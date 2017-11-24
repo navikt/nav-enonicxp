@@ -1,0 +1,45 @@
+<content-type>
+    <display-name>nav.innstilling-for-bestskjema</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Innstillinger">
+            <label>Innstillinger</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="introduction" type="HtmlArea">
+                    <label>Innledning</label>
+                    <custom-text>contentdata/introduction</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="success-feedback-message" type="HtmlArea">
+                    <label>Tilbakemelding når skjemaet er sendt</label>
+                    <custom-text>contentdata/success-feedback-message</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="timeslots">
+            <label>Klokkeslett</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="from-time" type="TextLine">
+                    <label>Fra (for samisk bestillingsskjema)</label>
+                    <custom-text>from-time</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="to-time" type="TextLine">
+                    <label>Til(for samisk bestillingsskjema)</label>
+                    <custom-text>to-time</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

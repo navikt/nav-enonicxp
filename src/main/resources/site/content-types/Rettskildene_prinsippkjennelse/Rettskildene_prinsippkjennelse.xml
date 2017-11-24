@@ -1,0 +1,45 @@
+<content-type>
+    <display-name>Rettskildene_prinsippkjennelse</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Prinsippkjennelse">
+            <label>Prinsippkjennelse</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Stikktittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="chapter" type="TextLine">
+                    <label>Folketrygdloven kapittel (nummer)</label>
+                    <custom-text>contentdata/chapter</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="content" type="HtmlArea">
+                    <label>Innhold</label>
+                    <custom-text>contentdata/content</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="kjennelse" type="ContentSelector">
+                    <label>Kjennelse</label>
+                    <custom-text>contentdata/kjennelse</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_trygderettkjennels</allow-content-type>
+                    </config>
+                </input>
+                <input name="paragraph" type="ContentSelector">
+                    <label>Hjemmel</label>
+                    <custom-text>contentdata/paragraph</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_paragraf</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

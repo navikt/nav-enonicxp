@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mixin>
+  <display-name>CMS Content</display-name>
+  <items>
+    <input type="TextLine" name="contentKey">
+      <label>Content key</label>
+      <occurrences minimum="0" maximum="1"/>
+    </input>
+    <input type="TextLine" name="categoryKey">
+      <label>Category key</label>
+      <occurrences minimum="0" maximum="1"/>
+    </input>
+    <input type="ContentSelector" name="contentHome">
+      <label>Content Home</label>
+      <occurrences minimum="0" maximum="0"/>
+    </input>
+  </items>
+</mixin>

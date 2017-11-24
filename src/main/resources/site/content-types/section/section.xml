@@ -1,0 +1,34 @@
+<content-type>
+    <display-name>Section</display-name>
+    <description/>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input name="sectionContents" type="ContentSelector">
+            <label>Contents</label>
+            <help-text>Add contents to section</help-text>
+            <occurrences maximum="0" minimum="0"/>
+        </input>
+        <item-set name="parameters">
+            <label>Menu item parameters</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Parameter name</label>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="value" type="TextLine">
+                    <label>Parameter value</label>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="override" type="CheckBox">
+                    <label>Override</label>
+                    <help-text>Can be overridden by the request</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

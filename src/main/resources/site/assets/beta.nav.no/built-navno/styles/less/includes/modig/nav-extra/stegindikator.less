@@ -1,0 +1,116 @@
+.stegindikator {
+  display: table;
+  list-style: none;
+  margin: 10px auto;
+  padding: 0;
+  text-align: center;
+  font-size: 0.9rem; 
+
+  a {
+    color: @text-color;
+    text-decoration: none; 
+    background-color: #fff;
+  }  
+
+  a:hover {
+    text-decoration: underline; 
+  }
+
+  li {
+    display: block;
+    float: left;
+    position: relative;
+    margin-right: 10px;
+    border: 1px solid @gray-lighter;
+    background: #f9f9f9;
+    color: @gray-dark;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-family: Modus, Helvetica, Arial, sans-serif;
+
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      height: 1px;
+      left: 100%;
+      top: 50%;
+      width: 11px;
+      background-color: @gray-lighter;
+    }
+
+    &:last-child {
+      margin-right: 0;
+      &:after {
+        display: inline;
+        position: static;
+        height: auto;
+        width: auto;
+        background-color: transparent;
+      }
+    }
+
+  }
+
+  .stegnummer {
+    display: none;
+  }
+
+  .steg {
+    padding: 8px 12px;
+    float: left;
+  }    
+
+  .aktiv, .aktiv a {  
+    background: @red;
+    color: @white;
+  }
+
+}
+
+@media (min-width: 62em) {
+  
+  // 992px (1em er 16px. 992 / 16 = 62)
+
+  .stegindikator {
+    font-size: 1rem; 
+
+    .steg {
+      padding: 10px 50px;  
+    }
+
+    .stegnummer {
+      display: none;
+    }
+
+  }
+
+}
+
+@media only screen and (max-width: 47.9375em) { 
+
+  // 767px (1em er 16px. 767 / 16 = 47.9375)
+
+  .stegindikator {
+
+    .stegnummer {
+      display: inline-block;
+    }
+
+    .tekst {
+      display: none;
+    }
+    
+    .aktiv {
+      .tekst {
+        display: inline-block;
+      }
+
+      .stegnummer {
+        display: none;
+      }
+    }
+
+  }
+
+}

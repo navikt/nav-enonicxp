@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>footerdecorator-lett-tilpasning-din-pensjon</display-name>
+  <config>
+    <input name="kontaktOssSide" type="ContentSelector">
+        <label>kontaktOssSide</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="personvernOgSikkerhetSide" type="ContentSelector">
+        <label>personvernOgSikkerhetSide</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="tilbakemeldingSide" type="TextLine">
+        <label>tilbakemeldingSide</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="tilgjengelighetSide" type="ContentSelector">
+        <label>tilgjengelighetSide</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

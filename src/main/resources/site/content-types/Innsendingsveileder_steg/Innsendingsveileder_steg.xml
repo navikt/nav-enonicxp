@@ -1,0 +1,35 @@
+<content-type>
+    <display-name>Innsendingsveileder_steg</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tittel">
+            <label>Tittel</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="steps">
+            <label>Steg i innsendingsveileder</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="active" type="TextLine">
+                    <label>Aktivt menypunkt</label>
+                    <custom-text>active</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="step" type="TextLine">
+                    <label>Navn på steg</label>
+                    <custom-text>step</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

@@ -1,0 +1,64 @@
+<content-type>
+    <display-name>Kampanjer_snarvei</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Snarvei">
+            <label>Snarvei</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="related" type="ContentSelector">
+                    <label>Relatert innhold</label>
+                    <custom-text>contentdata/related</custom-text>
+                    <help-text>Legg til kun ett innhold</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kampanjer_artikkel</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kampanjer_faq</allow-content-type>
+                    </config>
+                </input>
+                <input name="pageid" type="TextLine">
+                    <label>Side-ID</label>
+                    <custom-text>contentdata/pageid</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="bgcolor" type="RadioButton">
+                    <label>Bakgrunnsfarge</label>
+                    <custom-text>contentdata/bgcolor</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="lightgrey">Lys grå</option>
+                        <option value="grey">Grå</option>
+                        <option value="red">Rød</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Tilleggsinformasjon - ikke påkrevd">
+            <label>Tilleggsinformasjon - ikke påkrevd</label>
+            <items>
+                <input name="image" type="ImageSelector">
+                    <label>Kvadratisk bilde / ikon</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="description" type="TextArea">
+                    <label>Kort beskrivende tekst</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="link_text" type="TextLine">
+                    <label>Lenketekst</label>
+                    <custom-text>contentdata/link_text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

@@ -1,0 +1,48 @@
+<content-type>
+    <display-name>Toppbanner</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Topp banner">
+            <label>Topp banner</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="bannerText1" type="TextLine">
+                    <label>Banner tekst linje én</label>
+                    <custom-text>contentdata/bannerText1</custom-text>
+                    <help-text>Teksten kommer kun fram hvis banner tekst linje én er fylt ut</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="bannerText2" type="TextLine">
+                    <label>Banner tekst linje to</label>
+                    <custom-text>contentdata/bannerText2</custom-text>
+                    <help-text>Teksten kommer kun fram hvis banner tekst linje én er fylt ut</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="linkTitle" type="TextLine">
+                    <label>Banner linktekst</label>
+                    <custom-text>contentdata/linkTitle</custom-text>
+                    <help-text>Teksten kommer kun fram hvis banner tekst linje én er fylt ut</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="link" type="TextLine">
+                    <label>Banner link</label>
+                    <custom-text>contentdata/link</custom-text>
+                    <help-text>Hvis du skal linke til en ekstern lenke, så husk å ta med hele lenken inkludert http://</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="image" type="ImageSelector">
+                    <label>Image</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

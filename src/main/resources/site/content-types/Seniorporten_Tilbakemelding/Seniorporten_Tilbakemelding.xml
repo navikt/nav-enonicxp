@@ -1,0 +1,29 @@
+<content-type>
+    <display-name>Seniorporten_Tilbakemelding</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tilbakemelding">
+            <label>Tilbakemelding</label>
+            <items>
+                <input name="subject" type="TextLine">
+                    <label>Emne</label>
+                    <custom-text>contentdata/subject</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="feedback" type="TextArea">
+                    <label>Tilbakemelding</label>
+                    <custom-text>contentdata/feedback</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="sender" type="TextLine">
+                    <label>Avsender</label>
+                    <custom-text>contentdata/sender</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

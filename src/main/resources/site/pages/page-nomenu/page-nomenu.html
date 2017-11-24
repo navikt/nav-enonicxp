@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title data-th-text="${reqContent.displayName}">main page controller</title>
+</head>
+
+<body data-portal-component-type="page">
+
+<div id="region-centerRegion" data-portal-region="region-center">
+
+    Components in region-center:
+    <div data-th-if="${reqContent.page.regions['region-center']}" data-th-remove="tag">
+        <div data-th-each="component : ${reqContent.page.regions['region-center'].components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+        </div>
+    </div>
+</div>
+<div id="region-eastRegion" data-portal-region="region-east">
+
+    Components in region-east:
+    <div data-th-if="${reqContent.page.regions['region-east']}" data-th-remove="tag">
+        <div data-th-each="component : ${reqContent.page.regions['region-east'].components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+        </div>
+    </div>
+</div>
+<div id="region-northRegion" data-portal-region="region-north">
+
+    Components in region-north:
+    <div data-th-if="${reqContent.page.regions['region-north']}" data-th-remove="tag">
+        <div data-th-each="component : ${reqContent.page.regions['region-north'].components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+        </div>
+    </div>
+</div>
+<div id="region-southRegion" data-portal-region="region-south">
+
+    Components in region-south:
+    <div data-th-if="${reqContent.page.regions['region-south']}" data-th-remove="tag">
+        <div data-th-each="component : ${reqContent.page.regions['region-south'].components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+        </div>
+    </div>
+</div>
+<div id="region-westRegion" data-portal-region="region-west">
+
+    Components in region-west:
+    <div data-th-if="${reqContent.page.regions['region-west']}" data-th-remove="tag">
+        <div data-th-each="component : ${reqContent.page.regions['region-west'].components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+        </div>
+    </div>
+</div>
+<div id="scripts-regionRegion" data-portal-region="scripts-region">
+
+    Components in scripts-region:
+    <div data-th-if="${reqContent.page.regions['scripts-region']}" data-th-remove="tag">
+        <div data-th-each="component : ${reqContent.page.regions['scripts-region'].components}" data-th-remove="tag">
+            <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

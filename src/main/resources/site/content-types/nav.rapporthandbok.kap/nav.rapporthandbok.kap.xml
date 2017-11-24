@@ -1,0 +1,210 @@
+<content-type>
+    <display-name>nav.rapporthandbok.kap</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Kapittel (side) i rapporthandbok">
+            <label>Kapittel (side) i rapporthandbok</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="preface" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Deling på sosiale medier">
+            <label>Deling på sosiale medier</label>
+            <items>
+                <input name="share-facebook" type="CheckBox">
+                    <label>Vis 'Del på Facebook'</label>
+                    <custom-text>contentdata/share-facebook</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="share-twitter" type="CheckBox">
+                    <label>Vis 'Del på Twitter'</label>
+                    <custom-text>contentdata/share-twitter</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="share-linkedin" type="CheckBox">
+                    <label>Vis 'Del på LinkedIn'</label>
+                    <custom-text>contentdata/share-linkedin</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="newschemas">
+            <label>Skjemaer</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="newschema" type="ContentSelector">
+                    <label>Skjema og søknad</label>
+                    <custom-text>newschema</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                        <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+                <input name="veileder" type="ComboBox">
+                    <label>Veiledertype</label>
+                    <custom-text>veileder</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="Privatperson">Privatperson</option>
+                        <option value="Arbeidsgiver">Arbeidsgiver</option>
+                        <option value="Ettersender">Ettersender</option>
+                        <option value="Engelsk">Engelsk</option>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="Medlemskap i folketrygden">
+            <label>Medlemskap i folketrygden</label>
+            <items>
+                <input name="membership" type="ContentSelector">
+                    <label>Medlemskap i folketrygden</label>
+                    <custom-text>contentdata/membership</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                        <allow-content-type>no.nav.navno:Stor_tabell</allow-content-type>
+                        <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relatert informasjon">
+            <label>Relatert informasjon</label>
+            <items>
+                <input name="information" type="ContentSelector">
+                    <label>Relatert informasjon</label>
+                    <custom-text>contentdata/information</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                        <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                        <allow-content-type>no.nav.navno:Stor_tabell</allow-content-type>
+                        <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Selvbetjening">
+            <label>Selvbetjening</label>
+            <items>
+                <input name="selfservice" type="ContentSelector">
+                    <label>Selvbetjening</label>
+                    <custom-text>contentdata/selfservice</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Spørsmål og svar">
+            <label>Spørsmål og svar</label>
+            <items>
+                <input name="faq" type="ContentSelector">
+                    <label>Spørsmål og svar</label>
+                    <custom-text>contentdata/faq</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Sporsmaal_og_svar</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Internasjonalt">
+            <label>Internasjonalt</label>
+            <items>
+                <input name="international" type="ContentSelector">
+                    <label>Internasjonalt</label>
+                    <custom-text>contentdata/international</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                        <allow-content-type>no.nav.navno:Stor_tabell</allow-content-type>
+                        <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Meld fra om endringer">
+            <label>Meld fra om endringer</label>
+            <items>
+                <input name="notifications" type="ContentSelector">
+                    <label>Meld fra om endringer</label>
+                    <custom-text>contentdata/notifications</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Klagerettigheter">
+            <label>Klagerettigheter</label>
+            <items>
+                <input name="appeals" type="ContentSelector">
+                    <label>Klagerettigheter</label>
+                    <custom-text>contentdata/appeals</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Regelverk">
+            <label>Regelverk</label>
+            <items>
+                <input name="laws" type="ContentSelector">
+                    <label>Regelverk</label>
+                    <custom-text>contentdata/laws</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Andre språkversjoner">
+            <label>Andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Språkversjoner av dette innholdet</label>
+                    <custom-text>contentdata/languages</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:nav.rapporthandbok.kap</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

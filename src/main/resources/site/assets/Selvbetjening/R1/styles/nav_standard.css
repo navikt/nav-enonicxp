@@ -1,0 +1,289 @@
+/***********************************************
+*
+* KLASSER FOR DEFAULT FONT-STØRRELSER
+*
+***********************************************/
+BODY.font_normal   { font-size: 73%!important; }
+BODY.font_large    { font-size: 80%!important; }
+BODY.font_largest  { font-size: 90%!important; }
+.NAVsmall  { font-size: 1em; }
+.NAVmedium { font-size: 1.1em; }
+.NAVlarge  { font-size: 1.25em; }
+
+HEADER, NAV, SECTION, ARTICLE, ASIDE, FOOTER { display: block; }
+
+/***********************************************
+*
+*	GLOBALE ELEMENTER
+*
+***********************************************/
+html { background: url( /_public/www.nav.no/bilder/global/background.gif ) left top; }
+body { margin:0; padding: 0; border-collapse: collapse; }
+body, select, input, label, button { font-family: arial, verdana, sans-serif; color: #3e3832; }
+img       { border: none; }
+a         { text-decoration: none; color: #0074c2; }
+a:hover   { text-decoration: underline; }
+a:visited { color: #8b32e5; }
+.clear    {clear:both; }
+.bold     {font-weight: bold; }
+
+/* Buttons */
+.NAVbtn, .button, .loginButton { background: url('/_public/www.nav.no/bilder/global/buttonbackground.gif') repeat-x; border: 1px solid #A69D97; padding: 0.1em 0.5em 0 0.5em; }
+
+.NAVformBoxSearchContainer .NAVformBoxSearch { padding: 5px 6px; }
+select, input, textarea { font-size: 1em; }
+
+
+/************************************************
+*
+*	Site containers
+*
+*************************************************/
+#NAVheaderContainer, #NAVcenterContainer, #NAVborderBottomCenter { width: 99.5%; /*98.3%;*/ margin-left: 0.25%; /*0.9%;*/ display: inline; max-width: 1400px; }
+#NAVheaderContainer    { float: left; }
+#NAVcenterContainer    { float: left; }
+
+#NAVborderBottomLeft   { float: left; height: 12px; width: 100%; background: url( /_public/www.nav.no/bilder/global/borderbottomleft.gif ) no-repeat top left; }
+#NAVborderBottomRight  { float: left; height: 12px; width: 100%; background: url( /_public/www.nav.no/bilder/global/borderbottomright.gif ) no-repeat top right; }
+#NAVborderBottomCenter { float: left; background: url( /_public/www.nav.no/bilder/global/borderbottom.gif ) repeat-x top left; height: 12px; }
+
+#accessibilityContainer { position: absolute; left: -500px; top: -500px; }
+
+
+/**********************************************************
+*
+*	Containers in headerContainer
+*
+**********************************************************/
+#NAVheaderContainer #NAVheaderContentContainer { float: left; width: 100%; margin-top: 8px; }
+#NAVheaderContainer #NAVheaderContentContainer { background: url( /_public/www.nav.no/bilder/global/headerbackground.gif ) repeat-x 0 48px; }
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer     { float: left; margin-left: 18px; margin-top: 4px; }
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer img { float: left; }
+#NAVheaderContainer #NAVheaderContentContainer a                     { color: #3e3832; }
+#NAVheaderContainer #NAVheaderContent                                { float: right; margin-right: 10px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight     { text-align: right; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVlinksContainer { margin-left: 15px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVswitchFontLink { margin-right: 1px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVsizeLinks      { margin-left: 1px; margin-right: 0; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop             { margin-top: 5px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop form        { display: inline; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop a           { margin-right: 10px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop .NAVheadBtn { margin-right: 17px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop .NAVbtn     { margin-left: 5px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVavailabilityLinksRight { display:inline;}
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .noindex { display:inline;}
+
+#NAVtjenesterHeaderContainer    { padding: 10px 0 14px 0; background: url( /_public/www.nav.no/bilder/dittnav/skraa.png ) no-repeat top right; }
+#NAVtjenesterHeaderContainer h1 { font-size: 3.2em; color: #c30000; margin: 10px 0 0 10px; }
+#NAVheaderDot                   { background: url( /_public/www.nav.no/bilder/dittnav/headerbackground2.png ) repeat-x bottom; padding-bottom: 1px; height: 50px; }
+
+#NAVpageTopBackground           { background: #f9f8f7 url( /_public/www.nav.no/bilder/dittnav/pagetop-bg.png ) repeat-x; }
+#NAVpageBottomBackground        { background: url( /_public/www.nav.no/bilder/dittnav/pagebtm-bg.png ) repeat-x bottom; }
+#NAVcontentSpacerContainer      { background: url( /_public/www.nav.no/bilder/dittnav/toppstripe.png ) repeat-x 12px 0; margin-left: 7px; }
+#NAVtjenesterSeparatorHeader    { background: url( /_public/www.nav.no/bilder/dittnav/toppstripeleft.png ) no-repeat; height: 22px; border-bottom: 1px solid #dfddd9; }
+
+
+/*********************************************************
+*
+*	Containers in centerContainer
+*
+*********************************************************/
+#NAVborderLeft    { float: left; width: 100%; background: url( /_public/www.nav.no/bilder/global/borderleft.gif ) repeat-y left top; }
+#NAVborderLeftTop { position: absolute; background: url( /_public/www.nav.no/bilder/global/borderleft-top.gif ) no-repeat left top; width: 15px; height: 22px; }
+#NAVborderRight   { float: left; width: 100%; background: url( /_public/www.nav.no/bilder/global/borderright.gif ) repeat-y right top; }
+
+/************** contentSpacerContainer **************/
+#NAVcontentSpacerContainer { margin: 0 7px; }
+#NAVcontentSpacerOperaFix  { float: left; width:100%; }
+
+/************** pageTitleContainer *******************/
+#NAVpageTitleContainer         { text-align:left; margin-top: 20px; margin-bottom: 15px; float: left; width: 100%; }
+#NAVpageTitleContainer         { background: url( /_public/www.nav.no/bilder/global/pagetitlebackground.gif ) repeat-x bottom left; }
+#NAVpageTitleContainer h1      { color: #fff; margin: 0 0 0 14px; padding-top: 17px; font-size: 3.2em; }
+#NAVpageTitleContainer h1 span { color: #fff; }
+#NAVpageTitleContainer h1.rtl  { font-size: 4.2em; margin-right: 14px; }
+
+
+/****************************************************
+*
+*	pageContainer - containers in content
+*
+*****************************************************/
+#NAVpageContainer							   { margin-left: 0; position: relative; padding-left: 20px; }
+#NAVpageContainer .NAVtopSpacing               { height: 2em; clear: left; }
+#NAVpageContainer .NAVtopSpacingFrontPage      { height: 14px; clear: left; }
+#NAVpageContainer #NAVcontentContainer         { width: 48.5%; float: left; margin-right: 1.8%; }
+#NAVpageContainer #NAVwideContentContainer     { width: 68.5%; float: left; margin-right: 1.8%; }
+#NAVpageContainer #NAVrelevantContentContainer { width: 22%; float: left; }
+#NAVpageContainer #NAVrelevantContentContainer.wideAlt { width: 28%; float: left; }
+#NAVpageContainer #NAVfooterContainer          { clear: both; width: 100%; padding: 0.3em 0 3em; text-align: center; margin-top: 35px; }
+#NAVfooterContainer a                          { margin-right: 5px; }
+#NAVpageContainer #NAVtwoColumnContainer       { float: left; width: 73%; }
+#NAVpageContainer #NAVoneColumnContainer       { padding: 0 1em 0 1em; }
+#NAVpageContainer #NAVtjenesterRedDecorStripe  { display: none; }
+
+/****************************************************
+*
+*	DittNAV
+*
+*****************************************************/
+
+#NAVredBottomStripe         { border: none; background: #c30000; height: 2px; margin: 0 10% 20px; }
+
+/***********************************************************
+*
+*	breadcrumbContainer
+*
+************************************************************/
+#NAVbreadcrumbContainer         { margin: 14px 0 0 10px; }
+
+#alternativebreadcrumb  { -moz-border-radius:10px; -moz-box-shadow:2px 2px 5px #CCCCCC; background: url( /_public/www.nav.no/bilder/breadcrumb/meny-brodsmule-bg-solv.gif ) repeat; float:left; width:100%; height: 44px;}
+.hovednavigasjon>li {background: url( /_public/www.nav.no/bilder/breadcrumb/meny-brodsmule-bg-rod.gif ); }
+.horisontalmeny {list-style: none; margin: 0;}
+.horisontalmeny>li {float: left; position: relative;}
+ul.hovednavigasjon {background: #c30000; padding: 0; }
+ul.hovednavigasjon .hovedmenypunkt {display: block; line-height: 44px; padding: 0 2em; color: #fff; font-weight: bold; float: left;}
+.hovednavigasjon .hovedmenypunkt:hover {text-decoration: underline; color: #ffffff;}
+.hovednavigasjon  .hovedmenypunkt:visited {color: #ffffff;}
+.hovednavigasjon>li:first-child {-moz-border-radius:10px 0 0 10px;}
+#alternativebreadcrumb .pil {float: right; width: 15px; height: 44px; }
+#alternativebreadcrumb  .pil-rod-solv {background: url( /_public/www.nav.no/bilder/breadcrumb/meny-brodsmule-pil-rodsolv.gif ) no-repeat; }
+#alternativebreadcrumb  .pil-rod-rod {background: url( /_public/www.nav.no/bilder/breadcrumb/meny-brodsmule-pil-rod.gif ) no-repeat; }
+
+
+
+/************************************************************
+*
+*	 submenuContainer (leftcolumn)
+*
+*************************************************************/
+
+/* General submenu */
+#NAVsubmenuContainer               { width: 24.2%; float: left; margin-right: 1.8%; }
+#NAVsubmenuContainer UL.NAVsubmenu { width: 100%; list-style: none; margin: 0; padding: 0; }
+#NAVsubmenuContainer OL            { list-style: none; padding-left: 0; background: url( /_public/www.nav.no/bilder/dittnav/menyskygge.png ) no-repeat right center; }
+#NAVsubmenuContainer OL LI         { background: url( /_public/www.nav.no/bilder/dittnav/nav/dashedhorizontal.gif ) repeat-x bottom; }
+
+/* Top border with rounded corners */
+#NAVsubmenuContainer .NAVmenuTopLine        { position: relative; height: 10px; }
+#NAVsubmenuContainer .NAVmenuTopLine DIV.tv { position: absolute; background: url( /_public/www.nav.no/bilder/venstremeny/menylinje-topp-v.png ) no-repeat; height: 10px; width: 10px; }
+#NAVsubmenuContainer .NAVmenuTopLine DIV.tm { position: absolute; background: url( /_public/www.nav.no/bilder/venstremeny/menylinje-topp-m.png ) repeat-x; left: 10px; right: 10px; height: 10px; }
+#NAVsubmenuContainer .NAVmenuTopLine DIV.th { position: absolute; background: url( /_public/www.nav.no/bilder/venstremeny/menylinje-topp-h.png ) no-repeat; right: 0; height: 10px; width: 10px; }
+
+/* First menu line */
+#NAVsubmenuContainer .NAVfirstMenuItem             { background: url( /_public/www.nav.no/bilder/venstremeny/menylinje-topp-m.png ) repeat-x 0 -10px; }
+#NAVsubmenuContainer .NAVfirstMenuItem:hover       { background: url( /_public/www.nav.no/bilder/venstremeny/menylinje-topp-hover-m.png ) repeat-x 0 -10px; }
+#NAVsubmenuContainer .NAVfirstMenuItem.NAVselected { background: url( /_public/www.nav.no/bilder/venstremeny/menylinje-topp-valgt-m.png ) repeat-x 0 -10px; }
+
+/* General links */
+#NAVsubmenuContainer A                                   { display: block; text-decoration: none; padding: 11px 0 11px 26px; }
+#NAVsubmenuContainer A:hover , #NAVsubmenuContainer  A.NAVselected { font-weight: bold; }
+#NAVsubmenuContainer .hasChild A  { color: #c30000; font-weight: bold; }
+#NAVsubmenuContainer .NAVselected_hasChild A.NAVlevelTwo  {font-weight: bold; color: #c30000; padding-left: 36px; background: url( /_public/www.nav.no/bilder/venstremeny/arrowsubmenuselected.gif ) no-repeat 22px center; }
+#NAVsubmenuContainer .NAVselected_hasChild .NAVselected A.NAVlevelThree { color: #c30000; }
+
+/* Links level 1 */
+#NAVsubmenuContainer A.NAVlevelOne                   { font-size: 1.2em; color: #fff; font-weight: bold; border-bottom: 1px solid #d85958; background: #a60303 url( /_public/www.nav.no/bilder/venstremeny/menypil-hoyre.png ) no-repeat 12px 14px; }
+#NAVsubmenuContainer A.NAVlevelOne:hover             { background-color: #8c1310; }
+#NAVsubmenuContainer .NAVfirstMenuItem A.NAVlevelOne { background-color: transparent; }
+#NAVsubmenuContainer .NAVselected A.NAVlevelOne      { background: #670202 url( /_public/www.nav.no/bilder/venstremeny/menypil-ned.png ) no-repeat 9px 17px; }
+
+/* Links level 2 */
+#NAVsubmenuContainer A.NAVlevelTwo                   { font-size: 1em; color: #3e3832; padding: 6px 0 6px 24px; }
+#NAVsubmenuContainer .hasChild A.NAVlevelTwo         { background: url( /_public/www.nav.no/bilder/venstremeny/arrowsubmenu.gif ) no-repeat 22px center; padding-left: 36px; }
+
+/* Links level 3 */
+#NAVsubmenuContainer A.NAVlevelThree                 { font-size: 1em; color: #3e3832; padding: 2px 0 2px 36px; }
+#NAVsubmenuContainer .hasChild A.NAVlevelThree       { background: url( /_public/www.nav.no/bilder/venstremeny/arrowsubmenu.gif ) no-repeat 22px center; padding: 5px 0 5px 36px; }
+#NAVsubmenuContainer .hasChild A.NAVlevelThree:hover { font-weight: bold; }
+
+#NAVsubmenuContainer OL LI:last-child                { background: none; }
+
+/* Last menu line */
+#NAVsubmenuContainer .NAVlastMenuItem A.NAVlevelOne              { color: #fff; font-weight: bold; border-bottom: none; background: #a60303 url( /_public/www.nav.no/bilder/venstremeny/menypil-hoyre.png ) no-repeat 12px 14px; }
+#NAVsubmenuContainer .NAVlastMenuItem A.NAVlevelOne:hover        { background: #8c1310 url( /_public/www.nav.no/bilder/venstremeny/menypil-hoyre.png ) no-repeat 12px 14px; }
+#NAVsubmenuContainer .NAVlastMenuItem.NAVselected A.NAVlevelOne  { background: #670202 url( /_public/www.nav.no/bilder/venstremeny/menypil-ned.png ) no-repeat 9px 17px; }
+
+/* Bottom border with rounded corners */
+#NAVsubmenuContainer .NAVmenuBottomLine               { position: relative; height: 9px; }
+#NAVsubmenuContainer .NAVmenuBottomLine DIV.bv        { position: absolute; left: 0; top: 0; height: 9px; width: 9px; background: url( /_public/www.nav.no/bilder/venstremeny/meny-hjorne-bv.png ) no-repeat; }
+#NAVsubmenuContainer .NAVmenuBottomLine DIV.bm        { position: absolute; left: 9px; top: 0; right: 9px; height: 9px; margin: 0 auto; background: #a60303; }
+#NAVsubmenuContainer .NAVmenuBottomLine DIV.bh        { position: absolute; right: 0; top: 0; height: 9px; width: 9px; background: url( /_public/www.nav.no/bilder/venstremeny/meny-hjorne-bh.png ) no-repeat; }
+
+
+
+/* NAVMENU - FANER */
+
+#NAVmenu                    { margin: 0 3px 0 0; float: right; background:url( /_public/www.nav.no/bilder/dittnav/faner-h-bg.gif ) no-repeat right 3px;}
+.faner                      { overflow: hidden; width: auto; margin: 0 4px 0 0; }
+.faner LI                   { float: left; text-align: center; background: #f6f4f3 url( /_public/www.nav.no/bilder/dittnav/faner-bg.png ) no-repeat; height: 29px; list-style: none; margin-top: 3px; }
+.faner LI.last              { clear: right; }
+.faner A.indre              { display: block; margin: 5px 6px; background: none !important; width: 110px; font-family: arial, sans-serif; font-size: 1.4em; color: #4e4843; font-weight: bold; }
+
+.faner LI.selected             { background: #c30000; margin-top: 0; padding-top: 3px; }
+.faner LI.selected A           { color: #fff; }
+.faner LI:first-child          { background: #f6f4f3; }
+.faner LI:last-child           { margin-right: 2px; }
+.faner LI.arbeidsgiver         { background: #c30000; margin-right: 0; }
+.faner LI.selected:first-child { background: #c30000; margin-top: 0; padding-top: 3px; }
+
+.faner LI:hover             { background: #e9e7e5 url( /_public/www.nav.no/bilder/dittnav/faner-bg-hover.png ) no-repeat; }
+.faner LI:first-child:hover { background: #e9e7e5; }
+.faner LI.selected:hover    { background: #c30000; }
+.faner A.indre:hover        { text-decoration: none; }
+
+
+
+/* LINK STYLET SOM KNAPP */
+
+A.NAVknapp                    { display: inline-block; }
+A.NAVknapp:hover              { text-decoration: none; }
+A.NAVknapp SPAN.bord          { display: block; border: 2px solid #f1f1f1; background: #f1f1f1; float: left; margin-left:-3px;}
+A.NAVknapp SPAN.bord:hover    { border: 2px solid #bfe0fb; background: #bfe0fb; }
+A.NAVknapp SPAN               { position: relative; overflow: hidden; height: 24px; }
+A.NAVknapp SPAN.knapp-v       { float: left; display: block; background: url( /_public/www.nav.no/bilder/dittnav/knapper/knapp-v.png ) no-repeat 0 0; width: 3px; }
+A.NAVknapp SPAN.knapp-m       { float: left; display: block; background: url( /_public/www.nav.no/bilder/dittnav/knapper/knapp-m.png ) repeat-x 0 0; color: #3e3832; padding: 4px 6px 0; height: 21px; }
+A.NAVknapp SPAN.knapp-m:hover { background: url( /_public/www.nav.no/bilder/dittnav/knapper/knapp-hover-m.png ) repeat-x 0 0; }
+A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_public/www.nav.no/bilder/dittnav/knapper/knapp-h.png ) no-repeat 0 0; width: 3px; }
+
+#NAVstatus A.NAVknapp SPAN.bord       { border: none; margin-top: 2px; background: none; }
+#NAVstatus A.NAVknapp SPAN.bord:hover { border: none; background: none; }
+
+
+
+/* MINID/INNLOGGET STATUSLINJE */
+
+#NAVstatus                    { position: relative !important; left: 0; top: 0; right: 0; height: 45px; width: 100%; background:#3e3832; z-index: 300;}
+#NAVstatus .NAVstatusBakgrunn { position: absolute; left: 0; bottom: 4px; right: 0; border-bottom: 1px solid #3e3832; height: 195px; width: 100%; background: url( /_public/www.nav.no/bilder/dittnav/innlogget-bg.png ) repeat-x; }
+#NAVstatus .innloggingsinfo   { position: absolute; bottom: 46px; left: 330px; color: #fff; font-size: 1.2em; }
+#NAVstatus .innloggingsinfo #loggUtReminder {padding-top: 6px; padding-bottom: 14px; }
+#NAVstatus .innloggingslinje            { position: absolute; bottom: 4px; left: 0; right: 0; height: 30px; max-width: 1406px; }
+#NAVstatus .innloggingslinje DIV	    { float: right; border-left: 1px solid #47423c; border-right: 1px solid #635f59; padding: 0 12px; height: 25px; }
+#NAVstatus .innloggingslinje .minid     { margin-top: 4px; border-left: none; }
+#NAVstatus .innloggingslinje .minid IMG { margin-top: 2px; }
+#NAVstatus .innloggingslinje .innlogget { margin-top: 2px; padding-top: 5px; height: 15px; font-weight: bold; color: #fff; }
+#NAVstatus .innloggingslinje .loggut    { border-right: none; }
+#NAVstatus .NAVstatusSkygge             { position: absolute; left: 0; bottom: 0; right: 0; height: 4px; width: 100%; border-top: 1px solid #f9f8f8; background: transparent url( /_public/www.nav.no/bilder/dittnav/skygge_top_bg.gif ) repeat-x; }
+#NAVstatus .knapp-m       { padding: 4px 23px; }
+#NAVcover                 { display:none; background: url(/_public/www.nav.no/bilder/dittnav/monster-nav-tile.gif); width: 100%; height: 100%; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; opacity: 0.7; }
+#lukkInnloggingsInfo      { padding-top: 5px; }
+#lukkelenke, #lukkelenke:visited { color:#FFF;}
+#lukkelenke          { height:22px; padding-left:26px; display:block; float:left; background: url(/_public/www.nav.no/bilder/fellesinnlogging/knapp-lukk.gif) top left no-repeat;}
+#lukkelenke:hover    { background: url(/_public/www.nav.no/bilder/fellesinnlogging/knapp-lukk-hover.gif) top left no-repeat;}
+#lukkInnloggingsInfo {font-weight: bold;  font-size: 0.9em; color: #fff;  font-weight: bold; line-height: 1.8em; }
+
+
+/*Applikasjonsinnloggingslinje */
+
+.logginnContainer { margin-left: 26%; }
+
+#loginContainer { position: absolute; right: 0; }
+#loginContainer .loginContainerLeft  { float: left; width: 4px; height: 43px; background: url( /_public/www.nav.no/bilder/tjenester/gfx/headerbackground-left.gif ) no-repeat left bottom; }
+#loginContainer .loginContainerRight { float: left; background: url( /_public/www.nav.no/bilder/tjenester/gfx/innlogget-alt-bg.gif ) repeat-x; }
+#loginContainer .loginContainerRight .minIdLogo   { margin: 11px 15px 11px 15px; float: left; }
+#loginContainer .loginContainerRight .minIdBruker { float: left; padding: 9px 6px 6px 9px; margin-top: 7px; border-left: 1px solid #ccc; }
+
+
+.NAVportletSeperator { height: 1.9em; width: 100%; clear: left;}
+.NAVdashedHorizontal { background: url( /_public/www.nav.no/bilder/dittnav/nav/dashedhorizontal.gif ) repeat-x bottom; }
+

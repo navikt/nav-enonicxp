@@ -1,0 +1,871 @@
+// Universelle stiler, utenfor media
+
+.menu-link-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: block;
+}
+
+.menu-link-list li {
+	border-bottom: 1px solid @gray-lighter;
+	position: relative;
+	font-size: @rem-as-14px;
+}
+
+.menu-link-list a {
+	color: @gray-dark;
+	display: block;
+	margin-left: -1.5rem;
+	padding: 10px 10px 10px 1.5rem;
+	text-align: left;
+	text-decoration: none;
+	border-bottom: none;
+	&:hover {
+	  border-bottom-color: @gray-light;
+	  color: @blue-dark;
+	  &:before {
+		border: 3px solid @blue-dark;
+		border-radius: 50% 50% 50% 50%;
+		content: " ";
+		left: -10px;
+		top: 16px;
+		float: left;
+		position: absolute;
+		text-align: left;
+	  }
+	}
+	&:focus {
+	  box-shadow: 0 0 0 3px @orange-focus;
+	  outline: none;
+      background: transparent;
+	}
+
+	@media (min-width: @screen-medium) {
+		line-height: 1.5em;
+	}
+}
+
+.menu-link-list .active > a:before,
+.menu-link-list a:hover:before {
+	.bullet-point(3px, @link-color, -11px, 1.35em);
+}
+
+
+.input-sitesearch:focus { // må sette fokusstiler pga bakgrunnsbilde/farge og null border på inputs for søk
+    .tab-focus();
+    box-shadow: 0 0 0 2px #ffbd66;
+    outline: none;
+}
+
+.btn-sitesearch:focus{
+  .tab-focus();
+  overflow: hidden;
+  box-shadow: 0 0 0 2px #ffbd66;
+  outline: none !important;
+}
+
+.menu-link-list .active a,
+.menu-link-list a:hover {
+	color: @link-color;
+	text-decoration: none;
+}
+
+.topnavsection-wrapper {
+	background-color: #fff;
+	border-bottom: 1px solid @gray-lighter;
+	position: relative;
+	z-index: 1;
+}
+
+.accessible-megamenu,
+.subnavitems {
+	// UL
+	padding: 0px 0px 12px 0px;
+	margin: 0;
+	list-style: none;
+}
+
+.sitesearch {
+	// gjelder både mobil og desktop
+	.input-sitesearch {
+		border: none;
+		margin: 0;
+		border-radius: 0;
+		&:-moz-placeholder,
+		&::-moz-placeholder,
+		&:-ms-input-placeholder,
+		&::-webkit-input-placeholder,
+		&:input-placeholder {
+			font-size: @rem-as-12px;
+		}
+
+	}
+	.btn-sitesearch {
+		margin: 0 1px 0 0;
+		border: none;
+		text-indent: -9999em;
+		width: 17px;
+	}
+}
+
+//--------------------------------------------------------------------
+//
+//  Private mixins for responsive / non-responsive megamenu behaviour
+//
+//--------------------------------------------------------------------
+
+.accessible-megamenu-mobile-first();
+.accessible-megamenu-mobile-mq();
+// mobilversjon av hovedmeny
+.accessible-megamenu-desktop-mq();
+// desktopversjon av hovedmeny
+
+//--------------------------------------------------------------------
+//
+//  Mobile first setup
+//  Label / checkbox mobile menu toggler for non-js. Otherwise button.
+//
+//--------------------------------------------------------------------
+
+.accessible-megamenu-mobile-first() when (@responsive = false) {
+	.mobile-toggler,
+	.mobile-only {
+		display: none !important;
+		visibility: hidden;
+	}
+
+}
+
+.accessible-megamenu-mobile-first() when (@responsive = true) {
+
+	.accessible-megamenu {
+		display: none;
+		&.m-open {
+			display: block;
+		}
+	}
+
+	// RESPONSIVE MENU CONCEPT: Advanced checkbox hack
+	// NB! Mulige bugs på android: "The best solution is to add a webkit-only fake animation on the body element"
+
+	label.mobile-toggler,
+	button.mobile-toggler {
+		// label + button
+        white-space: nowrap;
+		position: relative;
+		display: inline-block;
+		width: 49%;
+		padding: 14px 0 14px 0;
+		font-size: 1em;
+		font-weight: 600;
+		color: #fff;
+		font-family: @font-family-modus;
+		text-transform: uppercase;
+		cursor: pointer;
+	    border: none;
+		&.toggle-mainmenu {
+			padding-left: 1.2em; // samme som på knapp for søk
+			text-align: left;
+
+			background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/meny_mobil_hvit.png') no-repeat left 50%;
+			//background: transparent url('../../../img/navno/gfx/mainmenu/meny_mobil_hvit.svg') no-repeat left 50%;
+		}
+
+		&.toggle-search {
+			text-align: right;
+			display: inline-block;
+			span {
+				pointer-events: none; // pga iOS, gjør hele <button> klikkbar
+				display: inline-block;
+				padding-left: 1.2em;
+				background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/sok_liten_hvit.png') no-repeat left 50%;
+				//background: transparent url('../../../img/navno/gfx/mainmenu/sok_liten_hvit.svg') no-repeat left 50%;
+			}
+
+		}
+	  	&:focus {
+		  box-shadow: none;
+		}
+
+	}
+
+	input#no-js-toggle-mobile-mainmenu {
+		&:checked ~ .accessible-megamenu {
+			display: block;
+		}
+		&:checked ~ label.toggle-mainmenu {
+			color: @blue-light;
+		  	background-color: transparent;
+		}
+	}
+
+	input#no-js-toggle-mobile-search {
+		&:checked ~ .sitesearch {
+			display: block;
+		}
+		&:checked ~ label.toggle-search {
+			color: @blue-light;
+		}
+	}
+
+	button.toggle-mainmenu.m-open {
+		color: @blue-light;
+		background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/meny_mobil_blaa.png') no-repeat left 50%;
+		//background: transparent url('../../../img/navno/gfx/mainmenu/meny_mobil_blaa.svg') no-repeat left 50%;
+	}
+
+	button.toggle-search.m-open {
+
+		span {
+			color: @blue-light;
+			background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/sok_liten_lyseblaa.png') no-repeat left 50%;
+			// background: transparent url('../../../img/navno/gfx/mainmenu/sok_liten_lyseblaa.svg') no-repeat left 50%;
+		}
+
+	}
+
+}
+
+//--------------------------------------------------------------------
+//
+//  MOBILMENY - opp til og med 768px
+//
+//--------------------------------------------------------------------
+
+.accessible-megamenu-mobile-mq() when (@responsive = true) {
+
+	@media (max-width: @screen-medium) {
+		// Mindre enn, eller lik 768px
+		@-ms-viewport {
+			width: auto;
+		}
+
+		#mainmenu > h1 {
+			display: none; // pga "hovedmeny" ikke skal leses opp av skjermleser når mobilmeny vises
+		}
+
+		.js label.mobile-toggler,
+		.js input.mobile-toggler {
+			display: none;
+		}
+
+		.no-js button.mobile-toggler {
+			display: none;
+		}
+
+		.mobile-submenu-expander {
+			cursor: pointer;
+		}
+
+		.mobile-submenu-expander.open {
+			color: @blue-light;
+		}
+
+		.mobile-submenu {
+			padding-left: 40px;
+			padding-right: 35px;
+			li {
+				font-size: 1em;
+				border-bottom: none;
+
+              a.locked {
+                margin-left: -30px;
+                padding: 15px 0 15px 30px;
+              }
+
+				a {
+					padding: 15px 0 15px 60px;
+					margin-left: -60px;
+                    text-decoration: none;
+					&:before {
+						display: none; // evt sette .menu-link-list innenfor min-width MQ i stedet for å overstyre her? Mer mobile first-ish.
+					}
+
+				}
+
+			}
+
+		}
+
+		.topnavsection {
+			// wrapper rundt meny
+			position: relative;
+			background-color: @gray-darker;
+		}
+
+		.accessible-megamenu,
+		.sitesearch {
+			border-top: 1px solid @gray;
+			margin-left: -1.5625em; //-@grid-gutter-width / 2;
+			width: 90%;
+			position: absolute;
+			background-color: @gray-darker;
+			color: #fff;
+			a, a:active, a:hover {
+				color: #fff;
+			}
+
+		}
+
+		.sitesearch {
+			// kun mobil
+			display: none;
+			&.m-open {
+				display: block;
+				width: 100%;
+			}
+			.inputwrapper {
+				padding: (@grid-gutter-width / 2) 1.5625em; // tilsvarende 25px ut til sidene
+				> div {
+					background: #fff;
+					border: 1px solid @gray-lighter;
+                    white-space: nowrap;
+				}
+
+			}
+			.input-sitesearch {
+				.box-sizing(border-box);
+				width: 85%;
+				display: inline-block;
+				margin: 0;
+				padding: @grid-gutter-width / 2;
+
+			}
+			.btn-sitesearch {
+				.box-sizing(border-box);
+				width: 15%;
+				display: inline-block;
+				margin: 0;
+				padding: @grid-gutter-width / 2;
+				background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/sok_stor_morkeblaa.png') no-repeat right (@grid-gutter-width / 2) center;
+				//background: transparent url('../../../img/navno/gfx/mainmenu/sok_stor_morkeblaa.svg') no-repeat right (@grid-gutter-width / 2) center;
+			}
+
+		}
+
+		.accessible-megamenu {
+			.h4 {
+			  	min-height: 55px;
+			}
+			a:active, a:focus, a:hover, .active a {
+				color: @blue-light;
+			}
+		}
+
+		.topnavitem {
+			line-height: 1.2; // default er 1.4ish
+			> a {
+				display: block;
+				padding: 15px 35px 15px 25px; //@grid-gutter-width / 2;
+				border-bottom: 1px solid @gray;
+				font-size: 1.0652em; // skal være 17px
+				text-transform: uppercase;
+				text-decoration: none;
+				font-family: @font-family-modus;
+				font-weight: 600;
+				&.open {
+					color: @blue-light;
+				}
+
+			}
+
+		}
+
+		// topnavitem
+		.topnavitem.selected-topnavitem.has-children {
+			border-bottom: 1px solid @gray; // skillelinje før neste hovedmenypunkt (etter undermeny)
+		}
+
+		.topnavitem.has-children {
+			// mobil!
+
+			> a,
+			.mobile-submenu-expander {
+				position: relative;
+			}
+
+			> a:after,
+			.mobile-submenu-expander:after {
+				content: " ";
+				display: inline-block;
+				border-top: 6px solid @blue-light;
+				border-right: 6px solid transparent;
+				border-left: 6px solid transparent;
+				position: absolute;
+				right: 23px;
+				top: 40%;
+			}
+
+			> a.open:after,
+			.mobile-submenu-expander.open:after {
+				border-bottom: 6px solid @blue-light;
+				border-top: none;
+				border-right: 6px solid transparent;
+				border-left: 6px solid transparent;
+			}
+
+			> a:hover:after, .mobile-submenu-expander:hover:after,
+			> a:focus:after, .mobile-submenu-expander:focus:after {
+				border-top: 6px solid @blue-light;
+			}
+
+			> a.open:hover:after, .mobile-submenu-expander.open:hover:after,
+			> a.open:focus:after, .mobile-submenu-expander.open:focus:after {
+				border-bottom: 6px solid @blue-light;
+				border-top: none;
+			}
+		}
+
+		.accessible-megamenu-panel {
+			> p {
+				margin: 0; // home-link wrapper
+			}
+
+			.mobile-submenu-expander {
+				display: block;
+				padding: 24px 35px 25px 40px; // dobbelt så mye padding left som nivået over (topnavitem)
+				margin: 0px;
+			}
+
+		  .tilbaketilgruppe {
+			font-size: 1.5rem;
+			color: @white;
+
+			.tilbaketittel {
+			  visibility: hidden;
+			}
+
+			.home-link {
+			  padding: 0px 0px;
+
+			  .tilbaketilforsidelink {
+				bottom: 5px;
+				color: @white;
+				font-size: 1rem;
+				border: none;
+				margin-left: 0px;
+			  }
+			  &:before {
+				height: 30px;
+				background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/hjem_hvit.png') no-repeat;
+				background-position: 66% 100%;
+				background-size: 43%;
+			  }
+
+			  &:hover, &:active, &:focus{
+				&:before {
+				  height: 30px;
+				  background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/hjem_hvit.png') no-repeat;
+				  background-position: 66% 100%;
+				  background-size: 43%;
+				}
+				.tilbaketilforsidelink {
+				  border:none;
+				  background-color: transparent;
+				  box-shadow: none;
+				  color: @blue-light;
+				}
+			  }
+
+			  &.dittnav {
+				.tilbaketilforsidelink {
+				  border: none;
+				  bottom: 10px;
+				}
+				&:before {
+				  height: 30px;
+                  background: transparent url('@{baseImagePath}img/navno/gfx/icons/person_graa.png') no-repeat 42% 30%;
+                  background-size: 62%;
+				}
+				&:hover, &:active, &:focus {
+				  &:before {
+					height: 30px;
+                    background: transparent url('@{baseImagePath}img/navno/gfx/icons/person_graa.png') no-repeat 42% 30%;
+                    background-size: 62%;
+				  }
+				  .tilbaketilforsidelink {
+					border:none;
+					bottom: 10px;
+					color: @blue-light;
+				  }
+				}
+			  }
+			}
+		  }
+
+		  .submenu-logg-inn {
+			margin: 1rem;
+		  }
+		}
+
+		.accessible-megamenu-panel,
+		.accessible-megamenu-panel .menu-link-list {
+			display: none;
+			&.open {
+				display: block;
+			}
+		}
+
+		.no-js .accessible-megamenu-panel,
+		.no-js .accessible-megamenu-panel .menu-link-list {
+			display: block; // Meny skal være åpen (tilgjengelig) når js ikke kjører
+		}
+
+		.no-js .mobile-submenu-expander {
+			cursor: auto;
+		}
+
+		.no-js .accessible-megamenu {
+			position: static;
+		}
+
+		// Kun for mobil: Språkvalg og logg inn / ut i mobilmeny
+		//-------------------------------------------------------
+		.mobile-only {
+			.active-language {
+				text-transform: none;
+				font-weight: normal;
+			}
+			.languages {
+				list-style: none;
+				margin: 0;
+				a {
+					display: block;
+				}
+			}
+			.login-container {
+				padding: 15px 35px 15px 25px;
+			}
+
+		}
+
+	}
+	// media screen max-width medium
+
+	@media (max-width: @screen-xs) {
+		// hack for mindre flater. Søkeknapp må ha større %-andel av bredde, slik at ikon vises
+		.sitesearch {
+			.input-sitesearch {
+				width: 80%;
+			}
+
+			.btn-sitesearch {
+				width: 20%;
+			}
+		}
+	}
+	// media screen xtra small
+
+}
+
+// mixin
+
+//--------------------------------------------------------------------
+//
+//  DESKTOPMENY - responsiv. Fra 769px og opp (tidligere 621px).
+//
+//--------------------------------------------------------------------
+
+.accessible-megamenu-desktop-mq() when (@responsive = true) {
+
+	@media (min-width: (@screen-medium-plus-em-as-one-px)) {
+		// fra 769px og opp
+		.mobile-toggler,
+		.mobile-only {
+			display: none !important;
+			visibility: hidden;
+		}
+
+		.accessible-megamenu-desktop();
+	}
+
+	@media (min-width: 60em) {
+		.sitesearch {
+			margin-left: 20px;
+		}
+
+		.topnavsection {
+			.topnavitem {
+				> a {
+					display: block;
+					padding: 10px 20px 10px 10px;
+				}
+			}
+		}
+	} // mq end
+
+
+
+}
+
+//--------------------------------------------------------------------
+//
+//  DESKTOPMENY - ikke responsiv (IE8 ++)
+//
+//--------------------------------------------------------------------
+
+.accessible-megamenu-desktop-mq() when (@responsive = false) {
+
+	.accessible-megamenu-desktop();
+
+	.topnavsection {
+		.topnav {
+			text-align: center; // når fixed with (ikke responsiv), skal menylinja alltid være sentrert.
+		}
+		.topnavitem {
+			> a {
+				display: block;
+				padding: 10px 40px 10px 10px;
+			}
+
+			&.has-children {
+				> a:after {
+					right: 23px;
+				}
+			}
+		}
+
+	}
+}
+
+//--------------------------------------------------------------------
+//
+//  DESKTOPMENY - basis 
+//  
+//  Inkluderes i mixins for desktop (responsiv og ikke-responsiv)
+//
+//--------------------------------------------------------------------
+
+.accessible-megamenu-desktop() {
+
+	.topnavsection {
+		overflow: hidden; // nødvendig pga animasjon i hovedmeny
+		.topnav {
+			text-align: center;
+			position: relative;
+            outline: none;
+		}
+		.h4 {
+		    margin-bottom: 0;
+			&.globalmenu-tittel {
+			  text-align: left;
+			}
+		}
+		.menu-link-list {
+			// fra .decorated
+			&:before {
+				border-bottom: 2px solid #808080;
+				clear: both;
+				content: " ";
+				display: block;
+                margin: 0 auto;
+			}
+		}
+	}
+
+	.topnavsection:after {
+		border-bottom: 1px solid @gray-lighter;
+		content: "";
+		position: absolute;
+		top: 2.625em; // 42px
+        width: 100%;
+	}
+
+	.accessible-megamenu {
+		display: inline-block; // fall back hvis ikke flexbox-støtte
+	    padding: 0px;
+		.panel-wrapper {
+			height: 0;
+			.transition(height .5s);
+		}
+
+		&.js-menu-expanded {
+			.panel-wrapper {
+				height: 37em; // 592px
+			}
+		}
+		.accessible-megamenu-panel-group {
+			display: table-cell;
+			width: 20%; // 5 kolonner
+			padding: 0 1em;
+			float: left;
+		}
+		.accessible-megamenu-panel-group:first-child {
+			padding: 0 1em 0 0;
+		}
+		.accessible-megamenu-panel-group:last-child {
+			padding: 0 0 0 1em;
+		}
+		.accessible-megamenu-panel-group:first-child:nth-last-child(3),
+		.accessible-megamenu-panel-group:first-child:nth-last-child(3) ~ li
+		{
+		  width: 33.3%; // 3 kolonner
+		}
+		.accessible-megamenu-panel-group:first-child:nth-last-child(4),
+		.accessible-megamenu-panel-group:first-child:nth-last-child(4) ~ li
+		{
+		  width: 25%; // 4 kolonner
+		}
+	}
+
+
+
+	.topnavitem {
+		line-height: 1.375em; // 22px
+		display: inline-block;
+		> a {
+			display: block;
+			padding: 0.625rem 1.25rem 0.625rem 0;
+			font-size: 1.0652em; // skal være 17px
+			text-transform: uppercase;
+			text-decoration: none;
+			font-family: @font-family-modus;
+			font-weight: 600;
+			color: #000;
+			&:hover, &:focus, &:active {
+				color: @link-color;
+			}
+			&:focus {
+				outline-offset: -1px;
+			}
+		}
+	}
+
+	.topnavitem.has-children {
+		// desktop
+		margin-right: 10px;
+		> a {
+			position: relative;
+		}
+		> a:after {
+			content: " ";
+			display: inline-block;
+			border-top: 6px solid @text-color;
+			border-right: 6px solid transparent;
+			border-left: 6px solid transparent;
+			position: absolute;
+			right: 4px;
+			top: 40%;
+		}
+		> a.open:after {
+			border-bottom: 6px solid @text-color;
+			border-top: none;
+			border-right: 6px solid transparent;
+			border-left: 6px solid transparent;
+		}
+
+		> a:hover:after,
+		> a:focus:after {
+			border-top: 6px solid @link-color;
+		}
+
+		> a.open:hover:after,
+		> a.open:focus:after {
+			border-bottom: 6px solid @link-color;
+			border-top: none;
+		}
+	}
+
+	.topnavitem.selected-topnavitem {
+		> a {
+			color: @link-color; // kun på desktopmeny!
+		}
+		> a:after {
+			border-top: 6px solid @link-color;
+		}
+		> a.open:after {
+			border-bottom: 6px solid @link-color;
+		}
+	}
+
+	.accessible-megamenu-panel {
+		// submenu-branch // accessible-megamenu-panel
+		visibility: hidden;
+		position: absolute;
+		top: 60px;
+        top:3.75rem;
+		left: 0;
+		width: 100%;
+		padding: 0 (@grid-gutter-width/2 + 1) 0 (@grid-gutter-width/2 + 1);
+		text-align: left;
+
+		.subnavitems {
+			display: table;
+			width: 100%;
+			padding: 0;
+			margin: 0;
+			//background:#fff; // Hvis meny går utover maxhøyde vises lenkene fortsatt
+		}
+
+		.home-link {
+			display: inline-block;
+			color: @text-color;
+		  	text-decoration: underline;
+			&:hover,
+			&:active,
+			&:focus {
+				color: @link-color;
+			}
+		}
+	}
+
+	.accessible-megamenu-panel.js-animated {
+		visibility: visible; // Viser menypunktene mens animasjonen går opp / ned
+		//  timeout fjerner klassen 300 ms etter lukkeanimasjonen startet (js)
+	}
+
+	.no-js {
+		.topnavsection {
+			.panel-wrapper {
+				min-height: 30em; // 480px // TODO - er 480px nok?
+			}
+			.selected-topnavitem {
+				.accessible-megamenu-panel {
+					visibility: visible;
+
+				}
+
+			}
+		}
+	}
+
+	.sitesearch {
+		padding: 9px 0 0 0;
+		vertical-align: top;
+		display: inline-block;
+		margin-left: 10px;
+
+      .inputwrapper {
+        line-height: normal;
+        border: 1px solid @gray-light;
+        border-radius: 2px;
+
+        input:focus::-webkit-input-placeholder {
+          color: @gray-dark;
+        }
+        input:focus:-moz-placeholder {
+          color: @gray-dark;
+        }
+        input:focus::-moz-placeholder {
+          color: @gray-dark;
+        }
+        input:focus:-ms-input-placeholder {
+          color: @gray-dark;
+        }
+
+        .input-sitesearch {
+          padding-left: 3px;
+          font-style: italic;
+          margin: 1px;
+        }
+      }
+
+		.btn-sitesearch {
+			background: transparent url('@{baseImagePath}img/navno/gfx/mainmenu/sok_liten_graa.png') no-repeat 50% 50%;
+		}
+	}
+
+}
+
+// desktop end

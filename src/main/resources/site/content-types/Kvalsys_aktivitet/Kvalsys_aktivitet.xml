@@ -1,0 +1,99 @@
+<content-type>
+    <display-name>Kvalsys_aktivitet</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Oppdaterer du på vegne av noene andre?">
+            <label>Oppdaterer du på vegne av noene andre?</label>
+            <items>
+                <input name="updated-by" type="TextLine">
+                    <label>Oppdatert på vegne av</label>
+                    <custom-text>contentdata/updated-by</custom-text>
+                    <help-text>La feltet være tomt med mindre du redigerer innholdet på vegne av noen andre.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Aktivitet">
+            <label>Aktivitet</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Hovedoverskrift (h1)</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="responsible" type="ComboBox">
+                    <label>Dette utføres av</label>
+                    <custom-text>contentdata/responsible</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="Innføringskoordinator">Innføringskoordinator</option>
+                        <option value="Nettverkskoordinator">Nettverkskoordinator</option>
+                        <option value="Kontaktperson">Kontaktperson</option>
+                        <option value="Fagspesialist">Fagspesialist</option>
+                        <option value="Aa-registeret">Aa-registeret</option>
+                        <option value="Arbeidsgiver">Arbeidsgiver</option>
+                        <option value="Bruker">Bruker</option>
+                        <option value="Flere-aktører">Flere aktører</option>
+                        <option value="Forvaltning">Forvaltning</option>
+                        <option value="NAV-kontor">NAV-kontor</option>
+                        <option value="NAVI">NAVI</option>
+                        <option value="Sentral-scanning">Sentral Scanning</option>
+                        <option value="Sykemelder">Sykemelder</option>
+                        <option value="Sykemeldt">Sykemeldt</option>
+                        <option value="Økonomi">Økonomi</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="sections">
+            <label>Retningslinje (brødtekst i flere seksjoner)</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="sectionheading" type="TextLine">
+                    <label>Seksjonsoverskrift (h2)</label>
+                    <custom-text>sectionheading</custom-text>
+                    <help-text>Fylles normalt sett ikke ut hvis en bare har en tekstseksjon (da en allerede har en stk hovedoverskrift)</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="section" type="HtmlArea">
+                    <label>Brødtekst (avsnitt)</label>
+                    <custom-text>section</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="Lenker og ressurser">
+            <label>Lenker og ressurser</label>
+            <items>
+                <input name="resources" type="ContentSelector">
+                    <label>Ressurser</label>
+                    <custom-text>contentdata/resources</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kvalsys_aktivitet</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="changelog">
+            <label>Endringslogg</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="date" type="Date">
+                    <label>Dato</label>
+                    <custom-text>date</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="log" type="TextArea">
+                    <label>Endring</label>
+                    <custom-text>log</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

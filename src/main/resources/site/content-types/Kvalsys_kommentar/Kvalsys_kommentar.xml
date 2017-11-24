@@ -1,0 +1,55 @@
+<content-type>
+    <display-name>Kvalsys_kommentar</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Denne kommentaren gjelder følgende innhold">
+            <label>Denne kommentaren gjelder følgende innhold</label>
+            <items>
+                <input name="type" type="TextLine">
+                    <label>Type tilbakemelding</label>
+                    <custom-text>contentdata/type</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="process" type="TextLine">
+                    <label>Arbeidsprosess</label>
+                    <custom-text>contentdata/process</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="heading" type="TextLine">
+                    <label>Tittel på kommentert innhold</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="related" type="ContentSelector">
+                    <label>Relatert prosess / aktivitet</label>
+                    <custom-text>contentdata/related</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kvalsys_aktivitet</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_prosess</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_t_aktivitet</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_t_prosess</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Kommentar">
+            <label>Kommentar</label>
+            <items>
+                <input name="department" type="TextLine">
+                    <label>Enhet / avdeling</label>
+                    <custom-text>contentdata/department</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="comment" type="TextArea">
+                    <label>Kommentar</label>
+                    <custom-text>contentdata/comment</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

@@ -1,0 +1,100 @@
+<content-type>
+    <display-name>Kampanjer_slideshow</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Slideshow">
+            <label>Slideshow</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <help-text>Slideshow brukes hvis ikke film er angitt.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="animation" type="RadioButton">
+                    <label>Animasjonstype</label>
+                    <custom-text>contentdata/animation</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="fading">Fading</option>
+                        <option value="sliding">Sliding</option>
+                        <option value="none">Ingen</option>
+                    </config>
+                </input>
+                <input name="autotransform" type="RadioButton">
+                    <label>Automatisk transformasjon</label>
+                    <custom-text>contentdata/autotransform</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="false">Av</option>
+                        <option value="true">På</option>
+                    </config>
+                </input>
+                <input name="delay" type="TextLine">
+                    <label>Intervall (i sekunder)</label>
+                    <custom-text>contentdata/delay</custom-text>
+                    <help-text>Intervallet settes til 10 dersom dette feltet står tomt.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="movies">
+            <label>Film</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="movie" type="TextLine">
+                    <label>Film</label>
+                    <custom-text>movie</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="caption" type="TextArea">
+                    <label>Bildetekst</label>
+                    <custom-text>caption</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="movielinktext" type="TextLine">
+                    <label>Lenketekst</label>
+                    <custom-text>movielinktext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>Lenke</label>
+                    <custom-text>link</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="articles">
+            <label>Artikler</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="article" type="ContentSelector">
+                    <label>Artikkel</label>
+                    <custom-text>article</custom-text>
+                    <occurrences maximum="0" minimum="1"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kampanjer_artikkel</allow-content-type>
+                    </config>
+                </input>
+                <input name="linktext" type="TextLine">
+                    <label>Lenketekst</label>
+                    <custom-text>linktext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="pagingtext" type="TextLine">
+                    <label>Tekst for pagineringsboks</label>
+                    <custom-text>pagingtext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="linkdisabled" type="CheckBox">
+                    <label>Ikke link til artikkelvisning</label>
+                    <custom-text>linkdisabled</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

@@ -1,0 +1,55 @@
+<content-type>
+    <display-name>MultippelLenkeListe</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Lenkeliste informasjon">
+            <label>Lenkeliste informasjon</label>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Navn på lenkelisten</label>
+                    <custom-text>contentdata/name</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="linklists">
+            <label>Lenker</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="linklist">
+                    <label>Lenker</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overskrift</label>
+                            <custom-text>title</custom-text>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <input name="links" type="ContentSelector">
+                            <label>Lenke</label>
+                            <custom-text>links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Ansattportal</allow-content-type>
+                            </config>
+                        </input>
+                        <input name="contents" type="ContentSelector">
+                            <label>Lenke liste</label>
+                            <custom-text>linklists</custom-text>
+                            <occurrences maximum="1" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Lenkeliste</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+    </form>
+</content-type>

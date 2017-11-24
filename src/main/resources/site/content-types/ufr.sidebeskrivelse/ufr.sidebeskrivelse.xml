@@ -1,0 +1,24 @@
+<content-type>
+    <display-name>ufr.sidebeskrivelse</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Sidebeskrivelse">
+            <label>Sidebeskrivelse</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="TextArea">
+                    <label>Beskrivelse</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

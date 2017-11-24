@@ -1,0 +1,98 @@
+<content-type>
+    <display-name>Rettskildene_vedlegg</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Vedlegg">
+            <label>Vedlegg</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="trunctitle" type="TextLine">
+                    <label>Tittel (trunkert)</label>
+                    <custom-text>contentdata/trunctitle</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="content" type="HtmlArea">
+                    <label>Innhold</label>
+                    <custom-text>contentdata/content</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relatert oversikt">
+            <label>Relatert oversikt</label>
+            <items>
+                <input name="oversikt" type="ContentSelector">
+                    <label>Relatert oversikt</label>
+                    <custom-text>contentdata/oversikt</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_kapitteloversikt</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_lovoversikt</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relaterte lover, paragrafer eller kapitler">
+            <label>Relaterte lover, paragrafer eller kapitler</label>
+            <items>
+                <input name="lov" type="ContentSelector">
+                    <label>Lov</label>
+                    <custom-text>contentdata/lov</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_lov</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_kapittel</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_paragraf</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relaterte forskrifter">
+            <label>Relaterte forskrifter</label>
+            <items>
+                <input name="forskrift" type="ContentSelector">
+                    <label>Forskrift</label>
+                    <custom-text>contentdata/forskrift</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_forskrift</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relaterte vedlegg">
+            <label>Relaterte vedlegg</label>
+            <items>
+                <input name="vedlegg" type="ContentSelector">
+                    <label>Vedlegg</label>
+                    <custom-text>contentdata/vedlegg</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_legemiddelliste</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_vedlegg</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relaterte rundskriv">
+            <label>Relaterte rundskriv</label>
+            <items>
+                <input name="rundskriv" type="ContentSelector">
+                    <label>Rundskriv</label>
+                    <custom-text>contentdata/rundskriv</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_rundskriv</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

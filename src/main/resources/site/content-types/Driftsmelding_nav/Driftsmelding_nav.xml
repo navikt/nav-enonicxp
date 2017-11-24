@@ -1,0 +1,41 @@
+<content-type>
+    <display-name>Driftsmelding_nav</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Driftsmelding">
+            <label>Driftsmelding</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <item-set name="images">
+                    <label>Bilder og bildetekst</label>
+                    <custom-text>contentdata/images</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="image" type="ImageSelector">
+                            <label>Image</label>
+                            <custom-text>contentdata/images</custom-text>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <input name="text" type="TextArea">
+                            <label>Image text</label>
+                            <custom-text>contentdata/images</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</content-type>

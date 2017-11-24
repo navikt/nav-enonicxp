@@ -1,0 +1,159 @@
+
+// Global values
+// --------------------------------------------------
+
+.define-responsive-if-not-defined() {
+  @responsive: true; // tar med min-width mediaqueries
+}
+.define-responsive-if-not-defined(); // exposes a variable ("responsive) only if it's not already in this scope.
+
+
+.define-basepath-if-not-defined() {
+  @baseImagePath: '../';
+}
+.define-basepath-if-not-defined();
+
+// Grays
+// -------------------------
+@white:                 #fff;
+@black:                 #000;
+
+@gray-darkest:          #222;
+@gray-darker:           #333;       // bakgrunn footer og head (mørk)
+@gray-dark:             #3e3832;    // verifisert (tekstfarge)
+@gray:                  #555;
+@gray-inactive:         #7F756C;
+@gray-background:       #efefef;
+@gray-light:            #b7b1a9;
+@gray-lighter:          #d1d1d1;    // linje rundt bokser etc
+@gray-lightest:         #f1f1f1;    // body background
+
+@orange-warning:        #ff9100;
+@orange-focus:          #ffbd66;
+
+// Accent colors
+// -------------------------
+@blue-light:            #0ca9e1;
+@blue:                  #008fc4;
+@blue-dark:             #0067c5;
+@green:                 #46a546;
+@red:                   #c30000;
+@red-light:             #fee6e6;
+@yellow:                #ffc40d;
+@orange:                #f89406;
+@pink:                  #df4b78;
+@pink-darker:           #ec288d;
+@purple:                #7a43b6;
+
+
+// Scaffolding
+// -------------------------
+@text-color:            @gray-dark;
+
+
+// Links
+// -------------------------
+@link-color:             #0067c5; // verifisert
+
+
+// Typography
+// -------------------------
+
+
+// family
+// -------------------------
+@font-family-sans-serif:        Arial, Helvetica, sans-serif;
+@font-family-serif:  	        Georgia, "Times New Roman", Times, serif;
+@font-family-monospace:         Monaco, Menlo, Consolas, "Courier New", monospace;
+@font-family-modus:     	    Modus,Arial,Helvetica,sans-serif; // custom webfont
+
+@headings-color:          		inherit;
+
+
+//REM base fonts (1rem = 16px)
+// -------------------------
+@rem-as-38px:			2.375rem;
+@rem-as-30px:			1.875rem;
+@rem-as-24px:           1.5rem;
+@rem-as-20px:			1.25rem;
+@rem-as-18px:    		1.125rem;
+@rem-as-17px:           1.0675rem;
+@rem-as-16px:			1rem;
+@rem-as-14px:			0.875rem;
+@rem-as-12px:			0.75rem;
+@rem-as-11px:    		0.7rem;
+@rem-as-10px:			0.625rem;
+
+@line-height-base:        1.428571429; // 20/14
+@line-height-computed:    floor(@rem-as-14px * @line-height-base); // ~20px
+
+//@base-line-height:        @line-height-base; // i bruk??
+
+// Buttons
+// -------------------------
+@btn-background:                      #e3e3e3;
+@btn-primary-background:              #0067c5;
+@btn-primary-background-highlight:    spin(@btn-primary-background, 10%);
+@btn-inverse-background:              #444;
+@btn-danger-background:               #ee5f5b;
+@btn-danger-background-highlight:     #bd362f;
+
+
+// Forms
+// -------------------------
+@input-bg:                       @white;
+@input-bg-disabled:              @gray-lightest;
+@input-color:                    @gray;
+@input-border:                   #ccc;
+@input-height:                   @line-height-base + 10px; // base line-height + 8px vertical padding + 2px top/bottom border
+
+
+// Z-index master list
+// -------------------------
+// Used for a bird's eye view of components dependent on the z-axis
+// Try to avoid customizing these :)
+@zindex-navbar:            1000;
+@zindex-dropdown:          1000;
+@zindex-popover:           1010;
+@zindex-tooltip:           1030;
+@zindex-navbar-fixed:      1030;
+@zindex-modal-background:  1040;
+@zindex-modal:             1050;
+
+
+// Tooltips // TODO i bruk?
+// -------------------------
+@tooltip-arrow-width:         5px;
+@tooltip-arrow-color:         @black;
+
+
+// Media queries breakpoints
+// --------------------------------------------------
+@screen-xxs:                        15em;       //240px;  Fra mobil
+@screen-xs:     	                30em;		//480px;  Mobil
+@screen-small:  			        38.75em;	//620px;  Custom
+@screen-medium:	                    48em;		//768px;  Tablet
+@screen-medium-plus-em-as-one-px:   48.0625em;	//769px;  < Tablet
+@screen-large:                      62em;		//992px;  Fra desktop
+@screen-xl:		     		        75em;		//1200px; Ikke i bruk
+
+
+// Grid system
+// --------------------------------------------------
+@grid-columns:              12;
+@grid-gutter-width:         1.875em; //30px;
+@grid-float-breakpoint:     @screen-xs; // Point at which the navbar stops collapsing
+
+
+// Container sizes
+// --------------------------------------------------
+@container-tablet:             ((720px + @grid-gutter-width));
+@container-sm:                 @container-tablet;
+
+@container-desktop:            ((61.125em + @grid-gutter-width)); // blir 978px + 30px til sammen (1008)
+@container-md:                 @container-desktop;
+
+@container-large-desktop:      ((1140px + @grid-gutter-width));
+@container-lg:                 @container-large-desktop;
+
+

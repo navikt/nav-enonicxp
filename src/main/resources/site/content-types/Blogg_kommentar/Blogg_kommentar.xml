@@ -1,0 +1,47 @@
+<content-type>
+    <display-name>Blogg_kommentar</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="userdata">
+            <label>userdata</label>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Navn</label>
+                    <custom-text>contentdata/name</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="email" type="TextLine">
+                    <label>Epost</label>
+                    <custom-text>contentdata/email</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Kommentar">
+            <label>Kommentar</label>
+            <items>
+                <input name="comment" type="TextArea">
+                    <label>Kommentar</label>
+                    <custom-text>contentdata/comment</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relatert blogginnlegg">
+            <label>Relatert blogginnlegg</label>
+            <items>
+                <input name="blogpost" type="ContentSelector">
+                    <label>Relatert Blogg</label>
+                    <custom-text>contentdata/blogpost</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Blogg_innlegg</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

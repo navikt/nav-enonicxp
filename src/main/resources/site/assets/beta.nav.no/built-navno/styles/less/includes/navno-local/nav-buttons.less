@@ -1,0 +1,102 @@
+//
+// Buttons
+// --------------------------------------------------
+
+#maincontent .btn {
+	text-decoration: none;
+}
+
+// basic standard knapp
+.btn {
+	display: inline-block;
+	color: @gray-dark;
+	cursor: pointer;
+	padding: 11px 40px;
+	text-align: center;
+	text-transform: uppercase;
+	font-family: Modus, Arial, Helvetica, sans-serif;
+	font-weight: 600;
+	font-size: 1.14em; // TODO? Tilsvarer 18.24 px
+	vertical-align: middle;
+	.border-radius(1px);
+	border: 1px solid @gray-lighter;
+	border-bottom: 1px solid #b6b6b6;
+
+	.buttonBackground(@btn-background, #d3d3d3, @gray-dark);
+	&:hover, &:focus {
+		.buttonBackground(#d3d3d3, #c3c3c3, @gray-dark);
+		text-decoration: none !important;
+	}
+	&:active {
+		.buttonBackground(darken(#d3d3d3, 5%), darken(#c3c3c3, 5%), @gray-dark);
+		text-decoration: none;
+	}
+}
+
+// knappestørrelser
+//-----------------------------
+
+.btn-small {
+	padding: 7px 20px;
+	font-size: @rem-as-14px;
+	line-height: 1.6;
+}
+
+//knappefarger
+//-----------------------------
+
+.btn-primary {
+	// lyseblå
+	background: #008fc4;
+	color: @gray-lightest;
+	&:hover, &:active, &:focus {
+		background: @blue-light;
+		color: #fff;
+	}
+}
+
+.btn-success {
+	// grønn?
+
+}
+
+.btn-danger {
+	// rød
+
+}
+
+
+
+[class*=btn-main], [class*=btn-clear] {
+	.buttonBackground(@btn-primary-background, @btn-primary-background-highlight);
+	&:hover, &:focus {
+		.buttonBackground(darken(@btn-primary-background, 10%), darken(@btn-primary-background-highlight, 10%), #fff);
+	}
+}
+
+[class*=btn-active] {
+	border-color: @blue-light;
+	background: @blue-light;
+	color: #fff;
+	&:hover, &:focus {
+		border-color: @blue-light;
+		background: @blue-light;
+		color: #fff;
+	}
+}
+
+.btn-link {
+	background: #008fc4;
+	color: @gray-lightest;
+	display: inline-block;
+	padding: 10px 30px;
+
+	&:hover, &:active, &:focus {
+		background: @blue-light;
+		color: #fff;
+	}
+}
+
+
+
+

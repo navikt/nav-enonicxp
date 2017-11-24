@@ -1,0 +1,258 @@
+<content-type>
+    <display-name>Idebanken_virksomhetseksempel</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Hovedfelt">
+            <label>Hovedfelt</label>
+            <items>
+                <input name="enablecomments" type="CheckBox">
+                    <label>Slå på kommentarer</label>
+                    <custom-text>contentdata/enablecomments</custom-text>
+                    <help-text>Huk av hvis artikkelen skal kunne kommenteres</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="company" type="TextLine">
+                    <label>Bedrift</label>
+                    <custom-text>contentdata/company</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="author" type="TextLine">
+                    <label>Skrevet av</label>
+                    <custom-text>contentdata/author</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="photo" type="TextLine">
+                    <label>Fotograf</label>
+                    <custom-text>contentdata/photo</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="image" type="ImageSelector">
+                    <label>Ingressbilde</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="readmore" type="TextLine">
+                    <label>Les mer</label>
+                    <custom-text>contentdata/readmore</custom-text>
+                    <help-text>Skriv inn en tekst som beskriver hva man kan lese mer om, f.eks. "Les mer om jobbsøking". Dette er til hjelp for blinde og svaksynte.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/ingress</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="article">
+            <label>Artikkelbilder</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <item-set name="images">
+                    <label>Hovedbilder og bildetekst</label>
+                    <custom-text>contentdata/article/images</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="image" type="ImageSelector">
+                            <label>Image</label>
+                            <custom-text>contentdata/article/images</custom-text>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <input name="text" type="TextArea">
+                            <label>Image text</label>
+                            <custom-text>contentdata/article/images</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <field-set name="Tilleggsinformasjon: Overskrift">
+            <label>Tilleggsinformasjon: Overskrift</label>
+            <items>
+                <input name="facts_heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/facts_heading</custom-text>
+                    <help-text>Vises øverst på høyre side med uthevet design.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="facts_ingress" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/facts_ingress</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="facts">
+            <label>Tilleggsinformasjon: Listepunkter</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="fact" type="TextArea">
+                    <label>Listepunkt:</label>
+                    <custom-text>fact</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="links">
+            <label>Mer fra virksomheten</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="link">
+                    <label>Mer fra virksomheten</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="description" type="TextLine">
+                            <label>Lenketekst</label>
+                            <custom-text>description</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                        <input name="contents" type="ContentSelector">
+                            <label>Lenke</label>
+                            <custom-text>contentdata/contents</custom-text>
+                            <occurrences maximum="0" minimum="0"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_virksomhetseksempel</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_rapport</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_faktaark</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_temahefte</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_nyhet</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_eksempelhefte</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_bransjehefte</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_farveark</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_artikkel</allow-content-type>
+                            </config>
+                        </input>
+                        <input name="destination" type="ComboBox">
+                            <label>Åpne i</label>
+                            <custom-text>target</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                            <config>
+                                <option value="current">Samme vindu</option>
+                                <option value="new">Nytt vindu</option>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <item-set name="links2">
+            <label>Mer informasjon</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="link">
+                    <label>Mer informasjon</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="description2" type="TextLine">
+                            <label>Lenketekst</label>
+                            <custom-text>description</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                        <input name="contents" type="ContentSelector">
+                            <label>Lenke</label>
+                            <custom-text>contentdata/contents</custom-text>
+                            <occurrences maximum="0" minimum="0"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_virksomhetseksempel</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_rapport</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_faktaark</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_temahefte</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_nyhet</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_eksempelhefte</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_bransjehefte</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_farveark</allow-content-type>
+                                <allow-content-type>no.nav.navno:Idebanken_artikkel</allow-content-type>
+                            </config>
+                        </input>
+                        <input name="destination2" type="ComboBox">
+                            <label>Åpne i</label>
+                            <custom-text>target</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                            <config>
+                                <option value="current">Samme vindu</option>
+                                <option value="new">Nytt vindu</option>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <field-set name="Tagging">
+            <label>Tagging</label>
+            <items>
+                <input name="county" type="ComboBox">
+                    <label>Fylke</label>
+                    <custom-text>contentdata/county</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="Akershus">Akershus</option>
+                        <option value="Aust-Agder">Aust-Agder</option>
+                        <option value="Buskerud">Buskerud</option>
+                        <option value="Finnmark">Finnmark</option>
+                        <option value="Hedmark">Hedmark</option>
+                        <option value="Hordaland">Hordaland</option>
+                        <option value="Møre og Romsdal">Møre og Romsdal</option>
+                        <option value="Nordland">Nordland</option>
+                        <option value="Nord-Trøndelag">Nord-Trøndelag</option>
+                        <option value="Oppland">Oppland</option>
+                        <option value="Oslo">Oslo</option>
+                        <option value="Rogaland">Rogaland</option>
+                        <option value="Sogn og Fjordane">Sogn og Fjordane</option>
+                        <option value="Sør-Trøndelag">Sør-Trøndelag</option>
+                        <option value="Telemark">Telemark</option>
+                        <option value="Troms">Troms</option>
+                        <option value="Vest-Agder">Vest-Agder</option>
+                        <option value="Vestfold">Vestfold</option>
+                        <option value="Østfold">Østfold</option>
+                        <option value="Svalbard">Svalbard</option>
+                    </config>
+                </input>
+                <input name="business" type="ComboBox">
+                    <label>Næring</label>
+                    <custom-text>contentdata/business</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="selection_01_01">Bygg og anlegg</option>
+                        <option value="selection_01_02">Handel og service</option>
+                        <option value="selection_01_03">Helse og sosial</option>
+                        <option value="selection_01_04">Industri og produksjon</option>
+                        <option value="selection_01_05">Kontor og administrasjon</option>
+                        <option value="selection_01_06">Skole og barnehage</option>
+                        <option value="selection_01_07">Samferdsel</option>
+                        <option value="selection_01_08">Kraft og energi</option>
+                        <option value="selection_01_09">Forsikring og finans</option>
+                        <option value="selection_01_10">Annet</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Visning">
+            <label>Visning</label>
+            <items>
+                <input name="no-show" type="CheckBox">
+                    <label>Ikke vis under gode eksempler</label>
+                    <custom-text>contentdata/no-show</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

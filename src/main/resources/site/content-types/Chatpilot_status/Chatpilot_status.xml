@@ -1,0 +1,72 @@
+<content-type>
+    <display-name>Chatpilot_status</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Chatstatus">
+            <label>Chatstatus</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel (vises bare i arkivet)</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="related" type="ContentSelector">
+                    <label>Relatert informasjon (kun én lenke)</label>
+                    <custom-text>contentdata/related</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Chat online">
+            <label>Chat online</label>
+            <items>
+                <input name="online_heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/online_heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="online_body" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/online_body</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Chat Busy">
+            <label>Chat Busy</label>
+            <items>
+                <input name="busy_heading" type="TextLine">
+                    <label>Overskrift (stor pågang / trafikk)</label>
+                    <custom-text>contentdata/busy_heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="busy_body" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/busy_body</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Chat offline">
+            <label>Chat offline</label>
+            <items>
+                <input name="offline_heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/offline_heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="offline_body" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/offline_body</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

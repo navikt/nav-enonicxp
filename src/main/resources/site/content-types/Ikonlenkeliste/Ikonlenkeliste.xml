@@ -1,0 +1,45 @@
+<content-type>
+    <display-name>Ikonlenkeliste</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Beskrivelse">
+            <label>Beskrivelse</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Beskrivelse</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="iconlinks">
+            <label>Relaterte lenker</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="linktext" type="TextLine">
+                    <label>Linktekst</label>
+                    <custom-text>linktext</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="linkicon" type="TextLine">
+                    <label>Link-ikon</label>
+                    <custom-text>linkicon</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="linkhref" type="TextLine">
+                    <label>Href</label>
+                    <custom-text>linkhref</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="linkonclick" type="TextLine">
+                    <label>OnClick</label>
+                    <custom-text>onclick</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

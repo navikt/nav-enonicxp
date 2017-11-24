@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<page>
+  <display-name>servicedecorator-lett-tilpasning-din-pensjon</display-name>
+  <config>
+    <input name="releaseName" type="TextLine">
+        <label>releaseName</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="countyParentPage" type="TextLine">
+        <label>countyParentPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="brukHtml5" type="TextLine">
+        <label>brukHtml5</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="siteName" type="TextLine">
+        <label>siteName</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="usabilityPage" type="ContentSelector">
+        <label>usabilityPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="showPrintPreview" type="TextLine">
+        <label>showPrintPreview</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+  <regions>
+    <region name="footer"/>
+    <region name="graphicalElementTop"/>
+    <region name="header"/>
+    <region name="leftColumn"/>
+    <region name="linkTop"/>
+    <region name="servicesAndSearchTop"/>
+  </regions>
+</page>

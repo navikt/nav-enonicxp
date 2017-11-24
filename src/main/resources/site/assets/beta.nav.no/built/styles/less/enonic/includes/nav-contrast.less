@@ -1,0 +1,206 @@
+// Høykontrast
+//-------------------
+
+@media only screen {
+	.contrast {
+
+		// banneren finnes ikke i høykontrast. Skal ha samme bakgrunnsfarge som på vanlig visning.
+		.hero-banner,
+		.hero-banner * {
+			background: #F1F1F1 !important;
+		}
+
+		.siteheader .hero-banner.nighttime,
+		.siteheader .hero-banner.nighttime * {
+			background-color: #98B3B7 !important;
+		}
+
+		// Globalt
+		//-------------------
+		* {
+			background-color: #000 !important;
+		}
+		span, p, div, th, td, section, aside, article, header, footer, li, h1, h2, h3, h4, h5, h6, input, time, figcaption, select, textarea, label {
+			color: #fff !important;
+		}
+
+		a, .link-btn {
+			color: #ffc40d !important;
+
+			h1, h2, h3, p, span {
+				color: #ffc40d !important;
+			}
+			&:hover, &:active, &:focus {
+				color: @blue-light !important;
+				h1, h2, h3, p {
+					color: @blue-light !important;
+				}
+			}
+		}
+
+		::-webkit-input-placeholder {
+			color: white;
+		}
+		::-moz-placeholder {
+			/* Firefox 19+ */
+			color: white;
+		}
+		:-ms-input-placeholder {
+			color: white;
+		}
+		.breadcrumb:after {
+			border: 3px solid white !important;
+		}
+		.dropdown-menu {
+			border: 1px solid white;
+		}
+		li.dropdown {
+			.caret {
+				border-top: 4px solid #ffc40d;
+			}
+			&:hover .caret, &:active .caret, &:focus .caret {
+				border-top: 4px solid @blue-light;
+			}
+		}
+
+		.topnavsection .topnav .accessible-megamenu {
+
+			.selected-topnavitem > a {
+				color: @blue-light !important;
+			}
+			.topnavitem.selected-topnavitem > a[aria-expanded='false']:after {
+				border-top: 6px solid @blue-light !important;
+			}
+			.topnavitem.has-children > a[aria-expanded='false']:after {
+				border-top: 6px solid #ffc40d;
+			}
+			.topnavitem.has-children > a[aria-expanded='false']:after:hover {
+				border-top: 6px solid @blue-light !important;
+			}
+			.topnavitem.has-children > a[aria-expanded='false']:hover:after, .topnavsection .topnav .accessible-megamenu .topnavitem.has-children > a[aria-expanded='false']:focus:after {
+				border-top: 6px solid @blue-light;
+			}
+			.topnavitem.has-children > a.open:hover:after, .topnavsection .topnav .accessible-megamenu .topnavitem.has-children > a.open:focus:after {
+				border-bottom: 6px solid @blue-light;
+			}
+
+			.home-link {
+				background-image: url('@{baseImagePath}img/enonic/gfx/mainmenu/hjem_gul.png');
+				&:hover {
+					background-image: url('@{baseImagePath}img/enonic/gfx/mainmenu/hjem_blaa.png');
+				}
+			}
+
+		}
+
+		.sitesearch .btn-sitesearch {
+			background-image: url('@{baseImagePath}img/enonic/gfx/mainmenu/sok_liten_gul.png');
+			@media (max-width: @screen-medium) {
+				background-image: url('@{baseImagePath}img/enonic/gfx/mainmenu/sok_stor_gul.png');
+			}
+		}
+
+		//-------------------\\
+
+		// Seksjonsside
+		//-------------------
+		.btn-small {
+			&:hover, &:active, &:focus {
+				color: #ffc40d;
+			}
+			background-color: transparent;
+			background-image: none !important;
+			border: 1px solid @gray-light;
+		}
+		//-------------------\\
+
+		// Artikkel sider
+		//-------------------
+		.content-languages {
+			background: url('@{baseImagePath}img/enonic/gfx/tts/spraak_gult.png') no-repeat 6px 6px;
+			background-color: transparent !important;
+
+			&:hover, &:focus, &:active {
+				background: transparent url('@{baseImagePath}img/enonic/gfx/tts/language_hover.png') no-repeat 6px 6px !important;
+				color: @blue-light !important;
+				span {
+					color: @blue-light !important;
+					&:after {
+						border-top: 4px solid @blue-light;
+					}
+				}
+			}
+			span {
+				color: #ffc40d !important;
+				&:after {
+					border-top: 4px solid #ffc40d;
+				}
+			}
+		}
+		.tts-btn-listen, .tts-btn-collapsed, .tts-btn-expanded {
+			background-image: url('@{baseImagePath}img/enonic/gfx/tts/tale_gult.png');
+			span {
+				color: #ffc40d !important;
+			}
+			&:hover, &:focus, &:active {
+				background-image: url('@{baseImagePath}img/enonic/gfx/tts/tale_hover.png');
+				span {
+					color: @blue-light !important;
+				}
+			}
+		}
+		#tts-group {
+			.tts-play {
+				background-image: url('@{baseImagePath}img/enonic/gfx/tts/play_hc.png');
+				&:hover, &:focus, &:active {
+					background-color: @blue !important;
+				}
+			}
+			.tts-stop {
+				background-image: url('@{baseImagePath}img/enonic/gfx/tts/stop_hc.png');
+				&:hover, &:focus, &:active {
+					background-color: @blue !important;
+				}
+			}
+			.tts-help {
+				background-image: url('@{baseImagePath}img/enonic/gfx/tts/help_hc.png');
+				&:hover, &:focus, &:active {
+					background-color: @blue !important;
+				}
+			}
+			.tts-settings {
+				background-image: url('@{baseImagePath}img/enonic/gfx/tts/settings_hc.png');
+				&:hover, &:focus, &:active {
+					background-color: @blue !important;
+				}
+			}
+		}
+
+		#print-page, #print-all {
+			background-image: url('@{baseImagePath}img/enonic/gfx/tts/print_gult.png');
+			span {
+				color: #ffc40d !important;
+			}
+			&:hover, &:focus, &:active {
+				background-image: url('@{baseImagePath}img/enonic/gfx/tts/print_hover.png');
+				span {
+					color: @blue-light !important;
+				}
+			}
+		}
+		.related-content.content-submenu ul li a.selected, .related-content.content-submenu ul li a:hover, .related-content.content-submenu ul li a:focus {
+			color: @blue-light;
+		}
+		.content-languages ul {
+			border: 1px solid #fff !important;
+		}
+		//-------------------\\
+
+		.maincontent .toggle-btn-wrapper .btn-small[data-selected='true'] {
+			color: @blue-light !important;
+		}
+		#navCarousel .carousel-indicators li.active {
+			background-color: @blue !important;
+		}
+	}
+}

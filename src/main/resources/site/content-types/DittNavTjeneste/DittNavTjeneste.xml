@@ -1,0 +1,35 @@
+<content-type>
+    <display-name>DittNavTjeneste</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="DittNAVtjeneste">
+            <label>DittNAVtjeneste</label>
+            <items>
+                <input name="tittel" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/tittel</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="ikon" type="ImageSelector">
+                    <label>Ikon</label>
+                    <custom-text>contentdata/ikon</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="beskrivelse" type="TextLine">
+                    <label>Beskrivelse</label>
+                    <custom-text>contentdata/beskrivelse</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL</label>
+                    <custom-text>contentdata/url</custom-text>
+                    <help-text>Benytt fullstendig URL. Eksempelvis slik: http://www.nav.no</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

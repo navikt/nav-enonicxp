@@ -1,0 +1,39 @@
+<content-type>
+    <display-name>Seksjonsside</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Ingress">
+            <label>Ingress</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="ingress" type="HtmlArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/ingress</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Nøkkeltall">
+            <label>Nøkkeltall</label>
+            <items>
+                <input name="keynumberstitle" type="TextLine">
+                    <label>Nøkkeltall tittel</label>
+                    <custom-text>contentdata/keynumberstitle</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="keynumbers" type="TextArea">
+                    <label>Nøkkeltall</label>
+                    <custom-text>contentdata/keynumbers</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

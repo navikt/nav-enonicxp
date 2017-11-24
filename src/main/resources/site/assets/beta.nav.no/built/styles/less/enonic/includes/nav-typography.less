@@ -1,0 +1,276 @@
+// Body text
+// -------------------------
+
+p, .paragraph, input, button, .article-body li {
+	font-size: @em-as-16px;
+}
+
+.article-body li li {
+	font-size: 1em; // avoid resizing due to nesting
+}
+
+p, .paragraph {
+	input, button, .paragraph {
+		font-size: 1em; // avoid resizing due to nesting
+	}
+}
+
+p, .paragraph {
+	margin: 0 0 14px;
+}
+
+.preface {
+	font-size: @em-as-16px;
+	font-weight: 700;
+	margin: 0;
+}
+
+@media (min-width: (@screen-medium + 0.0625em)) {
+	.preface {
+		font-size: @em-as-18px;
+		font-weight: 400;
+	}
+
+	p, .paragraph, input, button, .article-body li {
+		font-size: @font-size-base-em; // 14px
+	}
+
+}
+
+// Emphasis & misc
+// -------------------------
+
+// Ex: 14px base font * 85% = about 12px
+small {
+	font-size: 85%;
+}
+
+strong {
+	font-weight: bold;
+}
+
+em {
+	font-style: italic;
+}
+
+cite {
+	font-style: normal;
+}
+
+// Links
+// -------------------------
+
+a {
+	color: @link-color;
+	text-decoration: none;
+}
+
+a:hover,
+a:focus {
+	text-decoration: underline;
+}
+
+a.regular {
+	text-decoration: underline;
+}
+
+// Headings
+// -------------------------
+
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+	//margin: (@line-height-base / 2)em 0;
+	font-family: @font-family-modus;
+	color: @headings-color;
+	text-rendering: optimizelegibility; // Fix the character spacing for headings
+}
+
+h1, .h1 {
+	font-size: @font-size-h1-em;
+	font-weight: 600;
+}
+
+h2, .h2 {
+	font-size: @font-size-h2-em;
+	font-weight: 400;
+}
+
+h3, .h3 {
+	font-size: @font-size-h3-em;
+	font-weight: normal;
+}
+
+h4, .h4 {
+	font-size: @font-size-h4-em;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+h5, .h5 {
+	font-size: @font-size-h5-em;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+h6, .h6 {
+	font-size: @font-size-h6-em;
+}
+
+
+h1:first-child, h2:first-child, h3:first-child,
+.article-body h1:first-child, .article-body h2:first-child, .article-body h3:first-child {
+	margin-top: 0;
+}
+
+.page-head h1 {
+	margin: 50px 0 0 0;
+	text-align: center;
+}
+
+@media (max-width: (@screen-small - 0.0625em)) {
+
+	.page-head h1 {
+		margin-bottom: 0;
+		margin-top: 40px;
+		font-size: @em-as-24px;
+	}
+
+  .contentpage .page-head h1 {
+      margin-bottom:30px; // luft under h1 på f.eks temavelger (skriv til oss)
+  }
+
+  h2, .h2 {
+    font-size: @em-as-24px;
+  }
+
+}
+
+
+
+// Lists
+// --------------------------------------------------
+
+// Unordered and Ordered lists
+ul, ol {
+	margin: 0;
+}
+
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+	margin-bottom: 0;
+}
+
+// Remove default list styles
+ul.unstyled,
+ol.unstyled {
+	margin-left: 0;
+	list-style: none;
+}
+
+// Single-line list items
+ul.inline,
+ol.inline {
+	margin-left: 0;
+	list-style: none;
+	> li {
+		display: inline-block;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+}
+
+// Description Lists
+dl {
+	margin-bottom: 1.42857143em;
+}
+
+dt,
+dd {
+	line-height: @line-height-base;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd {
+	margin-left: 0.715em;
+}
+
+// MISC
+// ----
+
+// Horizontal rules
+hr {
+	margin: 1.42857143em 0;
+	border: 0;
+	border-top: 1px solid @gray-light;
+	border-bottom: 1px solid #fff;
+}
+
+// Abbreviations and acronyms
+abbr[title],
+	// Added data-* attribute to help out our tooltip plugin, per https://github.com/twitter/bootstrap/issues/5257
+abbr[data-original-title] {
+	cursor: help;
+	border-bottom: 1px dotted @gray-light;
+}
+
+// Blockquotes
+blockquote {
+	//font-size: @font-size-h4-em;
+	font-weight: normal;
+	font-family: @font-family-modus;
+	margin-top: 23px;
+	margin-bottom: 23px; // 23px; samme margin som overskrifter
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0 30px;
+	position: relative;
+	p {
+		font-size: 1em; // 16px
+		&:last-of-type {
+			margin-bottom: 0;
+		}
+	}
+
+	&:before {
+		content: "\201C"; //"\00AB"; // Norsk
+		font-size: 3.5em;
+		color: @red;
+		font-family: "Times new roman";
+		position: absolute;
+		left: 0;
+		top: 10px;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

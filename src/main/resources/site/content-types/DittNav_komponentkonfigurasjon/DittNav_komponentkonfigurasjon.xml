@@ -1,0 +1,89 @@
+<content-type>
+    <display-name>DittNav_komponentkonfigurasjon</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Komponent">
+            <label>Komponent</label>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Navn</label>
+                    <custom-text>contentdata/name</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="type" type="ComboBox">
+                    <label>Type</label>
+                    <custom-text>contentdata/type</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="DEBUG_COMPONENT">Debug komponent</option>
+                        <option value="HTML_COMPONENT">HTML komponent</option>
+                        <option value="MELDING_COMPONENT">Melding komponent</option>
+                        <option value="TJENESTELISTE_COMPONENT">Tjenesteliste</option>
+                        <option value="TJENESTELISTE_COMPONENT_WIDE">Bred tjenesteliste</option>
+                        <option value="Redaksjonell_COMPONENT">Redaksjonelt innhold - kort</option>
+                        <option value="REDAKSJONELL_COMPONENT_LONG">Redaksjonelt innhold - lang</option>
+                        <option value="DIN_SAK">Din sak</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="texts">
+            <label>Tekster</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="code" type="TextLine">
+                    <label>Nøkkel</label>
+                    <custom-text>code</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="text" type="TextArea">
+                    <label>Tekst</label>
+                    <custom-text>text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="images">
+            <label>Bilder</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="imgcode" type="TextLine">
+                    <label>Nøkkel</label>
+                    <custom-text>imgcode</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="image" type="ImageSelector">
+                    <label>Bilde</label>
+                    <custom-text>image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="HTML">
+            <label>HTML</label>
+            <items>
+                <input name="html" type="HtmlArea">
+                    <label>HTML</label>
+                    <custom-text>contentdata/html</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Lenker">
+            <label>Lenker</label>
+            <items>
+                <input name="lenke" type="ContentSelector">
+                    <label>Lenke</label>
+                    <custom-text>contentdata/lenke</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

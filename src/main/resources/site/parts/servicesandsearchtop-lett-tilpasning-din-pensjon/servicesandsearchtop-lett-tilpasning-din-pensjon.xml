@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>servicesandsearchtop-lett-tilpasning-din-pensjon</display-name>
+  <config>
+    <input name="searchPage" type="TextLine">
+        <label>searchPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="omNAV" type="TextLine">
+        <label>omNAV</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="contactPage" type="ContentSelector">
+        <label>contactPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

@@ -1,0 +1,304 @@
+//
+// "Hero blocks", hvite bokser med overskrift, ikon og eventuell lenkeliste e.l
+//  Basert på hero links (forside). Kan muligens merges (når ferdig)
+//
+
+
+.hero-block, .hero-link {
+  padding: 1rem 1.875rem 2.5rem; // 30px 40px
+  border: 1px solid @gray-lighter;
+  background-color: #fff;
+  display:block;
+  color: @text-color;
+}
+
+
+.hero-link {
+  text-align: center;
+  text-decoration: none;
+  .leading-icon {
+    padding-top:55px; // liten justering for ikon i hero links. Opprinnelig 52px (mindre luft)
+  }
+  &:hover, &:focus {
+    text-decoration: none;
+    background-color: transparent;
+    color: @text-color;
+  }
+}
+
+
+
+// ---------------------------------------
+//
+// Mindre enn tab!
+// For å unngå resetting / overstyring for større flater
+//
+// ---------------------------------------
+
+@media (max-width: (@screen-small - 0.0625em)) {
+
+  .hero-link {
+    p {
+      margin: 0;
+      display: none;
+    }
+
+    .decorated {
+      margin-bottom: 0;
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+}
+
+
+
+// ---------------------------------------
+//
+//  Større enn mobil!
+//  MIN-WIDTH MEDIA QUERIES HERFRA OG NED
+// ---------------------------------------
+
+
+@media (min-width: @screen-small) { // større enn 38.75em (620px)
+  // Fra stor mobil-ish og opp
+
+
+
+  .hero-block, .hero-link {
+    padding-top:1.875rem;
+    margin-bottom:1.875rem;
+    width:100%;
+  }
+
+
+  //
+  //  Progressive enhancement,
+  //  for de som støtter flexbox
+  //
+
+  .flexbox {
+
+    .hero-blocks, .hero-links {
+      .flex-container();
+      flex-flow: row wrap;
+      -webkit-flex-flow: row wrap;
+      margin-bottom: -1.875rem; // utligner siste rad med .hero-block (som har margin-bottom på 1.875rem)
+
+      justify-content: center;
+      -webkit-justify-content: center; // Midtstilling hvis færre en 3 stk per rad. Ellers tar tre stk bokser tilsammen 100% width.
+
+      .hero-block-wrapper, .hero-link-wrapper {
+        .flex-container(); // sørger for at også webkit gir boksene lik høyde
+        height: auto;
+      }
+      .hero-block, .hero-link {
+        height: auto;
+        //-ms-flex: 1; // for IE10
+      }
+    }
+
+  } // .flexbox
+
+}
+
+
+
+
+
+@media (min-width: @screen-small) and (max-width: (@screen-medium + 0.0625em)) { // større enn 38.75em - mindre enn 48.0625em
+
+  //
+  //  Overstyrer grid defaults, slik at col-md-4 kicker inn på smalere skjerm, når brukt sammen med flexboxbaserte lenkebokser her.
+  //
+
+  .hero-blocks.multiple .hero-block {
+    padding-left: 1em;
+    padding-right:1em;
+  }
+
+  .flexbox {
+    .hero-blocks .col-sm-12 {
+      width:auto;
+    }
+
+    .hero-blocks.multiple .col-md-4 {
+      width:33.3333%;
+    }
+
+
+    .hero-links {
+      .hero-link {
+        padding-left: 1em;
+        padding-right: 1em;
+        p {
+          font-size: @rem-as-12px;
+        }
+
+      }
+    }
+
+  }
+
+
+
+
+
+
+
+}
+
+
+@media (min-width: @screen-medium) { // større enn 48em (768px)
+
+  .no-flexbox {
+
+    //
+    //  Om ikke flexbox styrer høyden (IE9),
+    //  litt over 500px som minimum
+    //
+
+    .hero-block {
+      min-height: 34em; // pga "pensjon" på velg emne, skjemaveileder. Kan heller overstyres av skjemaveil-css.
+    }
+
+    .hero-link {
+      min-height: 18rem;
+    }
+
+    //
+    // Enslig boks midstilles,
+    // også i IE9 (uten flex)
+    //
+
+    .hero-blocks.single { // TODO: Bruke col-md-standalone i stedet? Flex-midtstilling hvis 2 bokser?
+      text-align: center;
+      .hero-block-wrapper.col-md-4 {
+        float:none;
+        display:inline-block;
+      }
+
+      .hero-block {
+        min-height: auto;
+        text-align:left;
+
+      }
+    }
+
+  } // no-flexbox
+} // min-width medium
+
+
+
+
+
+
+//
+// Ikoner for "hero links"
+//
+
+
+.icon-application {
+  background: url('@{baseImagePath}img/navno/gfx/icons/soknad_rod.png') center 0 no-repeat;
+  // background: url('@{baseImagePath}img/navno/gfx/icons/soknad_rod.svg') center 0 no-repeat;;
+  &:hover {
+    background: url('@{baseImagePath}img/navno/gfx/icons/soknad_hover.png') center 0 no-repeat;;
+    //background: url('@{baseImagePath}img/navno/gfx/icons/soknad_hover.svg') center 0 no-repeat;;
+  }
+}
+
+.icon-login {
+  background: url('@{baseImagePath}img/navno/gfx/icons/logg_inn_rod.png') center 0 no-repeat;;
+  //  background: url('@{baseImagePath}img/navno/gfx/icons/logg_inn_rod.svg') center 0 no-repeat;;
+  &:hover {
+    background: url('@{baseImagePath}img/navno/gfx/icons/logg_inn_hover.png') center 0 no-repeat;;
+    //  background: url('@{baseImagePath}img/navno/gfx/icons/logg_inn_hover.svg') center 0 no-repeat;;
+  }
+}
+
+.icon-document {
+  background: url('@{baseImagePath}img/navno/gfx/icons/dokument_rod.png') center 0 no-repeat;;
+  // background: url('@{baseImagePath}img/navno/gfx/icons/dokument_rod.svg') center 0 no-repeat;;
+  &:hover {
+    background: url('@{baseImagePath}img/navno/gfx/icons/dokument_hover.png') center 0 no-repeat;;
+    //  background: url('@{baseImagePath}img/navno/gfx/icons/dokument_hover.svg') center 0 no-repeat;;
+  }
+}
+
+
+
+
+//
+// Ikoner for skjemaveileder
+//
+
+.leading-icon-large {
+
+  &.icon-utenarbeid {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/uten_arbeid.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/uten_arbeid.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-arbeidhelsesykdom {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/arbeid_helse_sykdom.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/arbeid_helse_sykdom.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-familie {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/familie.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/familie.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-pensjon {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/pensjon.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/pensjon.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-dodsfall {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/stonader_dodsfall.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/stonader_dodsfall.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-hjelpemidler {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/hjelpemidler.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/hjelpemidler.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-lonnsgaranti {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/lonnsgaranti.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/lonnsgaranti.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-internasjonalt {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/internasjonalt.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/internasjonalt.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-diverse {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/div.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/div.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-privatperson {
+     background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/privat.png') center 0 no-repeat; // 32px
+     // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/privat.svg') center 0 no-repeat; // 32px
+   }
+
+
+  &.icon-arbeidsgiver {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/arbeidsgiver.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/arbeidsgiver.svg') center 0 no-repeat; // 32px
+  }
+
+  &.icon-arbeidspraksis {
+    background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/arbeidspraksis.png') center 0 no-repeat; // 32px
+    // background: url('@{baseImagePath}img/navno/gfx/skjemaveileder-v2/arbeidspraksis.svg') center 0 no-repeat; // 32px
+  }
+}
+
+.icon-soknad {
+  background: url('@{baseImagePath}img/navno/gfx/icons/soknad.png') center 0 no-repeat; // 32px
+  // background: url('@{baseImagePath}img/navno/gfx/icons/soknad.svg') center 0 no-repeat; // 32px
+}

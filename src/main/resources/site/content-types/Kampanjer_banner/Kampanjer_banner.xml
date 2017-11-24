@@ -1,0 +1,69 @@
+<content-type>
+    <display-name>Kampanjer_banner</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Banner">
+            <label>Banner</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel (vises ikke i banneret)</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <help-text>Tittelen er kun for å enkelt finne banneret i arkivet.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="flash" type="AttachmentUploader">
+                    <label>Flash-fil</label>
+                    <custom-text>contentdata/flash</custom-text>
+                    <help-text>Last opp flash-fila som skal brukes i banneret fra din lokale harddisk</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Flash-kontroller">
+            <label>Flash-kontroller</label>
+            <items>
+                <input name="width" type="ComboBox">
+                    <label>Bredde</label>
+                    <custom-text>contentdata/width</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="wide">Full bredde (950px)</option>
+                        <option value="medium">1/2 av full bredde (470px)</option>
+                        <option value="narrow">1/3 av full bredde (310px)</option>
+                    </config>
+                </input>
+                <input name="height" type="TextLine">
+                    <label>Høyde (eksakt tallverdi i piksler)</label>
+                    <custom-text>contentdata/height</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Fallback-bilde og lenke for de uten mulighet til å se flash">
+            <label>Fallback-bilde og lenke for de uten mulighet til å se flash.</label>
+            <items>
+                <input name="image" type="ImageSelector">
+                    <label>Bilde</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="alt_text" type="TextLine">
+                    <label>Alternativ tekst (vises for de som ikke kan se bilde)</label>
+                    <custom-text>contentdata/alt_text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="url" type="ContentSelector">
+                    <label>Målside (Velg kun én snarvei)</label>
+                    <custom-text>contentdata/url</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kampanjer_snarvei</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

@@ -1,0 +1,33 @@
+<content-type>
+    <display-name>KontaktinformasjonEnhetLang</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Nyhet">
+            <label>Nyhet</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Lenkeliste">
+            <label>Lenkeliste</label>
+            <items>
+                <input name="relatedlinklist" type="ContentSelector">
+                    <label>Lenkeliste</label>
+                    <custom-text>contentdata/relatedlinklist</custom-text>
+                    <help-text>Legg kun til en liste per nyhet. Hvis man legger                     inn flere vil kun den første lenkelisten brukes.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Lenkeliste</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

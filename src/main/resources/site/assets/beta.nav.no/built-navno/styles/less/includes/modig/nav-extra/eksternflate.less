@@ -1,0 +1,177 @@
+.panel {
+	margin: 0 auto;
+	&.mini {
+		text-align: center;
+		padding: 1.5% 4% 5%;
+		border: 1px solid @gray;
+	}
+	&.standard {
+		text-align: left;
+		border: none;
+		&.belyst {
+			padding: 1.5% 4% 6% 5%;
+		}
+		.panelheading {
+			font-size: @rem-as-14px;
+			font-weight: bold;
+		}
+	}
+	&.belyst {
+		background: @white;
+	}
+}
+
+.informasjonsboks {
+	text-align: center;
+	padding: 30px 30px 40px;
+	background: @gray-dark;
+	max-width: 100%;
+	width: 450px;
+	z-index: 1050;
+	position: fixed;
+	top: 250px;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	box-shadow: 0 0 15rem @gray-light;
+
+	h1, p {
+		color: @white;
+	}
+	p {
+		margin-bottom: 30px;
+	}
+	.knapp .info {
+		color: @white;
+		background: @gray-dark;
+		border: 1px solid #675c53;
+
+		&:hover, &:focus {
+			background: @blue-light;
+			color: @white;
+		}
+	}
+	.knapp:first-of-type + a,
+    .knapp + .knapp:last-of-type{
+		margin-left: 30px;
+	}
+}
+
+dialog.informasjonsboks {
+  border:none;
+  .dialog-body:focus {
+    outline:none;
+  }
+}
+
+
+.wicket-mask-dark {
+	position: fixed;
+	z-index: 1040;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+}
+
+/* MEDIA QUERIES */
+
+@media only screen and (max-width: 1024px) {
+	.diger {
+		font-size: 2.4rem;
+	}
+	.rad .begrensning {
+		width: 90%;
+	}
+	.skriftstorrelse {
+		display: none;
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.diger {
+		font-size: 1.8rem;
+	}
+	.rad {
+		padding: 10px;
+	}
+	.begrensning {
+		width: 90%;
+	}
+	.sak-kvart .panel {
+		width: 51%;
+	}
+	.sak-tredel .panel {
+		width: 55%;
+	}
+
+	.sak-halv .panel {
+		width: 65%;
+	}
+
+	.sak-totredel .panel {
+		width: 75%;
+	}
+
+	.sak-trekvart .panel {
+		width: 80%;
+	}
+
+	.sak-hel .panel {
+		width: 100%;
+	}
+
+	.informasjonsboks {
+		position: fixed;
+		top: 10px !important;
+		bottom: 10px !important;
+		right: 10px !important;
+		left: 10px !important;
+		width: auto;
+		z-index: 1050;
+
+		h1 {
+			font-size: 24px;
+			margin-top: 15px;
+		}
+
+		.knapp:first-of-type + a {
+			display: block;
+			margin-left: 0;
+			margin-top: 20px;
+			color: #00a9e0;
+		}
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.diger {
+		font-size: 1.4rem;
+	}
+	.rad {
+		padding: 5px;
+	}
+	.begrensning {
+		width: 100%;
+	}
+	.sak .panel {
+		width: 100%;
+	}
+}
+
+.feilside {
+	.diger {
+		color: rgb(167, 167, 167);
+	}
+	.luftig-horisontalt {
+		margin-left: 1em;
+		margin-right: 1em;
+	}
+	.luftig-vertikalt {
+		margin-top: 2em;
+		margin-bottom: 2em;
+	}
+	.panel .mini {
+		color: rgb(128, 128, 128);
+	}
+}

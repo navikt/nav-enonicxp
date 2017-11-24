@@ -1,0 +1,532 @@
+/***********************************************
+*
+*	GLOBALE ELEMENTER
+*
+***********************************************/
+
+html { background: url('/_public/www.nav.no/bilder/global/background.gif') left top; }
+body { margin:0; padding: 0; border-collapse: collapse; font-size: 73%; }
+body, select, input, label, button { font-family: arial, verdana, sans-serif; color: #3E3832; }
+
+
+a { text-decoration: none; color: #0074C4; }
+a:hover { text-decoration: underline; }
+a:visited { color: #8B32E5; }
+img { border: 0; }
+ul { list-style: none; margin: 0; padding: 0; }
+ol { list-style: none; margin: 0; padding: 0; }
+p { margin-top: 0.5em; }
+h1, h2, h3, h4, h5 { margin: 0; padding: 0; }
+h1 { font-size: 3.2em; } /* Tittel på siden */
+h2 a:hover { text-decoration: none; }
+h3 { font-size: 1em; color: #675C53; } /* Nivå 2 brødtekst. */
+h4 { font-size: 1em; color: #3E3832; } /* nivå 3 brødtekst */
+h5 { font-size: 1em; background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; padding: 0 0 4px 10px; color: #988F86; } /* Relevantinfo */
+form { margin: 0; padding: 0; }
+
+/**********************************************
+*
+*	EGENDEFINERTE GLOBALE ELEMENTER
+*
+***********************************************/
+/* Vanlig tabell */
+.NAVtbl { width: 100%; border-collapse: collapse; }
+.NAVtbl th { text-align: left; color: #675C53; }
+.NAVtbl td { padding:  5px 0 5px 7px; vertical-align: top; }
+.NAVtbl th div, .NAVnumTbl th div { background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; padding: 3px 0 3px 7px; margin-bottom: 8px; }
+.NAVtbl .NAValternateRow, .NAVnumTbl .NAValternateRow { background-color: #EFEFEE; }
+/* Pre definerte bredder */
+.NAVtbl .NAVcourseCol1 { width: 25%; }
+.NAVtbl .NAVcourseCol2 { width: 75%; }
+.NAVtbl .NAVcourseBtnCol { text-align: right; padding-right: 30px; }
+.NAVtbl .NAVskjemaNameCol { width: 50%; }
+.NAVtbl .NAVskjemaLanguageCol { width: 25%; }
+.NAVtbl .NAVskjemaIdCol { width: 25%; }
+
+/* Numerisk tabell */
+.NAVnumTbl { border-collapse: collapse; }
+.NAVnumTbl th { text-align: right; color: #675C53; }
+.NAVnumTbl td { padding: 5px 7px 5px 7px; vertical-align: bottom; text-align: right; white-space: nowrap; }
+.NAVnumTbl .NAVtextColumn { text-align: left!important; vertical-align:top; }
+.NAVnumTbl th div { padding-right: 7px; }
+.NAVnumTbl td.NAVtextColumn { color: #675C53; font-weight: bold; }
+
+.NAValternateRow { background-color: #F2F1F0; }
+
+.NAVform { margin: 0; padding: 0; }
+
+/* knapper */
+.NAVbtn, .button, .loginButton { background: url('/_public/www.nav.no/bilder/global/buttonbackground.gif') repeat-x; border: 1px solid #A69D97; padding: 0.1em 0.5em 0 0.5em; }
+/* Spacinger mellom objekter */
+.NAVportletSeperator { height: 1.9em; width: 100%; clear: left; }
+.NAVportletSeperatorExtra { height: 3em; width: 100%; clear: left; }
+.NAVportletSeparatorSmall { height: 1em; width: 100%; clear: left; }
+
+/* Lenkeliste*/
+.NAVsquareLinkList ul { list-style: square outside; color: #0074C4; }
+.NAVsquareLinkList ul li { margin-bottom: 0.2em; margin-left: 20px; }
+
+/* vanlig liste */
+ul.NAVsquarelist { list-style: square inside; }
+ul.NAVsquarelist li { margin-bottom: 0.2em; }
+
+/* striplet linje */
+.dashedLine { background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; width: 100%; clear: left; font-size: 0; height: 1px; padding-top: 15px; }
+
+/* Endre skriftstr stiler [AAA] - se egne stilark */
+.NAVsmall { font-size: 1em; }
+.NAVmedium { font-size: 1.1em; }
+.NAVlarge { font-size: 1.2em; }
+
+/* A til Å liste */
+.NAValfabet { float: left; width: 100%; }
+.NAValfabet a { text-transform: uppercase; text-align: center; font-weight: bold; text-decoration: none; display: block; width: 1em; float: left; margin: 0  0.5em 0.2em 0 ; background-color: #E0DED8; padding: 0.2em; color: #3E3832; }
+.NAValfabet a:hover, .NAValfabet .selected  { background-color: #00A9E0; color: #FFFFFF!important; text-decoration: none; }
+.NAValfabet a:visited { color: #3E3832; }
+
+/* Her kan du */
+.NAVsheetFlip { background: url('/_public/www.nav.no/bilder/global/sheetflip.gif') no-repeat top left; width: 14px; height: 16px; }
+.NAVfastNavBordemBottom { height: 4px; font-size: 0; background: url('/_public/www.nav.no/bilder/global/fastnavborderbottom.gif') repeat-x bottom left; }
+.NAVfastNavborderBottomRight { height: 4px; background: url('/_public/www.nav.no/bilder/global/fastnavbottomright.gif') no-repeat bottom right; }
+
+.NAVnext { float: right; }
+.NAVprev { float: left; }
+
+#NAVhideMe { display: none; } /* Skal bare vaere med i print.css */
+
+/* Misc */
+.NAVskjemaHeading { padding-left: 7px; }
+.NAVpageTitle { margin: 0 0 13px 10px; }
+.NAVspacerTop { margin-top: 15px; }
+.NAVupperCase { text-transform: uppercase; }
+.NAVboldLink a { font-weight: bold; }
+
+
+/*****************************************************************
+*
+*	NAVtextController - for aa overstyre editor tagger
+*
+******************************************************************/
+.NAVtextController ul { list-style: square outside; margin: 5px 0 8px 16px; }
+.NAVtextController h1, .NAVtextController h2, .NAVtextController h3, .NAVtextController h4, .NAVtextController h5 { margin-top: 13px; font-size: 1em; color: #675C53; }
+.NAVtextController ol { list-style: decimal outside; margin: 5px 0 8px 22px; }
+.NAVtextController strong, .NAVtextController b { color: #3E3832; }
+.NAVtextController p { margin-top: 0.5em; margin-bottom: 0; }
+.NAVtextController ul a { color: #0074C4!important; }
+.NAVtextController ul a:visited { color: #8B32E5!important; }
+.NAVtextController h5 { background-image: none; }
+
+
+/************************************************
+*
+*	Gray header pages
+*
+*************************************************/
+
+#gray_header #NAVbreadcrumbContainer { margin: 0; padding: 14px; }
+#gray_header .tittelheader { float: left; color: #fff; margin: 30px 0 0 35px; font-size: 2.1em; }
+#gray_header .NAVtjenesteLoginContainer .NAVbtn { width: 60px; background: url( /_public/www.nav.no/bilder/tjenester/gfx/knapper/btn60.png ) no-repeat; border: none; height: 24px; cursor: pointer; }
+.loginDiv { color: #fff; }
+
+/************************************************
+*
+*	Site containers
+*
+*************************************************/
+#NAVheaderContainer, #NAVcenterContainer, #NAVborderBottomCenter { width: 99.5%; /*98.3%;*/ margin-left: 0.25%; /*0.9%;*/ display: inline; max-width: 1400px; }
+#NAVheaderContainer { float: left; }
+#NAVcenterContainer { float: left; }
+#NAVcenterContainer { background-color: #564a40; }
+
+#NAVborderBottomLeft { float: left; height: 12px; width: 100%; background: url('/_public/www.nav.no/bilder/global/borderbottomleft.gif') no-repeat top left; }
+#NAVborderBottomRight { float: left; height: 12px; width: 100%; background: url('/_public/www.nav.no/bilder/global/borderbottomright.gif') no-repeat top right; }
+#NAVborderBottomCenter { float: left; background: url('/_public/www.nav.no/bilder/global/borderbottom.gif') repeat-x top left; height: 12px; }
+
+/**********************************************************
+*
+*	Containers in headerContainer
+*
+**********************************************************/
+#NAVheaderContainer #NAVheaderContentContainer { float: left; width: 100%; margin: 8px 0 0; }
+#NAVheaderContainer #NAVheaderContentContainer { background: url('/_public/www.nav.no/bilder/global/headerbackground.gif') repeat-x 0 48px; }
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer { float: left; margin-left: 18px; margin-top: 4px; }
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer img { float: left; }
+#NAVheaderContainer #NAVheaderContentContainer a { color: #3E3832; }
+#NAVheaderContainer #NAVheaderContent { float: right; margin-right: 10px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight { /*float: right;*/ text-align: right; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVlinksContainer { margin-left: 15px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVswitchFontLink { margin-right: 1px; }
+#NAVheaderContainer #NAVheaderContent .NAVavailabilityLinksRight .NAVsizeLinks { margin-left: 1px; margin-right: 0; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop form { display: inline; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop a { margin-right: 10px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop input { /*margin-left: 5px;*/}
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop .NAVheadBtn { margin-right: 17px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop .NAVbtn { margin-left: 5px; }
+
+#NAVheaderContainer #NAVmenu { margin-right: 5px; float: right; }
+#NAVheaderContainer #NAVmenu ul { list-style: none; float: left; }
+#NAVheaderContainer #NAVmenu ul li, #NAVheaderContainer #NAVmenu ul li a { float: left; }
+#NAVheaderContainer #NAVmenu img { height: 2.75em; float: left; }
+
+/*********************************************************
+*
+*	Containers in centerContainer
+*
+*********************************************************/
+#NAVborderLeft { float: left; width: 100%; background: url('/_public/www.nav.no/bilder/global/borderleft.gif') repeat-y left top; }
+#NAVborderRight { float: left; width: 100%; background: url('/_public/www.nav.no/bilder/global/borderright.gif') repeat-y right top; }
+
+/************** contentSpacerContainer **************/
+#NAVcontentSpacerContainer { margin: 0 7px 0 29px; }
+#NAVcontentSpacerOperaFix { float: left; padding-bottom: 22px; width:100%; }
+/************** pageTitleContainer *******************/
+#NAVpageTitleContainer { text-align:left; margin-top: 20px; margin-bottom: 15px; float: left; width: 100%; }
+#NAVpageTitleContainer { background-image: url('/_public/www.nav.no/bilder/global/pagetitlebackground.gif'); background-repeat: repeat-x; background-position: bottom left; }
+#NAVpageTitleContainer h1 { color: #FFFFFF; margin-left: 14px; padding-top: 17px; }
+#NAVpageTitleContainer h1 span { color: #FFFFFF; }
+
+#NAViconJobbOgArbeidsliv { background: url('/_public/www.nav.no/bilder/page/iconjobbogarbeidslivsmall.gif') no-repeat top right; margin-right: 20px; }
+#NAViconFamilieOgOmsorg { background: url('/_public/www.nav.no/bilder/page/iconfamilieogomsorgsmall.gif') no-repeat top right; margin-right: 20px; }
+#NAViconPensjon { background: url('/_public/www.nav.no/bilder/page/iconpensjonsmall.gif') no-repeat top right; margin-right: 20px; }
+#NAViconHelsetjenester { background: url('/_public/www.nav.no/bilder/page/iconhelsetjenestersmall.gif') no-repeat top right; margin-right: 20px; }
+
+/***********************************************************
+*
+*	personalizedNavigation
+*
+************************************************************/
+#NAVpersonalizedNavigation { float: left; width: 100%; text-align: right; _height: 45px; min-height: 45px; background: url('/_public/www.nav.no/bilder/pageforside/bgpersonalizednav.gif') repeat-x top left; }
+#NAVpersonalizedNavigation form { display: inline; }
+#NAVpersonalizedNavigation select { margin-right: 5px; }
+#NAVpersonalizedNavigation input { margin-right: 20px; }
+#NAVpersonalizedNavigation #NAVbreadcrumbContainer { float: left; }
+#NAVpersonalizedNavigation .NAVselectContainer { float: right; margin-top: 13px; }
+
+/**********************************************************
+*
+*	pageImage - Seksjonsforside
+*
+***********************************************************/
+#NAVpageImage { float: left; width: 100%; background: #C30000 no-repeat; _height: 12.8em; min-height: 12.8em; margin-top: 22px; }
+#NAVpageImage .NAViconContainer { padding-bottom: 7px; margin-bottom: 5px; background: url('/_public/www.nav.no/bilder/global/pagetitlebackground.gif') repeat-x bottom left; }
+#NAVpageImage .NAViconContainer .NAVDineSiderloggin { margin-left: 45px; font-size: 1.4em; }
+#NAVpageImage h1 { line-height: 1em; color: #FFFFFF; padding: 0 0 0 45px; margin-top: 20px; }
+#NAVpageImage h1 { background: url('/_public/www.nav.no/bilder/icons/arrowmasterheader.gif') no-repeat 0 3px; }
+#NAVpageImage h1 br {margin: 0; padding: 0; border-width: 0; line-height: 0em; }
+#NAVpageImage a { text-decoration: none; color: #FFFFFF; }
+
+#NAVpageForsiden .NAViconContainer { margin-left: 590px; }
+#NAVpageForsiden .NAViconContainer .NAViconPlaceHolder { float: right; }
+#NAVpageJobbOgArbeidsliv .NAViconContainer { margin-left: 530px; }
+#NAVpageJobbOgArbeidsliv .NAViconContainer .NAViconPlaceHolder { background: url('/_public/www.nav.no/bilder/page/iconjobbogarbeidsliv.gif') no-repeat top right; margin-right: 25px; height: 90px; float: right; width: 90px; }
+#NAVpageFamilieOgOmsorg .NAViconContainer { margin-left: 530px; }
+#NAVpageFamilieOgOmsorg .NAViconContainer .NAViconPlaceHolder { background: url('/_public/www.nav.no/bilder/page/iconfamilieogomsorg.gif') no-repeat top right; margin-right: 25px; height: 90px; float: right; width: 90px; }
+#NAVpageHelsetjenester .NAViconContainer { margin-left: 530px; }
+#NAVpageHelsetjenester .NAViconContainer .NAViconPlaceHolder { background: url('/_public/www.nav.no/bilder/page/iconhelsetjenester.gif') no-repeat top right; margin-right: 25px; height: 90px; float: right; width: 90px; }
+#NAVpagePensjon .NAViconContainer { margin-left: 530px; }
+#NAVpagePensjon .NAViconContainer .NAViconPlaceHolder { background: url('/_public/www.nav.no/bilder/page/iconpensjon.gif') no-repeat top right; margin-right: 25px; height: 90px; float: right; width: 90px; }
+
+/****************************************************
+*
+*	pageContainer - Side oppsett i innhold
+*
+*****************************************************/
+#NAVpageContainer { float: left; width: 100%; background-color: #F9F8F7; }
+#NAVpageContainer .NAVtopSpacing { height: 2em; clear: left; }
+#NAVpageContainer .NAVtopSpacingFrontPage { height: 14px; clear: left; }
+#NAVpageContainer #NAVsubmenuContainer { width: 24.2%; /*22%;*/ float: left; margin-right: 1.8%;/*2.9%;*/ }
+#NAVpageContainer #NAVcontentContainer { width: 48.5%; /*48.5%;*/ float: left; }
+#NAVpageContainer #NAVrelevantContentContainer { width: 23%; /*23.35%;*/ float: right; }
+#NAVpageContainer #NAVfooterContainer { clear: both; width: 100%; padding-top: 2em; margin-bottom: 2em; text-align: center; }
+#NAVfooterContainer a { margin-right: 5px; }
+#NAVpageContainer #NAVtwoColumnContainer { float: left; width: 73%; }
+#NAVpageContainer #NAVoneColumnContainer { padding: 0 1em 0 1em; }
+
+/******************* submenuContainer *************/
+#NAVsubmenuContainer ul.NAVsubmenu { width: 100%; }
+#NAVsubmenuContainer ul.NAVsubmenu li div { background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; }
+#NAVsubmenuContainer ul.NAVsubmenu li div { padding: 8px 0 8px 14px}
+#NAVsubmenuContainer ul.NAVsubmenu a { font-size: 1.2em; text-decoration: none; }
+#NAVsubmenuContainer ul.NAVsubmenu a:hover { font-weight: bold; }
+#NAVsubmenuContainer ul.NAVsubmenu ol { margin-bottom: 10px; }
+#NAVsubmenuContainer ul.NAVsubmenu ol a { font-size: 1em; }
+#NAVsubmenuContainer ul.NAVsubmenu li ol li div { padding-top: 5px; padding-bottom: 5px; background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; }
+
+/* Måtte skrive background-image: url(none) istedenfor background-image: none ellers ble arrow for valgt meny borte i ie, _ leses bare av ie */
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol li div { background-image: none; _background-image: url('none'); padding-bottom: 2px; padding-top: 2px }
+#NAVsubmenuContainer a { color: #675C53; }
+#NAVsubmenuContainer .NAVselected { background: url('/_public/www.nav.no/bilder/menu/submenuselected-grey.gif') no-repeat 0 0; }
+#NAVsubmenuContainer .NAVlevelOne { color: #C30000; font-weight: bold; }
+#NAVsubmenuContainer .NAVlevelTwo { color: #C30000; font-weight: bold; }
+#NAVsubmenuContainer .NAVlevelThree { color: #C30000; font-weight: bold; }
+#NAVsubmenuContainer .NAVlevelFour { color: #C30000; font-weight: bold; }
+#NAVsubmenuContainer .NAVarrow { background: url('/_public/www.nav.no/bilder/menu/arrowsubmenu.gif') no-repeat 0 7px; /*0em 0.7em;*/}
+#NAVsubmenuContainer .NAVarrowSelected { background: url('/_public/www.nav.no/bilder/menu/arrowsubmenuselected.gif') no-repeat 0 9px; /* 0em 0.8em;*/ }
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol .NAVarrow { background-position: 0 5px; }
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol .NAVarrowSelected { background-position: 0 7px; }
+/* Utgått? */
+#NAVsubmenuContainer .NAVmenuPartTwo { margin-top: 2em; }
+#NAVsubmenuContainer .NAVmenuPartTwo span { font-size: 2.3ex; color: #B7B1A9; margin-left: 10px; }
+
+#NAVsubmenuContainer .NAVfastNavBorderRight { padding-right: 4px; background: url('/_public/www.nav.no/bilder/global/fastnavrightborder.gif') repeat-y top right; }
+#NAVsubmenuContainer .NAVfastNavContainer { padding: 0 0 8px 0; background-color: #FFFFFF; }
+#NAVsubmenuContainer .NAVfastNavContainer h5 { padding-left: 20px; margin-right: 8px; }
+#NAVsubmenuContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { background-color: #F9F8F7; padding: 14px 15px 19px 14px; margin: 4px 8px 0 0; }
+#NAVsubmenuContainer .NAVfastNavContainer a { text-decoration: none; color: #0074C4; }
+#NAVsubmenuContainer .NAVfastNavContainer a:hover { text-decoration: underline; }
+#NAVsubmenuContainer .NAVfastNavContainer a:visited { color: #8B32E5; }
+
+#NAVsubmenuContainer .NAValfabet { margin-top: 10px; width: 85%; margin-left: 20px; display: inline; }
+#NAVsubmenuContainer .NAValfabet a { margin-right: 0.5em; margin-left: 0; }
+#NAVsubmenuContainer h5 { padding-left: 20px; }
+
+
+/************* Containere i innholdet *****************/
+
+/* errorBox */
+.NAVerrorBox { border: 1px dashed #CE3231; padding-left: 20px; margin-bottom: 20px; }
+.NAVerrorBox p { color: #CE3231; margin: 10px 0 10px 0}
+
+/* Søkeresultat FAST */
+.NAVSearchResultContainer { float: left; width: 80%; }
+.NAVSearchResultContainer li { margin-bottom: 10px; }
+.NAVsearchResultRightContainer { float: left; width: 20%; }
+.NAVsearchFirstLine { background-image: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; /*margin-bottom: 5px;*/ padding-bottom: 2px; }
+.NAVsearchFirstLine a { font-weight: bold; }
+.NAVsearchIngress { color: #988F86; }
+.NAVsearchHitBody { margin-left: 19px; margin-top: 5px; }
+.NAVformBoxSearch { background-color: #F1F0ED; padding: 15px 18px 15px 18px; margin-bottom: 4px; }
+.NAVsearchResultRightContainer strong { color: #3E3832; }
+.NAVsearchResultRightContainer h5 { padding: 0 0 2px 0!important; margin: 4px 0 10px 0; }
+.NAVsearchResultRightContainer .dashedLine { margin-bottom: 10px; }
+.NAVsearchList { width: 98%; }
+.NAVsearchResultInput { width: 250px; }
+.NAVsearchFloat { float: left; }
+.NAVShowHitsOfType { clear: left; margin-top: 8px; }
+.NAVSearchNavigationTop { margin-left: 15px; margin-top: 5px; }
+
+/*Nyheter*/
+.NAVnewsContainer { margin: 0 0 15px 0; padding: 0; float: left; width: 100%; }
+.NAVnewsContainer img { float: left; margin-right: 12px; border: 2px solid #B7B1A9; }
+.NAVnewsContainer h2 { display: inline; }
+.NAVnewsContainer span { font-size: 0.8em; margin-left: 0.5em; }
+.NAVnewsContainer p { margin: 0; }
+
+.NAVnewsTwoColumn, .NAVnewsTwoColumnSpacer { width: 48%; }
+.NAVnewsTwoColumn span, .NAVnewsTwoColumnSpacer span { margin-left: 0; display: block; }
+.NAVnewsTwoColumnSpacer { margin-right: 1em; }
+
+.NAVnewsTwoColumSeperator { clear: both; height: 0; font-size: 0; }
+
+.NAVnewsExtra h2 a, .NAVnewsExtra h2 a:visited  { color: #675C53; }
+.NAVnewsNoMarginBottom { margin-bottom: 0!important; }
+
+.NAVnewsArchiveNavigation { clear: left; margin-left: 10px; padding-top: 10px; }
+
+.NAVbigCampaign { background-color: #E0DED8; float: left; width: 100%; }
+.NAVbigCampaign img { float: right; }
+.NAVbigCampaign h5 { color: #675C53; background-image: url('/_public/www.nav.no/bilder/global/bigcampaigndashed.gif'); font-size: 1.6em; padding: 4px 0 4px 20px; }
+.NAVbigCampaign h5 a, .NAVbigCampaign h5 a:visited  { color: #675C53; }
+.NAVbigCampaign h5 a:hover { text-decoration: none; }
+.NAVbigCampaign .NAVcampaignContent { margin-top: 15px; margin-right: 200px; }
+.NAVbigCampaign .NAVlnkBigCampaign { margin-left: 20px; padding-top: 10px; display: block; font-size: 1.1em; }
+
+#NAVcampaignPortlet .NAVcampaign { float: left; width: 138px; margin-right: 21px; background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; padding-bottom: 15px; }
+#NAVcampaignPortlet img { float: left; display: block; }
+#NAVcampaignPortlet p { margin:0.7em 0 0 0; }
+#NAVcampaignPortlet .NAVkampanjeHeader { font-size: 2.5ex; color: #FFFFFF; background-color: #988F86; clear:left; padding: 0.5em; }
+#NAVcampaignPortlet .NAVnoMarginRight { margin-right: 0; }
+
+.NAVpageFooter { background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; padding-bottom: 4px; float: left; width: 100%; clear: left; }
+.NAVpageFooter a { margin-right: 1em; }
+
+/* Lenkeliste midtkolonne - To kolonne */
+.NAVlinkListContainer { float: left; width: 100%; }
+.NAVlinkListContainer div { float: left; width: 50%; }
+.NAVlinkListContainer h5 { color: #675C53; }
+.NAVlinkListContainer h2 { margin-bottom: 10px; }
+.NAVlinkListContainer .spacing { margin-right: 3.9%; width: 46%; }
+.NAVlinkListContainer .NAVsquareLinkList { width: 100%; float: left; }
+.NAVlinkListContainer .NAVsquareLinkList ul { margin: 15px 0 0 0; }
+.NAVlinkListContainer .NAVportletSeperator { height: 15px; }
+
+.NAVcalendar  ul { margin: 5px 0 0 0.5em; }
+
+.ingress { font-weight: bold; }
+
+.NAVformBox { background-color: #F1F0ED; padding: 5px 0 5px 0; margin-bottom: 4px; margin-top: 4px; float: left; width: 100%; }
+.NAVformBox label { float: left; width: 200px; margin-left: 10px; }
+.NAVformBox .NAVelement {float: left; width: 100px; margin-right: 5px; }
+.NAVformBox input, .NAVformBox select, .NAVformBox textarea, .NAVformBox .NAVbtnContainer { float: left; display: inline; }
+.NAVformBox .NAVbtn { margin-left: 5px; margin-right: 0; }
+.NAVformBox span { margin-left: 20px; font-weight: bold; }
+.NAVformBox .NAVbtnContainer { margin-left: 205px; }
+.NAVformBox .NAVsmallInput { width: 60px; }
+.NAVformBox .NAVmediumInput { width: 150px; }
+.NAVformBox .NAVlargeInput { width: 200px; }
+.NAVformBox textarea { width: 500px; height: 60px; }
+.NAVformBox select { margin-right: 5px; }
+.NAVformBox .NAVlblWidth { width: 5em; }
+
+/* Spesielle behov i forms */
+#Nofloat.NAVformBox * {float : none; }
+.NAVformBox #euresInfoDiv {float:left; width:50%; }
+
+/* To kolonne banner */
+.NAVtwoColumnBannerContainer { width: 49%; float: left; }
+.NAVtwoColumnBanner { width: 222px; background-color: #E1DED9; }
+.NAVtwoColumnBanner h5, .NAVtwoColumnBanner h5 a, .NAVtwoColumnBanner h5 a:visited { color: #675C53; }
+.NAVtwoColumnBanner h5 a:hover { text-decoration: none; }
+.NAVtwoColumnBanner h5 { background-image: url('/_public/www.nav.no/bilder/global/bigcampaigndashed.gif'); font-size: 1.6em; padding: 4px 0 4px 20px; }
+.NAVtwoColumnBannerContent { padding: 24px 0 16px 0; }
+.NAVtwoColumnBannerContent .NAVlinkTwoColumnBannerContent { margin-left: 20px; padding-top: 10px; display: block; font-size: 1.1em; }
+
+/* Kurs side */
+.NAVcourseInfoBox { margin-bottom: 10px; padding-left: 10px; }
+.NAVcourseInfoBox span { font-weight: bold; }
+.NAVcourseInfoBox div { margin-bottom: 5px; }
+
+/* Alfabet side */
+.NAValfabetNavigation { width: 80%; margin-bottom: 10px; float: left; }
+.NAVdashedLineAlfabet { margin: 0 0 10px 0; }
+
+/* dashedBox */
+.NAVdashedBox { padding: 5px 6px 5px 10px; background: url('/_public/www.nav.no/bilder/global/dashedhorizontal.gif') repeat-x bottom left; }
+.NAVdashedBox {padding: 10px 0 10px 0; float: left; width: 100%; }
+.NAVdashedBox form { float: left; }
+.NAVdashedBox .NAVbtn { margin-left: 6px; }
+.NAVdashedBox label { margin-left: 7px; }
+
+.NAVpageSection { margin-top:4px; background-color: #E0DED8; float: left; width: 100%; padding: 5px 0 5px 0; }
+.NAVpageSection span, .NAVpageSection label { margin-left: 7px; }
+
+.NAVfaqAnswer { margin-top: 15px; margin-bottom: 25px; }
+
+.NAVhaandbokNavigationContainer .NAVprev { float: left; margin-left: 11px; }
+.NAVhaandbokNavigationContainer .NAVnext { float: right; display: block; }
+
+/**************** relevantContentContainer **************/
+#NAVrelevantContentContainer ul { margin: 12px 3px 0 20px; }
+#NAVrelevantContentContainer ul li { margin-bottom: 0.3em; padding-right: 3px; }
+#NAVrelevantContentContainer h5 { margin-left: 10px; }
+#NAVrelevantContentContainer .NAVlnkMerOm, #NAVrelevantContentContainer .NAViconPrint { margin-left: 20px; margin-top: 10px; display: block; }
+
+#NAVrelevantContentContainer .NAVleftMargin { margin-left: 0.5em; }
+#NAVrelevantContentContainer .NAVcountyForm { margin-bottom: 2em; margin-left: 20px; }
+
+#NAVrelevantContentContainer .NAVfastNavContainer { padding: 0 0 8px 0; background-color: #FFFFFF; }
+#NAVrelevantContentContainer .NAVfastNavContainer h5 { padding-left: 20px; }
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { background-color: #F9F8F7; padding: 14px 5px 19px 8px;  margin: 5px 0 0 8px; }
+#NAVrelevantContentContainer .NAVfastNavContainer ul { margin: 0; }
+
+#NAVrelevantContentContainer .NAVkeyNumbers strong { color: #3F3832; }
+
+#NAVrelevantContentContainer .NAVnewsImg { background-color: #E0DED8; }
+#NAVrelevantContentContainer .NAVnewsImg p { padding: 10px 0 10px 7px; color: #3E3832; }
+
+#NAVrelevantContentContainer .NAVrelatedContentCampaign { background-color: #E0DED8; }
+#NAVrelevantContentContainer .NAVrelatedContentCampaign h5 { font-size: 1.6em; color: #675C53; padding-top: 10px; margin: 10px 0 10px 5px; background-image: url('/_public/www.nav.no/bilder/global/bigcampaigndashed.gif'); }
+#NAVrelevantContentContainer .NAVrelatedContentCampaign a { display: block; padding: 0 0 10px 15px; }
+#NAVrelevantContentContainer .NAVrelatedContentCampaign .NAVimageLink {padding: 0; }
+
+#NAVrelevantContentContainer .NAValfabet { padding: 1em 0 0 0.5em; }
+
+/****************************************************
+*
+*	errorPage
+*
+*****************************************************/
+#NAVerrorPage h1 { color: #CE3231; background: url('/_public/www.nav.no/bilder/tjenester/headerbackground.gif') repeat-x bottom left; }
+#NAVerrorPage p { font-size: 1.2em; margin-top: 20px; color: #675C53; }
+#NAVerrorPage .NAVlinkContact { margin-top: 30px; display: block; font-size: 1.2em; }
+
+/*********************************************************
+*
+*	Large table site
+*
+**********************************************************/
+#NAVlargeTableHeader { background-color: #C30000; height: 7em; margin-bottom: 14px; }
+#NAVlargeTableHeader img { margin: 8px 0 8px 1em; }
+.NAVlargeTableContentContainer { padding: 1em; }
+.NAVlargeTableBody { background-color: #F9F8F7; }
+
+
+
+
+/****************************************
+*
+*	Tjenester - Tjenestespesifikke stiler
+*
+*****************************************/
+#NAVdarkGradientContainer { height: 74px; background: url(/_public/www.nav.no/bilder/tjenester/gfx/gradient_topp.gif) repeat-x; margin: 0 7px; }
+#NAVdarkGradientContainer h1 { float: left; margin: 17px 0 0 23px; color: #fff; }
+#NAVdarkGradientContainer .NAVtjenesteLoginContainer { float: right; margin-right: 3em; margin-top: 14px; }
+#NAVdarkGradientContainer .NAVtjenesteLoginContainer strong { margin-left: 0.2em; margin-right: 1em; }
+#NAVdarkGradientContainer .NAVtjenesteLoginContainer DIV { color: #fff; margin-top: 20px; }
+#NAVdarkGradientContainer .NAVbackground { float: left; width: 100%; background: url(/_public/www.nav.no/bilder/tjenester/headerbackground.gif) repeat-x bottom left; }
+#NAVbreadcrumbContainer { margin: 0!important 0 14px!important 0!important; border-top: 3px solid #c30000; }
+
+/** Forms **/
+.formContainer { background-color: #F1F0ED; width: 98%; }
+.formFormContainer { padding: 18px 18px 18px 18px; width:95%; }
+
+
+/* STYLING FOR LOGIN PAGE */
+
+BODY#login A                               { color: #0074c4; }
+BODY#login .grayColor                      { color: #988f86; }
+BODY#login #NAVtjenesterHeaderContainer    { color: #fff; background: #c30000 url(/_public/www.nav.no/bilder/icons/whitedots.gif) repeat-x 0 55px; }
+BODY#login .tittelheader,
+BODY#login #NAVtjenesterHeaderContainer H1 { color: #fff; }
+BODY#login .formContainer                  { background: none; color: #3E3832; }
+BODY#login .formFormContainer              { padding: 0; }
+BODY#login LABEL.arrowHeader               { display: block; font-weight: bold; border-bottom: 1px solid silver; width: 290px; cursor: pointer;
+										               background: url(../images/icons/arrow_right.gif) no-repeat 230px; margin-top: 18px; }
+BODY#login DIV.arrowHeader                 { width: 290px; font-weight: bold; padding: 15px 0 2px; }
+
+BODY#login .tittelheader                   { float: left; margin: 25px 0 0 34px; font-size: 2.1em; }
+BODY#login #NAVbreadcrumbContainer         { margin: 0 0 14px 0; padding: 14px 0 0 14px; }
+
+BODY#login .loginFormContent LABEL         { display: block; font-weight: normal; }
+BODY#login .loginFormContent LABEL.noblock { display: inline; }
+BODY#login .loginFormContent #passordLabel { margin-top: 10px; }
+BODY#login .loginFormContent               { width: 270px; background: #f1f0ed; padding: 10px; margin: 8px 0; }
+BODY#login .loginFormContent .loginInput   { width: 200px; }
+BODY#login .loginFormContent .div2         { margin: 15px 0 7px 0; }
+
+BODY#login .dashed 		  					    { width: 270px; text-align: right; background: url(../images/icons/dashedhorizontal.gif) repeat-x top; padding-top: 8px; }
+BODY#login .wide   		  					    { width: 290px; }
+BODY#login .dashed .glemtLinks             { float: left; text-align: left; }
+BODY#login .solid                          { width: 290px; border-top: 1px solid #988f86; margin: 18px 0 8px; }
+
+BODY#login .arrowExpanded                  { display: none; width: 290px; margin-top: 5px; }
+BODY#login .loginDetails                   { display: block; width: 270px; }
+BODY#login #arbeidssoker .inputErrorContainer { margin-top: 8px; }
+BODY#login .arrowExpanded .button {  }
+
+BODY#login .inputErrorContainer            { width: 270px; padding: 10px; border: 1px dashed #c30000; color: #c30000; margin-bottom: 15px; }
+BODY#login .inputError                     { display: block; margin-bottom: 8px; width: 254px; padding: 8px; border: 1px dashed #c30000; color: #c30000; }
+BODY#login .sidemal .menuCol               { width: 30%; }
+
+/** Styling av driftsmelding og informasjon på høyresiden av loginsiden. */
+
+BODY#login DIV.leftCol             { float: left; width: 25%; }
+BODY#login .logginnContainer       { float: left; margin-left: 0; width: 40%; }
+BODY#login DIV.midCol              { float: left; width: 40%; }
+BODY#login DIV.rightCol            { float: left; width: 25%; }
+
+BODY#login DIV#info-content         { float: right; width: 330px; }
+BODY#login DIV#driftsmelding H5     { color: #c30000; padding: 0 3px 5px 0; }
+BODY#login DIV#informasjon          { margin-top: 20px; }
+BODY#login DIV#informasjon H5       { color: #675c53; padding: 0 3px 5px 0; }
+BODY#login DIV#driftsmelding H5 IMG { padding-right: 3px; }
+BODY#login DIV#informasjon H5 IMG   { padding-right: 3px; }
+BODY#login DIV.driftsinfo P         { padding: 0 30px 0 0.7em; }
+BODY#login .info-header             { background: url(../images/global/dashedhorizontal.gif) repeat-x left bottom; }
+
+BODY#login .avbrytLink             {float: left;}
+
+
+.informasjonsboks { width: 650px; padding: 10px 5px 8px 30px; background: url(/_public/www.nav.no/bilder/icons/icon_information.gif) no-repeat 5px 6px;
+                    border: 1px dashed #0074C4; margin-bottom: 15px;}
+

@@ -1,0 +1,49 @@
+<content-type>
+    <display-name>Idebanken_rapport</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Hovedfelt">
+            <label>Hovedfelt</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="image" type="ImageSelector">
+                    <label>Ingressbilde</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/ingress</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="TextLine">
+                    <label>Lenke-tekst</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="file" type="ContentSelector">
+                    <label>Fil</label>
+                    <custom-text>contentdata/file</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="origin" type="TextLine">
+                    <label>Opphavskilde</label>
+                    <custom-text>contentdata/origin</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL til opphavskilde</label>
+                    <custom-text>contentdata/url</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

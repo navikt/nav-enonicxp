@@ -1,0 +1,87 @@
+<content-type>
+    <display-name>ufr.artikkel</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Artikkel">
+            <label>Artikkel</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="preface" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="sections">
+            <label>Brødtekst</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="style" type="ComboBox">
+                    <label>Velg stil</label>
+                    <custom-text>style</custom-text>
+                    <help-text>Her bestemmer du hvordan tekstbolken skal fremstå. Fremhevet tekst skiller seg fra vanlig brødtekst, og kan f.eks brukes til faktaboks.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="default">Vanlig brødtekst (standard)</option>
+                        <option value="highlighted">Fremhevet tekst</option>
+                    </config>
+                </input>
+                <input name="factheading" type="TextLine">
+                    <label>Tittel for fremhevet tekst</label>
+                    <custom-text>factheading</custom-text>
+                    <help-text>Tittelen gjelder kun når fremhevet tekst (faktaboks) er valgt</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="facticon" type="ImageSelector">
+                    <label>Ikon for fremhevet tekst</label>
+                    <custom-text>facticon</custom-text>
+                    <help-text>Ikonet gjelder kun når fremhevet tekst (faktaboks) er valgt</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="section" type="HtmlArea">
+                    <label>Tekst</label>
+                    <custom-text>section</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="Relatert innhold">
+            <label>Relatert innhold</label>
+            <items>
+                <input name="links" type="ContentSelector">
+                    <label>Innhold</label>
+                    <custom-text>contentdata/links</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:ufr.artikkel</allow-content-type>
+                        <allow-content-type>no.nav.navno:ufr.sidebeskrivelse</allow-content-type>
+                        <allow-content-type>no.nav.navno:ufr.faktaark</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                        <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Angi andre språkversjoner">
+            <label>Angi andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Språkversjoner av denne artikkelen</label>
+                    <custom-text>contentdata/languages</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:ufr.artikkel</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

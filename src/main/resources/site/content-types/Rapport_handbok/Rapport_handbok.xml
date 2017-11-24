@@ -1,0 +1,100 @@
+<content-type>
+    <display-name>Rapport_handbok</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Generell informasjon">
+            <label>Generell informasjon</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="rapport_description" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/rapport_description</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="rapports">
+            <label>Side</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="rapport">
+                    <label>Side</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="subtitle" type="TextLine">
+                            <label>Undertittel</label>
+                            <custom-text>subtitle</custom-text>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <input name="text" type="HtmlArea">
+                            <label>Brødtekst</label>
+                            <custom-text>text</custom-text>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <item-set name="links">
+            <label>Relaterte lenker</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="link">
+                    <label>Relaterte lenker</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="description" type="TextLine">
+                            <label>Lenketekst</label>
+                            <custom-text>description</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                        <input name="contents" type="ContentSelector">
+                            <label>Relatert innhold</label>
+                            <custom-text>contentdata/contents</custom-text>
+                            <occurrences maximum="0" minimum="0"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Stor_tabell</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Ansattportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstra_stor_tabell</allow-content-type>
+                                <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                            </config>
+                        </input>
+                        <input name="destination" type="ComboBox">
+                            <label>Åpne i</label>
+                            <custom-text>target</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                            <config>
+                                <option value="current">Samme vindu</option>
+                                <option value="new">Nytt vindu</option>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <field-set name="Egenskaper">
+            <label>Egenskaper</label>
+            <items>
+                <input name="checkbox" type="CheckBox">
+                    <label>Arkivverdig</label>
+                    <custom-text>contentdata/checkbox</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

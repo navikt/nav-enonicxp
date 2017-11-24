@@ -1,0 +1,170 @@
+//
+// Grid system
+// --------------------------------------------------
+
+* {
+	.box-sizing(border-box);
+}
+
+.img-responsive, .article-body img {
+	// f.eks på "full" og "wide" i editor
+	.img-responsive();
+}
+
+.container {
+	.container-fixed();
+	.container-width();
+}
+
+// ---------------------------/
+// For å unngå "clipping" / disappearing content ved horisontal scroll,
+// når fixed width (responsive false).
+// setter inn min-width for .pagewrapper og .sitefooter
+.fixed-outer-container-mixin();
+// ---------------------------\
+
+.row {
+	.make-row();
+}
+
+.make-grid-columns();
+// ikke noe float, padding h+v i stedet for margin left
+
+//--------------------------------------------------------------------
+//
+//  Private mixins for responsive / non-responsive behaviour
+//
+//--------------------------------------------------------------------
+
+.grid-mobile-first-defaults();
+// if @responsive = true.
+.grid-setup();
+
+//--------------------------------------------------------------------
+//
+//  Mobile first grid defaults (if responsive)
+//
+//--------------------------------------------------------------------
+
+.grid-mobile-first-defaults() when (@responsive = true) {
+	//.inner-row { margin-bottom: 20px;}
+
+	.row [class*="col-"].spaceous {
+		// klasse for å override padding som per default står på alle gridklasser
+		padding-right: 0;
+		padding-left: 0;
+	}
+	.make-grid-columns-float(sm); // setter opp FLOAT på col-sm-1 til col-sm-11
+	.make-grid(@grid-columns, sm, width); // setter opp BREDDE på col-sm-1 til col-sm-11
+	.col-sm-12 {
+		margin-bottom: @grid-gutter-width / 2;
+	}
+	.inner-row {
+		margin-bottom: 60px;
+        &.tight {
+          margin-bottom: 30px;
+        }
+      &.tighter {
+        margin-bottom: 15px;
+      }
+	}
+}
+
+//--------------------------------------------------------------------
+//
+//  Mobile first responsive grid - several screen sizes
+//
+//--------------------------------------------------------------------
+
+.grid-setup() when (@responsive = true) {
+
+	@media (min-width: (@screen-medium + 0.0625em)) {
+		// equal to or larger than 769px
+		.make-grid-columns-float(md);
+		.make-grid(@grid-columns, md, width);
+		.make-grid(@grid-columns, md, offset); // offset for å legge på ekstra luft til venstre for kolonne.
+		.col-md-1, .col-md-2, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-9, .col-md-10, .col-md-12 {
+			padding-left: (@grid-gutter-width / 2);
+			padding-right: (@grid-gutter-width / 2);
+		}
+
+        .center-standalone-cols();
+
+		.row {
+			margin-left: -(@grid-gutter-width / 2);
+			margin-right: -(@grid-gutter-width / 2);
+		}
+	}
+
+	@media (min-width: @screen-large) {
+		// equal to or larger than 992px
+		.col-sm-12 {
+			margin-bottom: 0;
+		}
+
+		//.inner-row { margin-bottom: 60px; }
+
+	}
+}
+
+//--------------------------------------------------------------------
+//
+//  Non-responsive standard grid (IE8)
+//
+//--------------------------------------------------------------------
+
+.grid-setup() when (@responsive = false) {
+	// IE8 grid, ikke responsiv
+
+	body .maincontent {
+		// sterkere selector enn hva som er default i scaffolding
+		padding-top: 60px;
+	}
+
+	.make-grid-columns-float(md);
+	.make-grid(@grid-columns, md, width);
+
+	.make-grid(@grid-columns, md, offset); // offset for å legge på ekstra luft til venstre for kolonne.
+
+	.col-md-1, .col-md-2, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-9, .col-md-10, .col-md-12 {
+		padding-left: (@grid-gutter-width / 2);
+		padding-right: (@grid-gutter-width / 2);
+	}
+
+  .center-standalone-cols();
+
+	.row {
+		margin-left: -(@grid-gutter-width / 2);
+		margin-right: -(@grid-gutter-width / 2);
+	}
+
+  .inner-row {
+    margin-bottom: 60px;
+    &.tight {
+      margin-bottom: 30px;
+    }
+    &.tighter {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+
+.center-standalone-cols() {
+
+  .col-standalone { // sentrering av kolonne, f.eks col-md-8, som står alene. Skriv til oss + velg skjema (skjemaveileder)
+    &[class^='col-md-'] {
+      .center-block();
+      float:none;
+    }
+    &.col-md-4 {
+      width: 18.75em; // tilsvarende 33.3% og ca 300px på desktop. Brukt i skjemaveileder.
+      box-sizing:content-box; // default padding legger seg ellers til som en del av de 18.75 em-ene, slik at boksen ser smalere ut (hvis bakgrunnsfarge).
+    }
+    &.col-md-8 {
+      width:auto;
+      max-width: 41.25em; // tilsvarende 66.6% og ca 660px på desktop
+    }
+  }
+
+}

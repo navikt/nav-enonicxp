@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>rostilnav</display-name>
+  <config>
+    <input name="navUnit-autocomplete" type="ContentSelector">
+        <label>navUnit-autocomplete</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="kvittering" type="ContentSelector">
+        <label>kvittering</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

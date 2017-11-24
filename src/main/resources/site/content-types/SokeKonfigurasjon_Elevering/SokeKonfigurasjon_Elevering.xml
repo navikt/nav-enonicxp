@@ -1,0 +1,59 @@
+<content-type>
+    <display-name>SokeKonfigurasjon_Elevering</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tittel">
+            <label>Tittel</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel, type liste</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="elevering">
+            <label>Elevering</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="fra" type="TextLine">
+                    <label>Søkeord</label>
+                    <custom-text>ord</custom-text>
+                    <help-text>Søk som skal knyttes direkte til innhold</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="relation" type="ComboBox">
+                    <label>Forhold mellom ord og innhold</label>
+                    <custom-text>relation</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="boost">Skal gi treff</option>
+                        <option value="block">Skal ikke gi treff</option>
+                    </config>
+                </input>
+                <input name="contents" type="ContentSelector">
+                    <label>Relatert innhold</label>
+                    <custom-text>contentdata/contents</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                        <allow-content-type>no.nav.navno:Nyhet_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                        <allow-content-type>no.nav.navno:Nyhet_Ansattportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                    </config>
+                </input>
+                <input name="kapittel" type="TextLine">
+                    <label>Kapittel</label>
+                    <custom-text>kapittel</custom-text>
+                    <help-text>Skal settes dersom elevasjon gjelder et spesifikt kapittel</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

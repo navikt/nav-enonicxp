@@ -1,0 +1,24 @@
+<content-type>
+    <display-name>Hjelpetekstside_dinpensjon_R1</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Hjelpetekst">
+            <label>Hjelpetekst</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

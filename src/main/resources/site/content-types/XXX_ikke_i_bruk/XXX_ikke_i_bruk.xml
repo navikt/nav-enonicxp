@@ -1,0 +1,109 @@
+<content-type>
+    <display-name>XXX_ikke_i_bruk</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Enhet">
+            <label>Enhet</label>
+            <items>
+                <input name="head" type="ContentSelector">
+                    <label>Enhetsleder</label>
+                    <custom-text>emneord</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Emne</allow-content-type>
+                    </config>
+                </input>
+                <item-set name="contacts">
+                    <label>contacts</label>
+                    <occurrences maximum="1" minimum="1"/>
+                    <items>
+                        <item-set name="contact">
+                            <label>contact</label>
+                            <occurrences maximum="1" minimum="0"/>
+                            <items>
+                                <input name="name" type="TextLine">
+                                    <label>Navn</label>
+                                    <custom-text>contentdata/contacts/contact/name</custom-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="mail_address" type="TextLine">
+                                    <label>Postadresse</label>
+                                    <custom-text>contentdata/contacts/contact/mail_address</custom-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="postcode" type="TextLine">
+                                    <label>Postnummer</label>
+                                    <custom-text>contentdata/contacts/contact/postcode</custom-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="postcode_name" type="TextLine">
+                                    <label>Poststed</label>
+                                    <custom-text>contentdata/contacts/contact/postcode_name</custom-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="address" type="TextLine">
+                                    <label>Besøksadresse</label>
+                                    <custom-text>contentdata/contacts/contact/address</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="telephone" type="TextLine">
+                                    <label>Telefon</label>
+                                    <custom-text>contentdata/contacts/contact/telephone</custom-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="telefax" type="TextLine">
+                                    <label>Telefaks</label>
+                                    <custom-text>contentdata/contacts/contact/telefax</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="picturephone" type="TextLine">
+                                    <label>Bildetelefon</label>
+                                    <custom-text>contentdata/contacts/contact/picturephone</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="textphone" type="TextLine">
+                                    <label>Teksttelefon</label>
+                                    <custom-text>contentdata/contacts/contact/textphone</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="emergency_repair" type="TextLine">
+                                    <label>Akuttservicetelefon</label>
+                                    <custom-text>contentdata/contacts/contact/emergency_repair</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="email" type="TextLine">
+                                    <label>E-post</label>
+                                    <custom-text>contentdata/contacts/contact/email</custom-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="hours" type="TextLine">
+                                    <label>Åpningstid</label>
+                                    <custom-text>contentdata/contacts/contact/hours</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="summer_hours" type="TextLine">
+                                    <label>Åpningstid, sommer</label>
+                                    <custom-text>contentdata/contacts/contact/summer_hours</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="telephone_hours" type="TextLine">
+                                    <label>Telefontid</label>
+                                    <custom-text>contentdata/contacts/contact/telephone_hours</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                                <input name="summer_telephone_hours" type="TextLine">
+                                    <label>Telefontid, sommer</label>
+                                    <custom-text>contentdata/contacts/contact/summer_telephone_hours</custom-text>
+                                    <occurrences maximum="1" minimum="0"/>
+                                </input>
+                            </items>
+                        </item-set>
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</content-type>

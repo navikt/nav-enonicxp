@@ -1,0 +1,40 @@
+<content-type>
+    <display-name>nav.lenke-med-ikon</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Lenke">
+            <label>Lenke</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="icon" type="ComboBox">
+                    <label>Ikon</label>
+                    <custom-text>contentdata/icon</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="padlock">Hengelås</option>
+                        <option value="document">Dokument</option>
+                        <option value="application">Søknad</option>
+                    </config>
+                </input>
+                <input name="description" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL</label>
+                    <custom-text>contentdata/url</custom-text>
+                    <help-text>Benytt fullstendig URL. Eksempelvis slik: http://www.nav.no</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

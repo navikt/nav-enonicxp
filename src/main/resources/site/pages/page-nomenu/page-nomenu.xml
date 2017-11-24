@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<page>
+  <display-name>page-nomenu</display-name>
+  <config/>
+  <regions>
+    <region name="region-center"/>
+    <region name="region-east"/>
+    <region name="region-north"/>
+    <region name="region-south"/>
+    <region name="region-west"/>
+    <region name="scripts-region"/>
+  </regions>
+</page>

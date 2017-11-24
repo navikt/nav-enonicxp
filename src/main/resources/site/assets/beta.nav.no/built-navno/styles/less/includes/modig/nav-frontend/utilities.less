@@ -1,0 +1,264 @@
+* {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+
+.visuallyhidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	&.focusable:focus,
+	&.focusable:active {
+		clip: auto;
+		height: auto;
+		margin: 0;
+		overflow: visible;
+		position: static;
+		width: auto;
+	}
+
+}
+
+.muted {
+	color: @gray;
+}
+
+.loud {
+	color: @red;
+}
+
+.illuminated { // I bruk av skjemaveileder + aap
+  background: #fff;
+}
+
+.leading-icon {
+	padding-top: 52px; //plass til ikon på 32px, brukes på skriv til oss
+}
+
+.leading-icon-large {
+  padding-top: 80px; // plass til ikon på 60px, brukes i skjemaveileder-v2
+}
+
+.leading-icon.icon-mail {
+	background: url('@{baseImagePath}img/navno/gfx/forms/melding_graa.png') center 0 no-repeat; // 32px
+	// background: url('@{baseImagePath}img/enonic/gfx/forms/melding_graa.svg') center 0 no-repeat; // 32px
+}
+
+.decorated {
+	text-align: center;
+	margin-bottom: 20px;
+	display: block;
+}
+
+.decorated + .description {
+	// brukt til beskrivelse for temavelgeren (skriv til oss)
+	font-weight: 400;
+	padding-bottom: 30px;
+	margin: 0;
+	border-bottom: 1px solid @gray-lighter;
+}
+
+.decorated:after {
+	border-top: 1px solid #808080;
+	clear: both;
+	content: " ";
+	display: block;
+	margin: 20px auto 0;
+	width: 30px;
+}
+
+// Scroll to top link
+//-------------------
+
+// Show when user has scrolled down a bit.
+// Otherwise it will always show, in some cases when the whole page fits in the screen resolution (desktop/tablet frontpage)
+
+.js .top-link-wrapper.hide-on-pageload {
+	display: none;
+}
+
+div.placeholder {
+
+// TODO!!
+// .placeholder her fører til konflikt med .placeholder()-mixin i bootstrap! Genererer MYE unødvendig CSS.
+// Hver gang mixinen kalles på en input, spyttes alt innafor .placeholder her ut. Derfor div.placeholder som selector (ikke direkte konflikt med mixin).
+
+	margin-bottom: 60px;
+	margin-top: -23px;
+
+	.top-link-wrapper {
+		position: relative;
+		background: transparent;
+		text-align: center;
+
+		a {
+			display: inline-block;
+			cursor: pointer;
+			padding: 8px 34px 8px 18px;
+			text-transform: uppercase;
+			text-decoration: none;
+			font-family: Modus, Arial, Helvetica, sans-serif;
+			font-weight: 600;
+			font-size: 1.14em;
+			border: 1px solid @gray-lighter;
+			background: #fff url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMTVweCIgaGVpZ2h0PSI4cHgiIHZpZXdCb3g9IjAgMCAxNSA4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNSA4IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwb2x5Z29uIGZpbGw9IiMyNzY4QjIiIHBvaW50cz0iNy41LDAgMCw4IDQuOTk4LDggNy41LDUuMDIzIDkuOTk3LDggMTUsOCAiLz4NCjwvc3ZnPg0K) 90% 15px no-repeat;
+			@media (max-width: (@screen-small - 0.01)) {
+				background-position: 85% 15px;
+			}
+
+			&:hover, &:focus, &:active {
+				color: #fff;
+				background: @blue-light url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMTVweCIgaGVpZ2h0PSI4cHgiIHZpZXdCb3g9IjAgMCAxNSA4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNSA4IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwb2x5Z29uIGZpbGw9IiNGRkZGRkYiIHBvaW50cz0iNy41LDAgMCw4IDQuOTk4LDggNy41LDUuMDIzIDkuOTk3LDggMTUsOCAiLz4NCjwvc3ZnPg0K) 90% 15px no-repeat;
+				@media (max-width: (@screen-small - 0.01)) {
+					background-position: 85% 15px !important;
+				}
+			}
+		}
+	}
+	.top-link-wrapper.sticky-top-link {
+		position: fixed;
+		bottom: 0;
+		margin: 0;
+		width: 100%;
+		left: 0;
+		padding: 10px 0;
+		background-color: #f1f1f1;
+		z-index: 10;
+		@media (min-width: @screen-small) {
+			margin-left: 2px;
+			margin-bottom: -1px;
+			padding-bottom: 11px;
+		}
+		a {
+			padding: 0 20px 0 0;
+			border: none;
+			//background: url('@{baseImagePath}img/enonic/gfx/icons/pil_til_topp.svg') right 7px no-repeat;
+			background-position: right 7px;
+			background-color: @gray-lightest;
+
+			&:hover, &:focus, &:active {
+				color: @blue-light;
+				background-color: #f1f1f1;
+				text-decoration: underline;
+				background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMTVweCIgaGVpZ2h0PSI4cHgiIHZpZXdCb3g9IjAgMCAxNSA4IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNSA4IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwb2x5Z29uIGZpbGw9IiMyNzY4QjIiIHBvaW50cz0iNy41LDAgMCw4IDQuOTk4LDggNy41LDUuMDIzIDkuOTk3LDggMTUsOCAiLz4NCjwvc3ZnPg0K);
+			}
+
+			@media (max-width: (@screen-small - 0.01)) {
+				padding: 8px 34px 8px 18px;
+				//background: @gray-lightest url('@{baseImagePath}img/enonic/gfx/icons/pil_til_topp.svg') 90% 14px no-repeat;
+				background-position: 85% 14px !important;
+				border: 1px solid @gray-lighter;
+				-webkit-box-shadow: 0 0 25px 0 @gray-lighter;
+				-moz-box-shadow: 0 0 25px 0 @gray-lighter;
+				box-shadow: 0 0 25px 0 @gray-lighter;
+			}
+		}
+		-webkit-box-shadow: 0 0 25px 0 @gray-lighter;
+		-moz-box-shadow: 0 0 25px 0 @gray-lighter;
+		box-shadow: 0 0 25px 0 @gray-lighter;
+
+		@media (max-width: (@screen-small - 0.01)) {
+			background-color: transparent;
+			padding: 0;
+			-webkit-box-shadow: none;
+			-moz-box-shadow: none;
+			box-shadow: none;
+		}
+	}
+}
+
+/* Hide from both screenreaders and browsers: h5bp.com/u */
+.hidden, .hide {
+	display: none !important;
+	visibility: hidden;
+}
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible {
+	visibility: hidden;
+}
+
+.center-block {
+	.center-block();
+}
+
+// Alignment
+//.text-left           { text-align: left; }
+//.text-right          { text-align: right; }
+.text-center {
+	text-align: center;
+}
+
+/* Contain floats: h5bp.com/q */
+.group:before, .group:after {
+	content: "";
+	display: table;
+}
+
+.group:after {
+	clear: both;
+}
+
+
+
+//
+// Utility classes fra Modig
+// --------------------------------------------------
+
+// Quick floats
+.pull-right {
+	float: right;
+}
+
+.pull-left {
+	float: left;
+}
+
+// Toggling content
+
+.show {
+	display: block;
+}
+
+
+// For Affix plugin
+.affix {
+	position: fixed;
+}
+
+.netto {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.nettotopp {
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+}
+
+.nettobunn {
+	margin-bottom: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+.vekk {
+	position: absolute;
+	left: -3000px;
+	clip: rect(1px, 1px, 1px, 1px);
+	padding: 0;
+	border: 0;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	z-index: -1000;
+}

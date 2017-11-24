@@ -1,0 +1,68 @@
+.share-social-media {
+	text-align: center;
+	margin-top: 3rem;
+}
+
+.share-social-media-pills {
+	list-style-type: none;
+	margin: 0; 
+	padding: 0; 
+
+	li {
+		padding: 0; 
+		margin: 0; 
+		margin-right: 1rem;
+		display: inline-block;
+	}
+
+	li:last-child {
+		margin-right: 0; 
+	}
+}
+
+.share-container {
+	padding: .5rem;
+	display: inline-block;
+}
+
+.share-social {
+	display: inline-block;
+	width: 2rem;
+	height: 2rem;
+	text-indent: -9999px; 
+	border-radius: 50%; 
+	border: 1px solid @link-color;
+	background-position: center center;
+	background-repeat: no-repeat;
+
+	&:hover {
+		background-color: @link-color;
+	}
+}
+
+.share-twitter {
+	background-image: url('@{baseImagePath}img/navno/gfx/icons/share-twitter.png');
+	background-size: 19px 16px;
+
+	&:hover {
+		background-image: url('@{baseImagePath}img/navno/gfx/icons/share-twitter-hover.png');
+	}
+}
+
+.share-facebook {
+	background-image: url('@{baseImagePath}img/navno/gfx/icons/share-facebook.png');
+	background-size: 9px 18px;
+
+	&:hover {
+		background-image: url('@{baseImagePath}img/navno/gfx/icons/share-facebook-hover.png');
+	}	
+}
+
+.share-linkedin {
+	background-image: url('@{baseImagePath}img/navno/gfx/icons/share-linkedin.png');
+	background-size: 16px 16px;
+
+	&:hover {
+		background-image: url('@{baseImagePath}img/navno/gfx/icons/share-linkedin-hover.png');
+	}	
+}

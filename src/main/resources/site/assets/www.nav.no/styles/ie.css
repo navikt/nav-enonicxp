@@ -1,0 +1,61 @@
+/*******************************************
+*
+* Special styles for IE, this stylesheet will only be visible for IE clients
+*
+*******************************************/
+
+select, input, textarea { font-size: 0.9em;}
+.form-details .submit input.goback {font-size:1em;}
+samp { font-size: 1em; }
+
+#NAVheaderContainer #NAVmenu img  { float: left; }
+#NAVpersonalizedNavigation { height: 45px; }
+#NAVpageImage { height: 12.8em; }
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol li div { background-image: url('../bilder/global/none.gif'); }
+#NAVtjenesterHeaderContainer { height: 3em; }
+.NAVEDITable select { margin-bottom: 1px; }
+#topBannerAktuelt { z-index: 2000; }
+#topBannerAktuelt BR { line-height: 21px; }
+
+/* #NAVpageContainer #NAVrelevantContentContainer { width: 18%; } */
+#frameworkFrontpage #NAVpageContainer #NAVrelevantContentContainer  {width:20%}
+.leftColumnBanner .imageContainer { margin-left: 12px; }
+
+/******************************
+* Ny forside 2010
+********************************/
+/*Kun ie6 og 7*/
+*:first-child+html #NAVquicklinksContainer,
+* html #NAVquicklinksContainer {margin-right:0;}
+
+*:first-child+html #NAVquicklinksContainer .linkbox {width:47%;}
+* html #NAVquicklinksContainer .linkbox {width:46%;}
+
+*:first-child+html #frameworkFrontpage #NAVpageContainer #NAVrelevantContentContainer {float:right;width:20%}
+* html #frameworkFrontpage #NAVpageContainer #NAVrelevantContentContainer {float:right;width:19%;overflow:hidden;}
+
+/*********************************************************
+*	Skjemaveileder
+**********************************************************/
+#NAVvedleggsveilederContainer .NAVskjemaBakgrunn { zoom: 1; }
+#NAVvedleggsveilederContainer .NAVskjemaIndre { zoom: 1; }
+
+* html .form-details .getresources li:after {content:".";display:block; height:0;clear:both;visibility:hidden; }
+* html .form-details .getresources li {display:inline-block;}
+* html .form-details .getresources li {display:block;}
+
+* html .form-details .getresources li input.lastNedLenke {text-align:left;font-size:1em;padding:0 !important;padding-right:2px !important;cursor:pointer;overflow:visible}
+*:first-child+html .form-details input.lastNedLenke {text-align:left;font-size:1em;padding:0 !important;cursor:pointer;display:inline-block;overflow:visible}
+.shipping-guidelines h2 {margin:0;padding-bottom:30px}
+* html .skjema2011form-details .NAVskjemaIndre a#downloadComplaintForm { padding: 2px 80px;}
+.skjema2011form-details .NAVskjemaBakgrunn { height: 1%; }
+.skjema2011form-details input#downloadFirstPage { font-size: 12px;}
+div#categoryChosen span.categoryChosen { float: left; width: 300px; }
+div#senderChosen span.navunitlabel { float: left; width: 75px; }
+div#senderChosen span#navunitchosenorg,
+div#senderChosen span#navunitchosenmultiple { float: left; width: 400px; }
+/* Knapp for å endre NAV-enhet hhv. førsteside arb.giver og klage på vedtak */
+.skjema2011form-details .navUnitChangeButton { margin-left: 100px; }
+.skjema2011form-details .navUnitChangeButton.ie-klage { margin-left: 98px; }
+* html .skjema2011form-details .navUnitChangeButton { margin-left: 84px;}
+* html .skjema2011form-details .navUnitChangeButton.ie-klage { margin-left: 60px; }

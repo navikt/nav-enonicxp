@@ -1,0 +1,81 @@
+<content-type>
+    <display-name>ufr.temaintro</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Kort intro">
+            <label>Kort intro</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="preface" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Ikon og stikkord">
+            <label>Ikon og stikkord</label>
+            <items>
+                <input name="icon" type="ImageSelector">
+                    <label>Ikon</label>
+                    <custom-text>contentdata/icon</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="TextArea">
+                    <label>Kort beskrivende tekst</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="svgstring" type="TextLine">
+                    <label>SVG i minimert tekst (base64)</label>
+                    <custom-text>contentdata/svgstring</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Brødtekst (mer utfyllende)">
+            <label>Brødtekst (mer utfyllende)</label>
+            <items>
+                <input name="subheading" type="TextLine">
+                    <label>Undertittel</label>
+                    <custom-text>contentdata/subheading</custom-text>
+                    <help-text>Tittel for ekspandert brødtekst</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="text" type="TextArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="links">
+            <label>Lenker - maks tre stk</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="linktext" type="TextLine">
+                    <label>Lenktekst</label>
+                    <custom-text>linktext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="contentlink" type="ContentSelector">
+                    <label>Innhold det lenkes til</label>
+                    <custom-text>contentlink</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:ufr.artikkel</allow-content-type>
+                        <allow-content-type>no.nav.navno:ufr.faktaark</allow-content-type>
+                        <allow-content-type>no.nav.navno:ufr.sidebeskrivelse</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

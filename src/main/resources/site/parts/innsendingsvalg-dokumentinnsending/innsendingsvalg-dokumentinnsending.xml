@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>innsendingsvalg-dokumentinnsending</display-name>
+  <config>
+    <input name="dokumentinnsending" type="ContentSelector">
+        <label>dokumentinnsending</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="skjemaveilederFinnAdresse" type="ContentSelector">
+        <label>skjemaveilederFinnAdresse</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

@@ -1,0 +1,289 @@
+/* DETTE STILARKET ER TILPASSET NAV */
+
+/*datepicker*/
+/* Main Style Sheet for jQuery UI date picker */
+.ui-datepicker-div, .ui-datepicker-inline, #ui-datepicker-div {
+	/*resets*/margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none;
+	font-family: Verdana,Arial,sans-serif;
+	background: #ffffff url('../bilder/ui-gfx/ffffff_40x100_textures_01_flat_75.png') 0 0 repeat-x;
+	font-size: 73%;
+	border: 2px solid #aaaaaa;
+	width: 15.5em;
+	padding: 2.5em .5em .5em .5em;
+	position: relative;
+}
+
+.ui-datepicker-trigger, img{
+	vertical-align: bottom;
+}
+
+.ui-datepicker-div, #ui-datepicker-div {
+	z-index: 9999; /*must have*/
+	display: none;
+   padding-right: 6px;
+}
+.ui-datepicker-days-cell {
+   width: 20px; 
+}
+.ui-datepicker-inline {
+	float: left;
+	display: block;
+}
+.ui-datepicker-control {
+	display: none;
+}
+.ui-datepicker-current {
+	display: none;
+}
+.ui-datepicker-next, .ui-datepicker-prev {
+	position: absolute;
+	left: 6px;
+	top: .7em;
+	background: #e6e6e6 url('../bilder/ui-gfx/e6e6e6_40x100_textures_02_glass_75.png') 0 50% repeat-x;
+}
+.ui-datepicker-next {
+	left: 185px;
+}
+.ui-datepicker-next:hover, .ui-datepicker-prev:hover {
+	background: #dadada url('../bilder/ui-gfx/dadada_40x100_textures_02_glass_75.png') 0 50% repeat-x;
+}
+.ui-datepicker-next a, .ui-datepicker-prev a {
+	text-indent: -999999px;
+	width: 1.3em;
+	height: 1.4em;
+	display: block;
+	font-size: 9pt;
+	background: url('../bilder/ui-gfx/888888_7x7_arrow_left.gif') 50% 50% no-repeat;
+	border: 1px solid #d3d3d3;
+	cursor: pointer;
+}
+.ui-datepicker-next a {
+	background: url('../bilder/ui-gfx/888888_7x7_arrow_right.gif') 50% 50% no-repeat;
+}
+.ui-datepicker-prev a:hover {
+	background: url('../bilder/ui-gfx/454545_7x7_arrow_left.gif') 50% 50% no-repeat;
+}
+.ui-datepicker-next a:hover {
+	background: url('../bilder/ui-gfx/454545_7x7_arrow_right.gif') 50% 50% no-repeat;
+}
+.ui-datepicker-prev a:active {
+	background: url('../bilder/ui-gfx/454545_7x7_arrow_left.gif') 50% 50% no-repeat;
+}
+.ui-datepicker-next a:active {
+	background: url('../bilder/ui-gfx/454545_7x7_arrow_right.gif') 50% 50% no-repeat;
+}
+.ui-datepicker-header select {
+	border: 1px solid #d3d3d3;
+	color: #555555;
+	background: #e6e6e6;
+	font-size: 9pt ;
+	line-height: 1.4em;
+	position: absolute;
+	top: .5em;
+	margin: 0 !important;
+}
+.ui-datepicker-header option:focus, .ui-datepicker-header option:hover {
+	background: #dadada;
+}
+.ui-datepicker-header select.ui-datepicker-new-month {
+	width: 7em;
+	left: 30px;
+}
+.ui-datepicker-header select.ui-datepicker-new-year {
+	width: 5em;
+	left: 119px;
+}
+table.ui-datepicker {
+	margin-top: 10px;
+	width: 200px;
+	text-align: right;
+}
+table.ui-datepicker td a {
+	padding: .1em .3em .1em 0;
+	display: block;
+	color: #555555;
+	background: #e6e6e6 url('../bilder/ui-gfx/e6e6e6_40x100_textures_02_glass_75.png') 0 50% repeat-x;
+	cursor: pointer;
+	border: 1px solid #ffffff;
+	font-size: 9pt;
+}
+td.ui-datepicker-week-col {
+   font-size: 9pt;
+   text-align: center;
+}
+table.ui-datepicker td a:hover {
+	border: 1px solid #999999;
+	color: #212121;
+	background: #dadada url('../bilder/ui-gfx/dadada_40x100_textures_02_glass_75.png') 0 50% repeat-x;
+}
+table.ui-datepicker td a:active {
+	border: 1px solid #aaaaaa;
+	color: #212121;
+	background: #ffffff url('../bilder/ui-gfx/ffffff_40x100_textures_02_glass_65.png') 0 50% repeat-x;
+}
+table.ui-datepicker .ui-datepicker-title-row td {
+	padding: 0.6em 0 0.2em 0;
+	text-align: center;
+	font-size: 9pt;
+	color: #222222;
+	text-transform: uppercase;
+   width: 20px;
+}
+table.ui-datepicker .ui-datepicker-title-row td a {
+	color: #222222;
+}
+.ui-datepicker-cover {
+	display: none;
+	display/**/: block;
+	position: absolute;
+	z-index: -1;
+	filter: mask();
+	top: -4px;
+	left: -4px;
+	width: 193px;
+	height: 200px;
+}
+
+
+
+
+/*
+Generic ThemeRoller Classes
+>> Make your jQuery Components ThemeRoller-Compatible!
+*/
+
+/*component global class*/
+.ui-component {
+	/*resets*/margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 73%; list-style: none;
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 73%;
+}
+/*component content styles*/
+.ui-component-content {
+	border: 1px solid #aaaaaa;
+	background: #ffffff url('../bilder/ui-gfx/ffffff_40x100_textures_01_flat_75.png') 0 0 repeat-x;
+	color: #222222;
+}
+.ui-component-content a {
+	color: #222222;
+	text-decoration: underline;
+}
+/*component states*/
+.ui-default-state {
+	border: 1px solid #d3d3d3;
+	background: #e6e6e6 url('../bilder/ui-gfx/e6e6e6_40x100_textures_02_glass_75.png') 0 50% repeat-x;
+	font-weight: normal;
+	color: #555555 !important;
+}
+.ui-default-state a {
+	color: #555555;
+}
+.ui-default-state:hover, .ui-hover-state {
+	border: 1px solid #999999;
+	background: #dadada url('../bilder/ui-gfx/dadada_40x100_textures_02_glass_75.png') 0 50% repeat-x;
+	font-weight: normal;
+	color: #212121 !important;
+}
+.ui-hover-state a {
+	color: #212121;
+}
+.ui-default-state:active, .ui-active-state {
+	border: 1px solid #aaaaaa;
+	background: #ffffff url('../bilder/ui-gfx/ffffff_40x100_textures_02_glass_65.png') 0 50% repeat-x;
+	font-weight: normal;
+	color: #212121 !important;
+	outline: none;
+}
+.ui-active-state a {
+	color: #212121;
+	outline: none;
+}
+/*icons*/
+.ui-arrow-right-default {background: url('../bilder/ui-gfx/888888_7x7_arrow_right.gif') no-repeat 50% 50%;}
+.ui-arrow-right-default:hover, .ui-arrow-right-hover {background: url('../bilder/ui-gfx/454545_7x7_arrow_right.gif') no-repeat 50% 50%;}
+.ui-arrow-right-default:active, .ui-arrow-right-active {background: url('../bilder/ui-gfx/454545_7x7_arrow_right.gif') no-repeat 50% 50%;}
+.ui-arrow-right-content {background: url('../bilder/ui-gfx/222222_7x7_arrow_right.gif') no-repeat 50% 50%;}
+
+.ui-arrow-left-default {background: url('../bilder/ui-gfx/888888_7x7_arrow_left.gif') no-repeat 50% 50%;}
+.ui-arrow-left-default:hover, .ui-arrow-left-hover {background: url('../bilder/ui-gfx/454545_7x7_arrow_left.gif') no-repeat 50% 50%;}
+.ui-arrow-left-default:active, .ui-arrow-left-active {background: url('../bilder/ui-gfx/454545_7x7_arrow_left.gif') no-repeat 50% 50%;}
+.ui-arrow-left-content {background: url('../bilder/ui-gfx/222222_7x7_arrow_left.gif') no-repeat 50% 50%;}
+
+.ui-arrow-down-default {background: url('../bilder/ui-gfx/888888_7x7_arrow_down.gif') no-repeat 50% 50%;}
+.ui-arrow-down-default:hover, .ui-arrow-down-hover {background: url('../bilder/ui-gfx/454545_7x7_arrow_down.gif') no-repeat 50% 50%;}
+.ui-arrow-down-default:active, .ui-arrow-down-active {background: url('../bilder/ui-gfx/454545_7x7_arrow_down.gif') no-repeat 50% 50%;}
+.ui-arrow-down-content {background: url('../bilder/ui-gfx/222222_7x7_arrow_down.gif') no-repeat 50% 50%;}
+
+.ui-arrow-up-default {background: url('../bilder/ui-gfx/888888_7x7_arrow_up.gif') no-repeat 50% 50%;}
+.ui-arrow-up-default:hover, .ui-arrow-up-hover {background: url('../bilder/ui-gfx/454545_7x7_arrow_up.gif') no-repeat 50% 50%;}
+.ui-arrow-up-default:active, .ui-arrow-up-active {background: url('../bilder/ui-gfx/454545_7x7_arrow_up.gif') no-repeat 50% 50%;}
+.ui-arrow-up-content {background: url('../bilder/ui-gfx/222222_7x7_arrow_up.gif') no-repeat 50% 50%;}
+
+.ui-close-default {background: url('../bilder/ui-gfx/888888_11x11_icon_close.gif') no-repeat 50% 50%;}
+.ui-close-default:hover, .ui-close-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_close.gif') no-repeat 50% 50%;}
+.ui-close-default:active, .ui-close-active {background: url('../bilder/ui-gfx/454545_11x11_icon_close.gif') no-repeat 50% 50%;}
+.ui-close-content {background: url('../bilder/ui-gfx/454545_11x11_icon_close.gif') no-repeat 50% 50%;}
+
+.ui-folder-closed-default {background: url('../bilder/ui-gfx/888888_11x11_icon_folder_closed.gif') no-repeat 50% 50%;}
+.ui-folder-closed-default:hover, .ui-folder-closed-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_folder_closed.gif') no-repeat 50% 50%;}
+.ui-folder-closed-default:active, .ui-folder-closed-active {background: url('../bilder/ui-gfx/454545_11x11_icon_folder_closed.gif') no-repeat 50% 50%;}
+.ui-folder-closed-content {background: url('../bilder/ui-gfx/888888_11x11_icon_folder_closed.gif') no-repeat 50% 50%;}
+
+.ui-folder-open-default {background: url('../bilder/ui-gfx/888888_11x11_icon_folder_open.gif') no-repeat 50% 50%;}
+.ui-folder-open-default:hover, .ui-folder-open-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_folder_open.gif') no-repeat 50% 50%;}
+.ui-folder-open-default:active, .ui-folder-open-active {background: url('../bilder/ui-gfx/454545_11x11_icon_folder_open.gif') no-repeat 50% 50%;}
+.ui-folder-open-content {background: url('../bilder/ui-gfx/454545_11x11_icon_folder_open.gif') no-repeat 50% 50%;}
+
+.ui-doc-default {background: url('../bilder/ui-gfx/888888_11x11_icon_doc.gif') no-repeat 50% 50%;}
+.ui-doc-default:hover, .ui-doc-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_doc.gif') no-repeat 50% 50%;}
+.ui-doc-default:active, .ui-doc-active {background: url('../bilder/ui-gfx/454545_11x11_icon_doc.gif') no-repeat 50% 50%;}
+.ui-doc-content {background: url('../bilder/ui-gfx/222222_11x11_icon_doc.gif') no-repeat 50% 50%;}
+
+.ui-arrows-leftright-default {background: url('../bilder/ui-gfx/888888_11x11_icon_arrows_leftright.gif') no-repeat 50% 50%;}
+.ui-arrows-leftright-default:hover, .ui-arrows-leftright-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_arrows_leftright.gif') no-repeat 50% 50%;}
+.ui-arrows-leftright-default:active, .ui-arrows-leftright-active {background: url('../bilder/ui-gfx/454545_11x11_icon_arrows_leftright.gif') no-repeat 50% 50%;}
+.ui-arrows-leftright-content {background: url('../bilder/ui-gfx/222222_11x11_icon_arrows_leftright.gif') no-repeat 50% 50%;}
+
+.ui-arrows-updown-default {background: url('../bilder/ui-gfx/888888_11x11_icon_arrows_updown.gif') no-repeat 50% 50%;}
+.ui-arrows-updown-default:hover, .ui-arrows-updown-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_arrows_updown.gif') no-repeat 50% 50%;}
+.ui-arrows-updown-default:active, .ui-arrows-updown-active {background: url('../bilder/ui-gfx/454545_11x11_icon_arrows_updown.gif') no-repeat 50% 50%;}
+.ui-arrows-updown-content {background: url('../bilder/ui-gfx/222222_11x11_icon_arrows_updown.gif') no-repeat 50% 50%;}
+
+.ui-minus-default {background: url('../bilder/ui-gfx/888888_11x11_icon_minus.gif') no-repeat 50% 50%;}
+.ui-minus-default:hover, .ui-minus-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_minus.gif') no-repeat 50% 50%;}
+.ui-minus-default:active, .ui-minus-active {background: url('../bilder/ui-gfx/454545_11x11_icon_minus.gif') no-repeat 50% 50%;}
+.ui-minus-content {background: url('../bilder/ui-gfx/222222_11x11_icon_minus.gif') no-repeat 50% 50%;}
+
+.ui-plus-default {background: url('../bilder/ui-gfx/888888_11x11_icon_plus.gif') no-repeat 50% 50%;}
+.ui-plus-default:hover, .ui-plus-hover {background: url('../bilder/ui-gfx/454545_11x11_icon_plus.gif') no-repeat 50% 50%;}
+.ui-plus-default:active, .ui-plus-active {background: url('../bilder/ui-gfx/454545_11x11_icon_plus.gif') no-repeat 50% 50%;}
+.ui-plus-content {background: url('../bilder/ui-gfx/222222_11x11_icon_plus.gif') no-repeat 50% 50%;}
+
+/*hidden elements*/
+.ui-hidden {
+	display: none;/* for accessible hiding: position: absolute; left: -99999999px*/;
+}
+.ui-accessible-hidden {
+	 position: absolute; left: -99999999px;
+}
+/*reset styles*/
+.ui-reset {
+	/*resets*/margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none;
+}
+/*clearfix class*/
+.ui-clearfix:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+.ui-clearfix {display: inline-block;}
+/* Hides from IE-mac \*/
+* html .ui-clearfix {height: 1%;}
+.ui-clearfix {display: block;}
+/* End hide from IE-mac */
+
+/* Note: for resizable styles, use the styles listed above in the dialog section */
+
+

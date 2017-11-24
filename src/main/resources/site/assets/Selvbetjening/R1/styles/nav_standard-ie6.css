@@ -1,0 +1,93 @@
+/*******************************************
+*
+* Special styles for IE, this stylesheet will only be visible for IE clients
+*
+*******************************************/
+
+HEADER, FOOTER, SECTION, NAV, ASIDE, ASIDE DIV      { zoom: 1; }
+ASIDE                                               { position: relative; }
+
+select, input, textarea { font-size: 0.9em;}
+samp { font-size: 1em; }
+
+.faner LI { padding-top: 0; }
+
+#NAVheaderContainer #NAVmenu img  { float: left; }
+#NAVpersonalizedNavigation        { height: 45px; }
+#NAVpageImage                     { height: 12.8em; }
+#NAVpageContainer                 { height: 100%; }
+
+#NAVsubmenuContainer                                  { margin-top: -10px; }
+#NAVsubmenuContainer UL.NAVsubmenu OL                 { background: none; margin-left: 0; }
+#NAVsubmenuContainer UL.NAVsubmenu LI OL LI OL LI DIV { background-image: none; }
+#NAVsubmenuContainer .NAVmenuTopLine DIV.tv           { background-image: none; }
+#NAVsubmenuContainer .NAVmenuTopLine DIV.tm           { background-image: none; }
+#NAVsubmenuContainer .NAVmenuTopLine DIV.th           { background-image: none; }
+#NAVsubmenuContainer .NAVmenuBottomLine DIV.bv        { background-image: none; }
+#NAVsubmenuContainer .NAVmenuBottomLine DIV.bm        { background-image: none; }
+#NAVsubmenuContainer .NAVmenuBottomLine DIV.bh        { background-image: none; }
+#NAVsubmenuContainer .NAVfirstMenuItem A.NAVlevelOne  { background-image: url(/_public/www.nav.no/bilder/venstremeny/menypil-hoyre.gif); }
+#NAVsubmenuContainer .NAVselected A.NAVlevelOne       { background: #670202 url( /_public/www.nav.no/bilder/venstremeny/menypil-ned.gif ) no-repeat 9px 17px; }
+#NAVsubmenuContainer A.NAVlevelOne                    { background: #a60303 url( /_public/www.nav.no/bilder/venstremeny/menypil-hoyre.gif ) no-repeat 12px 14px; }
+#NAVsubmenuContainer .NAVlastMenuItem A.NAVlevelOne   { background: #a60303 url( /_public/www.nav.no/bilder/venstremeny/menypil-hoyre.gif ) no-repeat 12px 14px; }
+#NAVsubmenuContainer .NAVlastMenuItem A.NAVlevelOne:hover { background: #8c1310 url( /_public/www.nav.no/bilder/venstremeny/menypil-hoyre.gif ) no-repeat 12px 14px; }
+
+#NAVsubmenuContainer .NAVselected OL .NAVselected DIV A    { color: #c30000; }
+#NAVsubmenuContainer .NAVselected OL .NAVselected DIV * A  { color: #000000; font-weight: normal; }
+
+#NAVtjenesterHeaderContainer { height: 3em; background: url( /_public/www.nav.no/bilder/dittnav/skraa.gif ) no-repeat right top; }
+#NAVheaderDot                { background: url( /_public/www.nav.no/bilder/dittnav/headerbackground2.gif ) repeat-x bottom; padding-bottom: 1px; height: 60px; }
+
+.NAVEDITable select              { margin-bottom: 1px; }
+#NAVmainQuicklinksContainerOuter { padding: 5px 0 4px; }
+#topBannerAktuelt                { z-index: 2000; }
+#topBannerAktuelt BR             { line-height: 21px; }
+
+#NAVmainQuicklinksContainer .quicklinksBox     { margin: 0 1% 2% 2%!important; }
+#NAVmainQuicklinksContainer .quicklinksBox H5  { width: 95%; }
+#NAVmainQuicklinksContainer .quicklinksBox DIV { width: 98%; }
+#NAVmainQuicklinksContainer .quicklinksBox UL  { width: 98%; }
+
+#NAVquicklinksContainer { width: 76%; }
+.quicklinksBox          { width: 22%; }
+
+#NAVpageContainer #NAVcontentContainer         { position: relative; }
+#NAVpageContainer #NAVrelevantContentContainer { width: 18%; }
+
+.leftColumnBanner .imageContainer { margin-left: 12px; }
+
+
+
+/*********************************************************
+*	Skjemaveileder
+**********************************************************/
+
+#NAVvedleggsveilederContainer .NAVskjemaBakgrunn { zoom: 1; }
+#NAVvedleggsveilederContainer .NAVskjemaIndre    { zoom: 1; }
+.form-details input#lastNedToppark {text-align:left;font-size:1em;padding:0 !important;cursor:pointer;width:12em}
+.shipping-guidelines h2            {margin:0;padding-bottom:30px}
+
+
+/********************************************
+*	Logginn-boks.
+********************************************/
+
+.loginContainerTop, .loginContainerGrayTop, .loginContainerGrayMain, .loginContainerMain, .logginnRad { width: 100% !important;}
+.logginnContainer { overflow: auto !important;}
+.logginnForm      { width: 330px; }
+.NAVCenterSkygge  { display: none; }
+.logginnForm  .input_container {width: 100% !important;}
+
+
+/*********************************************
+* Breadcrumb
+**********************************************/
+
+#alternativebreadcrumb ul, #alternativebreadcrumb li.right {background: url( /_public/www.nav.no/bilder/breadcrumb/meny-brodsmule-bg-solv.gif ) repeat; float:left; width:100%; height: 44px;}
+#alternativebreadcrumb ul li {background: url( /_public/www.nav.no/bilder/breadcrumb/meny-brodsmule-bg-rod.gif ) repeat; float: left; width: 150px;}
+#alternativebreadcrumb .sok_breadcrumb {overflow: hidden; height: 44px;}
+#alternativebreadcrumb .sok_breadcrumb input {width: 20em;}
+#alternativebreadcrumb .hovednavigasjon #sokbtn {margin-bottom: 3px;}
+#alternativebreadcrumb li.right {float: right;  width: auto;}
+
+

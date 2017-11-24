@@ -1,0 +1,57 @@
+<content-type>
+    <display-name>nav.sidebeskrivelse</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Sidebeskrivelse">
+            <label>Sidebeskrivelse</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="TextArea">
+                    <label>Beskrivelse</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Relatert innhold">
+            <label>Relatert innhold</label>
+            <items>
+                <input name="shortcuts" type="ContentSelector">
+                    <label>Snarveier</label>
+                    <custom-text>contentdata/shortcuts</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                        <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
+                        <allow-content-type>no.nav.navno:nav.snarvei</allow-content-type>
+                        <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Andre språkversjoner">
+            <label>Andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Språkversjoner av dette innholdet</label>
+                    <custom-text>contentdata/languages</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:nav.sidebeskrivelse</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

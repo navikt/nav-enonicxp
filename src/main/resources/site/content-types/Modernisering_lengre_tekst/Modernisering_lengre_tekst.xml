@@ -1,0 +1,24 @@
+<content-type>
+    <display-name>Modernisering_lengre_tekst</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Lengre tekst">
+            <label>Lengre tekst</label>
+            <items>
+                <input name="string-key" type="TextLine">
+                    <label>Nøkkel</label>
+                    <custom-text>contentdata/string-key</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Tekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

@@ -1,0 +1,78 @@
+<content-type>
+    <display-name>Innsendingsveileder_velg_skjema</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Beskrivende informasjon">
+            <label>Beskrivende informasjon</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="HtmlArea">
+                    <label>Kort beskrivelse</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Lenke til mer informasjon">
+            <label>Lenke til mer informasjon</label>
+            <items>
+                <input name="info" type="ContentSelector">
+                    <label>Lenke til faktaark eller artikkel</label>
+                    <custom-text>contentdata/info</custom-text>
+                    <help-text>Velg bare én artikkel eller ett faktaark</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                        <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                    </config>
+                </input>
+                <input name="info-text" type="TextLine">
+                    <label>Lenketekst (overskriver innholdstittel)</label>
+                    <custom-text>contentdata/info-text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Lenke til skjema">
+            <label>Lenke til skjema</label>
+            <items>
+                <input name="form" type="ContentSelector">
+                    <label>Skjema</label>
+                    <custom-text>contentdata/form</custom-text>
+                    <help-text>Velg bare et skjema</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                    </config>
+                </input>
+                <input name="form-text" type="TextLine">
+                    <label>Lenketekst (overskriver skjematittel)</label>
+                    <custom-text>contentdata/form-text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Lenke til annen side">
+            <label>Lenke til annen side</label>
+            <items>
+                <input name="pageid" type="TextLine">
+                    <label>Side-ID (for lenke til menypunkt)</label>
+                    <custom-text>contentdata/pageid</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="pageid-text" type="TextLine">
+                    <label>Lenketekst</label>
+                    <custom-text>contentdata/pageid-text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

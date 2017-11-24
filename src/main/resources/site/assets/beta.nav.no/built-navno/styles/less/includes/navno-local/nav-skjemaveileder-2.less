@@ -1,0 +1,579 @@
+// ---------------------------------------
+// Skjemaveileder 2.0
+//
+// ---------------------------------------
+
+
+.block-row {
+  border-top: 1px solid @gray-lighter;
+  &.spaceous {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  .maincontent {
+    padding-top: 40px;
+  }
+}
+
+.page-head + .block-row {
+  margin-top: 30px; // hack! Her bør overliggende H1 ha margin-bottom i stedet (men skal ikke alltid ha det)
+}
+
+.block-row {
+  .block-row:first-of-type {
+    border-top: none; // på siden for velg vedlegg blir det ellers dobbel border. Hack.
+  }
+}
+
+header.decorated {
+  .pre-heading {
+    // addon for tilfeller hvor .decorated brukes på header, kun for skjemaveileder?
+    display: block;
+    margin-bottom: -20px; // trekker selve overskrifta litt opp
+    margin-top: -5px;
+    text-transform: uppercase;
+    font-size: @rem-as-14px;
+    font-family: @font-family-modus;
+  }
+
+  .heading {
+    margin-bottom: 20px; // samme margin som overskrifter som har .decorated.
+  }
+
+  .following-heading {
+    display: block;
+  }
+}
+
+//
+// Flyttes:
+//
+
+.input-spinner { // snurrepipp ved siden av postnummerfelt (der poststed skal sprette opp)
+  background: url('@{baseImagePath}img/navno/gfx/ajaxloader/loader_graa_16.gif') center right no-repeat;
+  display:inline-block;
+  min-width:2rem;
+  min-height:1rem;
+
+}
+
+
+
+a.normal-text {
+  color: @text-color;
+  text-decoration: none;
+}
+
+.knapp {
+  display: inline-block;
+  padding: .5rem 1rem; // Lokal overstyring for nav.no. Padding ca tilsvarende "liten". Blir større på større flate, ref media query nedenfor.
+}
+
+.label {
+  font-family: @font-family-sans-serif;
+  font-weight: 600;
+  text-transform: none;
+  margin: 0;
+}
+
+.fake-link {
+  // knapp som ser ut som lenke, f.eks "nedtonet" valg for "jeg vil sende i posten"
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  background: none;
+  color: @link-color;
+  cursor: pointer;
+  outline: none;
+  text-decoration: underline;
+  &:focus {
+    outline: thin dotted;
+  }
+}
+
+.standalone-link {
+  text-decoration: none;
+  &:hover, &:focus {
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: @screen-small) {
+  .page-head + .block-row {
+    margin-top: 60px;
+  }
+  .knapp {
+    padding: 8px 40px;
+  }
+}
+
+// ---------------------------------------
+//
+//  Mobile first:
+// ---------------------------------------
+
+.forms-list {
+  article {
+    border-bottom: 1px solid @gray-lighter;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    &:last-of-type {
+      border-bottom: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+//
+// Velg skjema
+//
+.no-js {
+  .truncate-wrapper .js-truncated-text {
+    display: none;
+  }
+  .toggle-truncation {
+    display: none;
+  }
+}
+
+.js {
+  .truncate-wrapper {
+    .full-text {
+      display: none;
+    }
+    &.js-full-text {
+      .full-text {
+        display: block;
+      }
+      .truncated-text {
+        display: none;
+      }
+    }
+
+  }
+
+  .truncated-text, .full-text {
+    margin-bottom: 30px;
+
+  }
+
+}
+
+// .js
+
+//
+// Velg vedlegg
+//
+
+.attachment {
+  padding: 40px 0 40px; // "boks"
+  position: relative;
+  .flipp {
+    text-decoration: none;
+    display: block;
+    position: absolute;
+    top: -4px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 64px;
+    height: 0;
+    border-style: solid;
+    border-color: transparent transparent #a3a3a3 transparent;
+    border-width: 0 2px 3px 2px;
+    &:before {
+      content: "";
+      color: #fff;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      border-top: 30px solid #cccccc;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+
+    }
+    &:after {
+      content: "+";
+      font-weight: 700;
+      display: block;
+      width: auto;
+      position: absolute;
+      top: 0;
+      left: 26px;
+      color: #fff;
+    }
+
+    &:focus:before {
+      border-top: 30px solid @blue-dark;
+    }
+
+  }
+
+  .flipp.open {
+    &:before {
+      border-top: 30px solid @red;
+    }
+    &:after {
+      content: "\2212"; // tankestrek
+      left: 26px;
+    }
+  }
+
+}
+
+.attachment-wrapper:hover {
+  .flipp:before,
+  .flipp.open:before {
+    border-top: 30px solid @blue-dark; // Flipp skal være blå når :hover på hele blokka (.attachment)
+  }
+}
+
+.js .attachment .js-collapsed {
+  display: none;
+}
+
+.select-form-language {
+  label {
+    font-weight: 600;
+    padding-right: 1rem;
+  }
+}
+
+//
+// Last ned
+//
+
+.numbers { // brukes på <ol>
+  padding-left: 0;
+  margin-left: 0;
+  list-style: none;
+  counter-reset: li;
+
+  > li:before {
+    font-family: @font-family-modus;
+    font-weight: 800; // modus extra bold
+    font-size: @rem-as-18px;
+    content: counter(li);
+    counter-increment: li;
+    position: absolute;
+    left: 0;
+    top: 46px;
+    display: block;
+    height: @rem-as-30px;
+    width: @rem-as-30px;
+    padding: .35rem .2rem .05rem; // vertikal midtstilling. Trikses til slik i stedet for med line-height (som ikke funker like bra overalt)
+    border-radius: @rem-as-30px;
+    background: #000;
+    text-align: center;
+    color: #fff;
+
+  }
+
+  > li {
+
+    position: relative;
+    padding: 50px 0 50px 90px;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid @gray-lighter;
+    }
+    &.download-container {
+      padding-top: 20px;
+      padding-bottom: 30px;
+      &:before {
+        top: 16px;
+      }
+    }
+  }
+
+}
+
+.numbers {
+  p {
+    margin-bottom: 30px;
+    &.h3 {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.downloadable {
+  list-style: none;
+  padding-left: 0;
+  li {
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid @gray-lighter;
+    &:last-of-type {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+  }
+}
+
+ul.regular {
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-left: 15px;
+}
+
+//
+//  PDF warning
+//
+
+.user-message-panel {
+  border: 1px solid @gray-lighter;
+  padding: 25px 20px; // forskjellig fra f.eks ".hero-block" som har standard padding. Endres?
+  margin-bottom: 30px;
+  .leading-icon.icon-warning {
+    padding-top: 46px;
+    background: url('@{baseImagePath}img/navno/gfx/icons/utropstegn_sirkel.png') center 0 no-repeat;
+    //background: url('@{baseImagePath}img/navno/gfx/icons/utropstegn_sirkel.svg') center 0 no-repeat;
+  }
+  p {
+    margin: 0;
+  }
+  p.message-panel-headline{
+	font-size: 0.875em;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 18px;
+  }
+  p.ettersendelse{
+    margin: 0;
+	font-size: 0.875em;
+	font-weight: normal;
+  }
+   
+}
+
+
+//
+// Innsendingsvalg
+//
+
+.innsendingsvalg {
+
+  form:first-of-type {
+    margin-bottom: 18px;
+  }
+  form:last-of-type {
+    display: block;
+  }
+
+}
+
+.innsending-info[data-pdf-info-showing='false'] {
+  border-bottom: 1px solid @gray-lighter;
+}
+
+.innsending-info {
+  margin-bottom: 30px;
+
+  ul {
+    margin-bottom: 30px;
+  }
+}
+
+/*.soknad-header-theme {
+  display: block;
+  font-size: 1rem;
+  color: @gray;
+  padding-bottom: 8px;
+
+}*/
+
+.address-options {
+
+  .js-postalplace { // poststed injectes i <span class="js-postalplace">
+    padding-left:1em;
+    display:inline-block;
+    font-size: @rem-as-14px;
+  }
+
+
+  form {
+    .text-center {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid @gray-lighter;
+
+      input[type="submit"] {
+        margin-bottom: 18px;
+      }
+      a {
+        display: block;
+      }
+    }
+    input {
+      & + label {
+        outline: none !important;
+      }
+    }
+
+    input[type='text'][data-info-type='nav-office'] {
+      max-width: 100%;
+    }
+  }
+
+  h3 {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    margin-left: 0;
+  }
+
+  .form-actions-wrapper {
+    text-align: center;
+    input[type='submit'] {
+      margin-bottom: 16px;
+    }
+    a {
+      display: block;
+    }
+  }
+
+  .radio-choice-wrapper {
+    margin-bottom: 12px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+  }
+
+  .address-dropdown {
+    border: 1px solid @gray-lighter;
+    background-color: @gray-lightest;
+    padding: 20px;
+    margin: 15px 0 0 32px;
+    position: relative;
+
+    &:after, &:before {
+      bottom: 100%;
+      border: solid transparent;
+      content: "";
+      height: 0;
+      width: 0;
+      position: absolute;
+      left: 8%;
+    }
+
+    &:after {
+      border-bottom-color: @gray-lightest;
+      border-width: 13px;
+      margin-left: -13px;
+    }
+
+    &:before {
+      border-bottom-color: @gray-lighter;
+      border-width: 14px;
+      margin-left: -14px;
+    }
+
+
+    label {
+      width: 95%;
+      p {
+        margin: 0;
+      }
+    }
+
+    input[type='radio'] {
+      margin-top: 4px;
+    }
+
+    .address-input-wrapper {
+      margin-bottom: 20px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      p {
+        font-weight: 600;
+      }
+    }
+
+    .error-panel {
+      margin-top: 20px;
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        li {
+          margin-bottom: 4px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    .nav-office-selection {
+      margin-top: 20px;
+    }
+
+    .input-container {
+      margin: 20px 0 20px 32px;
+
+      > span {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: inline-block;
+      }
+
+      .error-panel {
+        margin-bottom: 8px;
+      }
+
+      .address-input-wrapper {
+        margin-bottom: 14px;
+        input[type='text'] {
+          width: 70%;
+        }
+        input[name="notinnorwayzip"], input[name="notworkinnorwayfnr"] {
+          width: auto;
+        }
+        input[name='postnummer'] {
+          width: auto;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+      .address-input-wrapper.checkbox-option {
+        padding: 12px 0;
+        margin-bottom: 4px;
+      }
+      .fake-link {
+        display: block;
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    .radio-options {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0 20px 0;
+
+      li:last-of-type label {
+        min-height: inherit;
+      }
+    }
+    #navdepartment1Selected, #excaseNAVKontorSelected {
+      display: inline-block;
+      font-size: @rem-as-14px;
+      margin-top: 4px;
+    }
+
+    .chosenNavUnitName {
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+<content-type>
+    <display-name>nav.lenkeliste-med-beskrivelse</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Overskrift og beskrivelse">
+            <label>Overskrift og beskrivelse</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="HtmlArea">
+                    <label>Beskrivelse</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Lenkeliste">
+            <label>Lenkeliste</label>
+            <items>
+                <input name="linklist" type="ContentSelector">
+                    <label>Lenke</label>
+                    <custom-text>contentdata/linklist</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

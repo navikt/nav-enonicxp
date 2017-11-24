@@ -1,0 +1,70 @@
+<content-type>
+    <display-name>SokeKonfigurasjon_Forslag</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tittel">
+            <label>Tittel</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel, type liste</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="forslag">
+            <label>forslag</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="tittel" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>tittel</custom-text>
+                    <help-text>Tittel som vises i forslagsboksen</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="lenke" type="TextLine">
+                    <label>Lenke</label>
+                    <custom-text>lenke</custom-text>
+                    <help-text>Lenke til forslaget</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="lenketype" type="RadioButton">
+                    <label>Intern eller ekstern lenke</label>
+                    <custom-text>lenketype</custom-text>
+                    <help-text>Intern lenke refererer til lenker innenfor Navet. Eksterne lenker er alt annet.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="intern">Intern lenke</option>
+                        <option value="ekstern">Ekstern lenke</option>
+                    </config>
+                </input>
+                <input name="dokumenttype" type="ComboBox">
+                    <label>Type dokument</label>
+                    <custom-text>dokumenttype</custom-text>
+                    <help-text>Hva slags type side/innhold lenken leder til.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="Ingen">Ingen dokumenttype skal vises</option>
+                        <option value="Skjema">Skjema</option>
+                        <option value="Tjeneste">Tjeneste</option>
+                    </config>
+                </input>
+                <input name="ingress" type="TextLine">
+                    <label>Ingress</label>
+                    <custom-text>ingress</custom-text>
+                    <help-text>Ingress til forslaget, slik det skal vises i søkeresultatet</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="keywords" type="TextLine">
+                    <label>Keywords</label>
+                    <custom-text>keywords</custom-text>
+                    <help-text>Keywords til forslaget, separeres med mellomrom.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

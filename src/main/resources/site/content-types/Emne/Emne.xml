@@ -1,0 +1,143 @@
+<content-type>
+    <display-name>Emne</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Emne">
+            <label>Emne</label>
+            <items>
+                <input name="theme" type="TextLine">
+                    <label>Emneord</label>
+                    <custom-text>contentdata/theme</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="summary" type="TextArea">
+                    <label>Sammendrag</label>
+                    <custom-text>contentdata/summary</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="type" type="ComboBox">
+                    <label>Emnetype</label>
+                    <custom-text>contentdata/type</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="1">Tema</option>
+                        <option value="2">Målgruppe</option>
+                        <option value="3">Livssituasjon</option>
+                        <option value="4">Geografi</option>
+                    </config>
+                </input>
+                <input name="language" type="ContentSelector">
+                    <label>Språk</label>
+                    <custom-text>contentdata/language</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Sprak</allow-content-type>
+                    </config>
+                </input>
+                <input name="categorycode" type="TextLine">
+                    <label>Skjemakategorikode</label>
+                    <custom-text>contentdata/categorycode</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="globalformoffice" type="ContentSelector">
+                    <label>Landsomfattende skjemamottak</label>
+                    <custom-text>contentdata/globalformoffice</custom-text>
+                    <help-text>Overstyrer skjemamottak i enhetsinformasjon</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                    </config>
+                </input>
+                <input name="nav_intl" type="RadioButton">
+                    <label>Kan sendes til NAV Internasjonalt</label>
+                    <custom-text>contentdata/nav_intl</custom-text>
+                    <help-text>Velges "nei" her, må enten foretrukket enhet, landsmottak, eller fylkesmottak være valgt.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="yes">Ja</option>
+                        <option value="no">Nei</option>
+                    </config>
+                </input>
+                <input name="preferredoffice" type="ContentSelector">
+                    <label>Foretrukket enhet</label>
+                    <custom-text>contentdata/preferredoffice</custom-text>
+                    <help-text>Overstyrer brukerens lokale kontor og NAV Internasjonalt som mottaksenhet</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                    </config>
+                </input>
+                <input name="scan_other" type="RadioButton">
+                    <label>Annen post skal skannes</label>
+                    <custom-text>contentdata/scan_other</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="1">Ja</option>
+                        <option value="0">Nei</option>
+                    </config>
+                </input>
+                <input name="rank" type="TextLine">
+                    <label>Prioritet i temaliste for annen post (ett siffer)</label>
+                    <custom-text>contentdata/rank</custom-text>
+                    <help-text>1, 2, 3 eller 4 angir plass og rekkefølge øverst i lista.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="hide" type="CheckBox">
+                    <label>Unntas fra temaliste for annen post</label>
+                    <custom-text>contentdata/hide</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Adressesteg">
+            <label>Adressesteg</label>
+            <items>
+                <input name="adr1" type="CheckBox">
+                    <label>Skjul adressesteg 1</label>
+                    <custom-text>contentdata/adr1</custom-text>
+                    <help-text>Om adressesteg1 (Folkeregistert og bor i Norge) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="adr2" type="CheckBox">
+                    <label>Skjul adressesteg 2</label>
+                    <custom-text>contentdata/adr2</custom-text>
+                    <help-text>Om adressesteg2 (Ikke folkeregistrert i Norge) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="adr3" type="CheckBox">
+                    <label>Skjul adressesteg 3</label>
+                    <custom-text>contentdata/adr3</custom-text>
+                    <help-text>Om adressesteg3 (Verken bor eller arbeider i Norge) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="adr4" type="CheckBox">
+                    <label>Skjul adressesteg 4</label>
+                    <custom-text>contentdata/adr4</custom-text>
+                    <help-text>Om adressesteg4 (Flere personer samtidig) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="adr5" type="CheckBox">
+                    <label>Skjul adressesteg 5</label>
+                    <custom-text>contentdata/adr5</custom-text>
+                    <help-text>Om adressesteg5 (Tiltaksbedrifter, kursarrangører, og andre virksomheter) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="adr6" type="CheckBox">
+                    <label>Skjul adressesteg 6</label>
+                    <custom-text>contentdata/adr6</custom-text>
+                    <help-text>Om adressesteg6 (alle henvendelser skal gå til NAV Internasjonal) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="adr7" type="CheckBox">
+                    <label>Skjul adressesteg 7</label>
+                    <custom-text>contentdata/adr7</custom-text>
+                    <help-text>Om adressesteg7 (alle henvendelser skal gå til NAV Pensjon) skal skjules</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

@@ -1,0 +1,48 @@
+<content-type>
+    <display-name>Sporsmaal_og_svar</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Spørsmål og svar">
+            <label>Spørsmål og svar</label>
+            <items>
+                <input name="question" type="TextLine">
+                    <label>Spørsmål</label>
+                    <custom-text>contentdata/question</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="answer" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/answer</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="enhet" type="ContentSelector">
+                    <label>Enhet</label>
+                    <custom-text>contentdata/enhet</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                    </config>
+                </input>
+                <input name="themes" type="ContentSelector">
+                    <label>Emneord</label>
+                    <custom-text>contentdata/themes</custom-text>
+                    <occurrences maximum="0" minimum="1"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Emne</allow-content-type>
+                    </config>
+                </input>
+                <input name="sprak" type="ContentSelector">
+                    <label>Språk</label>
+                    <custom-text>contentdata/sprak</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Sprak</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

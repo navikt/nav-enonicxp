@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>finn-adresse</display-name>
+  <config>
+    <input name="last-ned-privat" type="ContentSelector">
+        <label>last-ned-privat</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="last-ned-bedrift" type="ContentSelector">
+        <label>last-ned-bedrift</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="navUnit-autocomplete" type="ContentSelector">
+        <label>navUnit-autocomplete</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

@@ -1,0 +1,44 @@
+<content-type>
+    <display-name>Modernisering_artikkel</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Artikkel">
+            <label>Artikkel</label>
+            <items>
+                <input name="string-key" type="TextLine">
+                    <label>Nøkkel</label>
+                    <custom-text>contentdata/string-key</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="preface" type="HtmlArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Tekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="image" type="ImageSelector">
+                    <label>Bilde</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="tags" type="TextArea">
+                    <label>Nøkkelord/tags (kommaseparert)</label>
+                    <custom-text>contentdata/tags</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

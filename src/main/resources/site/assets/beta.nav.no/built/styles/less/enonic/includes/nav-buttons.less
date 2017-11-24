@@ -1,0 +1,137 @@
+//
+// Buttons
+// --------------------------------------------------
+
+#maincontent .btn {
+	text-decoration: none;
+}
+
+// basic standard knapp
+.btn {
+	display: inline-block;
+	color: @gray-dark;
+	cursor: pointer;
+	padding: 11px 40px;
+	text-align: center;
+	text-transform: uppercase;
+	font-family: Modus, Arial, Helvetica, sans-serif;
+	font-weight: 600;
+	font-size: 1.14em; // TODO? Tilsvarer 18.24 px
+	vertical-align: middle;
+	.border-radius(1px);
+	border: 1px solid @gray-light;
+	border-bottom: 1px solid #b6b6b6;
+
+	.buttonBackground(@btn-background, @btn-background-highlight, @gray-dark);
+	&:hover, &:focus {
+		.buttonBackground(#d3d3d3, #c3c3c3, @gray-dark);
+		text-decoration: none !important;
+	}
+	&:active {
+		.buttonBackground(darken(#d3d3d3, 5%), darken(#c3c3c3, 5%), @gray-dark);
+		text-decoration: none;
+	}
+}
+
+// knappestørrelser
+//-----------------------------
+
+.btn-small {
+	padding: 7px 20px;
+	font-size: @em-as-14px;
+	line-height: 1.6;
+}
+
+//knappefarger
+//-----------------------------
+
+.btn-primary {
+	// lyseblå
+	background: #008fc4;
+	color: @gray-lighter;
+	&:hover, &:active, &:focus {
+		background: @blue;
+		color: #fff;
+	}
+}
+
+.btn-success {
+	// grønn?
+
+}
+
+.btn-danger {
+	// rød
+
+}
+
+.btn-auth {
+	display: inline-block;
+	text-align: center;
+	background: #d1d1d1;
+	text-transform: uppercase;
+	font-family: @font-family-modus;
+	font-weight: bold;
+	padding: 4px 15px 4px 15px;
+	border: none;
+	color: @gray-darker;
+	white-space: nowrap;
+
+	&.btn-logout {
+		color: @gray-darker;
+		background-color: #0CA9E0; // nyanse av lyseblå, ulik btn-primary. Bør de være like?
+		&:hover, &:focus {
+            color: @gray-darker;
+			background-color: #d1d1d1; //#5dd0f9; 5dd0f9 er lyse-lyseblå
+			text-decoration: none;
+		}
+	}
+	&.btn-login {
+		color: @gray-darker;
+		&:hover, &:focus {
+            color: @gray-darker;
+			background-color: #0CA9E0;
+			text-decoration: none;
+		}
+	}
+}
+
+.site-coltrols-toolbar .btn-auth {
+	padding: 4px 15px 4px 15px;
+	// samme padding som over, men må til for å overstyre andre stiler når
+	// knappene står innenfor .site-coltrols-toolbar. Quick fix.
+}
+
+[class*=btn-main], [class*=btn-clear] {
+	.buttonBackground(@btn-primary-background, @btn-primary-background-highlight);
+	&:hover, &:focus {
+		.buttonBackground(darken(@btn-primary-background, 10%), darken(@btn-primary-background-highlight, 10%), #fff);
+	}
+}
+
+[class*=btn-active] {
+	border-color: @blue;
+	background: @blue;
+	color: #fff;
+	&:hover, &:focus {
+		border-color: @blue;
+		background: @blue;
+		color: #fff;
+	}
+}
+
+.btn-link {
+	background: #008fc4;
+	color: @gray-lighter;
+	display: inline-block;
+	padding: 10px 30px;
+
+	&:hover, &:active, &:focus {
+		background: @blue;
+		color: #fff;
+	}
+}
+
+
+
+

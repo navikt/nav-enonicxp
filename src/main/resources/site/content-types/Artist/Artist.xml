@@ -1,0 +1,122 @@
+<content-type>
+    <display-name>Artist</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Artist">
+            <label>Artist</label>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Artistnavn</label>
+                    <custom-text>contentdata/name</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="image" type="ImageSelector">
+                    <label>Bilde</label>
+                    <custom-text>contentdata/image</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="preface" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Nøkkelord for søk">
+            <label>Nøkkelord for søk</label>
+            <items>
+                <input name="keywords" type="TextArea">
+                    <label>Nøkkelord</label>
+                    <custom-text>contentdata/keywords</custom-text>
+                    <help-text>Her legger du inn nøkkelord som ikke er brukt i brødtekst, eller tittel. Nøkkelordene du skriver inn her vises ingen steder og brukes bare for å trigge treff i søk.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Kontaktinformasjon">
+            <label>Kontaktinformasjon</label>
+            <items>
+                <input name="contact_name" type="TextLine">
+                    <label>Navn</label>
+                    <custom-text>contentdata/contact_name</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="address" type="TextLine">
+                    <label>Gateadresse</label>
+                    <custom-text>contentdata/address</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="zip" type="TextLine">
+                    <label>Postnummer</label>
+                    <custom-text>contentdata/zip</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="city" type="TextLine">
+                    <label>Poststed</label>
+                    <custom-text>contentdata/city</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="phone" type="TextLine">
+                    <label>Telefon</label>
+                    <custom-text>contentdata/phone</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="mobile" type="TextLine">
+                    <label>Mobiltelefon</label>
+                    <custom-text>contentdata/mobile</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="fax" type="TextLine">
+                    <label>Fax</label>
+                    <custom-text>contentdata/fax</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="email" type="TextLine">
+                    <label>E-post</label>
+                    <custom-text>contentdata/email</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="homepage" type="TextLine">
+                    <label>Hjemmeside (URL)</label>
+                    <custom-text>contentdata/homepage</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="members">
+            <label>Medlemmer - hvis gruppe / mer enn en</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="member" type="TextLine">
+                    <label>Medlem</label>
+                    <custom-text>member</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="links">
+            <label>Eksterne lenker</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="linktext" type="TextLine">
+                    <label>Lenketekst</label>
+                    <custom-text>linktext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL</label>
+                    <custom-text>url</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>factsheet-related-content</display-name>
+  <config>
+    <input name="privatpersonveileder" type="ContentSelector">
+        <label>privatpersonveileder</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="ettersenderveileder" type="ContentSelector">
+        <label>ettersenderveileder</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="arbeidsgiverveileder" type="ContentSelector">
+        <label>arbeidsgiverveileder</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="engelskveileder" type="ContentSelector">
+        <label>engelskveileder</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

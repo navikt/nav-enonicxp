@@ -1,0 +1,289 @@
+.vekk {
+	position: absolute;
+	left: -3000px;
+}
+
+/* Styling for søkefeltet */
+.sokeForm {
+	display: block;
+	
+	margin-bottom: 40px;
+	width: 100%;
+
+	.sokeelement {
+		display: block;
+		position: relative;
+		border: 1px inset #ccc;
+		margin-left: auto;
+		margin-right: auto;
+
+		.sokefelt {
+			border: none;
+			display: block;
+			width: 100%;
+			padding: 10px 60px 10px 20px;
+			font-size: 1.875rem;
+			
+		}
+
+		.sokeknapp {
+			position: absolute;
+			display: inline-block;
+			right: 14px;
+			bottom: 0;
+			width: 30px;
+			padding: 14px;
+			border: none;
+			text-indent: -9999em;
+			background: transparent url('../../../built-navno/img/navno/gfx/mainmenu/sok_stor_morkeblaa.png') no-repeat center;
+		}
+
+		#knappers {
+			position: absolute;
+			top: 1px;
+			right: 1px;
+			bottom: 1px;
+			width: 59px;
+			cursor: pointer;
+			background-color: #fff;
+		}
+	}
+}
+
+/* Styling for sokeresultatcontaineren */
+.sokeresultatContainer {
+	padding: 30px;
+	background: #fff;
+	border-top: 1px solid #ddd;
+
+	.ingentreff {
+		font-size: 1.1rem;
+		
+		.sokeord {
+			font-weight: bold;
+		}
+	}
+
+	.overskriftForOmraade {
+		font-weight: 600;
+		font-size: 1.1rem;
+	}
+
+	ul {
+		padding-left: 0;
+	}
+
+	.sokeresultatliste {
+		list-style-type: none;
+		li {
+			border-top: 1px solid #d1d1d1;
+			padding: 20px 0;
+			
+			h2 {
+				padding: 12px 0 10px 0;
+				display: block;
+				margin-bottom: 0;
+				font-size: 1.1rem;
+				font-weight: 600;
+			}
+
+			a {
+				display: block;
+				text-decoration: none;
+				&:hover {
+					text-decoration: underline;
+				}
+
+				&:focus {
+					outline: none;
+					text-decoration: underline;
+				}
+			}
+
+			.skjemanummer {
+				float: left;
+				margin-bottom: 0;
+			}
+			
+			ul {
+				list-style-type: disc;
+				li {
+					float: left;
+					padding: 0 28px 0 0;
+					border: none;
+					a {
+						font-size: 1rem;
+						display: inline;
+					}
+					&:first-child {
+						list-style-type: none;
+					}
+					&:last-child {
+						padding-right: 0;
+					}
+				}
+			}
+		}
+
+		.skjemaresultat:last-child {
+			border-bottom: 1px solid #d1d1d1;
+			margin-bottom: 40px;
+
+		}
+	}
+}
+
+/* Styling av høyrekolonnen */
+.valgForSkjemasok {
+	border: 1px solid #d1d1d1;
+
+	h2 {
+		font-size: 1.0675rem;
+    	font-weight: 600;
+    	padding: 20px 20px 0 60px;
+		background: transparent url('../../../built-navno/img/navno/gfx/icons/pluss_blaa.png') 30px 25px no-repeat;
+	}
+
+	&.expanded h2 {
+		background: transparent url('../../../built-navno/img/navno/gfx/icons/minus_blaa.png') 30px 25px no-repeat;
+	}
+	
+	ul {
+		padding: 0 20px 20px 25px;
+	}
+
+	li {
+		border: none;
+	}
+
+	a {
+        margin-left: 0;
+		padding-left: 5px;
+		font-size: 0.875rem;	
+	}
+}
+
+
+.valgForSkjemasok:first-child {
+  a {
+    margin-top: 3px;
+  }
+}
+
+.valgForSkjemasok:last-child {
+	border-top: none;
+}
+
+/* Styling for utvidelse av valgForSkjemasok-bokser  */
+.utvidbart-innhold .valgForSkjemasok {
+	&.expanded {
+		.toggle-element:after {
+			.dropdown-indicator-expanded();
+		}
+		.utvidbart-panel {
+			visibility: visible;
+			//height:auto;
+		}
+	}
+
+	&.js-animated {
+		.utvidbart-panel {
+			visibility: visible; // klasse fjernes med script vha setTimeout?
+		}
+	}
+}
+
+.utvidbart-panel {
+	.transition(height .2s ease-in-out);
+	visibility: hidden;
+	overflow: hidden;
+	height: 0;
+}
+
+.no-js .utvidbart-innhold {
+	.utvidbart-panel {
+		visibility: visible;
+		padding: 15px 30px;
+		//height: auto;
+	}
+}
+
+/* Media queries  */
+@media (min-width: 38.75em) {
+	// 620px
+
+	/* Styling for søketrefflisten*/
+	.sokeresultatContainer {
+		padding: 20px 25px;
+		border-top: none;
+		margin-top: 45px;
+	}
+}
+
+@media (min-width: 48em) {
+	// 768px
+	.sokeForm .sokeelement {
+		width: 50%;
+	}
+
+	.valgForSkjemasok {
+		h2 {
+	    	padding: 20px 20px 0 55px;
+	    }	
+		li a {
+			max-width: 140px;
+		}
+	}
+
+	/* Styling for søketrefflisten*/
+	.sokeresultatContainer {
+		padding: 30px;
+		margin-top: 0;
+		h1 {
+			display: block;
+			font-size: 1.875rem;
+			margin-top: 0;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.valgForSkjemasokContainer {
+		display: none;
+	}
+}
+
+@media (max-width: 820px) {
+	.valgForSkjemasok li a {
+		font-size: 0.75rem;
+	}
+
+	.valgForSkjemasok > li {
+		padding: 12px 18px 5px 22px;
+	}
+}
+
+@media (min-width: 820px) {
+	.valgForSkjemasok {
+		h2 {
+	    	padding: 20px 20px 0 60px;
+	    }	
+		li a {
+			max-width: 155px;
+		}
+	}
+}
+
+@media (min-width: 960px) {
+	.valgForSkjemasok li a {
+		max-width: 260px;
+	}
+}
+
+@media (min-width: 62em) {
+	// 992px
+	.valgForSkjemasok li a {
+		max-width: inherit;
+	}
+}
+

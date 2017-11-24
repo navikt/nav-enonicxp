@@ -1,0 +1,246 @@
+/*c-nav*/
+
+/*Avstander*/
+.footer-margin {
+    margin-bottom: 50px;
+}
+.reduce-margin-top{
+    margin-top: 10px;
+    margin-bottom:5px;
+}
+.reduce-padding-left{
+    padding-left: -10px;
+    margin-left: -24px;
+}
+.space-xsmall{
+    margin-bottom: 5px;
+}
+.space-small{
+    margin-bottom: 10px;
+}
+.space-medium{
+    margin-bottom: 15px;
+}
+.space-large{
+    margin-bottom: 20px;
+}
+.topspace-medium{
+    margin-top: 20px;
+}
+.topspace-large{
+    margin-top: 6%;
+}
+.spacious{
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+p.quiettext{
+    color: #999;
+
+}
+
+
+
+
+.hybrid-brukersegment a {
+
+    color:#333;
+    text-decoration: none;
+    display: inline-block;
+    float:left;
+    clear:both;
+    width:100%;
+    padding:10px 100px 10px 10px;
+    margin-top:1px;
+    margin-bottom:9px;
+    background-color:#fff;
+    background-image: url("../images/strekpil-hoyre.png");
+    background-size: 26px 24px;
+    background-repeat: no-repeat;
+    background-position:center right;
+    border-radius: 4px;
+    border:1px solid #ccc;
+    border-bottom:1px solid #777;
+}
+.hybrid-brukersegment a:hover {
+    margin-top:0px;
+    margin-bottom:9px;
+    border-bottom:2px solid #777;
+}
+
+
+
+a.highlight {
+    color: #fff;
+    background-color: transparent;
+    border:1px solid #333;
+    padding-left:10px;
+}
+
+
+
+
+.dropdown .dropdown-icon{
+    display: inline-block;
+    float:left;
+    width: 26px;
+    height: 24px;
+    margin-right:6px;
+    background-color: transparent;
+    background-image:url("images/hamburgermeny.png");
+}
+
+
+
+
+
+.panel-body.extrapadding-lrg{
+    padding:15px 30px 60px 30px;
+
+}
+.panel-body.extrapadding-med{
+    padding:15px 30px 30px 30px;
+
+}
+.panel-body h1{
+    font-size:26px;
+
+}
+
+
+
+
+
+
+.alert.extrapadding {
+    padding:30px;
+}
+
+
+
+
+
+
+
+.jumbotron a {
+    color: #333;
+    text-decoration: underline;
+
+}
+.jumbotron.tasks {
+    background-color: rgba(51, 124, 146, 0.6);
+
+}
+
+.jumbotron .navtask a {
+    font-size: 21px;
+    font-weight: 200;
+    text-decoration: none;
+    display: inline-block;
+    float:left;
+    clear:both;
+    padding:10px 100px 10px 50px;
+    margin-top:1px;
+    margin-bottom:9px;
+    background-color:#fff;
+    background-image: url("../images/melding.png");
+    background-size: 26px 24px;
+    background-repeat: no-repeat;
+    background-position:15px 14px;
+    border-radius: 4px;
+    border-bottom:1px solid #333;
+}
+.jumbotron .navtask a:hover {
+    border-bottom:2px solid #333;
+    margin-top:0px;
+    margin-bottom:9px;
+    margin-left:1px;
+}
+.jumbotron .navtask.tiltak a {
+    background-image: url("../images/kalender-task.png");
+}
+.jumbotron .navtask.meldekort a {
+    background-image: url("../images/meldekort.png");
+}
+
+
+
+
+
+.list-group h4,
+.panel-body h4 {
+    font-size:14px;
+}
+
+.list-group .list-group-header {
+    background-color:#efefef;
+}
+.list-group .calendar a{
+    display: inline-block;
+    color:#333;
+    text-decoration: none;
+    padding:8px 30px 8px 35px;
+
+    background-image: url("../images/kalender.png");
+    background-size: 26px 24px;
+    background-repeat: no-repeat;
+    background-position: left center; 
+}
+.list-group .addmore a{
+    display: inline-block;
+    padding:8px 30px 8px 35px;
+
+    background-image: url("../images/pluss.png");
+    background-size: 26px 24px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+
+
+.badge.lighter {
+    background-color:#efefef;
+    color:#333;
+    font-weight: 100;
+    padding: 0px 7px 4px 7px;
+    border-radius: 4px;
+}
+
+
+
+
+.dropdown-header.dropdown-header-large {
+    color:#333;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+
+
+.notification {
+    display: inline-block;
+    min-width: 10px;
+    padding: 4px 8px;
+    margin-left:8px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: #c30000;
+    border-radius: 20px;
+}
+.tidslinjen img{
+    width:100%;
+    height:auto;
+}
+.tidslinjen a{
+    text-decoration: none;
+}
+
+

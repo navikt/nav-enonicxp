@@ -1,0 +1,25 @@
+<content-type>
+    <display-name>Hjelpetekst</display-name>
+    <description>Hjelpetekster for tjenestekatalogen</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Hjelpetekst">
+            <label>Hjelpetekst</label>
+            <items>
+                <input name="tittel" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/tittel</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="hjelpetekst" type="TextArea">
+                    <label>Hjelpetekst</label>
+                    <custom-text>contentdata/hjelpetekst</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

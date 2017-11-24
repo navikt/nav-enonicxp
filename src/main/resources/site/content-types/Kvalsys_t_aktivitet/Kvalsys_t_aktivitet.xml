@@ -1,0 +1,89 @@
+<content-type>
+    <display-name>Kvalsys_t_aktivitet</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Oppdaterer du på vegne av noene andre?">
+            <label>Oppdaterer du på vegne av noene andre?</label>
+            <items>
+                <input name="updated-by" type="TextLine">
+                    <label>Oppdatert på vegne av</label>
+                    <custom-text>contentdata/updated-by</custom-text>
+                    <help-text>La feltet være tomt med mindre du redigerer innholdet på vegne av noen andre.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Aktivitet">
+            <label>Aktivitet</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="responsible" type="ComboBox">
+                    <label>Dette utføres av</label>
+                    <custom-text>contentdata/responsible</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="Aa-registeret">Aa-registeret</option>
+                        <option value="Arbeidsgiver">Arbeidsgiver</option>
+                        <option value="Bruker">Bruker</option>
+                        <option value="Flere-aktører">Flere aktører</option>
+                        <option value="Forvaltning">Forvaltning</option>
+                        <option value="NAV-kontor">NAV-kontor</option>
+                        <option value="NAVI">NAVI</option>
+                        <option value="Sentral-scanning">Sentral Scanning</option>
+                        <option value="Sykemelder">Sykemelder</option>
+                        <option value="Sykemeldt">Sykemeldt</option>
+                        <option value="Økonomi">Økonomi</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Innholdsalternativ 1: Sjekkliste, eller retningslinje">
+            <label>Innholdsalternativ 1: Sjekkliste, eller retningslinje</label>
+            <items>
+                <input name="maincontent" type="ContentSelector">
+                    <label>Hovedinnhold</label>
+                    <custom-text>contentdata/maincontent</custom-text>
+                    <help-text>Sjekkliste, retningslinje, eller artikkel (som kan lenke videre til rutine)</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kvalsys_sjekkliste</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_retningslinje</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Innholdsalternativ 2: Introduksjon og lenke til eventuell underRutine (i stedet for sjekkliste og retningslinje)">
+            <label>Innholdsalternativ 2: Introduksjon og lenke til eventuell underRutine (i stedet for sjekkliste og retningslinje)</label>
+            <items>
+                <input name="text" type="HtmlArea">
+                    <label>Intro og lenke til tilhørende rutine</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="changelog">
+            <label>Endringslogg</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="date" type="Date">
+                    <label>Dato</label>
+                    <custom-text>date</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="log" type="TextArea">
+                    <label>Endring</label>
+                    <custom-text>log</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

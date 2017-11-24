@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>skjemaveileder-klage-formgenerator</display-name>
+  <config>
+    <input name="https" type="TextLine">
+        <label>https</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="skjemanedlasting" type="TextLine">
+        <label>skjemanedlasting</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="navUnit-autocomplete" type="ContentSelector">
+        <label>navUnit-autocomplete</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

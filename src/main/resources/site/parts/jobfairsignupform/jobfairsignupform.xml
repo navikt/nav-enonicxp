@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>jobfairsignupform</display-name>
+  <config>
+    <input name="jobfairPage" type="ContentSelector">
+        <label>jobfairPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="categorykey" type="TextLine">
+        <label>categorykey</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

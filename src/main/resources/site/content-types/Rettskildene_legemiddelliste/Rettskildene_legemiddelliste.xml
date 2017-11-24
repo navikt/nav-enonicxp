@@ -1,0 +1,27 @@
+<content-type>
+    <display-name>Rettskildene_legemiddelliste</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Legemiddelliste">
+            <label>Legemiddelliste</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="vedlegg" type="ContentSelector">
+                    <label>Vedlegg</label>
+                    <custom-text>contentdata/vedlegg</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_vedlegg</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

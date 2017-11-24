@@ -1,0 +1,2290 @@
+/*********************************************************
+
+
+* Innsendingsveileder 
+
+* ********************************************************/
+
+/* Normal table */
+.NAVtbl {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.NAVtbl th {
+	text-align: left;
+	color: #675C53;
+}
+
+.NAVtbl td {
+	padding: 5px 0px 5px 7px;
+	vertical-align: top;
+	font-family: modus, arial, helvetica, sans-serif;
+	font-size: 12px;
+	width: 20%;
+}
+
+.NAVtbl th div, .NAVnumTbl th div {
+	background-image: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif');
+	background-repeat: repeat-x;
+	background-position: bottom left;
+	padding: 3px 0px 3px 7px;
+	margin-bottom: 8px;
+}
+
+.NAVtbl .NAValternateRow, .NAVnumTbl .NAValternateRow {
+	background-color: #EFEFEE;
+}
+
+.NAVtbl tr:nth-child(even), NAVnumTbl tr:nth-child(even) {
+	background-color: #EFEFEE;
+}
+
+.NAVtbl td p {
+	padding: 0;
+	margin: 0;
+}
+
+h2.skjemasteg {
+	font-size: 30px;
+	font-weight: 600;
+	text-align: center;
+	margin-bottom: 10px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+.NAVformBox {
+	background-color: #F1F0ED;
+	padding: 15px 0 15px 0;
+	margin-bottom: 4px;
+	float: left;
+	width: 100%;
+}
+
+.NAVformBox label {
+	float: left;
+	width: 200px;
+	margin-left: 10px;
+}
+
+.NAVformBox input, .NAVformBox select, .NAVformBox textarea, .NAVformBox .NAVbtnContainer {
+	float: left;
+	display: inline;
+}
+
+.NAVformBox .NAVbtn {
+	margin-left: 5px;
+	margin-right: 0;
+	height: 22px;
+}
+
+.NAVformBox span {
+	margin-left: 20px;
+	font-weight: bold;
+}
+
+.NAVformBox .NAVbtnContainer {
+	margin-left: 205px;
+	float: left;
+}
+
+.NAVformBox textarea {
+	width: 200px;
+	height: 60px;
+}
+
+.NAVformBox select {
+	margin-right: 5px;
+}
+
+.NAVformBox .NAVlblWidth {
+	width: 9em;
+}
+
+.NAVformBox .labelWithoutWidth {
+	width: auto;
+	margin-right: 10px;
+	margin-top: 3px;
+}
+
+#NAVpageTitleContainer span.innsendingsveilederHeading {
+	color: #FFFFFF;
+	margin-left: 14px;
+	padding-top: 17px;
+	font-size: 3.2em;
+	font-weight: bold;
+}
+
+#NAVpageTitleContainer span.innsendingsveilederHeading span {
+	color: #FFFFFF;
+}
+
+.form-details img.toggleAttachmentBody, .form-details img.toggleAddressBody {
+	float: right;
+	cursor: pointer;
+}
+
+.form-details h3, .form-details .velgBoksLabel {
+	font-size: 1.2em;
+}
+
+.form-details .NAVskjemaBakgrunn {
+	background-color: #e6e5e0;
+	padding: 16px 14px;
+	margin-bottom: 5px;
+}
+
+.form-details .NAVskjemaBakgrunn img.icon {
+	float: left;
+	margin-right: 7px
+}
+
+.form-details .NAVskjemaIndre {
+	color: #675C53;
+	background-color: #f6f6f4;
+	padding: 15px;
+	margin-top: 3px;
+	overflow: hidden;
+}
+
+.form-details .NAVskjemaIndre.checked {
+	background-color: #fff;
+}
+
+.form-details .main-form {
+	padding-bottom: 2em;
+}
+
+.form-details .main-form p {
+	margin: 0;
+}
+
+.form-details .main-form p.default {
+	margin-bottom: 1.5em
+}
+
+.form-details .submit input {
+	float: right;
+}
+
+.form-details .submit input.goback {
+	float: none;
+	cursor: pointer;
+	font-weight: normal;
+	border: none;
+	color: #0074C2;
+	background: transparent;
+	margin: 0;
+	padding: 0;
+	text-align: left
+}
+
+.form-details .attachmentbody {
+	float: left;
+	width: 100%;
+	padding-top: 2px;
+}
+
+.form-details .velgBoks {
+	float: left;
+	margin-right: 12px;
+	margin-left: 0;
+	margin-top: 5px;
+}
+
+.form-details .attachmentList div.brodtekst {
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+	padding-top: 10px;
+	margin-top: 10px;
+}
+
+.form-details .attachmentList .obligatoriskeVedlegg {
+	margin-top: 5px;
+}
+
+.form-details .attachmentList div.underpunkter div.input-wrapper {
+	float: left;
+	width: 100%;
+	margin: .5em 0;
+	height: 1.2em;
+}
+
+.form-details .attachmentList div.underpunkter input {
+	margin: 0 12px 0 0 !important;
+	padding: 0 !important;
+}
+
+.form-details .attachmentList div.underpunkter label {
+	font-weight: normal;
+}
+
+.form-details .NAVenhetsSelectBox div {
+	float: left
+}
+
+.form-details .NAVenhetsSelectBox select#selectEnhet {
+	width: 20em;
+}
+
+.form-details .velgBoksLabel {
+	float: left;
+	line-height: 1.5;
+	font-weight: 700;
+	font-size: 14px;
+	color: #3E3832;
+}
+
+.form-details .beskrivelse {
+	font-size: 12px;
+}
+
+#NAVvedleggsveilederDownloadContainer {
+	display: none;
+}
+
+#schemaAndAttachments div.submit {
+	visibility: hidden;
+}
+
+.form-details .dwnld-confirmation {
+	background-color: #fff !important;
+	padding-bottom: 20px !important;
+}
+
+.form-details .dwnld-confirmation a {
+	cursor: pointer;
+	clear: both;
+}
+
+.form-details .dwnld-confirmation p {
+	margin: 0;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #3E3832;
+}
+
+.form-details .dwnld-confirmation p em {
+	font-style: italic
+}
+
+.form-details .dwnld-confirmation .ajax-loader {
+	clear: both;
+	padding-right: 25px;
+	background: url('@{baseImagePath}img/skjemaveileder/ajax-loader.gif') no-repeat right 50%;
+}
+
+#dwnload-confirmation-msg span.quiet {
+	font-weight: normal;
+	font-style: italic
+}
+
+.form-details .dwnld-footer {
+	margin-top: 3em;
+}
+
+.general-wrapper {
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+.form-details .NAVerrorBox {
+	margin-top: 3em;
+	border: 1px dotted #CE3231;
+	clear: both;
+}
+
+.form-details .NAVerrorBox p {
+	margin: 10px 0 !important;
+}
+
+.form-details .top {
+	margin-top: 0
+}
+
+.form-details p.top {
+	color: #675C53
+}
+
+.form-details .quiet {
+	color: #988f86;
+}
+
+.form-details .strong {
+	font-weight: bold;
+}
+
+.form-details .bottom {
+	margin-bottom: 0;
+}
+
+.form-details .stor {
+	color: #3E3832;
+	font-size: 30px;
+	font-weight: 400;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+.form-details .stor span {
+	font-weight: normal;
+	color: #988f86;
+}
+
+.form-details .clear {
+	clear: both;
+}
+
+.form-details .text-wrapper {
+	float: left;
+	width: 90%;
+}
+
+.form-details .horizontal-separator {
+	float: left;
+	width: 100%;
+	margin-bottom: 1em;
+	padding-bottom: 1em;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left bottom;
+}
+
+.form-details .reset-defaults {
+	float: none !important;
+	font-weight: normal !important;
+}
+
+/*Kun for utlandscheckbox og label*/
+
+.form-details input#utland {
+	margin-left: 0;
+	vertical-align: middle
+}
+
+/*Kun for utlandscheckbox og label*/
+
+.form-details select#temaId {
+	width: 150px;
+}
+
+/*Kun for tema-dropdown */
+
+.attachmentList {
+	width: 100%;
+}
+
+.attachmentList label {
+	float: none !important;
+}
+
+.select-language-text {
+	float: left;
+	font-weight: bold;
+	margin: 0.3em 1em 0.3em 0.3em !important;
+}
+
+a#mainFormPreview, a.attachmentpreview {
+	margin-left: 5px;
+}
+
+.detail-inputs {
+	float: left;
+	width: 340px;
+	margin-right: 1.5em;
+	padding: 0;
+	margin-left: 2.2em;
+}
+
+.detail-inputs.wide {
+	width: 260px;
+}
+
+.detail-text {
+	float: left;
+	padding: 0;
+	width: 40%
+}
+
+.detail-text span {
+	font-weight: bold
+}
+
+/* Adresse */
+
+#userDetails input.radiobutton {
+	float: left;
+	margin-right: 10px
+}
+
+#userDetails .labelcontainer {
+	float: left;
+	width: 80%;
+}
+
+#userDetails .labelcontainer label.velgBoksLabel {
+	display: block;
+	margin-bottom: 1em
+}
+
+#userDetails .labelcontainer p {
+	font-weight: bold;
+	clear: left;
+	margin: 0;
+}
+
+#userDetails .singlefield {
+	margin-bottom: 1em
+}
+
+#userDetails .sublabel {
+	float: left;
+	width: 14%;
+}
+
+#userDetails .sublabel.ext {
+	width: 10em !important
+}
+
+#userDetails .addressinputbody .NAVpostnummer .sublabel,
+#enhetsSelectBox .sublabel,
+#userIdNumber .sublabel {
+	width: 10em !important
+}
+
+#userDetails div.inputfieldset {
+	float: left;
+	width: 80%
+}
+
+#userDetails .addressinputbody {
+	padding-left: 28px;
+}
+
+#userDetails .addressinputbody .detail-inputs {
+	width: 65%;
+	margin: 0;
+}
+
+#userDetails .addressinputbody .detail-text {
+	float: left;
+	width: 35%;
+	margin-top: 0 !important
+}
+
+#userDetails .addressinputbody .inputfieldset div {
+	border: 1px solid #E6E5E0;
+	margin-bottom: 5px;
+	padding: 3px;
+}
+
+#userDetails .addressinputbody .inputfieldset div.zip {
+	float: left;
+	width: 47%;
+}
+
+#userDetails .addressinputbody .inputfieldset div.area {
+	float: right;
+	width: 100%;
+}
+
+#userDetails .addressinputbody .inputfieldset div input {
+	border: none;
+	width: 67%;
+	margin-left: 1%;
+}
+
+#userDetails .addressinputbody .inputfieldset div.area input {
+	width: 52%
+}
+
+#userDetails .addressinputbody .inputfieldset div.zip input {
+	width: 34%
+}
+
+#userDetails .addressinputbody .inputfieldset div label {
+	display: inline-block;
+	font-weight: normal;
+	width: 7.5em;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/pil-hoyre.gif') no-repeat right 50%
+}
+
+#userDetails .addressinputbody .inputfieldset div.area label {
+	width: 7.5em;
+}
+
+#userDetails .addressinputbody .top-horizontal-separator.group {
+	border-top: none;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+}
+
+/*Fjernes!*/
+
+#userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group {
+	background: none;
+}
+
+/*Folkereg i Norge*/
+
+#userDetails .addressinputbody .NAVpostnummer .detail-inputs,
+#userIdNumber .detail-inputs {
+	width: 19.5em;
+	margin-right: 1em
+}
+
+#userDetails .addressinputbody .NAVpostnummer .detail-text,
+#userIdNumber .detail-text {
+	width: 55%;
+	float: left;
+}
+
+#enhetsSelectBox .detail-inputs {
+	width: 30em;
+	margin-right: 3em
+}
+
+#enhetsSelectBox .detail-text {
+	width: 33%;
+	float: left
+}
+
+#userDetails .addressinputbody .navdepartment input.selectednavdepartment {
+	width: 98%
+}
+
+#userDetails .moreaddressoptions .checked .addressinputbody {
+	margin: 1em 0 0 28px;
+	padding: 1em 0 0 0;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+}
+
+.form-details .top-horizontal-separator {
+	padding-top: 1em;
+	margin-top: 1em;
+	width: 100%;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+}
+
+.form-details #userIdNumber {
+	padding-top: 2em;
+	background: url("@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif") repeat-x scroll left top transparent
+}
+
+.form-details .NAVpostnummer {
+	padding: 1em 0;
+}
+
+/*Ettersendelse:*/
+
+#userDetails .moreaddressoptions {
+	clear: both;
+	padding-top: 2em;
+	margin-left: 2em;
+}
+
+#userDetails .moreaddressoptions .secondoption {
+	padding: 25px 0;
+	margin: 2em 0 !important;
+	border-top: 2px solid #E6E5E0;
+	border-bottom: 2px solid #E6E5E0;
+}
+
+#userDetails .moreaddressoptions .secondoption .addressinputbody {
+	padding-top: 2em;
+	margin-top: 2em
+}
+
+.shipping-guidelines-wrapper {
+	width: 100%;
+	top: 0;
+	margin-bottom: 20px;
+}
+
+#NAVvedleggsveilederDownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {
+	padding: 20px 15px 30px 15px;
+	background: #F6F6F4 url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left bottom
+}
+
+.shipping-guidelines div h4 {
+	padding-bottom: 90px;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/ikon-pluss.gif') no-repeat 80px 65%
+}
+
+.shipping-guidelines div {
+	float: left;
+	width: 125px;
+	position: relative
+}
+
+.shipping-guidelines div.last h4 {
+	background-image: none;
+}
+
+.shipping-guidelines div img.icon {
+	position: absolute;
+	top: 65px;
+}
+
+.form-details .NAVskjemaIndre.download {
+	background-color: #fff;
+}
+
+.form-details div.downloadablecontentwrapper {
+	position: relative;
+	width: 100%;
+	line-height: 1;
+}
+
+.downloadInfo {
+	font-weight: normal !important;
+}
+
+.form-details h2 {
+	font-size: 1.2em;
+	color: #3E3832;
+}
+
+.form-details .download ul {
+	margin: 10px 0 15px 0;
+	padding: 0px;
+}
+
+.form-details .download ul.getresources {
+	list-style: none;
+}
+
+.form-details .download ul.getresources li {
+	padding: 3px 0 3px 22px;
+}
+
+.form-details .download ul.getresources li.gettopsheet {
+	padding-left: 20px;
+	background: url('@{baseImagePath}img/skjemaveileder/ikon-toppark-sml.gif') no-repeat left 2px;
+	border: none;
+}
+
+.form-details .download ul.getresources li.getapplication {
+	background: url('@{baseImagePath}img/skjemaveileder/ikon-skjema-sml.gif') no-repeat left 2px
+}
+
+.form-details .download ul.getresources li.getattachment {
+	background: url('@{baseImagePath}img/skjemaveileder/ikon-vedlegg-sml.gif') no-repeat left 2px
+}
+
+.form-details .download ul.getresources li a {
+	font-weight: bold;
+	letter-spacing: .02em
+}
+
+.form-details .download ul.getresources li input.lastNedLenke {
+	cursor: pointer;
+	font-weight: 400;
+	font-size: 14px;
+	background: transparent;
+	border: none;
+	color: #0074C2;
+	margin: 0 auto;
+	padding: 0;
+	width: auto;
+}
+
+.form-details .download ul.getresources li input.lastNedLenke:hover {
+	text-decoration: underline;
+}
+
+.form-details .download ul.other-attachments {
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+.form-details .download ul.other-attachments li {
+	padding: 3px 0;
+	font-size: 14px;
+}
+
+.form-details .download .additional-info {
+	color: #B7B1A9;
+}
+
+/* Infoboks */
+
+.form-details .infoboks_skygge {
+	margin: 0 auto;
+	padding: 0;
+	border-right: 2px solid #e8e8e4;
+	border-bottom: 2px solid #e8e8e4;
+}
+
+.form-details .infoboks {
+	padding: 10px;
+	border: 1px solid #dadad4;
+	background-color: #fff;
+}
+
+/*Skjemaoversikt*/
+
+.form-list div.last {
+	margin-right: 0;
+}
+
+/*Used with .form-wrapper - no margin on last div*/
+
+.form-list a {
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+.form-list .form-wrapper {
+	float: left;
+	margin-right: 1em;
+}
+
+.form-list .keywords-wrapper {
+	float: left;
+	width: 49%;
+}
+
+.form-list .keywords-wrapper ul {
+	float: left;
+	list-style: disc outside;
+}
+
+.form-list div.pushdwn {
+	margin-bottom: 3em !important;
+}
+
+.form-list .section {
+	margin-bottom: 1.5em !important;
+}
+
+.form-list .section h3 {
+	margin-bottom: 1em
+}
+
+.form-list table {
+	clear: both
+}
+
+.form-list .form-tbl .NAVskjemaNameCol {
+	width: 67%;
+}
+
+/*Overrides NAVtbl default styles*/
+
+.form-list .form-tbl .NAVskjemaLanguageCol {
+	width: 15%;
+}
+
+.form-list .form-tbl .NAVskjemaIdCol {
+	width: 15%;
+}
+
+.form-list .form-tbl td.first-cell {
+	padding-right: 3%;
+	width: 70%
+}
+
+.form-list caption.table-heading {
+	font-size: 14px;
+	color: #675C53;
+	font-weight: bold;
+	text-align: left;
+	padding-left: 7px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+.form-list thead.hidden span {
+	position: absolute;
+	top: auto;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+}
+
+/*Table headings only visible for screen readers*/
+
+.form-list input#formSearch {
+	width: 15%;
+}
+
+.form-list .focus {
+	background-color: #E7E6E1 !important;
+}
+
+/*Darker*/
+
+.form-list .NAVtbl tr:nth-child(2n) {
+	background-color: #fff !important;
+}
+
+.form-list h2.section-heading, .form-details h2.section-heading {
+	font-size: 30px;
+	font-weight: 600px;
+	text-align: center;
+	font-family: modus, arial, helvetica, sans-serif;
+	color: #675C53;
+	margin-bottom: .5em;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x bottom left;
+	padding: 0 0 4px 3px;
+	color: #675C53;
+}
+
+.form-list label, .form-details label, .form-details h2.section-heading, #userDetails h4 {
+	font-weight: 700;
+	color: #675C53;
+	font-family: modus, arial, helvetica, sans-serif;
+	font-size: 14px;
+}
+
+.relationRadioOptions label, .relationRadioOptions input {
+	line-height: 2
+}
+
+/*Alternativ 3 p� finn adresse-steget*/
+.form-list select, .form-details select {
+	padding: 0px;
+	font-family: modus, arial, helvetica, sans-serif;
+	width: 200px;
+}
+
+.form-list input.text, .form-details input.text, .form-details .zip input.postalcode {
+	padding: 2px
+}
+
+.form-list input, .form-list select {
+	border: 1px solid #A69D97;
+}
+
+.form-list input[type="hidden"] {
+	border: 0;
+}
+
+.form-details div > input[type="text"], .form-details div > select {
+	border: 1px solid #A69D97;
+}
+
+/*-----------------------------------------------
+
+
+
+*   Innsendsingsveileder
+
+
+
+* -----------------------------------------------*/
+
+* html #innsendingsveileder ul li a {
+	display: inline-block
+}
+
+.outercontent {
+	background-color: #e6e5e0;
+	padding: 16px 14px;
+	margin-bottom: 5px;
+}
+
+/*Samme som NAVskjemaBakgrunn og NAVskjemaIndre - men bedre navn?*/
+
+.innercontent {
+	background-color: #fff;
+	color: #675C53;
+	padding: 15px;
+	margin-top: 3px;
+}
+
+.pagesection, .col-wrapper {
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left bottom
+}
+
+.col-wrapper.lastrow {
+	margin-bottom: 0;
+}
+
+.pagesection form#findmyform {
+	float: left;
+	margin-right: 15px;
+}
+
+.pagesection #findmyform fieldset {
+	display: inline;
+	background: transparent;
+	margin: 0;
+	padding: 0
+}
+
+.pagesection #findmyform input {
+	margin-bottom: 0;
+}
+
+.pagesection #findmyform input#formsearch {
+	margin: 0 5px 0 0;
+	border: 1px solid #A69D97
+}
+
+.pagesection #findmyform input.NAVbtn {
+	width: auto;
+}
+
+.pagesection #findmyform label {
+	display: block;
+	font-size: 1.2em;
+	font-weight: bold;
+	margin-bottom: 1.1em
+}
+
+.formarchivebutton {
+	float: left;
+	margin-top: 3em;
+}
+
+.formarchivebutton a {
+	font-size: 14px;
+}
+
+.footersection {
+	margin-top: 10px;
+	padding-top: 10px;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top
+}
+
+.col-wrapper .col {
+	float: left;
+	width: 47%;
+	margin-right: 5%;
+}
+
+.col-wrapper .last {
+	margin-right: 0px !important;
+}
+
+#innsendingsveileder h2.normal {
+	font-size: 1.2em;
+	color: #3E3832;
+}
+
+#innsendingsveileder h2.nodesc {
+	margin-bottom: 2.4em
+}
+
+#innsendingsveileder h3 {
+	font-size: 1.2em;
+	color: #000;
+	font-weight: bold;
+}
+
+#innsendingsveileder .col h3,
+#innsendingsveileder h2.article-heading {
+	font-size: 17px;
+	margin-bottom: 5px;
+	color: #000
+}
+
+#innsendingsveileder h4 {
+	margin-bottom: 5px;
+	color: #000
+}
+
+#innsendingsveileder fieldset {
+	border: 0
+}
+
+#innsendingsveileder ul {
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#innsendingsveileder ul li {
+	line-height: 1.5
+}
+
+#innsendingsveileder ul li a {
+	padding-left: 22px;
+	font-size: 14px;
+	display: block;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/ikon-pil-tykk-blaa.gif') no-repeat left .25em
+}
+
+#innsendingsveileder ul li.moreinfo a {
+	padding-bottom: 2px;
+	padding-top: 4px;
+	background-image: url('@{baseImagePath}img/skjemaveileder/ikon-faktaark.gif')
+}
+
+#steg_i_innsendingsveileder ul {
+	margin-bottom: 10px;
+	padding-bottom: 20px;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x scroll left bottom;
+}
+
+#steg_i_innsendingsveileder ul li {
+	float: left;
+	margin-right: 15px;
+	font-size: 1.5em;
+	font-weight: bold;
+	color: #685D54;
+}
+
+#steg_i_innsendingsveileder ul li.last {
+	float: none;
+}
+
+#steg_i_innsendingsveileder ul li.selected {
+	color: #C30000;
+}
+
+#steg_i_innsendingsveileder ul li.waiting {
+	color: #988F86;
+}
+
+#steg_i_innsendingsveileder ul li span {
+	margin-left: 15px;
+	color: #988F86;
+}
+
+#steg_i_innsendingsveileder h1#steg_header, #steg_i_innsendingsveileder p {
+	position: absolute;
+	top: auto;
+	left: -9999px;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+}
+
+/*jQuery Autocomplete plugin styles*/
+
+.ac_results {
+	padding: 0px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;
+}
+
+.ac_results ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.ac_results li {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	font: menu;
+	font-size: 12px;
+	line-height: 16px;
+	overflow: hidden;
+}
+
+.ac_loading {
+	background: white url('@{baseImagePath}img/skjemaveileder/indicator.gif') right center no-repeat;
+}
+
+.ac_even {
+	background-color: #d9eaf6;
+}
+
+.ac_over, .ac_over strong {
+	background-color: #0A246A;
+	color: white;
+}
+
+/*Innsendingsveil end*/
+/* Skjema2011 */
+
+.skjema2011form-details .NAVskjemaIndre .group p {
+	clear: left;
+
+	font-weight: 400;
+	margin-bottom: 0.5em;
+	margin-left: 2.5em;
+}
+
+#skjemaveilederContainer h1 {
+	font-size: 30px;
+	font-weight: 400;
+	text-align: center;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjemaveilederContainer h2.skjemasteg {
+	font-size: 30px;
+	font-weight: 400;
+	text-align: center;
+	margin-bottom: 10px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjemaveileder ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+#skjemaveileder ul li.moreinfo a {
+	font-size: 14px;
+	padding-bottom: 2px;
+	padding-top: 4px;
+	background-image: none;
+}
+
+#skjemaveileder h2.normal {
+	color: #3E3832;
+	font-size: 30px;
+	font-weight: 400;
+	text-align: centre;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjemaveileder h2.nodesc {
+	margin-bottom: 2.4em
+}
+
+#skjemaveileder h3 {
+	font-size: 17px;
+	color: #000;
+	font-weight: 400;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjemaveileder .col h3,
+#skjemaveileder h2.article-heading {
+	font-size: 1.5em;
+	margin-bottom: 5px;
+	color: #000
+}
+
+#skjemaveileder h4 {
+	margin-bottom: 5px;
+	color: #000
+}
+
+#skjemaveileder ul li {
+	line-height: 1.5
+}
+
+#skjemaveileder ul li a {
+	font-size: 14px;
+	padding-left: 22px;
+	display: block;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/ikon-pil-tykk-blaa.gif') no-repeat left .25em
+}
+
+.skjema2011form-details .categoryChosen {
+	margin: 0 0 0 12px;
+}
+
+.skjema2011form-details .navUnitChangeButton {
+	background-color: transparent;
+	border: 0;
+	padding: 0em 0em 0em 0em;
+	color: #0074C4;
+	margin-left: 120px;
+	cursor: pointer;
+	display: none;
+}
+
+.skjema2011form-details #excaseNAVKontorSelectedChangeButton {
+	background-color: transparent;
+	border: 0;
+	padding: 0em 0em 0em 0em;
+	color: #0074C4;
+	margin-left: 145px;
+	display: none;
+}
+
+.skjema2011form-details #navdepartment1SelectedChangeButton {
+	background-color: transparent;
+	border: 0;
+	padding: 0em 0em 0em 0em;
+	color: #0074C4;
+	margin-left: 116px;
+	display: none;
+}
+
+.skjema2011form-details h2.skjemasteg {
+	font-size: 30px;
+	font-weight: 400;
+	text-align: center;
+	margin-bottom: 10px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+/* MOD */
+.MODingress {
+	font-weight: 600;
+	font-size: 13px;
+	width: 49%;
+	margin-bottom: 20px
+}
+
+.MODinnsendingsvalgContainer {
+	color: #675C53;
+}
+
+.MODinnsendingsValg {
+	display: inline-block;
+	height: 285px;
+	padding: 40px 30px;
+	width: 49%;
+	vertical-align: top;
+	background-color: #fff;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	position: relative;
+}
+
+.MODinnsendingsValg h3 {
+	margin-bottom: 30px;
+	font-size: 22px !important;
+}
+
+.MODinnsendingsValg .modbutton {
+	position: absolute;
+	bottom: 10px;
+}
+
+.MODinnsendingsValg:first-child {
+	margin-right: 14px;
+}
+
+.MODinnsendingListe {
+	line-height: 1.8;
+	margin-bottom: 25px;
+	list-style: disc;
+	padding-left: 22px
+}
+
+.MODinnsendingListe li {
+	font-size: 73%
+}
+
+.sporsmaal {
+	// background: url(../bilder/sporsmaal.png) no-repeat 0 0; // bildet finnes ikke
+	width: 20px;
+	height: 20px;
+	margin-left: 5px;
+	position: relative;
+	top: 6px;
+	display: inline-block;
+}
+
+.skjema2011form-details .NAVskjemaBakgrunn .modinnsendingsvalgLeft {
+	float: left;
+	width: 250px
+}
+
+.skjema2011form-details .NAVskjemaBakgrunn .modinnsendingsvalgRight {
+	margin-left: 5px
+}
+
+.skjema2011form-details .NAVskjemaBakgrunn .modinnsendingsliste {
+	float: left
+}
+
+.skjema2011form-details h3.modinnsendingsvalgoverskrift {
+	margin: 0px
+}
+
+.modbutton {
+	display: inline-block;
+	cursor: pointer;
+	padding: 11px 40px;
+	text-align: center;
+	text-transform: uppercase;
+	text-decoration: none;
+	font-family: Modus, Arial, Helvetica, sans-serif;
+	font-weight: 600;
+	vertical-align: middle;
+	-webkit-border-radius: 1px;
+	-moz-border-radius: 1px;
+	border-radius: 1px;
+	border: 1px solid #dfdfdf;
+	border-bottom: 1px solid #b6b6b6;
+	color: #3e3832;
+	background-color: #dcdcdc;
+	background-image: -moz-linear-gradient(top, #e3e3e3, #d2d2d2);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e3e3e3), to(#d2d2d2));
+	background-image: -webkit-linear-gradient(top, #e3e3e3, #d2d2d2);
+	background-image: -o-linear-gradient(top, #e3e3e3, #d2d2d2);
+	background-image: linear-gradient(to bottom, #e3e3e3, #d2d2d2);
+	background-repeat: repeat-x;
+	border-color: #d2d2d2 #d2d2d2 #acacac;
+	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+
+.skjema2011form-details h2.modstor {
+	background: url("@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif") repeat-x scroll center bottom transparent;
+	color: #3E3832;
+	font-size: 1.4em;
+	font-weight: bold;
+	margin-bottom: 1em;
+	padding: 5px 0;
+}
+
+/* SLUTT MOD */
+
+#skjema2011userDetails input.radiobutton {
+	float: left;
+	margin-right: 10px;
+	margin-top: 3px;
+}
+
+#skjema2011userDetails .labelcontainer {
+	float: left;
+	width: 80%;
+}
+
+#skjema2011userDetails .labelcontainer label.velgBoksLabel {
+	display: block;
+	margin-bottom: 1em
+}
+
+#skjema2011userDetails .labelcontainer p {
+	font-size: 14px;
+	font-weight: 400;
+	clear: left;
+	margin: 0;
+}
+
+#skjema2011userDetails .singlefield {
+	margin-bottom: 1em
+}
+
+#skjema2011userDetails .sublabel {
+	float: left;
+	margin-right: 5px;
+	line-height: inherit;
+	font-weight: 700;
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .sublabel.ext {
+	width: 10em !important
+}
+
+#skjema2011userDetails .sublabel.small {
+	width: 8em !important
+}
+
+#skjema2011userDetails .sublabel.big {
+	width: 8em !important
+}
+
+#skjema2011userDetails #excase1 {
+	margin-right: 10px;
+}
+
+#NAVskjema2011DownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {
+	padding: 20px 15px 30px 15px;
+	background: #F6F6F4 url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left bottom
+}
+
+#NAVskjema2011DownloadContainer h2.skjemasteg {
+	font-size: 30px;
+	font-weight: 400;
+	text-align: center;
+	margin-bottom: 10px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .navUnitsSelectBox select#selectEnhet2 {
+	width: 20em;
+	float: left;
+	margin-left: 120px;
+}
+
+#skjema2011userDetails .addressinputbody .NAVpostnummer .sublabel,
+#enhetsSelectBox .sublabel,
+#userIdNumber .sublabel {
+	width: 10em !important
+}
+
+#skjema2011userDetails div.inputfieldset {
+	float: left;
+	width: 50%;
+	margin-right: 5px
+}
+
+#skjema2011userDetails .addressinputbody {
+	padding-left: 28px;
+}
+
+#skjema2011userDetails .addressinputbody .detail-inputs {
+	width: 95%;
+	margin: 5px 0 0 0;
+}
+
+#skjema2011userDetails .addressinputbody .detail-inputs-address1 {
+	width: 35%;
+	margin: 5px 0 0 0;
+	float: left
+}
+
+#skjema2011userDetails .addressinputbody .detail-inputs-address2 {
+	width: 35%;
+	margin: 5px 0 0 0;
+	float: left
+}
+
+#skjema2011userDetails .addressinputbody .detail-text {
+	float: left;
+	width: 35%;
+	margin-top: 0 !important
+}
+
+#skjema2011userDetails .addressinputbody .help-text {
+	font-weight: normal;
+	margin-left: 5px;
+	width: 35%;
+	margin-top: 0 !important
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div {
+	border: 1px solid #E6E5E0;
+	margin-bottom: 5px;
+	padding: 3px;
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div.zip {
+	float: left;
+	width: 56%;
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div.area {
+	float: left;
+	width: 100%;
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div input {
+	border: none;
+	width: 57%;
+	margin-left: 1%;
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div.area input {
+	width: 50%;
+	padding: 1px;
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div.zip input {
+	width: 34%
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div label {
+	display: inline-block;
+	font-weight: normal;
+	width: 120px;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/pil-hoyre.gif') no-repeat right 50%
+}
+
+#skjema2011userDetails .addressinputbody .inputfieldset div.area label {
+	width: 120px;
+}
+
+#skjema2011userDetails .addressinputbody .top-horizontal-separator.group {
+	border-top: none;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+}
+
+#skjema2011userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group {
+	background: none;
+}
+
+#skjema2011userDetails #navUnitOrgSelected {
+	float: left;
+	font-size: 14px;
+}
+
+#skjema2011userDetails #navUnitMultipleSelected {
+	width: 40%;
+	font-size: 14px;
+}
+
+#skjema2011userDetails .addressinputbody .NAVpostnummer .detail-inputs,
+#userIdNumber .detail-inputs {
+	width: 19.5em;
+	margin-right: 1em
+}
+
+#skjema2011userDetails .addressinputbody .NAVpostnummer .detail-text,
+#userIdNumber .detail-text {
+	width: 55%;
+	float: left;
+}
+
+#enhetsSelectBox .detail-inputs {
+	width: 30em;
+	margin-right: 3em
+}
+
+#enhetsSelectBox .detail-text {
+	width: 33%;
+	float: left
+}
+
+#enhetsSelectBox2 .detail-inputs {
+	width: 30em;
+	margin-right: 3em
+}
+
+#enhetsSelectBox2 .detail-text {
+	width: 33%;
+	float: left
+}
+
+#skjema2011userDetails .moreaddressoptions .checked .addressinputbody {
+	margin: 0em 0 0 28px;
+	padding: 0em 0 0 0;
+}
+
+#skjema2011userDetails .moreaddressoptions .navunit {
+	float: left;
+}
+
+#skjema2011userDetails .moreaddressoptions .navunit input {
+	float: left;
+}
+
+#skjema2011userDetails .moreaddressoptions .explain-text-address1 {
+	font-weight: normal;
+	margin-top: 0 !important;
+	width: 65%;
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .explain-text-address2 {
+	font-weight: normal;
+	margin-top: 0 !important;
+	width: 65%;
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .help-addressbox-text {
+	margin-left: 5px;
+	display: block;
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .help-text {
+	margin-left: 14px;
+	font-size: 14px;
+	display: inline-block;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .addressleft {
+	float: left;
+	width: 40%;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .addressright {
+	float: left;
+	width: 40%;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .navunitaddressright {
+	float: left;
+	width: 35%;
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+#skjema2011userDetails .moreaddressoptions .navunitaddressleft {
+	float: left;
+	width: 53%
+}
+
+#skjema2011userDetails .top-horizontal-separator {
+	padding-top: 1em;
+	margin-top: 1em;
+	width: 96%;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+}
+
+.skjema2011form-details .top-horizontal-separator {
+	padding-top: 1em;
+	margin-top: 1em;
+	width: 96%;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+}
+
+.skjema2011form-details #userIdNumber {
+	padding-top: 2em;
+	background: url("@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif") repeat-x scroll left top transparent
+}
+
+.skjema2011form-details .NAVpostnummer {
+	padding: 1em 0;
+}
+
+#skjema2011userDetails .moreaddressoptions {
+	clear: both;
+	padding-top: 2em;
+	margin-left: 2em;
+	font-size: 14px;
+}
+
+#skjema2011userDetails .moreaddressoptions.private {
+	padding-top: 0em;
+	margin-left: 0em;
+}
+
+#skjema2011userDetails .moreaddressoptions .secondoption {
+	margin: 2em 0;
+	border-top: 2px solid #E6E5E0;
+	border-bottom: 2px solid #E6E5E0;
+}
+
+#skjema2011userDetails .moreaddressoptions .thirdoption {
+	margin: 2em 0;
+	border-bottom: 2px solid #E6E5E0;
+}
+
+#skjema2011userDetails .moreaddressoptions .fourthoption {
+	margin: 2em 0;
+	border-bottom: 2px solid #E6E5E0;
+}
+
+#skjema2011userDetails .moreaddressoptions .secondoption .addressinputbody {
+	padding-top: 0em;
+	margin-top: 0em
+}
+
+#skjema2011userDetails .moreaddressoptions .secondoption.private {
+	margin: 0em;
+}
+
+#skjema2011userDetails .moreaddressoptions .thirdoption.private {
+	margin: 0em;
+}
+
+#skjema2011userDetails .moreaddressoptions .fourthoption.private {
+	margin: 0em;
+}
+
+.skjema2011form-details img.toggleAttachmentBody, .skjema2011form-details img.toggleAddressBody {
+	float: right;
+	cursor: pointer;
+}
+
+.skjema2011form-details h3 {
+	font-size: 1.2em;
+	margin-left: 6px
+}
+
+.skjema2011form-details .NAVskjemaBakgrunn {
+	background-color: #e6e5e0;
+	padding: 16px 14px;
+	margin-bottom: 5px;
+}
+
+.skjema2011form-details .NAVskjemaBakgrunn img.icon {
+	float: left;
+	margin-right: 0px
+}
+
+.skjema2011form-details .NAVskjemaIndre {
+	color: #675C53;
+	padding: 15px;
+	margin-top: 3px;
+	overflow: auto;
+}
+
+.skjema2011form-details .NAVskjemaIndre.private {
+	padding: 0 0 0 0;
+}
+
+.skjema2011form-details .NAVskjemaIndre.checked {
+	background-color: #fff;
+}
+
+.skjema2011form-details .userinputsectionIndre {
+	background-color: #fff;
+}
+
+.skjema2011form-details .addressInfo.checked {
+	background-color: #fff;
+}
+
+.skjema2011form-details .addressInfo {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.skjema2011form-details .addressInfo.private {
+	padding: 25px 0px 15px 20px;
+	display: block
+}
+
+.skjema2011form-details .addressInfo.secondoption.private {
+	padding: 25px 0px 15px 20px;
+	display: block
+}
+
+.skjema2011form-details .main-form {
+	padding-bottom: 2em;
+}
+
+.skjema2011form-details .main-form p {
+	margin: 0;
+}
+
+.skjema2011form-details .main-form p.default {
+	margin-bottom: 1.5em
+}
+
+.skjema2011form-details #senderChosen {
+	margin-left: 12px
+}
+
+.skjema2011form-details .attachmentbody {
+	float: left;
+	width: 100%;
+	padding-top: 2px;
+}
+
+.skjema2011form-details .velgBoks {
+	float: left;
+	margin-right: 12px;
+	margin-left: 0;
+}
+
+.skjema2011form-details .attachmentList div.brodtekst {
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left top;
+	padding-top: 10px;
+	margin-top: 10px;
+}
+
+.skjema2011form-details .attachmentList .obligatoriskeVedlegg {
+	margin-top: 5px;
+}
+
+.skjema2011form-details .attachmentList div.underpunkter div.input-wrapper {
+	float: left;
+	width: 100%;
+	margin: .5em 0;
+	height: 1.2em;
+}
+
+.skjema2011form-details .attachmentList div.underpunkter input {
+	margin: 0 12px 0 0 !important;
+	padding: 0 !important;
+}
+
+.skjema2011form-details .attachmentList div.underpunkter label {
+	font-weight: normal;
+}
+
+.skjema2011form-details .navUnitsSelectBox div {
+	float: left
+}
+
+.skjema2011form-details .navUnitsSelectBox select#selectEnhet {
+	width: 20em;
+	height: 4em;
+	float: left;
+	margin-right: 83px;
+	margin-left: 16px;
+}
+
+.skjema2011form-details .velgBoksLabel {
+	float: left;
+	line-height: 1.5;
+	margin-bottom: 1em;
+	font-weight: 400;
+	color: #3E3832;
+	font-size: 14px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+.NAVerrorBoxWrapper {
+	border: 1px dotted;
+	border-color: #CE3231
+}
+
+.NAVerrorBoxWrapperComplaint {
+	border: 1px dotted;
+	border-color: #CE3231;
+	margin-top: 65px;
+}
+
+#navUnitOrgError, #navUnitMultipleError {
+	border: 1px dotted;
+	border-color: #CE3231;
+}
+
+.skjema2011form-details .dwnld-confirmation {
+	background-color: #fff !important;
+	padding-bottom: 20px !important;
+}
+
+.skjema2011form-details .dwnld-confirmation a {
+	cursor: pointer;
+	clear: both;
+}
+
+.skjema2011form-details .dwnld-confirmation p {
+	margin: 0;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #3E3832;
+}
+
+.skjema2011form-details .dwnld-confirmation p em {
+	font-style: italic
+}
+
+.skjema2011form-details .dwnld-confirmation .ajax-loader {
+	clear: both;
+	padding-right: 25px;
+	background: url('@{baseImagePath}img/skjemaveileder/ajax-loader.gif') no-repeat right 50%;
+}
+
+#dwnload-confirmation-msg span.quiet {
+	font-weight: normal;
+	font-style: italic
+}
+
+.skjema2011form-details .dwnld-footer {
+	margin-top: 3em;
+}
+
+.general-wrapper {
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+.skjema2011form-details .NAVerrorBox {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	border: 0;
+	clear: both;
+}
+
+.skjema2011form-details .NAVerrorBox p {
+	margin: 10px 0 !important;
+	font-weight: bold
+}
+
+.skjema2011form-details .top {
+	margin-top: 0
+}
+
+.skjema2011form-details p.top {
+	color: #675C53
+}
+
+.skjema2011form-details .quiet {
+	color: #988f86;
+}
+
+.skjema2011form-details .strong {
+	font-weight: bold;
+}
+
+.skjema2011form-details .bottom {
+	margin-bottom: 0;
+}
+
+.skjema2011form-details .stor {
+	font-size: 1.4em;
+	font-weight: bold;
+	color: #3E3832;
+}
+
+.skjema2011form-details .stor span {
+	font-weight: normal;
+	color: #988f86;
+}
+
+.skjema2011form-details .clear {
+	clear: both;
+}
+
+.skjema2011form-details .text-wrapper {
+	float: left;
+	width: 90%;
+}
+
+.skjema2011form-details .horizontal-separator {
+	float: left;
+	width: 100%;
+	margin-bottom: 1em;
+	padding-bottom: 1em;
+	background: url('@{baseImagePath}img/skjemaveileder/dashedhorizontal.gif') repeat-x left bottom;
+}
+
+.skjema2011form-details .reset-defaults {
+	float: none !important;
+	font-weight: normal !important;
+}
+
+/*Kun for utlandscheckbox og label*/
+
+.skjema2011form-details input#utland {
+	margin-left: 0;
+	vertical-align: middle
+}
+
+/*Kun for utlandscheckbox og label*/
+
+.skjema2011form-details select#temaId {
+	width: 150px;
+}
+
+/*Kun for tema-dropdown */
+
+.skjema2011form-details h2 {
+	font-size: 1.2em;
+	color: #3E3832;
+}
+
+/* Infoboks */
+
+.skjema2011form-details .infoboks_skygge {
+	margin: 0 auto;
+	padding: 0;
+	border-right: 2px solid #e8e8e4;
+	border-bottom: 2px solid #e8e8e4;
+}
+
+.skjema2011form-details .infoboks {
+	padding: 10px;
+	border: 1px solid #dadad4;
+	background-color: #fff;
+}
+
+.skjema2011form-details .relationRadioOptions .relatedinputfieldset {
+	width: 80%;
+	float: left
+}
+
+.skjema2011form-details .relationRadioOptions .relatedinputfieldset ul {
+	list-style-type: none
+}
+
+.skjema2011form-details .nextStepButton {
+	border: 1px solid #A69D97;
+	padding: 0.1em 0.5em 0em 0.5em;
+	float: right
+}
+
+.skjema2011form-details .previousStepButton {
+	background-color: transparent;
+	border: 0;
+	padding: 0.1em 0.5em 0em 0.5em;
+	color: #0074C4;
+	float: right;
+	cursor: pointer;
+}
+
+.skjema2011form-details .NAVskjemaIndre .downloadFirstPage input#downloadFirstPage {
+	background: transparent url('@{baseImagePath}img/skjemaveileder/ikon-toppark-sml.gif') no-repeat left center;
+	border: 0;
+	color: #0074C4;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 2px 25px;
+}
+
+.skjema2011form-details .NAVskjemaIndre a#downloadComplaintForm {
+	color: #0074C4;
+	font-weight: bold;
+	text-decoration: none;
+	background: transparent url('@{baseImagePath}img/skjemaveileder/ikon-skjema-sml.gif') no-repeat left center;
+	padding: 2px 28px;
+}
+
+#skjema2011-schemaAndAttachment div.submit {
+	visibility: visible;
+}
+
+#skjema2011-schemaAndAttachment h2.skjemasteg {
+	font-weight: 400;
+	font-size: 30px;
+	text-align: center;
+	margin-bottom: 10px;
+	font-family: modus, arial, helvetica, sans-serif;
+}
+
+.skjema2011form-details input.rightadjusted {
+	float: right;
+}
+
+.btn-standard {
+
+	cursor: pointer;
+
+	float: left;
+
+	margin-right: 4px;
+
+	display: block;
+
+	color: #ffffff;
+
+	font-size: 14px;
+
+	font-weight: bold;
+
+	border: solid 1px #3a3733;
+
+	padding: 5px 10px 7px;
+
+	background: #3a3733;
+
+	background: -moz-linear-gradient(top center, #6f6962, #3a3733);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#6f6962), to(#3a3733));
+
+	-moz-box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
+
+	-webkit-box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
+
+	box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
+
+	text-shadow: 0 -1px 1px #000000;
+
+	-moz-border-radius: 4px;
+
+	-webkit-border-radius: 4px;
+
+	-border-radius: 4px;
+
+}
+
+.btn-standard:hover {
+
+	text-decoration: none;
+
+	background: #5a554f;
+
+	background: -moz-linear-gradient(top center, #938b81, #4a4641);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#938b81), to(#4a4641));
+
+	-moz-box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
+
+	-webkit-box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
+
+	box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
+
+}
+
+.btn-standard:active {
+
+	background: #3a3733;
+
+	background: #34312e;
+
+	background: -moz-linear-gradient(top center, #3a3733, #3a3733);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#3a3733), to(#3a3733));
+
+	-moz-box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
+
+	-webkit-box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
+
+	box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
+
+}
+
+.btn-standard:visited {
+	color: #ffffff;
+}
+
+.btn-action:visited {
+	color: #ffffff;
+}
+
+.btn-action:hover {
+	color: #ffffff;
+}
+
+.btn-action {
+
+	float: left;
+
+	margin-right: 4px;
+
+	display: block;
+
+	color: #ffffff;
+
+	font-size: 1.2em;
+
+	font-weight: bold;
+
+	border: solid 1px #8c9400;
+
+	padding: 5px 10px 7px;
+
+	background: #8c9400;
+
+	background: -moz-linear-gradient(top center, #b7c300, #8c9400);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#b7c300), to(#8c9400));
+
+	-moz-box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
+
+	-webkit-box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
+
+	box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
+
+	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.4);
+
+	-moz-border-radius: 4px;
+
+	-webkit-border-radius: 4px;
+
+	-border-radius: 4px;
+
+}
+
+.btn-action:hover {
+
+	text-decoration: none;
+
+	background: #a2ad00;
+
+	background: -moz-linear-gradient(top center, #cfdd00, #939b00);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#cfdd00), to(#939b00));
+
+}
+
+.btn-action:active {
+
+	background: #889400;
+
+	background: #858d00;
+
+	background: -moz-linear-gradient(top center, #8c9400, #8c9400);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#8c9400), to(#8c9400));
+
+	-moz-box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
+
+	-webkit-box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
+
+	box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
+
+}
+
+.btn-alternativ {
+
+	float: left;
+
+	margin-right: 4px;
+
+	display: block;
+
+	color: #3a3733;
+
+	font-size: 1.2em;
+
+	font-weight: bold;
+
+	border: solid 1px #ceccc8;
+
+	padding: 6px 10px 6px;
+
+	background: #e0ded8;
+
+	background: -moz-linear-gradient(top center, #f9f8f7, #e0ded8);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#f9f8f7), to(#e0ded8));
+
+	-moz-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+
+	-webkit-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+
+	box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+
+	text-shadow: 0 1px 1px #ffffff;
+
+	-moz-border-radius: 4px;
+
+	-webkit-border-radius: 4px;
+
+	-border-radius: 4px;
+
+}
+
+.btn-alternativ:hover {
+
+	text-decoration: none;
+
+	background: #eceae4;
+
+	background: -moz-linear-gradient(top center, #ffffff, #e9e7e1);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#e9e7e1));
+
+	-moz-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+
+	-webkit-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+
+	box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+
+}
+
+.btn-alternativ:active {
+
+	background: #889400;
+
+	background: #d6d4ce;
+
+	background: -moz-linear-gradient(top center, #e0ded8, #e0ded8);
+
+	background: -webkit-gradient(linear, center top, center bottom, from(#e0ded8), to(#e0ded8));
+
+	-moz-box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
+
+	-webkit-box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
+
+	box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
+
+}
+
+.btn-prosess {
+
+	float: right;
+
+	margin-left: 4px;
+
+	margin-right: 0;
+
+}
+
+.btn-posisjon2 {
+	margin-left: 6px;
+}
+
+.btn-liten {
+
+	font-size: 1em;
+
+	padding: 1px 8px 2px;
+
+}
+
+#chooseCategorySelectAdr {
+
+	display: none;
+
+}
+
+/* end Skjema 2011*/
+

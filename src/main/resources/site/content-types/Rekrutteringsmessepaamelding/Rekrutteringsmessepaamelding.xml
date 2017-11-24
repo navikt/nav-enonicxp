@@ -1,0 +1,47 @@
+<content-type>
+    <display-name>Rekrutteringsmessepaamelding</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Påmelding">
+            <label>Påmelding</label>
+            <items>
+                <input name="navn" type="TextLine">
+                    <label>Fullt navn</label>
+                    <custom-text>contentdata/navn</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="telefonnummer" type="TextLine">
+                    <label>Telefonnummer</label>
+                    <custom-text>contentdata/telefonnummer</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="epost" type="TextLine">
+                    <label>E-post</label>
+                    <custom-text>contentdata/epost</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="melding" type="TextArea">
+                    <label>Melding</label>
+                    <custom-text>contentdata/melding</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="rekrutteringsmesse" type="TextLine">
+                    <label>Rekrutteringsmesse</label>
+                    <custom-text>contentdata/rekrutteringsmesse</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="messeId" type="ContentSelector">
+                    <label>Rekrutteringsmesse</label>
+                    <custom-text>contentdata/messeId</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rekrutteringsmessebeskrivelse</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

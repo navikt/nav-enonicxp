@@ -1,0 +1,345 @@
+/***********************************************
+*
+*	GLOBAL ELEMENTS
+*
+***********************************************/
+html { background-image: url('images/background.gif'); background-position: left top;}
+body { margin:0em; padding: 0em; border-collapse: collapse; font-size: 73%; }
+body, select, input, label, textarea { font-family: arial, verdana, sans-serif; color: #3E3832;}
+table { font-size: 100%;}
+select, input, textarea { font-size: 1em;}
+a { text-decoration: none; color: #0074C4;}
+a:hover { text-decoration: underline;}
+a:visited { color: #8B32E5; }
+img { border: 0em;}
+samp { font-size: 1.3em; }
+.NAVbtn, .button, .loginButton { background-image: url('images/buttonbackground.gif'); background-repeat: repeat-x; border: 1px solid #A69D97; padding: 0.1em 0.5em 0em 0.5em;/*2px 4px 0px 4px;*/}
+
+/************************************************
+*
+*	Site containers
+*
+*************************************************/
+#NAVheaderContainer, #NAVcenterContainer, #NAVborderBottomCenter { width: 99.5%; /*98.3%;*/ margin-left: 0.25%; /*0.9%;*/ display: inline; max-width: 1400px;}
+#NAVheaderContainer { float: left; }
+#NAVcenterContainer { float: left; }
+#NAVcenterContainer { background-color: #C30000; }
+
+#NAVborderBottomLeft { float: left; height: 12px; width: 100%; background-image: url('images/borderbottomleft.gif'); background-repeat: no-repeat; background-position: top left;}
+#NAVborderBottomRight { float: left; height: 12px; width: 100%; background-image: url('images/borderbottomright.gif'); background-repeat: no-repeat; background-position: top right; }
+#NAVborderBottomCenter { float: left; background-image: url('images/borderbottom.gif'); background-repeat: repeat-x; background-position: top left; height: 12px;}
+
+/**********************************************************
+*
+*	Containers in headerContainer
+*
+**********************************************************/
+#NAVheaderContainer #NAVheaderContentContainer { float: left; width: 100%; margin-top: 8px;}
+#NAVheaderContainer #NAVheaderContentContainer { background-image: url('images/headerbackground.gif'); background-repeat: repeat-x; background-position: 0px 48px;}
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer { float: left; margin-left: 18px; margin-top: 4px; }
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer img { float: left;}
+#NAVheaderContainer #NAVheaderContentContainer a { color: #3E3832;}
+#NAVheaderContainer #NAVheaderContent { float: right; margin-right: 10px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop { margin-top: 5px; }
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop form { display: inline;}
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop a { margin-right: 10px;}
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop .NAVheadBtn { margin-right: 17px;}
+#NAVheaderContainer #NAVheaderContent .NAVservicesTop .NAVbtn { margin-left: 5px;}
+
+/*********************************************************
+*
+*	Containers in centerContainer
+*
+*********************************************************/
+#NAVborderLeft { float: left; width: 100%; background-image: url('images/borderleft.gif'); background-repeat: repeat-y; background-position: left top; }
+#NAVborderRight { float: left; width: 100%; background-image: url('images/borderright.gif'); background-repeat: repeat-y; background-position: right top; }
+
+/************** contentSpacerContainer **************/
+#NAVcontentSpacerContainer { margin: 0em 7px 0em 29px; }
+#NAVcontentSpacerOperaFix { float: left; padding-bottom: 22px; width:100%;}
+
+/****************************************************
+*
+*	pageContainer - containers in content
+*
+*****************************************************/
+#NAVpageContainer { float: left; width: 100%; background-color: #F9F8F7;}
+#NAVpageContainer .NAVtopSpacing { height: 2em; width: 100%; clear: left;}
+#NAVpageContainer .NAVtopSpacingFrontPage { height: 14px; clear: left;}
+#NAVfooterContainer a { margin-right: 5px;}
+#NAVpageContainer #NAVoneColumnContainer { padding: 0em 1em 0em 1em; }
+
+/*help.css*/
+ul.NAVsquarelist { list-style-type: square; list-style-position: inside; }
+ul.NAVsquarelist li { margin-bottom: 0.2em; }
+
+ul.NAVcirclelist { list-style-type: circle; list-style-position: inside; }
+ul.NAVcirclelist li { margin-left:1.5em; margin-bottom: 0.2em; }
+
+ol.NAVnumberedList { list-style-type:decimal; list-style-position: inside; }
+ol.NAVnumberedList li { margin-bottom: 0.2em; }
+ol.NAVnumberedList li p { margin-left: 1.2em; }
+
+
+
+#NAVhelpHeaderSpacer { clear:both; font-size:1px; margin:8px; }
+
+#NAVhelpContentSpacerContainer { margin: 0em 7px 0em 15px; }
+#NAVhelpContentSpacerOperaFix { float: left; padding-bottom: 8px; width:100%;}
+#NAVhelpSeparatorHeader { font-size:1px; height: 10px; width: 100%; clear: left;}
+
+
+
+/**********************************************
+*
+*	PRINT TRICKS
+*
+***********************************************/
+@media print {
+body { font-size: 85%;}
+body, label { font-family: "Times New Roman", sans-serif, arial;}
+
+h1, h2, h3, h4, h5 { font-family: arial, verdana;}
+
+h1 { font-size: 1.5em;}
+
+/* CSS2 browsers only, prints url for links */
+#NAVpageContainer #NAVrelevantContentContainer a:link:after, #NAVpageContainer #NAVrelevantContentContainer a:visited:after {
+   content: "(www.nav.no/" attr(href) ")";
+   padding-left: 5px;
+   }
+a { text-decoration: underline;}
+
+.NAVtbl td, .NAVnumTbl td { border-bottom: 1px solid #F4F3F1;}
+
+.NAVtbl th,
+.NAVnumTbl th,
+.NAVsearchFirstLine { border-bottom: 1px dashed #F4F3F1;}
+
+.NAVpageBreak { display: block; page-break-after: always; }
+
+/* Sort skrift pÃ¥ print */
+body, label, a, a:visited, h1, h2, h3, h4, h5, strong, b, span, ul, ol,
+.NAVtextController ul a,
+.NAVtextController ul a:visited,
+.NAVtbl th,
+.NAVnumTbl th { color: #000000!important;}
+
+/*****************************
+*
+*	Display
+*
+*********************************/
+#NAVheaderContent,
+#NAVmenu,
+#NAVsubmenuContainer,
+#NAVpersonalizedNavigation form,
+#NAVpageImage,
+#NAVfooterContainer,
+#NAVrelevantContentContainer .NAVavailability,
+#NAVborderBottomLeft,
+#NAVborderBottomRight,
+#NAVborderBottomCenter,
+.NAVsheetFlip,
+.dashedLine,
+.NAVnewsArchiveNavigation,
+.NAVdashedBox,
+.NAVlargeTableBody .NAVpageFooter,
+#NAVlargeTableHeader,
+#NAVpageContainer .NAVtopSpacing,
+#NAVpageContainer .NAVtopSpacingFrontPage,
+.NAVsortBox,
+.NAVformBoxSearch,
+.NAVsearchResultRightContainer,
+.NAVShowHitsOfType,
+.NAVSearchNavigationTop,
+.NAVfastNavBordemBottom, 
+.NAVsheetFlip { display: none!important;}
+
+/************************************
+*
+*	Float
+*
+*************************************/
+#NAVpageContainer #NAVrelevantContentContainer,
+#NAVpageContainer #NAVcontentContainer,
+#NAVborderLeft,
+#NAVborderRight,
+#NAVcontentSpacerOperaFix,
+#NAVpageContainer,
+#NAVheaderContainer,
+.NAVlinkListContainer,
+.NAVpageFooter,
+#NAVheaderContainer #NAVheaderContentContainer,
+#NAVpageContainer #NAVtwoColumnContainer,
+#NAVcenterContainer,
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer,
+#NAVpageTitleContainer,
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer img,
+.NAVbigCampaign,
+#NAVrelevantContentContainer .NAVnewsImgPlaceHolder,
+#NAVrelevantContentContainer .NAVnewsImg,
+#NAVtjenesterHeaderContainer h1,
+#NAVtjenesterHeaderContainer .NAVtjenesteLoginContainer,
+.NAVSearchResultContainer,
+.threeColumnCampaign li,
+.threeColumnCampaign img { float: none!important;}
+
+.NAVlinkListContainer h5 { float: left;}
+
+/***********************************
+*
+* Image
+*
+************************************/
+html,
+#NAVborderLeft,
+#NAVborderRight,
+#NAVheaderContainer #NAVheaderContentContainer,
+.NAVpageFooter,
+#NAVrelevantContentContainer .NAVavailability,
+h5,
+.NAVtbl th div, 
+.NAVnumTbl th div,
+#NAVrelevantContentContainer .NAVfastNavContainer,
+#NAVpageTitleContainer,
+.NAVbigCampaign h5,
+.NAVsearchFirstLine,
+#NAVcontentContainer .NAVfastNavBorderRight,
+.threeColumnCampaign li { background-image: none!important;}
+
+/***********************************
+*
+* Width
+*
+************************************/
+#NAVheaderContainer, #NAVcenterContainer, #NAVborderBottomCenter { width: 100%;}
+
+#NAVpageContainer #NAVrelevantContentContainer,
+#NAVpageContainer #NAVcontentContainer,
+#NAVtwoColumnContainer,
+.NAVSearchResultContainer { width: 95%!important;}
+
+
+/***********************************
+*
+* Color
+*
+************************************/
+#NAVcenterContainer,
+#NAVpageContainer,
+.NAValternateRow,
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+.NAVtwoColumnBanner,
+.NAVformBox,
+#NAVrelevantContentContainer .NAVnewsImg,
+.NAVpageSection,
+.NAVrelatedContentCampaign,
+.NAVbigCampaign,
+#NAVcontentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+.threeColumnCampaign .header,
+.threeColumnCampaign h3 { background-color: transparent!important;}
+
+#NAVpageTitleContainer h1 { color: #675C53;}
+
+/***********************************
+*
+* Margin og padding
+*
+************************************/
+#NAVrelevantContentContainer h5,
+#NAVheaderContainer, 
+#NAVcenterContainer, 
+#NAVborderBottomCenter,
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer,
+#NAVrelevantContentContainer .NAVleftMargin ,
+#NAVrelevantContentContainer .NAVlnkMerOm,
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogo,
+.NAVtwoColumnBannerContent .NAVlinkTwoColumnBannerContent,
+#NAVbreadcrumbContainer,
+#NAVpageTitleContainer h1,
+#NAVrelevantContentContainer .NAViconPrint,
+#NAVrelevantContentContainer ul,
+#NAVrelevantContentContainer .NAVcountyForm,
+#NAVrelevantContentContainer .NAVrelatedContentCampaign h5,
+.NAVbigCampaign .NAVlnkBigCampaign,
+.NAVsearchHitBody,
+.threeColumnCampaign p,
+.threeColumnCampaign .campaignLink { margin-left: 0px!important;}
+
+.NAVsquareLinkList ul li { margin-left: 15px;}
+
+#NAVrelevantContentContainer ul li,
+#NAVrelevantContentContainer .NAVfastNavContainer h5,
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+.NAVtwoColumnBanner h5,
+#NAVrelevantContentContainer .NAVnewsImg p,
+#NAVrelevantContentContainer .NAVrelatedContentCampaign a,
+.NAVbigCampaign h5,
+#NAVcontentContainer .NAVfastNavContainer h5,
+.threeColumnCampaign h3 { padding-left: 0px!important;}
+
+#NAVcontentSpacerContainer,
+.NAVbigCampaign .NAVcampaignContent,
+#NAVcontentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { margin: 0px!important;}
+
+h5,
+#NAVpageContainer #NAVoneColumnContainer,
+#NAVcontentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { padding: 0px;}
+
+#NAVheaderContainer #NAVheaderContentContainer,
+#NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer,
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+#NAVpageTitleContainer,
+.NAVlinkListContainer .NAVsquareLinkList ul { margin-top: 0px;}
+
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { padding-top: 0px;}
+
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+#NAVpageTitleContainer { margin-bottom: 0px;}
+
+#NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+#NAVrelevantContentContainer .NAVfastNavContainer { padding-bottom: 0px;}
+
+.NAVlinkListContainer h5,
+#NAVrelevantContentContainer .NAVfastNavContainer h5 {padding-bottom: 10px;}
+
+#NAVbreadcrumbContainer { margin: 10px 0px 20px 0px;}
+
+/*********************************************
+*
+*	Clear
+*
+*********************************************/
+#NAVcenterContainer,
+#NAVbreadcrumbContainer,
+.NAVlinkListContainer p { clear: left;}
+
+/*****************************************
+*
+*	MISC
+*
+******************************************/
+#NAVheaderContainer { width: 100%;}
+#NAVcenterContainer { display: block;}
+.NAVnewsContainer h2 a { text-decoration: none;}
+.NAVlinkListContainer ul { clear: left;}
+#NAVbreadcrumbContainer { padding-top: 10px;}
+.NAVtextCenter { text-align: left;}
+
+/**********************************************
+*
+*	PRINT TRICKS for pensjon
+*
+***********************************************/
+
+#NAVcontentContainer,
+#NAVcontentContainerFullWidth {margin:7px;}
+
+/** Missing style in new version of CSS from NAV. */
+#NAVpageContainer #NAVcontentContainerFullWidth { float: none!important;}
+/*END*/
+#printFrame{border:1em solid #C30000; padding:0.7em}	
+.noprint{display:none;}	
+}

@@ -1,0 +1,127 @@
+<content-type>
+    <display-name>Artikkel_Ansattportal</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Artikkel">
+            <label>Artikkel</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="author" type="TextLine">
+                    <label>Tekstforfatter</label>
+                    <custom-text>contentdata/author</custom-text>
+                    <help-text>Vises i tillegg til den som har publisert, eller endret innholdet</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="hide_date" type="CheckBox">
+                    <label>Skjul dato</label>
+                    <custom-text>contentdata/hide_date</custom-text>
+                    <help-text>Huk av hvis artikkel skal ha lang levetid, slik at innhold ikke virker utdatert</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="preface" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="themes" type="ContentSelector">
+                    <label>Emneord</label>
+                    <custom-text>contentdata/themes</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Emne</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="images">
+            <label>Bilder og bildetekst</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="image" type="ImageSelector">
+                    <label>Artikkelbilde</label>
+                    <custom-text>image</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="caption" type="TextArea">
+                    <label>Bildetekst</label>
+                    <custom-text>caption</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="links">
+            <label>Relaterte lenker</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="link">
+                    <label>Relaterte lenker</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="description" type="TextLine">
+                            <label>Lenketekst</label>
+                            <custom-text>description</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                        <input name="contentlink" type="ContentSelector">
+                            <label>innhold</label>
+                            <custom-text>contentlink</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Ansattportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Artikkel_Ansattportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_tilleggsinformasjon</allow-content-type>
+                            </config>
+                        </input>
+                        <input name="destination" type="ComboBox">
+                            <label>Åpne i</label>
+                            <custom-text>target</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                            <config>
+                                <option value="current">Samme vindu</option>
+                                <option value="new">Nytt vindu</option>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <field-set name="Faktaboks">
+            <label>Faktaboks</label>
+            <items>
+                <input name="fact_placement" type="RadioButton">
+                    <label>Faktaboksen skal plasseres</label>
+                    <custom-text>contentdata/fact_placement</custom-text>
+                    <help-text>For at faktaboksen skal vises MÅ et av alternativene velges.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="sidebar">i høyre kolonne</option>
+                        <option value="maincol">under brødtekst i hovedkolonne</option>
+                    </config>
+                </input>
+                <input name="fact" type="HtmlArea">
+                    <label>Faktaboks</label>
+                    <custom-text>contentdata/fact</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

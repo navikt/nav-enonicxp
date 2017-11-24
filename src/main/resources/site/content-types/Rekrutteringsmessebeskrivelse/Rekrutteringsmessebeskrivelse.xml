@@ -1,0 +1,98 @@
+<content-type>
+    <display-name>Rekrutteringsmessebeskrivelse</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Rekrutteringsmesse">
+            <label>Rekrutteringsmesse</label>
+            <items>
+                <input name="rekrutteringsmesse" type="TextLine">
+                    <label>Rekrutteringsmessenavn</label>
+                    <custom-text>contentdata/rekrutteringsmesse</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="innhold" type="HtmlArea">
+                    <label>Kommentarer</label>
+                    <custom-text>contentdata/innhold</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="land" type="ContentSelector">
+                    <label>Land</label>
+                    <custom-text>contentdata/land</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rekrutteringsmesseland</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="kontakt">
+            <label>Kontakt</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="epost" type="TextLine">
+                    <label>E-post</label>
+                    <custom-text>epost</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="telefon" type="TextLine">
+                    <label>Telefon</label>
+                    <custom-text>telefon</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="kontaktURI" type="TextLine">
+                    <label>URI</label>
+                    <custom-text>uri</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="arrangement">
+            <label>Arrangement</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="adresse" type="TextLine">
+                    <label>Adresse</label>
+                    <custom-text>contentdata/arrangement/adresse</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="sted" type="TextLine">
+                    <label>By</label>
+                    <custom-text>contentdata/arrangement/sted</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="ubekreftet" type="TextLine">
+                    <label>Ubekreftet</label>
+                    <custom-text>contentdata/arrangement/ubekreftet</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="tidspunkt" type="Date">
+                    <label>Dato</label>
+                    <custom-text>contentdata/arrangement/tidspunkt</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="tidspunkttil" type="Date">
+                    <label>Til-dato</label>
+                    <custom-text>contentdata/arrangement/tidspunkttil</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="Språk">
+            <label>Språk</label>
+            <items>
+                <input name="spraak" type="ComboBox">
+                    <label>Språk</label>
+                    <custom-text>contentdata/spraak</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <option value="bokmaal">Norsk bokmål</option>
+                        <option value="engelsk">Engelsk</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

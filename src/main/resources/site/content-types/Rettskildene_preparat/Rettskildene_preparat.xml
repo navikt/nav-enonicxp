@@ -1,0 +1,32 @@
+<content-type>
+    <display-name>Rettskildene_preparat</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Preparat">
+            <label>Preparat</label>
+            <items>
+                <input name="nativeid" type="TextLine">
+                    <label>Native id</label>
+                    <custom-text>contentdata/nativeid</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="name" type="TextLine">
+                    <label>Navn</label>
+                    <custom-text>contentdata/name</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="virkestoff" type="ContentSelector">
+                    <label>Virkestoff</label>
+                    <custom-text>contentdata/virkestoff</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_virkestoff</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

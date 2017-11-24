@@ -1,0 +1,57 @@
+<content-type>
+    <display-name>Driftsmelding_vedlikehold</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Driftsmelding (vedlikehold)">
+            <label>Driftsmelding (vedlikehold)</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="links">
+            <label>Relaterte lenker</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="link">
+                    <label>Relaterte lenker</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="description" type="TextLine">
+                            <label>Lenketekst</label>
+                            <custom-text>description</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                        <input name="contents" type="ContentSelector">
+                            <label>Relatert innhold</label>
+                            <custom-text>contentdata/contents</custom-text>
+                            <occurrences maximum="0" minimum="0"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:Nyhet_Ansattportal</allow-content-type>
+                            </config>
+                        </input>
+                        <input name="destination" type="ComboBox">
+                            <label>Åpne i</label>
+                            <custom-text>target</custom-text>
+                            <occurrences maximum="1" minimum="0"/>
+                            <config>
+                                <option value="current">Samme vindu</option>
+                                <option value="new">Nytt vindu</option>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+    </form>
+</content-type>

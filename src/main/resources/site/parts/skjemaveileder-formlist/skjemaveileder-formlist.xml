@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>skjemaveileder-formlist</display-name>
+  <config>
+    <input name="formGeneratorPage" type="ContentSelector">
+        <label>formGeneratorPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="allFormsPage" type="ContentSelector">
+        <label>allFormsPage</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="https" type="TextLine">
+        <label>https</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

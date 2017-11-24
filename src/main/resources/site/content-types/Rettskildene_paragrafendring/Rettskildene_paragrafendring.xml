@@ -1,0 +1,39 @@
+<content-type>
+    <display-name>Rettskildene_paragrafendring</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Paragrafendring">
+            <label>Paragrafendring</label>
+            <items>
+                <input name="nativeid" type="TextLine">
+                    <label>Native id</label>
+                    <custom-text>contentdata/nativeid</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="readable_id" type="TextLine">
+                    <label>Lesbar id</label>
+                    <custom-text>contentdata/readable_id</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="full_title" type="HtmlArea">
+                    <label>Full Tittel</label>
+                    <custom-text>contentdata/full_title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="paragraphcontent" type="HtmlArea">
+                    <label>Innhold</label>
+                    <custom-text>contentdata/paragraphcontent</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

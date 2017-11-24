@@ -1,0 +1,56 @@
+<content-type>
+    <display-name>Rettskildene_forskrift</display-name>
+    <description>Forskrifter importeres fra Gyldendal</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Forskrift">
+            <label>Forskrift</label>
+            <items>
+                <input name="nativeid" type="TextLine">
+                    <label>Native id</label>
+                    <custom-text>contentdata/nativeid</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="readable_id" type="TextLine">
+                    <label>Lesbar id</label>
+                    <custom-text>contentdata/readable_id</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="full_title" type="HtmlArea">
+                    <label>Full Tittel</label>
+                    <custom-text>contentdata/full_title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="opphevet" type="CheckBox">
+                    <label>Opphevet</label>
+                    <custom-text>contentdata/opphevet</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="lov" type="ContentSelector">
+                    <label>Lovhjemmel</label>
+                    <custom-text>contentdata/lov</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_lov</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_kapittel</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_paragraf</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_forskrift</allow-content-type>
+                    </config>
+                </input>
+                <input name="regulationcontent" type="HtmlArea">
+                    <label>Innhold</label>
+                    <custom-text>contentdata/regulationcontent</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

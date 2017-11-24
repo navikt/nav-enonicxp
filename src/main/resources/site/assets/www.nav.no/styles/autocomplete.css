@@ -1,0 +1,32 @@
+/**
+ * Description: Styles for autocompletion on nav.no site search.
+ * Version: 0.1
+ * Author: Vegard Sandvold (vegard.sandvold@comperio.no)
+ * Author URI: http://www.comperiosearch.com
+ */
+
+.ac_results,
+.ac_results_header {
+	margin: 0 0 0 1px;
+	overflow: hidden;
+	z-index: 99999;
+	background: #FFFFFF none repeat scroll 0 0;
+	border: 1px solid #BBBBBB;
+	opacity: 1;
+	}
+	.ac_results_header {
+		margin: 0;
+		}
+
+	.ac_results ul,
+	.ac_results_header ul {}
+
+		.ac_results li,
+		.ac_results_header li {
+			cursor: pointer;
+			padding: 2px 8px 0;
+			}
+		.ac_results li.ac_over,
+		.ac_results_header li.ac_over {
+			background-color: #DDEDF5;
+			}

@@ -1,0 +1,85 @@
+<content-type>
+    <display-name>Rettskildene_kapitteloversikt</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Oversikt">
+            <label>Oversikt</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Title</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="content" type="HtmlArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/content</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="vedlegg" type="ContentSelector">
+                    <label>Generelle vedlegg</label>
+                    <custom-text>contentdata/vedlegg</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_medikamentliste</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_vedlegg</allow-content-type>
+                    </config>
+                </input>
+                <input name="rundskriv" type="ContentSelector">
+                    <label>Generelle rundskriv</label>
+                    <custom-text>contentdata/rundskriv</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_rundskriv</allow-content-type>
+                    </config>
+                </input>
+                <input name="forskrift" type="ContentSelector">
+                    <label>Generelle forskrifter</label>
+                    <custom-text>contentdata/forskrift</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_forskrift</allow-content-type>
+                    </config>
+                </input>
+                <input name="prinsippkjennelse" type="ContentSelector">
+                    <label>Prinsippkjennelser</label>
+                    <custom-text>contentdata/prinsippkjennelse</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_prinsippkjennelse</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="oversiktdel">
+            <label>Oversiktsdel</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="relatert_law" type="ContentSelector">
+                    <label>Relatert hoveddel (kun en vil bli vist)</label>
+                    <custom-text>lov</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_kapittel</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_paragraf</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_kapittelendring</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_paragrafendring</allow-content-type>
+                    </config>
+                </input>
+                <input name="relatert_innhold" type="ContentSelector">
+                    <label>Relatert innhold</label>
+                    <custom-text>oversiktdel</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Rettskildene_forskrift</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_rundskriv</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_legemiddelliste</allow-content-type>
+                        <allow-content-type>no.nav.navno:Rettskildene_vedlegg</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

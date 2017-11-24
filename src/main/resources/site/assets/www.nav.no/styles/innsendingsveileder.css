@@ -1,0 +1,250 @@
+#NAVpageTitleContainer span.innsendingsveilederHeading { color: #FFFFFF; margin-left: 14px; padding-top: 17px; font-size: 3.2em; font-weight:bold;}
+#NAVpageTitleContainer span.innsendingsveilederHeading span { color: #FFFFFF; }
+
+/*********************************************************
+*
+*	Vedleggsveileder
+*
+**********************************************************/
+.form-details img.toggleAttachmentBody, .form-details img.toggleAddressBody { float: right; cursor: pointer; }
+.form-details h3, .form-details .velgBoksLabel { font-size: 1.2em;}
+.form-details .NAVskjemaBakgrunn {background-color:#e6e5e0;padding: 16px 14px; margin-bottom:5px; }
+.form-details .NAVskjemaBakgrunn img.icon {float:left;margin-right:7px}
+.form-details .NAVskjemaIndre {background-color:#f6f6f4;color:#675C53;padding:15px;margin-top:3px;overflow:auto; }
+.form-details .NAVskjemaIndre.checked {background-color: #fff;}
+.form-details .main-form {padding-bottom: 2em;} 
+.form-details .main-form p {margin:0;}
+.form-details .main-form p.default {margin-bottom:1.5em}
+
+.form-details .submit input { float: right; }
+.form-details .submit input.goback { float: none; cursor:pointer;font-weight:normal;border:none;color:#0074C2;background:transparent;margin:0;padding:0;text-align:left}
+.form-details .attachmentbody {float:left;width:100%;padding-top:2px;}
+.form-details .velgBoks {float:left;margin-right:12px;margin-left:0;}
+.form-details .attachmentList div.brodtekst { background: url( ../bilder/global/dashedhorizontal.gif ) repeat-x left top; padding-top:10px;margin-top:10px; }
+.form-details .attachmentList .obligatoriskeVedlegg {margin-top:5px;}
+.form-details .attachmentList div.underpunkter div.input-wrapper {float:left;width:100%;margin:.5em 0;height:1.2em;}
+.form-details .attachmentList div.underpunkter input {margin:0 12px 0 0 !important; padding:0 !important;}
+.form-details .attachmentList div.underpunkter label {font-weight:normal;}
+.form-details .NAVenhetsSelectBox div {float:left}
+.form-details .NAVenhetsSelectBox select#selectEnhet {width:20em;}
+.form-details .velgBoksLabel {float:left;line-height:1.5;font-weight:bold;color:#3E3832;}
+
+
+#NAVvedleggsveilederDownloadContainer {display: none;}
+#schemaAndAttachments div.submit {visibility:hidden;}
+.form-details .dwnld-confirmation {background-color:#fff !important;padding-bottom:20px !important;}
+.form-details .dwnld-confirmation a {cursor: pointer;clear:both;}
+.form-details .dwnld-confirmation p {margin:0;font-size:1.2em;font-weight:bold;color:#3E3832;}
+.form-details .dwnld-confirmation p em {font-style:italic}
+.form-details .dwnld-confirmation .ajax-loader {clear:both;padding-right:25px;background:url('../bilder/vedleggsveileder/ajax-loader.gif') no-repeat right 50%;}
+#dwnload-confirmation-msg span.quiet {font-weight:normal;font-style:italic}
+.form-details .dwnld-footer {margin-top:3em;}
+
+.general-wrapper {clear:both;float:left;width:100%;}
+.form-details .NAVerrorBox {margin-top:3em;border:1px dotted #CE3231;clear:both;}
+.form-details .NAVerrorBox p {margin:10px 0 !important;}
+.form-details .top {margin-top:0}
+.form-details p.top {color:#675C53}
+.form-details .quiet {color:#988f86;}
+/*.form-details .small {font-size:.9em;}*/
+.form-details .strong {font-weight:bold;}
+.form-details .bottom {margin-bottom:0;}
+.form-details .stor {font-size: 1.4em; font-weight: bold; color:#3E3832;}
+.form-details .stor span {font-weight: normal; color: #988f86;}
+.form-details .clear {clear:both;}
+.form-details .text-wrapper {float:left;width:90%;}
+.form-details .horizontal-separator {float:left;width:100%;margin-bottom:1em;padding-bottom:1em; background:url('../bilder/global/dashedhorizontal.gif') repeat-x left bottom;}
+
+.form-details .reset-defaults {float:none !important;font-weight:normal !important;} /*Kun for utlandscheckbox og label*/
+.form-details input#utland {margin-left:0; vertical-align:middle} /*Kun for utlandscheckbox og label*/
+.form-details select#temaId{width:150px;} /*Kun for tema-dropdown */
+
+.attachmentList {width:100%;}
+.attachmentList label {float:none !important;}
+.select-language-text {float:left; font-weight:bold; margin:0.3em 1em 0.3em 0.3em !important; }
+a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
+.detail-inputs {float:left;width:340px;margin-right:1.5em;padding:0;margin-left:2.2em;}
+.detail-inputs.wide {width:260px;}
+.detail-text {float:left;padding:0;width:40%}
+.detail-text span {font-weight:bold}
+
+/* Adresse */
+#userDetails input.radiobutton {float:left;margin-right:10px}
+#userDetails .labelcontainer {float:left;width:80%;}
+#userDetails .labelcontainer label.velgBoksLabel {display:block;margin-bottom:1em}
+#userDetails .labelcontainer p {font-weight:bold;clear:left;margin:0;}
+
+#userDetails .singlefield {margin-bottom:1em}
+#userDetails .sublabel {float:left;width:14%;}
+#userDetails .sublabel.ext {width:10em !important}
+
+/*FJERNES - bruk .ext*/
+#userDetails .addressinputbody .NAVpostnummer .sublabel, 
+#enhetsSelectBox .sublabel,
+#userIdNumber .sublabel{width:10em !important}
+
+#userDetails div.inputfieldset {float:left;width:80%}
+
+#userDetails .addressinputbody {padding-left:28px;}
+#userDetails .addressinputbody .detail-inputs {width:65%;margin:0;}
+#userDetails .addressinputbody .detail-text {float:left;width:35%;margin-top:0 !important} 
+#userDetails .addressinputbody .inputfieldset div { border:1px solid #E6E5E0;margin-bottom:5px;padding:3px;}
+#userDetails .addressinputbody .inputfieldset div.zip {float:left;width:47%;}
+#userDetails .addressinputbody .inputfieldset div.area {float:right;width:47%;}
+#userDetails .addressinputbody .inputfieldset div input { border:none;width:67%;margin-left:1%;}
+#userDetails .addressinputbody .inputfieldset div.area input {width:52%}
+#userDetails .addressinputbody .inputfieldset div.zip input {width:34%}
+#userDetails .addressinputbody .inputfieldset div label { display:inline-block;font-weight: normal;width:7.5em;background:transparent url(../bilder/vedleggsveileder/pil-hoyre.gif) no-repeat right 50%}
+#userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;} 
+
+#userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../bilder/global/dashedhorizontal.gif') repeat-x left top; } /*Fjernes!*/
+#userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group{background: none; }
+
+
+/*Folkereg i Norge*/
+/*Sett på egen wrapperklasse på .addressinputbody utenfor skjema for bruker reg i norge i stedet for direkte ref til id'er her: */
+#userDetails .addressinputbody .NAVpostnummer .detail-inputs,
+#userIdNumber .detail-inputs {width:19.5em;margin-right:1em} 
+
+#userDetails .addressinputbody .NAVpostnummer .detail-text,
+#userIdNumber .detail-text {width: 55%;float:left;}
+
+#enhetsSelectBox .detail-inputs {width:30em;margin-right:3em}
+#enhetsSelectBox .detail-text {width:33%;float:left}
+
+#userDetails .addressinputbody .navdepartment input.selectednavdepartment {width:98%}
+#userDetails  .moreaddressoptions  .checked .addressinputbody {margin:1em 0 0 28px;padding:1em 0 0 0 ;background:url('../bilder/global/dashedhorizontal.gif') repeat-x left top;}
+
+/*ERSTATTES!*/.form-details .top-horizontal-separator {padding-top:1em;margin-top:1em;width:100%;background:url('../bilder/global/dashedhorizontal.gif') repeat-x left top;}
+.form-details #userIdNumber {padding-top:2em;background: url("../bilder/global/dashedhorizontal.gif") repeat-x scroll left top transparent}
+.form-details .NAVpostnummer {padding: 1em 0;}
+
+/*Ettersendelse:*/
+#userDetails .moreaddressoptions {clear:both; padding-top:2em; margin-left:2em; }
+#userDetails .moreaddressoptions .secondoption {padding:25px 0;margin:2em 0!important;border-top: 2px solid #E6E5E0; border-bottom: 2px solid #E6E5E0;}
+#userDetails .moreaddressoptions .secondoption .addressinputbody {padding-top:2em;margin-top:2em}
+
+
+/**********************
+*
+*  Nedlastingssiden
+* 
+**********************/
+ 
+ /*Hjelp / forklaring*/
+.shipping-guidelines-wrapper {width:100%;top:0;margin-bottom:20px;}
+#NAVvedleggsveilederDownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {padding:20px 15px 30px 15px;background: #F6F6F4 url('../bilder/global/dashedhorizontal.gif') repeat-x left bottom !important;}
+.shipping-guidelines h2 {margin-bottom:30px;}
+.shipping-guidelines div h4 {padding-bottom:90px;background:transparent url(../bilder/vedleggsveileder/ikon-pluss.gif) no-repeat 80px 65%}
+.shipping-guidelines div {float:left;width:125px;position:relative}
+.shipping-guidelines div.last h4 {background-image:none;}
+.shipping-guidelines div img.icon {position:absolute;top:35px;}
+
+/* Skjemanedlasting ?? På hvilken side?? */
+.form-details .NAVskjemaIndre.download {background-color:#fff !important}
+.form-details div.downloadablecontentwrapper {position:relative;width:100%;}
+/*.form-details .NAVskjemaIndre div.downloadBox { position:relative;top:245px;}*/
+.downloadInfo { font-weight: normal !important;}
+
+/*Lenker til toppark mm*/
+.form-details h2 {font-size:1.2em;color:#3E3832;}
+.form-details .download ul {margin:10px 0 15px 0;}
+.form-details .download ul.getresources {list-style:none;}
+.form-details .download ul.getresources li {padding:3px 0 3px 22px;}
+.form-details .download ul.getresources li.gettopsheet {padding-left:20px;background:url(../bilder/vedleggsveileder/ikon-toppark-sml.gif) no-repeat left 2px; border: none;}
+.form-details .download ul.getresources li.getapplication {background:url(../bilder/vedleggsveileder/ikon-skjema-sml.gif) no-repeat left 2px}
+.form-details .download ul.getresources li.getattachment {background:url(../bilder/vedleggsveileder/ikon-vedlegg-sml.gif) no-repeat left 2px}
+.form-details .download ul.getresources li a {font-weight:bold;letter-spacing:.02em}
+.form-details .download ul.getresources li input.lastNedLenke {cursor:pointer;font-weight:bold;background: transparent; border:none;color:#0074C2;margin:0 auto;padding:0; width: auto;}
+.form-details .download ul.getresources li input.lastNedLenke:hover { text-decoration:underline; }
+.form-details .download ul.other-attachments {list-style-type:disc; list-style-position:inside;}
+.form-details .download ul.other-attachments li {padding: 3px 0;}
+.form-details .download .additional-info {color:#B7B1A9;}
+
+
+/* Infoboks */
+.form-details .infoboks_skygge { margin: 0 auto; padding: 0; border-right: 2px solid #e8e8e4; border-bottom: 2px solid #e8e8e4; }
+.form-details .infoboks { padding: 10px;   border: 1px solid #dadad4; background-color:#fff; }
+
+/*Skjemaoversikt*/
+.form-list div.last {margin-right:0;} /*Used with .form-wrapper - no margin on last div*/
+.form-list .form-wrapper {float:left;margin-right:1em;}
+.form-list .keywords-wrapper {float:left;width:49%;}
+.form-list .keywords-wrapper ul {float:left;list-style:disc inside;padding-left:12px;}
+.form-list div.pushdwn {margin-bottom:3em !important;}
+.form-list .section {margin-bottom:1.5em !important;}
+.form-list .section h3 {margin-bottom:1em}
+.form-list table {clear:both}
+.form-list .form-tbl .NAVskjemaNameCol { width: 67%; } /*Overrides NAVtbl default styles*/
+.form-list .form-tbl .NAVskjemaLanguageCol { width: 15%; }
+.form-list .form-tbl .NAVskjemaIdCol { width: 15%; }
+.form-list .form-tbl td.first-cell {padding-right:3%}
+.form-list caption.table-heading {font-size:1.4em;color:#675C53;font-weight:bold;text-align:left;padding-left:7px;}
+.form-list thead.hidden span {position:absolute;top:auto;left:-9999px;width:1px;height:1px;} /*Table headings only visible for screen readers*/
+.form-list input#formSearch {width:35%;}
+.form-list .focus {background-color: #E7E6E1 !important;} /*Darker*/
+.form-list .NAVtbl tr:nth-child(2n) {background-color:#fff !important;}
+
+.form-list h2.section-heading, .form-details h2.section-heading { font-size:1em;color:#675C53;margin-bottom:.5em;background: url('../bilder/global/dashedhorizontal.gif') repeat-x bottom left; padding: 0 0 4px 3px; color: #675C53;}
+.form-list label, .form-details label, .form-details h2.section-heading, #userDetails h4 {font-weight:bold;color:#675C53;line-height:1.5}
+.relationRadioOptions label, .relationRadioOptions input {line-height:2} /*Alternativ 3 på finn adresse-steget*/
+.form-list select, .form-details select {padding:1px}
+.form-list input.text, .form-details input.text {padding:2px}
+.form-list input, .form-list select {border:1px solid #A69D97;}
+.form-list input[type="hidden"]  {border:0;}
+.form-details div>input[type="text"], .form-details div>select {border:1px solid #A69D97;}
+
+/* erstattet med .group: .form-details .clearfix:after {content:".";display:block; height:0;clear:both;visibility:hidden; }
+.form-details .clearfix      {display:inline-block;}
+.form-details .clearfix     {display:block;}*/
+
+
+/*-----------------------------------------------
+*   Innsendsingsveileder
+* -----------------------------------------------*/
+* html #innsendingsveileder ul li a {display:inline-block}
+.outercontent {background-color:#e6e5e0;padding: 16px 14px; margin-bottom:5px; } /*Samme som NAVskjemaBakgrunn og NAVskjemaIndre - men bedre navn?*/
+.innercontent {background-color:#fff;color:#675C53;padding:15px;margin-top:3px;}
+
+.pagesection, .col-wrapper {margin-bottom:20px;padding-bottom:20px;background:transparent url(../bilder/global/dashedhorizontal.gif) repeat-x left bottom}
+.col-wrapper.lastrow {margin-bottom:0;}
+.pagesection form#findmyform {float:left;margin-right:15px;}
+.pagesection #findmyform fieldset {display:inline;background:transparent;margin:0;padding:0}
+.pagesection #findmyform input {margin-bottom:0;}
+.pagesection #findmyform input#formsearch {margin:0 5px 0 0;border:1px solid #A69D97}
+.pagesection #findmyform input.NAVbtn {width:auto;}
+.pagesection #findmyform label {display:block;font-size:1.2em;font-weight:bold;margin-bottom:1.1em}
+
+.formarchivebutton {float:left;margin-top:3em;}
+.footersection {margin-top:10px;padding-top:10px;background:transparent url(../bilder/global/dashedhorizontal.gif) repeat-x left top}
+
+.col-wrapper .col {float:left;width:47%;margin-right:5%;}
+.col-wrapper .last {margin-right:0px !important;}
+
+#innsendingsveileder h2.normal {font-size:1.2em;color:#3E3832;}
+#innsendingsveileder h2.nodesc {margin-bottom:2.4em}
+#innsendingsveileder h3 {font-size:1.2em;color:#000;font-weight:bold;}
+#innsendingsveileder .col h3,
+#innsendingsveileder h2.article-heading {font-size:1.5em;margin-bottom:5px;color:#000}
+#innsendingsveileder h4 {margin-bottom:5px;color:#000}
+#innsendingsveileder ul li {line-height:1.5}
+#innsendingsveileder ul li a {padding-left:22px;display:block;background:transparent url(../bilder/vedleggsveileder/ikon-pil-tykk-blaa.gif) no-repeat left .25em}
+#innsendingsveileder ul li.moreinfo a {padding-bottom:2px;padding-top:4px;background-image: url(../bilder/vedleggsveileder/ikon-faktaark.gif)}
+
+#steg_i_innsendingsveileder ul {margin-bottom:10px;padding-bottom:20px;background:transparent url(../bilder/global/dashedhorizontal.gif) repeat-x scroll left bottom;}
+#steg_i_innsendingsveileder ul li {float: left; margin-right:15px; font-size:1.5em;font-weight:bold;color:#685D54;}
+#steg_i_innsendingsveileder ul li.last {float:none;}
+#steg_i_innsendingsveileder ul li.selected {color:#C30000;}
+#steg_i_innsendingsveileder ul li.waiting {color:#988F86;}
+#steg_i_innsendingsveileder ul li span {margin-left:15px;color:#988F86;}
+#steg_i_innsendingsveileder h1#steg_header, #steg_i_innsendingsveileder p {position:absolute;top:auto;left:-9999px;height:1px;width:1px;overflow:hidden; }
+
+/*jQuery Autocomplete plugin styles*/
+.ac_results {padding: 0px;border: 1px solid black;background-color: white;overflow: hidden;z-index: 99999;}
+.ac_results ul {width: 100%;list-style-position: outside;list-style: none;padding: 0;margin: 0;}
+
+.ac_results li {margin: 0px;padding: 2px 5px;cursor:default;display: block;font: menu;font-size: 12px;line-height: 16px;overflow: hidden;}
+
+.ac_loading {background: white url('../bilder/vedleggsveileder/indicator.gif') right center no-repeat; }
+.ac_even {background-color: #d9eaf6;}
+.ac_over, .ac_over strong {background-color: #0A246A;color: white;}

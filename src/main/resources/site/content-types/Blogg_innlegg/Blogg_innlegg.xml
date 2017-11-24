@@ -1,0 +1,35 @@
+<content-type>
+    <display-name>Blogg_innlegg</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Innlegg">
+            <label>Innlegg</label>
+            <items>
+                <input name="commentsdisabled" type="CheckBox">
+                    <label>Slå av kommentering</label>
+                    <custom-text>contentdata/commentsdisabled</custom-text>
+                    <help-text>Huk av for å stenge kommentering av innlegget</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="heading" type="TextLine">
+                    <label>Overskrift</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Tekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="preface" type="TextArea">
+                    <label>Sammendrag</label>
+                    <custom-text>contentdata/preface</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

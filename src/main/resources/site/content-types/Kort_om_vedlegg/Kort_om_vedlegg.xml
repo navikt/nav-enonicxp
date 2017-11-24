@@ -1,0 +1,104 @@
+<content-type>
+    <display-name>Kort_om_vedlegg</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Kort om vedlegg">
+            <label>Kort om vedlegg</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel (norsk)</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="originaltitle" type="TextLine">
+                    <label>Tittel (originalspråk)</label>
+                    <custom-text>contentdata/originaltitle</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                    <custom-text>contentdata/ingress</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="text" type="HtmlArea">
+                    <label>Brødtekst</label>
+                    <custom-text>contentdata/text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Les mer om">
+            <label>Les mer om</label>
+            <items>
+                <input name="read_more" type="ContentSelector">
+                    <label>Les mer om</label>
+                    <custom-text>contentdata/read_more</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Aktuelle skjemaer">
+            <label>Aktuelle skjemaer</label>
+            <items>
+                <input name="schemas" type="ContentSelector">
+                    <label>Aktuelle skjemaer</label>
+                    <custom-text>contentdata/schemas</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                        <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="language">
+            <label>Språkversjoner</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="sprakversjoner" type="ContentSelector">
+                    <label>Språkversjoner</label>
+                    <custom-text>sprakversjoner</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kort_om_vedlegg</allow-content-type>
+                    </config>
+                </input>
+                <input name="sprak" type="ContentSelector">
+                    <label>Språk</label>
+                    <custom-text>sprak</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Sprak</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="Egenskaper">
+            <label>Egenskaper</label>
+            <items>
+                <input name="enhet" type="ContentSelector">
+                    <label>Enhet</label>
+                    <custom-text>contentdata/enhet</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                    </config>
+                </input>
+                <input name="emneord" type="ContentSelector">
+                    <label>Emneord</label>
+                    <custom-text>contentdata/emneord</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Emne</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

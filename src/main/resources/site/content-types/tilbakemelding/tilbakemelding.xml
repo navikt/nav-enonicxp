@@ -1,0 +1,39 @@
+<content-type>
+    <display-name>tilbakemelding</display-name>
+    <description>Innholdstype for "Fant du det du lette etter?"</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tilbakemelding">
+            <label>Tilbakemelding</label>
+            <items>
+                <input name="answer" type="RadioButton">
+                    <label>Fant du det du lette etter?</label>
+                    <custom-text>contentdata/answer</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <option value="Ja">Ja</option>
+                        <option value="Nei">Nei</option>
+                    </config>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>Side</label>
+                    <custom-text>contentdata/url</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="language" type="TextLine">
+                    <label>Språk</label>
+                    <custom-text>contentdata/language</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="description" type="TextArea">
+                    <label>Tilbakemelding</label>
+                    <custom-text>contentdata/description</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

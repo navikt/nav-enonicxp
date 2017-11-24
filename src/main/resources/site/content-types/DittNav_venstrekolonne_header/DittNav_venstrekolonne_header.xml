@@ -1,0 +1,48 @@
+<content-type>
+    <display-name>DittNav_venstrekolonne_header</display-name>
+    <description>Melding til innlogget bruker</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tittel">
+            <label>Tittel</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Navn</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingresstekst</label>
+                    <custom-text>contentdata/ingress</custom-text>
+                    <help-text>Begrens lengden på teksten til maksimalt 100 tegn.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="loginstatus">
+            <label>Status</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="status" type="TextLine">
+                    <label>Tekst</label>
+                    <custom-text>status</custom-text>
+                    <help-text>Begrens lengden på teksten til maksimalt 100 tegn.</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="link" type="ContentSelector">
+                    <label>Link til</label>
+                    <custom-text>link</custom-text>
+                    <help-text>Legg kun til én lenke per kampanje. Hvis man legger inn flere, vil bare den første lenken brukes.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Nyhet_Brukerportal</allow-content-type>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

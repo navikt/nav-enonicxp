@@ -1,0 +1,36 @@
+.btn { font-size: 1.4em!important;}
+
+#header h1 { display: inline;}
+
+#header h1 { padding-bottom: 14px; margin-bottom: 0px;}
+
+#menu ul li, #smartMenu li { _height: 50px;}
+
+#menu #searchResult ul li { height: auto;}
+#menu .expanded li { _height: 20px;}
+#menu #search input { font-size: 1.5em; }
+
+#menu #searchResult .scroller { _overflow-x: visible; _width: auto;}
+
+#smartMenu h2 { padding-top: 14px; padding-bottom: 11px; }
+
+#smartMenu .linkList { background-position: 7px 0.6em;}
+#smartMenu DIV#siste H2.sisteNytt {background-position: 7px 0.4em}
+
+#smartMenu div { height: 56px;}
+#smartMenu DIV#siste { height: 48px; min-height: 48px; }
+#smartMenu DIV#siste H2 { padding-top: 10px; padding-bottom: 11px; }
+
+#contentContainer .content { _height: 370px;}
+#menu #searchResult div { height: 47px;}
+
+#menu #search { height: 56px;}
+#menu #search .searchTable TD IMG { margin-bottom: -3px; margin-right: -2px; }
+#menu #search .searchTable TD.first { width: 60px; }
+#menu #search .searchTable TD.inner DIV { margin-top: 3px; }
+
+#appContainer { display: inline;}
+
+#contentContainer .content .textController li { margin-left: 5px;}
+
+.searchBox .btn { font-size: 1em!important;}

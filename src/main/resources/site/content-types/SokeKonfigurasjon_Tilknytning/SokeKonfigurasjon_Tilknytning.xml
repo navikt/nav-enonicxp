@@ -1,0 +1,56 @@
+<content-type>
+    <display-name>SokeKonfigurasjon_Tilknytning</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Tittel">
+            <label>Tittel</label>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/title</custom-text>
+                    <help-text/>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="sentrale">
+            <label>Sentrale</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="menypunkt">
+                    <label>Sentrale</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="sentraltMenypunkt" type="TextLine">
+                            <label>Sentralt menypunkt på nivå 2</label>
+                            <custom-text>menypunktnavn</custom-text>
+                            <help-text>Eksakt navn på menypunkt som skal vises i liste over sentrale menypunkter i søkesiden. Menypunktet må befinne seg på nivå to fra Navet/Meny, eksempel: "Hjelpemidler" som befinner seg på Navet/Meny/Fag/Hjelpemidler.</help-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <item-set name="lokale">
+            <label>Lokale</label>
+            <occurrences maximum="1" minimum="0"/>
+            <items>
+                <item-set name="menypunkt">
+                    <label>Lokale</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="lokaltMenypunkt" type="TextLine">
+                            <label>Lokalt menypunkt på nivå 2</label>
+                            <custom-text>menypunktnavn</custom-text>
+                            <help-text>Eksakt navn på menypunkt som skal vises i liste over lokale menypunkter i søkesiden. Menypunktet må befinne seg på nivå to fra Navet/Meny, eksempel: "NAV Oppland" som befinner seg på Navet/Meny/Lokalt/NAV Oppland.</help-text>
+                            <occurrences maximum="1" minimum="0"/>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+    </form>
+</content-type>

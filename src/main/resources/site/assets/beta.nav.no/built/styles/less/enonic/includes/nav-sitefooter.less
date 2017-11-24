@@ -1,0 +1,96 @@
+//--------------------------------------------------------------------
+//
+//  Site footer, uten A-Å (felles for beta.nav.no og dekoratør / applikasjoner )
+//
+//--------------------------------------------------------------------
+
+.sitefooter a {
+	color: #fff;
+	font-size: @font-size-base-em;
+}
+
+.sitefooter {
+	background: @gray-darker;
+	position: relative;
+	color: #fff;
+	padding: 0 0 20px 0;
+	.about-site {
+		padding-top: 30px;
+		color: @gray-footer-text; //#988F86;
+		text-align: center;
+		ul {
+			padding: 0;
+			li {
+				display: inline-block;
+				position: relative;
+				padding-left: 30px;
+				&:before {
+					position: absolute;
+					left: 13px;
+					top: 47%;
+					border: 2px solid #857B71;
+					border-radius: 2px;
+					content: " ";
+					display: inline-block;
+
+				}
+				&:first-child {
+					padding-left: 0;
+					&:before {
+						display: none;
+					}
+
+				}
+			}
+		}
+		a:hover, a:focus {
+			color: @blue-light;
+			text-decoration: none;
+		}
+
+		.copyright {
+			font-size: 0.7em;
+			margin-top: 0.7em;
+			p {
+				font-size: 1em;
+			}
+		}
+		.decorated {
+			margin-bottom: 16px; // som MOD
+			font-size: 1em;
+			Font-family: @font-family-modus;
+
+			&:after {
+				border-color: #857B71; // OK!
+				margin-top: 15px;
+			}
+		}
+	}
+}
+
+.footer-about-mq();
+
+.footer-about-mq() when (@responsive = true) {
+
+	// Footerlenker
+	@media (max-width: (@screen-medium - 0.01)) {
+
+		//Skal trigges når lenkeliste knekkes over to linjer
+		.sitefooter .about-site ul li {
+			display: block;
+			padding: 0;
+			margin-bottom: 10px;
+
+			> a {
+				padding: .5em 0;
+				font-size: 1em;
+			}
+			&:before {
+				left: 50%;
+				top: -6px;
+			}
+		}
+	}
+
+}
+

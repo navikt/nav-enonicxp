@@ -1,0 +1,284 @@
+/* For persons with vision disabilities */
+
+/************************************************
+*
+* Fontsize 
+*
+*************************************************/
+/*body.contrast { font-size: 90%!important;}*/
+body.contrast select, input { font-size: 1em;}
+
+
+/************************************************
+*
+* Images
+*
+*************************************************/
+body.contrast,
+body.contrast #NAVpersonalizedNavigation,
+body.contrast #NAVborderBottomLeft,
+body.contrast #NAVborderBottomRight,
+body.contrast #NAVborderBottomCenter,
+body.contrast #NAVborderLeft,
+body.contrast #NAVborderRight,
+body.contrast .NAVsheetFlip,
+body.contrast #NAVsubmenuContainer .NAVfastNavContainer,
+body.contrast input.NAVbtn, 
+body.contrast .button, 
+body.contrast .loginButton,
+body.contrast #NAVpageImage .NAViconContainer,
+body.contrast #NAVheaderContainer #NAVheaderContentContainer,
+body.contrast #NAVrelevantContentContainer .NAVfastNavContainer,
+body.contrast #NAVsubmenuContainer .NAVfastNavBorderRight,
+body.contrast .NAVfastNavBordemBottom,
+body.contrast .NAVfastNavborderBottomRight,
+body.contrast #NAVcontentContainer .NAVfastNavBorderRight,
+body.contrast .NAVsearchResultRightContainer .NAVdrilldown,
+body.contrast .NAVsearchResultRightContainer .NAVdrillDownOptionContainer,
+body.contrast #frameworkFrontpage #NAVmainQuicklinksContainerOuter,
+body.contrast #frameworkFrontpage #NAVmainQuicklinksContainer,
+body.contrast #frameworkFrontpage #newsListBoxOuter,
+body.contrast #frameworkFrontpage #aboutNAVOuter { background-image: none;} 
+
+/***********************************************
+*
+* Background
+*
+************************************************/
+body.contrast .NAVdittnavCenterSkygge div { background: none; }
+
+/***********************************************
+*
+* Backgroundcolor 
+*
+************************************************/
+body.contrast,
+body.contrast #NAVcenterContainer,
+body.contrast #NAVheaderContainer,
+body.contrast #NAVpageContainer,
+body.contrast #frameworkFrontpage #NAVpageContainer,
+body.contrast #NAVquicklinksContainer,
+body.contrast #NAVrelevantContentContainer,
+body.contrast #NAVsubmenuContainer .NAVfastNavContainer,
+body.contrast #NAVsubmenuContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+body.contrast .NAVtbl .NAValternateRow,
+body.contrast #NAVrelevantContentContainer .NAVfastNavContainer,
+body.contrast #NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+body.contrast #NAVrelevantContentContainer .NAVnewsImg,
+body.contrast .NAValfabet a,
+body.contrast .NAValfabet a:hover, 
+body.contrast .NAValfabet .selected,
+body.contrast .NAVformBoxSearch,
+body.contrast #NAVcontentContainer .NAVfastNavContainer,
+body.contrast #NAVcontentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
+body.contrast .loginContainerMain, 
+body.contrast .loginContainerMain DIV, 
+body.contrast .NAVsearchResultRightContainer .NAVdrilldown,
+body.contrast .NAVsearchResultRightContainer .NAVdrillDownOptionContainer,
+body.contrast .threeColumnCampaign .header,
+body.contrast .threeColumnCampaign h3,
+body.contrast #NAVquicklinksContainer #NAVmainQuicklinksContainer,
+body.contrast #newsListBox,
+body.contrast #aboutNAV,
+body.contrast .NAVdittnavContent,
+body.contrast .infoboks,
+body.contrast #NAVwhiteContainer,
+body.contrast .NAVstep, 
+body.contrast .NAVstepSelectedBody,
+body.contrast .NAVskritt,
+body.contrast .stepFutureDisabled,
+body.contrast .NAValternateRow,
+body.contrast SECTION.innhold,
+body.contrast .iawebpanel,
+body.contrast ul.umeny,
+body.contrast ul.uumeny,
+body.contrast ul.facets,
+body.contrast ul.presentasjoner,
+body.contrast .NAVformBoxSearchContainer { background-color: #000 !important;}
+
+.cssgradients body.contrast,
+body.contrast .bedriftsnavigasjon LI A { background: #000; background-color: #000 !important; }
+
+body.contrast .statistikk_table tbody.odd,
+body.contrast .bedriftssok_table tr.even { background: #222; }
+
+body.contrast LI.facet A:hover,
+body.contrast LI.presentasjon A:hover,
+body.contrast .statistikk_table .selectedElement,
+body.contrast .statistikk_table .selectedElementOdd   { background-color: #333; }
+
+body.contrast ul.umeny LI A,
+body.contrast ul.uumeny LI A { color: yellow !important; }
+
+body#frameworkFrontpage.contrast #NAVpageContainer, 
+body.contrast .form-list .NAVtbl tr:nth-child(2n),
+body.contrast .form-list .NAVformBox{ background-color: #000 !important; }
+
+
+body.contrast div.serviceswrapper,
+body.contrast div.serviceswrapper,
+body.contrast div.serviceswrapper .services,
+body.contrast div.serviceswrapper .services .topleft,
+body.contrast div.serviceswrapper .services .topright,
+body.contrast div.serviceswrapper .services .btmleft,
+body.contrast div.serviceswrapper .services .btmright,
+body.contrast div.serviceswrapper .services .servicescontent { background-image: none !important; background-color: #000 !important; }
+body.contrast div.serviceswrapper .services h3 a { background-image: none; }
+
+body.contrast #NAVpageImage { background-color: #C30000;}
+
+body.contrast #NAVrelevantContentContainer #NAValfabet a,
+body.contrast input.NAVbtn, 
+body.contrast .button, 
+body.contrast .loginButton,
+body.contrast .NAVbigCampaign,
+body.contrast #NAVrelevantContentContainer .NAVrelatedContentCampaign,
+body.contrast .NAVerrorBox,
+body.contrast .NAVtwoColumnBanner {  background-color: #fff;}
+
+body.contrast .umeny>li>a:hover, 
+body.contrast .uumeny>li>a:hover {background-color: yellow;}
+body.contrast #NAVrelevantContentContainer #NAValfabet a:hover { background-color: yellow;}
+body.contrast .NAVformBox { background-color: #333333;}
+
+
+/*************************************************
+*
+* Border 
+*
+*************************************************/
+body.contrast img { border: 0px;}
+body.contrast #NAVquicklinksContainer #NAVmainQuicklinksContainer { border: 0px; }
+body.contrast .NAVstep, body.contrast .NAVskritt { border: 1px solid #fff; }
+
+/**********************************************
+*
+* Color 
+*
+***********************************************/
+body.contrast,  
+body.contrast label,
+body.contrast h1,
+body.contrast #NAVpageImage h1 span,
+body.contrast h2,
+body.contrast h3,
+body.contrast h4,
+body.contrast h5,
+body.contrast p.ingress,
+body.contrast .NAVtbl th,
+body.contrast .NAVtbl .NAValternateRow,
+body.contrast #NAVheaderContainer,
+body.contrast #NAVrelevantContentContainer .NAVkeyNumbers strong,
+body.contrast #NAVrelevantContentContainer .NAVnewsImg p,
+body.contrast strong,
+body.contrast td.legendLabel,
+body.contrast div.tickLabel,
+body.contrast .overskriftFacet,
+body.contrast .organisasjon_property,
+body.contrast #NAVcontentContainer .NAVfastNavContainer .NAVsquareLinkList ul { color: #fff !important;}
+body.contrast .loginContainerMain, 
+
+body.contrast a,
+body.contrast a:hover,
+body.contrast a:visited,
+body.contrast #NAVheaderContainer #NAVheaderContentContainer a,
+body.contrast #NAVsubmenuContainer .NAVfastNavContainer a,
+body.contrast #NAVsubmenuContainer .NAVfastNavContainer a:hover,
+body.contrast #NAVsubmenuContainer .NAVfastNavContainer a:visited,
+body.contrast .NAVsquareLinkList ul,
+body.contrast h2 a,
+body.contrast h2 a:visited,
+body.contrast .newsExtra h2 a, 
+body.contrast .newsExtra h2 a:visited,
+body.contrast #NAVrelevantContentContainer .NAVlnkAvailability,
+body.contrast #NAVrelevantContentContainer .NAVlnkAvailability:hover,
+body.contrast #NAVsubmenuContainer a,
+body.contrast #NAVsubmenuContainer .NAVlevelOne,
+body.contrast #NAVsubmenuContainer .NAVlevelTwo,
+body.contrast #NAVsubmenuContainer .NAVlevelThree,
+body.contrast #NAVsubmenuContainer .NAVlevelFour,
+body.contrast #NAVrelevantContentContainer .NAVavailability .NAVsizeLinks,
+body.contrast #NAValfabet a:hover,
+body.contrast #topBannerAktuelt a,
+body.contrast #topBannerAktuelt h5 { color: yellow!important;}
+
+body.contrast #NAVrelevantContentContainer #NAValfabet a, 
+body.contrast #NAVrelevantContentContainer #NAValfabet a:hover,
+body.contrast .NAVbigCampaign h5,
+body.contrast .NAVbigCampaign h5 a, 
+body.contrast .NAVbigCampaign h5 a:visited,
+body.contrast .NAVbigCampaign h5 a:hover,
+body.contrast .NAVbigCampaign a,
+body.contrast .NAVlnkBigCampaign:hover,
+body.contrast .NAVlnkBigCampaign:visited,
+body.contrast #NAVrelevantContentContainer .NAVrelatedContentCampaign h5,
+body.contrast .NAVerrorBox p,
+body.contrast .NAVtwoColumnBanner h5, 
+body.contrast .NAVtwoColumnBanner h5 a, 
+body.contrast .NAVtwoColumnBanner h5 a:visited,
+body.contrast .NAVtwoColumnBanner h5,
+body.contrast .NAVtwoColumnBanner a,
+body.contrast .NAVtwoColumnBanner a:visited,
+body.contrast .NAVrelatedContentCampaign a,
+body.contrast .NAVrelatedContentCampaign a:visited,
+body.contrast .umeny>li>a:hover, 
+body.contrast .uumeny>li>a:hover,
+body.contrast .NAVrelatedContentCampaign a:hover { color: #000 !important;}
+
+/*************************************************
+*
+* Text decoration
+*
+**************************************************/
+body.contrast #NAVsubmenuContainer .NAVlevelOne,
+body.contrast #NAVsubmenuContainer .NAVlevelTwo,
+body.contrast #NAVsubmenuContainer .NAVlevelThree,
+body.contrast #NAVsubmenuContainer .NAVlevelFour,
+body.contrast .NAVerrorBox p { font-weight: bold;}
+body.contrast .NAVerrorBox { border: 1px solid white;}
+body.contrast .NAVEDITable td {  background-color: #000 !important; }
+
+/************************************************
+*Skjemaveileder
+* 
+* *************************************************/
+
+body.contrast .outercontent, 
+body.contrast .NAVskjemaBakgrunn, 
+body.contrast .innercontent, 
+body.contrast .NAVskjemaIndre, 
+body.contrast .shipping-guidelines, 
+body.contrast .NAVskjemaIndre.dwnld-confirmation, 
+body.contrast .NAVskjemaIndre.download,
+body.contrast #NAVvedleggsveilederDownloadContainer .NAVskjemaBakgrunn .shipping-guidelines,
+body.contrast #userDetails .moreaddressoptions ,
+body.contrast #userDetails .moreaddressoptions  .addressInfo {background-color:#000 !important;color:#fff !important}
+body.contrast .form-details #userDetails .NAVskjemaIndre{border-top:1px solid;overflow:visible}
+body.contrast .attachmentList .NAVskjemaIndre {border-top:1px solid;}
+
+
+body.contrast .form-details p.top, 
+body.contrast .form-details .quiet, 
+body.contrast .form-details .stor, 
+body.contrast .form-details .stor span, 
+body.contrast .form-details .dwnld-confirmation p, 
+body.contrast .form-details .download .additional-info {color:#fff;}
+
+body.contrast .form-details .download ul.getresources li input.lastNedToppark,
+body.contrast .form-details .download ul.getresources li input.lastNedLenke { color: yellow; }
+
+/*body.contrast .shipping-guidelines .topsheet,
+body.contrast .shipping-guidelines .applicationform,
+body.contrast .shipping-guidelines .optionalform, 
+body.contrast .shipping-guidelines div h4{background-image:none;}
+body.contrast .shipping-guidelines div h4 {padding-bottom:0;}*/
+
+body.contrast .form-details .download ul.getresources li.gettopsheet,
+body.contrast .form-details .download ul.getresources li.getapplication,
+body.contrast .form-details .download ul.getresources li.getattachment,
+body.contrast #innsendingsveileder ul li a {background-image:none !important;padding-left:0}
+
+/*Main menu*/
+body.contrast .faner a.indre        { background: none !important; color: #4e4843 !important; }
+body.contrast .faner li.selected    { background: #c30000;}
+body.contrast .faner li.selected a.indre  { color: #fff !important; }

@@ -1,0 +1,369 @@
+<content-type>
+    <display-name>Skjemaveileder_arbeidsgiver_txt</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Skjemaoverskrift">
+            <label>Skjemaoverskrift</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Skjemaoverskrift</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="headingexplained" type="TextArea">
+                    <label>Forklaring</label>
+                    <custom-text>contentdata/headingexplained</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Oversikt over vedlegg">
+            <label>Oversikt over vedlegg</label>
+            <items>
+                <input name="schemaheading" type="TextLine">
+                    <label>Skjemaoverskrift</label>
+                    <custom-text>contentdata/schemaheading</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="schemaheadingexplained" type="TextArea">
+                    <label>Forklaring</label>
+                    <custom-text>contentdata/schemaheadingexplained</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Oversikt over nedlasting">
+            <label>Oversikt over nedlasting</label>
+            <items>
+                <input name="downloadheading" type="TextLine">
+                    <label>Nedlastingsoverskrift</label>
+                    <custom-text>contentdata/downloadheading</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="downloadheadingexplained" type="TextArea">
+                    <label>Forklaring til nedlasting</label>
+                    <custom-text>contentdata/downloadheadingexplained</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="applicationcontent" type="TextLine">
+                    <label>Dette skal søknaden inneholde</label>
+                    <custom-text>contentdata/applicationcontent</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="firstpage" type="TextLine">
+                    <label>Førsteside</label>
+                    <custom-text>contentdata/firstpage</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="storeontop" type="TextLine">
+                    <label>Legges øverst</label>
+                    <custom-text>contentdata/storeontop</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="applicationschema" type="TextLine">
+                    <label>Søknadsskjema</label>
+                    <custom-text>contentdata/applicationschema</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="attachments" type="TextLine">
+                    <label>Eventuelle vedlegg</label>
+                    <custom-text>contentdata/attachments</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="downloaddirection" type="TextLine">
+                    <label>Disse dokumentene laster du ned her</label>
+                    <custom-text>contentdata/downloaddirection</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="schemagetyourself" type="TextLine">
+                    <label>Disse dokumentene skaffer du selv</label>
+                    <custom-text>contentdata/schemagetyourself</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Velg avsender">
+            <label>Velg avsender</label>
+            <items>
+                <input name="senderheadline" type="TextLine">
+                    <label>Velg avsender: Overskrift</label>
+                    <custom-text>contentdata/senderheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="På vegne av en selv eller annen person">
+            <label>På vegne av en selv eller annen person</label>
+            <items>
+                <input name="senderinnorwayheadline" type="TextLine">
+                    <label>På vegne av en selv eller annen person, overskrift</label>
+                    <custom-text>contentdata/senderinnorwayheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="senderinnorwaydescription" type="TextArea">
+                    <label>På vegne av en selv eller annen person, beskrivelse</label>
+                    <custom-text>contentdata/senderinnorwaydescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Folkeregistrert og bor i Norge">
+            <label>Folkeregistrert og bor i Norge</label>
+            <items>
+                <input name="innorwayheadline" type="TextLine">
+                    <label>Folkeregistert og bor i Norge, overskrift</label>
+                    <custom-text>contentdata/innorwayheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="innorwaydescription" type="TextArea">
+                    <label>Folkeregistert og bor i Norge, beskrivelse</label>
+                    <custom-text>contentdata/innorwaydescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="innorwayzip" type="TextLine">
+                    <label>Ledetekst for postnr</label>
+                    <custom-text>contentdata/innorwayzip</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="innorwayfnr" type="TextLine">
+                    <label>Ledetekst for fødselsnummer</label>
+                    <custom-text>contentdata/innorwayfnr</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="innorwayzipdescription" type="TextLine">
+                    <label>Beskrivelse for postnr</label>
+                    <custom-text>contentdata/innorwayzipdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="innorwayfnrdescription" type="TextArea">
+                    <label>Beskrivelse for fødselsnummer</label>
+                    <custom-text>contentdata/innorwayfnrdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Ikke folkeregistrert i Norge">
+            <label>Ikke folkeregistrert i Norge</label>
+            <items>
+                <input name="notinnorwayheadline" type="TextLine">
+                    <label>Ikke folkeregistrert i Norge, overskrift</label>
+                    <custom-text>contentdata/notinnorwayheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwaydescription" type="TextArea">
+                    <label>Ikke folkeregistert i Norge, beskrivelse</label>
+                    <custom-text>contentdata/notinnorwaydescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwayaddress" type="TextLine">
+                    <label>Ledetekst for adresse</label>
+                    <custom-text>contentdata/notinnorwayaddress</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwaycoaddress" type="TextLine">
+                    <label>Coadresse</label>
+                    <custom-text>contentdata/notinnorwaycoaddress</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwaystreetaddress" type="TextLine">
+                    <label>Gateadresse</label>
+                    <custom-text>contentdata/notinnorwaystreetaddress</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwayzip" type="TextLine">
+                    <label>Postnummer</label>
+                    <custom-text>contentdata/notinnorwayzip</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwaypostalplace" type="TextLine">
+                    <label>Poststed</label>
+                    <custom-text>contentdata/notinnorwaypostalplace</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notinnorwayaddressdescription" type="TextArea">
+                    <label>Beskrivelse til feltene for adresse</label>
+                    <custom-text>contentdata/notinnorwayaddressdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Verken bor eller arbeider i Norge">
+            <label>Verken bor eller arbeider i Norge</label>
+            <items>
+                <input name="notworkinnorwayheadline" type="TextLine">
+                    <label>Verken bor eller arbeider i Norge, overskrift</label>
+                    <custom-text>contentdata/notworkinnorwayheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notworkinnorwaydescription" type="TextArea">
+                    <label>Verken bor eller arbeider i Norge, beskrivelse</label>
+                    <custom-text>contentdata/notworkinnorwaydescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notworkinnorwayfnr" type="TextLine">
+                    <label>Ledetekst for fødselsnummer</label>
+                    <custom-text>contentdata/notworkinnorwayfnr</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="notworkinnorwayfnrdescription" type="TextArea">
+                    <label>Beskrivelse for fødselsnummer</label>
+                    <custom-text>contentdata/notworkinnorwayfnrdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="På vegne av flere brukere samtidig">
+            <label>På vegne av flere brukere samtidig</label>
+            <items>
+                <input name="multiplesenderheadline" type="TextLine">
+                    <label>På vegne av flere brukere samtidig, overskrift</label>
+                    <custom-text>contentdata/multiplesenderheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="multiplesenderdescription" type="TextArea">
+                    <label>På vegne av flere brukere samtidig, beskrivelse</label>
+                    <custom-text>contentdata/multiplesenderdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="multiplesendernavunit" type="TextLine">
+                    <label>Ledetekst for NAV-enhet</label>
+                    <custom-text>contentdata/multiplesendernavunit</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="multiplesendernavunitdescription" type="TextArea">
+                    <label>Forklaring for inputboks for NAV-enhet</label>
+                    <custom-text>contentdata/multiplesendernavunitdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="På vegne av en organisasjon">
+            <label>På vegne av en organisasjon</label>
+            <items>
+                <input name="organizationheadline" type="TextLine">
+                    <label>På vegne av en organisasjon, overskrift</label>
+                    <custom-text>contentdata/organizationheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="organizationdescription" type="TextArea">
+                    <label>På vegne av en organisasjon, beskrivelse</label>
+                    <custom-text>contentdata/organizationdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="organizationnavunit" type="TextLine">
+                    <label>Ledetekst for NAV-enhet</label>
+                    <custom-text>contentdata/organizationnavunit</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="organizationnavunitdescription" type="TextArea">
+                    <label>Forklaring for inputboks for NAV-enhet</label>
+                    <custom-text>contentdata/organizationnavunitdescription</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Last ned førsteside">
+            <label>Last ned førsteside</label>
+            <items>
+                <input name="downloaddocumentstext" type="TextLine">
+                    <label>Nedlastingsoverskrift</label>
+                    <custom-text>contentdata/downloaddocumentstext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="these" type="TextLine">
+                    <label>Disse</label>
+                    <custom-text>contentdata/these</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="firstpagetext" type="TextLine">
+                    <label>Første side til saken din</label>
+                    <custom-text>contentdata/firstpagetext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="documents" type="TextLine">
+                    <label>Dokumenter</label>
+                    <custom-text>contentdata/documents</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="firstpageexplain" type="TextLine">
+                    <label>Forklaring til førsteside</label>
+                    <custom-text>contentdata/firstpageexplain</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="backbutton" type="TextLine">
+                    <label>Tilbakeknapp</label>
+                    <custom-text>contentdata/backbutton</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="firstpagelink" type="TextLine">
+                    <label>Førstesidelenke</label>
+                    <custom-text>contentdata/firstpagelink</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="nextstep" type="TextLine">
+                    <label>Neste steg</label>
+                    <custom-text>contentdata/nextstep</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="searchheadline" type="TextLine">
+                    <label>Søkeoverskrift</label>
+                    <custom-text>contentdata/searchheadline</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="searchbutton" type="TextLine">
+                    <label>Søkeknapp</label>
+                    <custom-text>contentdata/searchbutton</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="searchall" type="TextLine">
+                    <label>Se alle skjemaer</label>
+                    <custom-text>contentdata/searchall</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="helpneeded" type="TextLine">
+                    <label>Dersom du trenger hjelp</label>
+                    <custom-text>contentdata/helpneeded</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="helpneededtext" type="TextLine">
+                    <label>Kontaktlenke</label>
+                    <custom-text>contentdata/helpneededtext</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Stegoverskrifter">
+            <label>Stegoverskrifter</label>
+            <items>
+                <input name="stepheading0" type="TextLine">
+                    <label>Emneoverskrift</label>
+                    <custom-text>contentdata/stepheading0</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="stepheading1" type="TextLine">
+                    <label>Vedleggsoverskrift</label>
+                    <custom-text>contentdata/stepheading1</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="stepheading2" type="TextLine">
+                    <label>Innsendingsvalgoverskrift</label>
+                    <custom-text>contentdata/stepheading2</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="stepheading3" type="TextLine">
+                    <label>Overskrift for finn adresse</label>
+                    <custom-text>contentdata/stepheading3</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="stepheading4" type="TextLine">
+                    <label>Overskrift for nedlasting</label>
+                    <custom-text>contentdata/stepheading4</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

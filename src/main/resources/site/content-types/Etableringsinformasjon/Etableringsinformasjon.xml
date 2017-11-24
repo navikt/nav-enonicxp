@@ -1,0 +1,39 @@
+<content-type>
+    <display-name>Etableringsinformasjon</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="NAV-kontor">
+            <label>NAV-kontor</label>
+            <items>
+                <input name="kontornavn" type="TextLine">
+                    <label>Kontornavn</label>
+                    <custom-text>contentdata/kontornavn</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="ddag" type="TextLine">
+                    <label>Etablert dato</label>
+                    <custom-text>contentdata/ddag</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="pulje" type="TextLine">
+                    <label>Pulje</label>
+                    <custom-text>contentdata/pulje</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="kommunenummer" type="TextLine">
+                    <label>Kommunenummer</label>
+                    <custom-text>contentdata/kommunenummer</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="kontorid" type="TextLine">
+                    <label>Kontorid</label>
+                    <custom-text>contentdata/kontorid</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

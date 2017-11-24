@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<part>
+  <display-name>skjemaveileder-helelektronisk-velginnsendingsmetode</display-name>
+  <config>
+    <input name="https" type="TextLine">
+        <label>https</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="elektroniskInnsending" type="TextLine">
+        <label>elektroniskInnsending</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+    <input name="skjemaveileder" type="ContentSelector">
+        <label>skjemaveileder</label>
+        <occurrences maximum="1" minimum="0"/>
+    </input>
+</config>
+</part>

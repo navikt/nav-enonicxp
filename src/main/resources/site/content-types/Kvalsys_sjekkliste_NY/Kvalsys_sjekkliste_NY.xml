@@ -1,0 +1,81 @@
+<content-type>
+    <display-name>Kvalsys_sjekkliste_NY</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="Oppdaterer du på vegne av noen andre?">
+            <label>Oppdaterer du på vegne av noen andre?</label>
+            <items>
+                <input name="updated-by" type="TextLine">
+                    <label>Oppdatert på vegne av</label>
+                    <custom-text>contentdata/updated-by</custom-text>
+                    <help-text>La feltet være tomt med mindre du redigerer innholdet på vegne av noen andre.</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Om sjekklisten">
+            <label>Om sjekklisten</label>
+            <items>
+                <input name="heading" type="TextLine">
+                    <label>Tittel</label>
+                    <custom-text>contentdata/heading</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="intro" type="HtmlArea">
+                    <label>Innledning</label>
+                    <custom-text>contentdata/intro</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="outcome" type="HtmlArea">
+                    <label>Resultat</label>
+                    <custom-text>contentdata/outcome</custom-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="listitem">
+            <label>Sjekkliste</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="text" type="HtmlArea">
+                    <label>Sjekklistepunkt</label>
+                    <custom-text>text</custom-text>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="Veiledningsplattform">
+            <label>Veiledningsplattform</label>
+            <items>
+                <input name="veiledning" type="ContentSelector">
+                    <label>Veiledningsplattform</label>
+                    <custom-text>contentdata/veiledning</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Kvalsys_veiledningsplattform_NY</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Referanser">
+            <label>Referanser</label>
+            <items>
+                <input name="resources" type="ContentSelector">
+                    <label>Støttemateriale</label>
+                    <custom-text>contentdata/resources</custom-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_retningslinje_NY</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_sjekkliste_NY</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_aktivitet_NY</allow-content-type>
+                        <allow-content-type>no.nav.navno:Kvalsys_systemstotte_NY</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

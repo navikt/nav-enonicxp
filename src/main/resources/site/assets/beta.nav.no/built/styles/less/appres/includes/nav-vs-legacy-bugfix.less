@@ -1,0 +1,63 @@
+
+/*
+* Stiler fra beta og gamle apper kan kræsje. Her prøver vi å fikse det, slik at alt ser ut som før,
+* lokalt i appene.
+*
+**/
+
+// Overstyring av stiler fra beta, lokalt for appene:
+
+.maincontent > .row > div > div, // lokalt for appinnhold
+.maincontent > .row > div > nav,
+.tooltip { font-size: 73%; line-height: 1.4em; }  // .tooltip.hjelpetekst er spørsmålstegn i bidragsveileder
+
+
+.NAVsubmenu li {line-height:1.4em;} // gjøres mer generell? Sette 1.4em globalt for app?
+
+.maincontent {    // tidligere globale stiler, gjelder nå kun innenfor app
+	p,
+	input,
+	button,
+	textarea,
+	select
+	 {
+		font-size: 1em;
+	}
+	p {
+		margin: 0.6em 0 0.8em;
+	}
+
+	A           { text-decoration: none; color:#0074c2; }
+	A:hover     { text-decoration: underline; }
+	A:visited   { color: #0074c2;; }
+    
+}
+
+//---------------------------------------------------------
+// Overstyring av stiler fra forskjellge SASS-komponenter:
+//---------------------------------------------------------
+
+
+// _paneler.scss:
+
+.componentFeedback {
+	min-height:25px; // fra 18px
+}
+
+.panelhode P.hode,
+.panelhode H1,
+.panelhode H2,
+.panelhode H3,
+.panelhode H4  {
+	font-size:1.3em; // fra 1.2em
+	} 
+
+// typografi.scss:
+
+.ultrastor {
+    font-size: 1.9em; // fra 1.8
+}
+
+.megastor {
+    font-size: 1.6em; // fra 1.5
+ }

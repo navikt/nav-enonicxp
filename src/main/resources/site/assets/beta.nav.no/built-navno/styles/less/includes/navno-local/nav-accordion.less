@@ -1,0 +1,181 @@
+// Accordion + vanlig Høyremeny
+//-----------------------
+
+.related-content {
+	@media (max-width: (@screen-small - 0.01)) {
+		margin-left: 25px;
+		margin-right: 25px;
+	}
+	@media (max-width: (@screen-medium - 0.01)) {
+		margin-top: 30px;
+	}
+	/*@media (min-width: @screen-medium) and (max-width: (@screen-large - 0.01)) {
+		margin-top: 40px;
+	}*/
+	li {
+		font-size: @rem-as-14px;
+	}
+	border: 1px solid @gray-lighter;
+	margin-bottom: 30px;
+	section {
+		border-bottom: 1px solid @gray-lighter;
+		background-color: #fff;
+		&:last-child {
+			border: none;
+		}
+	}
+}
+
+// accordion
+
+.accordion .accordion-item {
+	background-color: #f5f5f4;
+	.h4 {
+		margin: 0;
+		padding: 0;
+	}
+	&.expanded {
+		background-color: #fff;
+		.accordion-toggle:after {
+			.dropdown-indicator-expanded();
+		}
+		.accordion-panel {
+			visibility: visible;
+			//height:auto;
+		}
+	}
+
+	&.js-animated {
+		.accordion-panel {
+			visibility: visible; // klasse fjernes med script vha setTimeout?
+		}
+
+	}
+}
+
+.accordion-panel {
+	.transition(height .2s ease-in-out);
+	overflow: hidden;
+	visibility: hidden;
+	height: 0;
+	ul {
+		margin: 0;
+		padding: 15px 30px;
+		list-style: none;
+		li {
+			margin-bottom: 20px; // OK!
+			&:last-child {
+				margin-bottom: 1px;
+			}
+		}
+	}
+}
+
+.accordion-toggle {
+	color: @text-color;
+	padding: 12px 30px 12px 30px;
+	display: block;
+	text-decoration: none;
+	border-bottom: 1px solid @gray-lighter;
+	margin-bottom: -1px;
+	position: relative;
+	&:hover,
+	&:focus {
+		text-decoration: none;
+		background-color: #fff;
+	}
+	&:after {
+		// TODO: Mixin. Brukes flere steder (link-list)
+		.dropdown-indicator-collapsed();
+	}
+
+}
+
+.no-js .related-content.accordion {
+	.accordion-panel {
+		visibility: visible;
+		padding: 15px 30px;
+		height: auto;
+	}
+}
+
+//
+//  Høyremeny artikkel, faktaark mm
+// 	I stor grad lik accordion! TODO: Refactor
+// -------------------------------
+.related-content.content-submenu {
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		li {
+			a {
+				border-bottom: 1px solid @gray-lighter;
+				color: @text-color;
+				padding: 10px 30px 10px 30px;
+				display: block;
+				text-decoration: none;
+				background-color: #f5f5f4;
+				span {
+					display: block;
+					position: relative;
+				}
+
+			}
+			&:last-child a {
+				border: none;
+			}
+		}
+
+		li a.selected,
+		li a:hover,
+		li a:focus {
+			background: #fff;
+			color: @link-color;
+		}
+
+		li a.selected {
+			// Hvit pil mot venstre for aktivt menypunkt
+			position: relative;
+
+			&:before, &:after {
+				content: " ";
+				display: inline-block;
+				border: solid rgba(209, 209, 209, 0); // ikke transparent pga ekstra "strek" på diagonal boarders. Fikses med rgba.
+				@media (max-width: (@screen-medium - 0.01)) {
+					border: 0;
+				}
+				transform: scale(.9999); // Hack for å rendre border (pil) riktig i firefox.
+				outline: none;
+				position: absolute;
+				right: 100%;
+
+			}
+
+			&:before {
+				border-width: 12px;
+				border-right-color: @gray-lighter;
+				top: 8px;
+
+			}
+			&:after {
+				border-width: 10px;
+				border-right-color: #fff;
+				top: 10px;
+			}
+		}
+
+		li .selected span:before, // Blå blupp
+		li a:hover span:before,
+		li a:focus span:before {
+			border: 3px solid @link-color;
+			border-radius: 50%;
+			display: inline-block;
+			content: " ";
+			position: absolute;
+			left: -13px;
+			top: 7px;
+		}
+	}
+}
