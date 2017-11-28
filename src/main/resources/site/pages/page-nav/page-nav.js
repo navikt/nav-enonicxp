@@ -4,12 +4,12 @@ var view = resolve('page-nav.html');
 
 function handleGet(req) {
     var site = portalLib.getSite();
-    var reqContent = portalLib.getContent();
+    var content = portalLib.getContent();
 
     var params = {
         context: req,
         site: site,
-        reqContent: reqContent
+        content: content
     };
 
     var body = thymeleafLib.render(view, params);
