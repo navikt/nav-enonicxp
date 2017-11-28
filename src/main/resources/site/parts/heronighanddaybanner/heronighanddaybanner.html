@@ -1,3 +1,12 @@
-<div>
-    <h1 data-th-text="${partName}"></h1>
+<div class="hero-banner" data-th-classappend="${timeOfDay}">
+    <div class="container">
+        <figure>
+            <img class="img-responsive-dummy" data-th-width="${imageWidth}" data-th-height="${imageHeight}" aria-hidden="true" alt=""
+                 data-th-src="${portal.assetUrl({'_path=beta.nav.no/images/transparentPix.png'})}">
+            <img id="svg-banner" class="img-responsive"
+                 data-th-width="${imageWidth}" data-th-height="${imageHeight}"
+                 data-th-alt="${imageDescription}"
+                 data-th-src="${portal.imageUrl({'_id=' + imageId, '_scale=full', '_quality=100'})}">
+        </figure>
+    </div>
 </div>
