@@ -1,5 +1,7 @@
 var portalLib = require('/lib/xp/portal');
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var menuLib = require('/lib/menu');
+
 var view = resolve('page-nav.html');
 
 var accessibleLetters = 'abcdefghijklmnopqrstuvwxyzæøå'.split('');
@@ -8,12 +10,17 @@ function handleGet(req) {
     var site = portalLib.getSite();
     var content = portalLib.getContent();
 
+    var menuItems = menuLib.getSubMenus(site, 4);
+    menuItems = menuItems[0];
+
     var params = {
         context: req,
         site: site,
         content: content,
+        frontPageUrl: portalLib.pageUrl({id: site._id}),
         contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
-        accessibleLetters: accessibleLetters
+        accessibleLetters: accessibleLetters,
+        menu: menuItems
     };
 
     var body = thymeleafLib.render(view, params);

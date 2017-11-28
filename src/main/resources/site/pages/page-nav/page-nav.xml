@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <page>
-  <display-name>page-nav</display-name>
+  <display-name>Page Nav</display-name>
   <config/>
   <regions>
     <region name="region-center"/>
