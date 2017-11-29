@@ -206,14 +206,14 @@
             <div data-portal-region="region-center">
                 <div data-th-if="${content.page.regions['region-center']}" data-th-remove="tag">
                     <div data-th-each="component : ${content.page.regions['region-center'].components}" data-th-remove="tag">
-                        <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+                        <div data-portal-component="${component.path}" class="col-md-8 col-sm-12"></div>
                     </div>
                 </div>
             </div>
             <div data-portal-region="region-south">
                 <div data-th-if="${content.page.regions['region-south']}" data-th-remove="tag">
                     <div data-th-each="component : ${content.page.regions['region-south'].components}" data-th-remove="tag">
-                        <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+                        <div data-portal-component="${component.path}" class="col-md-8 col-sm-12"></div>
                     </div>
                 </div>
             </div>

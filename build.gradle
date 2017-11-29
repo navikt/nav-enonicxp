@@ -20,8 +20,9 @@ dependencies {
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
+    include "com.enonic.xp:lib-i18n:${xpVersion}"
+    include 'no.iskald.lib:moment:1.0.0'
     //include "com.enonic.xp:lib-mustache:${xpVersion}"
-    //include "com.enonic.xp:lib-i18n:${xpVersion}"
     //include "com.enonic.xp:lib-auth:${xpVersion}"
     //include "com.enonic.xp:lib-context:${xpVersion}"
     //include "com.enonic.xp:lib-io:${xpVersion}"
@@ -35,4 +36,7 @@ repositories {
     mavenLocal()
     jcenter()
     xp.enonicRepo()
+    maven {
+        url  "https://dl.bintray.com/ljl/maven"
+    }
 }

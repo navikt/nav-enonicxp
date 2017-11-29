@@ -1,10 +1,23 @@
+var portalLib = require('/lib/xp/portal');
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var utils = require('/lib/nav-utils');
+
 var view = resolve('article.html');
 
 function handleGet(req) {
+    var content = portalLib.getContent();
+
+    var contentKey = utils.getContentParam(content, 'key');
+    var article;
+    if (contentKey) {
+        article = utils.getContentByCmsKey(contentKey);
+        article.publishFromText = utils.dateTimePublished(article, 'no');
+    }
 
     var params = {
-        partName: "article"
+        appNamePre: app.name + ':',
+        content: article,
+        driftsMelding: article.type === (app.name + ':Driftsmelding_nav')
     };
 
     var body = thymeleafLib.render(view, params);
