@@ -1,3 +1,14 @@
-<div>
-    <h1 data-th-text="${partName}"></h1>
-</div>
+<section class="row inner-row">
+    <div class="hero-links">
+        <h1 class="visuallyhidden" data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
+            data-th-text="${portal.localize({'_key=nav.site.key-shortcuts'})}">nav.site.key-shortcuts</h1>
+
+        <div class="col-md-4 col-sm-12 hero-link-wrapper" data-th-each="content : ${contents}">
+            <a data-th-href="${content.data.url}" class="hero-link">
+                <h2 data-th-text="${content.data.heading}" class="h4 decorated leading-icon"
+                    data-th-classappend="'icon-'+(${content.data.icon == 'padlock'}? 'login' : ${content.data.icon})"></h2>
+                <p data-th-text="${content.data.description}"></p>
+            </a>
+        </div>
+    </div>
+</section>

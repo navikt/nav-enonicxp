@@ -1,10 +1,29 @@
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var portalLib = require('/lib/xp/portal');
+var contentLib = require('/lib/xp/content');
+var utils = require('/lib/nav-utils');
+
 var view = resolve('shortcut-box-link-hero-tripple.html');
 
 function handleGet(req) {
 
+    var content = portalLib.getContent();
+    var sectionIds = [].concat(content.data.sectionContents || []);
+    var queryResult = contentLib.query({
+        start: 0,
+        count: 100,
+        filters: {
+            ids: {
+                values: sectionIds
+            }
+        },
+        contentTypes: [app.name + ':nav.lenke-med-ikon']
+    });
+
+    var contents = utils.sortContents(queryResult.hits, sectionIds);
+
     var params = {
-        partName: "shortcut-box-link-hero-tripple"
+        contents: contents
     };
 
     var body = thymeleafLib.render(view, params);

@@ -1,6 +1,8 @@
 var portalLib = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var utils = require('/lib/nav-utils');
+
 var view = resolve('heronighanddaybanner.html');
 
 function handleGet(req) {
@@ -23,8 +25,8 @@ function handleGet(req) {
     if (count === 1) {
         imageContent = queryResult.hits[0];
     } else if (count > 1) {
-        sortSectionImages(queryResult.hits, content.data.sectionContents);
-        imageContent = timeOfDay === 'nighttime' ? queryResult.hits[1] : queryResult.hits[0];
+        var sortedContents = utils.sortContents(queryResult.hits, content.data.sectionContents);
+        imageContent = timeOfDay === 'nighttime' ? sortedContents[1] : sortedContents[0];
     }
 
     if (!imageContent) {
@@ -47,18 +49,6 @@ function handleGet(req) {
         contentType: 'text/html',
         body: body
     };
-}
-
-function sortSectionImages(contents, ids) {
-    var id1 = contents[0]._id;
-    var id2 = contents[1]._id;
-    var pos1 = ids.indexOf(id1);
-    var pos2 = ids.indexOf(id2);
-    if (pos1 > pos2) {
-        var tmp = contents[0];
-        contents[0] = contents[1];
-        contents[1] = tmp;
-    }
 }
 
 exports.get = handleGet;
