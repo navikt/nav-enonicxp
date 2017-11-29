@@ -13,10 +13,18 @@ function handleGet(req) {
     var menuItems = menuLib.getSubMenus(site, 4);
     menuItems = menuItems[0];
 
+    var regionsInWest = content.page.regions['region-west'].components.length > 0;
+    var regionsInEast = content.page.regions['region-east'].components.length > 0;
+    var regionsInCenter = content.page.regions['region-center'].components.length > 0;
+
     var params = {
         context: req,
         site: site,
         content: content,
+        westRegionClass: regionsInEast && !regionsInCenter ? 'col-md-6' : 'col-md-4',
+        eastRegionClass: regionsInWest && !regionsInCenter ? 'col-md-6' : 'col-md-4',
+        centerRegionClass: regionsInEast && regionsInWest ? 'col-md-4' : (regionsInEast || regionsInWest ? 'col-md-8' : 'col-md-12'),
+        title: content.displayName + ' - ' + site.displayName,
         frontPageUrl: portalLib.pageUrl({id: site._id}),
         contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
         accessibleLetters: accessibleLetters,
