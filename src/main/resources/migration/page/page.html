@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAV Migration Tools</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.css">
+</head>
+<body>
+<section class="hero is-link">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">NAV - Migration Tools</h1>
+        </div>
+    </div>
+</section>
+<br/>
+<section>
+    <div class="container has-text-centered">
+        <div class="columns">
+
+            <div class="column">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title is-centered">Delete content</p>
+                        <a href="#" class="card-header-icon" aria-label="more options">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                        </a>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            Delete list of contents by path.
+                            <br/>
+                            <span class="tag is-info" id="deleteContentResult" style="display: none"></span>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="#" class="card-footer-item" id="deleteContent">Execute</a>
+                        <a href="#" class="card-footer-item" disabled id="deleteContentExecuting" style="display: none;">Executing</a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title is-centered">Page parameters</p>
+                        <a href="#" class="card-header-icon" aria-label="more options">
+                      <span class="icon">
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                        </a>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            Migrate page parameters to part config.
+                            <br/>
+                            <span class="tag is-info" id="pageParamsResult" style="display: none"></span>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="#" class="card-footer-item" id="pageParams" disabled="">Not implemented</a>
+                        <a href="#" class="card-footer-item" disabled id="pageParamsExecuting" style="display: none;">Executing</a>
+                    </footer>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{{assetsUri}}/migration/js/main.js" data-serviceurl="{{serviceUrl}}"></script>
+</body>
+</html>

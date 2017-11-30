@@ -22,14 +22,14 @@ dependencies {
     include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
     include "com.enonic.xp:lib-i18n:${xpVersion}"
     include 'no.iskald.lib:moment:1.0.0'
-    //include "com.enonic.xp:lib-mustache:${xpVersion}"
-    //include "com.enonic.xp:lib-auth:${xpVersion}"
-    //include "com.enonic.xp:lib-context:${xpVersion}"
-    //include "com.enonic.xp:lib-io:${xpVersion}"
-    //include "com.enonic.xp:lib-mail:${xpVersion}"
+    //include "com.enonic.lib:menu:1.2.0"
+
+    include "com.enonic.xp:lib-mustache:${xpVersion}"
+    include "com.enonic.xp:lib-auth:${xpVersion}"
+    include "com.enonic.xp:lib-task:${xpVersion}"
+    include "com.enonic.xp:lib-context:${xpVersion}"
+    include "com.enonic.xp:lib-io:${xpVersion}"
     //include "com.enonic.xp:lib-repo:${xpVersion}"
-    //include "com.enonic.xp:lib-websocket:${xpVersion}"
-//    include "com.enonic.lib:menu:1.2.0"
 }
 
 repositories {
