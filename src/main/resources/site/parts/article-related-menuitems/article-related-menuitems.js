@@ -1,10 +1,17 @@
+var portalLib = require('/lib/xp/portal');
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var menuLib = require('/lib/menu');
+
 var view = resolve('article-related-menuitems.html');
 
 function handleGet(req) {
+    var content = portalLib.getContent();
+
+    var menus = menuLib.getSubMenus(content, 1);
+    log.info('menus: ' + JSON.stringify(menus, null, 2));
 
     var params = {
-        partName: "article-related-menuitems"
+        menus: menus
     };
 
     var body = thymeleafLib.render(view, params);

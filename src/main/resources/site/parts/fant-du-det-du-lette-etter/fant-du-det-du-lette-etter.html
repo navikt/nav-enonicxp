@@ -1,3 +1,55 @@
-<div>
-    <h1 data-th-text="${partName}"></h1>
-</div>
+<aside class="fant-du-det-du-lette-etter related-content"><h1 class="typo-etikett-stor tittel">Fant du det du lette etter?</h1>
+    <div class="skjema">
+        <form id="submit-form" method="post" action="#todo">
+            <input type="hidden" name="categorykey" value="8519"/><input type="hidden" name="language" value="no"/>
+            <div class="skjema-horisontal">
+                <label for="submit-knapp" id="skjema-feilmelding" class="typo-undertekst blokk-xxs"
+                       style="display:none; font-weight:bold;">Du må velge «ja» eller «nei»</label>
+                <div class="nav-input">
+                    <input class="nav-radioknapp" type="radio" name="answer" value="Ja"
+                           id="fant-du-det-du-lette-etter-radio-ja"/>
+                    <label for="fant-du-det-du-lette-etter-radio-ja">Ja</label>
+                    <input class="nav-radioknapp" type="radio" name="answer" value="Nei" id="fant-du-det-du-lette-etter-radio-nei"/>
+                    <label for="fant-du-det-du-lette-etter-radio-nei">Nei</label>
+                </div>
+            </div>
+            <div class="nav-input">
+                <label for="description" class="typo-undertekst blokk-xxs">Hva lette du etter? (maks. 1000
+                    tegn)</label>
+                <textarea class="typo-undertekst blokk-s" name="description" id="description" maxlength="1000"
+                          onkeyup="updateCounter('tegn igjen');" placeholder="Ikke skriv personlige opplysninger.">
+                </textarea>
+                <div class="typo-undertekst blokk-xxs">
+                    <kontaktoss><p>Vi bruker det du skriver kun til å forbedre nav.no. Skal du gi en beskjed, må du
+                        <a href="#todo">kontakte NAV på telefon</a>.</p>
+                    </kontaktoss>
+                </div>
+            </div>
+            <input id="submit-knapp" type="submit" name="Send inn" value="Send inn" class="btn btn-main btn-small"/>
+            <p class="signsleft"><span id="remaining"/></p><span id="feedback"/>
+            <script type="text/javascript"><!--
+            function updateCounter(text) {
+                var maxLength = 1000;
+                var count = maxLength - document.getElementById('description').value.length;
+
+                document.getElementById('remaining').innerHTML = count + ' ' + text;
+
+            }
+
+            document.querySelector("#submit-form").onsubmit = function () {
+                var jaKnappErValgt = document.querySelector("#fant-du-det-du-lette-etter-radio-ja").checked;
+                var neiKnappErValgt = document.querySelector("#fant-du-det-du-lette-etter-radio-nei").checked;
+
+                if (!(jaKnappErValgt || neiKnappErValgt)) {
+                    document.querySelector("#skjema-feilmelding").style.display = 'block';
+                    return false;
+                }
+
+                return true;
+
+            }
+            -->
+            </script>
+        </form>
+    </div>
+</aside>
