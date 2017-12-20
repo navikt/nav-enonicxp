@@ -1,3 +1,4 @@
 /sites/www.nav.no/foreldrepenger
 /sites/www.nav.no/nyuforetrygd
 /sites/www.nav.no/nyuforetrygd_2
+/sites/www.nav.no/robots.txt
