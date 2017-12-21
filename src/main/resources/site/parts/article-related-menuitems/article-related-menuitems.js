@@ -8,7 +8,7 @@ function handleGet(req) {
     var content = portalLib.getContent();
 
     var menus = menuLib.getSubMenus(content, 1);
-    log.info('menus: ' + JSON.stringify(menus, null, 2));
+//    log.info('menus: ' + JSON.stringify(menus, null, 2));
 
     var params = {
         menus: menus
