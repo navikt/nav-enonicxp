@@ -8,7 +8,9 @@ function handleGet(req) {
     var content = portalLib.getContent();
 
     var contentKey = utils.getContentParam(content, 'key');
-    var article;
+    var article = {
+		type: null
+	};
     if (contentKey) {
         article = utils.getContentByCmsKey(contentKey);
         article.publishFromText = utils.dateTimePublished(article, 'no');

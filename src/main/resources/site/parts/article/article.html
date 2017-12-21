@@ -1,45 +1,53 @@
 <article class="full-article" id="pagecontent">
-    <header data-th-classappend="${!driftsMelding}? 'article-head'">
-        <time class="pubdate muted" data-th-datetime="${content.publish.from}" data-th-text="${content.publishFromText}">Publisert
-            12.02.2015 | Sist endret 21.12.2016
-        </time>
 
-        <h1 data-th-text="${content.displayName}"></h1>
+	<div data-th-remove="tag" data-th-if="${!content.data}">
+		<p>Sorry, couldn't find the article you were looking for!</p>
+	</div>
 
-        <div class="toolbar">
-            <div class="content-print" id="print-page" role="button" tabindex="0"
-                 data-th-classappend="${!content.data.languages or !content.data.languages.content}? 'content-print leftmost-in-toolbar'">
-                <span data-th-text="${portal.localize({'_key=nav.print.page','_locale=content.language'})}"></span>
-            </div>
-        </div>
+	<div data-th-remove="tag" data-th-if="${content.type}">
 
-        <!--<xsl:call-template name="generate-article-submenu"/>-->
+		<header data-th-classappend="${!driftsMelding}? 'article-head'">
+	        <time class="pubdate muted" data-th-datetime="${content.publish.from}" data-th-text="${content.publishFromText}">Publisert
+	            12.02.2015 | Sist endret 21.12.2016
+	        </time>
 
-        <p class="preface" data-th-if="${content.data.preface != ''}">
-            <br data-th-if="${#strings.contains(content.data.preface,'\n')}"/>
-            [[${content.data.preface}]]
-        </p>
-    </header>
-    <div class="article-body">
-        <div data-th-utext="${portal.processHtml({'_value='+content.data.text})}">text</div>
-    </div>
+	        <h1 data-th-text="${content.displayName}"></h1>
 
-    <div class="well article-facts" data-th-if="${content.data.fact != ''}">
-        <h3 class="h4 decorated" data-th-text="${portal.localize({'_key=nav.facts'})}">nav.facts</h3>
-        <div data-th-utext="${portal.processHtml({'_value='+content.data.fact})}">fact</div>
-    </div>
+	        <div class="toolbar">
+	            <div class="content-print" id="print-page" role="button" tabindex="0"
+	                 data-th-classappend="${!content.data.languages or !content.data.languages.content}? 'content-print leftmost-in-toolbar'">
+	                <span data-th-text="${portal.localize({'_key=nav.print.page','_locale=content.language'})}"></span>
+	            </div>
+	        </div>
 
-    <div class="figure-container" data-th-if="${content.data.image}">
-        <figure data-th-classappend="|${content.data.imagesize == '100' ? 'figure-full' : ''} ${content.data.imagesize == '70' ? 'figure-medium' : ''} ${content.data.imagesize == '40' ? 'figure-small' : ''}| ">
-            <img data-th-src="${portal.imageUrl({'_id='+content.data.image, '_scale=full()'})}"/>
-            <figcaption class="decorated" data-th-if="${content.data.caption}" data-th-text="${content.data.caption}"></figcaption>
-        </figure>
-    </div>
+	        <!--<xsl:call-template name="generate-article-submenu"/>-->
 
-    <!--<xsl:call-template name="share-social-media">-->
-    <!--<xsl:with-param name="display-twitter" select="contentdata/share-twitter = 'true'"/>-->
-    <!--<xsl:with-param name="display-facebook" select="contentdata/share-facebook = 'true'"/>-->
-    <!--<xsl:with-param name="display-linkedin" select="contentdata/share-linkedin = 'true'"/>-->
-    <!--</xsl:call-template>-->
+	        <p class="preface" data-th-if="${content.data.preface != ''}">
+	            <br data-th-if="${#strings.contains(content.data.preface,'\n')}"/>
+	            [[${content.data.preface}]]
+	        </p>
+	    </header>
+	    <div class="article-body">
+	        <div data-th-utext="${portal.processHtml({'_value='+content.data.text})}">text</div>
+	    </div>
+
+	    <div class="well article-facts" data-th-if="${content.data.fact != ''}">
+	        <h3 class="h4 decorated" data-th-text="${portal.localize({'_key=nav.facts'})}">nav.facts</h3>
+	        <div data-th-utext="${portal.processHtml({'_value='+content.data.fact})}">fact</div>
+	    </div>
+
+	    <div class="figure-container" data-th-if="${content.data.image}">
+	        <figure data-th-classappend="|${content.data.imagesize == '100' ? 'figure-full' : ''} ${content.data.imagesize == '70' ? 'figure-medium' : ''} ${content.data.imagesize == '40' ? 'figure-small' : ''}| ">
+	            <img data-th-src="${portal.imageUrl({'_id='+content.data.image, '_scale=full()'})}"/>
+	            <figcaption class="decorated" data-th-if="${content.data.caption}" data-th-text="${content.data.caption}"></figcaption>
+	        </figure>
+	    </div>
+
+	    <!--<xsl:call-template name="share-social-media">-->
+	    <!--<xsl:with-param name="display-twitter" select="contentdata/share-twitter = 'true'"/>-->
+	    <!--<xsl:with-param name="display-facebook" select="contentdata/share-facebook = 'true'"/>-->
+	    <!--<xsl:with-param name="display-linkedin" select="contentdata/share-linkedin = 'true'"/>-->
+	    <!--</xsl:call-template>-->
+	</div>
 
 </article>
