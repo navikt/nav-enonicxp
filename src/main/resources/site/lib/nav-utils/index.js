@@ -13,18 +13,20 @@ var libs = {
  */
 exports.sortContents = function (contents, sortedIds) {
     var sorted = [];
-    sortedIds.forEach(function (id) {
-        var found = false;
-        contents = contents.filter(function (content) {
-            if (!found && content._id === id) {
-                sorted.push(content);
-                found = true;
-                return false;
-            } else {
-                return true;
-            }
-        })
-    });
+	if (sortedIds.isArray) {
+	    sortedIds.forEach(function (id) {
+	        var found = false;
+	        contents = contents.filter(function (content) {
+	            if (!found && content._id === id) {
+	                sorted.push(content);
+	                found = true;
+	                return false;
+	            } else {
+	                return true;
+	            }
+	        })
+	    });
+	}
     return sorted;
 };
 
@@ -56,7 +58,7 @@ exports.getContentParam = function (content, paramName, defaultValue) {
  * @returns {object|null} content object or null if not found.
  */
 exports.getContentByMenuKey = function (cmsMenuKey) {
-    var queryResult = contentLib.query({
+    var queryResult = libs.content.query({
         start: 0,
         count: 1,
         query: "x." + libs.util.app.getJsonName() + ".cmsMenu.menuKey = '" + cmsMenuKey + "'"
@@ -71,7 +73,7 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
  */
 exports.getContentByCmsKey = function (contentKey) {
     log.info('getContentByMenuKey query: ' + "x." + libs.util.app.getJsonName() + ".cmsContent.contentKey = '" + contentKey + "'");
-    var queryResult = contentLib.query({
+    var queryResult = libs.content.query({
         start: 0,
         count: 1,
         query: "x." + libs.util.app.getJsonName() + ".cmsContent.contentKey = '" + contentKey + "'"
@@ -80,9 +82,9 @@ exports.getContentByCmsKey = function (contentKey) {
 };
 
 exports.dateTimePublished = function (content, language) {
-    var navPublished = i18nLib.localize({key: 'nav.published'});
+    var navPublished = libs.i18n.localize({key: 'nav.published'});
     var published = '', lastModified = '';
-    var navUpdated = i18nLib.localize({key: 'nav.updated'});
+    var navUpdated = libs.i18n.localize({key: 'nav.updated'});
 
     if (language !== 'no' && language !== 'en') {
         published = moment(content.publish.from).locale('no').format('L');
