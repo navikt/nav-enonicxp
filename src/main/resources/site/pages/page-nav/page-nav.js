@@ -13,9 +13,9 @@ function handleGet(req) {
     var menuItems = menuLib.getSubMenus(site, 4);
     menuItems = menuItems[0];
 
-    var regionsInWest = content.page.regions['region-west'].components.length > 0;
-    var regionsInEast = content.page.regions['region-east'].components.length > 0;
-    var regionsInCenter = content.page.regions['region-center'].components.length > 0;
+    var regionsInWest = content.page.regions['region-west'] && content.page.regions['region-west'].components.length > 0;
+    var regionsInEast = content.page.regions['region-east'] && content.page.regions['region-east'].components.length > 0;
+    var regionsInCenter = content.page.regions['region-center'] && content.page.regions['region-center'].components.length > 0;
 
     var params = {
         context: req,
