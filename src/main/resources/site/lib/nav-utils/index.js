@@ -1,6 +1,9 @@
-var contentLib = require('/lib/xp/content');
-var i18nLib = require('/lib/xp/i18n');
-var moment = require('/lib/moment');
+var libs = {
+	content: require('/lib/xp/content'),
+	i18n: require('/lib/xp/i18n'),
+	moment: require('/lib/moment'),
+	util: require('/lib/enonic/util')
+}
 
 /**
  * Sort contents in the same order as the sorted array of ids.
