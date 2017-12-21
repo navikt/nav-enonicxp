@@ -2,14 +2,15 @@
     <!--<h1 data-th-text="${partName}"></h1>-->
 	<div class="col-md-4 col-sm-12">
       <h2 class="h4 decorated">Nyheter</h2>
-      <ul class="link-list-meta">
-         <li>
-            <time datetime="2017-12-19 08:00">19.12.2017</time><a href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Presse/Pressemeldinger/Sykefrav%C3%A6ret+er+fortsatt+stabilt">Sykefraværet er fortsatt stabilt</a></li>
-         <li>
-            <time datetime="2017-12-18 11:09">18.12.2017</time><a href="https://www.nav.no/no/NAV+og+samfunn/Innhold+til+NAV+og+samfunn+forside/Nyheter/endringer-i-regelverk-og-satser-1.januar-2018">Endringer i regelverk og satser 1. januar 2018</a></li>
-         <li>
-            <time datetime="2017-12-01 10:00">01.12.2017</time><a href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Presse/Pressemeldinger/Ledigheten+fortsetter+%C3%A5+falle">Ledigheten fortsetter å falle</a></li>
+
+	  <ul class="link-list-meta" data-th-if="${contents}">
+         <li data-th-each="content : ${contents}">
+            <time datetime="2017-12-19 08:00" data-th-text="${content.publish.from}">19.12.2017</time>
+			<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}">
+			</a>
+         </li>
          <li><a href="https://tjenester.nav.no/nav-sok?nyhetsfiltrering=Alle+nyheter&amp;sortering=dato">Flere nyheter</a></li>
       </ul>
+
    </div>
 </div>
