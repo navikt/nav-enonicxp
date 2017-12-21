@@ -5,6 +5,11 @@ var libs = {
 	util: require('/lib/enonic/util')
 }
 
+// *********************************
+// A collection of functions useful for Nav as a CMS2XP-project, but might also (with some tuning) be handy for other migration projects.
+// *********************************
+
+
 /**
  * Sort contents in the same order as the sorted array of ids.
  * @param {Object[]} contents Array of content objects.
@@ -51,6 +56,24 @@ exports.getContentParam = function (content, paramName, defaultValue) {
     }
     return defaultValue;
 };
+
+/**
+ * Used for menus to get specific parameter's values. Probably could be tweaked and merged with getContentParam ...
+ */
+exports.getParameterValue = function(content, paramName) {
+    var parameters = content.data.parameters;
+    if (!parameters) {
+        return null;
+    }
+    var params = [].concat(parameters), param;
+    for (var i = 0, l = params.length; i < l; i++) {
+        param = params[i];
+        if (param.name === paramName) {
+            return param.value;
+        }
+    }
+    return null;
+}
 
 /**
  * Fetch a content by its cms menu key.

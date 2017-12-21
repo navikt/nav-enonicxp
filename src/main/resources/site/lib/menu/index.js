@@ -1,6 +1,7 @@
 var libs = {
     portal: require('/lib/xp/portal'),
-    content: require('/lib/xp/content')
+    content: require('/lib/xp/content'),
+    navUtils: require('/lib/nav-utils')
 };
 
 var globals = {
@@ -157,7 +158,7 @@ function isMenuItem(content) {
  * @return {Boolean} true if the content should be excluded from the menu
  */
 function excludeFromMainMenu(content) {
-    return getParameterValue(content, 'exclude-from-mainmenu') === 'true';
+    return libs.navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
 }
 
 /**
@@ -202,23 +203,8 @@ function menuItemToJson(content, levels) {
         newWindow: menuItem.newWindow ? menuItem.newWindow : false,
         type: content.type,
         children: subMenus,
-        showLoginInfo: getParameterValue(content, 'showLoginInfo') === 'true'
+        showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true'
     };
-}
-
-function getParameterValue(content, paramName) {
-    var parameters = content.data.parameters;
-    if (!parameters) {
-        return null;
-    }
-    var params = [].concat(parameters), param;
-    for (var i = 0, l = params.length; i < l; i++) {
-        param = params[i];
-        if (param.name === paramName) {
-            return param.value;
-        }
-    }
-    return null;
 }
 
 /**
