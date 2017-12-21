@@ -59,7 +59,7 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
     var queryResult = contentLib.query({
         start: 0,
         count: 1,
-        query: "x." + app.name.replaceAll('\\.', '-') + ".cmsMenu.menuKey = '" + cmsMenuKey + "'"
+        query: "x." + libs.util.app.getJsonName() + ".cmsMenu.menuKey = '" + cmsMenuKey + "'"
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
@@ -70,11 +70,11 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
  * @returns {object|null} content object or null if not found.
  */
 exports.getContentByCmsKey = function (contentKey) {
-    log.info('getContentByMenuKey query: ' + "x." + app.name.replaceAll('\\.', '-') + ".cmsContent.contentKey = '" + contentKey + "'");
+    log.info('getContentByMenuKey query: ' + "x." + libs.util.app.getJsonName() + ".cmsContent.contentKey = '" + contentKey + "'");
     var queryResult = contentLib.query({
         start: 0,
         count: 1,
-        query: "x." + app.name.replaceAll('\\.', '-') + ".cmsContent.contentKey = '" + contentKey + "'"
+        query: "x." + libs.util.app.getJsonName() + ".cmsContent.contentKey = '" + contentKey + "'"
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
