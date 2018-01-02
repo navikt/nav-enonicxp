@@ -5,13 +5,15 @@ var utils = require('/lib/nav-utils');
 
 var view = resolve('shortcut-box-link-hero-tripple.html');
 
+/* This is the part displayed on nav.no/no/Person frontpage, the three top boxes underneath the illustration. */
+
 function handleGet(req) {
 
     var content = portalLib.getContent();
     var sectionIds = [].concat(content.data.sectionContents || []);
     var queryResult = contentLib.query({
         start: 0,
-        count: 100,
+        count: 10,
         filters: {
             ids: {
                 values: sectionIds

@@ -5,20 +5,22 @@ var utils = require('/lib/nav-utils');
 
 var view = resolve('heronighanddaybanner.html');
 
+/* This is displayed on nav.no/no/Person and alternates between two images depending on the time of day. */
+
 function handleGet(req) {
     var h = new Date().getHours();
     var timeOfDay = h > 16 || h < 5 ? 'nighttime' : 'daytime';
 
     var content = portalLib.getContent();
-    var queryResult = contentLib.query({
+    var queryResult = contentLib.query({ // Query entire XP for all data
         start: 0,
         count: 2,
         filters: {
             ids: {
-                values: [].concat(content.data.sectionContents || [])
+                values: [].concat(content.data.sectionContents || []) // Fetch related contents on this Content (page)
             }
         },
-        contentTypes: ["media:image"]
+        contentTypes: ["media:image"] // Keep only images
     });
 
     var count = queryResult.hits.length, imageContent = null;
