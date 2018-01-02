@@ -18,7 +18,7 @@ var libs = {
  */
 exports.sortContents = function (contents, sortedIds) {
     var sorted = [];
-	if (sortedIds.isArray) {
+	//if (sortedIds.isArray) {
 	    sortedIds.forEach(function (id) {
 	        var found = false;
 	        contents = contents.filter(function (content) {
@@ -31,7 +31,7 @@ exports.sortContents = function (contents, sortedIds) {
 	            }
 	        })
 	    });
-	}
+	//}
     return sorted;
 };
 
