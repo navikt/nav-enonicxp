@@ -28,7 +28,7 @@ exports.get = function(req) {
 	*/
 	var results = libs.content.query({
 		start: 0,
-		count: 400,
+		count: 5, //400
 		sort: "",
 		query: "",
 		contentTypes: [
