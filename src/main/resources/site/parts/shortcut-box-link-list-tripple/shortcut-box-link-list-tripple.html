@@ -4,24 +4,27 @@
 
 
     <div class="col-md-4 col-sm-12">
-        <div data-th-each="content : ${nicetoknow}">
-            <h2 class="h4 decorated">
-                <!--<xsl:value-of select="/result/menuitems[1]/menuitem/display-name"/>-->
-            </h2>
-            <ul class="link-list" data-th-text="${content.name}">
-                <!--<xsl:apply-templates select="/result/contents[1]/content"/>-->
-            </ul>
-        </div>
+		<div data-th-remove="tag" data-th-if="${nicetoknow.data}">
+	        <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}">
+	            <!--<xsl:value-of select="/result/menuitems[1]/menuitem/display-name"/>-->
+	        </h2>
+	        <ul class="link-list">
+				<!--<xsl:apply-templates select="/result/contents[1]/content" mode="nicetoknow"/>-->
+		        <li data-th-each="content : ${nicetoknow.data}">
+					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
+				</li>
+	        </ul>
+		</div>
     </div>
 
     <div class="col-md-4 col-sm-12">
-        <div data-th-each="content : ${news}">
-            <h2 class="h4 decorated">
-                <!--<xsl:value-of select="/result/menuitems[2]/menuitem/display-name"/>-->
-            </h2>
+		<div data-th-remove="tag" data-th-if="${news.data}">
+            <h2 class="h4 decorated" data-th-text="${news.sectionName}"></h2>
             <ul class="link-list-meta">
-                <!--<xsl:apply-templates select="/result/contents[2]/content" mode="news"/>-->
-
+				<li data-th-each="content : ${news.data}">
+					<time datetime="X">X</time>
+					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
+				</li>
                 <!-- Produce context aware search link -->
                 <!--<xsl:call-template name="context-news-search"/>-->
             </ul>

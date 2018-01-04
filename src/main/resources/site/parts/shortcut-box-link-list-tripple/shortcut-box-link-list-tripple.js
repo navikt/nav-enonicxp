@@ -3,6 +3,10 @@ var portalLib = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var utils = require('/lib/nav-utils');
 
+var libs = {
+	util: require('/lib/enonic/util')
+}
+
 var view = resolve('shortcut-box-link-list-tripple.html');
 
 /* This is the part displayed on nav.no/no/Person frontpage, the three bottom boxes listing different data like news etc. */
@@ -12,10 +16,10 @@ function handleGet(req) {
     var content = portalLib.getContent();
     var sectionIds = [].concat(content.data.sectionContents || []);
 
-    var niceToKnowContents = getNiceToKnowContents(content, sectionIds);
+    var niceToKnowContents = getNiceToKnowContents(content);
     var newsContents = getNewsContents(content);
     var shortcutContents = getShortcutContents(content);
-    log.info('nicetoknow: ' + JSON.stringify(niceToKnowContents, null, 2));
+//    log.info('nicetoknow: ' + JSON.stringify(niceToKnowContents, null, 2));
     var params = {
         nicetoknow: niceToKnowContents,
         news: newsContents,
@@ -38,11 +42,12 @@ function getNiceToKnowContents(content) {
         return [];
     }
     var section = utils.getContentByMenuKey(nicetoknow);
+	//libs.util.log(section);
     var sectionIds = section && section.data.sectionContents;
     if (!sectionIds) {
         return [];
     }
-
+	//libs.util.log(sectionIds);
     var queryResult = contentLib.query({
         start: 0,
         count: 5,
@@ -52,7 +57,10 @@ function getNiceToKnowContents(content) {
             }
         }
     });
-    return utils.sortContents(queryResult.hits, sectionIds);
+    return {
+		sectionName: section.displayName,
+		data: utils.sortContents(queryResult.hits, sectionIds)
+	};
 }
 
 function getNewsContents(content) {
@@ -74,10 +82,17 @@ function getNewsContents(content) {
                 values: sectionIds
             }
         },
-        contentTypes: [app.name + ':nav.snarvei', app.name + ':nav.nyhet', app.name + ':nav.pressemelding',
-            app.name + ':Artikkel_Brukerportal']
+        contentTypes: [
+						app.name + ':nav.snarvei',
+						app.name + ':nav.nyhet',
+						app.name + ':nav.pressemelding',
+            			app.name + ':Artikkel_Brukerportal'
+					  ]
     });
-    return utils.sortContents(queryResult.hits, sectionIds);
+    return {
+		sectionName: section.displayName,
+		data: utils.sortContents(queryResult.hits, sectionIds)
+	};
 }
 
 function getShortcutContents(content) {
@@ -100,7 +115,10 @@ function getShortcutContents(content) {
             }
         }
     });
-    return utils.sortContents(queryResult.hits, sectionIds);
+    return  {
+		sectionName: section.displayName,
+		data: utils.sortContents(queryResult.hits, sectionIds)
+	};
 }
 
 /*
