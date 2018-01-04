@@ -22,7 +22,33 @@
             <h2 class="h4 decorated" data-th-text="${news.sectionName}"></h2>
             <ul class="link-list-meta">
 				<li data-th-each="content : ${news.data}">
+					<!--
+					<time datetime="{$currentLink/@publishfrom}">
+						<xsl:call-template name="stk:time.format-date">
+							<xsl:with-param name="date" select="$currentLink/@publishfrom"/>
+							<xsl:with-param name="language" select="$stk:language"/>
+						</xsl:call-template>
+					</time>
+					-->
 					<time datetime="X">X</time>
+					<!--
+					<xsl:choose>
+						<xsl:when test="@contenttype = 'Ekstern_lenke'">
+							<a href="{contentdata/url}">
+								<xsl:if test="contentdata/target = 'new'">
+									<xsl:attribute name="rel" select="'external'"/>
+								</xsl:if>
+								<xsl:value-of select="$currentLink/title"/>
+							</a>
+						</xsl:when>
+
+						<xsl:otherwise>
+							<a href="{portal:createContentUrl($currentLink[1]/@key,())}">
+								<xsl:value-of select="$currentLink/title"/>
+							</a>
+						</xsl:otherwise>
+					</xsl:choose>
+					-->
 					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
 				</li>
                 <!-- Produce context aware search link -->
