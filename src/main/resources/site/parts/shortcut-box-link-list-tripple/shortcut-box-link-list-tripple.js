@@ -4,7 +4,8 @@ var contentLib = require('/lib/xp/content');
 var utils = require('/lib/nav-utils');
 
 var libs = {
-	util: require('/lib/enonic/util')
+	util: require('/lib/enonic/util'),
+	moment: require('/lib/moment')
 }
 
 var view = resolve('shortcut-box-link-list-tripple.html');
@@ -89,6 +90,18 @@ function getNewsContents(content) {
             			app.name + ':Artikkel_Brukerportal'
 					  ]
     });
+
+	// Each news item needs to format the publish.from date in two separate ways, based on language.
+	if (queryResult.total > 0) {
+		for (var i = 0; i < queryResult.hits.length; i++) {
+			queryResult.hits[i].computedDates = {
+				full: queryResult.hits[i].publish.from,
+				no: queryResult.hits[i].publish.from,
+				en: queryResult.hits[i].publish.from
+			};
+		}
+	}
+
     return {
 		sectionName: section.displayName,
 		data: utils.sortContents(queryResult.hits, sectionIds)
