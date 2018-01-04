@@ -95,9 +95,9 @@ function getNewsContents(content) {
 	if (queryResult.total > 0) {
 		for (var i = 0; i < queryResult.hits.length; i++) {
 			queryResult.hits[i].computedDates = {
-				full: queryResult.hits[i].publish.from,
-				no: queryResult.hits[i].publish.from,
-				en: queryResult.hits[i].publish.from
+				full: libs.moment(queryResult.hits[i].publish.from).format("YYYY-MM-DD hh:mm"),
+				no: libs.moment(queryResult.hits[i].publish.from).format("DD.MM.YYYY"),
+				en: libs.moment(queryResult.hits[i].publish.from).format("DD/MM/YYYY")
 			};
 		}
 	}
