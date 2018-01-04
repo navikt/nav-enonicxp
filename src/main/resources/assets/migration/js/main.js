@@ -41,7 +41,7 @@ function executeListNotinuse(e) {
 	$('#listNotinuseExecuting').show();
 
 	$.ajax({
-		type: "GET",
+		type: "POST",
 		url: serviceUrl,
 		dataType: 'json',
 		data: {

@@ -13,7 +13,7 @@ exports.execute = function () {
 
 	var result = libs.content.query({
 		start: 0,
-		count: -1,
+		count: 10000,
 		sort: "",
 		query: "_path LIKE '/content/*'",
 	});
