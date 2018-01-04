@@ -3,6 +3,7 @@ const serviceUrl = document.currentScript.getAttribute('data-serviceurl');
 var deleteTaskId;
 $(function () {
     $('#deleteContent').on('click', executeDeleteContent);
+    $('#listNotinuse').on('click', executeListNotinuse);
 });
 
 function executeDeleteContent(e) {
@@ -33,6 +34,29 @@ function deleteContentDone(result) {
     $('#deleteContent').show();
     $('#deleteContentExecuting').hide();
     $('#deleteContentResult').show().text(result);
+}
+
+function executeListNotinuse(e) {
+	$('#listNotinuse,#listNotinuseResult').hide();
+	$('#listNotinuseExecuting').show();
+
+	$.ajax({
+		type: "GET",
+		url: serviceUrl,
+		dataType: 'json',
+		data: {
+			action: 'listNotinuse'
+		},
+		success: function (data) {
+			//deleteTaskId = data.id;
+			//checkStatus(deleteTaskId, deleteContentDone);
+		},
+		error: function () {
+			console.log(arguments);
+			$('#listNotinuse').show();
+			$('#listNotinuseExecuting').hide();
+		}
+	});
 }
 
 function checkStatus(id, onDone) {

@@ -3,6 +3,7 @@ var contextLib = require('/lib/xp/context');
 
 var page = require('/migration/page/page');
 var deleteStep = require('/migration/steps/delete-content');
+var notinuseStep = require('/migration/steps/list-notinuse');
 
 exports.get = function (req) {
     if (req.path.endsWith(app.name)) {
@@ -25,6 +26,8 @@ exports.post = function (req) {
     var taskId;
     if (action === 'deleteContent') {
         taskId = async('Delete Content', deleteStep.execute);
+    } else if (action === 'listNotinuse') {
+        taskId = async('List NotInUse', notinuseStep.execute);
     }
 
     if (taskId) {
