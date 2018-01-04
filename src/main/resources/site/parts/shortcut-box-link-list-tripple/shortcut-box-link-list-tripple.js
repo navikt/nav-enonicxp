@@ -5,6 +5,8 @@ var utils = require('/lib/nav-utils');
 
 var view = resolve('shortcut-box-link-list-tripple.html');
 
+/* This is the part displayed on nav.no/no/Person frontpage, the three bottom boxes listing different data like news etc. */
+
 function handleGet(req) {
 
     var content = portalLib.getContent();
