@@ -31,8 +31,7 @@ exports.execute = function () {
     log.info(result.total + ' contents found.');
     log.info('---------------------------------');
 
-    //libs.task.progress({ info: result.total + ' contents found.'});
-    libs.task.progress({ info: templateList });
+    libs.task.progress({ info: result.total + ' contents found.'});
 
     return {
         ok: true
