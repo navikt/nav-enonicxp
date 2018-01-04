@@ -30,6 +30,10 @@
 						</xsl:call-template>
 					</time>
 					-->
+					<!--
+						RESULT:
+						<time datetime="2018-01-03 09:21">03.01.2018</time>
+					-->
 					<time datetime="X">X</time>
 					<!--
 					<xsl:choose>
@@ -52,21 +56,21 @@
 					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
 				</li>
                 <!-- Produce context aware search link -->
-                <!--<xsl:call-template name="context-news-search"/>-->
+                <!--<xsl:call-template name="context-news-search"/>--><!-- The XSLT-code behind this call spans almost 200 lines! -->
             </ul>
         </div>
     </div>
 
     <div class="col-md-4 col-sm-12">
-        <div data-th-each="content : ${shortcuts}">
-            <h2 class="h4 decorated">
-                <!--<xsl:value-of select="/result/menuitems[3]/menuitem/display-name"/>-->
-                <!-- TODO: Translation / localization -->
-            </h2>
+		<div data-th-remove="tag" data-th-if="${shortcuts.data}">
+            <h2 class="h4 decorated" data-th-text="${shortcuts.sectionName}"></h2>
             <ul class="link-list">
                 <!--<xsl:apply-templates select="/result/contents[3]/content">-->
                     <!--<xsl:with-param name="isShortcutsNode" select="true()" as="xs:boolean"/>-->
                 <!--</xsl:apply-templates>-->
+				<li data-th-each="content : ${shortcuts.data}">
+					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
+				</li>
             </ul>
         </div>
     </div>
