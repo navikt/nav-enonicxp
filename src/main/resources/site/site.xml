@@ -4,4 +4,9 @@
   <x-data mixin="menu-item"/>
   <x-data mixin="cmsContent"/>
   <x-data mixin="cmsMenu"/>
+  <mappings>
+    <mapping controller="/lib/enonic/url-redirect/index.js">
+      <match>type:'no.nav.navno:url'</match>
+    </mapping>
+  </mappings>
 </site>
