@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="no" class="no-js">
 <head>
-    <title data-th-text="${title}"></title>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+	 <title data-th-text="${title}"></title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta property="og:title" content="Person - www.nav.no">
-    <meta property="og:site_name" content="NAV">
-    <meta property="og:image" data-th-content="${portal.assetUrl({'_path=beta.nav.no/images/social-share-fallback.png'})}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Person - www.nav.no">
-    <meta name="twitter:image:src" data-th-content="${portal.assetUrl({'_path=beta.nav.no/images/social-share-fallback.png'})}">
+
     <meta name="twitter:domain" content="nav.no">
+
     <link rel="apple-touch-icon" data-th-href="${portal.assetUrl({'_path=beta.nav.no/images/logo.png'})}">
     <link type="image/x-icon" rel="shortcut icon" data-th-href="${portal.assetUrl({'_path=shared/bilder/favicon.ico'})}">
     <script type="text/javascript">
@@ -73,9 +69,8 @@
                         </div>
                         <div class="login-container">
                             <div id="login-details" class="hidden"><span id="name-container"><img id="idporten-ikon-innlogging"
-                                                                                                  alt="Innlogget via ID-porten"
-                                                                                                  data-th-src="${portal.assetUrl({'_path=beta.nav.no/built-navno/img/navno/gfx/icons/idporten_ikon.png'})}"><span
-                                    id="name"></span></span>
+                                   alt="Innlogget via ID-porten"
+                                   data-th-src="${portal.assetUrl({'_path=beta.nav.no/built-navno/img/navno/gfx/icons/idporten_ikon.png'})}"><span id="name"></span></span>
                                 <div class="logout-tooltip hidden"><a href="javascript:void(0)" class="lukk hidden"
                                                                       aria-label="Lukk informasjon om logg ut"> × </a>
                                     <p>Du er logget inn på alle offentlige tjenester med ID-porten/MinID.</p>
@@ -83,9 +78,9 @@
                             </div>
                             <div id="auth-btns"><a id="login" class="hidden knapp mini btn-auth btn-login"
                                                    href="https://tjenester.nav.no/dittnav/oversikt">Logg inn</a><a id="logout"
-                                                                                                                   data-ga="Header"
-                                                                                                                   class="hidden btn-auth knapp mini hoved btn-logout"
-                                                                                                                   href="https://tjenester.nav.no/esso/logout">Logg
+                                                 data-ga="Header"
+                                                 class="hidden btn-auth knapp mini hoved btn-logout"
+                                                 href="https://tjenester.nav.no/esso/logout">Logg
                                 ut</a></div>
                             <div class="login-tooltip hidden"><p>Logg inn på Ditt NAV</p><span class="arrow"></span></div>
                         </div>
@@ -98,7 +93,7 @@
                 <img data-th-src="${portal.assetUrl({'_path=beta.nav.no/images/logo.png'})}" alt="NAV-logo"></a></div>
         </div>
 
-		  <div data-portal-region="region-north" data-th-remove="tag">
+		  <div data-portal-region="region-north">
 			   <div data-th-if="${content.page.regions['region-north']}" data-th-remove="tag">
 					 <div data-th-each="component : ${content.page.regions['region-north'].components}" data-th-remove="tag">
 						  <div data-portal-component="${component.path}" data-th-remove="tag"></div>
