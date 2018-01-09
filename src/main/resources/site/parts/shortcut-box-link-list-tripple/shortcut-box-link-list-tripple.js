@@ -92,6 +92,7 @@ function getNewsContents(content) {
     });
 
 	// Each news item needs to format the publish.from date in two separate ways, based on language.
+	// In XSLT the time.xsl STK function is used, it will only show Norwegian format for Norwegians, and fallback to the English format for all other locales. That is pretty simple logic.
 	if (queryResult.total > 0) {
 		for (var i = 0; i < queryResult.hits.length; i++) {
 			queryResult.hits[i].computedDates = {

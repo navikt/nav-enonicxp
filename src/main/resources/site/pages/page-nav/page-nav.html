@@ -97,6 +97,15 @@
             <div class="container"><a data-th-href="${frontPageUrl}" title="Hjem" data-ga="Header/Logo">
                 <img data-th-src="${portal.assetUrl({'_path=beta.nav.no/images/logo.png'})}" alt="NAV-logo"></a></div>
         </div>
+
+		  <div data-portal-region="region-north" data-th-remove="tag">
+			   <div data-th-if="${content.page.regions['region-north']}" data-th-remove="tag">
+					 <div data-th-each="component : ${content.page.regions['region-north'].components}" data-th-remove="tag">
+						  <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+					 </div>
+			   </div>
+		  </div>
+
         <!--render-mainmenu-->
         <div class="topnavsection-wrapper">
             <div class="topnavsection">
@@ -196,13 +205,6 @@
     </header>
     <main id="maincontent" role="main" tabindex="-1">
         <div class="container maincontent">
-            <div data-portal-region="region-north">
-                <div data-th-if="${content.page.regions['region-north']}" data-th-remove="tag">
-                    <div data-th-each="component : ${content.page.regions['region-north'].components}" data-th-remove="tag">
-                        <div data-portal-component="${component.path}" data-th-remove="tag"></div>
-                    </div>
-                </div>
-            </div>
             <div data-portal-region="region-west">
                 <div data-th-if="${content.page.regions['region-west']}" data-th-remove="tag">
                     <div data-th-each="component : ${content.page.regions['region-west'].components}" data-th-remove="tag">
