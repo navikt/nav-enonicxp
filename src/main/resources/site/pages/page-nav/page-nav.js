@@ -24,7 +24,6 @@ function handleGet(req) {
         westRegionClass: regionsInEast && !regionsInCenter ? 'col-md-6' : 'col-md-4',
         eastRegionClass: regionsInWest && !regionsInCenter ? 'col-md-6' : 'col-md-4',
         centerRegionClass: regionsInEast && regionsInWest ? 'col-md-4' : (regionsInEast || regionsInWest ? 'col-md-8' : 'col-md-12'),
-        title: content.displayName + ' - ' + site.displayName,
         frontPageUrl: portalLib.pageUrl({id: site._id}),
         contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
         accessibleLetters: accessibleLetters,
