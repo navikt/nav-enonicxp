@@ -6,6 +6,7 @@ var utils = require('/lib/nav-utils');
 var view = resolve('shortcut-box-link-hero-tripple.html');
 
 /* This is the part displayed on nav.no/no/Person frontpage, the three top boxes underneath the illustration. */
+/* It fetches its contents (up to 10) from the page/section it is added to and the ContentSelector field there. */
 
 function handleGet(req) {
 
