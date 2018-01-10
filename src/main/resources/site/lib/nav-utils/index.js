@@ -110,15 +110,15 @@ exports.dateTimePublished = function (content, language) {
     var navUpdated = libs.i18n.localize({key: 'nav.updated'});
 
     if (language !== 'no' && language !== 'en') {
-        published = moment(content.publish.from).locale('no').format('L');
+        published = libs.moment(content.publish.from).locale('no').format('L');
     } else {
-        published = moment(content.publish.from).locale(language).format('L');
+        published = libs.moment(content.publish.from).locale(language).format('L');
     }
 
     if (language !== 'nn' && language !== 'se') {
-        lastModified = moment(content.modifiedTime).locale('no').format('L');
+        lastModified = libs.moment(content.modifiedTime).locale('no').format('L');
     } else {
-        lastModified = moment(content.modifiedTime).locale(language).format('L');
+        lastModified = libs.moment(content.modifiedTime).locale(language).format('L');
     }
     return navPublished + ' ' + published + (published !== lastModified ? ' | ' + navUpdated + ' ' + lastModified : '');
 };
