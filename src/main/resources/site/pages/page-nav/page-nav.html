@@ -221,21 +221,18 @@
 			*/-->
 
 			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation" data-th-id="${breadcrumbs}">
-
-				 <li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
-
-					 <a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
-					 <span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
-
-					 <div data-th-remove="tag" data-th-if="${breadcrumbs.divider} and !${iterStat.last}" data-th-utext="${breadcrumbs.divider}"></div>
+				<li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
+					<a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
+					<span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
 				 </li>
 			</nav>
-
+			<!--/* END-RESULT FROM NAV.NO - generating XSLT is 150 lines of code
 			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
 				<a href="https://www.nav.no/no/NAV+og+samfunn" class="crumb">NAV og samfunn</a>
 				<span class="crumb">Om NAV</span>
 				<span class="crumb crumb-current">Lover og regler</span>
 			</nav>
+			*/-->
 			<h1 data-th-text="${content.displayName}">Kontakt oss</h1>
 		</div>
 		<!--/* TODO: Breadcrumb-generation AND title generation here. Loads of XSLT ... */-->
