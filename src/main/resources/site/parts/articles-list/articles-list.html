@@ -1,15 +1,56 @@
-<div>
-    <h1 data-th-text="${partName}"></h1>
-	 TODO ...
-</div>
+<article class="article-list" id="pagecontent">
+	<header class="article-head">
+		<h1 role="heading" aria-level="1" data-th-text="${partName}">Fakta om NAV</h1>
+		<div class="toolbar">
+			<div class="tts-panel" data-scriptenabled="false">
+				<button class="tts-btn-listen tts-btn-collapsed"><span>Lytt</span></button>
+				<div id="tts-group" class="tts-btn-group hide">
+					<button class="btn-tts tts-play" id="play-btn" title="Play"><span class="visuallyhidden">Play</span></button>
+					<button class="btn-tts tts-stop" title="Stop"><span class="visuallyhidden">Stop</span></button><a href="http://help.leseweb.dk/?id=no" target="_blank" class="btn-tts tts-help" title="Help"><span class="visuallyhidden">Help</span></a>
+					<button class="btn-tts tts-settings" onclick="javascript:vFact_showconfigbox()"
+					title="Settings"><span class="visuallyhidden">Settings</span></button>
+				</div>
+			</div>
+			<div class="content-print" id="print-page" role="button" tabindex="0"><span>Skriv ut side</span></div>
+		</div>
+	</header>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/regionalisering">Regionalisering i NAV</a></h2>
+		<p>Høring om forslag til fremtidig regional struktur i Arbeids- og tjenestelinjen i NAV.</p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/kva-er-nav">Kva er NAV?</a></h2>
+		<p>NAV forvaltar ein tredel av statsbudsjettet gjennom ordningar som dagpengar, arbeidsavklaringspengar, sjukepengar, pensjon, barnetrygd og kontantstøtte.</p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/organisering-av-nav">Organisering av NAV</a></h2>
+		<p>NAV er ei landsdekkande offentleg verksemd som omfattar mellom anna Arbeids- og velferdsdirektoratet, ei arbeids- og tenestelinje med lokale NAV-kontor i kommunane, ei ytelseslinje og ei økonomilinje. Sjå meir informasjon og organisasjonskart under
+			relatert informasjon.</p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/partnerskapet-i-nav">Partnerskapet i NAV</a></h2>
+		<p>Arbeids- og velferdsforvaltningen (NAV) består av både kommunale og statlige tjenester. Partnerskapet mellom kommune og stat er et av hovedgrepene i NAV-reformen, som skal gi brukerne én dør inn til de offentlige velferdstjenestene.
+		</p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/organisering-av-nav-kontoret">Organisering av NAV-kontoret</a></h2>
+		<p>NAV-kontoret er tuftet på likeverdig partnerskap mellom stat og kommune og skal yte både statlige og kommunale arbeids- og velferdstjenester.</p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/tildelingsbrev">Tildelingsbrev</a></h2>
+		<p>Her finner du tildelingsbrev fra Arbeids- og sosialdepartementet. </p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/%C3%A5rsrapport">Årsrapporter</a></h2>
+		<p>Her finner du NAVs årsrapporter.</p>
+	</article>
+	<article>
+		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Kunnskap/Relatert+informasjon/nav-og-kunnskap">NAV og kunnskap</a></h2>
+		<p>NAV er en av Norges største leverandører av statistikk og analyser. På denne siden finner du oversikt over alt kunnskapsstoffet NAV produserer eller finansierer, samt kunnskap om NAV.</p>
+	</article>
+</article>
+
 <!--/*
-<article class="article-list" id="pagecontent"><header class="article-head"><h1 role="heading" aria-level="1">Fakta om NAV</h1><div class="toolbar"><div class="tts-panel" data-scriptenabled="false"><button class="tts-btn-listen tts-btn-collapsed"><span>Lytt</span></button><div id="tts-group" class="tts-btn-group hide"><button class="btn-tts tts-play" id="play-btn" title="Play"><span class="visuallyhidden">Play</span></button><button class="btn-tts tts-stop" title="Stop"><span class="visuallyhidden">Stop</span></button><a href="http://help.leseweb.dk/?id=no" target="_blank" class="btn-tts tts-help" title="Help"><span class="visuallyhidden">Help</span></a><button class="btn-tts tts-settings" onclick="javascript:vFact_showconfigbox()" title="Settings"><span class="visuallyhidden">Settings</span></button></div></div><div class="content-print" id="print-page" role="button" tabindex="0"><span>Skriv ut side</span></div></div></header><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/regionalisering">Regionalisering i NAV</a></h2><p>Høring om forslag til fremtidig regional struktur i Arbeids- og tjenestelinjen i NAV.</p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/kva-er-nav">Kva er NAV?</a></h2><p>NAV forvaltar ein tredel av statsbudsjettet gjennom ordningar som dagpengar, arbeidsavklaringspengar, sjukepengar, pensjon, barnetrygd og kontantstøtte.</p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/organisering-av-nav">Organisering av NAV</a></h2><p>NAV er ei landsdekkande offentleg verksemd som omfattar mellom anna Arbeids- og velferdsdirektoratet, ei arbeids- og tenestelinje med lokale NAV-kontor i kommunane, ei ytelseslinje og ei økonomilinje. Sjå meir informasjon og organisasjonskart under relatert informasjon.</p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/partnerskapet-i-nav">Partnerskapet i NAV</a></h2><p>Arbeids- og velferdsforvaltningen (NAV) består av både kommunale og statlige tjenester. Partnerskapet mellom kommune og stat er et av hovedgrepene i NAV-reformen, som skal gi brukerne én dør inn til de offentlige velferdstjenestene.
-</p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/organisering-av-nav-kontoret">Organisering av NAV-kontoret</a></h2><p>NAV-kontoret er tuftet på likeverdig partnerskap mellom stat og kommune og skal yte både statlige og kommunale arbeids- og velferdstjenester.</p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/tildelingsbrev">Tildelingsbrev</a></h2><p>Her finner du tildelingsbrev fra Arbeids- og sosialdepartementet.  </p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/%C3%A5rsrapport">Årsrapporter</a></h2><p>Her finner du NAVs årsrapporter.</p></article><article><h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Kunnskap/Relatert+informasjon/nav-og-kunnskap">NAV og kunnskap</a></h2><p>NAV er en av Norges største leverandører av statistikk og analyser. På denne siden finner du oversikt over alt kunnskapsstoffet NAV produserer eller finansierer, samt kunnskap om NAV.</p></article></article>
-
-
-
-
-
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet exclude-result-prefixes="#all" version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:portal="http://www.enonic.com/cms/xslt/portal" xmlns:stk="http://www.enonic.com/cms/xslt/stk">
