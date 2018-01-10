@@ -3,7 +3,7 @@
         data-th-text="${portal.localize({'_key=nav.site.priority-services-and-content'})}">nav.site.priority-services-and-content</h1>
 
 
-    <div class="col-md-4 col-sm-12">
+    <div class="col-md-4 col-sm-12" data-th-if="${nicetoknow}">
 		<div data-th-remove="tag" data-th-if="${nicetoknow.data}">
 	        <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}">
 	            <!--/*<xsl:value-of select="/result/menuitems[1]/menuitem/display-name"/>*/-->
@@ -17,7 +17,7 @@
 		</div>
     </div>
 
-    <div class="col-md-4 col-sm-12">
+    <div class="col-md-4 col-sm-12" data-th-if="${news}">
 		<div data-th-remove="tag" data-th-if="${news.data}">
             <h2 class="h4 decorated" data-th-text="${news.sectionName}"></h2>
             <ul class="link-list-meta">
@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <div class="col-md-4 col-sm-12">
+    <div class="col-md-4 col-sm-12" data-th-if="${shortcuts}">
 		<div data-th-remove="tag" data-th-if="${shortcuts.data}">
             <h2 class="h4 decorated" data-th-text="${shortcuts.sectionName}"></h2>
             <ul class="link-list">

@@ -40,13 +40,13 @@ exports.get = handleGet;
 function getNiceToKnowContents(content) {
     var nicetoknow = utils.getContentParam(content, 'nicetoknow');
     if (!nicetoknow) {
-        return [];
+        return null;
     }
     var section = utils.getContentByMenuKey(nicetoknow);
 	//libs.util.log(section);
     var sectionIds = section && section.data.sectionContents;
     if (!sectionIds) {
-        return [];
+        return null;
     }
 	//libs.util.log(sectionIds);
     var queryResult = contentLib.query({
@@ -67,12 +67,12 @@ function getNiceToKnowContents(content) {
 function getNewsContents(content) {
     var news = utils.getContentParam(content, 'news');
     if (!news) {
-        return [];
+        return null;
     }
     var section = utils.getContentByMenuKey(news);
     var sectionIds = section && section.data.sectionContents;
     if (!sectionIds) {
-        return [];
+        return null;
     }
 
     var queryResult = contentLib.query({
@@ -87,7 +87,7 @@ function getNewsContents(content) {
 						app.name + ':nav.snarvei',
 						app.name + ':nav.nyhet',
 						app.name + ':nav.pressemelding',
-            			app.name + ':Artikkel_Brukerportal'
+            		app.name + ':Artikkel_Brukerportal'
 					  ]
     });
 
@@ -112,12 +112,12 @@ function getNewsContents(content) {
 function getShortcutContents(content) {
     var shortcuts = utils.getContentParam(content, 'shortcuts');
     if (!shortcuts) {
-        return [];
+        return null;
     }
     var section = utils.getContentByMenuKey(shortcuts);
     var sectionIds = section && section.data.sectionContents;
     if (!sectionIds) {
-        return [];
+        return null;
     }
 
     var queryResult = contentLib.query({
@@ -129,7 +129,7 @@ function getShortcutContents(content) {
             }
         }
     });
-    return  {
+    return {
 		sectionName: section.displayName,
 		data: utils.sortContents(queryResult.hits, sectionIds)
 	};
