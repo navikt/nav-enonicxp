@@ -1,6 +1,9 @@
 var portalLib = require('/lib/xp/portal');
 var thymeleafLib = require('/lib/xp/thymeleaf');
-var menuLib = require('/lib/menu');
+var libs = {
+	menu: require('/lib/menu'),
+	util: require('/lib/enonic/util')
+}
 
 var view = resolve('page-nav.html');
 
@@ -10,8 +13,15 @@ function handleGet(req) {
     var site = portalLib.getSite();
     var content = portalLib.getContent();
 
-    var menuItems = menuLib.getSubMenus(site, 4);
+    var menuItems = libs.menu.getSubMenus(site, 4);
     menuItems = menuItems[0];
+
+	var breadcrumbs = libs.menu.getBreadcrumbMenu({
+		linkActiveItem: false,
+		showHomepage: false
+	});
+	// On Localhost, first 3 items are useless, slice! In XSLT they did it more complicated by checking types of content for each parent node, skipping that for now.
+	breadcrumbs.items = breadcrumbs.items.slice(3);
 
     var regionsInWest = content.page.regions['region-west'] && content.page.regions['region-west'].components.length > 0;
     var regionsInEast = content.page.regions['region-east'] && content.page.regions['region-east'].components.length > 0;
@@ -27,7 +37,8 @@ function handleGet(req) {
         frontPageUrl: portalLib.pageUrl({id: site._id}),
         contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
         accessibleLetters: accessibleLetters,
-        menu: menuItems
+        menu: menuItems,
+		  breadcrumbs: breadcrumbs
     };
 
     var body = thymeleafLib.render(view, params);

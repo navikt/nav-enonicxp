@@ -198,15 +198,48 @@
 		 <!--/* TODO: add class="contentpage" if this is a content page, viewing articles not shortcuts. How to do that in XP ... */-->
 
 		<div class="container page-head">
-			<h1 data-th-text="${content.displayName}">Kontakt oss</h1>
+			<!--/*
+			<xsl:choose>
+				<xsl:when test="boolean(/result/contents/content)">
+				<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
+              <xsl:apply-templates select="$resources/resource[show-in-menu = true()][type != 'shortcut']" mode="create-breadcrumbs"/>
+            </nav>
+          </xsl:when>
+            <xsl:otherwise>
+                <h1>
+                <xsl:choose>
+                    <xsl:when test="$stk:rendered-page/parameters/parameter[name='english-heading']/value != '' and $stk:querystring-parameter[@name = 'veiledertype'] = 'engelsk'">
+                        <xsl:value-of select="$stk:rendered-page/parameters/parameter[name='english-heading']/value"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="/result/context/resource/display-name"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                </h1>
+            </xsl:otherwise>
+        </xsl:choose>
+			*/-->
+
+			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation" data-th-id="${breadcrumbs}">
+
+				 <li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
+
+					 <a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
+					 <span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
+
+					 <div data-th-remove="tag" data-th-if="${breadcrumbs.divider} and !${iterStat.last}" data-th-utext="${breadcrumbs.divider}"></div>
+				 </li>
+			</nav>
+
 			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
 				<a href="https://www.nav.no/no/NAV+og+samfunn" class="crumb">NAV og samfunn</a>
 				<span class="crumb">Om NAV</span>
 				<span class="crumb crumb-current">Lover og regler</span>
 			</nav>
+			<h1 data-th-text="${content.displayName}">Kontakt oss</h1>
 		</div>
 		<!--/* TODO: Breadcrumb-generation AND title generation here. Loads of XSLT ... */-->
-		<!--/* TODO: Only certain curcumstances should output title and breadcrumb (deep enough down in the structure for instance). */-->
+		<!--/* TODO: Only certain circumstances should output title and breadcrumb (deep enough down in the structure for instance). */-->
 
 
         <div class="container maincontent">
