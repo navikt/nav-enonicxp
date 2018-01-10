@@ -195,6 +195,20 @@
         </script>
     </header>
     <main id="maincontent" role="main" tabindex="-1">
+		 <!--/* TODO: add class="contentpage" if this is a content page, viewing articles not shortcuts. How to do that in XP ... */-->
+
+		<div class="container page-head">
+			<h1 data-th-text="${content.displayName}">Kontakt oss</h1>
+			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
+				<a href="https://www.nav.no/no/NAV+og+samfunn" class="crumb">NAV og samfunn</a>
+				<span class="crumb">Om NAV</span>
+				<span class="crumb crumb-current">Lover og regler</span>
+			</nav>
+		</div>
+		<!--/* TODO: Breadcrumb-generation AND title generation here. Loads of XSLT ... */-->
+		<!--/* TODO: Only certain curcumstances should output title and breadcrumb (deep enough down in the structure for instance). */-->
+
+
         <div class="container maincontent">
             <div data-portal-region="region-west">
                 <div data-th-if="${content.page.regions['region-west']}" data-th-remove="tag">

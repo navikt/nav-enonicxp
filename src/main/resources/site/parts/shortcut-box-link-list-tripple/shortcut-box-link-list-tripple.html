@@ -1,21 +1,35 @@
 <section class="row inner-row linklists-container">
     <h1 class="visuallyhidden" data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
         data-th-text="${portal.localize({'_key=nav.site.priority-services-and-content'})}">nav.site.priority-services-and-content</h1>
-
+	  <!--/*
+		  <h1 class="visuallyhidden" aria-label="{portal:localize('nav.site.visually-hidden-heading', (), $stk:language)}">
+			  <xsl:value-of select="portal:localize('nav.site.priority-services-and-content', (), $stk:language)"/>
+		  </h1>
+	  */-->
 
     <div class="col-md-4 col-sm-12" data-th-if="${nicetoknow}">
 		<div data-th-remove="tag" data-th-if="${nicetoknow.data}">
 	        <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}">
-	            <!--/*<xsl:value-of select="/result/menuitems[1]/menuitem/display-name"/>*/-->
 	        </h2>
 	        <ul class="link-list">
-				<!--/*<xsl:apply-templates select="/result/contents[1]/content" mode="nicetoknow"/>*/-->
 		        <li data-th-each="content : ${nicetoknow.data}">
-					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
-				</li>
+					  <a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
+				  </li>
 	        </ul>
 		</div>
     </div>
+	<!--/*
+		<div class="col-md-4 col-sm-12 ">
+			<xsl:if test="/result/contents[1]/content">
+				<h2 class="h4 decorated">
+					<xsl:value-of select="/result/menuitems[1]/menuitem/display-name"/>
+				</h2>
+				<ul class="link-list">
+					<xsl:apply-templates select="/result/contents[1]/content"/>
+				</ul>
+			</xsl:if>
+		</div>
+	*/-->
 
     <div class="col-md-4 col-sm-12" data-th-if="${news}">
 		<div data-th-remove="tag" data-th-if="${news.data}">

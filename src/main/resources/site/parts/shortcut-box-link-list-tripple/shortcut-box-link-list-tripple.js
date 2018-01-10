@@ -24,7 +24,8 @@ function handleGet(req) {
     var params = {
         nicetoknow: niceToKnowContents,
         news: newsContents,
-        shortcuts: shortcutContents
+        shortcuts: shortcutContents,
+		  self: content
     };
 
     var body = thymeleafLib.render(view, params);
