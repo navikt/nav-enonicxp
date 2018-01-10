@@ -29,6 +29,44 @@ exports.get = function(req) {
 
 	// TODO: Loop over the selected related contents and fill them with data.
 	// ===(loop)===
+/*
+<xsl:choose>
+	<xsl:when test="current()/contentdata/shortcuts/content">
+		<xsl:apply-templates select="current()/contentdata/shortcuts/content"/>
+	</xsl:when>
+	<xsl:otherwise>
+		<xsl:apply-templates select="/result/contents/content/contentdata/links/content"/>
+	</xsl:otherwise>
+</xsl:choose>
+
+<xsl:variable name="linkContent" select="/result/contents/relatedcontents/content[@key = current()/@key]"></xsl:variable>
+
+<xsl:choose>
+	<xsl:when test="$linkContent/@contenttype = 'Ekstern_lenke'">
+		<a href="{$linkContent/contentdata/url}">
+			<xsl:if test="$linkContent/contentdata/target = 'new'">
+				<xsl:attribute name="rel" select="'external'"/>
+			</xsl:if>
+			<xsl:value-of select="$linkContent/contentdata/heading"/>
+		</a>
+	</xsl:when>
+	<xsl:when test="$linkContent/@contenttype = 'Fil'">
+		<a href="{portal:createAttachmentUrl(@key, ('download', 'true'))}">
+			<xsl:value-of select="$linkContent/contentdata/name"/>
+		</a>
+	</xsl:when>
+	<xsl:when test="$linkContent/@contenttype = 'nav.sidebeskrivelse'">
+		<a href="{portal:createPageUrl($linkContent/location/site/contentlocation[@home = true()]/@menuitemkey,())}">
+			<xsl:value-of select="$linkContent/contentdata/heading"/>
+		</a>
+	</xsl:when>
+	<xsl:otherwise>
+		<a href="{portal:createContentUrl(@key,())}">
+			<xsl:value-of select="$linkContent/title"/>
+		</a>
+	</xsl:otherwise>
+</xsl:choose>
+*/
 
     var params = {
 		  introduction: introduction,
