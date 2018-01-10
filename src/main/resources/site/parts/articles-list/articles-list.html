@@ -1,4 +1,26 @@
 <article class="article-list" id="pagecontent">
+	<!--/*
+	<xsl:template match="content" mode="introduction">
+		 <header class="article-head">
+			  <h1 role="heading" aria-level="1">
+					<xsl:value-of select="title"/>
+			  </h1>
+			  <xsl:call-template name="stk:create-article-sidebeskrivelse-toolbar"/>
+			  <xsl:if test="normalize-space(contentdata/description) != ''">
+					<p class="preface">
+						 <xsl:analyze-string select="contentdata/description" regex="\n">
+							  <xsl:matching-substring>
+									<br/>
+							  </xsl:matching-substring>
+							  <xsl:non-matching-substring>
+									<xsl:value-of select="."/>
+							  </xsl:non-matching-substring>
+						 </xsl:analyze-string>
+					</p>
+			  </xsl:if>
+		 </header>
+	</xsl:template>
+	*/-->
 	<header class="article-head">
 		<h1 role="heading" aria-level="1" data-th-text="${partName}">Fakta om NAV</h1>
 		<div class="toolbar">
@@ -14,40 +36,42 @@
 			<div class="content-print" id="print-page" role="button" tabindex="0"><span>Skriv ut side</span></div>
 		</div>
 	</header>
+
+<!--/*
+<xsl:template match="content" mode="list-element">
+	// @preface = DONE IN JS //
+	// @url = DONE IN JS //
+
 	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/regionalisering">Regionalisering i NAV</a></h2>
-		<p>Høring om forslag til fremtidig regional struktur i Arbeids- og tjenestelinjen i NAV.</p>
+		<h2 role="heading" aria-level="2">
+			<a href="{$url}">
+				 <xsl:if test="contentdata/target = 'new'">
+					  <xsl:attribute name="rel" select="'external'"/>
+				 </xsl:if>
+				 <xsl:value-of select="title"/>
+			</a>
+		</h2>
+		<xsl:if test="string-length(normalize-space($preface)) gt 0">
+			<p>
+				<xsl:value-of select="stk:text.crop($preface, $maxPrefaceLength)"/>
+			</p>
+		</xsl:if>
 	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/kva-er-nav">Kva er NAV?</a></h2>
-		<p>NAV forvaltar ein tredel av statsbudsjettet gjennom ordningar som dagpengar, arbeidsavklaringspengar, sjukepengar, pensjon, barnetrygd og kontantstøtte.</p>
-	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/organisering-av-nav">Organisering av NAV</a></h2>
-		<p>NAV er ei landsdekkande offentleg verksemd som omfattar mellom anna Arbeids- og velferdsdirektoratet, ei arbeids- og tenestelinje med lokale NAV-kontor i kommunane, ei ytelseslinje og ei økonomilinje. Sjå meir informasjon og organisasjonskart under
-			relatert informasjon.</p>
-	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/partnerskapet-i-nav">Partnerskapet i NAV</a></h2>
-		<p>Arbeids- og velferdsforvaltningen (NAV) består av både kommunale og statlige tjenester. Partnerskapet mellom kommune og stat er et av hovedgrepene i NAV-reformen, som skal gi brukerne én dør inn til de offentlige velferdstjenestene.
-		</p>
-	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/organisering-av-nav-kontoret">Organisering av NAV-kontoret</a></h2>
-		<p>NAV-kontoret er tuftet på likeverdig partnerskap mellom stat og kommune og skal yte både statlige og kommunale arbeids- og velferdstjenester.</p>
-	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/tildelingsbrev">Tildelingsbrev</a></h2>
-		<p>Her finner du tildelingsbrev fra Arbeids- og sosialdepartementet. </p>
-	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/%C3%A5rsrapport">Årsrapporter</a></h2>
-		<p>Her finner du NAVs årsrapporter.</p>
-	</article>
-	<article>
-		<h2 role="heading" aria-level="2"><a href="https://www.nav.no/no/NAV+og+samfunn/Kunnskap/Relatert+informasjon/nav-og-kunnskap">NAV og kunnskap</a></h2>
-		<p>NAV er en av Norges største leverandører av statistikk og analyser. På denne siden finner du oversikt over alt kunnskapsstoffet NAV produserer eller finansierer, samt kunnskap om NAV.</p>
-	</article>
+</xsl:template>
+*/-->
+	<div data-th-remove="tag" data-th-if="${articles}">
+		<article data-th-each="article : ${articles}">
+			<h2 role="heading" aria-level="2">
+				<a data-th-href="${article.data.url}" data-th-text="${article.displayName}" data-th-attr="rel=${article.data.target}" href="https://www.nav.no/no/NAV+og+samfunn/Om+NAV/Fakta+om+NAV/regionalisering">
+					Regionalisering i NAV
+				</a>
+			</h2>
+			<p data-th-if="${article.data.preface}" data-th-text="${article.data.preface}">
+				Høring om forslag til fremtidig regional struktur i Arbeids- og tjenestelinjen i NAV.
+			</p>
+		</article>
+	</div>
+
 </article>
 
 <!--/*
@@ -74,7 +98,6 @@
     </xsl:variable>
 
     <xsl:template match="/">
-
         <xsl:if test="/result/contents/content[@contenttype = 'nav.sidebeskrivelse']">
             <article class="article-list" id="pagecontent">
                 <xsl:apply-templates select="/result/contents/content[@contenttype = 'nav.sidebeskrivelse']" mode="language-filter">
