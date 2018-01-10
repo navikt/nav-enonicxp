@@ -1,11 +1,17 @@
 var libs = {
-	portal: require('/lib/xp/portal')
-	content: require('/lib/xp/content')
-	thymeleaf: require('/lib/xp/thymeleaf')
+	portal: require('/lib/xp/portal'),
+	content: require('/lib/xp/content'),
+	thymeleaf: require('/lib/xp/thymeleaf'),
+	i18n: require('/lib/xp/i18n'),
+	nav: require('/lib/nav-utils'),
+	util: require('/lib/enonic/util')
 }
 var view = resolve('articles-list-related-content.html');
 
 exports.get = function(req) {
+
+	var content = libs.portal.getContent();
+	var sectionIds = [].concat(content.data.sectionContents || []);
 
 	// Fetch the one introductory text, if exists - as it contains the shortcuts we want to display on the side.
 	var queryResult = libs.content.query({
@@ -22,15 +28,17 @@ exports.get = function(req) {
 	introduction = introduction[0]; // Flatten array into object since this is a single item.
 
 	// TODO: Loop over the selected related contents and fill them with data.
+	// ===(loop)===
 
     var params = {
-		  introduction: introduction
+		  introduction: introduction,
+		  heading: libs.i18n.localize({key: 'nav.related.shortcuts'}) // TODO: Toggle this based on locale
     };
 
-    return {
-		 body: thymeleafLib.render(view, params),
-        contentType: 'text/html'
-    };
+	 return {
+		body: libs.thymeleaf.render(view, params),
+		contentType: 'text/html'
+	};
 };
 
 /*
