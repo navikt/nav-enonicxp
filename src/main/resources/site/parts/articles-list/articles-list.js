@@ -25,6 +25,7 @@ exports.get = function(req) {
 		contentTypes: [app.name + ':nav.sidebeskrivelse']
 	});
 	var introduction = libs.nav.sortContents(queryResult.hits, sectionIds);
+	introduction = introduction[0]; // Flatten array into object since this is a single item.
 
 	// Fetch remaining items published to this page.
 	queryResult = libs.content.query({

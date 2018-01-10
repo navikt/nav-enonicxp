@@ -21,8 +21,8 @@
 		 </header>
 	</xsl:template>
 	*/-->
-	<header class="article-head">
-		<h1 role="heading" aria-level="1" data-th-text="${partName}">Fakta om NAV</h1>
+	<header class="article-head" if="${introduction}">
+		<h1 role="heading" aria-level="1" data-th-text="${introduction.displayName}">Fakta om NAV</h1>
 		<div class="toolbar">
 			<div class="tts-panel" data-scriptenabled="false">
 				<button class="tts-btn-listen tts-btn-collapsed"><span>Lytt</span></button>
