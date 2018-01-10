@@ -1,21 +1,37 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var libs = {
+	portal: require('/lib/xp/portal')
+	content: require('/lib/xp/content')
+	thymeleaf: require('/lib/xp/thymeleaf')
+}
 var view = resolve('articles-list-related-content.html');
 
-function handleGet(req) {
+exports.get = function(req) {
+
+	// Fetch the one introductory text, if exists - as it contains the shortcuts we want to display on the side.
+	var queryResult = libs.content.query({
+		start: 0,
+		count: 1,
+		filters: {
+			ids: {
+				values: sectionIds
+			}
+		},
+		contentTypes: [app.name + ':nav.sidebeskrivelse']
+	});
+	var introduction = libs.nav.sortContents(queryResult.hits, sectionIds);
+	introduction = introduction[0]; // Flatten array into object since this is a single item.
+
+	// TODO: Loop over the selected related contents and fill them with data.
 
     var params = {
-        partName: "articles-list-related-content"
+		  introduction: introduction
     };
-
-    var body = thymeleafLib.render(view, params);
 
     return {
-        contentType: 'text/html',
-        body: body
+		 body: thymeleafLib.render(view, params),
+        contentType: 'text/html'
     };
-}
-
-exports.get = handleGet;
+};
 
 /*
  * The following DataSources were used in the original CMS portlet:

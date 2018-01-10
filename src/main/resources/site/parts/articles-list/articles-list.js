@@ -93,7 +93,6 @@ exports.get = function(req) {
 	var articles = libs.nav.sortContents(queryResult.hits, sectionIds);
 
     var params = {
-        partName: "articles-list",
 		  introduction: introduction,
 		  articles: articles
     };
