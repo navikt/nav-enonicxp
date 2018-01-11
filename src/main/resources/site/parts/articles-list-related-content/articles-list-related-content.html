@@ -1,4 +1,4 @@
-<aside role="complementary" class="related-content subsection-related-content">
+<aside role="complementary" class="related-content subsection-related-content" data-th-if="${introduction}">
 	<section class="accordion-item expanded">
 		<header>
 			<h1 class="h5">
@@ -18,11 +18,13 @@
 			</h1>
 		</header>
 
-		<ul data-th-if="${introduction.data.relatedContent}">
-			<li data-th-each="related : ${introduction.data.relatedContent}">
-				<a href="#" data-th-href="${related.url}" data-th-text="${related.displayName}" data-th-attr="rel=${related.rel}">Xxx</a>
-			</li>
-		</ul>
+		<div data-th-remove="tag" data-th-if="${introduction.data}">
+			<ul data-th-if="${introduction.data.relatedContent}">
+				<li data-th-each="related : ${introduction.data.relatedContent}">
+					<a href="#" data-th-href="${related.url}" data-th-text="${related.displayName}" data-th-attr="rel=${related.rel}">Xxx</a>
+				</li>
+			</ul>
+		</div>
 	</section>
 </aside>
 <!--/*

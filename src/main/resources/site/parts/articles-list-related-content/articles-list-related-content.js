@@ -24,89 +24,96 @@ exports.get = function(req) {
 		},
 		contentTypes: [app.name + ':nav.sidebeskrivelse']
 	});
-	var introduction = libs.nav.sortContents(queryResult.hits, sectionIds);
-	introduction = introduction[0]; // Flatten array into object since this is a single item, makes Thymeleaf'ing smoother.
 
-	// Loop over the selected related contents and fill them with data (fetch content based on key).
-	var relatedContentsList = introduction.data.shortcuts || introduction.data.links;
-	/*
-	<xsl:choose>
-		<xsl:when test="current()/contentdata/shortcuts/content">
-			<xsl:apply-templates select="current()/contentdata/shortcuts/content"/>
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:apply-templates select="/result/contents/content/contentdata/links/content"/>
-		</xsl:otherwise>
-	</xsl:choose>
-	*/
+	var introduction = null;
+	if (queryResult.total > 0) {
+		introduction = libs.nav.sortContents(queryResult.hits, sectionIds);
+		introduction = introduction[0]; // Flatten array into object since this is a single item, makes Thymeleaf'ing smoother.
 
-	introduction.data.relatedContent = [];
-	for (var i = 0; i < relatedContentsList.length; i++) {
-		var relatedContent = libs.content.get({
-			'key': relatedContentsList[i]
-		});
-		if (relatedContent) {
-			var relatedContentData = {
-				'id': relatedContentsList[i],
-				'displayName': relatedContent.displayName,
-				'type': relatedContent.type,
-				'target': relatedContent.data.target,
-			};
-			switch (relatedContentData.type) {
-				case app.name + 'Ekstern_lenke':
-					relatedContentData.url = relatedContent.data.url;
-					if (relatedContentData.target === 'new') {
-						relatedContentData.rel = 'external';
+		if (introduction.data) {
+
+			// Loop over the selected related contents and fill them with data (fetch content based on key).
+			var relatedContentsList = introduction.data.shortcuts || introduction.data.links;
+			/*
+			<xsl:choose>
+				<xsl:when test="current()/contentdata/shortcuts/content">
+					<xsl:apply-templates select="current()/contentdata/shortcuts/content"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:apply-templates select="/result/contents/content/contentdata/links/content"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			*/
+
+			introduction.data.relatedContent = [];
+			for (var i = 0; i < relatedContentsList.length; i++) {
+				var relatedContent = libs.content.get({
+					'key': relatedContentsList[i]
+				});
+				if (relatedContent) {
+					var relatedContentData = {
+						'id': relatedContentsList[i],
+						'displayName': relatedContent.displayName,
+						'type': relatedContent.type,
+						'target': relatedContent.data.target,
+					};
+					switch (relatedContentData.type) {
+						case app.name + 'Ekstern_lenke':
+							relatedContentData.url = relatedContent.data.url;
+							if (relatedContentData.target === 'new') {
+								relatedContentData.rel = 'external';
+							}
+							relatedContentData.displayName = relatedContent.data.heading;
+							break;
+						case app.name + 'Fil':
+							relatedContentData.url = libs.portal.attachmentUrl({
+								'id': relatedContentData.id,
+								'download': true
+							});
+							relatedContentData.displayName = relatedContent.data.name;
+							break;
+						case app.name + 'nav.sidebeskrivelse':
+							// URL here should be pointing to the contents home, I guess since cms2xp moves such items a simple pageUrl will do the same.
+							relatedContentData.url = libs.portal.pageUrl({'id': relatedContentData.id});
+							relatedContentData.displayName = relatedContent.data.heading;
+							break;
+						default:
+							relatedContentData.url = libs.portal.pageUrl({'id': relatedContentData.id});
 					}
-					relatedContentData.displayName = relatedContent.data.heading;
-					break;
-				case app.name + 'Fil':
-					relatedContentData.url = libs.portal.attachmentUrl({
-						'id': relatedContentData.id,
-						'download': true
-					});
-					relatedContentData.displayName = relatedContent.data.name;
-					break;
-				case app.name + 'nav.sidebeskrivelse':
-					// URL here should be pointing to the contents home, I guess since cms2xp moves such items a simple pageUrl will do the same.
-					relatedContentData.url = libs.portal.pageUrl({'id': relatedContentData.id});
-					relatedContentData.displayName = relatedContent.data.heading;
-					break;
-				default:
-					relatedContentData.url = libs.portal.pageUrl({'id': relatedContentData.id});
+					introduction.data.relatedContent.push(relatedContentData);
+				}
 			}
-			introduction.data.relatedContent.push(relatedContentData);
+		/*
+		<xsl:variable name="linkContent" select="/result/contents/relatedcontents/content[@key = current()/@key]"></xsl:variable>
+
+		<xsl:choose>
+			<xsl:when test="$linkContent/@contenttype = 'Ekstern_lenke'">
+				<a href="{$linkContent/contentdata/url}">
+					<xsl:if test="$linkContent/contentdata/target = 'new'">
+						<xsl:attribute name="rel" select="'external'"/>
+					</xsl:if>
+					<xsl:value-of select="$linkContent/contentdata/heading"/>
+				</a>
+			</xsl:when>
+			<xsl:when test="$linkContent/@contenttype = 'Fil'">
+				<a href="{portal:createAttachmentUrl(@key, ('download', 'true'))}">
+					<xsl:value-of select="$linkContent/contentdata/name"/>
+				</a>
+			</xsl:when>
+			<xsl:when test="$linkContent/@contenttype = 'nav.sidebeskrivelse'">
+				<a href="{portal:createPageUrl($linkContent/location/site/contentlocation[@home = true()]/@menuitemkey,())}">
+					<xsl:value-of select="$linkContent/contentdata/heading"/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<a href="{portal:createContentUrl(@key,())}">
+					<xsl:value-of select="$linkContent/title"/>
+				</a>
+			</xsl:otherwise>
+		</xsl:choose>
+		*/
 		}
 	}
-	/*
-	<xsl:variable name="linkContent" select="/result/contents/relatedcontents/content[@key = current()/@key]"></xsl:variable>
-
-	<xsl:choose>
-		<xsl:when test="$linkContent/@contenttype = 'Ekstern_lenke'">
-			<a href="{$linkContent/contentdata/url}">
-				<xsl:if test="$linkContent/contentdata/target = 'new'">
-					<xsl:attribute name="rel" select="'external'"/>
-				</xsl:if>
-				<xsl:value-of select="$linkContent/contentdata/heading"/>
-			</a>
-		</xsl:when>
-		<xsl:when test="$linkContent/@contenttype = 'Fil'">
-			<a href="{portal:createAttachmentUrl(@key, ('download', 'true'))}">
-				<xsl:value-of select="$linkContent/contentdata/name"/>
-			</a>
-		</xsl:when>
-		<xsl:when test="$linkContent/@contenttype = 'nav.sidebeskrivelse'">
-			<a href="{portal:createPageUrl($linkContent/location/site/contentlocation[@home = true()]/@menuitemkey,())}">
-				<xsl:value-of select="$linkContent/contentdata/heading"/>
-			</a>
-		</xsl:when>
-		<xsl:otherwise>
-			<a href="{portal:createContentUrl(@key,())}">
-				<xsl:value-of select="$linkContent/title"/>
-			</a>
-		</xsl:otherwise>
-	</xsl:choose>
-	*/
 
     var params = {
 		  introduction: introduction,
