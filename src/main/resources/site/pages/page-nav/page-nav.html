@@ -195,10 +195,11 @@
         </script>
     </header>
     <main id="maincontent" role="main" tabindex="-1" data-th-class="${bodyClassExtras}">
-		 <!--/* TODO: add class="contentpage" if this is a content page, viewing articles not shortcuts. How to do that in XP ... */-->
 
 		<div class="container page-head">
 			<!--/*
+			Basically this code checks if the template has a datasource that returns any content, if found it will generate the breadcrumb otherwise it displays a heading. This is not possible in XP. Not sure how to do, should we "sniff" for a set list of templates and use that as a toggler?
+
 			<xsl:choose>
 				<xsl:when test="boolean(/result/contents/content)">
 				<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
@@ -219,7 +220,6 @@
             </xsl:otherwise>
         </xsl:choose>
 			*/-->
-
 			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation" data-th-id="${breadcrumbs}">
 				<li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
 					<a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>

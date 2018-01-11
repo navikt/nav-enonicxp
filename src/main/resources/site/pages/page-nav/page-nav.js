@@ -29,7 +29,7 @@ function handleGet(req) {
 
 	// Check if there is content (huh!? always content in XP ...) or a specific template being used.
 	// Research: the mentioned page template doesn't exists anymore. Looking for existing contents/content is impossible in XP since all pages are content and will have something returned with .getContent(). Something else needs to be done here.
-	var bodyClassExtras = "contentpage";
+	var bodyClassExtras = "contentpage"; // Perhaps just check if we're viewing a "section" CTY?
 /*
     <xsl:if test="/result/contents/content or /result/context/page/page-template/name = 'Subseksjonsside'">
       <xsl:attribute name="class">
