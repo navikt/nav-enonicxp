@@ -27,6 +27,17 @@ function handleGet(req) {
     var regionsInEast = content.page.regions['region-east'] && content.page.regions['region-east'].components.length > 0;
     var regionsInCenter = content.page.regions['region-center'] && content.page.regions['region-center'].components.length > 0;
 
+	// Check if there is content (huh!? always content in XP ...) or a specific template being used.
+	// Research: the mentioned page template doesn't exists anymore. Looking for existing contents/content is impossible in XP since all pages are content and will have something returned with .getContent(). Something else needs to be done here.
+	var bodyClassExtras = "contentpage";
+/*
+    <xsl:if test="/result/contents/content or /result/context/page/page-template/name = 'Subseksjonsside'">
+      <xsl:attribute name="class">
+        <xsl:text>contentpage</xsl:text>
+      </xsl:attribute>
+    </xsl:if>
+*/
+
     var params = {
         context: req,
         site: site,
@@ -38,7 +49,8 @@ function handleGet(req) {
         contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
         accessibleLetters: accessibleLetters,
         menu: menuItems,
-		  breadcrumbs: breadcrumbs
+		  breadcrumbs: breadcrumbs,
+		  bodyClassExtras: bodyClassExtras
     };
 
     var body = thymeleafLib.render(view, params);
