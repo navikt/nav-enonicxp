@@ -21,7 +21,13 @@ function handleGet(req) {
 		showHomepage: false
 	});
 	// On Localhost, first 3 items are useless, slice! In XSLT they did it more complicated by checking types of content for each parent node, skipping that for now.
-	breadcrumbs.items = breadcrumbs.items.slice(3);
+	if (breadcrumbs.items.length > 3) {
+		breadcrumbs.items = breadcrumbs.items.slice(3);
+	}
+	// Looks like breadcrumbs are never shown if only 2 items or less, so nuke it.
+	if (breadcrumbs.items.length <= 2) {
+		breadcrumbs = null;
+	}
 
     var regionsInWest = content.page.regions['region-west'] && content.page.regions['region-west'].components.length > 0;
     var regionsInEast = content.page.regions['region-east'] && content.page.regions['region-east'].components.length > 0;

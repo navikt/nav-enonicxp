@@ -220,7 +220,7 @@
             </xsl:otherwise>
         </xsl:choose>
 			*/-->
-			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation" data-th-id="${breadcrumbs}">
+			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation" data-th-if="${breadcrumbs}">
 				<li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
 					<a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
 					<span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
@@ -233,7 +233,7 @@
 				<span class="crumb crumb-current">Lover og regler</span>
 			</nav>
 			*/-->
-			<h1 data-th-text="${content.displayName}">Kontakt oss</h1>
+			<h1 data-th-if="${!breadcrumbs}" data-th-text="${content.displayName}">Kontakt oss</h1>
 		</div>
 		<!--/* TODO: Breadcrumb-generation AND title generation here. Loads of XSLT ... */-->
 		<!--/* TODO: Only certain circumstances should output title and breadcrumb (deep enough down in the structure for instance). It also looks to be an either/or logic, never both. */-->
