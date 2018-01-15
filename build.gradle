@@ -24,8 +24,9 @@ dependencies {
     include "com.enonic.xp:lib-context:${xpVersion}"
     include "com.enonic.xp:lib-io:${xpVersion}"
 
-	include 'no.iskald.lib:moment:1.0.0'
-    include 'com.enonic.lib:menu:1.3.3'
+    include 'no.iskald.lib:moment:1.0.0'
+    //include 'com.enonic.lib:menu:1.3.3'
+    include files('../lib-menu/build/libs/menu-1.4.0.jar')
     include 'com.enonic.lib:util:1.3.0'
     include 'com.enonic.lib:urlredirect:2.0.0'
 }
