@@ -2,6 +2,9 @@ var portalLib = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var thymeleafLib = require('/lib/xp/thymeleaf');
 var utils = require('/lib/nav-utils');
+var libs = {
+	util: require('/lib/enonic/util')
+}
 
 var view = resolve('heronighanddaybanner.html');
 
