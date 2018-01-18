@@ -18,7 +18,7 @@ function handleGet(req) {
 		linkActiveItem: false,
 		showHomepage: false
 	});
-	libs.util.log(breadcrumbs);
+
 	// On Localhost, first 3 items are useless, slice! In XSLT they did it more complicated by checking types of content for each parent node, skipping that for now.
 	if (breadcrumbs.items.length > 3) {
 		breadcrumbs.items = breadcrumbs.items.slice(3);
