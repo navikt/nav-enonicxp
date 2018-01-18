@@ -1,17 +1,15 @@
-var portalLib = require('/lib/xp/portal');
-var thymeleafLib = require('/lib/xp/thymeleaf');
 var libs = {
+	thymeleaf: require('/lib/xp/thymeleaf'),
+	portal: require('/lib/xp/portal'),
 	menu: require('/lib/menu'),
 	util: require('/lib/enonic/util')
 }
-
 var view = resolve('page-nav.html');
-
 var accessibleLetters = 'abcdefghijklmnopqrstuvwxyzæøå'.split('');
 
 function handleGet(req) {
-    var site = portalLib.getSite();
-    var content = portalLib.getContent();
+    var site = libs.portal.getSite();
+    var content = libs.portal.getContent();
 
     var menuItems = libs.menu.getSubMenus(site, 4);
     menuItems = menuItems[0];
@@ -20,9 +18,17 @@ function handleGet(req) {
 		linkActiveItem: false,
 		showHomepage: false
 	});
+	libs.util.log(breadcrumbs);
 	// On Localhost, first 3 items are useless, slice! In XSLT they did it more complicated by checking types of content for each parent node, skipping that for now.
 	if (breadcrumbs.items.length > 3) {
 		breadcrumbs.items = breadcrumbs.items.slice(3);
+
+		// NAV doesn't link CMS Labels (Folders in XP), make sure to remove URL data for these so we don't link them.
+		for (var i = 0; i < breadcrumbs.items.length; i++) {
+			if (breadcrumbs.items[i].type === 'base:folder') {
+				breadcrumbs.items[i].url = null;
+			}
+		}
 	}
 	// Looks like breadcrumbs are never shown if only 2 items or less, so nuke it.
 	if (breadcrumbs.items.length <= 2) {
@@ -51,7 +57,7 @@ function handleGet(req) {
         westRegionClass: regionsInEast && !regionsInCenter ? 'col-md-6' : 'col-md-4',
         eastRegionClass: regionsInWest && !regionsInCenter ? 'col-md-6' : 'col-md-4',
         centerRegionClass: regionsInEast && regionsInWest ? 'col-md-4' : (regionsInEast || regionsInWest ? 'col-md-8' : 'col-md-12'),
-        frontPageUrl: portalLib.pageUrl({id: site._id}),
+        frontPageUrl: libs.portal.pageUrl({id: site._id}),
         contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
         accessibleLetters: accessibleLetters,
         menu: menuItems,
@@ -59,7 +65,7 @@ function handleGet(req) {
 		  bodyClassExtras: bodyClassExtras
     };
 
-    var body = thymeleafLib.render(view, params);
+    var body = libs.thymeleaf.render(view, params);
 
     return {
         contentType: 'text/html',

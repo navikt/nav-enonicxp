@@ -71,7 +71,7 @@ var globals = {
 						item.active = false;
 						item.url = curItemUrl;
 					}
-					item.type = content.type;
+					item.type = curItem.type;
 					breadcrumbItems.push(item);
 				}
 			}
