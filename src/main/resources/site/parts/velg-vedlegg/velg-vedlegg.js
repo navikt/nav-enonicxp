@@ -1,17 +1,31 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var libs = {
+    portal: require('/lib/xp/portal'),
+	content: require('/lib/xp/content'),
+	thymeleaf: require('/lib/xp/thymeleaf'),
+    i18n: require('/lib/xp/i18n'),
+    skjema: require('/lib/skjema'),
+	util: require('/lib/enonic/util')
+};
+
+var appPath = libs.util.app.getJsonName();
 var view = resolve('velg-vedlegg.html');
 
-function handleGet(req) {
 
-    var params = {
-        partName: "velg-vedlegg"
+
+/**
+ * Creates an HTML response to the GET request on page load
+ * @param  {Object} request GET request
+ * @return {Object}
+ */
+function handleGet(request) {
+
+    var model = {
+        isEditMode: (request.mode === 'edit')
     };
-
-    var body = thymeleafLib.render(view, params);
 
     return {
         contentType: 'text/html',
-        body: body
+        body: libs.thymeleaf.render(view, model)
     };
 }
 
