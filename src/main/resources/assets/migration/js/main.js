@@ -4,7 +4,6 @@ var deleteTaskId, listTaskId;
 $(function () {
     $('#deleteContent').on('click', executeDeleteContent);
     $('#moveContent').on('click', executeMoveContent);
-    $('#listNotinuse').on('click', executeListNotinuse);
 });
 
 function executeDeleteContent(e) {
@@ -65,35 +64,6 @@ function moveContentDone(result) {
     $('#moveContent').show();
     $('#moveContentExecuting').hide();
     $('#moveContentResult').show().text(result);
-}
-
-function executeListNotinuse(e) {
-	$('#listNotinuse,#listNotinuseResult').hide();
-	$('#listNotinuseExecuting').show();
-
-	$.ajax({
-		type: "POST",
-		url: serviceUrl,
-		dataType: 'json',
-		data: {
-			action: 'listNotinuse'
-		},
-		success: function(data) {
-			listTaskId = data.id;
-			checkStatus(listTaskId, listNotinuseDone);
-		},
-		error: function() {
-			//console.log(arguments);
-			$('#listNotinuse').show();
-			$('#listNotinuseExecuting').hide();
-		}
-	});
-}
-
-function listNotinuseDone(result) {
-    $('#listNotinuse').show();
-    $('#listNotinuseExecuting').hide();
-    $('#listNotinuseResult').show().text(result);
 }
 
 function checkStatus(id, onDone) {
