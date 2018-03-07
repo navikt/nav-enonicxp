@@ -103,8 +103,8 @@
             <div class="topnavsection">
                 <nav class="topnav container" role="navigation" id="mainmenu" aria-labelledby="header-nav-heading" tabindex="-1"><h1
                         class="visuallyhidden" id="header-nav-heading">Hovedmeny</h1><input id="no-js-toggle-mobile-mainmenu"
-                                                                                            type="checkbox"
-                                                                                            class="visuallyhidden mobile-toggler"><label
+                       type="checkbox"
+                       class="visuallyhidden mobile-toggler"><label
                         for="no-js-toggle-mobile-mainmenu" class="mobile-toggler toggle-mainmenu">Meny</label>
                     <button type="button" id="toggle-mobile-mainmenu" class="link-btn mobile-toggler toggle-mainmenu">Meny</button>
 
@@ -198,7 +198,9 @@
 
 		<div class="container page-head">
 			<!--/*
-			Basically this code checks if the template has a datasource that returns any content, if found it will generate the breadcrumb otherwise it displays a heading. This is not possible in XP. Not sure how to do, should we "sniff" for a set list of templates and use that as a toggler?
+			Basically this code checks if the template has a datasource that returns any content,
+            if found it will generate the breadcrumb otherwise it displays a heading.
+            This is not possible in XP. Not sure how to do, should we "sniff" for a set list of templates and use that as a toggler?
 
 			<xsl:choose>
 				<xsl:when test="boolean(/result/contents/content)">
@@ -220,7 +222,7 @@
             </xsl:otherwise>
         </xsl:choose>
 			*/-->
-			<nav class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation" data-th-if="${breadcrumbs}">
+			<nav data-th-if="${breadcrumbs}" class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
 				<li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
 					<a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
 					<span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
@@ -233,43 +235,43 @@
 				<span class="crumb crumb-current">Lover og regler</span>
 			</nav>
 			*/-->
-			<h1 data-th-if="${!breadcrumbs}" data-th-text="${content.displayName}">Kontakt oss</h1>
+			<h1 data-th-unless="${breadcrumbs}" data-th-text="${content.displayName}">Kontakt oss</h1>
 		</div>
 		<!--/* TODO: Breadcrumb-generation AND title generation here. Loads of XSLT ... */-->
 		<!--/* TODO: Only certain circumstances should output title and breadcrumb (deep enough down in the structure for instance). It also looks to be an either/or logic, never both. */-->
 
 
         <div class="container maincontent">
-            <div data-portal-region="region-west">
+            <div data-portal-region="region-west" data-th-remove="${isEditMode} ? 'none' : 'tag'">
                 <div data-th-if="${content.page.regions['region-west']}" data-th-remove="tag">
                     <div data-th-each="component : ${content.page.regions['region-west'].components}" data-th-remove="tag">
                         <div data-portal-component="${component.path}" class="col-sm-12" data-th-classappend="${westRegionClass}"></div>
                     </div>
                 </div>
             </div>
-            <div data-portal-region="region-center">
+            <div data-portal-region="region-center" data-th-remove="${isEditMode} ? 'none' : 'tag'">
                 <div data-th-if="${content.page.regions['region-center']}" data-th-remove="tag">
                     <div data-th-each="component : ${content.page.regions['region-center'].components}" data-th-remove="tag">
                         <div data-portal-component="${component.path}" class="col-sm-12" data-th-classappend="${centerRegionClass}"></div>
                     </div>
                 </div>
             </div>
-            <div data-portal-region="region-east">
+            <div data-portal-region="region-east" data-th-remove="${isEditMode} ? 'none' : 'tag'">
                 <div data-th-if="${content.page.regions['region-east']}" data-th-remove="tag">
                     <div data-th-each="component : ${content.page.regions['region-east'].components}" data-th-remove="tag">
                         <div data-portal-component="${component.path}" class="col-sm-12" data-th-classappend="${eastRegionClass}"></div>
                     </div>
                 </div>
             </div>
-            <div data-portal-region="region-south">
-                <div data-th-if="${content.page.regions['region-south']}" data-th-remove="tag">
-                    <div data-th-each="component : ${content.page.regions['region-south'].components}" data-th-remove="tag">
-                        <div data-portal-component="${component.path}" class="col-md-8 col-sm-12"></div>
-                    </div>
+        </div>
+        <div data-portal-region="region-south" data-th-remove="${isEditMode} ? 'none' : 'tag'">
+            <div data-th-if="${content.page.regions['region-south']}" data-th-remove="tag">
+                <div data-th-each="component : ${content.page.regions['region-south'].components}" data-th-remove="tag">
+                    <div data-portal-component="${component.path}" data-th-remove="${isEditMode} ? 'none' : 'tag'"></div>
                 </div>
             </div>
-            <div class="placeholder hide"><div class="top-link-wrapper"><a href="#page-top" id="top-scroll-link">Til toppen</a></div></div>
         </div>
+        <div class="placeholder hide"><div class="top-link-wrapper"><a href="#page-top" id="top-scroll-link">Til toppen</a></div></div>
     </main>
 
 </div>

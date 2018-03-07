@@ -4,6 +4,7 @@ var view = resolve('last-ned.html');
 function handleGet(req) {
 
     var params = {
+        isEditMode: (req.mode === 'edit'),
         partName: "last-ned"
     };
 

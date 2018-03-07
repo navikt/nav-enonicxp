@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- usage example: /no/Person/Skjemaer-for-privatpersoner/Skjemaer/Arbeid, helse og sykdom/Sykepenger -->
 <part>
-  <display-name>velg-skjema</display-name>
+  <display-name>Skjema 3: Velg skjema</display-name>
   <config>
     <input name="innsendingsvalg" type="ContentSelector">
         <label>innsendingsvalg</label>
@@ -14,5 +15,5 @@
         <label>vedlegg-bedrift</label>
         <occurrences maximum="1" minimum="0"/>
     </input>
-</config>
+  </config>
 </part>

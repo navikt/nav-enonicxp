@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- usage example: /no/Person/Skjemaer-for-privatpersoner/Skjemaer -->
 <part>
-  <display-name>linklist-heroblocks</display-name>
+  <display-name>Skjema 1 og 2 (hovedinnganger, velg emne)</display-name>
   <config>
     <input name="sokeresultatside_for_privatperson" type="ContentSelector">
         <label>sokeresultatside_for_privatperson</label>
@@ -18,5 +19,5 @@
         <label>sokeresultatside_for_arbeid_ettersendelse</label>
         <occurrences maximum="1" minimum="0"/>
     </input>
-</config>
+  </config>
 </part>

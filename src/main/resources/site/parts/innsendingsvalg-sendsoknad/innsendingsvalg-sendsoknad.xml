@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- usage example: /no/Person/Skjemaer-for-privatpersoner/Skjemaer/Arbeid, helse og sykdom/uforetrygd -->
 <part>
-  <display-name>innsendingsvalg-sendsoknad</display-name>
+  <display-name>Skjema 4: innsendingsvalg</display-name>
   <config/>
 </part>
