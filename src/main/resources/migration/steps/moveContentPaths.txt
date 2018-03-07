@@ -1,0 +1,5 @@
+#/large-tree/large-tree-node-2 -> /
+#/large-tree/large-tree-node-1 -> /
+
+/sites/www.nav.no -> /
+/content/nav.no-tysk -> /www.nav.no/
