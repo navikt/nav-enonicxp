@@ -81,6 +81,7 @@
                         <option value="100">100%</option>
                         <option value="70">70%</option>
                         <option value="40">40%</option>
+                        <option value="">Ingen</option>
                     </config>
                 </input>
                 <input name="image" type="ImageSelector">
@@ -227,6 +228,7 @@
                     <config>
                         <option value="sidebar">i høyre kolonne</option>
                         <option value="maincol">under brødtekst i hovedkolonne</option>
+                        <option value="">Ingen</option>
                     </config>
                 </input>
                 <input name="fact" type="HtmlArea">

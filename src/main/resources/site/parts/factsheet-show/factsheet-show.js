@@ -1,10 +1,33 @@
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var portal = require('/lib/xp/portal');
+var utils = require('/lib/nav-utils');
+var contentLib = require('/lib/xp/content');
 var view = resolve('factsheet-show.html');
 
 function handleGet(req) {
+    var content = portal.getContent();
+    //var defult = content.x['no-nav-navno'];
+    //var defVal = (defult && defult.cmsContent) ? defult.cmsContent.contentKey : (defult && defult.cmsMenu) ? defult.cmsMenu.menuKey : '';
+    var contentKey = utils.getContentParam(content, 'key');
+    var article = {
+        type: null
+    };
+    if (contentKey) {
+        log.info(contentKey);
+        article = utils.getContentByCmsKey(contentKey);
+        log.info(JSON.stringify(article));
+        if (article) {
+            article.publishFromText = utils.dateTimePublished(article, 'no');
+        }
+        else {
+            article = {type: null}
+        }
+    }
 
     var params = {
-        partName: "factsheet-show"
+        appNamePre: app.name + ':',
+        content: article,
+        driftsMelding: article.type === (app.name + ':Driftsmelding_nav')
     };
 
     var body = thymeleafLib.render(view, params);

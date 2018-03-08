@@ -1,4 +1,20 @@
-<xsl:if test="/result/menuitems//menuitem[@active = 'true'][parameters/parameter[@name = 'key'] != '']/menuitems/menuitem or /result/menuitems//menuitem[@path = 'true'][parameters/parameter[@name = 'key'] != '']/menuitems/menuitem[@active = 'true'][parameters/parameter[@name = 'key'] != '']">
+
+<nav class="related-content content-submenu">
+    <ul>
+
+
+        <li>
+            <a data-th-href="${ page._path }" class="selected">
+                <span data-th-text="${ page.displayName }"></span>
+            </a>
+        </li>
+        <li data-th-each="item : ${ items }">
+            <a data-th-href="${ item.path }"><span data-th-text="${ item.displayName }"></span></a>
+        </li>
+    </ul>
+</nav>
+
+<!--<xsl:if test="/result/menuitems//menuitem[@active = 'true'][parameters/parameter[@name = 'key'] != '']/menuitems/menuitem or /result/menuitems//menuitem[@path = 'true'][parameters/parameter[@name = 'key'] != '']/menuitems/menuitem[@active = 'true'][parameters/parameter[@name = 'key'] != '']">
     <nav class="related-content content-submenu">
         <ul>
             <xsl:apply-templates
@@ -22,7 +38,7 @@
     <xsl:if test="$level lt 2">
         <xsl:apply-templates select="menuitems/menuitem[parameters/parameter[@name = 'key'] != '']">
             <xsl:with-param name="level" select="$level + 1"/>
-            <!-- Level stopper templaten fra å kalle seg selv rekursivt til det uendelige hvis mange nivåer i menystrukturen -->
+            <!-- Level stopper templaten fra å kalle seg selv rekursivt til det uendelige hvis mange nivåer i menystrukturen
         </xsl:apply-templates>
     </xsl:if>
-</xsl:template>
+</xsl:template>-->

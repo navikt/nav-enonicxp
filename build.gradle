@@ -1,7 +1,25 @@
+
+
+buildscript {
+    repositories {
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+
+    }
+    dependencies {
+        classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.0.17"
+    }
+}
 plugins {
     id 'java'
-    id 'com.enonic.xp.app' version '1.0.15'
 }
+apply plugin: "com.enonic.xp.app"
+
+
+
 
 app {
     name = project.appName
@@ -23,6 +41,7 @@ dependencies {
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "com.enonic.xp:lib-context:${xpVersion}"
     include "com.enonic.xp:lib-io:${xpVersion}"
+    include "com.enonic.xp:lib-node:${xpVersion}"
 
     include 'no.iskald.lib:moment:1.0.0'
     //include 'com.enonic.lib:menu:1.3.3'

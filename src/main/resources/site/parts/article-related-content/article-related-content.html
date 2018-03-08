@@ -1,8 +1,11 @@
-<aside role="complementary" class="related-content accordion" id="related-content-accordion">
+<aside role="complementary" class="related-content accordion" id="related-content-accordion" data-th-if="${ hasLinks }">
     <section class="accordion-item">
         <header><h1 class="h4"><a href="#accordion-information" class="accordion-toggle">Relatert informasjon</a></h1></header>
         <div id="accordion-information" class="accordion-panel">
             <ul>
+                <li data-th-each="link : ${ links }">
+                    <a data-th-href="${link.link}" data-th-text="${ link.title }"></a>
+                </li>
                 <!--<li><a href="https://www.nav.no/no/Bedrift/Rekruttering/tilskudd-arbeidstrening-og-tilrettelegging">Arbeidstrening, tilskudd-->
                     <!--og tilrettelegging</a></li>-->
                 <!--<li>-->

@@ -22,7 +22,7 @@
 
 	        <!--<xsl:call-template name="generate-article-submenu"/>-->
 
-	        <p class="preface" data-th-if="${content.data.preface != ''}">
+	        <p class="preface" data-th-if="${content.data.preface && content.data.preface != ''}">
 	            <br data-th-if="${#strings.contains(content.data.preface,'\n')}"/>
 	            [[${content.data.preface}]]
 	        </p>
@@ -31,7 +31,7 @@
 	        <div data-th-utext="${portal.processHtml({'_value='+content.data.text})}">text</div>
 	    </div>
 
-	    <div class="well article-facts" data-th-if="${content.data.fact != ''}">
+	    <div class="well article-facts" data-th-if="${!(!content.data.fact || content.data.fact != '')}">
 	        <h3 class="h4 decorated" data-th-text="${portal.localize({'_key=nav.facts'})}">nav.facts</h3>
 	        <div data-th-utext="${portal.processHtml({'_value='+content.data.fact})}">fact</div>
 	    </div>

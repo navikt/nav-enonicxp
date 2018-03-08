@@ -9,21 +9,36 @@ var view = resolve('shortcut-box-link-hero-tripple.html');
 /* It fetches its contents (up to 10) from the page/section it is added to and the ContentSelector field there. */
 
 function handleGet(req) {
-
+    var site = portalLib.getSite();
     var content = portalLib.getContent();
     var sectionIds = [].concat(content.data.sectionContents || []);
     var queryResult = contentLib.query({
         start: 0,
         count: 10,
-        filters: {
-            ids: {
-                values: sectionIds
-            }
-        },
-        contentTypes: [app.name + ':nav.lenke-med-ikon']
+
+        contentTypes: [app.name + ':nav.lenke-med-ikon'],
+        "query": "_path LIKE '/content" + content._path + "/*'"
     });
 
-    var contents = utils.sortContents(queryResult.hits, sectionIds);
+    log.info(JSON.stringify(queryResult.hits));
+
+    var contents = utils.sortContents(queryResult.hits, sectionIds).map(function(content) {
+        var icon = (content.data.icon) ? content.data.icon : 'document';
+        icon = (icon === 'padlock') ? 'login' : icon;
+        icon = 'icon-' + icon;
+        content.data.icon = icon;
+        return content
+    });
+
+    if (contents.length === 0) {
+        contents = queryResult.hits.map(function(cont) {
+            cont.data.url = portalLib.pageUrl({id: cont.data.link});
+            cont.data.icon = "icon-" + cont.data.icon;
+            return cont;
+        });
+    }
+
+
 
     var params = {
         contents: contents

@@ -6,9 +6,10 @@
         <div class="col-md-4 col-sm-12 hero-link-wrapper" data-th-each="content : ${contents}">
             <a data-th-href="${content.data.url}" class="hero-link">
                 <h2 data-th-text="${content.data.heading}" class="h4 decorated leading-icon"
-                    data-th-classappend="'icon-'+(${content.data.icon == 'padlock'}? 'login' : ${content.data.icon})"></h2>
+                    data-th-classappend="${content.data.icon}"></h2>
                 <p data-th-text="${content.data.description}"></p>
             </a>
         </div>
     </div>
 </section>
+

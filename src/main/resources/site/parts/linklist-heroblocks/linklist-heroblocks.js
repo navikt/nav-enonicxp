@@ -1,17 +1,18 @@
+var menuLib = require('/lib/menu');
 var thymeleafLib = require('/lib/xp/thymeleaf');
 var view = resolve('linklist-heroblocks.html');
 
 function handleGet(req) {
 
-    var params = {
-        partName: "linklist-heroblocks"
-    };
+    //var menuItems = menuLib.getSubMenus(site, 4);
 
-    var body = thymeleafLib.render(view, params);
+    var model = {
+
+    };
 
     return {
         contentType: 'text/html',
-        body: body
+        body: thymeleafLib.render(view, model)
     };
 }
 

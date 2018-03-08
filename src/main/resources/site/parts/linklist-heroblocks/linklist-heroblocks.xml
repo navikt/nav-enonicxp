@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <part>
-  <display-name>linklist-heroblocks</display-name>
+  <display-name>Skjema 1: hovedinnganger (privat | bedrift | etc)s</display-name>
   <config>
     <input name="sokeresultatside_for_privatperson" type="ContentSelector">
         <label>sokeresultatside_for_privatperson</label>

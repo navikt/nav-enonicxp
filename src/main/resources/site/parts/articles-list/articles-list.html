@@ -1,5 +1,5 @@
 <article class="article-list" id="pagecontent">
-	<!--/*
+	<!--
 	<xsl:template match="content" mode="introduction">
 		 <header class="article-head">
 			  <h1 role="heading" aria-level="1">
@@ -20,8 +20,8 @@
 			  </xsl:if>
 		 </header>
 	</xsl:template>
-	*/-->
-	<header class="article-head" if="${introduction}">
+	-->
+	<header class="article-head" data-th-if="${introduction}">
 		<h1 role="heading" aria-level="1" data-th-text="${introduction.displayName}">Fakta om NAV</h1>
 		<div class="toolbar">
 			<div class="tts-panel" data-scriptenabled="false">

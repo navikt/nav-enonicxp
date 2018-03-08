@@ -11,7 +11,8 @@ function handleGet(req) {
 //    log.info('menus: ' + JSON.stringify(menus, null, 2));
 
     var params = {
-        menus: menus
+        page: content,
+        items: menus
     };
 
     var body = thymeleafLib.render(view, params);

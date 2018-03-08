@@ -10,36 +10,36 @@ var view = resolve('heronighanddaybanner.html');
 
 /* This is displayed on nav.no/no/Person and alternates between two images depending on the time of day. */
 
+
 function handleGet(req) {
+
     var h = new Date().getHours();
     var timeOfDay = h > 16 || h < 5 ? 'nighttime' : 'daytime';
 
     var content = portalLib.getContent();
-    var queryResult = contentLib.query({ // Query entire XP for all data
-        start: 0,
-        count: 2,
-        filters: {
-            ids: {
-                values: [].concat(content.data.sectionContents || []) // Fetch related contents on this Content (page)
-            }
-        },
-        contentTypes: ["media:image"] // Keep only images
-    });
-
-    var count = queryResult.hits.length, imageContent = null;
+    var queryResult = contentLib.getChildren({
+        key: content._id
+    }).hits.reduce(function(t,el) {
+        if (el.type === 'media:image') t.push(el)
+        return t;
+    },[]);
+   // checkImage(queryResult.hits[0]);
+    //log.info(content._path);
+    //log.info(JSON.stringify(queryResult));
+    var count = queryResult.length, imageContent = null;
     if (count === 1) {
-        imageContent = queryResult.hits[0];
+        imageContent = queryResult[0];
     } else if (count > 1) {
-        var sortedContents = utils.sortContents(queryResult.hits, content.data.sectionContents);
+        var sortedContents = queryResult;
         imageContent = timeOfDay === 'nighttime' ? sortedContents[1] : sortedContents[0];
     }
 
     if (!imageContent) {
+
         return {
             status: 400
         }
     }
-
     var params = {
         imageWidth: imageContent.x.media.imageInfo.imageWidth,
         imageHeight: imageContent.x.media.imageInfo.imageHeight,

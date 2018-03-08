@@ -1,10 +1,26 @@
 var thymeleafLib = require('/lib/xp/thymeleaf');
+var portal = require('/lib/xp/portal');
+var content = require('/lib/xp/content');
 var view = resolve('article-related-content.html');
 
 function handleGet(req) {
 
+    var links = portal.getContent().data.links || [];
+    if (typeof links === 'string') links = [links];
+
+    links = links.map(function(id) {
+        var l = content.get({key: id});
+        return (l) ? { link: l._path, title: l.data.heading } : undefined;
+    }).reduce(function(t, el){
+        if (el) t.push(el);
+        return t
+    },[]);
+    var hasLinks = (links.length > 0);
+
     var params = {
-        partName: "article-related-content"
+        partName: "article-related-content",
+        links: links,
+        hasLinks: hasLinks
     };
 
     var body = thymeleafLib.render(view, params);

@@ -1,0 +1,27 @@
+<aside role="complementary" class="related-content accordion" id="related-content-accordion" data-th-if="${ hasLinks }">
+    <section class="accordion-item" data-th-each="content : ${content.data.menuListItems}">
+        <header><h1 class="h4"><a href="#accordion-information" class="accordion-toggle" data-th-text="${ content.menuListName }"></a></h1></header>
+        <div id="accordion-information" class="accordion-panel">
+            <ul>
+                <li data-th-each="link : ${ content.link }">
+                    <a data-th-href="${link.link}" data-th-text="${ link.title }"></a>
+                </li>
+                <!--<li><a href="https://www.nav.no/no/Bedrift/Rekruttering/tilskudd-arbeidstrening-og-tilrettelegging">Arbeidstrening, tilskudd-->
+                <!--og tilrettelegging</a></li>-->
+                <!--<li>-->
+                <!--<a href="https://www.nav.no/no/Bedrift/Oppfolging/Sykmeldt+arbeidstaker/Relatert+informasjon/oppfolging-av-sykmeldte-arbeidstakere">Slik-->
+                <!--følger du opp sykmeldte</a></li>-->
+                <!--<li><a href="https://www.nav.no/no/Bedrift/Inkluderende+arbeidsliv/Psykisk+helse+paa+arbeidsplassen">Har du ansatte som-->
+                <!--sliter psykisk?</a></li>-->
+                <!--<li><a href="https://www.nav.no/no/Bedrift/Inkluderende+arbeidsliv/Relatert+informasjon/ia-funksjonsvurdering">IA-Funksjonsvurdering </a>-->
+                <!--</li>-->
+                <!--<li>-->
+                <!--<a href="https://www.nav.no/no/Bedrift/Inkluderende+arbeidsliv/Kontakt+NAV+Arbeidslivssenter/_attachment/356475?_ts=140ed2a3cd8&amp;download=true">NAV-->
+                <!--Arbeidslivssenter (brosjyre bokmål)</a></li>-->
+                <!--<li>-->
+                <!--<a href="https://www.nav.no/no/Bedrift/Inkluderende+arbeidsliv/Kontakt+NAV+Arbeidslivssenter/_attachment/356476?_ts=140ed2ac590&amp;download=true">NAV-->
+                <!--Arbeidslivssenter (brosjyre nynorsk)</a></li>-->
+            </ul>
+        </div>
+    </section>
+</aside>

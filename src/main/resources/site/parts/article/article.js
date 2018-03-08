@@ -1,17 +1,22 @@
 var portalLib = require('/lib/xp/portal');
 var thymeleafLib = require('/lib/xp/thymeleaf');
 var utils = require('/lib/nav-utils');
-
+var contentLib = require('/lib/xp/content');
 var view = resolve('article.html');
 
 function handleGet(req) {
     var content = portalLib.getContent();
 
-    var contentKey = utils.getContentParam(content, 'key');
+    var defult = content.x['no-nav-navno'];
+
+    var defVal = (defult && defult.cmsContent) ? defult.cmsContent.contentKey : (defult && defult.cmsMenu) ? defult.cmsMenu.menuKey : '';
+
+    var contentKey = utils.getContentParam(content, 'key', defVal);
     var article = {
 		type: null
 	};
     if (contentKey) {
+        log.info(contentKey);
         article = utils.getContentByCmsKey(contentKey);
         article.publishFromText = utils.dateTimePublished(article, 'no');
     }

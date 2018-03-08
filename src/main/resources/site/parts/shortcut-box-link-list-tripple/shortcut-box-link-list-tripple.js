@@ -44,12 +44,11 @@ function getNiceToKnowContents(content) {
         return null;
     }
     var section = utils.getContentByMenuKey(nicetoknow);
-	//libs.util.log(section);
     var sectionIds = section && section.data.sectionContents;
     if (!sectionIds) {
         return null;
     }
-	//libs.util.log(sectionIds);
+    //libs.util.log(sectionIds);
     var queryResult = contentLib.query({
         start: 0,
         count: 5,
@@ -60,9 +59,9 @@ function getNiceToKnowContents(content) {
         }
     });
     return {
-		sectionName: section.displayName,
-		data: utils.sortContents(queryResult.hits, sectionIds)
-	};
+        sectionName: section.displayName,
+        data: utils.sortContents(queryResult.hits, sectionIds)
+    };
 }
 
 function getNewsContents(content) {

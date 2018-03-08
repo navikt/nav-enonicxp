@@ -19,6 +19,7 @@ var libs = {
 exports.sortContents = function (contents, sortedIds) {
     var sorted = [];
 	//if (sortedIds.isArray) {
+    if (typeof sortedIds === 'string') sortedIds = [sortedIds];
 	    sortedIds.forEach(function (id) {
 	        var found = false;
 	        contents = contents.filter(function (content) {
@@ -31,7 +32,7 @@ exports.sortContents = function (contents, sortedIds) {
 	            }
 	        })
 	    });
-	//}
+
     return sorted;
 };
 
@@ -105,6 +106,7 @@ exports.getContentByCmsKey = function (contentKey) {
 };
 
 exports.dateTimePublished = function (content, language) {
+    if (!content) return '';
     var navPublished = libs.i18n.localize({key: 'nav.published'});
     var published = '', lastModified = '';
     var navUpdated = libs.i18n.localize({key: 'nav.updated'});

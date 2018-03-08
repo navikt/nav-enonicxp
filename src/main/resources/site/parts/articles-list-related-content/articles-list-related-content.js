@@ -46,7 +46,8 @@ exports.get = function(req) {
 			*/
 
 			introduction.data.relatedContent = [];
-			for (var i = 0; i < relatedContentsList.length; i++) {
+			var l = (relatedContentsList && Array.isArray(relatedContentsList)) ? relatedContentsList.length : 0;
+			for (var i = 0; i < l; i++) {
 				var relatedContent = libs.content.get({
 					'key': relatedContentsList[i]
 				});

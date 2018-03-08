@@ -8,6 +8,8 @@ var view = resolve('page-nav.html');
 var accessibleLetters = 'abcdefghijklmnopqrstuvwxyzæøå'.split('');
 
 function handleGet(req) {
+    var navnojs = libs.portal.assetUrl({path: '/navno/navno.js'});
+
     var site = libs.portal.getSite();
     var content = libs.portal.getContent();
 
@@ -69,7 +71,10 @@ function handleGet(req) {
 
     return {
         contentType: 'text/html',
-        body: body
+        body: body,
+        pageContributions: [
+            '<script src="' + navnojs + '"></script>'
+        ]
     };
 }
 
