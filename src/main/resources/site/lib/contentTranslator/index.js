@@ -162,7 +162,16 @@ var ret = {
         content = insertContentTypeMetaTag(content);
         return content;
     },
-
+    'nav.pressemelding': function (content) {
+        content = changeHideDate(content);
+        content = changePreface(content);
+        content = changeSocial(content);
+        content = changeNewsSchemas(content);
+        content = changeLinks(content);
+        content = changeFactPlacement(content);
+        content = changeLanguageVersions(content);
+        return content
+    }
 
 
 }
@@ -380,7 +389,7 @@ function translateTables(content) {
     var scElements = getSCElements(content) || [];
     var ssElements = getSSElements(content) || [];
 
-    var newContent = createNewTableContent(tableElements, ntkElements, newElements, scElements, content);
+    return createNewTableContent(tableElements, ntkElements, newElements, scElements, content);
 
     if (newContent === content) return content;
     getRefs(content._id).forEach(function (value) {
@@ -622,4 +631,211 @@ exports.transSidebeskrivelse = function(id) {
         }
     });
 
+}
+var t = true;
+exports.changetavleliste = function () {
+    if (!t) return;
+    t = false;
+    var r = [];
+    var correct = repo.get('50767846-75d2-48d0-9d6d-f71dd2ed70e8')._indexConfig;
+    var start = 0;
+    var count = 100;
+    while (count === 100) {
+        var h = contentLib.query({
+            start: start,
+            count: count,
+            contentTypes: [toContentType('tavleliste')]
+        }).hits;
+        count = h.length;
+        r = r.concat(h);
+        start += count;
+    }
+    log.info(logBeautify(r));
+    r.forEach(function (el) {
+        var wrong = repo.get(el._id);
+        log.info(logBeautify(wrong));
+        wrong._indexConfig = correct;
+        if(!wrong.page) wrong.page = {};
+        wrong.page.template = '3aef6701-4641-45a7-ba4b-02540f1b7a85';
+
+        repo.modify({
+            key: wrong._id,
+            editor: function () {
+                return wrong;
+            }
+        })
+    })
+
+}
+var tms = true;
+function transMainSections() {
+    if (!tms) return;
+    var start = 0;
+    var count = 100;
+    var r = [];
+    while (count === 100) {
+        var h = contentLib.query({
+            start: start,
+            count: count,
+            contentTypes: [toContentType('cms2xp_section')],
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'page.template',
+                            values: ['93e5b5ba-e593-4d43-b055-3234d164f7db']
+                        }
+                    }
+                }
+            }
+        }).hits;
+        r = r.concat(h);
+        count = h.length;
+        start += count;
+    }
+    var indexParams = repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')._indexConfig;
+    r.forEach(function (value) {
+        var content = repo.get(value._id);
+        content.data = translateTables(content);
+        content._indexConfig = indexParams;
+        content.type = toContentType('oppslagstavle');
+        if (!content.page) content.page = {};
+        content.page.template = 'f9b8fad6-2300-40b1-8e9d-066a6c500f19';
+        repo.modify({
+            key: content._id,
+            editor: function () {
+                return content;
+            }
+        });
+    })
+    //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
+    //log.info(logBeautify(repo.get(r[0]._id)))
+    //log.info(logBeautify(r));
+}
+
+exports.transMainSection = transMainSections;
+
+var tmins = true;
+exports.tmins = transMinSections;
+function transMinSections() {
+    if (!tms) return;
+    tmins = false;
+    var start = 0;
+    var count = 100;
+    var r = [];
+    while (count === 100) {
+        var h = contentLib.query({
+            start: start,
+            count: count,
+            contentTypes: [toContentType('cms2xp_section')]
+
+        }).hits;
+        r = r.concat(h.reduce(function(t, el){
+            if (el.page && el.page.template === 'a5316223-aeaf-4f70-9b78-126dba2a0aab') t.push(el);
+            return t;
+        },[]));
+        count = h.length;
+        start += count;
+    }
+    log.info(logBeautify(r));
+    var indexParams = repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')._indexConfig;
+    r.forEach(function (value) {
+        var content = repo.get(value._id);
+        content.data = translateTables(content);
+        content._indexConfig = indexParams;
+        content.type = toContentType('oppslagstavle');
+        if (!content.page) content.page = {};
+        content.page.template = 'f9b8fad6-2300-40b1-8e9d-066a6c500f19';
+        log.info(logBeautify(content));
+        repo.modify({
+            key: content._id,
+            editor: function () {
+                return content;
+            }
+        });
+    })
+    //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
+    //log.info(logBeautify(repo.get(r[0]._id)))
+    //log.info(logBeautify(r));
+}
+function transcms2xpPage() {
+    var r = [];
+    var start = 0;
+    var count = 100;
+    while (count === 100) {
+        var h = contentLib.query({
+            start: start,
+            count: count,
+            contentTypes: [toContentType('cms2xp_page')]
+        }).hits;
+        r = r.concat(h);
+        count = h.length;
+        start += count;
+    }
+    r.forEach(function (value) {
+        var cms2xp = repo.get(value._id);
+        if (cms2xp && cms2xp.hasOwnProperty('x') && cms2xp.x.hasOwnProperty('no-nav-navno') && cms2xp.x['no-nav-navno'].hasOwnProperty('cmsMenu') && cms2xp.x['no-nav-navno'].cmsMenu.hasOwnProperty('content')) {
+            var article = repo.get(cms2xp.x['no-nav-navno'].cmsMenu.content);
+            if (article && !ret[stripContentType(article.type)]) {
+                log.info(logBeautify(article));
+            }
+            else {
+                if (!article) {
+
+                        contentLib.move({
+                            source: cms2xp._id,
+                            target: '/sites/www.nav.no/not-found/'
+                        })
+
+                }
+                else {
+                    var cms2xpchildren = repo.findChildren({
+                        key: cms2xp._id
+                    }).hits;
+                    cms2xpchildren.forEach(function (value2) {
+                        if (value2.id !== article._id) {
+                            repo.move({
+                                source: value2.id,
+                                target: article._id
+                            })
+                        }
+                    });
+                    var deleted = false;
+                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')) {
+                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentHome);
+                        if (path && path._path + '/' !== article._path.replace(article._name, "")) {
+                            contentLib.delete({
+                                key: cms2xp._id
+                            });
+                            deleted = true;
+                            repo.move({
+                                source: article._id,
+                                target: path._path + '/'
+                            });
+                        }
+                    }
+                    article = ret[stripContentType(article.type)](article);
+                    if (!deleted) {
+                        contentLib.delete({
+                            key: cms2xp._id
+                        });
+                    }
+                    repo.modify({
+                        key: article._id,
+                        editor: function () {
+                            article.type = toContentType('main-article');
+                            if (!article.page) article.page = {};
+                            article.page.template = 'a1dcfb7f-c57e-426e-abb8-b57892da12a2';
+                            return article
+                        }
+                    });
+
+                }
+            }
+        }
+    })
+}
+exports.transcms2xpPages = transcms2xpPage;
+function stripContentType(type) {
+    return type.replace(app.name + ':', "")
 }

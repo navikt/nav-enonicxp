@@ -3,7 +3,6 @@ var contentLib = require('/lib/xp/content');
 exports.verifyPaths = verifyPaths;
 function verifyPaths(object) {
     var tmp= undefined;
-
     for (var k in arguments) {
         if (arguments.hasOwnProperty(k)) {
             if (!tmp) tmp = arguments[k];
@@ -350,7 +349,7 @@ function createNewTableContent(tableElements, ntkElements, newElements, scElemen
         nrSC: scElements.length
 
     };
-
+    return data;
 
     var newContent = {
         name: content._name,

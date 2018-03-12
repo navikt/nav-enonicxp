@@ -7,10 +7,11 @@ exports.responseFilter = function (req, res) {
     var content = portal.getContent();
     log.info("From filter");
    // trans.transSidebeskrivelse('0a397e62-c064-4494-905a-b835991d7811');
-    //trans.trans('Kort_om');
-    trans.refresh();
-    //trans.nodeCheck('76b3fee6-d989-4430-a2ca-4fe2ba94ad94');
-    //trans.nodeCheck('5fdf71e7-cf1f-4da6-a782-8285ef8abbe9');
+  //  trans.trans('nav.pressemelding');
+    //trans.refresh();
+   // trans.changetavleliste();
+//trans.nodeCheck('47b762ad-ca8e-4835-aff3-1e342645b8c7');
+  //  trans.nodeCheck('50767846-75d2-48d0-9d6d-f71dd2ed70e8');
    // trans.logBeautify(trans.testNodeLib());
    // trans.logBeautify(contentLib.get({key: '83b9e5a4-f077-4611-9ca5-450eebbb60fb'}));
    //var r =contentLib.get({
@@ -23,8 +24,9 @@ exports.responseFilter = function (req, res) {
   // trans.logBeautify(rn);
   //  trans.logBeautify(ra);
 
-
-
+  //  trans.transMainSection();
+   //trans.tmins();
+    //trans.transcms2xpPages()
     function changePage() {
         var pagesWithChildren = [];
         var length = 100;
