@@ -637,7 +637,7 @@ exports.changetavleliste = function () {
     if (!t) return;
     t = false;
     var r = [];
-    var correct = repo.get('50767846-75d2-48d0-9d6d-f71dd2ed70e8')._indexConfig;
+    var correct = repo.get('c6cf5161-3241-4dcf-971c-7040bb25746c')._indexConfig;
     var start = 0;
     var count = 100;
     while (count === 100) {
@@ -656,7 +656,7 @@ exports.changetavleliste = function () {
         log.info(logBeautify(wrong));
         wrong._indexConfig = correct;
         if(!wrong.page) wrong.page = {};
-        wrong.page.template = '3aef6701-4641-45a7-ba4b-02540f1b7a85';
+        wrong.page.template = getTemplate('seksjon-liste');
 
         repo.modify({
             key: wrong._id,
@@ -670,6 +670,7 @@ exports.changetavleliste = function () {
 var tms = true;
 function transMainSections() {
     if (!tms) return;
+    tms = false;
     var start = 0;
     var count = 100;
     var r = [];
@@ -693,20 +694,25 @@ function transMainSections() {
         count = h.length;
         start += count;
     }
-    var indexParams = repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')._indexConfig;
+    var indexParams = repo.get('2351e7d6-8e11-47fb-bf45-9f8cd111388a')._indexConfig;
     r.forEach(function (value) {
-        var content = repo.get(value._id);
-        content.data = translateTables(content);
-        content._indexConfig = indexParams;
-        content.type = toContentType('oppslagstavle');
-        if (!content.page) content.page = {};
-        content.page.template = 'f9b8fad6-2300-40b1-8e9d-066a6c500f19';
-        repo.modify({
-            key: content._id,
-            editor: function () {
-                return content;
-            }
-        });
+
+
+    var content = repo.get(value._id);
+    var was = content.type;
+    if (was === toContentType('main-article')) return;
+    content.data = translateTables(content);
+    content._indexConfig = indexParams;
+    content.type = toContentType('oppslagstavle');
+   // log.info(logBeautify(content));
+    if (!content.page) content.page = {};
+    content.page.template = '1ffd9a20-9ea3-46c9-99b7-3034d031cd45';
+    repo.modify({
+        key: content._id,
+        editor: function () {
+            return content;
+        }
+    });
     })
     //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
     //log.info(logBeautify(repo.get(r[0]._id)))
@@ -738,14 +744,14 @@ function transMinSections() {
         start += count;
     }
     log.info(logBeautify(r));
-    var indexParams = repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')._indexConfig;
+    var indexParams = repo.get('2351e7d6-8e11-47fb-bf45-9f8cd111388a')._indexConfig;
     r.forEach(function (value) {
         var content = repo.get(value._id);
         content.data = translateTables(content);
         content._indexConfig = indexParams;
         content.type = toContentType('oppslagstavle');
         if (!content.page) content.page = {};
-        content.page.template = 'f9b8fad6-2300-40b1-8e9d-066a6c500f19';
+        content.page.template = getTemplate('seksjon-hovedseksjon');
         log.info(logBeautify(content));
         repo.modify({
             key: content._id,
@@ -775,28 +781,30 @@ function transcms2xpPage() {
     r.forEach(function (value) {
         var cms2xp = repo.get(value._id);
         if (cms2xp && cms2xp.hasOwnProperty('x') && cms2xp.x.hasOwnProperty('no-nav-navno') && cms2xp.x['no-nav-navno'].hasOwnProperty('cmsMenu') && cms2xp.x['no-nav-navno'].cmsMenu.hasOwnProperty('content')) {
-            var article = repo.get(cms2xp.x['no-nav-navno'].cmsMenu.content);
+           var article = null;
+            try {
+                article = repo.get(cms2xp.x['no-nav-navno'].cmsMenu.content);
+            } catch (e) {
+                log.info('Node not found')
+                contentLib.move({
+                    source: cms2xp._id,
+                    target: '/sites/www.nav.no/not-found/'
+                })
+            }
             if (article && !ret[stripContentType(article.type)]) {
                 log.info(logBeautify(article));
             }
             else {
-                if (!article) {
-
-                        contentLib.move({
-                            source: cms2xp._id,
-                            target: '/sites/www.nav.no/not-found/'
-                        })
-
-                }
-                else {
+                if (article) {
                     var cms2xpchildren = repo.findChildren({
                         key: cms2xp._id
                     }).hits;
                     cms2xpchildren.forEach(function (value2) {
                         if (value2.id !== article._id) {
+
                             repo.move({
                                 source: value2.id,
-                                target: article._id
+                                target: article._path + '/'
                             })
                         }
                     });
@@ -825,7 +833,7 @@ function transcms2xpPage() {
                         editor: function () {
                             article.type = toContentType('main-article');
                             if (!article.page) article.page = {};
-                            article.page.template = 'a1dcfb7f-c57e-426e-abb8-b57892da12a2';
+                            article.page.template = getTemplate('artikkel-hovedartikkel');
                             return article
                         }
                     });
@@ -838,4 +846,14 @@ function transcms2xpPage() {
 exports.transcms2xpPages = transcms2xpPage;
 function stripContentType(type) {
     return type.replace(app.name + ':', "")
+}
+
+exports.getTemplate = getTemplate;
+
+function getTemplate(templateName) {
+    var ret = '';
+    var r = contentLib.query({
+        query: '_name LIKE "' + templateName +'"'
+    });
+    return r.hits[0]._id
 }

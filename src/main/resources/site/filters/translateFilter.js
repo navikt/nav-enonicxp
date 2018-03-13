@@ -6,8 +6,13 @@ var thymeleaf = require('/lib/xp/thymeleaf');
 exports.responseFilter = function (req, res) {
     var content = portal.getContent();
     log.info("From filter");
+   // trans.logBeautify(res);
+
+   // trans.getTemplate('seksjon-liste');
    // trans.transSidebeskrivelse('0a397e62-c064-4494-905a-b835991d7811');
   //  trans.trans('nav.pressemelding');
+  //  trans.trans('nav.nyhet');
+  //  trans.trans('Artikkel_Brukerportal');
     //trans.refresh();
    // trans.changetavleliste();
 //trans.nodeCheck('47b762ad-ca8e-4835-aff3-1e342645b8c7');
@@ -228,7 +233,7 @@ exports.responseFilter = function (req, res) {
     //    key: '0c4979f8-ed3e-4e2b-9dcc-3d9b1301c66f'
     //}))
 
-   // changeSidebeskrivelse();
+    //changeSidebeskrivelse();
     //changeNavNyhet();
     /*pagesWithChildren.forEach(function(page) {
         if (page.type === app.name + ':cms2xp_page') {

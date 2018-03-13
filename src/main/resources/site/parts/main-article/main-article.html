@@ -32,7 +32,7 @@
             <div data-th-utext="${portal.processHtml({'_value='+content.data.text})}">text</div>
         </div>
 
-        <div class="well article-facts" data-th-if="${content.data.fact && content.data.fact != ''}">
+        <div class="well article-facts" data-th-if="${hasFact}">
             <h3 class="h4 decorated" data-th-text="${portal.localize({'_key=nav.facts'})}">nav.facts</h3>
             <div data-th-utext="${portal.processHtml({'_value='+content.data.fact})}">fact</div>
         </div>

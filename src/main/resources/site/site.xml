@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-  <filters>
+  <!--<filters>
     <response-filter name="translateFilter" order="10"/>
-  </filters>
+  </filters>-->
   <config/>
   <x-data mixin="menu-item"/>
   <x-data mixin="cmsContent"/>
