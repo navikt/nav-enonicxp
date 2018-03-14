@@ -19,21 +19,26 @@
                                 <li data-th-unless="${#strings.isEmpty(schematext.modelectronicheadingexplained3)}" data-th-text="${schematext.modelectronicheadingexplained3}"></li>
                                 <li data-th-unless="${#strings.isEmpty(schematext.modelectronicheadingexplained4)}" data-th-text="${schematext.modelectronicheadingexplained4}"></li>
                             </ul>
-                            <div data-th-if="${schematext.ettersendelseadvarsel}" class="user-message-panel">
+                            <!--div data-th-if="${schematext.ettersendelseadvarsel}" class="user-message-panel">
                                 <p class="leading-icon icon-warning message-panel-headline" data-th-text="${schematext.ettersendelseadvarseloverskrift}"></p>
                                 <p class="ettersendelse" data-th-utext="${schematext.ettersendelseadvarsel}"></p>
-                            </div>
+                            </div-->
                         </div>
-                        <ul data-th-if="${submission}" class="list-clean text-center">
+                        <!-- TODO -->
+                        <!--ul data-th-if="${submission}" class="list-clean text-center">
                             <div data-th-each="menuitem,iterStat : ${menuitems}" data-th-remove="tag">
                                 <li data-th-class="${iterStat.first} ? 'paragraph' : ''">
-                                    <a data-th-href="${}"
+                                    <a data-th-href="'#'"
                                         data-th-attrappend="id=(${menuitem.type} == 'url' and ${iterStat.first}) ? 'goto-sendsoknad'"
                                         data-th-class="${iterStat.first} ? 'knapp hoved' : 'standalone-link'"
                                         data-th-text="${menuitem.linkText}"></a>
                                 </li>
                             </div>
-                        </ul>
+                        </ul-->
+                        <ul class="list-clean text-center">
+               <li class="paragraph"><a href="https://tjenester.nav.no/esso/saml2/jsp/spSSOInit.jsp?metaAlias=/sp&amp;idpEntityID=idporten.difi.no-v3&amp;NameIDFormat=transient&amp;AuthLevel=4&amp;goto=https://tjenester.nav.no/soknaddagpenger/utslagskriterier/start#/" id="goto-sendsoknad" class="knapp hoved">Send elektronisk</a></li>
+               <li><a href="https://www.nav.no/no/Person/Skjemaer-for-privatpersoner/Skjemaer/Uten+arbeid/Dagpenger/Dagpenger?method=mail&amp;veiledertype=privatperson" class="standalone-link">Jeg ønsker å sende inn søknaden i posten</a></li>
+            </ul>
                     </div>
                 </div>
             </div>

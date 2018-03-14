@@ -1,23 +1,54 @@
 <div data-th-remove="${isEditMode} ? 'none' : 'tag'">
     <div class="form-standard block-row">
-       <form method="post" name="formgenerator" id="formgenerator" action="https://www.nav.no/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/innsendingsvalg?veiledertype=privatperson"><input type="hidden" name="key" value="338339"><input type="hidden" name="skjematitle" value="Inntektsopplysninger for selvstendig næringsdrivende og/eller frilansere"><input type="hidden" name="anon" value="false"><div class="block-row illuminated">
+       <form method="post" name="formgenerator" id="formgenerator" data-th-action="${actionUrl}">
+           <input type="hidden" name="key" data-th-value="${contentKey}">
+           <input type="hidden" name="skjematitle" data-th-value="${forms[0].name}">
+           <input type="hidden" name="anon" data-th-value="${content.data.anonymous} ? 'true' : 'false'">
+           <div class="block-row illuminated">
              <div class="container maincontent">
                 <div class="col-md-8 col-standalone">
-                   <header class="decorated leading-icon icon-soknad"><span class="pre-heading">Sykepenger (SYK)</span><h2 class="heading">Inntektsopplysninger for selvstendig næringsdrivende og/eller frilansere<span class="following-heading">NAV 08-35.01</span></h2>
+                   <header class="decorated leading-icon icon-soknad">
+                       <span class="pre-heading">
+                           <span data-th-each="category : ${categories}" data-th-remove="tag">
+                               <span data-th-text="${category.title} + ${!iterStat.last} ? ','" data-th-remove="tag"></span>
+                           </span>
+                       </span>
+                       <h2 class="heading">
+                           <span data-th-text="${forms[0].name}" data-th-remove="tag"></span>
+                           <span class="following-heading" data-th-text="${content.title}"></span>
+                       </h2>
                    </header>
 
-                   <p>Dette skjemaet skal du fylle ut når du skal søke om sykepenger fra NAV.</p>
+                   <!-- TODO: xsl:if test="contentdata/forms/form[language/@key = 53]/description != ''"-->
+
+                   <!--p>Dette skjemaet skal du fylle ut når du skal søke om sykepenger fra NAV.</p>
 
                    <p>Hvis du i løpet av de siste fire årene har startet næringsvirksomhet eller fått en varig endring av arbeidssituasjonen/virksomheten,
                       må du dokumentere dette. Du&nbsp;krysser av for det av de fire alternativene nedenfor du bruker som dokumentasjon. &nbsp;
-                   </p>
+                  </p-->
 
-                   <div class="select-form-language"><label for="main-form-language">Velg språk:</label><select name="fcLang" id="main-form-language">
-                         <option value="53">Bokmål</option>
-                         <option value="54">Nynorsk</option></select></div>
+                   <div data-th-unless="${content.data.type} == 4 and ${#strings.isEmpty(schematext.chooselanguage)}" data-th-remove="tag">
+                       <div class="select-form-language">
+                           <label for="main-form-language" data-th-text="${schematext.chooselanguage}"></label>
+                           <select name="fcLang" id="main-form-language">
+                               <div data-th-each="form : ${forms}" data-th-remove="tag">
+                                   <option data-th-value="${form.language}" data-th-selected="${form.language == qpLanguagecode}" data-th-text="'Bokmål'"></option>
+                               </div>
+                         </select>
+                     </div>
+                   </div>
+                   <input if="${content.data.type} == 4 and ${#strings.isEmpty(schematext.chooselanguage)}" type="hidden" name="fcLang" value="53"/>
                 </div>
              </div>
           </div>
+          <!--div data-th-if="${attachmentsRequired} or ${attachmentsOptional}" data-th-remove="tag">
+              <div data-th-replace="attachmentblocks :: (attachments=${attachmentsRequired})"></div>
+              <div data-th-replace="attachmentblocks :: (attachments=${attachmentsOptional})"></div>
+          </div-->
+
+
+
+
           <div class="block-row attachment-wrapper">
              <div class="container">
                 <div class="col-md-8 col-standalone">
@@ -207,8 +238,27 @@
                    </div>
                 </div>
              </div>
+         </div>
+          <div class="block-row spaceous text-center">
+              <button data-th-if="${content.data.skalSendesElektronisk} and ${qpSubmitMethod} != 'mail' and (${veilederType} == 'privatperson' or ${veiledertype} == 'privatperson_ettersendelse')"
+                  type="submit" class="knapp hoved" data-th-text="${schematext.tosenderchoice}"></button>
+              <!--button data-th-unless="${content.data.skalSendesElektronisk} and ${qpSubmitMethod} != 'mail' and (${veilederType} == 'privatperson' or ${veiledertype} == 'privatperson_ettersendelse')"
+                  type="submit" class="knapp hoved" data-th-text="${schematext.nextstep}"></button-->
+              <button type="submit" class="knapp hoved">TIL INNSENDINGSVALG</button>
           </div>
-          <div class="block-row spaceous text-center"><button type="submit" class="knapp hoved">Til innsendingsvalg</button></div>
        </form>
+    </div>
+</div>
+<div data-th-fragment="attachmentblocks (attachments)"data-th-remove="tag">
+    <div data-th-each="attachment,iterStat : ${attachments}" class="block-row attachment-wrapper">
+        <div data-th-with="required=${attachment.required} ? 'required' : 'optional'" class="container">
+            <div data-th-with="inputId=${'attachment-' + required + '-' + iterStat.count}" class="col-md-8 col-standalone">
+                <div data-th-class="${'attachment ' + required}">
+                    <div class="paragraph">
+                        <input type="checkbox" name="acKey" id="{$inputId}" class=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
