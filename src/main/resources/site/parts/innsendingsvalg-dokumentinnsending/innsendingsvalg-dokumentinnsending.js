@@ -25,14 +25,10 @@ function handleGet(request) {
     var config = component.config;
 
     var veilederType = libs.skjema.getVeilederType();
-    log.info('veilederType');
-    log.info(JSON.stringify(veilederType, null, 4));
     var qpSkjematitle = libs.skjema.getValidParamFromRequestByName(request, 'skjematitle');
     var formKey = libs.skjema.getValidParamFromRequestByName(request, 'key');
     var form = libs.navUtils.getContentByCmsKey(formKey);
-    log.info('form');
-    log.info(JSON.stringify(form, null, 4));
-
+    
     var schematext = [];
     if (content.data.sectionContents) {
         libs.util.data.forceArray(content.data.sectionContents).forEach(function (sectionContentId) {
@@ -43,8 +39,6 @@ function handleGet(request) {
             }
         });
     }
-    log.info('schematext');
-    log.info(JSON.stringify(schematext, null, 4));
 
     /*
     var schematextQuery = libs.content.query({

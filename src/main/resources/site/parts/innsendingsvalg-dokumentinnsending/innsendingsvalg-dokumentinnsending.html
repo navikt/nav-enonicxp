@@ -48,7 +48,7 @@
                                      <p class="leading-icon icon-warning">På mobiltelefon eller nettbrett med Android kan du fylle ut et skjema i Adobe Reader, som du finner på på <a href="http://get.adobe.com/no/reader" rel="external">http://get.adobe.com/no/reader</a>.
                                      </p>
                                   </div>
-                                  <div class="user-message-panel" style="" data-platform="chrome-pdf-info">
+                                  <div class="user-message-panel" style="display: none" data-platform="chrome-pdf-info">
                                      <p class="leading-icon icon-warning"><strong>Viktig melding til deg som bruker nettleseren Chrome:</strong></p><ul><li>Du bruker Chrome som nettleser og må derfor
                                         benytte <a title="Adobe Reader" href="http://get.adobe.com/no/reader" rel="nofollow">Adobe Reader</a>&nbsp;når du fyller
                                         ut skjemaet.</li><li>Hvis du fyller ut skjemaet i Chrome, forsvinner alt du har fylt ut når du sender det til NAV. <a title="Hjelp til personbruker" href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Teknisk+brukerstotte/hjelp-til-personbruker?kap=398773" rel="nofollow">Mer om Chrome og Adobe Reader.</a></li></ul>
@@ -62,10 +62,10 @@
 
 
                             </div>
-                            <div data-th-if="${schematext.ettersendelseadvarsel}" class="user-message-panel">
+                            <!--div data-th-if="${schematext.ettersendelseadvarsel}" class="user-message-panel">
                                 <p class="leading-icon icon-warning message-panel-headline" data-th-text="${schematext.ettersendelseadvarseloverskrift}"></p>
                                 <p class="ettersendelse" data-th-utext="${schematext.ettersendelseadvarsel}"></p>
-                            </div>
+                            </div-->
                         </div>
                         <!--ul data-th-if="${submission}" class="list-clean text-center">
                             <div data-th-each="menuitem,iterStat : ${menuitems}" data-th-remove="tag">

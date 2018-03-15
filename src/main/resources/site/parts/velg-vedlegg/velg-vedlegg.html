@@ -1,10 +1,10 @@
 <div data-th-remove="${isEditMode} ? 'none' : 'tag'">
     <div class="form-standard block-row">
-       <form method="get" name="formgenerator" id="formgenerator" data-th-action="${actionUrl}">
+       <form data-th-if="${content}" method="get" name="formgenerator" id="formgenerator" data-th-action="${actionUrl}">
            <input type="hidden" name="key" data-th-value="${contentKey}">
            <input type="hidden" name="skjematitle" data-th-value="${forms[0].name}">
            <input type="hidden" name="anon" data-th-value="${content.data.anonymous} ? 'true' : 'false'">
-           <input type="hidden" name="veiledertype" value="privatperson">
+           <input type="hidden" name="veiledertype" data-th-value="${veilederType}">
            <div class="block-row illuminated">
              <div class="container maincontent">
                 <div class="col-md-8 col-standalone">
@@ -28,7 +28,7 @@
                       må du dokumentere dette. Du&nbsp;krysser av for det av de fire alternativene nedenfor du bruker som dokumentasjon. &nbsp;
                   </p-->
 
-                   <div data-th-unless="${content.data.type} == 4 and ${#strings.isEmpty(schematext.chooselanguage)}" data-th-remove="tag">
+                   <div data-th-unless="${content.data.type} == '4' and ${#strings.isEmpty(schematext.chooselanguage)}" data-th-remove="tag">
                        <div class="select-form-language">
                            <label for="main-form-language" data-th-text="${schematext.chooselanguage}"></label>
                            <select name="fcLang" id="main-form-language">
@@ -38,7 +38,7 @@
                          </select>
                      </div>
                    </div>
-                   <input if="${content.data.type} == 4 and ${#strings.isEmpty(schematext.chooselanguage)}" type="hidden" name="fcLang" value="53"/>
+                   <input data-th-if="${content.data.type} == '4' and ${#strings.isEmpty(schematext.chooselanguage)}" type="hidden" name="fcLang" value="53"/>
                 </div>
              </div>
           </div>
@@ -46,11 +46,57 @@
               <div data-th-replace="attachmentblocks :: (attachments=${attachmentsRequired})"></div>
               <div data-th-replace="attachmentblocks :: (attachments=${attachmentsOptional})"></div>
           </div-->
+          <div data-th-each="attachment,iterStat : ${attachmentsRequired}" class="block-row attachment-wrapper">
+              <div data-th-with="required=${attachment.required} ? 'required' : 'optional'" class="container">
+                  <div data-th-with="inputId=${'attachment-' + required + '-' + iterStat.count}" class="col-md-8 col-standalone">
+                      <div data-th-class="${'attachment ' + required}">
+                          <div class="paragraph">
+                              <input type="checkbox" name="acKey" data-th-id="${inputId}" class=""
+                                data-th-checked="${attachment.required} and (${veilederType == 'privatperson'} or ${veilederType == 'arbeidsgiver'} or ${veilederType == 'engelsk'}) ? 'checked' : 'false'"
+                                data-th-disabled="${attachment.required} and (${veilederType == 'privatperson'} or ${veilederType == 'arbeidsgiver'} or ${veilederType == 'engelsk'}) ? 'disabled' : 'false'"
+                                data-th-value="${attachment.attachment_mandatory}"/>
+                              <label data-th-for="${inputId}" data-th-text="${attachment.title}" class="select-attachment"></label>
+                          </div>
+                          <p data-th-unless="${#strings.isEmpty(attachment.ingress)}" data-th-text="${attachment.ingress}" class="description"></p>
+                          <a data-th-href="'#collapsible-' + ${inputId}" data-th-id="'flipp-' + ${inputId}" class="flipp">
+                              <span class="visuallyhidden show-more" data-th-text="${phrases.showMoreText}"></span>
+                              <span class="visuallyhidden show-less" data-th-text="${phrases.showLessText}" aria-hidden="true"></span>
+                          </a>
+                          <div class="collapsible js-collapsed" data-th-id="'collapsible-' + ${inputId}" tabindex="-1">
+                              <div class="article-body" data-th-utext="${attachment.about}"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div data-th-each="attachment,iterStat : ${attachmentsOptional}" class="block-row attachment-wrapper">
+              <div data-th-with="required=${attachment.required} ? 'required' : 'optional'" class="container">
+                  <div data-th-with="inputId=${'attachment-' + required + '-' + iterStat.count}" class="col-md-8 col-standalone">
+                      <div data-th-class="${'attachment ' + required}">
+                          <div class="paragraph">
+                              <input type="checkbox" name="acKey" data-th-id="${inputId}" class=""
+                                data-th-checked="${attachment.required} and (${veilederType == 'privatperson'} or ${veilederType == 'arbeidsgiver'} or ${veilederType == 'engelsk'}) ? 'checked' : 'false'"
+                                data-th-disabled="${attachment.required} and (${veilederType == 'privatperson'} or ${veilederType == 'arbeidsgiver'} or ${veilederType == 'engelsk'}) ? 'disabled' : 'false'"
+                                data-th-value="${attachment.attachment_mandatory}"/>
+                              <label data-th-for="${inputId}" data-th-text="${attachment.title}" class="select-attachment"></label>
+                          </div>
+                          <p data-th-unless="${#strings.isEmpty(attachment.ingress)}" data-th-text="${attachment.ingress}" class="description"></p>
+                          <a data-th-href="'#collapsible-' + ${inputId}" data-th-id="'flipp-' + ${inputId}" class="flipp">
+                              <span class="visuallyhidden show-more" data-th-text="${phrases.showMoreText}"></span>
+                              <span class="visuallyhidden show-less" data-th-text="${phrases.showLessText}" aria-hidden="true"></span>
+                          </a>
+                          <div class="collapsible js-collapsed" data-th-id="'collapsible-' + ${inputId}" tabindex="-1">
+                              <div class="article-body" data-th-utext="${attachment.about}"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
 
 
 
-          <div class="block-row attachment-wrapper">
+          <!--div class="block-row attachment-wrapper">
              <div class="container">
                 <div class="col-md-8 col-standalone">
                    <div class="attachment required">
@@ -239,16 +285,16 @@
                    </div>
                 </div>
              </div>
-         </div>
+         </div-->
           <div class="block-row spaceous text-center">
               <button data-th-if="${content.data.skalSendesElektronisk} and ${qpSubmitMethod} != 'mail' and (${veilederType} == 'privatperson' or ${veiledertype} == 'privatperson_ettersendelse')"
                   type="submit" class="knapp hoved" data-th-text="${schematext.tosenderchoice}"></button>
-              <!--button data-th-unless="${content.data.skalSendesElektronisk} and ${qpSubmitMethod} != 'mail' and (${veilederType} == 'privatperson' or ${veiledertype} == 'privatperson_ettersendelse')"
-                  type="submit" class="knapp hoved" data-th-text="${schematext.nextstep}"></button-->
-              <button type="submit" class="knapp hoved">TIL INNSENDINGSVALG</button>
+              <button data-th-unless="${content.data.skalSendesElektronisk} and ${qpSubmitMethod} != 'mail' and (${veilederType} == 'privatperson' or ${veiledertype} == 'privatperson_ettersendelse')"
+                  type="submit" class="knapp hoved" data-th-text="${schematext.nextstep}"></button>
           </div>
        </form>
     </div>
+    <script type="text/javascript">navno.isSkjemaveilederV2 = true;</script>
 </div>
 <div data-th-fragment="attachmentblocks (attachments)"data-th-remove="tag">
     <div data-th-each="attachment,iterStat : ${attachments}" class="block-row attachment-wrapper">

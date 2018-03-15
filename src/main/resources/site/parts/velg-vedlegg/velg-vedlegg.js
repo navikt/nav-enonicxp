@@ -24,11 +24,11 @@ function handleGet(request) {
         path: site._path + '/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/innsendingsvalg'
     });
     var contentKey = libs.skjema.getValidParamFromRequestByName(request, 'key');
-    var content = contentKey ? libs.navUtils.getContentByCmsKey(contentKey) : null;
+    var formContent = contentKey ? libs.navUtils.getContentByCmsKey(contentKey) : null;
 
     var forms = [{}];
-    if (content && content.data.forms && content.data.forms.form) {
-        forms = libs.util.data.forceArray(content.data.forms.form);
+    if (formContent && formContent.data.forms && formContent.data.forms.form) {
+        forms = libs.util.data.forceArray(formContent.data.forms.form);
     }
 
     var languages = [];
@@ -43,51 +43,58 @@ function handleGet(request) {
 
     var attachmentsRequired = [];
     var attachmentsOptional = [];
-    libs.util.data.forceArray(content.data.attachments).forEach(function (a) {
-        if (a.attachment_mandatory) {
-            a.attachment = libs.content.get({ key: a.attachment_mandatory });
-            if (a.required) {
-                attachmentsRequired.push(a);
-            } else {
-                attachmentsOptional.push(a);
-            }
-        }
-    });
-
-    var veilederType = libs.skjema.getVeilederType();
-    var schematextQuery = libs.content.query({
-        contentTypes: [ app.name + ':Skjemaveiledertekster' ],
-        count: 10,
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.veiledertype',
-                        values: [ veilederType ]
-                    }
+    if (formContent && formContent.data.attachments) {
+        libs.util.data.forceArray(formContent.data.attachments).forEach(function (a) {
+            if (a.attachment_mandatory) {
+                a.attachment = libs.content.get({ key: a.attachment_mandatory });
+                if (a.required) {
+                    attachmentsRequired.push(a);
+                } else {
+                    attachmentsOptional.push(a);
                 }
             }
-        },
-        query: '_path LIKE "/content' + libs.portal.getContent()._path + '/*"'
-    });
+        });
+    }
+
+    var veilederType = libs.skjema.getVeilederType();
+
+    var schematext = [];
+    var pageContent = libs.portal.getContent();
+    if (pageContent.data.sectionContents) {
+        libs.util.data.forceArray(pageContent.data.sectionContents).forEach(function (sectionContentId) {
+            var sectionContent = libs.content.get({ key: sectionContentId });
+
+            if (sectionContent && sectionContent.type === app.name + ':Skjemaveiledertekster' && sectionContent.data.veiledertype == veilederType) {
+                schematext.push(sectionContent);
+            }
+        });
+    }
 
     var model = {
         isEditMode: (request.mode === 'edit'),
         actionUrl: actionUrl,
         attachmentsRequired: attachmentsRequired,
         attachmentsOptional: attachmentsOptional,
-        content: content,
+        content: formContent,
         contentKey: contentKey,
         categories: [],
         forms: forms,
         languages: languages,
+        phrases: {
+            showMoreText: libs.i18n.localize({
+                key: 'nav.skjemaveileder.show-more-text',
+                locale: pageContent.language || site.language || 'no'
+            }),
+            showLessText: libs.i18n.localize({
+                key: 'nav.skjemaveileder.show-less-text',
+                locale: pageContent.language || site.language || 'no'
+            })
+        },
         qpLanguagecode: libs.skjema.getValidParamFromRequestByName(request, 'languagecode'),
         qpSubmitMethod: libs.skjema.getValidParamFromRequestByName(request, 'method'),
-        schematext: schematextQuery.hits.length ? schematextQuery.hits[0].data : {}
+        schematext: schematext.length ? schematext[0].data : {},
+        veilederType: veilederType
     };
-
-    log.info('model');
-    log.info(JSON.stringify(model, null, 4));
 
     return {
         contentType: 'text/html',

@@ -26,33 +26,33 @@ function handleGet(request) {
     var veilederType = libs.skjema.getVeilederType();
     var qpSkjematitle = libs.skjema.getValidParamFromRequestByName(request, 'skjematitle');
 
-    var formQuery = libs.content.query({
-        contentTypes: [ app.name + ':skjema_for_veileder' ],
-        count: 1,
-        query: '_path LIKE "/content' + content._path + '/*"'
-    });
+    var forms = [];
+    if (content.data.sectionContents) {
+        libs.util.data.forceArray(content.data.sectionContents).forEach(function (sectionContentId) {
+            var sectionContent = libs.content.get({ key: sectionContentId });
 
-    var schematextQuery = libs.content.query({
-        contentTypes: [ app.name + ':Skjemaveiledertekster' ],
-        count: 10,
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.veiledertype',
-                        values: [ veilederType ]
-                    }
-                }
+            if (sectionContent && sectionContent.type === app.name + ':Skjema_for_veileder') {
+                forms.push(sectionContent);
             }
-        },
-        query: '_path LIKE "/content' +  content._path + '/*"'
-    });
+        });
+    }
+
+    var schematext = [];
+    if (content.data.sectionContents) {
+        libs.util.data.forceArray(content.data.sectionContents).forEach(function (sectionContentId) {
+            var sectionContent = libs.content.get({ key: sectionContentId });
+
+            if (sectionContent && sectionContent.type === app.name + ':Skjemaveiledertekster' && sectionContent.data.veiledertype == veilederType) {
+                schematext.push(sectionContent);
+            }
+        });
+    }
 
     var model = {
         isEditMode: (request.mode === 'edit'),
-        hasForm: formQuery.hits.length,
+        form: forms.length ? forms[0] : null,
         qpSkjematitle: qpSkjematitle,
-        schematext: schematextQuery.hits.length ? schematextQuery.hits[0].data : null,
+        schematext: schematext.length ? schematext[0].data : null,
         submissionMenuitems: null
     };
 
