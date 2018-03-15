@@ -3,7 +3,7 @@
         <div class="container maincontent">
             <div class="row">
                 <div class="col-md-8 col-standalone">
-                    <div data-th-if="${hasForm}">
+                    <div data-th-if="${form}">
                         <header class="decorated leading-icon icon-soknad">
                             <h2 class="heading" data-th-text="${qpSkjematitle} ? ${qpSkjematitle} : ${schematext.electronicheading}"></h2>
                         </header>
@@ -79,7 +79,7 @@
                         </ul-->
                         <div class="innsendingsvalg text-center">
                            <form action="https://www.nav.no/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/dokumentinnsending" method="POST"><input type="hidden" name="languagecode" value="53"><input type="hidden" value="Y5" name="attachmentid"><input type="hidden" name="type" value="arbeidsgiver"><input type="hidden" name="skjematitle" value="NAV 08-35.01"><input type="hidden" value="U8" name=""><input type="submit" value="Start innsending" class="knapp hoved" id="goto-dokumentinnsending"></form>
-                           <form action="http://localhost:8080/admin/portal/preview/draft/sites/www.nav.no/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/adresse?key=338339&veiledertype=privatperson" method="POST"><input type="hidden" name="key" value="338339"><input type="hidden" name="attachmentKeys" value="241660"><input type="hidden" name="fcLang" value="53"><input type="hidden" name="showskjema" value="true"><input type="hidden" name="anon" value="false"><button type="submit" class="fake-link standalone-link">Jeg vil sende inn søknaden i posten</button></form>
+                           <form action="http://localhost:8080/admin/portal/preview/draft/sites/www.nav.no/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/adresse?key=338339&veiledertype=privatperson" method="GET"><input type="hidden" name="key" value="338339"><input type="hidden" name="attachmentKeys" value="241660"><input type="hidden" name="fcLang" value="53"><input type="hidden" name="showskjema" value="true"><input type="hidden" name="anon" value="false"><button type="submit" class="fake-link standalone-link">Jeg vil sende inn søknaden i posten</button></form>
                         </div>
                     </div>
                 </div>

@@ -1,9 +1,10 @@
 <div data-th-remove="${isEditMode} ? 'none' : 'tag'">
     <div class="form-standard block-row">
-       <form method="post" name="formgenerator" id="formgenerator" data-th-action="${actionUrl}">
+       <form method="get" name="formgenerator" id="formgenerator" data-th-action="${actionUrl}">
            <input type="hidden" name="key" data-th-value="${contentKey}">
            <input type="hidden" name="skjematitle" data-th-value="${forms[0].name}">
            <input type="hidden" name="anon" data-th-value="${content.data.anonymous} ? 'true' : 'false'">
+           <input type="hidden" name="veiledertype" value="privatperson">
            <div class="block-row illuminated">
              <div class="container maincontent">
                 <div class="col-md-8 col-standalone">

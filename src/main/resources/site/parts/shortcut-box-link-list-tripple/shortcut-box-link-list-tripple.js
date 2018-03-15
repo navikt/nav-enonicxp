@@ -28,7 +28,7 @@ function handleGet(req) {
 		  self: content
     };
 
-    var body = thymeleafLib.render(view, params);
+	var body = thymeleafLib.render(view, params);
 
     return {
         contentType: 'text/html',
@@ -130,9 +130,16 @@ function getShortcutContents(content) {
             }
         }
     });
+	queryResult = utils.sortContents(queryResult.hits, sectionIds).map(function (shortcut) {
+		if (shortcut.type === app.name + ':Ekstern_lenke' && shortcut.data.url) {
+			shortcut.data.url = portalLib.pageUrl({ path: portalLib.getSite()._path + shortcut.data.url });
+		}
+		return shortcut;
+	});
+
     return {
 		sectionName: section.displayName,
-		data: utils.sortContents(queryResult.hits, sectionIds)
+		data: queryResult
 	};
 }
 

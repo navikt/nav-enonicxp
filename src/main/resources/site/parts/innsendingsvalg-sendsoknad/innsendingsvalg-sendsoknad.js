@@ -63,7 +63,6 @@ function handleGet(request) {
 }
 
 exports.get = handleGet;
-exports.post = handleGet;
 
 /*
  * The following DataSources were used in the original CMS portlet:

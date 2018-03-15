@@ -21,10 +21,7 @@ var view = resolve('velg-vedlegg.html');
 function handleGet(request) {
     var site = libs.portal.getSite();
     var actionUrl = libs.portal.pageUrl({
-        path: site._path + '/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/innsendingsvalg',
-        params: {
-            veiledertype: 'privatperson'
-        }
+        path: site._path + '/no/Person/Skjemaer-for-privatpersoner/skjemaveileder/innsendingsvalg'
     });
     var contentKey = libs.skjema.getValidParamFromRequestByName(request, 'key');
     var content = contentKey ? libs.navUtils.getContentByCmsKey(contentKey) : null;

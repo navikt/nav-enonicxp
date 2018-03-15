@@ -85,7 +85,8 @@
                     <!--<xsl:with-param name="isShortcutsNode" select="true()" as="xs:boolean"/>-->
                 <!--</xsl:apply-templates>-->
 				<li data-th-each="content : ${shortcuts.data}">
-					<a href="#" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
+                    <a data-th-if="${content.data.url}" data-th-href="${content.data.url}" data-th-text="${content.displayName}"></a>
+					<a data-th-unless="${content.data.url}" data-th-href="${portal.pageUrl({'_id=' + content._id})}" data-th-text="${content.displayName}"></a>
 				</li>
             </ul>
         </div>

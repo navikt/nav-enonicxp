@@ -25,10 +25,28 @@ function handleGet(request) {
     var config = component.config;
 
     var veilederType = libs.skjema.getVeilederType();
+    log.info('veilederType');
+    log.info(JSON.stringify(veilederType, null, 4));
     var qpSkjematitle = libs.skjema.getValidParamFromRequestByName(request, 'skjematitle');
     var formKey = libs.skjema.getValidParamFromRequestByName(request, 'key');
     var form = libs.navUtils.getContentByCmsKey(formKey);
+    log.info('form');
+    log.info(JSON.stringify(form, null, 4));
 
+    var schematext = [];
+    if (content.data.sectionContents) {
+        libs.util.data.forceArray(content.data.sectionContents).forEach(function (sectionContentId) {
+            var sectionContent = libs.content.get({ key: sectionContentId });
+
+            if (sectionContent && sectionContent.type === app.name + ':Skjemaveiledertekster' && sectionContent.data.veiledertype == veilederType) {
+                schematext.push(sectionContent);
+            }
+        });
+    }
+    log.info('schematext');
+    log.info(JSON.stringify(schematext, null, 4));
+
+    /*
     var schematextQuery = libs.content.query({
         contentTypes: [ app.name + ':Skjemaveiledertekster' ],
         count: 10,
@@ -41,15 +59,15 @@ function handleGet(request) {
                     }
                 }
             }
-        },
-        query: '_path LIKE "/content' +  content._path + '/*"'
+        }
     });
+    */
 
     var model = {
         isEditMode: (request.mode === 'edit'),
-        hasForm: !!form,
+        form: form,
         qpSkjematitle: qpSkjematitle,
-        schematext: schematextQuery.hits.length ? schematextQuery.hits[0].data : null,
+        schematext: schematext.length ? schematext[0].data : null,
         submissionMenuitems: null
     };
 
@@ -59,8 +77,7 @@ function handleGet(request) {
     };
 }
 
-exports.get = handleGet;
-exports.post = handleGet;
+exports.all = handleGet;
 
 /*
  * The following DataSources were used in the original CMS portlet:
