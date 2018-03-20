@@ -175,6 +175,9 @@ var ret = {
 
 
 }
+
+exports.ret = ret;
+
 function def(content) {
     return content;
 }
@@ -607,37 +610,58 @@ exports.trans = function(type) {
 function toContentType(type) {
     return app.name + ':' + type;
 }
-exports.transSidebeskrivelse = function(id) {
-    var r = contentLib.get({key: id});
-    if (!r || r.type === toContentType('tavleliste')) return;
-    var sidebeskrivelse = r;
-    var sideHome = repo.get(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentHome);
-    sideHome.data = join(sideHome.data, sidebeskrivelse.data);
-    if (!sideHome.data.hasOwnProperty('heading')) sideHome.data.heading = sideHome.displayName;
-    sideHome = changeShortcuts(sideHome);
-    sideHome = changeDescription(sideHome);
-    sideHome = mapReduceMenuItems(sideHome);
-    getRefs(sidebeskrivelse).forEach(function (value) {
-        modify(value, sideHome._id, sidebeskrivelse._id)
-    });
-    contentLib.delete({ key: sidebeskrivelse._id});
-    repo.modify({
-        key: sideHome._id,
-        editor: function () {
-            sideHome._id = sidebeskrivelse._id;
-            sideHome.type = toContentType('tavleliste');
-            sideHome.page = {};
-            return sideHome;
-        }
+exports.transSidebeskrivelse = function(indexConfigurations) {
+    var start = 0;
+    var count = 100;
+    var ar = [];
+    while (count === 100) {
+        var q = contentLib.query({
+            start: start,
+            count: count,
+            contentTypes: [toContentType('nav.sidebeskrivelse')]
+        });
+        count = q.hits.length;
+        start += count;
+        ar = ar.concat(q.hits.map(function (el) {
+            return el._id
+        }));
+    }
+    ar.forEach(function (id) {
+        var r = contentLib.get({key: id});
+        if (!r || r.type === toContentType('tavleliste')) return;
+        var sidebeskrivelse = r;
+        var sideHome = repo.get(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentHome);
+        if (!sideHome) return;
+        sideHome.data = join(sideHome.data, sidebeskrivelse.data);
+        if (!sideHome.data.hasOwnProperty('heading')) sideHome.data.heading = sideHome.displayName;
+        sideHome = changeShortcuts(sideHome);
+        sideHome = changeDescription(sideHome);
+        sideHome = mapReduceMenuItems(sideHome);
+        sideHome = insertMetaTag(sideHome, 'content', 'nav.sidebeskrivelse');
+        getRefs(sidebeskrivelse).forEach(function (value) {
+            modify(value, sideHome._id, sidebeskrivelse._id)
+        });
+        contentLib.delete({ key: sidebeskrivelse._id});
+        repo.modify({
+            key: sideHome._id,
+            editor: function () {
+                sideHome._id = sidebeskrivelse._id;
+                sideHome.type = toContentType('tavleliste');
+                if (!sideHome.page) sideHome.page = {};
+                sideHome.page.template = getTemplate('seksjon-tavleseksjon');
+                sideHome._indexConfig = indexConfigurations;
+                return sideHome;
+            }
+        });
     });
 
 }
 var t = true;
-exports.changetavleliste = function () {
+exports.changetavleliste = function (id) {
     if (!t) return;
     t = false;
     var r = [];
-    var correct = repo.get('c6cf5161-3241-4dcf-971c-7040bb25746c')._indexConfig;
+    var correct = repo.get(id)._indexConfig;
     var start = 0;
     var count = 100;
     while (count === 100) {
@@ -656,7 +680,7 @@ exports.changetavleliste = function () {
         log.info(logBeautify(wrong));
         wrong._indexConfig = correct;
         if(!wrong.page) wrong.page = {};
-        wrong.page.template = getTemplate('seksjon-liste');
+        wrong.page.template = getTemplate('seksjon-tavleseksjon');
 
         repo.modify({
             key: wrong._id,
@@ -668,7 +692,7 @@ exports.changetavleliste = function () {
 
 }
 var tms = true;
-function transMainSections() {
+function transMainSections(id) {
     if (!tms) return;
     tms = false;
     var start = 0;
@@ -694,7 +718,7 @@ function transMainSections() {
         count = h.length;
         start += count;
     }
-    var indexParams = repo.get('2351e7d6-8e11-47fb-bf45-9f8cd111388a')._indexConfig;
+    var indexParams = id;
     r.forEach(function (value) {
 
 
@@ -706,7 +730,7 @@ function transMainSections() {
     content.type = toContentType('oppslagstavle');
    // log.info(logBeautify(content));
     if (!content.page) content.page = {};
-    content.page.template = '1ffd9a20-9ea3-46c9-99b7-3034d031cd45';
+    content.page.template = getTemplate('seksjon-hovedseksjon');
     repo.modify({
         key: content._id,
         editor: function () {
@@ -723,9 +747,8 @@ exports.transMainSection = transMainSections;
 
 var tmins = true;
 exports.tmins = transMinSections;
-function transMinSections() {
-    if (!tms) return;
-    tmins = false;
+function transMinSections(id) {
+
     var start = 0;
     var count = 100;
     var r = [];
@@ -744,7 +767,7 @@ function transMinSections() {
         start += count;
     }
     log.info(logBeautify(r));
-    var indexParams = repo.get('2351e7d6-8e11-47fb-bf45-9f8cd111388a')._indexConfig;
+    var indexParams = id;
     r.forEach(function (value) {
         var content = repo.get(value._id);
         content.data = translateTables(content);
@@ -764,7 +787,7 @@ function transMinSections() {
     //log.info(logBeautify(repo.get(r[0]._id)))
     //log.info(logBeautify(r));
 }
-function transcms2xpPage() {
+function transcms2xpPage(id) {
     var r = [];
     var start = 0;
     var count = 100;
@@ -785,7 +808,7 @@ function transcms2xpPage() {
             try {
                 article = repo.get(cms2xp.x['no-nav-navno'].cmsMenu.content);
             } catch (e) {
-                log.info('Node not found')
+                log.info('Node not found');
                 contentLib.move({
                     source: cms2xp._id,
                     target: '/sites/www.nav.no/not-found/'
@@ -832,6 +855,7 @@ function transcms2xpPage() {
                         key: article._id,
                         editor: function () {
                             article.type = toContentType('main-article');
+                            article._indexConfig = id;
                             if (!article.page) article.page = {};
                             article.page.template = getTemplate('artikkel-hovedartikkel');
                             return article

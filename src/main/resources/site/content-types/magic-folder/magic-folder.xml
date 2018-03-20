@@ -1,0 +1,4 @@
+<content-type>
+    <display-name>Magic folder</display-name>
+    <super-type>base:folder</super-type>
+</content-type>

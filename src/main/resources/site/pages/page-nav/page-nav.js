@@ -47,6 +47,7 @@ function handleGet(req) {
 
     var menuItems = libs.menu.getSubMenus(site, 4);
     menuItems = menuItems[0];
+   // log.info(JSON.stringify(site));
 
 	var breadcrumbs = libs.menu.getBreadcrumbMenu({
 		linkActiveItem: false,
@@ -57,12 +58,19 @@ function handleGet(req) {
 	if (breadcrumbs.items.length > 3) {
 		breadcrumbs.items = breadcrumbs.items.slice(3);
 
+		breadcrumbs.items = breadcrumbs.items.reduce(function (t,el) {
+            if (el.type !== app.name + ':magic-folder') {
+                el.url = (el.type === 'base:folder') ? null : el.url;
+                t.push(el)
+            }
+            return t;
+        }, [])
 		// NAV doesn't link CMS Labels (Folders in XP), make sure to remove URL data for these so we don't link them.
-		for (var i = 0; i < breadcrumbs.items.length; i++) {
-			if (breadcrumbs.items[i].type === 'base:folder') {
-				breadcrumbs.items[i].url = null;
-			}
-		}
+		//for (var i = 0; i < breadcrumbs.items.length; i++) {
+		//	if (breadcrumbs.items[i].type === app.name + ':magic-folder') {
+		//		breadcrumbs.items[i].url = null;
+		//	}
+		//}
 	}
 	// Looks like breadcrumbs are never shown if only 2 items or less, so nuke it.
 	if (breadcrumbs.items.length <= 2) {

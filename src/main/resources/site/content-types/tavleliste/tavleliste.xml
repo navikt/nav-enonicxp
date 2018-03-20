@@ -66,5 +66,8 @@
             </items>
             <occurrences minimum="0" maximum="0"/>
         </item-set>
+        <input name="metaTags" type="Tag">
+            <label>Meta tagger</label>
+        </input>
     </form>
 </content-type>
