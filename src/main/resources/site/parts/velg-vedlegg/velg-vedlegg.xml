@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- usage example: /no/Person/Skjemaer-for-privatpersoner/skjemaveileder/vedlegg?key=338339&veiledertype=privatperson -->
 <part>
-  <display-name>velg-vedlegg</display-name>
+  <display-name>Skjema 5: Velg vedlegg</display-name>
   <config>
     <input name="innsendingsvalg" type="ContentSelector">
         <label>innsendingsvalg</label>

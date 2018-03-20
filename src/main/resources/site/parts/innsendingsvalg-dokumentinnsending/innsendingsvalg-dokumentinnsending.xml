@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- usage example: /no/Person/Skjemaer-for-privatpersoner/skjemaveileder/innsendingsvalg?key=338339&veiledertype=privatperson -->
 <part>
   <display-name>innsendingsvalg-dokumentinnsending</display-name>
   <config>

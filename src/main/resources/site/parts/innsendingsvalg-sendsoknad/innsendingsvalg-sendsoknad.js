@@ -1,17 +1,64 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var libs = {
+    portal: require('/lib/xp/portal'),
+	content: require('/lib/xp/content'),
+	thymeleaf: require('/lib/xp/thymeleaf'),
+    i18n: require('/lib/xp/i18n'),
+    skjema: require('/lib/skjema'),
+	util: require('/lib/enonic/util')
+};
+
+var appPath = libs.util.app.getJsonName();
 var view = resolve('innsendingsvalg-sendsoknad.html');
 
-function handleGet(req) {
 
-    var params = {
-        partName: "innsendingsvalg-sendsoknad"
+
+/**
+ * Creates an HTML response to the GET request on page load
+ * @param  {Object} request GET request
+ * @return {Object}
+ */
+function handleGet(request) {
+    var content = libs.portal.getContent();
+    var site = libs.portal.getSite();
+    var component = libs.portal.getComponent();
+    var config = component.config;
+
+    var veilederType = libs.skjema.getVeilederType();
+    var qpSkjematitle = libs.skjema.getValidParamFromRequestByName(request, 'skjematitle');
+
+    var forms = [];
+    if (content.data.sectionContents) {
+        libs.util.data.forceArray(content.data.sectionContents).forEach(function (sectionContentId) {
+            var sectionContent = libs.content.get({ key: sectionContentId });
+
+            if (sectionContent && sectionContent.type === app.name + ':Skjema_for_veileder') {
+                forms.push(sectionContent);
+            }
+        });
+    }
+
+    var schematext = [];
+    if (content.data.sectionContents) {
+        libs.util.data.forceArray(content.data.sectionContents).forEach(function (sectionContentId) {
+            var sectionContent = libs.content.get({ key: sectionContentId });
+
+            if (sectionContent && sectionContent.type === app.name + ':Skjemaveiledertekster' && sectionContent.data.veiledertype == veilederType) {
+                schematext.push(sectionContent);
+            }
+        });
+    }
+
+    var model = {
+        isEditMode: (request.mode === 'edit'),
+        form: forms.length ? forms[0] : null,
+        qpSkjematitle: qpSkjematitle,
+        schematext: schematext.length ? schematext[0].data : null,
+        submissionMenuitems: null
     };
-
-    var body = thymeleafLib.render(view, params);
 
     return {
         contentType: 'text/html',
-        body: body
+        body: libs.thymeleaf.render(view, model)
     };
 }
 

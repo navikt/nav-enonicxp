@@ -3,6 +3,7 @@ var contextLib = require('/lib/xp/context');
 
 var page = require('/migration/page/page');
 var deleteStep = require('/migration/steps/delete-content');
+var moveStep = require('/migration/steps/move-content');
 var notinuseStep = require('/migration/steps/list-notinuse');
 
 
@@ -27,8 +28,12 @@ exports.post = function (req) {
     var taskId;
     if (action === 'deleteContent') {
         taskId = async('Delete Content', deleteStep.execute);
+
     } else if (action === 'listNotinuse') {
         taskId = async('List NotInUse', notinuseStep.execute);
+
+    } else if (action === 'moveContent') {
+        taskId = async('Move Content', moveStep.execute);
     }
 
     if (taskId) {

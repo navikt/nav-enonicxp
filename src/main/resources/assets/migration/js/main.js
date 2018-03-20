@@ -3,7 +3,7 @@ const serviceUrl = document.currentScript.getAttribute('data-serviceurl');
 var deleteTaskId, listTaskId;
 $(function () {
     $('#deleteContent').on('click', executeDeleteContent);
-    $('#listNotinuse').on('click', executeListNotinuse);
+    $('#moveContent').on('click', executeMoveContent);
 });
 
 function executeDeleteContent(e) {
@@ -36,33 +36,34 @@ function deleteContentDone(result) {
     $('#deleteContentResult').show().text(result);
 }
 
-function executeListNotinuse(e) {
-	$('#listNotinuse,#listNotinuseResult').hide();
-	$('#listNotinuseExecuting').show();
+function executeMoveContent(e) {
+    e.preventDefault();
+    $('#moveContent,#moveContentResult').hide();
+    $('#moveContentExecuting').show();
 
-	$.ajax({
-		type: "POST",
-		url: serviceUrl,
-		dataType: 'json',
-		data: {
-			action: 'listNotinuse'
-		},
-		success: function(data) {
-			listTaskId = data.id;
-			checkStatus(listTaskId, listNotinuseDone);
-		},
-		error: function() {
-			//console.log(arguments);
-			$('#listNotinuse').show();
-			$('#listNotinuseExecuting').hide();
-		}
-	});
+    $.ajax({
+        type: "POST",
+        url: serviceUrl,
+        dataType: 'json',
+        data: {
+            action: 'moveContent'
+        },
+        success: function (data) {
+            moveTaskId = data.id;
+            checkStatus(moveTaskId, moveContentDone);
+        },
+        error: function () {
+            console.log(arguments);
+            $('#moveContent').show();
+            $('#moveContentExecuting').hide();
+        }
+    });
 }
 
-function listNotinuseDone(result) {
-    $('#listNotinuse').show();
-    $('#listNotinuseExecuting').hide();
-    $('#listNotinuseResult').show().text(result);
+function moveContentDone(result) {
+    $('#moveContent').show();
+    $('#moveContentExecuting').hide();
+    $('#moveContentResult').show().text(result);
 }
 
 function checkStatus(id, onDone) {
