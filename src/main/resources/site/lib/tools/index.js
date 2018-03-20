@@ -183,6 +183,7 @@ function mapReduceMenuItems(content) {
 exports.insertMetaTag = insertMetaTag;
 function insertMetaTag(content, key, value) {
     content.data.metaTags = content.data.metaTags || [];
+    if (!Array.isArray(content.data.metaTags)) content.data.metaTags = [content.data.metaTags];
     content.data.metaTags.push(key + '$$$' + value);
     return content
 }
@@ -320,6 +321,7 @@ function createTableListContent(content) {
 exports.changeShortcuts = changeShortcuts;
 function changeShortcuts(content) {
     content.data.menuListItems = content.data.menuListItems || [];
+    if (!Array.isArray(content.data.menuListItems)) content.data.menuListItems = [content.data.menuListItems];
     content.data.menuListItems.push({menuListName: 'Relatert innhold', link: content.data.shortcuts});
 
     delete content.data.shortcuts;
@@ -388,6 +390,9 @@ function createNewTableContent(tableElements, ntkElements, newElements, scElemen
 }
 exports.getTableElements = getTableElements;
 function getTableElements(content) {
+    if (!content) {
+        return []
+    }
     if (typeof content.data.sectionContents === 'string') content.data.sectionContents = [ content.data.sectionContents];
 
 

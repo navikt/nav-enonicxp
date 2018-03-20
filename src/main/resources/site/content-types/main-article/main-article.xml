@@ -2,37 +2,6 @@
     <display-name>Artikkel - Hovedartikkel</display-name>
     <super-type>base:unstructured</super-type>
     <form>
-        <item-set name="sprak">
-            <label>Test</label>
-            <items>
-               <input name="locale" type="ComboBox">
-                   <label>Angi språk</label>
-                   <config>
-                       <option value="nb-NO">Norsk bokmål</option>
-                       <option value="en">Engelsk</option>
-                       <option value="nn">Nynorsk</option>
-                       <option value="se">Samisk</option>
-                   </config>
-                   <default>nb-NO</default>
-               </input>
-                <input type="TextLine" name="s_heading">
-                    <label>Tittel</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <input name="s_originaltitle" type="TextArea">
-                    <label>Orginal tittel</label>
-                </input>
-                <input name="s_ingress" type="TextArea">
-                    <label>Ingress</label>
-                    <occurrences maximum="1" minimum="1"/>
-                </input>
-                <input type="HtmlArea" name="s_text">
-                    <label>Artikkelinnhold</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-            </items>
-            <occurrences minimum="1" maximum="0"/>
-        </item-set>
         <field-set name="article">
             <label>Artikkelen</label>
             <items>
@@ -65,7 +34,7 @@
                     <config>
                         <option value="true">Ja</option>
                         <option value="false">Nei</option>
-                        <option value="">Ingen</option>
+                        <option value="">Ingen </option>
                     </config>
                 </input>
                 <field-set name="priority">
