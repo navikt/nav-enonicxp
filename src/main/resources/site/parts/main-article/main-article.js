@@ -11,29 +11,9 @@ exports.get = function(req) {
     // Define the model
     var content =portal.getContent();
 
-    //var locale = getLocale(req);
 
-    function getLocale(request) {
-        var def = 'nb-NO';
-        return request.headers['Accept-Language'].split(",");
-    }
 
-    var data = tryLocales(getLocale(req), content);
-    if (data) {
-        content.data.heading = data.s_heading;
-        content.data.ingress = data.s_ingress;
-        content.data.text = data.s_text;
-    }
-   // contentTranslator.logBeautify(tryLocales(getLocale(req), content))
-    function tryLocales(locales, content) {
-        if (!content.data.sprak || typeof content.data.sprak === 'string') return content.data.sprak;
-        return locales.reduce(function(t, el) {
-            return t || content.data.sprak.reduce(function(u, el2) {
-                if (!u && el2.locale === el.split(";")[0]) u = el2;
-                return u
-            }, t)
-        }, null)
-    }
+
 
     if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
         var ch = 1;
