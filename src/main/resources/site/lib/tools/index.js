@@ -311,7 +311,7 @@ function createTableListContent(content) {
     var newContent = {
         name: content._name,
         displayName: content.displayName,
-        parentPath:  '/sites/www.nav.no/no/test/',
+        parentPath:  '/sites/www.nav.no/tmp/',
         contentType: 'no.nav.navno:tavleliste',
         data: content.data,
         x: content.x

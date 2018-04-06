@@ -1,10 +1,10 @@
-var taskLib = require('/lib/xp/task');
+/*var taskLib = require('/lib/xp/task');
 var contextLib = require('/lib/xp/context');
 
 var page = require('/migration/page/page');
 var deleteStep = require('/migration/steps/delete-content');
 var moveStep = require('/migration/steps/move-content');
-var notinuseStep = require('/migration/steps/list-notinuse');
+//var notinuseStep = require('/migration/steps/list-notinuse');
 
 
 exports.get = function (req) {
@@ -29,8 +29,8 @@ exports.post = function (req) {
     if (action === 'deleteContent') {
         taskId = async('Delete Content', deleteStep.execute);
 
-    } else if (action === 'listNotinuse') {
-        taskId = async('List NotInUse', notinuseStep.execute);
+    //} else if (action === 'listNotinuse') {
+    //    taskId = async('List NotInUse', notinuseStep.execute);
 
     } else if (action === 'moveContent') {
         taskId = async('Move Content', moveStep.execute);
@@ -80,7 +80,7 @@ function getTaskStatus(req) {
     }
 }
 
-/*
+*/
 var thymeleaf = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
 var trans = require('./site/lib/contentTranslator');
@@ -100,7 +100,7 @@ var repo = nodeLib.connect({
     principals: ['role:system.admin']
 });
 
-event.listener({
+/*event.listener({
     type: '*',
     callback: function (res) {
         if (res.type === 'node.renamed' && res.data.nodes.length === 1 && !res.data.nodes[0].path.split("/").pop().startsWith("__unnamed__")) {
@@ -110,7 +110,7 @@ event.listener({
             makeMagic(res.data.nodes[0].id)
         }
     }
-});
+});*/
 
 function makeMagic(id) {
 
@@ -139,8 +139,12 @@ function makeMagic(id) {
 exports.get = function(req) {
     log.info(trans.logBeautify(req));
   //  trans.logBeautify(repo.get("3c35cd57-462b-4e52-9d5d-a63bd159562b"));
+ //   createTemplates();
+    createMocks();
+  //  var message = 'all done'
     var message = translateContents();
-   // changeSeksjon();
+    deleteMocks();
+   // changeSeksjon(); noen endringer
   //  gatherRedirects();
    // log.info(moveRedirects());
    // log.info(getUrlRedirectFolder())
@@ -152,6 +156,474 @@ exports.get = function(req) {
         })
     }
 };
+function deleteMocks() {
+    contentLib.delete({
+        key: '/sites/www.nav.no/no/main-article'
+    });
+    contentLib.delete({
+        key: '/sites/www.nav.no/no/oppslagstavle'
+    });
+    contentLib.delete({
+        key: '/sites/www.nav.no/no/tavleliste'
+    });
+}
+function createMocks() {
+    if (!contentLib.get({ key: '/sites/www.nav.no/no/main-article'})) {
+        contentLib.create({
+            name: 'main-article',
+            contentType: toContentType('main-article'),
+            parentPath: '/sites/www.nav.no/no/',
+            data: {
+                heading: 'm',
+                ingress: 'm',
+                text: 'm'
+            }
+        })
+        contentLib.create({
+            name: 'oppslagstavle',
+            contentType: toContentType('oppslagstavle'),
+            parentPath: '/sites/www.nav.no/no/',
+            data: {
+                heading: 'm'
+            }
+        })
+        contentLib.create({
+            name: 'tavleliste',
+            contentType: toContentType('tavleliste'),
+            parentPath: '/sites/www.nav.no/no/',
+            data: {
+                heading: 'm',
+                ingress: 'm'
+            }
+        })
+    }
+}
+function createTemplates() {
+    var m = {
+        "_name": "artikkel-hovedartikkel",
+        "_path": "/sites/www.nav.no/_templates/artikkel-hovedartikkel",
+        "creator": "user:system:su",
+        "modifier": "user:system:su",
+        "createdTime": "2018-03-22T09:48:36.420Z",
+        "modifiedTime": "2018-03-22T09:49:48.339Z",
+        "owner": "user:system:su",
+        "type": "portal:page-template",
+        "displayName": "Artikkel Hovedartikkel",
+        "hasChildren": false,
+        "valid": true,
+        "data": {
+            "supports": "no.nav.navno:main-article"
+        },
+        "x": {
+            "no-nav-navno": {
+                "menu-item": {
+                    "menuItem": false,
+                    "newWindow": false
+                },
+                "cmsContent": {},
+                "cmsMenu": {}
+            }
+        },
+        "page": {
+            "controller": "no.nav.navno:page-nav",
+            "config": {},
+            "regions": {
+                "region-center": {
+                    "components": [
+                        {
+                            "name": "main-article",
+                            "path": "region-center/0",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:main-article",
+                            "config": {}
+                        }
+                    ],
+                    "name": "region-center"
+                },
+                "region-east": {
+                    "components": [
+                        {
+                            "name": "main-article-linked-list",
+                            "path": "region-east/0",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:main-article-linked-list",
+                            "config": {}
+                        },
+                        {
+                            "name": "main-article-related-content",
+                            "path": "region-east/1",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:main-article-related-content",
+                            "config": {}
+                        }
+                    ],
+                    "name": "region-east"
+                },
+                "region-north": {
+                    "components": [],
+                    "name": "region-north"
+                },
+                "region-south": {
+                    "components": [],
+                    "name": "region-south"
+                },
+                "region-west": {
+                    "components": [],
+                    "name": "region-west"
+                },
+                "scripts-region": {
+                    "components": [],
+                    "name": "scripts-region"
+                }
+            }
+        },
+        "attachments": {},
+        "publish": {}
+    }
+    var o = {
+        "_name": "seksjon-hovedseksjon",
+        "_path": "/sites/www.nav.no/_templates/seksjon-hovedseksjon",
+        "creator": "user:system:su",
+        "modifier": "user:system:su",
+        "createdTime": "2018-03-22T09:50:15.621Z",
+        "modifiedTime": "2018-03-22T09:51:04.309Z",
+        "owner": "user:system:su",
+        "type": "portal:page-template",
+        "displayName": "Seksjon hovedseksjon",
+        "hasChildren": false,
+        "valid": true,
+        "data": {
+            "supports": "no.nav.navno:oppslagstavle"
+        },
+        "x": {
+            "no-nav-navno": {
+                "menu-item": {
+                    "menuItem": false,
+                    "newWindow": false
+                },
+                "cmsContent": {},
+                "cmsMenu": {}
+            }
+        },
+        "page": {
+            "controller": "no.nav.navno:page-nav",
+            "config": {},
+            "regions": {
+                "region-center": {
+                    "components": [
+                        {
+                            "name": "Oppslagstavle",
+                            "path": "region-center/0",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:oppslagstavle",
+                            "config": {}
+                        }
+                    ],
+                    "name": "region-center"
+                },
+                "region-east": {
+                    "components": [],
+                    "name": "region-east"
+                },
+                "region-north": {
+                    "components": [
+                        {
+                            "name": "heronighanddaybanner",
+                            "path": "region-north/0",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:heronighanddaybanner",
+                            "config": {}
+                        }
+                    ],
+                    "name": "region-north"
+                },
+                "region-south": {
+                    "components": [],
+                    "name": "region-south"
+                },
+                "region-west": {
+                    "components": [],
+                    "name": "region-west"
+                },
+                "scripts-region": {
+                    "components": [],
+                    "name": "scripts-region"
+                }
+            }
+        },
+        "attachments": {},
+        "publish": {}
+    }
+    var t = {
+        "_name": "seksjon-tavleseksjon",
+        "_path": "/sites/www.nav.no/_templates/seksjon-tavleseksjon",
+        "creator": "user:system:su",
+        "modifier": "user:system:su",
+        "createdTime": "2018-03-22T09:51:17.849Z",
+        "modifiedTime": "2018-03-22T09:52:31.847Z",
+        "owner": "user:system:su",
+        "type": "portal:page-template",
+        "displayName": "Seksjon Tavleseksjon",
+        "hasChildren": false,
+        "valid": true,
+        "data": {
+            "supports": "no.nav.navno:tavleliste"
+        },
+        "x": {
+            "no-nav-navno": {
+                "menu-item": {
+                    "menuItem": false,
+                    "newWindow": false
+                },
+                "cmsContent": {},
+                "cmsMenu": {}
+            }
+        },
+        "page": {
+            "controller": "no.nav.navno:page-nav",
+            "config": {},
+            "regions": {
+                "region-center": {
+                    "components": [
+                        {
+                            "name": "tavleliste",
+                            "path": "region-center/0",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:tavleliste",
+                            "config": {}
+                        }
+                    ],
+                    "name": "region-center"
+                },
+                "region-east": {
+                    "components": [
+                        {
+                            "name": "tavleliste-relatert-innhold",
+                            "path": "region-east/0",
+                            "type": "part",
+                            "descriptor": "no.nav.navno:tavleliste-relatert-innhold",
+                            "config": {}
+                        }
+                    ],
+                    "name": "region-east"
+                },
+                "region-north": {
+                    "components": [],
+                    "name": "region-north"
+                },
+                "region-south": {
+                    "components": [],
+                    "name": "region-south"
+                },
+                "region-west": {
+                    "components": [],
+                    "name": "region-west"
+                },
+                "scripts-region": {
+                    "components": [],
+                    "name": "scripts-region"
+                }
+            }
+        },
+        "attachments": {},
+        "publish": {}
+    };
+    if (!repo.get(m._path)) {
+
+
+        var mid = contentLib.create({
+            displayName: 'Artikkel Hovedartikkel',
+            data: {
+                supports: toContentType('main-article')
+            },
+            contentType: 'portal:page-template',
+            parentPath: '/sites/www.nav.no/_templates/',
+            "page": {
+                "controller": "no.nav.navno:page-nav",
+                "config": {},
+                "regions": {
+                    "region-center": {
+                        "components": [
+                            {
+                                "name": "main-article",
+                                "path": "region-center/0",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:main-article",
+                                "config": {}
+                            }
+                        ],
+                        "name": "region-center"
+                    },
+                    "region-east": {
+                        "components": [
+                            {
+                                "name": "main-article-linked-list",
+                                "path": "region-east/0",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:main-article-linked-list",
+                                "config": {}
+                            },
+                            {
+                                "name": "main-article-related-content",
+                                "path": "region-east/1",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:main-article-related-content",
+                                "config": {}
+                            }
+                        ],
+                        "name": "region-east"
+                    },
+                    "region-north": {
+                        "components": [],
+                        "name": "region-north"
+                    },
+                    "region-south": {
+                        "components": [],
+                        "name": "region-south"
+                    },
+                    "region-west": {
+                        "components": [],
+                        "name": "region-west"
+                    },
+                    "scripts-region": {
+                        "components": [],
+                        "name": "scripts-region"
+                    }
+                }
+            }
+        })._id;
+        var oid = contentLib.create({
+            displayName: 'Seksjon Hovedseksjon',
+            data: {
+                supports: toContentType('oppslagstavle')
+            },
+            contentType: 'portal:page-template',
+            parentPath: '/sites/www.nav.no/_templates/',
+            "page": {
+                "controller": "no.nav.navno:page-nav",
+                "config": {},
+                "regions": {
+                    "region-center": {
+                        "components": [
+                            {
+                                "name": "Oppslagstavle",
+                                "path": "region-center/0",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:oppslagstavle",
+                                "config": {}
+                            }
+                        ],
+                        "name": "region-center"
+                    },
+                    "region-east": {
+                        "components": [],
+                        "name": "region-east"
+                    },
+                    "region-north": {
+                        "components": [
+                            {
+                                "name": "heronighanddaybanner",
+                                "path": "region-north/0",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:heronighanddaybanner",
+                                "config": {}
+                            }
+                        ],
+                        "name": "region-north"
+                    },
+                    "region-south": {
+                        "components": [],
+                        "name": "region-south"
+                    },
+                    "region-west": {
+                        "components": [],
+                        "name": "region-west"
+                    },
+                    "scripts-region": {
+                        "components": [],
+                        "name": "scripts-region"
+                    }
+                }
+            }
+        })._id;
+        var tid = contentLib.create({
+            displayName: 'Seksjon Tavleseksjon',
+            data: {
+                supports: toContentType('tavleliste')
+            },
+            contentType: 'portal:page-template',
+            parentPath: '/sites/www.nav.no/_templates/',
+            "page": {
+                "controller": "no.nav.navno:page-nav",
+                "config": {},
+                "regions": {
+                    "region-center": {
+                        "components": [
+                            {
+                                "name": "tavleliste",
+                                "path": "region-center/0",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:tavleliste",
+                                "config": {}
+                            }
+                        ],
+                        "name": "region-center"
+                    },
+                    "region-east": {
+                        "components": [
+                            {
+                                "name": "tavleliste-relatert-innhold",
+                                "path": "region-east/0",
+                                "type": "part",
+                                "descriptor": "no.nav.navno:tavleliste-relatert-innhold",
+                                "config": {}
+                            }
+                        ],
+                        "name": "region-east"
+                    },
+                    "region-north": {
+                        "components": [],
+                        "name": "region-north"
+                    },
+                    "region-south": {
+                        "components": [],
+                        "name": "region-south"
+                    },
+                    "region-west": {
+                        "components": [],
+                        "name": "region-west"
+                    },
+                    "scripts-region": {
+                        "components": [],
+                        "name": "scripts-region"
+                    }
+                }
+            }
+        })._id;
+        contentLib.modify({
+            key: mid,
+            editor: function (c) {
+                c.page = m.page;
+                return c
+            }
+        })
+        repo.modify({
+            key: oid,
+            editor: function (c) {
+                o._indexConfig = c._indexConfig;
+                return o
+            }
+        })
+        repo.modify({
+            key: tid,
+            editor: function (c) {
+                t._indexConfig = c._indexConfig;
+                return t
+            }
+        })
+    }
+    return false
+}
 
 function changeSeksjon() {
     var start = 0;
@@ -187,9 +659,72 @@ function translateContents() {
 }
 
 function translateAll() {
-    return translateNavNyhet() || moveRedirects() || gatherRedirects() || translateNavPressemelding() || translateCMSStuff() || transl8('Artikkel_Brukerportal') || transl8('Kort_om')|| 'All done';
+
+    //return 'all done'
+   return translateNavNyhet() || translateNavPressemelding() || translateCMSStuff() || transl8('Artikkel_Brukerportal') || transl8('Kort_om')|| moveNotFounds() || pushToMaster();  'All done';
 }
 
+function pushToMaster() {
+    //trans.logBeautify(contentLib.getType(contentLib.get({
+    //    key: 'e955ef98-8f39-4031-aa86-a1cc36d174ae'
+    //}).type))
+    contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: [toContentType('tavleliste')]
+    }).hits.forEach(function (value) {
+        contentLib.modify({
+            key: value._id,
+            editor: function(c) {
+                trans.logBeautify(c.data);
+                if (c.data.languages) {
+                    if (!c.data.menuListItems) c.data.menuListItems = [];
+                    else if (!Array.isArray(c.data.menuListItems)) c.data.menuListItems = [c.data.menuListItems];
+                    c.data.menuListItems.push({
+                        menuListName: 'Språkversjoner',
+                        link: (Array.isArray(c.data.languages)) ? c.data.languages : [ c.data.languages ]
+                    })
+                    delete c.data.languages;
+                }
+                if (Array.isArray(c.data.heading)) {
+                    c.data.heading = c.data.heading[0];
+                }
+                return c;
+            }
+        })
+    })
+    contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: [toContentType('oppslagstavle')]
+    }).hits.forEach(function (value) {
+        contentLib.modify({
+            key: value._id,
+            editor: function(c) {
+                trans.logBeautify(c.data);
+                if (c.data.languages) {
+                    if (!c.data.menuListItems) c.data.menuListItems = [];
+                    else if (!Array.isArray(c.data.menuListItems)) c.data.menuListItems = [c.data.menuListItems];
+                    c.data.menuListItems.push({
+                        menuListName: 'Språkversjoner',
+                        link: (Array.isArray(c.data.languages)) ? c.data.languages : [ c.data.languages ]
+                    })
+                    delete c.data.languages;
+                }
+                if (Array.isArray(c.data.heading)) {
+                    c.data.heading = c.data.heading[0];
+                }
+                return c;
+            }
+        })
+    })
+    trans.logBeautify(contentLib.publish({
+        keys: ['499cdbe1-eba1-4736-9cd2-75b79e3a1be3'],
+        sourceBranch: 'draft',
+        targetBranch: 'master',
+        includeDependencies: true
+    }));
+}
 
 function gatherRedirects() {
     var start = 0;
@@ -258,6 +793,41 @@ function getUrlRedirectFolder() {
     return (urf) ? urf._path : false;
 }
 
+function moveNotFounds() {
+    var start = 0;
+    var count = 100;
+    var m = [];
+    while (count === 100) {
+        var h = contentLib.query({
+            start: start,
+            count: count,
+            contentTypes: [toContentType('cms2xp_page')]
+        });
+        count = h.hits.length;
+        start += count;
+        m = m.concat(h.hits);
+    }
+    m.forEach(function (value) {
+        if (value.hasOwnProperty('x')&&value.x.hasOwnProperty('no-nav-navno')&&value.x['no-nav-navno'].hasOwnProperty('cmsMenu')&&value.x['no-nav-navno'].cmsMenu.hasOwnProperty('content')) {
+            var c = value.x['no-nav-navno'].cmsMenu.content;
+            if (!contentLib.get({key: c})) {
+                try {
+                    contentLib.move({
+                        source: value._id,
+                        target: '/sites/www.nav.no/not-found/'
+                    })
+                } catch (e) {
+                    contentLib.move({
+                        source: value._id,
+                        target: '/sites/www.nav.no/not-found/' + value._name + Date.now()
+                    })
+                }
+            }
+        }
+    })
+    return false
+}
+
 function moveRedirects() {
     var targetPath = getUrlRedirectFolder();
     if (!targetPath) return 'Failed to create or get "url-redirect"';
@@ -301,10 +871,11 @@ function translateNavPressemelding() {
 }
 
 function translateCMSStuff() {
+    trans.transSidebeskrivelse(getIndexConfig('tavleliste'));
     trans.transcms2xpPages(getIndexConfig('main-article'));
     trans.transMainSection(getIndexConfig('oppslagstavle'));
     trans.tmins(getIndexConfig('oppslagstavle'));
-    trans.transSidebeskrivelse(getIndexConfig('tavleliste'));
+    changeSection2TavleListe();
     return false;
 }
 
@@ -408,4 +979,27 @@ function getIndexConfig(type) {
     }
     ret = (ret) ? ret : repo.get('40e6d1c6-6328-4680-842f-e5c39b1e44d9');
     return ret._indexConfig
-}*/
+}
+
+function changeSection2TavleListe() {
+    var pagesWithChildren = [];
+    var length = 100;
+    var start = 0;
+    while (length === 100) {
+        var q = contentLib.query({
+            start: start,
+            count: length,
+            contentTypes: [app.name + ':cms2xp_section']
+        });
+        length = q.hits.length;
+        start += length;
+        pagesWithChildren = q.hits.reduce(function (t, el) {
+            if (el.page && el.page.template && el.page.template ==='debed1f9-8310-4e79-93f0-c0f64245d4fc') t.push(el);
+            return t;
+        }, pagesWithChildren)
+    }
+
+    pagesWithChildren.forEach(function (value) {
+        trans.doTableListTranslation(value);
+    });
+}

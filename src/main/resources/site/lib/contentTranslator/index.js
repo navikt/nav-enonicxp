@@ -211,7 +211,8 @@ function moveNewContent(a,b,c,d,e) { return tools.moveNewContent(a,b,c,d,e); }
 exports.logBeautify = logBeautify;
 var repo = node.connect({
     repoId: 'cms-repo',
-    branch: 'draft'
+    branch: 'draft',
+    principals: ['role:system.admin']
 });
 function translate(content) {
 
@@ -770,24 +771,28 @@ function transMinSections(id) {
     var indexParams = id;
     r.forEach(function (value) {
         var content = repo.get(value._id);
-        content.data = translateTables(content);
-        content._indexConfig = indexParams;
-        content.type = toContentType('oppslagstavle');
-        if (!content.page) content.page = {};
-        content.page.template = getTemplate('seksjon-hovedseksjon');
-        log.info(logBeautify(content));
-        repo.modify({
-            key: content._id,
-            editor: function () {
-                return content;
-            }
-        });
+        if (content) {
+            content.data = translateTables(content);
+            content._indexConfig = indexParams;
+            content.type = toContentType('oppslagstavle');
+            if (!content.page) content.page = {};
+            content.page.template = getTemplate('seksjon-hovedseksjon');
+            log.info(logBeautify(content));
+            repo.modify({
+                key: content._id,
+                editor: function () {
+                    return content;
+                }
+            });
+        }
+        else log.info(logBeautify(value));
     })
     //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
     //log.info(logBeautify(repo.get(r[0]._id)))
     //log.info(logBeautify(r));
 }
 function transcms2xpPage(id) {
+
     var r = [];
     var start = 0;
     var count = 100;
@@ -809,9 +814,9 @@ function transcms2xpPage(id) {
                 article = repo.get(cms2xp.x['no-nav-navno'].cmsMenu.content);
             } catch (e) {
                 log.info('Node not found');
-                contentLib.move({
+                repo.move({
                     source: cms2xp._id,
-                    target: '/sites/www.nav.no/not-found/'
+                    target: '/content/sites/www.nav.no/not-found/'
                 })
             }
             if (article && !ret[stripContentType(article.type)]) {
@@ -819,48 +824,80 @@ function transcms2xpPage(id) {
             }
             else {
                 if (article) {
+                    var originalArticlePath = article._path;
+                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')) {
+                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentHome)._path;
+                            log.info('Path:' + path);
+                            originalArticlePath = path.split("/").slice(0,-1).join("/")+'/';
+                            log.info('OriginalArticlePath: ' + originalArticlePath);
+
+
+
+                    }
+                    repo.move({
+                        source: article._id,
+                        target: '/content/sites/www.nav.no/tmp/'
+                    });
+                    article = repo.get(article._id);
                     var cms2xpchildren = repo.findChildren({
-                        key: cms2xp._id
+                        start: 0,
+                        count: 10000,
+                        parentKey: cms2xp._id
                     }).hits;
                     cms2xpchildren.forEach(function (value2) {
                         if (value2.id !== article._id) {
+                            try {
+                                repo.move({
+                                    source: value2.id,
+                                    target: article._path + '/'
+                                })
+                            } catch (e) {
+                                log.info("Error:");
+                                log.info(logBeautify(repo.get(value2.id)));
+                            }
 
-                            repo.move({
-                                source: value2.id,
-                                target: article._path + '/'
-                            })
                         }
                     });
-                    var deleted = false;
-                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')) {
-                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentHome);
-                        if (path && path._path + '/' !== article._path.replace(article._name, "")) {
-                            contentLib.delete({
-                                key: cms2xp._id
-                            });
-                            deleted = true;
-                            repo.move({
-                                source: article._id,
-                                target: path._path + '/'
-                            });
-                        }
-                    }
-                    article = ret[stripContentType(article.type)](article);
-                    if (!deleted) {
-                        contentLib.delete({
-                            key: cms2xp._id
+
+
+
+                    /**
+                     * I have my article from a cms2xp_page
+                     * I have have moved the children from the cms2xp_page to the actual article
+                     * All refs points to the article
+                     *
+                     *
+                     */
+
+                     repo.delete(cms2xp._id);
+                    log.info(originalArticlePath);
+                    try {
+                        repo.move({
+                            source: article._id,
+                            target: originalArticlePath
                         });
+                    } catch (e) {
+                        log.info("Deleting: " + cms2xp._path);
+                        log.info('Watch: ' + originalArticlePath.split('/').slice(0,-2).join('/')+'/');
+                        repo.move({
+                            source: article._id,
+                            target: originalArticlePath.split('/').slice(0,-2).join("/")+'/'
+                        })
                     }
-                    repo.modify({
-                        key: article._id,
-                        editor: function () {
-                            article.type = toContentType('main-article');
-                            article._indexConfig = id;
-                            if (!article.page) article.page = {};
-                            article.page.template = getTemplate('artikkel-hovedartikkel');
-                            return article
-                        }
-                    });
+                     article = ret[stripContentType(article.type)](article);
+
+
+
+                     repo.modify({
+                         key: article._id,
+                         editor: function () {
+                             article.type = toContentType('main-article');
+                             article._indexConfig = id;
+                             if (!article.page) article.page = {};
+                             article.page.template = getTemplate('artikkel-hovedartikkel');
+                             return article
+                         }
+                     });
 
                 }
             }

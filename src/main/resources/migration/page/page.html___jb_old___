@@ -10737,31 +10737,6 @@
             <div class="column">
                 <div class="card">
                     <header class="card-header">
-                        <p class="card-header-title is-centered">Move content</p>
-                        <a href="#" class="card-header-icon" aria-label="more options">
-                      <span class="icon">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                      </span>
-                        </a>
-                    </header>
-                    <div class="card-content">
-                        <div class="content">
-                            Move list of content to target path.
-                            <br/>
-                            <span class="tag is-info" id="moveContentResult" style="display: none"></span>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="#" class="card-footer-item" id="moveContent">Execute</a>
-                        <a href="#" class="card-footer-item" disabled id="moveContentExecuting" style="display: none;">Executing</a>
-                    </footer>
-                </div>
-            </div>
-
-
-            <div class="column">
-                <div class="card">
-                    <header class="card-header">
                         <p class="card-header-title is-centered">Page parameters</p>
                         <a href="#" class="card-header-icon" aria-label="more options">
                       <span class="icon">

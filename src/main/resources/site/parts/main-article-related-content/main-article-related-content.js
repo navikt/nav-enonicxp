@@ -2,6 +2,7 @@ var thymeleafLib = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var trans = require('/lib/contentTranslator');
+var utils = require('/lib/nav-utils');
 var view = resolve('main-article-related-content.html');
 
 function handleGet(req) {
@@ -35,6 +36,7 @@ function handleGet(req) {
 
 
     var params = {
+        publishedFromText: utils.dateTimePublished(content, 'no'),
         content: content,
         hasLinks: hasLinks
     };

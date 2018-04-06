@@ -2,6 +2,7 @@ var thymeleaf = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
 var content = require('/lib/xp/content');
 var contentTranslator = require('../../lib/contentTranslator');
+var utils = require('/lib/nav-utils');
 // Resolve the view
 var view = resolve('main-article.html');
 
@@ -39,6 +40,7 @@ exports.get = function(req) {
     var hasFact = false;
     if (content.data.fact && content.data.fact !== '') hasFact = true;
     var model = {
+        published: utils.dateTimePublished(content, 'no'),
         toc: toc,
         content: content,
         hasFact: hasFact
