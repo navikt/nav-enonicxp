@@ -157,7 +157,7 @@
                     </input>
                     <input type="HtmlArea" name="text">
                         <label>Tekstbasert innhold</label>
-                        <occurrences minimum="0" maximum="1"/>
+                        <occurrences minimum="0" maximum="0"/>
                     </input>
                     <input type="ContentSelector" name="link">
                         <label>Linker til innhold</label>

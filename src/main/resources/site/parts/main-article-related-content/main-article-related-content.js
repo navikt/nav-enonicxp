@@ -8,11 +8,16 @@ var view = resolve('main-article-related-content.html');
 function handleGet(req) {
 
     var content = portal.getContent();
+    log.info("*** FØR behandling ***");
+    trans.logBeautify(content);
     if (content.data.menuListItems && !Array.isArray(content.data.menuListItems)) content.data.menuListItems = [content.data.menuListItems];
     content.data.menuListItems = (content.data.menuListItems) ? content.data.menuListItems.map(function (item) {
         if (!item.link) item.link = [];
         if (typeof item.link === 'string') item.link = [item.link];
-        return {menuListName: item.menuListName, link: item.link.map(function(l) {
+        return {
+            menuListName: item.menuListName,
+            text: item.text,
+            link: item.link.map(function(l) {
 
             var r;
             try{
@@ -31,7 +36,8 @@ function handleGet(req) {
         return t
     }, []) : [];
 
-
+    log.info("*** ETTER behandling ***");
+    trans.logBeautify(content);
     var hasLinks = (content.data.menuListItems.length > 0);
 
 
