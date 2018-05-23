@@ -21,10 +21,10 @@ exports.get = function(req) {
             });
             if (root.type !== app.name + ':main-article') return []
         }
-        return [{heading: root.data.heading, link: portal.pageUrl({key: root._id}), active: (root === cont)}].concat(content.getChildren({
+        return [{heading: root.data.heading, link: portal.pageUrl({id: root._id}), active: (root === cont)}].concat(content.getChildren({
             key: root._id
         }).hits.map(function (el) {
-            return { heading: el.data.heading || el.displayName, link: portal.pageUrl({key: el._id}), active: (el._id === cont._id) }
+            return { heading: el.data.heading || el.displayName, link: portal.pageUrl({id: el._id}), active: (el._id === cont._id) }
         }))
     }
     // Define the model

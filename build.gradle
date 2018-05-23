@@ -29,6 +29,7 @@ app {
 	systemVersion = "${xpVersion}"
 }
 
+
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
     compile "com.enonic.xp:portal-api:${xpVersion}"
