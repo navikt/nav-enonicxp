@@ -54,6 +54,9 @@ dependencies {
 }
 
 repositories {
+	maven {
+	url "http://maven.adeo.no/nexus/content/groups/public"
+	}
     mavenLocal()
     jcenter()
     xp.enonicRepo()
