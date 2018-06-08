@@ -137,25 +137,73 @@ function makeMagic(id) {
 }
 
 exports.get = function(req) {
-    log.info(trans.logBeautify(req));
+    var ls = repo.get("5caac2ef-f32f-4ece-b042-64d145b92312");
+    var routeBucket = [];
+    var contentBucket = [];
+    var mediaBucket = [];
+    var mailtoBucket = [];
+    var endsWithCmsBucket = [];
+    var strangeBucket = [];
+    var tjenesteBucket = [];
+
+    var buckets = {
+        routeBucket: routeBucket,
+        tjenesteBucket: tjenesteBucket,
+        contentBucket: contentBucket,
+        mediaBucket: mediaBucket,
+        mailtoBucket: mailtoBucket,
+        endsWithCmsBucket: endsWithCmsBucket,
+        strangeBucket: strangeBucket
+    };
+
+    ls.data.shit.forEach(function (el) {
+        if      (el.address.startsWith('/'))                    buckets.routeBucket.push(el);
+        else if (el.address.startsWith('https://tjenester'))    buckets.tjenesteBucket.push(el);
+        else if (el.address.startsWith('content://'))           buckets.contentBucket.push(el);
+        else if (el.address.startsWith('media://'))             buckets.mediaBucket.push(el);
+        else if (el.address.startsWith('mailto:'))              buckets.mailtoBucket.push(el);
+        else if (el.address.endsWith('.cms'))                   buckets.endsWithCmsBucket.push(el);
+        else                                                    buckets.strangeBucket.push(el);
+    });
+    trans.logBeautify(buckets.routeBucket);
+    arrangeBuckets(buckets);
+    tryToFixRoute(buckets.routeBucket);
+  //  log.info(trans.logBeautify(req));
   //  trans.logBeautify(repo.get("3c35cd57-462b-4e52-9d5d-a63bd159562b"));
  //   createTemplates();
-    createMocks();
+//    createMocks();
   //  var message = 'all done'
-    var message = translateContents();
-    deleteMocks();
+   // var message = translateContents();
+    //deleteMocks();
    // changeSeksjon(); noen endringer
   //  gatherRedirects();
    // log.info(moveRedirects());
    // log.info(getUrlRedirectFolder())
 
     return {
-        body: thymeleaf.render(resolve('./translation/translation.html'),{
-            message: message,
-            styles: portal.assetUrl({path: 'nav-responsive.css'})
-        })
+        body: "Done"
     }
 };
+
+function tryToFixRoute(routes) {
+    routes.forEach(function (route) {
+        contentLib.modify({
+            key: route.el,
+            editor: function (c) {
+                c.data.text = c.data.text.replace(address, 'www.nav.no/' + address.replace(/\+/g, '-'));
+                return c;
+            }
+        })
+    })
+}
+
+function arrangeBuckets(buckets) {
+    for (var key in buckets) {
+        if (buckets.hasOwnProperty(key)) {
+            log.info(key + ': ' + buckets[key].length);
+        }
+    }
+}
 function deleteMocks() {
     contentLib.delete({
         key: '/sites/www.nav.no/no/main-article'
@@ -661,7 +709,7 @@ function translateContents() {
 function translateAll() {
 
     //return 'all done'
-   return translateNavNyhet() || translateNavPressemelding() || translateCMSStuff() || transl8('Artikkel_Brukerportal') || transl8('Kort_om')|| moveNotFounds() || pushToMaster();  'All done';
+   return translateNavNyhet() || translateNavPressemelding() || translateCMSStuff() || transl8('Artikkel_Brukerportal') || transl8('Kort_om')|| moveNotFounds() || pushToMaster();
 }
 
 function pushToMaster() {
@@ -1002,4 +1050,8 @@ function changeSection2TavleListe() {
     pagesWithChildren.forEach(function (value) {
         trans.doTableListTranslation(value);
     });
+}
+
+function fixDeadLinks() {
+
 }
