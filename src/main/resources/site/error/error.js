@@ -1,7 +1,7 @@
 var event = require('/lib/xp/event');
 var redirects = {};
 var trans = require('/lib/contentTranslator');
-var main = require('../../main');
+var main = require('../../omain');
 
 exports.handle404 = function (req) {
     log.info('Hello');
