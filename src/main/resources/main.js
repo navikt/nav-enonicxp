@@ -6,7 +6,7 @@ var handleSockets = require('lib/handleSockets/handleSockets');
 var emitter = new ws.SocketEmitter();
 exports.get = function (req) {
 
-
+    handleSockets.handleSockets(emitter);
 
     if (req.path.indexOf('socket') === -1) {
         return t.get(req);
@@ -14,17 +14,12 @@ exports.get = function (req) {
 
 
 
-
-    log.info(JSON.stringify(req));
-
     return ws.sendSocketResponse(req, '/app/' + app.name + '/socket');
 };
-emitter.connect(function(socket) {
-   socket.emit('hello', 'Hello client');
-});
 
-var io = new ws.SocketEmitter();
 
-handleSockets.handleSockets(io);
+
+
+
 
 exports.webSocketEvent = ws.getWsEvents;

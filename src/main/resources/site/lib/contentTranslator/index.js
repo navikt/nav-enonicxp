@@ -611,7 +611,7 @@ exports.trans = function(type) {
 function toContentType(type) {
     return app.name + ':' + type;
 }
-exports.transSidebeskrivelse = function(indexConfigurations) {
+exports.transSidebeskrivelse = function(indexConfigurations, socket) {
     var start = 0;
     var count = 100;
     var ar = [];
@@ -627,7 +627,9 @@ exports.transSidebeskrivelse = function(indexConfigurations) {
             return el._id
         }));
     }
-    ar.forEach(function (id) {
+    if (socket) socket.emit('sidebeskrivelsemax', ar.length);
+    ar.forEach(function (id, index) {
+        if (socket) socket.emit('sidebeskrivelseval', index +1);
         var r = contentLib.get({key: id});
         if (!r || r.type === toContentType('tavleliste')) return;
         var sidebeskrivelse = r;
@@ -693,7 +695,7 @@ exports.changetavleliste = function (id) {
 
 }
 var tms = true;
-function transMainSections(id) {
+function transMainSections(id, socket) {
     if (!tms) return;
     tms = false;
     var start = 0;
@@ -720,8 +722,9 @@ function transMainSections(id) {
         start += count;
     }
     var indexParams = id;
-    r.forEach(function (value) {
-
+    if (socket) socket.emit('mainmax', r.length);
+    r.forEach(function (value, index) {
+    if (socket) socket.emit('mainval', index +1);
 
     var content = repo.get(value._id);
     var was = content.type;
@@ -748,7 +751,7 @@ exports.transMainSection = transMainSections;
 
 var tmins = true;
 exports.tmins = transMinSections;
-function transMinSections(id) {
+function transMinSections(id, socket) {
 
     var start = 0;
     var count = 100;
@@ -767,9 +770,10 @@ function transMinSections(id) {
         count = h.length;
         start += count;
     }
-    log.info(logBeautify(r));
+    if (socket) socket.emit('minmax', r.length);
     var indexParams = id;
-    r.forEach(function (value) {
+    r.forEach(function (value, index) {
+        if (socket) socket.emit('minval', index +1);
         var content = repo.get(value._id);
         if (content) {
             content.data = translateTables(content);
@@ -791,7 +795,7 @@ function transMinSections(id) {
     //log.info(logBeautify(repo.get(r[0]._id)))
     //log.info(logBeautify(r));
 }
-function transcms2xpPage(id) {
+function transcms2xpPage(id, socket) {
 
     var r = [];
     var start = 0;
@@ -806,7 +810,9 @@ function transcms2xpPage(id) {
         count = h.length;
         start += count;
     }
-    r.forEach(function (value) {
+    if (socket) socket.emit('cms2xp_pagemax', r.length);
+    r.forEach(function (value, index) {
+        if (socket) socket.emit('cms2xp_pageval', index + 1);
         var cms2xp = repo.get(value._id);
         if (cms2xp && cms2xp.hasOwnProperty('x') && cms2xp.x.hasOwnProperty('no-nav-navno') && cms2xp.x['no-nav-navno'].hasOwnProperty('cmsMenu') && cms2xp.x['no-nav-navno'].cmsMenu.hasOwnProperty('content')) {
            var article = null;
@@ -816,7 +822,7 @@ function transcms2xpPage(id) {
                 log.info('Node not found');
                 repo.move({
                     source: cms2xp._id,
-                    target: '/content/sites/www.nav.no/not-found/'
+                    target: '/content/www.nav.no/not-found/'
                 })
             }
             if (article && !ret[stripContentType(article.type)]) {
@@ -836,7 +842,7 @@ function transcms2xpPage(id) {
                     }
                     repo.move({
                         source: article._id,
-                        target: '/content/sites/www.nav.no/tmp/'
+                        target: '/content/www.nav.no/tmp/'
                     });
                     article = repo.get(article._id);
                     var cms2xpchildren = repo.findChildren({

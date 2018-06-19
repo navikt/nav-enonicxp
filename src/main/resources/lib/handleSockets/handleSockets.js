@@ -1,20 +1,11 @@
 
-var deadLinks = require('deadLinks');
+var deadLinks = require('../deadLinks/deadLinks');
+var translate = require('../translate/translate');
 
 exports.handleSockets = function (io) {
     io.connect(function (socket) {
-        socket.on('deadLinks', function (message) {
-            handleDeadLinks(socket, message);
-        });
-        socket.on('all', function(message) {
-            handleEverything(socket, message);
-        });
-        socket.on('translate', function (message) {
-            handleTranslation(socket, message);
-        })
+        deadLinks.handle(socket);
+        translate.handle(socket);
     })
 }
 
-function handleDeadLinks(socket, message) {
-    deadLinks.handle(socket);
-}
