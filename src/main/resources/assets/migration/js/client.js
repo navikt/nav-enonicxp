@@ -6,12 +6,17 @@
     var error;
     var errorHead;
     var errorBody;
+    var status;
+    var statusBody;
 
     $(function() {
         colums = $('#columns');
         error = $('#error');
         errorBody = $('#error-body');
         errorHead = $('#error-header');
+        status = $('#status');
+        statusBody = $('#status-body');
+        status.hide();
         error.hide();
         io = new ws.Io();
         init();
@@ -47,7 +52,9 @@
         newCard.append(head);
 
         var body = $('<div class="card-content"></div>');
-
+        if (elements.preBody) {
+            body = $('<div class="row"></div>');
+        }
         elements.body.elements.forEach(function handleElements(element) {
             var newTag = $('<' + element.tag + '></'+element.tag+'>');
             if (element.tagClass) {
@@ -57,6 +64,21 @@
                 });
             }
             if (element.id) newTag.attr('id', element.id);
+            if (element.update) {
+                io.on(element.update, function (message) {
+                    var update = $('<p></p>');
+                    update.text(message);
+                    newTag.append(update);
+                })
+            }
+            if (element.status) {
+                status.show();
+                var st = $('<p></p>');
+                io.on(element.status, function(message) {
+                    st.text(message);
+                });
+                statusBody.append(st);
+            }
             if (element.progress) {
                 var pval = $('<span></span>');
                 pval.attr('id', element.id + 'value');
@@ -91,10 +113,16 @@
 
         },body);
 
-        newCard.append(body);
+        if (!elements.preBody) {
+            newCard.append(body);
 
-        newElement.append(newCard);
-        colums.append(newElement);
+            newElement.append(newCard);
+            colums.append(newElement);
+        }
+        else {
+            colums.after(body);
+        }
+
     }
 
 

@@ -65,7 +65,7 @@ exports.handle = function (socket) {
 }
 
 function updatePressemelding(socket, message) {
-   // transl8(toContentType('nav.pressemelding'), socket);
+    transl8('nav.pressemelding', socket);
     createCmsStuff(socket);
 }
 
@@ -160,7 +160,10 @@ function toContentType(type) {
 }
 
 function transl8(type,socket) {
+
     return itterateContents(query(type, socket), socket)
+
+
 }
 
 

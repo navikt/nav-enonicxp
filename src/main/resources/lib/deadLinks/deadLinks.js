@@ -9,9 +9,7 @@ var repo = nodeLib.connect({
     principals: ['role:system.admin']
 });
 var socket;
-var elements = {
-    elements: createElements()
-}
+var elements = createNewElements();
 exports.handle = function (s) {
     socket = s;
     var c = context.get();
@@ -60,7 +58,7 @@ exports.handle = function (s) {
             if (!el) return log.info('Failed');
             route = 'www.nav.no'
         } else route = route + '->' + el.displayName;
-
+        socket.emit('dlStatusTree','Working in ' + route);
         if (el.hasChildren) {
             var childs = contentLib.getChildren({
                 key: el._id,
@@ -83,6 +81,7 @@ exports.handle = function (s) {
                 var rx = /href=\"(.*?)\".*/g;
                 while(reg = rx.exec(something)) {
                     var address = reg.pop();
+                    socket.emit('dlStatus', 'Visiting: ' + address);
                     if (!visit(address)) {
 
                         var find = repo.query({
@@ -141,7 +140,50 @@ exports.handle = function (s) {
 
 };
 
+function createNewElements() {
+    return {
+        isNew: true,
+        head: 'Lenkeråte',
+        body: {
+            elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag en lenkeråterapport'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: [ 'progress', 'is-info'],
+                            id: 'lprog',
+                            progress: {
+                                value: 'd-Value',
+                                max: 'dl-childCount'
+                            }
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree'
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus'
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: [ 'button', 'is-primary' ],
+                            action: 'lenke',
+                            text: 'Start'
+                        }
+                    ]
+                }
 
+            ]
+        }
+    }
+}
 function createElements() {
     return {
         tag: '<div class="column"></div>',
