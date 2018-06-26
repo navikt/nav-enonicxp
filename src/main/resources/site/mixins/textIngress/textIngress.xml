@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mixin>
+    <display-name>Artikkelekst og Ingress</display-name>
+    <items>
+        <input type="TextLine" name="ingress">
+        <label>Ingress</label>
+        <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="HTMLArea" name="text">
+            <label>Artikkeltekst</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+
+    </items>
+</mixin>
