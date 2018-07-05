@@ -3,12 +3,13 @@ var libs = {
 	portal: require('/lib/xp/portal'),
 	content: require('/lib/xp/content'),
 	menu: require('/lib/menu'),
-	util: require('/lib/enonic/util')
+	util: require('/lib/enonic/util'),
+    trans: require('/lib/contentTranslator')
 }
 var view = resolve('page-nav.html');
 var accessibleLetters = 'abcdefghijklmnopqrstuvwxyzæøå'.split('');
 
-/*
+/*  TODO: Avklare om dette skal kuttes ut. Bruken av dette er utkommentert nå.
 	Display names of page templates that in Enonic CMS used page-nav.xsl but did NOT contain a datasource that would produce /result/contents/content
 	Since the XSLT file checked for data in /result/contents/content, these page templates will never show breadcrumbs with that code
 	Yeah, it's hacky hardcoded stuff, but an improvement will most likely require changes to the data model.
@@ -54,33 +55,31 @@ function handleGet(req) {
 		showHomepage: false
 	});
 
-	// On Localhost, first 3 items are useless, slice! In XSLT they did it more complicated by checking types of content for each parent node, skipping that for now.
-	if (breadcrumbs.items.length > 3) {
+	//Tar vekk de første tre nivåene: <hjem>/<språk>/<seksjon>
+	if (breadcrumbs.items.length >= 3) {
 		breadcrumbs.items = breadcrumbs.items.slice(3);
 
+		//Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg
 		breadcrumbs.items = breadcrumbs.items.reduce(function (t,el) {
-            if (el.type !== app.name + ':magic-folder') {
-                el.url = (el.type === 'base:folder') ? null : el.url;
+            if (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder') {
                 t.push(el)
             }
             return t;
-        }, [])
-		// NAV doesn't link CMS Labels (Folders in XP), make sure to remove URL data for these so we don't link them.
-		//for (var i = 0; i < breadcrumbs.items.length; i++) {
-		//	if (breadcrumbs.items[i].type === app.name + ':magic-folder') {
-		//		breadcrumbs.items[i].url = null;
-		//	}
-		//}
-	}
-	// Looks like breadcrumbs are never shown if only 2 items or less, so nuke it.
-	if (breadcrumbs.items.length <= 2) {
-		breadcrumbs = null;
+        }, []);
 	}
 
+	/* TODO: Avklare hvorfor brødsmulestien ble skjult hvis det bare var igjen to elementer. Utkommentert nå.
+	if (breadcrumbs.items.length <= 2) {
+		breadcrumbs = null;
+	}*/
+
+    // TODO: Avklare hvorfor vi skal skjule dette. Har justert koden så den (sannsynligvis) virker, men grisete!
 	// Don't show breadcrumbs if the content uses a page template that in Enonic CMS didn't have a datasource producing data in /result/contents/content
 	if (content.page && content.page.template) {
 		var pageTemplate = libs.content.get({ key: content.page.template });
-		if (pageTemplate && breadcrumbPageTemplateBlackList.indexOf(pageTemplate.displayName)) {
+		if (pageTemplate && breadcrumbPageTemplateBlackList.indexOf(pageTemplate.displayName) >= 0) {
+            log.info("*** blacklist ***");
+            libs.trans.logBeautify(pageTemplate.displayName);
 			breadcrumbs = null;
 		}
 	}
@@ -89,6 +88,7 @@ function handleGet(req) {
     var regionsInEast = content.page.regions['region-east'] && content.page.regions['region-east'].components.length > 0;
     var regionsInCenter = content.page.regions['region-center'] && content.page.regions['region-center'].components.length > 0;
 
+	// TODO: sjekk dette
 	// Check if there is content (huh!? always content in XP ...) or a specific template being used.
 	// Research: the mentioned page template doesn't exists anymore. Looking for existing contents/content is impossible in XP since all pages are content and will have something returned with .getContent(). Something else needs to be done here.
 	var bodyClassExtras = "contentpage"; // Perhaps just check if we're viewing a "section" CTY?
