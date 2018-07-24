@@ -40,8 +40,13 @@ exports.get = function(req) {
     var hasFact = false;
     var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
     socials = socials ? socials.map(function (el) {
+        var text = 'Del på ';
+        if (el === 'linkedin') text += 'LinkedIn';
+        else if (el === 'facebook') text += 'Facebook';
+        else text += 'Twitter';
         return {
             type: el,
+            text: text,
             href: getSocialRef(el, content, req)
         }
     }) : false;

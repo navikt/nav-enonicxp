@@ -51,7 +51,7 @@
                 <li><a class="js-share share-container" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https://www.nav.no/no/Lokalt/Hedmark/NAV+Arbeidslivssenter+Hedmark/Lokal+informasjon/nyhetsbrev-fra-nav-hedmark&amp;title=Nyhetsbrev%20fra%20NAV%20Hedmark&amp;source=nav.no" data-medium="linkedin"><span class="share-social share-linkedin">Del på LinkedIn</span></a></li>
                 -->
                 <li data-th-each="social : ${socials}">
-                    <a data-th-href="${social.href}" class="js-share share-container" data-medium="${social.type}" ><span data-th-text="social.text" class="share-social" data-th-classappend="${'share-' + social.type}"></span></a>
+                    <a data-th-href="${social.href}" class="js-share share-container" data-medium="${social.type}" ><span data-th-text="${social.text}" class="share-social" data-th-classappend="${'share-' + social.type}"></span></a>
                 </li>
             </ul>
         </div>
