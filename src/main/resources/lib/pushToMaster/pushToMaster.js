@@ -14,56 +14,8 @@ exports.handle = function (socket) {
             },
             principals: ["role:system.admin"]
         }, function () {
-            contentLib.query({
-                start: 0,
-                count: 1000,
-                contentTypes: [toContentType('tavleliste')]
-            }).hits.forEach(function (value) {
-                socket.emit('ptmStatus', 'Modifying ' + value.displayName);
-                contentLib.modify({
-                    key: value._id,
-                    editor: function(c) {
-                        if (c.data.languages) {
-                            if (!c.data.menuListItems) c.data.menuListItems = [];
-                            else if (!Array.isArray(c.data.menuListItems)) c.data.menuListItems = [c.data.menuListItems];
-                            c.data.menuListItems.push({
-                                menuListName: 'Språkversjoner',
-                                link: (Array.isArray(c.data.languages)) ? c.data.languages : [ c.data.languages ]
-                            });
-                            delete c.data.languages;
-                        }
-                        if (Array.isArray(c.data.heading)) {
-                            c.data.heading = c.data.heading[0];
-                        }
-                        return c;
-                    }
-                })
-            });
-            contentLib.query({
-                start: 0,
-                count: 1000,
-                contentTypes: [toContentType('oppslagstavle')]
-            }).hits.forEach(function (value) {
-                socket.emit('ptmStatus', 'Modifying ' + value.displayName);
-                contentLib.modify({
-                    key: value._id,
-                    editor: function(c) {
-                        if (c.data.languages) {
-                            if (!c.data.menuListItems) c.data.menuListItems = [];
-                            else if (!Array.isArray(c.data.menuListItems)) c.data.menuListItems = [c.data.menuListItems];
-                            c.data.menuListItems.push({
-                                menuListName: 'Språkversjoner',
-                                link: (Array.isArray(c.data.languages)) ? c.data.languages : [ c.data.languages ]
-                            });
-                            delete c.data.languages;
-                        }
-                        if (Array.isArray(c.data.heading)) {
-                            c.data.heading = c.data.heading[0];
-                        }
-                        return c;
-                    }
-                })
-            });
+            convertFromRepoToContent(socket, 'tavleliste');
+            convertFromRepoToContent(socket, 'oppslagstavle');
             var res =contentLib.publish({
                 keys: ['/www.nav.no'],
                 sourceBranch: 'draft',
@@ -75,6 +27,34 @@ exports.handle = function (socket) {
         })
     })
 };
+
+function convertFromRepoToContent(socket, type) {
+    contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: [toContentType(type)]
+    }).hits.forEach(function (value) {
+        socket.emit('ptmStatus', 'Modifying ' + value.displayName);
+        contentLib.modify({
+            key: value._id,
+            editor: function(c) {
+                if (c.data.languages) {
+                    if (!c.data.menuListItems) c.data.menuListItems = [];
+                    else if (!Array.isArray(c.data.menuListItems)) c.data.menuListItems = [c.data.menuListItems];
+                    c.data.menuListItems.push({
+                        menuListName: 'Språkversjoner',
+                        link: (Array.isArray(c.data.languages)) ? c.data.languages : [ c.data.languages ]
+                    });
+                    delete c.data.languages;
+                }
+                if (Array.isArray(c.data.heading)) {
+                    c.data.heading = c.data.heading[0];
+                }
+                return c;
+            }
+        })
+    });
+}
 
 function createElements() {
     return {

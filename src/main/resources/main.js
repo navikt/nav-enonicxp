@@ -11,9 +11,6 @@ exports.get = function (req) {
     if (req.path.indexOf('socket') === -1) {
         return t.get(req);
     }
-
-
-
     return ws.sendSocketResponse(req, '/app/' + app.name + '/socket');
 };
 
