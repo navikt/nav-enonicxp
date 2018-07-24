@@ -50,6 +50,7 @@ exports.get = function(req) {
             href: getSocialRef(el, content, req)
         }
     }) : false;
+    log.info(JSON.stringify(socials));
     if (content.data.fact && content.data.fact !== '') hasFact = true;
     var model = {
         published: utils.dateTimePublished(content, 'no'),
