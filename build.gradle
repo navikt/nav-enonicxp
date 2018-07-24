@@ -10,7 +10,7 @@ buildscript {
 
     }
     dependencies {
-        classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.0.17"
+        classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.0.7"
     }
 }
 plugins {
@@ -28,6 +28,7 @@ app {
     vendorUrl = 'http://enonic.com'
 	systemVersion = "${xpVersion}"
 }
+
 
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
@@ -60,6 +61,9 @@ dependencies {
 }
 
 repositories {
+	maven {
+	url "http://maven.adeo.no/nexus/content/groups/public"
+	}
     mavenLocal()
     jcenter()
     xp.enonicRepo()
