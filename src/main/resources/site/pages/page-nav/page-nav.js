@@ -100,6 +100,8 @@ function handleGet(req) {
     </xsl:if>
 */
 
+	var social = getSocial(content, req);
+	log.info(JSON.stringify(social));
     var model = {
 		isEditMode: (req.mode === 'edit'),
         context: req,
@@ -118,12 +120,51 @@ function handleGet(req) {
 
     return {
         contentType: 'text/html',
-        body: libs.thymeleaf.render(view, model)
+        body: libs.thymeleaf.render(view, model),
+		pageContributions: {
+        	headBegin: social ? social : []
+		}
     };
 }
 
 exports.get = handleGet;
 
+function getSocial(content, req) {
+	if (!content.data.social) return null;
+	var social = Array.isArray(content.data.social) ? content.data.social : [content.data.social];
+	return social.reduce(function (total, value) {
+		if (value === 'facebook') {
+
+			total.push(setOg('url', req.url.split('?')[0]));
+			total.push(setOg('type', 'article'));
+			total.push(setOg('title', content.displayName));
+			total.push(setOg('description', content.data.ingress));
+			total.push(setOg('image', libs.portal.assetUrl({path: 'beta.nav.no/images/social-share-fallback.png'})));
+		}
+		else if (value === 'twitter') {
+			total.push(setOg('card', 'summary_large_image', 'name'));
+			total.push(setOg('title', content.displayName, 'name'));
+			total.push(setOg('description', content.data.ingress, 'name'));
+			total.push(setOg('domain', 'nav.no', 'name'));
+			total.push(setOg('image:src', libs.portal.assetUrl({path: 'beta.nav.no/images/social-share-fallback.png'}), 'name'));
+		}
+		else if (value === 'linkedin' && total.indexOf(setOg('type', 'article')) === -1) {
+            total.push(setOg('url', req.url.split('?')[0]));
+            total.push(setOg('type', 'article'));
+            total.push(setOg('title', content.displayName));
+            total.push(setOg('description', content.data.ingress));
+            total.push(setOg('image', libs.portal.assetUrl({path: 'beta.nav.no/images/social-share-fallback.png'})));
+		}
+		return total
+	},[])
+
+}
+
+function setOg(property, content, name) {
+	var og = name ? 'twitter' : 'og';
+	name = name || 'property';
+	return '<meta ' + name +'="' + og + ':' + property + '" content="' + content + '" />';
+}
 
 /*
  * The following DataSources were used in the original CMS page template:
