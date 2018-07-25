@@ -109,7 +109,7 @@ function handleGet(req) {
         eastRegionClass: regionsInWest && !regionsInCenter ? 'col-md-6' : 'col-md-4',
         centerRegionClass: regionsInEast && regionsInWest ? 'col-md-4' : (regionsInEast || regionsInWest ? 'col-md-8' : 'col-md-12'),
         frontPageUrl: libs.portal.pageUrl({id: site._id}),
-        contentAZPage: '/sites/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
+        contentAZPage: '/www.nav.no/no/innhold-a-aa', // TODO make page parameter with default value
         accessibleLetters: accessibleLetters,
         menu: menuItems,
 		  breadcrumbs: breadcrumbs,
