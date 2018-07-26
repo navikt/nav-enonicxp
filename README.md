@@ -1,4 +1,4 @@
-# Nav main site Proof of Concept in XP.
+# Nav main site - Enonic XP
 
 ## Building
 
@@ -6,6 +6,6 @@
 ./gradlew deploy -t
 ```
 
-## Content
+## Under construction
 
-BWE and ARO have the content to use (CMS original data and migrated XP data). Migrated with CMS2XP 0.10.7.
+Originally migrated by Enonic with CMS2XP 0.10.7. Other migration code added later.

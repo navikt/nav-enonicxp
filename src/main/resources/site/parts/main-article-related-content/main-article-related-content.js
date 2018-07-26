@@ -20,7 +20,11 @@ function handleGet(req) {
             } catch (e) {
                 log.info("Failed in marc " + l);
             }
+            // Special cases
+            if (r && r.type === app.name + ':Skjema_for_veileder') {
 
+            }
+            // End special cases
             return (r) ? { title: r.data.heading, link: portal.pageUrl({ id: r._id})} : undefined
             }).reduce(function(t,e) {
                 if (e) t.push(e);

@@ -1,0 +1,11 @@
+<div>
+<div id="content-a-z">
+    <ul class="footer-columns" data-th-if="${hasList}">
+
+    <li data-th-each="item : ${list}">
+        <a data-th-href="${item.url}" data-th-text="${item.heading}"></a>
+    </li>
+
+    </ul>
+</div>
+</div>

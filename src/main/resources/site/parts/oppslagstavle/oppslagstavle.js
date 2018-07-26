@@ -12,7 +12,7 @@ exports.get = function(req) {
     var content = portal.getContent();
 
     var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
-
+    t.logBeautify(table);
     var col = 'col-md-';
     var ntk = {
         sectionName: 'Nyttig å vite',
@@ -77,6 +77,7 @@ function getTableElements(cont) {
             });
             ret = ret.concat(query.hits).map(mapElements).slice(0, cont.data.nrTableEntries)
         }
+        else ret = ret.map(mapElements);
         return ret
     }
     return null;
