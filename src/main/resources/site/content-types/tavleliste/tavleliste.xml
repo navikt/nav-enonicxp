@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Table list</display-name>
+    <display-name>Artikkelliste</display-name>
     <description/>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
