@@ -5,7 +5,7 @@
   </filters>-->
   <config/>
   <mappings>
-    <mapping controller="/lib/enonic/url-redirect/index.js">
+    <mapping controller="/lib/enonic/url-redirect/contentAZ.js">
       <match>type:'no.nav.navno:url'</match>
     </mapping>
   </mappings>
