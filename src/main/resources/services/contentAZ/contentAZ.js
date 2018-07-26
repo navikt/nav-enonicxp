@@ -1,15 +1,15 @@
 var thymeleafLib = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
 var content = require('/lib/xp/content');
-var view = resolve('../../site/parts/linklist-contentbyletter/linklist-contentbyletter.html');
+var view = resolve('contentAZ.html');
 
 function handleGet(req) {
 
     var letter = req.params.letter;
-    var list = []
+    var list = [];
     if (letter) {
         list = content.getChildren({
-            key: '7d54791c-aa4b-480c-acfd-80636054b309',
+            key: '/innhold-footer-a-a',
             start: 0,
             count: 10000
         }).hits.reduce(function (t, el) {
@@ -17,9 +17,6 @@ function handleGet(req) {
             return t;
         }, []);
     }
-
-
-
 
     var params = {
         list: list,
