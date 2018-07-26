@@ -1,19 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>XP translation</title>
-
-
-    <!-- Optional theme -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAV Migration Tools</title>
+    <link rel="stylesheet" href="{{assetsUri}}/main.css" data-serviceurl="{{serviceUrl}}">
 </head>
 <body>
+<section class="hero is-link">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">NAV - Migration Tools</h1>
+        </div>
+    </div>
+</section>
+<br/>
+<section>
+    <div class="container has-text-centered">
+        <article class="message is-danger" id="error">
+            <div class="message-header" >
+                <p id="error-header"></p>
+                <button class="delete" aria-label="delete"></button>
+            </div>
+            <div class="message-body" id="error-body"></div>
+        </article>
+        <article class="message is-info" id="status">
+            <div class="message-header">
+                <p id="status-header">Status</p>
+                <button class="delete" aria-label="delete"></button>
+            </div>
+            <div class="message-body" id="status-body"></div>
+        </article>
+        <div class="columns" id="columns">
 
-        <h1>Gjør XP-cms til XP-XP</h1>
-        <p data-th-text="${message}"></p>
 
-        <a href=""></a>
-
-
+        </div>
+    </div>
+</section>
+<script src="{{assetsUri}}/migration/js/jquery.js" data-serviceurl="{{serviceUrl}}"></script>
+<script src="/app/no.nav.navno/_/services/socket/index.js"></script>
+<script src="{{assetsUri}}/migration/js/client.js" data-serviceurl="{{serviceUrl}}"></script>
 </body>
 </html>
