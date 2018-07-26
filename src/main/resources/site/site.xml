@@ -4,9 +4,6 @@
     <response-filter name="translateFilter" order="10"/>
   </filters>-->
   <config/>
-  <x-data mixin="menu-item"/>
-  <x-data mixin="cmsContent"/>
-  <x-data mixin="cmsMenu"/>
   <mappings>
     <mapping controller="/lib/enonic/url-redirect/contentAZ.js">
       <match>type:'no.nav.navno:url'</match>
