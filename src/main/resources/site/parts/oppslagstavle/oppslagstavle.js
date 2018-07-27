@@ -7,12 +7,10 @@ var t = require('/lib/contentTranslator');
 
 exports.get = function(req) {
 
-    log.info(JSON.stringify(contentLib.get({key: '594917a9-1141-4b04-8e8f-89536a5422ae'})));
-
     var content = portal.getContent();
 
     var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
-    t.logBeautify(table);
+
     var col = 'col-md-';
     var ntk = {
         sectionName: 'Nyttig å vite',
