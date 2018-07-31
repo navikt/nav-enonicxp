@@ -4,7 +4,7 @@ var libs = {
 	content: require('/lib/xp/content'),
 	menu: require('/lib/menu'),
 	util: require('/lib/enonic/util')
-}
+};
 var view = resolve('page-nav.html');
 var accessibleLetters = 'abcdefghijklmnopqrstuvwxyzæøå'.split('');
 
@@ -19,11 +19,9 @@ function handleGet(req) {
 		linkActiveItem: false,
 		showHomepage: false
 	});
-
 	//Tar vekk de første tre nivåene: <hjem>/<språk>/<seksjon>
 	if (breadcrumbs.items.length >= 3) {
 		breadcrumbs.items = breadcrumbs.items.slice(3);
-
 		//Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg
 		breadcrumbs.items = breadcrumbs.items.reduce(function (t,el) {
             if (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder') {
@@ -31,6 +29,20 @@ function handleGet(req) {
             }
             return t;
         }, []);
+	}
+
+	//Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
+	//TODO: avklare komavdelingens krav til  GTM
+	var path = content._path.split('/');
+	var level3 = (path[3] ? path[3] : "").toLowerCase();
+	var seksjonssider = "";
+	switch ( level3 ) {
+		case "person":
+		case "bedrift":
+		case "nav-og-samfunn":
+			seksjonssider = level3;
+			break;
+		default:
 	}
 
     var regionsInWest = content.page.regions['region-west'] && content.page.regions['region-west'].components.length > 0;
@@ -51,11 +63,12 @@ function handleGet(req) {
         eastRegionClass: regionsInWest && !regionsInCenter ? 'col-md-6' : 'col-md-4',
         centerRegionClass: regionsInEast && regionsInWest ? 'col-md-4' : (regionsInEast || regionsInWest ? 'col-md-8' : 'col-md-12'),
         frontPageUrl: libs.portal.pageUrl({id: site._id}),
-        contentAZPage: libs.portal.serviceUrl({service: 'contentAZ'}), // TODO make page parameter with default value
+        contentAZPage: libs.portal.serviceUrl({service: 'contentAZ'}),
+        seksjonsSider: seksjonssider,
         accessibleLetters: accessibleLetters,
         menu: menuItems,
-		  breadcrumbs: breadcrumbs,
-		  bodyClassExtras: bodyClassExtras
+        breadcrumbs: breadcrumbs,
+        bodyClassExtras: bodyClassExtras
     };
 
     return {
