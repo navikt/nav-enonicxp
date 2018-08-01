@@ -11,8 +11,9 @@ function handleGet(req) {
     var site = libs.portal.getSite();
     var content = libs.portal.getContent();
 
-    var imageUrl = getImageUrl(content.data.text);
-    imageUrl = (imageUrl ? imageUrl : libs.portal.assetUrl({path: '/img/navno/social-share-fallback.png'}));
+    var imageUrl = libs.portal.imageUrl({id: content.data.image, scale: 'height(500)', type:'absolute'});
+    imageUrl = (imageUrl.indexOf("/error/") === -1 ? imageUrl :
+        libs.portal.assetUrl({path: '/img/navno/social-share-fallback.png', type:'absolute'}));
     var title = content.displayName + " - www.nav.no";
     var description = (content.data.ingress ? content.data.ingress :
 		"NAV forvalter en tredjedel av statsbudsjettet gjennom ordninger som dagpenger, arbeidsavklaringspenger, " +
@@ -121,8 +122,4 @@ function forIn(obj, fn, thisObj) {
         return fn.call(thisObj, obj[key], key, obj);
     }
     return forIn;
-}
-
-function getImageUrl(text) {
-	return null; //TODO: Hva skal være regel for deling av bilder?
 }
