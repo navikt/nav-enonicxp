@@ -2,12 +2,12 @@
 <html lang="no" class="no-js">
 <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Nav.no</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" data-th-href="${portal.assetUrl({'_path=img/navno/logo.svg'})}">
-    <link type="image/x-icon" rel="shortcut icon" data-th-href="${portal.assetUrl({'_path=img/navno/favicon.ico'})}">
-    <link data-th-href="${portal.assetUrl({'_path=styles/css/navno.css'})}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" data-th-href="${portal.assetUrl({'_path=img/navno/logo.svg'})}" />
+    <link type="image/x-icon" rel="shortcut icon" data-th-href="${portal.assetUrl({'_path=img/navno/favicon.ico'})}" />
+    <link data-th-href="${portal.assetUrl({'_path=styles/css/navno.css'})}" rel="stylesheet" />
     <script data-th-src="${portal.assetUrl({'_path=libs/modernizr.2.7.1.min.js'})}"></script>
     <script data-th-src="${portal.assetUrl({'_path=js/innloggingslinjen.min.js'})}"></script>
     <script id="navno-page-js"
@@ -137,18 +137,18 @@
             </div>
         </div>
 
-            <!--render-mainmenu-->
-            <div class="topnavsection-wrapper">
-                <div class="topnavsection">
-                    <nav class="topnav container" role="navigation" id="mainmenu" aria-labelledby="header-nav-heading" tabindex="-1">
-                        <h1 class="visuallyhidden" id="header-nav-heading">
-                            Hovedmeny
-                        </h1>
-                        <input id="no-js-toggle-mobile-mainmenu"
-                            type="checkbox"
-                            class="visuallyhidden mobile-toggler"
-                        />
-                        <label for="no-js-toggle-mobile-mainmenu" class="mobile-toggler toggle-mainmenu">Meny</label>
+        <!--render-mainmenu-->
+        <div class="topnavsection-wrapper">
+            <div class="topnavsection">
+                <nav class="topnav container" role="navigation" id="mainmenu" aria-labelledby="header-nav-heading" tabindex="-1">
+                    <h1 class="visuallyhidden" id="header-nav-heading">
+                        Hovedmeny
+                    </h1>
+                    <input id="no-js-toggle-mobile-mainmenu"
+                           type="checkbox"
+                           class="visuallyhidden mobile-toggler"
+                    />
+                    <label for="no-js-toggle-mobile-mainmenu" class="mobile-toggler toggle-mainmenu">Meny</label>
                     <button type="button" id="toggle-mobile-mainmenu" class="link-btn mobile-toggler toggle-mainmenu">Meny</button>
                     <ul class="accessible-megamenu" id="accessible-megamenu">
                         <li class="topnavitem has-children"
@@ -275,7 +275,7 @@
         </div>
         <div class="sitelogo sitelogo-small">
             <a data-th-href="${frontPageUrl}" title="Hjem">
-                <img data-th-src="${portal.assetUrl({'_path=img/navno/logo.svg'})}" alt="NAV-logo">
+                <img data-th-src="${portal.assetUrl({'_path=img/navno/logo.svg'})}" alt="NAV-logo" />
             </a>
         </div>
     </header>
@@ -284,11 +284,13 @@
 
 		<div class="container page-head">
 			<nav data-th-if="${breadcrumbs}" class="breadcrumbs" aria-label="Du er her" itemprop="breadcrumb" role="navigation">
-				<li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
-					<a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
-					<span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
-				 </li>
-			</nav>
+                <ul>
+                    <li data-th-each="item, iterStat : ${breadcrumbs.items}" data-th-remove="tag">
+                        <a href="/" class="crumb" data-th-if="${item.url}" data-th-href="${item.url}" data-th-text="${item.text}">Home</a>
+                        <span data-th-classappend="${item.active ? 'crumb-current' : ''}" class="crumb" data-th-unless="${item.url}" data-th-text="${item.text}">Home</span>
+                    </li>
+                </ul>
+            </nav>
 		</div>
 
         <div class="container maincontent">
@@ -371,6 +373,7 @@
             </div>
         </div>
     </footer>
+</div>
 
 </body>
 </html>
