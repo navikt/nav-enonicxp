@@ -20,15 +20,19 @@ function handleGet(req) {
             menuListName: item.menuListName,
             text: item.text,
             link: item.link.map(function(l) {
+                var r;
+                try{
+                    r= contentLib.get({key: l});
+                } catch (e) {
+                    log.info("Failed in marc " + l);
+                }
+                // Special cases
+                if (r && r.type === app.name + ':Skjema_for_veileder') {
 
-            var r;
-            try{
-                r= contentLib.get({key: l});
-            } catch (e) {
-                log.info("Failed in marc " + l);
-            }
-
-            return (r) ? {title: r.data.heading, link: portal.pageUrl({id: r._id})} : undefined
+                    return (r) ? {title: r.data.heading, link: portal.pageUrl({id: r._id})} : undefined;
+                }
+                // End special cases
+                return (r) ? { title: r.data.heading, link: portal.pageUrl({ id: r._id})} : undefined;
             }).reduce(function(t,e) {
                 if (e) t.push(e);
                 return t;

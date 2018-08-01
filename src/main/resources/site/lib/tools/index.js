@@ -267,9 +267,9 @@ function logBeutify(content) {
     var t = '  ';
     var n = '\n';
     return string.split("").map(function (value) {
-        if (value === '[' || value === '{') return t.repeat(t) + value + n + t.repeat(++tn)
-        else if (value === ']' || value === '}') return t.repeat(--tn) + value + n + t.repeat(tn)
-        else if (value === ',') return  value + n + t.repeat(tn)
+        if (value === '[' || value === '{') return t.repeat(t) + value + n + t.repeat(++tn);
+        else if (value === ']' || value === '}') return t.repeat(--tn) + value + n + t.repeat(tn);
+        else if (value === ',') return  value + n + t.repeat(tn);
         return value
     }).reduce(function(t, c) {
         return t + c;
@@ -311,7 +311,7 @@ function createTableListContent(content) {
     var newContent = {
         name: content._name,
         displayName: content.displayName,
-        parentPath:  '/sites/www.nav.no/tmp/',
+        parentPath:  '/www.nav.no/tmp/',
         contentType: 'no.nav.navno:tavleliste',
         data: content.data,
         x: content.x
