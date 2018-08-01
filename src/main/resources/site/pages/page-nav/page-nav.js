@@ -114,7 +114,7 @@ function setMetaTag(property, content) {
 function forIn(obj, fn, thisObj) {
     var key;
     for (key in obj) {
-        if (exec(fn, obj, key, thisObj) === false) {
+        if (obj.hasOwnProperty(key) && exec(fn, obj, key, thisObj) === false) {
             break;
         }
     }
