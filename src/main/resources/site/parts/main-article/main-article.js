@@ -1,6 +1,6 @@
 var thymeleaf = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
-var content = require('/lib/xp/content');
+var contentLib = require('/lib/xp/content');
 var contentTranslator = require('../../lib/contentTranslator');
 var utils = require('/lib/nav-utils');
 // Resolve the view
@@ -37,13 +37,18 @@ exports.get = function(req) {
 
 
     }
+
+    var languages = getLanguageVersions(content);
+
     var hasFact = false;
     if (content.data.fact && content.data.fact !== '') hasFact = true;
     var model = {
         published: utils.dateTimePublished(content, 'no'),
         toc: toc,
         content: content,
-        hasFact: hasFact
+        hasFact: hasFact,
+        hasLanguageVersions: languages.length > 0,
+        languages: languages
     };
 
     // Render a thymeleaf template
@@ -54,3 +59,31 @@ exports.get = function(req) {
         body: body
     };
 };
+
+function getLanguageVersions(content) {
+    var lang = {
+        no: 'Bokmål',
+        en: 'English',
+        se: 'Sami Ædnan',
+        "nn_NO": 'Nynorsk'
+    }
+    var lRefs = content.data.languages;
+    var ret = [{
+        href: '#',
+        tClass: 'active-lang',
+        text: lang[content.language],
+        title: lang[content.language] + ' (Språkversjon)'
+    }];
+    if (!lRefs) return ret;
+    else if (!Array.isArray(lRefs)) lRefs = [lRefs];
+    lRefs.forEach(function (ref) {
+        var el = contentLib.get({key: ref});
+        if (el) ret.push({
+            href: portal.pageUrl({id: ref}),
+            text: lang[el.language],
+            tClass: '',
+            title: lang[el.language] + ' (Språkversjon)'
+        })
+    });
+    return ret;
+}

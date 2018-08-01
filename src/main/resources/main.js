@@ -1,9 +1,12 @@
 
 
 var t = require('translation/translation');
+
 var ws = require('/lib/wsUtil');
 var handleSockets = require('lib/handleSockets/handleSockets');
 var emitter = new ws.SocketEmitter();
+var langVersions = require('lib/langVersions/langVersions');
+var trans = require('site/lib/contentTranslator');
 exports.get = function (req) {
 
     handleSockets.handleSockets(emitter);
@@ -14,9 +17,6 @@ exports.get = function (req) {
     return ws.sendSocketResponse(req, '/app/' + app.name + '/socket');
 };
 
-
-
-
-
-
 exports.webSocketEvent = ws.getWsEvents;
+
+langVersions.handleLanguageVersion(trans);
