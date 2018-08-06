@@ -1,34 +1,76 @@
-var event = require('/lib/xp/event');
-var redirects = {};
+
 var trans = require('/lib/contentTranslator');
-var main = require('../../omain');
+var content = require('/lib/xp/content');
+var portal = require('/lib/xp/portal');
 
 exports.handle404 = function (req) {
-    log.info('Hello');
-        trans.logBeautify(req);
-    if (req.request.path in main.redirects) {
+
+    trans.logBeautify(req);
+
+    var path = req.request.path.split('/').pop();
+
+    log.info(path);
+
+    var element = content.getChildren({
+        key: '/redirects',
+        start: 0,
+        count: 10000
+    }).hits.reduce(function (t, el) {
+        if (el.displayName === path) t = (el.type === app.name + ':url') ? el : content.get({key: el.data.target}) ;
+        return t;
+    }, false);
+    if (element) {
+        var redirect = portal.pageUrl({id: element._id})
+        if (element.type === app.name + ':url') {
+             redirect = portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(appendRoot).andOr(xpInfuse).endValidation);
+        }
+        log.info('Final ' + redirect);
         return {
-            redirect: main.redirects[req.request.path]
+            redirect: redirect
         }
     }
-    else if (req.request.path.split("+").length > 2) {
+    return {
+        body: 'Missing',
+        contentType: 'text/plain'
+    }
+
+}
+
+
+
+function validateUrl(url) {
+    log.info(url);
+    var valid = url.startsWith('http') && url.indexOf('www.nav.no') === -1;
+
+    function andOr(f) {
+        if (!valid) {
+            url = f(url)
+        }
         return {
-            body: JSON.stringify(req.request)
+            andOr: andOr,
+            endValidation: splitParams(url)
         }
     }
-    else {
-        trans.logBeautify(req);
-        trans.logBeautify(main.redirects);
+    return {
+        andOr: andOr,
+        endValidation: splitParams(url)
+    }
+
+    function splitParams(url) {
         return {
-            body: 'Missing',
-            contentType: 'text/plain'
+            path: url.split('?')[0],
+            params: url.split('?')[1] ? url.split('?')[1].split('&').reduce(function(t, el) {
+                t[el.split('=')[0]] = el.split('=')[1]
+            },{}) : {}
         }
     }
 }
 
-exports.handleError = function (req) {
-    trans.logBeautify(req);
-    return {
-        body: JSON.stringify(req)
-    }
+function appendRoot(url) {
+    if (!url.startsWith('/')) url = '/' + url;
+    return '/www.nav.no' + url;
+}
+function xpInfuse(url) {
+    url = url.replace(/\+/g, '-').replace(/%c3%b8/g, 'o').replace(/%c3%a5/g, 'a').replace(/%20/g, '-').replace(/%c3%a6/g, 'ae').replace(/(\.cms|\.\d+)/g, '');
+    return url
 }
