@@ -23,7 +23,8 @@ exports.get = function (req) {
         },
         icons: {
             nav: portal.assetUrl({path: 'www.nav.no/bilder/global/navlogohvit.gif'}),
-            close: portal.assetUrl({path: 'www.nav.no/bilder/global/ikonlukk.gif'})
+            close: portal.assetUrl({path: 'www.nav.no/bilder/global/ikonlukk.gif'}),
+            favicon: portal.assetUrl({path: 'shared/bilder/favicon.ico'})
         }
     };
 
