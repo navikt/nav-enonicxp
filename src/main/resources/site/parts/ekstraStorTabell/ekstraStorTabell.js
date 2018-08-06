@@ -12,7 +12,7 @@ exports.get = function (req) {
 
   var m =   parsers.parse(content.data.article.text);
 
-    var i = parsers.map(m);
+    var i = parsers.map(m, true);
     log.info(i);
 
     var body = thymeleaf.render(view, model);

@@ -5,19 +5,30 @@ var view = resolve('ekstraStorTabell.html');
 exports.get = function (req) {
 
 
+    var stylePath = 'www.nav.no/styles/';
     var content = portal.getContent();
-
-
-    var model = content;
 
     var m = parsers.parse(content.data.article.text);
 
-    var i = parsers.map(m);
+    var parsed = parsers.map(m, true);
 
-    log.info('Output: ' + i);
+    var model = {
+        title: content.displayName,
+        content: parsed,
+        styles: {
+            main: portal.assetUrl({path: stylePath + 'main.css'}),
+            content: portal.assetUrl({path: stylePath + 'content.css'}),
+            ie: portal.assetUrl({path: stylePath + 'ie.css'}),
+            print: portal.assetUrl({path: stylePath + 'print.css'})
+        },
+        icons: {
+            nav: portal.assetUrl({path: 'www.nav.no/bilder/global/navlogohvit.gif'}),
+            close: portal.assetUrl({path: 'www.nav.no/bilder/global/ikonlukk.gif'})
+        }
+    };
 
     var body = thymeleaf.render(view, model);
     return {
-        body: i
+        body: body
     }
 }
