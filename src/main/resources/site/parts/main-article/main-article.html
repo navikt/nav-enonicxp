@@ -14,6 +14,13 @@
             <h1 data-th-text="${content.data.heading}"></h1>
 
             <div class="toolbar">
+                <div class="content-languages leftmost-in-toolbar" data-th-if="${hasLanguageVersions}" role="button" tabindex="0" aria-haspopup="true" aria-owns="language-selection" aria-controls="language-selection"><span>Language</span>
+                    <ul class="nav hide" id="language-selection">
+                        <li data-th-each="language : ${languages}">
+                            <a data-th-href="${language.href}" data-th-class="${language.tClass}" data-th-title="${language.title}" data-th-text="${language.text}"></a>
+                        </li>
+                    </ul>
+                </div>
                 <div class="content-print" id="print-page" role="button" tabindex="0">
                     <span data-th-text="${portal.localize({'_key=nav.print.page','_locale=content.language'})}"></span>
                 </div>
