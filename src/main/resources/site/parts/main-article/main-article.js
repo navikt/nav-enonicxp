@@ -89,7 +89,7 @@ function getLanguageVersions(content) {
     var lang = {
         no: 'Bokmål',
         en: 'English',
-        se: 'Sami Ædnan',
+        se: 'Sámegiella',
         "nn_NO": 'Nynorsk'
     }
     var lRefs = content.data.languages;
@@ -99,7 +99,7 @@ function getLanguageVersions(content) {
         text: lang[content.language],
         title: lang[content.language] + ' (Språkversjon)'
     }];
-    if (!lRefs) return ret;
+    if (!lRefs) return [];
     else if (!Array.isArray(lRefs)) lRefs = [lRefs];
     lRefs.forEach(function (ref) {
         var el = contentLib.get({key: ref});
