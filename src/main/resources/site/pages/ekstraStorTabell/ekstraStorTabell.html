@@ -15,22 +15,14 @@
     <![endif]-->
     <link data-th-href="${styles.print}" media="print" rel="stylesheet"
           type="text/css">
-    <script language="javascript" type="text/javascript">
-        function NoConfirm() {
-            win = top;
-            win.opener = top;
-            win.close();
-        }
-    </script>
+
 </head>
 <body class="NAVlargeTableBody" cz-shortcut-listen="true">
 <div id="NAVlargeTableHeader"><img alt=""
                                    data-th-src="${icons.nav}">
 </div>
 <div class="NAVlargeTableContentContainer">
-    <div class="NAVpageFooter"><a href="javascript:NoConfirm();"><img alt="Ikon lukk"
-                                                                      data-th-src="${icons.close}">
-        Lukk</a></div>
+
     <div class="NAVportletseperator">&nbsp;</div>
     <div data-th-utext="${content}" data-th-remove="tag"></div>
     <div class="NAVportletseperator">&nbsp;</div>
@@ -38,9 +30,7 @@
     <input type="hidden" name="tabelltype" value="Ekstra stor tabell">
     <input name="emneord" type="hidden" value="">
     <input name="endretDato" type="hidden" value="2014-06-11 08:10">
-    <div class="NAVpageFooter"><a href="javascript:NoConfirm();"><img alt="Ikon lukk"
-                                                                      data-th-src="${icons.close}">
-        Lukk</a></div>
+
     <div class="NAVportletseperator">&nbsp;</div>
 </div>
 </body>

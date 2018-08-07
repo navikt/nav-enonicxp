@@ -1,5 +1,3 @@
-var trans = require('../contentTranslator');
-
 
 // Takes the raw Ekstra_Stor_tabell content and parses it to correct JSON format
 function parseToJSON(html) {
@@ -12,7 +10,6 @@ function parseToJSON(html) {
     current = reParse(current.o); // Alters the raw JSON into correct JSON properties
     return current;
 }
-
 
 function reParse(e) {
         e = insertDivAfterTable(e);
@@ -28,8 +25,6 @@ function reParse(e) {
 
 ///// Adapted functions ///////
 
-
-
 function filterAttributes(element) {
     delete element.attribute.cellpadding;
     delete element.attribute.cellspacing;
@@ -40,16 +35,11 @@ function filterAttributes(element) {
     return element;
 }
 
-
 function checkIfStatGroupHeadOrStatGroupRestAndChange(element) {
     var isStatGroup = function (e) {
         return e.tag === 'td' && e.attribute.class && e.attribute.class.reduce(function (p, e) { return p || e.indexOf('statGroup') > -1 },false);
     };
-
-
     return doIf(isStatGroup(element), setStrongOnElement, returnElement, element);
-
-
 }
 var setStrongOnElement = function (e) {
     e = setAttribute('class', 'NAVsemiHead', e);
@@ -66,7 +56,6 @@ function insertDivAfterTable(element) {
     return element
 }
 
-
 function insertSpacer() {
     return {
         tag: 'div',
@@ -75,7 +64,6 @@ function insertSpacer() {
         children: []
     }
 }
-
 
 function setAttribute(name, value, element) {
     if (!element) {
@@ -113,7 +101,6 @@ function alterTrElement(element) {
     return changeClass('NAValternateRow', element);
 }
 
-
 function isTbody(element) {
     return element.tag === 'tbody';
 }
@@ -141,7 +128,6 @@ function changeTbodyChildren(element) {
     var changeTrElementAndIsFirstChild = doIf(isFirstChild, mix(alterTrElement, changeFirstFirstTd), changeTrElement);
     element.children = recurse(changeTrElementAndIsFirstChild, 'children', element);
     return element;
-
 }
 
 function alterElementsIfTbody(element) {
@@ -188,7 +174,7 @@ function isFirstChild(array, element) {
 function changeClass(className, element) {
     if (!element) return function (element) {
         return setAttribute('class', className, element);
-    }
+    };
     return setAttribute('class', className, element);
 }
 
@@ -276,8 +262,6 @@ function returnElement(element) {
     return element;
 }
 
-
-
 function unmap(array, string) {
     var el = array.shift();                                     // Pick out the next tag to parse
     var rtag = el.replace(/[<>]/g, '');                         // Get the tag name and attributes, without ><
@@ -310,9 +294,7 @@ function unmap(array, string) {
     var end = string.indexOf('</' + tag + '>');                 // So as the three grows, the trimmed string shrinks
     var c = string.substr(start, end - start);                  // Leaving just the content text between the start and
                                                                 // closing tags
-
     o.content = c;
-
     string = string.replace(el + c + '</' + tag + '>', '');
 
     return {
