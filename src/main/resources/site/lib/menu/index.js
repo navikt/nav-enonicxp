@@ -117,35 +117,33 @@ exports.getMenuTree = function (levels) {
     return menu;
 };
 
-/**
- * Returns submenus of a parent menuitem.
- * @param {Content} parentContent - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
- * @param {Integer} levels - The number of submenus to retrieve
- * @return {Array} Array of submenus
- */
 exports.getSubMenus = function (parentContent, levels) {
     var subMenus = [];
 
     if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
         subMenus.push(menuItemToJson(parentContent, 0));
     }
-
-    var children = libs.content.getChildren({
-        key: parentContent._id,
-        count: 200
-    });
-
     levels--;
 
-    var loopLength = children.hits.length;
+    return libs.content.getChildren({
+        key: parentContent._id,
+        count: 200
+    }).hits.reduce(function (t, el) {
+        if (isMenuItem(el)) t.push(menuItemToJson(el, levels));
+        return t;
+    },subMenus);
+
+
+
+    /*var loopLength = children.hits.length;
     for (var i = 0; i < loopLength; i++) {
         var child = children.hits[i];
         if (isMenuItem(child)) {
             subMenus.push(menuItemToJson(child, levels));
         }
     }
+*/
 
-    return subMenus;
 };
 
 

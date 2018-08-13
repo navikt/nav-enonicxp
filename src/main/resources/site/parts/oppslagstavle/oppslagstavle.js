@@ -4,24 +4,26 @@ var contentLib = require('/lib/xp/content');
 // Resolve the view
 var view = resolve('oppslagstavle.html');
 var t = require('/lib/contentTranslator');
+var langLib = require('/lib/i18nUtil');
 
 exports.get = function(req) {
 
     var content = portal.getContent();
+    var lang = langLib.parseBundle(content.language).oppslagstavle;
 
     var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
 
     var col = 'col-md-';
     var ntk = {
-        sectionName: 'Nyttig å vite',
+        sectionName: lang.niceToKnow,
         data: getNTKElements(content)
     };
     var news = {
-        sectionName: 'Nyheter',
+        sectionName: lang.news,
         data: getNewsElements(content)
     };
     var shortcuts = {
-        sectionName: 'Snarveier',
+        sectionName: lang.shortcuts,
         data: getShortCutElements(content)
     };
     var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));

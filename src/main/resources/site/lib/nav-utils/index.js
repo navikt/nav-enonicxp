@@ -107,9 +107,9 @@ exports.getContentByCmsKey = function (contentKey) {
 
 exports.dateTimePublished = function (content, language) {
     if (!content) return '';
-    var navPublished = libs.i18n.localize({key: 'nav.published'});
+    var navPublished = libs.i18n.localize({key: 'main-article.published', locale: language});
     var published = '', lastModified = '';
-    var navUpdated = libs.i18n.localize({key: 'nav.updated'});
+    var navUpdated = libs.i18n.localize({key: 'main-article.lastChanged', locale: language});
 
     if (language !== 'no' && language !== 'en') {
         published = libs.moment(content.publish.from).locale('no').format('L');
