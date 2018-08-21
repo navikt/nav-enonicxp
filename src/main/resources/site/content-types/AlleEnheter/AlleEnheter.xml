@@ -1,0 +1,4 @@
+<content-type>
+    <display-name>Alle Enheter</display-name>
+    <super-type>base:folder</super-type>
+</content-type>

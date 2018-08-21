@@ -18,7 +18,7 @@ exports.handle = function (s) {
     log.info(JSON.stringify(contentLib.getSite({
         key: '0bbae6ac-7e6d-4d65-a5d8-6bbe95e2f7ec'
     })));
-
+    var rdArr = [];
     elements.action = [{
         id: 'lenke',
         emit: 'lenke',
@@ -32,14 +32,29 @@ exports.handle = function (s) {
     }]
     socket.emit('newTask', elements);
     socket.on('lenke', function(action) {
-        task.submit({
-            description: 'Lager lenkeråterapport',
-            task: function () {
-                deadLinks(false, [], '');
-            }
-        })
+        context.run({
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            }, function() {
 
-    });
+
+            task.submit({
+                description: 'Lager lenkeråterapport',
+                task: function () {
+
+                    deadLinks(false, [], '');
+                    repo.create({
+                        _name: 'linkshit',
+                        data: rdArr
+                    })
+                }
+            });
+    })});
 
 
     var val = 0;
@@ -83,45 +98,14 @@ exports.handle = function (s) {
                     var address = reg.pop();
                     socket.emit('dlStatus', 'Visiting: ' + address);
                     if (!visit(address)) {
-
-                        var find = repo.query({
-                            query: '_name LIKE "linkshit"'
-                        }).hits[0];
-                        if (!find) {
-                            repo.create({
-                                _name: 'linkshit',
-                                data: {
-                                    shit: [{
-                                        el: el._id,
-                                        route: route,
-                                        address: address
-                                    }]
-                                }
-                            });
-                        }
-                        else {
-                            find = find.id;
-                            repo.modify({
-                                key: find,
-                                editor: function (c) {
-                                    if (!Array.isArray(c.data.shit)) c.data.shit = [c.data.shit];
-                                    c.data.shit.push({
-                                        el: el._id,
-                                        route: route,
-                                        address: address
-                                    })
-                                    return c;
-                                }
-                            })
-                        }
-
-
+                        rdArr.push({
+                            el: el._id,
+                            route: route,
+                            address: address
+                        })
                     }
 
-
                 }
-
-
             }
             else if (Array.isArray(something)) {
                 something.forEach(runDeep);
