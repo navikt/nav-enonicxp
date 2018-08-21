@@ -1091,11 +1091,10 @@ button.toggle-search.m-open span {
     }
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link .tilbaketilforsidelink {
-        bottom: 5px;
+        top: 12px;
         color: #fff;
         font-size: 1rem;
         border: none;
-        margin-left: 0px
     }
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link:before {
@@ -2461,7 +2460,8 @@ body > img[src*="nav.tns-cs.net"] {
 
 .tilbaketilgruppe .home-link .tilbaketilforsidelink {
     position: absolute;
-    margin-left: 8px
+    top: 2px;
+    left: 54px;
 }
 
 .tilbaketilgruppe .home-link:before {
@@ -3125,7 +3125,6 @@ body > img[src*="nav.tns-cs.net"] {
 
 .accessible-megafooter .panel-wrapper {
     height: 0;
-    border: 0;
     visibility: hidden;
     display: none;
     -moz-transition: height .5s;
@@ -5103,30 +5102,16 @@ a.knapp {
     margin-top: 24px
 }
 
-.office-details table {
-    margin-bottom: 25px;
-    border: none;
-    width: auto
-}
-
-.office-details table tr:first-child td {
-    background-color: inherit
-}
-
-.office-details table td {
-    padding: 0 25px 0 0
-}
-
-.office-details .article-body h3, .office-details .article-body h5 {
+.office-details .article-body h3 {
     margin-bottom: 0
 }
 
 .office-details .article-body p {
-    margin-bottom: 0
+    margin-bottom: 25px
 }
 
-.office-details .article-body div p:last-child {
-    margin-bottom: 25px
+.office-details .article-body > p:last-child {
+    margin-bottom: 0
 }
 
 .figure-container {
@@ -6177,7 +6162,7 @@ a.knapp {
 
 .din-situasjon-wrapper .lenkeboks {
     background-color: #fff;
-    padding: 2rem 3rem 4rem;
+    padding: 6rem 3rem 4rem;
     display: block;
     margin: 0.5rem;
     color: #3e3832;
@@ -6188,20 +6173,20 @@ a.knapp {
     width: 0
 }
 
-.din-situasjon-wrapper .lenkeboks.heldekkende {
+.din-situasjon-wrapper .lenkeboks:first-of-type {
     flex-basis: 100%;
     padding: 1.5rem 3rem 2rem;
-    border-color: #c2eaf7;
-    display: flex
+    border-color: #c2eaf7
 }
 
 @media (min-width: 38.75em) {
-    .din-situasjon-wrapper .lenkeboks.heldekkende .tekst {
-        padding-left: 1.5rem
+    .din-situasjon-wrapper .lenkeboks:first-of-type {
+        background: url(../../img/navno/gfx/icons/arbeidssoker_illustrasjon.svg) no-repeat 1.5rem 50% #fff;
+        padding-left: 8rem
     }
 }
 
-.din-situasjon-wrapper .lenkeboks.heldekkende .panelChevron {
+.din-situasjon-wrapper .lenkeboks:first-of-type .panelChevron {
     position: absolute;
     bottom: 0;
     left: auto;
@@ -6212,26 +6197,36 @@ a.knapp {
     display: flex
 }
 
-.din-situasjon-wrapper .lenkeboks.heldekkende .icon-size {
-    height: 100%;
-    width: 80px
+.din-situasjon-wrapper .lenkeboks:nth-of-type(2) {
+    background: url(../../img/navno/gfx/icons/venterdubarn.svg) no-repeat 50% 2rem #fff
 }
 
-.din-situasjon-wrapper .lenkeboks .icon {
-    display: flex;
-    justify-content: center;
-    padding-bottom: 0.75rem
+.din-situasjon-wrapper .lenkeboks:nth-of-type(3) {
+    background: url(../../img/navno/gfx/icons/erdusykemeldt.svg) no-repeat 50% 2rem #fff
 }
 
-@media (max-width: 38.75em) {
-    .din-situasjon-wrapper .lenkeboks .icon {
-        display: none
-    }
+.din-situasjon-wrapper .lenkeboks:nth-of-type(4) {
+    background: url(../../img/navno/gfx/icons/sykdomifamilien.svg) no-repeat 50% 2rem #fff
 }
 
-.din-situasjon-wrapper .lenkeboks .icon-size {
-    height: 40px;
-    width: 100%
+.din-situasjon-wrapper .lenkeboks:nth-of-type(5) {
+    background: url(../../img/navno/gfx/icons/okonomisksosialhjelp.svg) no-repeat 50% 2rem #fff
+}
+
+.din-situasjon-wrapper .lenkeboks:nth-of-type(6) {
+    background: url(../../img/navno/gfx/icons/aap.svg) no-repeat 50% 2rem #fff
+}
+
+.din-situasjon-wrapper .lenkeboks:nth-of-type(7) {
+    background: url(../../img/navno/gfx/icons/alderspensjon.svg) no-repeat 50% 2rem #fff
+}
+
+.din-situasjon-wrapper .lenkeboks:nth-of-type(8) {
+    background: url(../../img/navno/gfx/icons/hjelpemidler.svg) no-repeat 50% 2rem #fff
+}
+
+.din-situasjon-wrapper .lenkeboks:nth-of-type(9) {
+    background: url(../../img/navno/gfx/icons/okonomiskeproblemer.svg) no-repeat 50% 2rem #fff
 }
 
 .din-situasjon-wrapper .lenkeboks h2 {
@@ -6267,7 +6262,7 @@ a.knapp {
         flex-basis: 36%
     }
 
-    .din-situasjon-wrapper .lenkeboks.heldekkende {
+    .din-situasjon-wrapper .lenkeboks:first-of-type {
         flex-basis: 100%
     }
 }
@@ -7354,7 +7349,7 @@ ul.regular {
     padding: 14px;
     border: none;
     text-indent: -9999em;
-    background: transparent url('../../../built-navno/img/navno/gfx/mainmenu/sok_stor_morkeblaa.png') no-repeat center
+    background: transparent url('../../img/navno/gfx/mainmenu/sok_stor_morkeblaa.png') no-repeat center
 }
 
 .sokeForm .sokeelement #knappers {
@@ -7462,11 +7457,11 @@ ul.regular {
     font-size: 1.0675rem;
     font-weight: 600;
     padding: 20px 20px 0 60px;
-    background: transparent url('../../../built-navno/img/navno/gfx/icons/pluss_blaa.png') 30px 25px no-repeat
+    background: transparent url('../../img/navno/gfx/icons/pluss_blaa.png') 30px 25px no-repeat
 }
 
 .valgForSkjemasok.expanded h2 {
-    background: transparent url('../../../built-navno/img/navno/gfx/icons/minus_blaa.png') 30px 25px no-repeat
+    background: transparent url('../../img/navno/gfx/icons/minus_blaa.png') 30px 25px no-repeat
 }
 
 .valgForSkjemasok ul {
