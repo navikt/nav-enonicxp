@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div>
+            <h1 class="typo-sidetittel text-center" data-th-text="${title}"></h1>
+        </div>
+        <div class="din-situasjon-wrapper">
+            <p class="ingress typo-infotekst" data-th-text="${ingress}">
+
+            </p>
+            <a data-th-href="${item.url}" data-th-each="item : ${items}" class="lenkeboks" data-th-classappend="${item.className}">
+                <div class="icon">
+                    <img data-th-src="${item.logo}" src="" class="icon-size">
+                </div>
+                <div class="tekst">
+                    <h2 class="typo-innholdstittel" data-th-text="${item.title}"></h2>
+                    <p class="typo-infotekst" data-th-text="${item.ingress}"></p>
+                </div>
+                <div class="panelChevron"><span class="chevronboks chevron--hoyre"></span></div>
+            </a>
+        </div>
+    </div>
+</div>
