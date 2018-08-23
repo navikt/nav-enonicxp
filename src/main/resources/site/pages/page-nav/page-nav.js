@@ -41,7 +41,7 @@ function handleGet(req) {
     var menuItems = libs.menu.getSubMenus(site, 4);
     menuItems = menuItems[0];
 
-	var breadcrumbs = libs.menu.getBreadcrumbMenu({
+	var breadcrumbs = hideBreadcrumbs(content) ? {items: []} : libs.menu.getBreadcrumbMenu({
 		linkActiveItem: false,
 		showHomepage: false
 	});
@@ -122,4 +122,8 @@ function forIn(obj, fn, thisObj) {
         return fn.call(thisObj, obj[key], key, obj);
     }
     return forIn;
+}
+
+function hideBreadcrumbs(content) {
+    return content.x && content.x['no-nav-navno'] && content.x['no-nav-navno']['hide-breadcrumbs'] && content.x['no-nav-navno']['hide-breadcrumbs'].hide
 }
