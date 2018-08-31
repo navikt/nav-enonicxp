@@ -1,8 +1,25 @@
 
-plugins {
-    id 'java'
-    id "com.enonic.xp.app" version "1.1.0"
-}
+uildscript {
+    repositories {
+    	maven {
+	    url "http://central.maven.org/maven2/"
+	}
+    	maven {
+	    url "http://maven.adeo.no/nexus/content/groups/public/"
+	}
+         maven {
+            url "https://plugins.gradle.org/m2/"
+         }
+      }
+     dependencies {
+         classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
+     }
+ }
+ plugins {
+     id 'java'
+     
+ }
+ apply plugin: "com.enonic.xp.app"
 app {
     name = project.appName
     displayName = 'Nav.no - XP 2018'
