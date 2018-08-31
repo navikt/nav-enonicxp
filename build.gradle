@@ -1,5 +1,5 @@
 
-uildscript {
+buildscript {
     repositories {
     	maven {
 	    url "http://central.maven.org/maven2/"
