@@ -1,7 +1,7 @@
 buildscript {
     repositories {
     	maven {
-	    url "http://maven.adeo.no/nexus/content/groups/public"
+	    url "http://maven.adeo.no/nexus/content/groups/public/"
 	}
          maven {
             url "https://plugins.gradle.org/m2/"
