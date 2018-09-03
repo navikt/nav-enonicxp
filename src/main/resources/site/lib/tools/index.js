@@ -94,32 +94,29 @@ function changeNewsSchemas(content) {
     content.data.menuListItems = content.data.menuListItems || [];
     var ns = content.data.newsschemas;
     if (!Array.isArray(ns)) ns = [ns];
-    content.data.menuListItems.push({menuListName: 'Skjema og søknad', link: ns.reduce(function (t, el) {
-            if (el) t.push(el);
-            return t
-        },[])});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Skjema og søknad', ns.reduce(function (t, el) {
+        if (el) t.push(el);
+        return t
+    },[]));
     delete content.data.newschemas;
     if (content.data.forms) delete content.data.forms;
     return content;
 }
 exports.changeLaws = changeLaws;
 function changeLaws(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Regelverk', 'link': content.data.laws});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Regelverk', content.data.laws);
     delete content.data.laws;
     return content;
 }
 exports.changeInternational = changeInternational;
 function changeInternational(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Internasjonalt', 'link': content.data.international});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Internasjonalt', content.data.international);
     delete content.data.international;
     return content;
 }
 exports.changeSelfService = changeSelfService
 function changeSelfService(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Selvbetjening', 'link': content.data.selfservice});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Selbetjening', content.data.selfservice);
     delete content.data.selfservice;
     return content;
 }
@@ -134,29 +131,25 @@ function changeLanguage(content) {
 }
 exports.changeMembership = changeMembership
 function changeMembership(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Medlemskap i folketrygden', 'link': content.data.membership});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Medlemskap i folketrygden', content.data.membership);
     delete content.data.membership;
     return content;
 }
 exports.changeQA = changeQA
 function changeQA(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Spørsmål og svar', 'link': content.data.faq});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Spørsmål og svar', content.data.faq);
     delete content.data.faq;
     return content;
 }
 exports.changeNotifications = changeNotifications
 function changeNotifications(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Meld fra om endringer', 'link': content.data.notifications});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Meld fra om endringer', content.data.notifications);
     delete content.data.notifications;
     return content;
 }
 exports.changeAppeals = changeAppeals;
 function changeAppeals(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({'menuListName': 'Klagerettigheter', 'link': content.data.appeals});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Klagerettigheter', content.data.appeals);
     delete content.data.appeals;
     return content;
 }
@@ -209,22 +202,19 @@ function changeTitle(content) {
 
 exports.changeLinks = changeLinks;
 function changeLinks(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({menuListName: 'Relatert innhold', link: content.data.links});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Relatert innhold', content.data.links);
     delete content.data.links;
     return content;
 }
 exports.changeInformation = changeInformation;
 function changeInformation(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({menuListName: 'Relatert informasjon', link: content.data.information});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Relatert informasjon', content.data.information);
     delete content.data.information;
     return content;
 }
 exports.changeRates = changeRates
 function changeRates(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    content.data.menuListItems.push({menuListName: 'Satser', link: content.data.rates});
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Satser', content.data.rates);
     delete content.data.rates;
     return content;
 }
@@ -261,19 +251,8 @@ exports.logBeautify = function(content) {
 }
 function logBeutify(content) {
     if (!content) return "content undefined";
-    var string = JSON.stringify(content);
-    var ret = ""
-    var tn = 0;
-    var t = '  ';
-    var n = '\n';
-    return string.split("").map(function (value) {
-        if (value === '[' || value === '{') return t.repeat(t) + value + n + t.repeat(++tn);
-        else if (value === ']' || value === '}') return t.repeat(--tn) + value + n + t.repeat(tn);
-        else if (value === ',') return  value + n + t.repeat(tn);
-        return value
-    }).reduce(function(t, c) {
-        return t + c;
-    },ret)
+    else if (typeof content !== 'object') return content;
+    return JSON.stringify(content, null, 4);
 }
 
 exports.changeMenuItem = changeMenuItem;
@@ -289,7 +268,7 @@ function changeMenuItem(content, name, from) {
                 undefined :
         undefined;
     if (items) {
-        content.data.menuListItems.push({menuListName: name, link: items});
+        content.data.menuListItems = addMenuListItem(content.menuListItems, name, items);
     }
     delete content.data[from];
     return content;
@@ -320,10 +299,7 @@ function createTableListContent(content) {
 }
 exports.changeShortcuts = changeShortcuts;
 function changeShortcuts(content) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    if (!Array.isArray(content.data.menuListItems)) content.data.menuListItems = [content.data.menuListItems];
-    content.data.menuListItems.push({menuListName: 'Relatert innhold', link: content.data.shortcuts});
-
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Relatert innhold', content.data.shortcuts);
     delete content.data.shortcuts;
     return content;
 }
@@ -491,4 +467,20 @@ function modify(value, newId, oldId) {
         log.info('Failed modify');
         log.info(newId + ' ' + oldId);
     }
+}
+
+function addMenuListItem(menuListItems, name, links) {
+    name = name.replace(/ /g, '_');
+    if (!menuListItems) {
+        menuListItems = {
+            _selected: []
+        }
+    }
+    if (menuListItems._selected.indexOf(name) === -1) {
+        menuListItems._selected.push(name);
+    }
+    menuListItems[name] = {
+        link: Array.isArray(links) ? links : [links]
+    };
+    return menuListItems;
 }
