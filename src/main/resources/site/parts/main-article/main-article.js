@@ -12,10 +12,6 @@ exports.get = function(req) {
     // Define the model
     var content =portal.getContent();
 
-
-
-
-
     if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
         var ch = 1;
         toc = '<nav class="table-of-contents" data-selected-id>' +
@@ -28,8 +24,7 @@ exports.get = function(req) {
             var ssEnd =  content.data.text.indexOf('</h3>',ind);
             var ss = content.data.text.slice(h2End, ssEnd);
             toc += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
-            content.data.text = content.data.text.replace('<h3>', '<h2 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
-            content.data.text = content.data.text.replace('</h3>', '</h2>');
+            content.data.text = content.data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
             ind = content.data.text.indexOf('<h3>');
 
         }
