@@ -9,7 +9,6 @@ exports.get = function(req) {
     var cont = portal.getContent();
     var list = createList(cont);
 
-    log.info(JSON.stringify(list));
     function createList(cont) {
         var root = {};
         if (cont.hasChildren) {

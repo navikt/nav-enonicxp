@@ -1,6 +1,6 @@
 var thymeleaf = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
-var content = require('/lib/xp/content');
+var contentLib = require('/lib/xp/content');
 var contentTranslator = require('../../lib/contentTranslator');
 var utils = require('/lib/nav-utils');
 // Resolve the view
@@ -32,13 +32,32 @@ exports.get = function(req) {
 
 
     }
+
+    var languages = getLanguageVersions(content);
+
     var hasFact = false;
+    var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
+    socials = socials ? socials.map(function (el) {
+        var text = 'Del på ';
+        if (el === 'linkedin') text += 'LinkedIn';
+        else if (el === 'facebook') text += 'Facebook';
+        else text += 'Twitter';
+        return {
+            type: el,
+            text: text,
+            href: getSocialRef(el, content, req)
+        }
+    }) : false;
+
     if (content.data.fact && content.data.fact !== '') hasFact = true;
     var model = {
         published: utils.dateTimePublished(content, 'no'),
         toc: toc,
         content: content,
-        hasFact: hasFact
+        hasFact: hasFact,
+        hasLanguageVersions: languages.length > 0,
+        languages: languages,
+        socials: socials
     };
 
     // Render a thymeleaf template
@@ -49,3 +68,42 @@ exports.get = function(req) {
         body: body
     };
 };
+
+function getSocialRef(el, content, req) {
+    if (el === 'facebook') {
+        return 'http://www.facebook.com/sharer/sharer.php?u='+ req.url + '&amp;title=' + content.displayName.replace(/ /g, '%20')
+    }
+    else if (el === 'twitter') {
+        return 'http://twitter.com/intent/tweet?text=' + content.displayName.replace(/ /g, '%20') + ': ' + req.url;
+    }
+    else if (el === 'linkedin') {
+        return 'http://www.linkedin.com/shareArticle?mini=true&amp;url=' + req.url +'&amp;title=' + content.displayName.replace(/ /g, '%20') + '&amp;source=nav.no';
+    }
+}
+function getLanguageVersions(content) {
+    var lang = {
+        no: 'Bokmål',
+        en: 'English',
+        se: 'Sámegiella',
+        "nn_NO": 'Nynorsk'
+    }
+    var lRefs = content.data.languages;
+    var ret = [{
+        href: '#',
+        tClass: 'active-lang',
+        text: lang[content.language],
+        title: lang[content.language] + ' (Språkversjon)'
+    }];
+    if (!lRefs) return [];
+    else if (!Array.isArray(lRefs)) lRefs = [lRefs];
+    lRefs.forEach(function (ref) {
+        var el = contentLib.get({key: ref});
+        if (el) ret.push({
+            href: portal.pageUrl({id: ref}),
+            text: lang[el.language],
+            tClass: '',
+            title: lang[el.language] + ' (Språkversjon)'
+        })
+    });
+    return ret;
+}
