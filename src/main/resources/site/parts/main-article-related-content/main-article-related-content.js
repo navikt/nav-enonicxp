@@ -25,33 +25,6 @@ function handleGet(req) {
     });
 
     trans.logBeautify(links);
-    /*if (content.data.menuListItems && !Array.isArray(content.data.menuListItems)) content.data.menuListItems = [content.data.menuListItems];
-    content.data.menuListItems = (content.data.menuListItems) ? content.data.menuListItems.map(function (item) {
-        if (!item.link) item.link = [];
-        if (typeof item.link === 'string') item.link = [item.link];
-        return {menuListName: item.menuListName, link: item.link.map(function(l) {
-
-            var r;
-            try{
-                r= contentLib.get({ key: l});
-            } catch (e) {
-                log.info("Failed in marc " + l);
-            }
-            // Special cases
-            if (r && r.type === app.name + ':Skjema_for_veileder') {
-
-            }
-            // End special cases
-            return (r) ? { title: r.data.heading, link: portal.pageUrl({ id: r._id})} : undefined
-            }).reduce(function(t,e) {
-                if (e) t.push(e);
-                return t;
-            },[] )}
-    }).reduce(function (t, el) {
-        if (el.link && el.link.length > 0) t.push(el);
-        return t
-    }, []) : [];*/
-
 
     var hasMenuLists = (links.length > 0);
     log.info(hasMenuLists);
