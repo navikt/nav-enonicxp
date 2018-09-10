@@ -20,6 +20,7 @@ buildscript {
      
  }
  apply plugin: "com.enonic.xp.app"
+
 app {
     name = project.appName
     displayName = 'Nav.no - XP 2018'
