@@ -210,7 +210,7 @@ function mapElements(el) {
     if (el.type === app.name + ':Ekstern_lenke') {
         log.info(portal.pageUrl({path: el.data.url}))
     }
-    var e = (el) ? { heading: el.data.heading, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
+    var e = (el) ? { heading: el.data.heading || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
     if (e && e.ingress) {
         e.isHtml = e.ingress.startsWith('<')
     }
