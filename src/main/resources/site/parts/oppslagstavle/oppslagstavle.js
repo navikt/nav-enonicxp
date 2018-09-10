@@ -7,12 +7,10 @@ var t = require('/lib/contentTranslator');
 
 exports.get = function(req) {
 
-    log.info(JSON.stringify(contentLib.get({key: '594917a9-1141-4b04-8e8f-89536a5422ae'})));
-
     var content = portal.getContent();
 
     var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
-    t.logBeautify(table);
+
     var col = 'col-md-';
     var ntk = {
         sectionName: 'Nyttig å vite',
@@ -210,7 +208,7 @@ function mapElements(el) {
     if (el.type === app.name + ':Ekstern_lenke') {
         log.info(portal.pageUrl({path: el.data.url}))
     }
-    var e = (el) ? { heading: el.data.heading, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
+    var e = (el) ? { heading: el.data.heading || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
     if (e && e.ingress) {
         e.isHtml = e.ingress.startsWith('<')
     }

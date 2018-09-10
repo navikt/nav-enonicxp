@@ -14,12 +14,17 @@
             <h1 data-th-text="${content.data.heading}"></h1>
 
             <div class="toolbar">
+                <div class="content-languages leftmost-in-toolbar" data-th-if="${hasLanguageVersions}" role="button" tabindex="0" aria-haspopup="true" aria-owns="language-selection" aria-controls="language-selection"><span>Language</span>
+                    <ul class="nav hide" id="language-selection">
+                        <li data-th-each="language : ${languages}">
+                            <a data-th-href="${language.href}" data-th-class="${language.tClass}" data-th-title="${language.title}" data-th-text="${language.text}"></a>
+                        </li>
+                    </ul>
+                </div>
                 <div class="content-print" id="print-page" role="button" tabindex="0">
                     <span data-th-text="${portal.localize({'_key=nav.print.page','_locale=content.language'})}"></span>
                 </div>
             </div>
-
-            <!--<xsl:call-template name="generate-article-submenu"/>-->
 
             <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
                 <br data-th-if="${#strings.contains(content.data.ingress,'\n')}"/>
@@ -44,11 +49,13 @@
             </figure>
         </div>
 
-        <!--<xsl:call-template name="share-social-media">-->
-        <!--<xsl:with-param name="display-twitter" select="contentdata/share-twitter = 'true'"/>-->
-        <!--<xsl:with-param name="display-facebook" select="contentdata/share-facebook = 'true'"/>-->
-        <!--<xsl:with-param name="display-linkedin" select="contentdata/share-linkedin = 'true'"/>-->
-        <!--</xsl:call-template>-->
+        <div class="share-social-media" data-th-if="${socials}">
+            <ul class="share-social-media-pills">
+                <li data-th-each="social : ${socials}">
+                    <a data-th-href="${social.href}" class="js-share share-container" data-th-attr="data-medium=${social.type}" ><span data-th-text="${social.text}" class="share-social" data-th-classappend="${'share-' + social.type}"></span></a>
+                </li>
+            </ul>
+        </div>
     </div>
 
 </article>

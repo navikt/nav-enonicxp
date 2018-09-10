@@ -13,6 +13,15 @@
                     <custom-text>contentdata/heading</custom-text>
                     <occurrences maximum="1" minimum="1"/>
                 </input>
+                <item-set name="article">
+                    <label>Tabellen</label>
+                    <items>
+                        <input name="text" type="HtmlArea">
+                            <label>Tabell</label>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                    </items>
+                </item-set>
             </items>
         </field-set>
     </form>
