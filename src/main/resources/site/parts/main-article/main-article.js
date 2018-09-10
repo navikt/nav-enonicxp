@@ -3,6 +3,7 @@ var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var contentTranslator = require('../../lib/contentTranslator');
 var utils = require('/lib/nav-utils');
+var langLib = require('/lib/i18nUtil');
 // Resolve the view
 var view = resolve('main-article.html');
 
@@ -11,6 +12,8 @@ exports.get = function(req) {
     var toc = null;
     // Define the model
     var content =portal.getContent();
+
+    var lang = langLib.parseBundle(content.language);
 
     if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
         var ch = 1;
@@ -51,13 +54,14 @@ exports.get = function(req) {
 
     if (content.data.fact && content.data.fact !== '') hasFact = true;
     var model = {
-        published: utils.dateTimePublished(content, 'no'),
+        published: utils.dateTimePublished(content, content.language || 'no'),
         toc: toc,
         content: content,
         hasFact: hasFact,
         hasLanguageVersions: languages.length > 0,
         languages: languages,
-        socials: socials
+        socials: socials,
+        lang: lang
     };
 
     // Render a thymeleaf template

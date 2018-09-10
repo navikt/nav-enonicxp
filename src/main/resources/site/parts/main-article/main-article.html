@@ -22,7 +22,7 @@
                     </ul>
                 </div>
                 <div class="content-print" id="print-page" role="button" tabindex="0">
-                    <span data-th-text="${portal.localize({'_key=nav.print.page','_locale=content.language'})}"></span>
+                    <span data-th-text="${lang.tavleliste.printpage}"></span>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
         </div>
 
         <div class="well article-facts" data-th-if="${hasFact}">
-            <h3 class="h4 decorated" data-th-text="${portal.localize({'_key=nav.facts'})}">nav.facts</h3>
+            <h3 class="h4 decorated" data-th-text="${lang['main-article'].facts}">nav.facts</h3>
             <div data-th-utext="${portal.processHtml({'_value='+content.data.fact})}">fact</div>
         </div>
 
