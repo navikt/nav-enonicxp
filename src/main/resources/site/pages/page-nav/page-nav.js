@@ -51,7 +51,7 @@ function handleGet(req) {
 
     log.info(JSON.stringify(menuItems, null, 4));
 
-	var breadcrumbs = libs.menu.getBreadcrumbMenu({
+	var breadcrumbs = hideBreadcrumbs(content) ? {items: []} : libs.menu.getBreadcrumbMenu({
 		linkActiveItem: false,
 		showHomepage: false
 	});
@@ -185,4 +185,7 @@ if (!Array.prototype.findIndex) {
         configurable: true,
         writable: true
     });
+
+function hideBreadcrumbs(content) {
+    return content.x && content.x['no-nav-navno'] && content.x['no-nav-navno']['hide-breadcrumbs'] && content.x['no-nav-navno']['hide-breadcrumbs'].hide
 }
