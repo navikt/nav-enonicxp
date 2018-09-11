@@ -185,7 +185,7 @@ if (!Array.prototype.findIndex) {
         configurable: true,
         writable: true
     });
-
+}
 function hideBreadcrumbs(content) {
     return content.x && content.x['no-nav-navno'] && content.x['no-nav-navno']['hide-breadcrumbs'] && content.x['no-nav-navno']['hide-breadcrumbs'].hide
 }
