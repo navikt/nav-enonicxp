@@ -29,6 +29,7 @@ Temporary Items
 
 ### Gradle ###
 .gradle
+gradle.properties
 build/
 
 # Ignore Gradle GUI config
@@ -88,3 +89,5 @@ crashlytics-build.properties
 ### Sass ###
 .sass-cache
 *.css.map
+
+node_modules/
