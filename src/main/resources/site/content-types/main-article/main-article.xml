@@ -38,7 +38,7 @@
                     </items>
                 </field-set>
                 <field-set name="priority">
-                    <label></label>
+                    <label>Sett prioritet</label>
                     <help-text>Her velger du prioritet på boksene på seksjonssiden/forsiden, tall fra 1-9</help-text>
                     <items>
                         <field-set name="table">
@@ -145,7 +145,7 @@
             <label >Innhold i høyremenyen</label>
             <expanded>false</expanded>
             <occurrences minimum="0" maximum="1"/>
-            <options minimum="0" maximum="0">
+            <options minimum="0" maximum="11">
                 <option name="Relatert_innhold">
                     <label>Relatert innhold</label>
                     <items>
@@ -163,6 +163,7 @@
                                 <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
                                 <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
                             </config>
                         </input>
                     </items>
@@ -315,5 +316,9 @@
                 </input>
             </items>
         </field-set>
+        <input name="metaTags" type="Tag">
+            <label>Metatagger</label>
+            <occurrences minimum="0" maximum="0"/>
+        </input>
     </form>
 </content-type>
