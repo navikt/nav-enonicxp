@@ -831,8 +831,8 @@ function transcms2xpPage(id, socket) {
             else {
                 if (article) {
                     var originalArticlePath = article._path;
-                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')) {
-                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentHome)._path;
+                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentKey')) {
+                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentKey)._path;
                             log.info('Path:' + path);
                             originalArticlePath = path.split("/").slice(0,-1).join("/")+'/';
                             log.info('OriginalArticlePath: ' + originalArticlePath);
