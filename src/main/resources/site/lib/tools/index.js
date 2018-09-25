@@ -167,10 +167,14 @@ function realyIs(link) {
 }
 exports.mapReduceMenuItems = mapReduceMenuItems;
 function mapReduceMenuItems(content) {
-    content.data.menuListItems = content.data.menuListItems.reduce(function(t,el) {
-        if (realyIs(el.link)) t.push(el);
-        return t;
-    },[]);
+    var selected = content.data.menuListItems._selected;
+    selected = Array.isArray(selected) ? selected : [selected];
+    selected.forEach(function (value) {
+        if (!realyIs(content.data.menuListItems[value]).link) {
+            delete content.data.menuListItems[value];
+        }
+    });
+
     return content;
 }
 exports.insertMetaTag = insertMetaTag;

@@ -47,7 +47,7 @@ var globals = {
 
 	// Loop the entire path for current content based on the slashes. Generate one JSON item node for each item.
 	// If on frontpage, skip the path-loop
-	if (content._path != site._path) {
+	if (content._path !== site._path) {
 		var fullPath = content._path;
 		var arrVars = fullPath.split("/");
 		var arrLength = arrVars.length;
@@ -193,12 +193,12 @@ function menuItemToJson(content, levels) {
     var currentContent = libs.portal.getContent();
 
     // Is the menuitem we are processing in the currently viewed content's path?
-    if (content._path == currentContent._path.substring(0, content._path.length)) {
+    if (currentContent && content._path === currentContent._path.substring(0, content._path.length)) {
         inPath = true;
     }
 
     // Is the currently viewed content the current menuitem we are processing?
-    if (content._path == currentContent._path) {
+    if (currentContent && content._path === currentContent._path) {
         isActive = true;
         inPath = false; // Reset this so an menuitem isn't both in a path and active (makes no sense)
     }
