@@ -1,0 +1,8 @@
+<layout>
+  <display-name>main</display-name>
+  <config/>
+  <regions>
+    <region name="first"/>
+    <region name="second"/>
+  </regions>
+</layout>

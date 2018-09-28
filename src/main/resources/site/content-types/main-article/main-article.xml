@@ -145,7 +145,7 @@
             <label >Innhold i høyremenyen</label>
             <expanded>false</expanded>
             <occurrences minimum="0" maximum="1"/>
-            <options minimum="0" maximum="0">
+            <options minimum="0" maximum="10">
                 <option name="Relatert_innhold">
                     <label>Relatert innhold</label>
                     <items>
