@@ -38,7 +38,7 @@
                     </items>
                 </field-set>
                 <field-set name="priority">
-                    <label></label>
+                    <label>Prioritet</label>
                     <help-text>Her velger du prioritet på boksene på seksjonssiden/forsiden, tall fra 1-9</help-text>
                     <items>
                         <field-set name="table">
