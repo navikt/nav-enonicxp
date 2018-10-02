@@ -3,7 +3,8 @@
   <!--<filters>
     <response-filter name="translateFilter" order="10"/>
   </filters>-->
-  <x-data mixin="hide-breadcrumbs"/>
+  <!--x-data name="hide-breadcrumbs"/-->
+  <x-data name="menu-item"/>
   <config>
 
   </config>
