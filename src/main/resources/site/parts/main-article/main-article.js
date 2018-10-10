@@ -13,7 +13,7 @@ var cache = cacheLib.newCache({
 })
 exports.get = function(req) {
     //contentTranslator.logBeautify(req);
-    cache.get(req.path, function () {
+   return cache.get(req.path, function () {
         var toc = null;
         // Define the model
         var content =portal.getContent();
