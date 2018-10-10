@@ -3,49 +3,54 @@ var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 // Resolve the view
 var view = resolve('oppslagstavle.html');
-var t = require('/lib/contentTranslator');
 var langLib = require('/lib/i18nUtil');
-
+var cacheLib = require('/lib/cache');
+var cache = cacheLib.newCache({
+    size: 100,
+    expire: 3600*24
+});
 exports.get = function(req) {
+    return cache.get(req.path, function() {
+        var content = portal.getContent();
+        var lang = langLib.parseBundle(content.language).oppslagstavle;
 
-    var content = portal.getContent();
-    var lang = langLib.parseBundle(content.language).oppslagstavle;
+        var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
 
-    var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
+        var col = 'col-md-';
+        var ntk = {
+            sectionName: lang.niceToKnow,
+            data: getNTKElements(content)
+        };
+        var news = {
+            sectionName: lang.news,
+            data: getNewsElements(content)
+        };
+        var shortcuts = {
+            sectionName: lang.shortcuts,
+            data: getShortCutElements(content)
+        };
+        var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));
+        if (cont === 0) cont = 1;
+        col += 12/cont;
 
-    var col = 'col-md-';
-    var ntk = {
-        sectionName: lang.niceToKnow,
-        data: getNTKElements(content)
-    };
-    var news = {
-        sectionName: lang.news,
-        data: getNewsElements(content)
-    };
-    var shortcuts = {
-        sectionName: lang.shortcuts,
-        data: getShortCutElements(content)
-    };
-    var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));
-    if (cont === 0) cont = 1;
-    col += 12/cont;
+        // Define the model
+        var model = {
+            table: table,
+            nicetoknow: ntk,
+            news: news,
+            shortcuts: shortcuts,
+            col: col
+        };
 
-    // Define the model
-    var model = {
-        table: table,
-        nicetoknow: ntk,
-        news: news,
-        shortcuts: shortcuts,
-        col: col
-    };
+        // Render a thymeleaf template
+        var body = thymeleaf.render(view, model);
 
-    // Render a thymeleaf template
-    var body = thymeleaf.render(view, model);
+        // Return the result
+        return {
+            body: body
+        };
+    })
 
-    // Return the result
-    return {
-        body: body
-    };
 };
 
 
@@ -207,9 +212,7 @@ function getElements(els) {
 }
 
 function mapElements(el) {
-    if (el.type === app.name + ':Ekstern_lenke') {
-        log.info(portal.pageUrl({path: el.data.url}))
-    }
+
     var e = (el) ? { heading: el.data.heading || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
     if (e && e.ingress) {
         e.isHtml = e.ingress.startsWith('<')
