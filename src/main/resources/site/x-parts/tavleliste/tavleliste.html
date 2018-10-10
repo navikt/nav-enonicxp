@@ -1,0 +1,27 @@
+<article class="article-list" id="pagecontent">
+    <header class="article-head">
+        <time class="pubdate muted" data-th-datetime="${from}" data-th-text="${published}">Publisert
+            12.02.2015 | Sist endret 21.12.2016
+        </time>
+        <h1 role="heading" aria-level="1" data-th-text="${heading}"></h1>
+        <div class="toolbar">
+            <div class="tts-panel" data-scriptenabled="false">
+                <button class="tts-btn-listen tts-btn-collapsed"><span>Lytt</span></button>
+                <div id="tts-group" class="tts-btn-group hide">
+                    <button class="btn-tts tts-play" id="play-btn" title="Play"><span class="visuallyhidden">Play</span>
+                    </button>
+                    <button class="btn-tts tts-stop" title="Stop"><span class="visuallyhidden">Stop</span></button>
+                    <a href="http://help.leseweb.dk/?id=no" target="_blank" class="btn-tts tts-help" title="Help"><span
+                            class="visuallyhidden">Help</span></a>
+                    <button class="btn-tts tts-settings" onclick="javascript:vFact_showconfigbox()" title="Settings">
+                        <span class="visuallyhidden">Settings</span></button>
+                </div>
+            </div>
+            <div class="content-print" id="print-page" role="button" tabindex="0"><span>Skriv ut side</span></div>
+        </div>
+        <p class="preface" data-th-text="${ ingress }" ></p></header>
+    <article data-th-each="item : ${items}"><h2 role="heading" aria-level="2"><a
+            data-th-href="${item.src}" data-th-text="${item.heading}"></a></h2>
+        <p data-th-text="${item.ingress}"></p></article>
+    </article>
+</article>

@@ -1,0 +1,110 @@
+<section class="row inner-row">
+    <div class="hero-links">
+        <h1 class="visuallyhidden" data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
+            data-th-text="${portal.localize({'_key=nav.site.key-shortcuts'})}">nav.site.key-shortcuts</h1>
+
+        <div class="col-md-4 col-sm-12 hero-link-wrapper" data-th-each="content : ${table}">
+            <a data-th-href="${content.src}" class="hero-link">
+                <h2 data-th-text="${content.heading}" class="h4 decorated leading-icon"
+                    data-th-classappend="${content.icon}"></h2>
+                <p data-th-text="${content.ingress }" data-th-if="${!content.isHtml}"></p>
+                <p data-th-utext="${content.ingress }" data-th-if="${content.isHtml}" data-th-remove="tag"></p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="row inner-row linklists-container">
+    <h1 class="visuallyhidden" data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
+        data-th-text="${portal.localize({'_key=nav.site.priority-services-and-content'})}">nav.site.priority-services-and-content</h1>
+    <!--/*
+        <h1 class="visuallyhidden" aria-label="{portal:localize('nav.site.visually-hidden-heading', (), $stk:language)}">
+            <xsl:value-of select="portal:localize('nav.site.priority-services-and-content', (), $stk:language)"/>
+        </h1>
+    */-->
+
+    <div class="col-sm-12" data-th-classappend="${col}" data-th-if="${nicetoknow.data}">
+        <div data-th-remove="tag" data-th-if="${nicetoknow.data}">
+            <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}">
+            </h2>
+            <ul class="link-list">
+                <li data-th-each="content : ${nicetoknow.data}">
+                    <a href="#" data-th-href="${content.src}" data-th-text="${content.heading}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--/*
+        <div class="col-md-4 col-sm-12 ">
+            <xsl:if test="/result/contents[1]/content">
+                <h2 class="h4 decorated">
+                    <xsl:value-of select="/result/menuitems[1]/menuitem/display-name"/>
+                </h2>
+                <ul class="link-list">
+                    <xsl:apply-templates select="/result/contents[1]/content"/>
+                </ul>
+            </xsl:if>
+        </div>
+    */-->
+
+    <div class="col-sm-12" data-th-classappend="${col}" data-th-if="${news.data}">
+        <div data-th-remove="tag" data-th-if="${news.data}">
+            <h2 class="h4 decorated" data-th-text="${news.sectionName}"></h2>
+            <ul class="link-list-meta">
+                <li data-th-each="content : ${news.data}">
+                    <!--/*
+                    <time datetime="{$currentLink/@publishfrom}">
+                        <xsl:call-template name="stk:time.format-date">
+                            <xsl:with-param name="date" select="$currentLink/@publishfrom"/>
+                            <xsl:with-param name="language" select="$stk:language"/>
+                        </xsl:call-template>
+                    </time>
+                    */-->
+                    <!--/*
+                        RESULT:
+                        <time datetime="2018-01-03 09:21">03.01.2018</time> NO
+                        <time datetime="2018-01-03 09:21">03/01/2018</time> EN
+                        Can't find on Sami. These are the only three selectable languages on the site.
+                    */-->
+                    <time datetime="X" data-th-attr="datetime=${content.modifiedTime}" data-th-text="${content.modifiedTime}">X</time>
+                    <!--/*
+                    <xsl:choose>
+                        <xsl:when test="@contenttype = 'Ekstern_lenke'">
+                            <a href="{contentdata/url}">
+                                <xsl:if test="contentdata/target = 'new'">
+                                    <xsl:attribute name="rel" select="'external'"/>
+                                </xsl:if>
+                                <xsl:value-of select="$currentLink/title"/>
+                            </a>
+                        </xsl:when>
+
+                        <xsl:otherwise>
+                            <a href="{portal:createContentUrl($currentLink[1]/@key,())}">
+                                <xsl:value-of select="$currentLink/title"/>
+                            </a>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    */-->
+                    <a href="#" data-th-href="${content.src}" data-th-text="${content.heading}"></a>
+                </li>
+                <li><a href="#">Flere nyheter</a></li>
+                <!-- Produce context aware search link -->
+                <!--/*<xsl:call-template name="context-news-search"/>*/--><!--/* The XSLT-code behind this call spans almost 200 lines! It determines link href and text based on where on the site this part is rendered. */-->
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-sm-12" data-th-classappend="${col}" data-th-if="${shortcuts.data}">
+        <div data-th-remove="tag" data-th-if="${shortcuts.data}">
+            <h2 class="h4 decorated" data-th-text="${shortcuts.sectionName}"></h2>
+            <ul class="link-list">
+                <!--<xsl:apply-templates select="/result/contents[3]/content">-->
+                <!--<xsl:with-param name="isShortcutsNode" select="true()" as="xs:boolean"/>-->
+                <!--</xsl:apply-templates>-->
+                <li data-th-each="content : ${shortcuts.data}">
+                    <a href="#" data-th-href="${content.src}" data-th-text="${content.heading}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
