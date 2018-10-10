@@ -479,10 +479,6 @@ function doTableListTranslation(content) {
         } catch (e) {
             log.info('Failed table list content');
             log.info(e);
-            if (!content.data.hasOwnProperty('heading')) {
-                content.data.heading = content.displayName;
-                return doTableListTranslation(content);
-            }
             return content;
         }
         getRefs(content).forEach(function (value) {
@@ -490,6 +486,7 @@ function doTableListTranslation(content) {
         });
         deleteOldContent(content, newContent._path);
         newContent = moveNewContent(newContent, content._path);
+    //    moveFromContentSiteToContent(newContent.data.sectionContents, {path: newContent._path, id: newContent._id});
         return newContent
     }
     return content;
@@ -634,9 +631,13 @@ exports.transSidebeskrivelse = function(indexConfigurations, socket) {
         if (!r || r.type === toContentType('tavleliste')) return;
         var sidebeskrivelse = r;
         var sideHome = repo.get(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentHome);
+        if (!sideHome) {
+            sideHome = utils.getContentByCmsKey(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentKey);
+            log.info(JSON.stringify(sideHome, null, 4));
+            return;
+        }
         if (!sideHome) return;
         sideHome.data = join(sideHome.data, sidebeskrivelse.data);
-        if (!sideHome.data.hasOwnProperty('heading')) sideHome.data.heading = sideHome.displayName;
         sideHome = changeShortcuts(sideHome);
         sideHome = changeDescription(sideHome);
         sideHome = mapReduceMenuItems(sideHome);
@@ -656,6 +657,7 @@ exports.transSidebeskrivelse = function(indexConfigurations, socket) {
                 return sideHome;
             }
         });
+        moveFromContentSiteToContent(sideHome.data.sectionContents, {path: sideHome._path, id: sideHome._id});
     });
 
 }
@@ -694,10 +696,9 @@ exports.changetavleliste = function (id) {
     })
 
 }
-var tms = true;
+
 function transMainSections(id, socket) {
-    if (!tms) return;
-    tms = false;
+    log.info('Translating Mains');
     var start = 0;
     var count = 100;
     var r = [];
@@ -711,7 +712,7 @@ function transMainSections(id, socket) {
                     must: {
                         hasValue: {
                             field: 'page.template',
-                            values: ['93e5b5ba-e593-4d43-b055-3234d164f7db']
+                            values: [getTemplate("person-seksjonsforside-niva-1")]
                         }
                     }
                 }
@@ -724,23 +725,23 @@ function transMainSections(id, socket) {
     var indexParams = id;
     if (socket) socket.emit('mainmax', r.length);
     r.forEach(function (value, index) {
-    if (socket) socket.emit('mainval', index +1);
+        if (socket) socket.emit('mainval', index +1);
 
-    var content = repo.get(value._id);
-    var was = content.type;
-    if (was === toContentType('main-article')) return;
-    content.data = translateTables(content);
-    content._indexConfig = indexParams;
-    content.type = toContentType('oppslagstavle');
-   // log.info(logBeautify(content));
-    if (!content.page) content.page = {};
-    content.page.template = getTemplate('seksjon-hovedseksjon');
-    repo.modify({
-        key: content._id,
-        editor: function () {
-            return content;
-        }
-    });
+        var content = repo.get(value._id);
+        var was = content.type;
+        if (was === toContentType('main-article')) return;
+        content.data = translateTables(content);
+        content._indexConfig = indexParams;
+        content.type = toContentType('oppslagstavle');
+       // log.info(logBeautify(content));
+        if (!content.page) content.page = {};
+        content.page.template = getTemplate('seksjon-hovedseksjon');
+        repo.modify({
+            key: content._id,
+            editor: function () {
+                return content;
+            }
+        });
     })
     //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
     //log.info(logBeautify(repo.get(r[0]._id)))
@@ -764,7 +765,7 @@ function transMinSections(id, socket) {
 
         }).hits;
         r = r.concat(h.reduce(function(t, el){
-            if (el.page && el.page.template === 'a5316223-aeaf-4f70-9b78-126dba2a0aab') t.push(el);
+            if (el.page && el.page.template === getTemplate('person-seksjonsside-niva-2')) t.push(el);
             return t;
         },[]));
         count = h.length;
@@ -781,20 +782,46 @@ function transMinSections(id, socket) {
             content.type = toContentType('oppslagstavle');
             if (!content.page) content.page = {};
             content.page.template = getTemplate('seksjon-hovedseksjon');
-            log.info(logBeautify(content));
             repo.modify({
                 key: content._id,
                 editor: function () {
                     return content;
                 }
             });
+            moveFromContentSiteToContent(content.data.tableContents, { path: content._path, id: content._id });
         }
         else log.info(logBeautify(value));
     })
-    //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
-    //log.info(logBeautify(repo.get(r[0]._id)))
-    //log.info(logBeautify(r));
+
+
 }
+function moveFromContentSiteToContent(elements, contentObj) {
+    elements = elements ? Array.isArray(elements) ? elements : [elements] : [];
+    elements.forEach(function (value) {
+        var element = repo.get(value);
+        if (element && element._path.split('/').indexOf('www.nav.no') === -1) {
+            var done = false;
+            var str = '';
+            var int = 2;
+            while (!done) {
+                done = true;
+                try {
+                    repo.move({
+                        source: value,
+                        target: contentObj.path + '/' + str
+                    });
+                } catch (e) {
+                    str = element._name + int++;
+                    done = false;
+
+                }
+            }
+
+
+        }
+    })
+}
+
 function transcms2xpPage(id, socket) {
 
     var r = [];
@@ -831,14 +858,23 @@ function transcms2xpPage(id, socket) {
             else {
                 if (article) {
                     var originalArticlePath = article._path;
-                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentKey')) {
-                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentKey)._path;
+                    if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')) {
+                        var p = repo.get(article.x['no-nav-navno'].cmsContent.contentHome);
+                        if (p) {
+                            var path = p._path;
                             log.info('Path:' + path);
-                            originalArticlePath = path.split("/").slice(0,-1).join("/")+'/';
-                            log.info('OriginalArticlePath: ' + originalArticlePath);
-
-
-
+                            originalArticlePath = path.split("/").slice(0, -1).join("/") + '/';
+                            if (path.indexOf('relatert-informasjon') !== -1) {
+                                originalArticlePath = cms2xp._path.split('/').slice(0,-1).join('/') + '/';
+                            }
+                        }
+                        else {
+                            log.info(JSON.stringify(article));
+                            log.info('Missing shit')
+                        }
+                    }
+                    else if (article._name === cms2xp._name || article._path.split('/').indexOf('relatert-informasjon') !== -1) {
+                        originalArticlePath = cms2xp._path.split('/').slice(0,-1).join('/') + '/';
                     }
                     repo.move({
                         source: article._id,
@@ -876,7 +912,6 @@ function transcms2xpPage(id, socket) {
                      */
 
                      repo.delete(cms2xp._id);
-                    log.info(originalArticlePath);
                     try {
                         repo.move({
                             source: article._id,
@@ -890,6 +925,7 @@ function transcms2xpPage(id, socket) {
                             target: originalArticlePath.split('/').slice(0,-2).join("/")+'/'
                         })
                     }
+                    article = repo.get(article._id);
                      article = ret[stripContentType(article.type)](article);
 
 
@@ -922,5 +958,8 @@ function getTemplate(templateName) {
     var r = contentLib.query({
         query: '_name LIKE "' + templateName +'"'
     });
+    if (!r.hits[0]) {
+        r = contentLib.get({key: '/www.nav.no/_templates/' + templateName})
+    }
     return r.hits[0]._id
 }

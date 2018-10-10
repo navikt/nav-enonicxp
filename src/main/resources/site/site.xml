@@ -5,6 +5,8 @@
   </filters>-->
   <x-data mixin="hide-breadcrumbs"/>
   <x-data mixin="menu-item"/>
+  <!--x-data name="hide-breadcrumbs"/-->
+  <x-data name="menu-item"/>
   <config>
 
   </config>

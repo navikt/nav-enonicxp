@@ -6,10 +6,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input type="TextArea" name="heading">
-            <label>Tittel</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
         <input type="TextArea" name="originaltitle">
             <label>Orginaltittel</label>
             <occurrences minimum="0" maximum="1"/>
@@ -49,23 +45,166 @@
                 </input>
             </items>
         </item-set>
-        <item-set name="menuListItems">
-            <label>Menylisteoppføringer</label>
-            <items>
-                <input name="menuListName" type="TextLine">
-                    <label>Navn på listeoppføring</label>
-                </input>
-                <input type="HtmlArea" name="text">
-                    <label>Tekstbasert innhold</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input type="ContentSelector" name="link">
-                    <label>Linker til innhold</label>
-                    <occurrences maximum="0" minimum="0"/>
-                </input>
-            </items>
-            <occurrences minimum="0" maximum="0"/>
-        </item-set>
+        <option-set name="menuListItems">
+            <label >Innhold i høyremenyen</label>
+            <expanded>false</expanded>
+            <occurrences minimum="0" maximum="1"/>
+            <options minimum="0" maximum="11">
+                <option name="Relatert_innhold">
+                    <label>Relatert innhold</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Innhold</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                                <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
+                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Regelverk">
+                    <label>Regelverk</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Regelverk</label>
+                            <custom-text>contentdata/laws</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Saksbehandlingstider">
+                    <label>Saksbehandlingstider</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Saksbehandlingstider</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Medlemskap i folketrygden">
+                    <label>Medlemskap i folketrygden</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Medlemskap i folketrygden</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Satser">
+                    <label>Satser</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Satser</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Selvbetjening">
+                    <label >Selvbetjening</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Selvbetjening</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Klagerettigheter">
+                    <label >Klagerettigheter</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Klagerettigheter</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Skjema og søknad">
+                    <label >Skjema og søknad</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Skjema og søknad</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Skjemavedlegg</allow-content-type>
+                                <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                                <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Meld fra om endringer">
+                    <label >Meld fra om endringer</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Meld fra om endringer</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Internasjonalt">
+                    <label >Internasjonalt</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Internasjonalt</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
         <input name="metaTags" type="Tag">
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>

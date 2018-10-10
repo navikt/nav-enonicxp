@@ -197,7 +197,7 @@ function itterateContents(contents, socket) {
     var ret = false;
 
     contents.forEach(function (value, index) {
-        try {
+
             var el = repo.get(value._id);
             trans.logBeautify(el);
             socket.emit(stripContentType(el.type) + 'val', index + 1);
@@ -205,11 +205,8 @@ function itterateContents(contents, socket) {
                 key: el._id,
                 editor: editor
             })
-        }
-        catch (e) {
-            ret = 'Failed to modify ' + value._path + ' ' + e;
-            log.info(ret);
-        }
+
+
 
     });
 
@@ -240,12 +237,11 @@ function getIndexConfig(type) {
     if (!ret) {
         trans.logBeautify(ret);
         var data = (type === 'main-article') ? {
-                'heading': type,
+
                 ingress: type,
                 text: type
 
             } : {
-            'heading': type,
             ingress: type
 
         };
@@ -312,6 +308,14 @@ function translateCMSStuff(socket) {
     return false;
 }
 
+function getTemplate(templateName) {
+    var ret = '';
+    var r = contentLib.query({
+        query: '_name LIKE "' + templateName +'"'
+    });
+    return r.hits[0]._id
+}
+
 function changeSection2TavleListe(socket) {
     var pagesWithChildren = [];
     var length = 100;
@@ -325,7 +329,7 @@ function changeSection2TavleListe(socket) {
         length = q.hits.length;
         start += length;
         pagesWithChildren = q.hits.reduce(function (t, el) {
-            if (el.page && el.page.template && el.page.template ==='debed1f9-8310-4e79-93f0-c0f64245d4fc') t.push(el);
+            if (el.page && el.page.template && el.page.template === getTemplate("artikkelliste-med-sidebeskrivelse-subseksjon")) t.push(el);
             return t;
         }, pagesWithChildren)
     }

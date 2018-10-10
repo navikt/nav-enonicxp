@@ -116,7 +116,7 @@ function changeInternational(content) {
 }
 exports.changeSelfService = changeSelfService
 function changeSelfService(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Selbetjening', content.data.selfservice);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Selvbetjening', content.data.selfservice);
     delete content.data.selfservice;
     return content;
 }
@@ -170,11 +170,10 @@ function mapReduceMenuItems(content) {
     var selected = content.data.menuListItems._selected;
     selected = Array.isArray(selected) ? selected : [selected];
     selected.forEach(function (value) {
-        if (!realyIs(content.data.menuListItems[value]).link) {
+        if (!realyIs(content.data.menuListItems[value].link)) {
             delete content.data.menuListItems[value];
         }
     });
-
     return content;
 }
 exports.insertMetaTag = insertMetaTag;
@@ -310,7 +309,6 @@ function changeShortcuts(content) {
 
 exports.createNewTableContent = createNewTableContent;
 function createNewTableContent(tableElements, ntkElements, newElements, scElements, content) {
-
     var data = {
         hasTableItems: (tableElements.length > 0) ? "true": 'false',
         heading: content.title || content.heading || content.displayName,
@@ -467,24 +465,31 @@ function modify(value, newId, oldId) {
             }
         });
     } catch (e) {
-        log.info(logBeutify(value))
+        log.info(JSON.stringify(contentLib.get({ key: value._id}), null, 4));
         log.info('Failed modify');
         log.info(newId + ' ' + oldId);
     }
 }
 
 function addMenuListItem(menuListItems, name, links) {
-    name = name.replace(/ /g, '_');
+    links = links ? Array.isArray(links) ? links : [links] : [];
     if (!menuListItems) {
         menuListItems = {
             _selected: []
         }
     }
-    if (menuListItems._selected.indexOf(name) === -1) {
-        menuListItems._selected.push(name);
+    if (!menuListItems._selected) {
+        menuListItems = {
+            _selected: []
+        }
     }
-    menuListItems[name] = {
-        link: Array.isArray(links) ? links : [links]
-    };
+    if (links.length > 0) {
+        if (menuListItems._selected.indexOf(name) === -1) {
+            menuListItems._selected.push(name);
+        }
+        menuListItems[name] = {
+            link: Array.isArray(links) ? links : [links]
+        };
+    }
     return menuListItems;
 }

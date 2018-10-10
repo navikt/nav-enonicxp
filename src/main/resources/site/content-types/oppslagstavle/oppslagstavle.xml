@@ -5,10 +5,6 @@
         <field-set name="meta">
             <label>Oppslagstavle - informasjon</label>
             <items>
-                <input type="TextLine" name="heading">
-                    <label>Tittel</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
                 <input type="TextLine" name="ingress">
                     <label>Beskrivelse</label>
                     <occurrences minimum="0" maximum="1" />
