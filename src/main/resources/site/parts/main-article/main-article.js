@@ -6,71 +6,75 @@ var utils = require('/lib/nav-utils');
 var langLib = require('/lib/i18nUtil');
 // Resolve the view
 var view = resolve('main-article.html');
+var cache = require('/lib/cacheControll');
 
 exports.get = function(req) {
     //contentTranslator.logBeautify(req);
-    var toc = null;
-    // Define the model
-    var content =portal.getContent();
+    return cache.getPaths('main-article' + req.path, function () {
+        var toc = null;
+        // Define the model
+        var content =portal.getContent();
 
-    var lang = langLib.parseBundle(content.language);
+        var lang = langLib.parseBundle(content.language);
 
-    if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
-        var ch = 1;
-        toc = '<nav class="table-of-contents" data-selected-id>' +
-            '<h2 class="visuallyhidden" role="heading" aria-level="2">Innholdsfortegnelse</h2><ol>';
-        var ind = content.data.text.indexOf('<h3>');
-        var count = 0;
-        while (ind !== -1 && count < 100) {
-            count++;
-            var h2End = ind + 4;
-            var ssEnd =  content.data.text.indexOf('</h3>',ind);
-            var ss = content.data.text.slice(h2End, ssEnd);
-            toc += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
-            content.data.text = content.data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
-            ind = content.data.text.indexOf('<h3>');
+        if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
+            var ch = 1;
+            toc = '<nav class="table-of-contents" data-selected-id>' +
+                '<h2 class="visuallyhidden" role="heading" aria-level="2">Innholdsfortegnelse</h2><ol>';
+            var ind = content.data.text.indexOf('<h3>');
+            var count = 0;
+            while (ind !== -1 && count < 100) {
+                count++;
+                var h2End = ind + 4;
+                var ssEnd =  content.data.text.indexOf('</h3>',ind);
+                var ss = content.data.text.slice(h2End, ssEnd);
+                toc += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
+                content.data.text = content.data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
+                ind = content.data.text.indexOf('<h3>');
+
+            }
+            toc += '</ol></nav>';
+
 
         }
-        toc += '</ol></nav>';
 
+        var languages = getLanguageVersions(content);
 
-    }
+        var hasFact = false;
+        var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
+        socials = socials ? socials.map(function (el) {
+            var text = 'Del på ';
+            if (el === 'linkedin') text += 'LinkedIn';
+            else if (el === 'facebook') text += 'Facebook';
+            else text += 'Twitter';
+            return {
+                type: el,
+                text: text,
+                href: getSocialRef(el, content, req)
+            }
+        }) : false;
 
-    var languages = getLanguageVersions(content);
+        if (content.data.fact && content.data.fact !== '') hasFact = true;
+        var model = {
+            published: utils.dateTimePublished(content, content.language || 'no'),
+            toc: toc,
+            content: content,
+            hasFact: hasFact,
+            hasLanguageVersions: languages.length > 0,
+            languages: languages,
+            socials: socials,
+            lang: lang
+        };
 
-    var hasFact = false;
-    var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
-    socials = socials ? socials.map(function (el) {
-        var text = 'Del på ';
-        if (el === 'linkedin') text += 'LinkedIn';
-        else if (el === 'facebook') text += 'Facebook';
-        else text += 'Twitter';
+        // Render a thymeleaf template
+        var body = thymeleaf.render(view, model);
+
+        // Return the result
         return {
-            type: el,
-            text: text,
-            href: getSocialRef(el, content, req)
-        }
-    }) : false;
+            body: body
+        };
+    })
 
-    if (content.data.fact && content.data.fact !== '') hasFact = true;
-    var model = {
-        published: utils.dateTimePublished(content, content.language || 'no'),
-        toc: toc,
-        content: content,
-        hasFact: hasFact,
-        hasLanguageVersions: languages.length > 0,
-        languages: languages,
-        socials: socials,
-        lang: lang
-    };
-
-    // Render a thymeleaf template
-    var body = thymeleaf.render(view, model);
-
-    // Return the result
-    return {
-        body: body
-    };
 };
 
 function getSocialRef(el, content, req) {
