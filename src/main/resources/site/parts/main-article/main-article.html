@@ -41,7 +41,6 @@
             <h3 class="h4 decorated" data-th-text="${lang['main-article'].facts}">nav.facts</h3>
             <div data-th-utext="${portal.processHtml({'_value='+content.data.fact})}">fact</div>
         </div>
-
         <div class="figure-container" data-th-if="${content.data.image}">
             <figure data-th-classappend="|${content.data.imagesize == '100' ? 'figure-full' : ''} ${content.data.imagesize == '70' ? 'figure-medium' : ''} ${content.data.imagesize == '40' ? 'figure-small' : ''}| ">
                 <img data-th-src="${portal.imageUrl({'_id='+content.data.image, '_scale=full()'})}"/>

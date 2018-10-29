@@ -29,11 +29,8 @@ exports.get = function(req) {
             toc += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
             content.data.text = content.data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
             ind = content.data.text.indexOf('<h3>');
-
         }
         toc += '</ol></nav>';
-
-
     }
 
     var languages = getLanguageVersions(content);

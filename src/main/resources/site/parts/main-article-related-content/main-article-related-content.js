@@ -13,10 +13,16 @@ function handleGet(req) {
             : []
         );
     var links = keys.map( function(el) {
-        return ({ name: el, links: forceArr(menuListItems[el].link).map(function (link){
-                var element = contentLib.get({key: link});
+        var links = forceArr(menuListItems[el].link).concat(menuListItems[el].files ? forceArr(menuListItems[el].files).map(function (fileid) {
+            var file = contentLib.get({
+                key: fileid
+            })
+            return { isFile: true, link: portal.attachmentUrl({ id: file._id, download: true}), displayName: file.displayName, data: {} }
+        }) : []);
+        return ({ name: el, links: links.map(function (link){
+                var element = typeof link === 'string' ? contentLib.get({key: link}) : link;
                 return(
-                    { title: element.data.heading || element.displayName, link: portal.pageUrl({id: link}) }
+                    { title: element.data.heading || element.displayName, link: !element.isFile ? portal.pageUrl({id: link}) : element.link }
                 );
             })
         });
