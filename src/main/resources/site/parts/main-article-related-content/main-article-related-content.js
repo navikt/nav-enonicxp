@@ -12,25 +12,36 @@ function handleGet(req) {
             ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected])
             : []
         );
-    var links = keys.map( function(el) {
-        var links = forceArr(menuListItems[el].link).concat(menuListItems[el].files ? forceArr(menuListItems[el].files).map(function (fileid) {
-            var file = contentLib.get({
-                key: fileid
+    var linkList = keys.map( function(el) {
+        var links = forceArr(menuListItems[el].link).concat(
+            (menuListItems[el].files
+                ?   forceArr(menuListItems[el].files).map(function (fileid) {
+                        var file = contentLib.get({key: fileid});
+                        return {
+                            isFile: true,
+                            link: portal.attachmentUrl({ id: file._id, download: true}),
+                            displayName: file.displayName,
+                            data: {}
+                        }
+                    })
+                :   []
+            )
+        );
+        return {
+            name: el,
+            links: links.map(function (link){
+                var element = (typeof link === 'string' ? contentLib.get({key: link}) : link);
+                return {
+                    title: element.data.heading || element.displayName,
+                    link: (!element.isFile ? portal.pageUrl({id: link}) : element.link)
+                };
             })
-            return { isFile: true, link: portal.attachmentUrl({ id: file._id, download: true}), displayName: file.displayName, data: {} }
-        }) : []);
-        return ({ name: el, links: links.map(function (link){
-                var element = typeof link === 'string' ? contentLib.get({key: link}) : link;
-                return(
-                    { title: element.data.heading || element.displayName, link: !element.isFile ? portal.pageUrl({id: link}) : element.link }
-                );
-            })
-        });
+        };
     });
 
-    var hasMenuLists = (links.length > 0);
+    var hasMenuLists = (linkList.length > 0);
     var params = {
-        relatedContentList: links,
+        relatedContentList: linkList,
         hasMenuList: hasMenuLists
     };
 
