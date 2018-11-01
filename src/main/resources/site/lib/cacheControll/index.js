@@ -2,20 +2,35 @@ var cache = require('/lib/cache');
 var event = require('/lib/xp/event');
 var standardCache = {
     size: 1000,
-    expire: 3600 * 24 // One day
-}
+    expire: 3600 * 24 /* One day */
+};
+var nodeLib = require('/lib/xp/node');
+var repo= nodeLib.connect({
+    repoId: 'cms-repo',
+    branch: 'draft',
+    principals: ["role:system.admin"]
+});
 var caches = {
     decorator: cache.newCache(standardCache),
     paths: cache.newCache(standardCache)
-}
+};
 module.exports = {
     wipeDecorator: wipe('decorator'),
     wipePaths: wipe('paths'),
     getDecorator: getSome('decorator'),
     getPaths: getSome('paths'),
     activateEventListener: activateEventListener,
-    whipeAll: wipeAll
+    wipeAll: wipeAll,
+    stripPath: getPath
 };
+
+function getPath(path) {
+    if (!path) return;
+    var arr = path.split('/');
+    /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
+    /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
+    return arr.shift() + '/' + arr.slice(arr.indexOf('www.nav.no')).join('/');
+}
 
 function wipeAll() {
     wipe('decorator')();
@@ -24,30 +39,53 @@ function wipeAll() {
 
 function wipe(name) {
     return function(key) {
+       // log.info('Cache remove key ' + getPath(key))
         if (!key) {
             caches[name].clear();
         }
-        else caches[name].remove(key);
+        else caches[name].remove(getPath(key));
     }
 }
 
+function wipeOnChange(value) {
+    var wipee = repo.get(value.id);
+    var w = wipe('paths');
+    w('main-article' + getPath(wipee._path));
+    w('main-article-linked-list' + getPath(wipee._path));
+    w('main-article-related-content' + getPath(wipee._path));
+    w('oppslagstavle' + getPath(wipee._path));
+    w('tavleliste' + getPath(wipee._path));
+    w('tavleliste-relatert-innhold' + getPath(wipee._path));
+    w('transport' + getPath(wipee._path));
 
+}
 
 function getSome(name) {
     return function (key, f, params) {
-        return caches[name].get(key, function () {
-            log.info('Cache ' + name + ': ' + caches[name].getSize());
+        /* Vil ikke cache innhold som redigeres */
+        // TODO test for www-x adresser
+        return key.indexOf('/admin/portal/edit') === -1 ? caches[name].get(getPath(key), function () {
+           // log.info('Store cache key: ' + getPath(key));
+           // log.info('Cache ' + name + ': ' + caches[name].getSize());
             return f(params);
-        })
+        }) : f(params);
     }
 }
 
 function activateEventListener() {
+    wipeAll();
     event.listener({
-        type: 'node.update',
+        type: 'node.updated',
         localOnly: false,
         callback: function (event) {
-            log.info(JSON.stringify(event,null,4))
+            var node = event.data.nodes.pop();
+            wipeOnChange(node);
+            repo.query({
+                start: 0,
+                count: 100,
+                branch: 'draft',
+                query: "_references LIKE '" + node.id + "'"
+            }).hits.forEach(wipeOnChange);
         }
     })
 }

@@ -22,7 +22,7 @@ var urls = {
 function handleGet(req) {
     var site = libs.portal.getSite();
     var content = libs.portal.getContent();
-    return libs.cache.getDecorator('header' + content.language || 'no', function () {
+    return libs.cache.getDecorator('header' + (content.language ? content.language : 'no'), function () {
         var languageBundles = libs.lang.parseBundle(content.language).pagenav;
         var assets = {
             img: {

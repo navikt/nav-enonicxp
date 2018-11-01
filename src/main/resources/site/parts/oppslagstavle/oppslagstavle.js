@@ -210,7 +210,7 @@ function getElements(els) {
 }
 
 function mapElements(el) {
-    return (el) ? { isHtml: el.data.ingress? el.data.ingress.startsWith('<'): false, heading: el.data.heading || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
+    return (el) ? { isHtml: el.data.ingress? el.data.ingress.startsWith('<'): false, heading: el.displayName || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
 }
 function removeNullElements(t, el) {
     if (el) t.push(el);

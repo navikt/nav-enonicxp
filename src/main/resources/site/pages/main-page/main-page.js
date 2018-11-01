@@ -8,11 +8,12 @@ var libs = {
 var view = resolve('main-page.html');
 
 function handleGet(req) {
-
+   // log.info(JSON.stringify(req, null, 4))
     var content = libs.portal.getContent();
 
     //Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
     //TODO: avklare komavdelingens krav til  GTM
+    //TODO: Denne må bli smartere
     var path = content._path.split('/');
     var level3 = (path[3] ? path[3] : "").toLowerCase();
     return libs.cache.getDecorator('main-page' + level3, function () {

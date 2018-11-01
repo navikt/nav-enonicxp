@@ -8,8 +8,9 @@ var langLib = require('/lib/i18nUtil');
 var view = resolve('main-article.html');
 var cache = require('/lib/cacheControll');
 
-exports.get = function(req) {
+exports.get = function handleGet(req) {
     //contentTranslator.logBeautify(req);
+
     return cache.getPaths('main-article' + req.path, function () {
         var toc = null;
         // Define the model
