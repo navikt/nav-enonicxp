@@ -136,10 +136,7 @@
                 <input name="caption" type="TextLine">
                     <label>Bildetekst</label>
                 </input>
-                <input type="AttachmentUploader" name="video">
-                    <occurrences minimum="0" maximum="0"/>
-                    <label>Legg ved filer</label>
-                </input>
+
             </items>
         </field-set>
         <option-set name="menuListItems">
@@ -150,10 +147,19 @@
                 <option name="Relatert_innhold">
                     <label>Relatert innhold</label>
                     <items>
+                    <input type="MediaSelector" name="files">
+                        <occurrences minimum="0" maximum="0"/>
+                        <label>Legg ved filer</label>
+                        <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
+                        <config>
+                            <allowContentType>media:document</allowContentType>
+                        </config>
+                    </input>
+
                         <input name="link" type="ContentSelector">
                             <label>Innhold</label>
                             <custom-text>contentdata/links</custom-text>
-                            <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
+
                             <occurrences maximum="0" minimum="1"/>
                             <config>
                                 <allow-content-type>no.nav.navno:Fil</allow-content-type>
