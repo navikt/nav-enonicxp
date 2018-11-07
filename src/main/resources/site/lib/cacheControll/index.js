@@ -4,6 +4,7 @@ var standardCache = {
     size: 1000,
     expire: 3600 * 24 /* One day */
 };
+var etag = Date.now().toString(16);
 var nodeLib = require('/lib/xp/node');
 var repo= nodeLib.connect({
     repoId: 'cms-repo',
@@ -21,7 +22,8 @@ module.exports = {
     getPaths: getSome('paths'),
     activateEventListener: activateEventListener,
     wipeAll: wipeAll,
-    stripPath: getPath
+    stripPath: getPath,
+    etag: getEtag
 };
 
 function getPath(path) {
@@ -32,7 +34,16 @@ function getPath(path) {
     return arr.shift() + '/' + arr.slice(arr.indexOf('www.nav.no')).join('/');
 }
 
+function getEtag() {
+    return etag
+}
+
+function setEtag() {
+    etag = Date.now().toString(16);
+}
+
 function wipeAll() {
+    setEtag();
     wipe('decorator')();
     wipe('paths')();
 }

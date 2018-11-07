@@ -35,8 +35,6 @@ exports.get = function handleGet(req) {
 
             }
             toc += '</ol></nav>';
-
-
         }
 
         var languages = getLanguageVersions(content);
@@ -69,7 +67,6 @@ exports.get = function handleGet(req) {
 
         // Render a thymeleaf template
         var body = thymeleaf.render(view, model);
-
         // Return the result
         return {
             body: body
