@@ -36,6 +36,8 @@ function handleGet(req) {
         '<script async src="' + libs.portal.assetUrl({path: 'js/navno.min.js'}) + '"></script>'
     ];
     var body = libs.thymeleaf.render(view, model);
+
+    return {
         contentType: 'text/html',
         body: body,
         pageContributions: {
