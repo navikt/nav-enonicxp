@@ -20,15 +20,20 @@ exports.get = function(req) {
             });
             if (root.type !== app.name + ':main-article') return []
         }
-        return [{heading: root.data.heading, link: portal.pageUrl({id: root._id}), active: (root === cont)}].concat(content.getChildren({
+        return [{heading: root.data.displayName, link: portal.pageUrl({id: root._id}), active: (root === cont)}].concat(content.getChildren({
             key: root._id
-        }).hits.map(function (el) {
+        }).hits.reduce(function (previousValue, child) {
+            if (!child.type.startsWith("media")) {
+              previousValue.push(child)
+          }
+            return previousValue
+        },[]).map(function (el) {
             return { heading: el.data.heading || el.displayName, link: portal.pageUrl({id: el._id}), active: (el._id === cont._id) }
         }))
     }
     // Define the model
     var model = {
-        hasList: (list.length > 0),
+        hasList: (list.length > 1),
         list: list
     };
 
