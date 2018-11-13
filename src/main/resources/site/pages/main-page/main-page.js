@@ -10,9 +10,9 @@ var view = resolve('main-page.html');
 var etag = libs.cache.etag;
 function handleGet(req) {
 
-    if (req.headers.hasOwnProperty('If-None-Match') && req.headers['If-None-Match'].replace('--gzip','') === etag()) {
+   /* if (req.headers.hasOwnProperty('If-None-Match') && req.headers['If-None-Match'].replace('--gzip','') === etag()) {
         return { status: 304 };
-    }
+    }*/
    // log.info(JSON.stringify(req, null, 4))
     var content = libs.portal.getContent();
 
