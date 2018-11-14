@@ -116,7 +116,7 @@
             </items>
         </field-set>
         <field-set name="media">
-            <label>Legg til filer eller bilder</label>
+            <label>Legg til bilder</label>
             <items>
                 <input name="image" type="ImageSelector">
                     <label>Bilde</label>
@@ -136,7 +136,6 @@
                 <input name="caption" type="TextLine">
                     <label>Bildetekst</label>
                 </input>
-
             </items>
         </field-set>
         <option-set name="menuListItems">
@@ -144,89 +143,6 @@
             <expanded>false</expanded>
             <occurrences minimum="0" maximum="1"/>
             <options minimum="0" maximum="10">
-                <option name="Relatert_innhold">
-                    <label>Relatert innhold</label>
-                    <items>
-                    <input type="MediaSelector" name="files">
-                        <occurrences minimum="0" maximum="0"/>
-                        <label>Legg ved filer</label>
-                        <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
-                        <config>
-                            <allowContentType>media:document</allowContentType>
-                        </config>
-                    </input>
-
-                        <input name="link" type="ContentSelector">
-                            <label>Innhold</label>
-                            <custom-text>contentdata/links</custom-text>
-
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                                <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Regelverk">
-                    <label>Regelverk</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Regelverk</label>
-                            <custom-text>contentdata/laws</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Saksbehandlingstider">
-                    <label>Saksbehandlingstider</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Saksbehandlingstider</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Medlemskap i folketrygden">
-                    <label>Medlemskap i folketrygden</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Medlemskap i folketrygden</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Satser">
-                    <label>Satser</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Satser</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
                 <option name="Selvbetjening">
                     <label>Selvbetjening</label>
                     <items>
@@ -236,19 +152,6 @@
                             <occurrences maximum="0" minimum="1"/>
                             <config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Klagerettigheter">
-                    <label>Klagerettigheter</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Klagerettigheter</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
                             </config>
                         </input>
                     </items>
@@ -268,14 +171,42 @@
                         </input>
                     </items>
                 </option>
-                <option name="Meld fra om endringer">
-                    <label>Meld fra om endringer</label>
+                <option name="Saksbehandlingstider">
+                    <label>Saksbehandlingstider</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                            <label>Meld fra om endringer</label>
+                            <label>Saksbehandlingstider</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Relatert_innhold">
+                    <label>Relatert innhold</label>
+                    <items>
+                        <input type="MediaSelector" name="files">
+                            <occurrences maximum="0"  minimum="1"/>
+                            <label>Legg ved filer</label>
+                            <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
+                            <config>
+                                <allowContentType>media:document</allowContentType>
+                            </config>
+                        </input>
+                        <input name="link" type="ContentSelector">
+                            <label>Innhold</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
+                                <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
+                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
                             </config>
                         </input>
@@ -292,6 +223,72 @@
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
                                 <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Meld fra om endringer">
+                    <label>Meld fra om endringer</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Meld fra om endringer</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Satser">
+                    <label>Satser</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Satser</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Klagerettigheter">
+                    <label>Klagerettigheter</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Klagerettigheter</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Medlemskap i folketrygden">
+                    <label>Medlemskap i folketrygden</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Medlemskap i folketrygden</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="Regelverk">
+                    <label>Regelverk</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Regelverk</label>
+                            <custom-text>contentdata/laws</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
                             </config>
                         </input>
                     </items>
