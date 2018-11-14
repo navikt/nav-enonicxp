@@ -188,7 +188,7 @@
                     <label>Relatert innhold</label>
                     <items>
                         <input type="MediaSelector" name="files">
-                            <occurrences minimum="0" maximum="0"/>
+                            <occurrences maximum="0"  minimum="1"/>
                             <label>Legg ved filer</label>
                             <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
                             <config>
@@ -198,7 +198,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Innhold</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="0"/>
+                            <occurrences maximum="0" minimum="1"/>
                             <config>
                                 <allow-content-type>no.nav.navno:Fil</allow-content-type>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
