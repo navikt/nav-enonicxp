@@ -1,4 +1,4 @@
-<header class="siteheader" role="banner">
+<header class="siteheader">
     <div class="site-coltrols-toolbar site-controls-toolbar">
         <div class="container">
             <div class="row navbar">
@@ -25,6 +25,7 @@
                             </li>
                             <li id="text-size-accessibility">
                                 <span class="link-btn"
+                                      role="button"
                                       tabindex="0"
                                       data-th-aria-label="${langBundles.textTip}"
                                       data-th-utext="${langBundles.textSize}"
@@ -93,7 +94,7 @@
     <!--render-mainmenu-->
     <div class="topnavsection-wrapper">
         <div class="topnavsection">
-            <nav class="topnav container" role="navigation" id="mainmenu" aria-labelledby="header-nav-heading" tabindex="-1">
+            <nav class="topnav container" id="mainmenu" aria-labelledby="header-nav-heading" tabindex="-1">
                 <h1 class="visuallyhidden" id="header-nav-heading"
                     data-th-utext="${langBundles.mainMenuHeading}"
                 >
@@ -181,17 +182,15 @@
                 </button>
                 <form data-th-action="${urls.sok}" method="get" class="sitesearch" id="sitesearch" role="search">
                     <div class="inputwrapper">
-                        <div>
-                            <label class="visuallyhidden" for="site-search-input" data-th-utext="${langBundles.search}"></label>
-                            <input type="hidden" name="language" value="no" />
-                            <input type="search"
-                                   id="site-search-input"
-                                   name="ord"
-                                   class="input-sitesearch"
-                                   data-th-placeholder="${langBundles.searchPlaceholder}"
-                            />
-                            <input type="submit" class="btn-sitesearch" value="Søk" />
-                        </div>
+                        <input type="hidden" name="language" value="no" />
+                        <input type="search"
+                               id="site-search-input"
+                               name="ord"
+                               class="input-sitesearch"
+                               data-th-placeholder="${langBundles.searchPlaceholder}"
+                               data-th-aria-label="${langBundles.search}"
+                        />
+                        <input type="submit" class="btn-sitesearch" data-th-value="${langBundles.search}" />
                     </div>
                 </form>
                 <div id="toggle-varsler-container" class="toggle-varsler-container">
