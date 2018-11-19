@@ -19,7 +19,7 @@ exports.get = function(req) {
         // Define the model
         var model = {
             published: utils.dateTimePublished(cont, cont.language || 'no'),
-            from: cont.published.from,
+            from: cont.publish.from,
             heading: cont.data.heading || cont.displayName,
             ingress: cont.data.ingress,
             items: items
