@@ -1,5 +1,3 @@
-
-
 var libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/xp/thymeleaf'),
@@ -17,7 +15,6 @@ function handleGet(req) {
     var content = libs.portal.getContent();
 
     //Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
-    //TODO: avklare komavdelingens krav til  GTM
     //TODO: Denne må bli smartere
     var path = content._path.split('/');
     var level3 = (path[3] ? path[3] : "").toLowerCase();
@@ -44,6 +41,7 @@ function handleGet(req) {
             '<script src="' + libs.portal.assetUrl({path: 'libs/modernizr.2.7.1.min.js'}) + '"></script>',
             '<script src="' + libs.portal.assetUrl({path: 'js/innloggingslinjen.min.js'}) + '"></script>',
             '<script id="navno-page-js" src="' + libs.portal.assetUrl({path: 'js/navno-page.js'}) + '" seksjonssider="' + seksjonsSider + '"></script>',
+            '<script id="google-tag-manager-props" src="' + libs.portal.assetUrl({path:'js/google-tag-manager.js'}) + '"></script>',
             '<script async src="' + libs.portal.assetUrl({path: 'js/navno.min.js'}) + '"></script>'
         ];
         var body = libs.thymeleaf.render(view, model);

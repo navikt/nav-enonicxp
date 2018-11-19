@@ -62,5 +62,5 @@ function handleGet(req) {
 
 exports.get = handleGet;
 function forceArr(element) {
-    return Array.isArray(element) ? element : [element]
+    return (element !== undefined ? (Array.isArray(element) ? element : [element]) : []);
 }
