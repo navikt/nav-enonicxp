@@ -7,6 +7,8 @@ var handleSockets = require('lib/handleSockets/handleSockets');
 var emitter = new ws.SocketEmitter();
 var langVersions = require('lib/langVersions/langVersions');
 var trans = require('site/lib/contentTranslator');
+var cache = require('site/lib/cacheControll');
+
 exports.get = function (req) {
 
     handleSockets.handleSockets(emitter);
@@ -19,4 +21,6 @@ exports.get = function (req) {
 
 exports.webSocketEvent = ws.getWsEvents;
 
-langVersions.handleLanguageVersion(trans);
+//langVersions.handleLanguageVersion(trans);
+
+cache.activateEventListener();

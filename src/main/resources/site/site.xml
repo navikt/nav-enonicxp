@@ -4,7 +4,7 @@
     <response-filter name="translateFilter" order="10"/>
   </filters>-->
   <!--x-data name="hide-breadcrumbs"/-->
-  <x-data name="menu-item"/>
+  <x-data mixin="menu-item"/>
   <config>
 
   </config>

@@ -5,7 +5,8 @@ var libs = {
 	util: require('/lib/enonic/util'),
     i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
-    lang: require('/lib/i18nUtil')
+    lang: require('/lib/i18nUtil'),
+    cache: require('/lib/cacheControll')
 };
 var view = resolve('page-heading-with-menu.html');
 //TODO: URL-er skal være konfigurerbare
@@ -15,59 +16,62 @@ var urls = {
     login: serviceurl + '/oversikt',
     logout: serviceurl + '/esso/logout',
     stillinger: serviceurl + '/stillinger/',
-    sok: serviceurl + '/nav-sok'
+    sok: serviceurl + '/nav-sok',
 };
 
 function handleGet(req) {
     var site = libs.portal.getSite();
     var content = libs.portal.getContent();
-    var languageBundles = libs.lang.parseBundle(content.language).pagenav;
-    var assets = {
-        img: {
-            logo: libs.portal.assetUrl({path: 'img/navno/logo.svg'}),
-            idporten: libs.portal.assetUrl({path: 'img/navno/gfx/icons/idporten_ikon.png'})
-        }
-    };
-    var menuItems = libs.menu.getSubMenus(site, 4);
-    var language = content.language || 'no';
-    menuItems = menuItems[menuItems.findIndex(function (value) {
-        return value.name === language;
-    })];
-    var frontPageUrl = libs.portal.pageUrl({id: site._id});
-    var languageSelectors = [
-        {
-            href: frontPageUrl + '/no',
-            title: 'Norsk (Globalt språkvalg)',
-            text: 'Norsk',
-            active: (language || language === 'no' ? 'active' : '')
-        },
-        {
-            href: frontPageUrl + '/en',
-            title: 'English (Globalt språkvalg)',
-            text: 'English',
-            active: (language === 'en' ? 'active' : '')
-        },
-        {
-            href: frontPageUrl + '/se',
-            title: 'Sámegiella (Globalt Språkvalg)',
-            text: 'Sámegiella',
-            active: (language === 'se' ? 'active': '')
-        }
-    ];
-    var model = {
-        assets: assets,
-        urls: urls,
-        langBundles: languageBundles,
-        langSelectors: languageSelectors,
-        frontPageUrl: frontPageUrl,
-        menu: menuItems,
-        regionNorth: content.page.regions['region-north']
-    };
+    return libs.cache.getDecorator('header' + (content.language ? content.language : 'no'), function () {
+        var languageBundles = libs.lang.parseBundle(content.language).pagenav;
+        var assets = {
+            img: {
+                logo: libs.portal.assetUrl({path: 'img/navno/logo.svg'}),
+                idporten: libs.portal.assetUrl({path: 'img/navno/gfx/icons/idporten_ikon.png'})
+            }
+        };
+        var menuItems = libs.menu.getSubMenus(site, 4);
+        var language = content.language || 'no';
+        menuItems = menuItems[menuItems.findIndex(function (value) {
+            return value.name === language;
+        })];
+        var frontPageUrl = libs.portal.pageUrl({id: site._id});
+        var languageSelectors = [
+            {
+                href: frontPageUrl + '/no',
+                title: 'Norsk (Globalt språkvalg)',
+                text: 'Norsk',
+                active: (language || language === 'no' ? 'active' : '')
+            },
+            {
+                href: frontPageUrl + '/en',
+                title: 'English (Globalt språkvalg)',
+                text: 'English',
+                active: (language === 'en' ? 'active' : '')
+            },
+            {
+                href: frontPageUrl + '/se',
+                title: 'Sámegiella (Globalt Språkvalg)',
+                text: 'Sámegiella',
+                active: (language === 'se' ? 'active': '')
+            }
+        ];
+        var model = {
+            assets: assets,
+            urls: urls,
+            langBundles: languageBundles,
+            langSelectors: languageSelectors,
+            frontPageUrl: frontPageUrl,
+            menu: menuItems,
+            regionNorth: content.page.regions['region-north']
+        };
 
-    return {
-        contentType: 'text/html',
-        body: libs.thymeleaf.render(view, model),
-    };
+        return {
+            contentType: 'text/html',
+            body: libs.thymeleaf.render(view, model),
+        };
+    })
+
 }
 
 exports.get = handleGet;
