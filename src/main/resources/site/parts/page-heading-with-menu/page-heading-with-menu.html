@@ -10,7 +10,7 @@
                                         data-th-utext="${langBundles.language}"
                                 >
                                 </button>
-                                <ul class="dropdown-menu hidden">
+                                <ul class="dropdown-menu hidden" aria-expanded="false">
                                     <li data-th-each="languageSelector : ${langSelectors}" data-th-class="${languageSelector.active}">
                                         <a data-th-href="${languageSelector.href}"
                                            data-th-title="${languageSelector.title}"
