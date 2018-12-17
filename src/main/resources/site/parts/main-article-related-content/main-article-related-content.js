@@ -3,19 +3,19 @@ var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var view = resolve('main-article-related-content.html');
 var cache = require('/lib/cacheControll');
+var langLib = require('/lib/i18nUtil');
+var contentTranslator = require('../../lib/contentTranslator');
 
 function handleGet(req) {
     return cache.getPaths('main-article-related-content' + req.path, function () {
         var content = portal.getContent();
+        var selectNames = langLib.parseBundle(content.language).related_content.select;
         var menuListItems = content.data.menuListItems || [];
         var keys =
             (menuListItems._selected
                     ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected])
                     : []
             );
-
-
-
         var linkList = keys.map( function(el) {
             var links = forceArr(menuListItems[el].link).concat(
                 (menuListItems[el].files
@@ -32,7 +32,7 @@ function handleGet(req) {
                 )
             );
             return {
-                name: el,
+                name: (selectNames[el] !== undefined ? selectNames[el] : ''),
                 links: links.map(function (link){
                     var element = (typeof link === 'string' ? contentLib.get({key: link}) : link);
                     return {

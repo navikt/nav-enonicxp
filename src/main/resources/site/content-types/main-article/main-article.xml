@@ -143,7 +143,7 @@
             <expanded>false</expanded>
             <occurrences minimum="0" maximum="1"/>
             <options minimum="0" maximum="10">
-                <option name="Selvbetjening">
+                <option name="selvbetjening">
                     <label>Selvbetjening</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -156,7 +156,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Skjema og søknad">
+                <option name="skjema_soknad">
                     <label>Skjema og søknad</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -171,7 +171,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Saksbehandlingstider">
+                <option name="saksbehandlingstider">
                     <label>Saksbehandlingstider</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -184,7 +184,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Relatert_innhold">
+                <option name="relatert_innhold">
                     <label>Relatert innhold</label>
                     <items>
                         <input type="MediaSelector" name="files">
@@ -212,7 +212,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Internasjonalt">
+                <option name="internasjonalt">
                     <label>Internasjonalt</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -227,7 +227,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Meld fra om endringer">
+                <option name="endringer">
                     <label>Meld fra om endringer</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -240,7 +240,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Satser">
+                <option name="satser">
                     <label>Satser</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -254,7 +254,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Klagerettigheter">
+                <option name="klagerettigheter">
                     <label>Klagerettigheter</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -267,7 +267,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Medlemskap i folketrygden">
+                <option name="folketrygden">
                     <label>Medlemskap i folketrygden</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -280,7 +280,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="Regelverk">
+                <option name="regelverk">
                     <label>Regelverk</label>
                     <items>
                         <input name="link" type="ContentSelector">
