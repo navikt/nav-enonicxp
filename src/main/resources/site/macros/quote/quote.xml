@@ -1,0 +1,9 @@
+<macro>
+    <display-name i18n="a-macro.display-name">Sett inn sitat</display-name>
+    <description i18n="a-macro.description">Sett inn sitat i brødteksten</description>
+    <form>
+        <input name="quote" type="TextLine">
+            <label>Sitat</label>
+        </input>
+    </form>
+</macro>
