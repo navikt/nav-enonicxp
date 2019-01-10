@@ -1,0 +1,42 @@
+<footer class="sitefooter">
+    <div data-th-if="${contentAZPage}" class="footernavsection-wrapper">
+        <div class="footernavsection">
+            <button class="letter-scroll-left">
+                <span class="visuallyhidden"  data-th-utext="${lang.scrollStart}"></span>
+            </button>
+            <button class="letter-scroll-right">
+                <span class="visuallyhidden"  data-th-utext="${lang.scrollEnd}"></span>
+            </button>
+            <nav class="container letters-container" id="footer-content-menu" aria-labelledby="footer-nav-heading">
+                <h1 class="visuallyhidden" id="footer-nav-heading"
+                    data-th-utext="${lang.contentAZ}"
+                >
+                </h1>
+                <ul class="accessible-megafooter">
+                    <li class="letter" data-th-each="accessibleLetter: ${accessibleLetters}">
+                        <a data-ga="Footer: A til AA"
+                           data-th-href="${portal.pageUrl({'_path=' + contentAZPage, 'letter='+accessibleLetter})}"
+                           data-th-text="${accessibleLetter}"
+                        >
+                        </a>
+                        <div class="panel-wrapper footer-container">
+                            <div class="accessible-megafooter-panel"></div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="container about-site">
+        <a data-th-href="${frontPageUrl}" data-ga="Footer/Link til NAV" class="decorated">NAV</a>
+        <ul class="nav">
+            <li><a data-ga="Footer" data-th-href="${urls.contactUs}" data-th-utext="${lang.contactUs}"></a></li>
+            <li><a data-ga="Footer" data-th-href="${urls.accessibility}" data-th-utext="${lang.accessibility}"></a></li>
+            <li><a data-ga="Footer" data-th-href="${urls.privacy}" data-th-utext="${lang.privacy}"></a></li>
+            <li><a data-ga="Footer" data-th-href="${urls.rss}" data-th-utext="${lang.rss}"></a></li>
+        </ul>
+        <div class="copyright">
+            <p data-th-text="${'Arbeids- og velferdsetaten ' + year}"></p>
+        </div>
+    </div>
+</footer>

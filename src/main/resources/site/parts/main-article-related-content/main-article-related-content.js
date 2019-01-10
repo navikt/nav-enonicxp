@@ -1,51 +1,66 @@
 var thymeleafLib = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
-var utils = require('/lib/nav-utils');
 var view = resolve('main-article-related-content.html');
+var cache = require('/lib/cacheControll');
 
 function handleGet(req) {
+    return cache.getPaths('main-article-related-content' + req.path, function () {
+        var content = portal.getContent();
+        var menuListItems = content.data.menuListItems || [];
+        var keys =
+            (menuListItems._selected
+                    ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected])
+                    : []
+            );
 
-    var content = portal.getContent();
 
-    if (content.data.menuListItems && !Array.isArray(content.data.menuListItems)) {
-        content.data.menuListItems = [content.data.menuListItems];
-    }
-    content.data.menuListItems = (content.data.menuListItems) ? content.data.menuListItems.map(function (item) {
-        if (!item.link) item.link = [];
-        if (typeof item.link === 'string') item.link = [item.link];
+
+        var linkList = keys.map( function(el) {
+            var links = forceArr(menuListItems[el].link).concat(
+                (menuListItems[el].files
+                    ?   forceArr(menuListItems[el].files).map(function (fileid) {
+                            var file = contentLib.get({key: fileid});
+                            return {
+                                isFile: true,
+                                link: portal.attachmentUrl({ id: file._id, download: true}),
+                                displayName: file.displayName,
+                                data: {}
+                            }
+                        })
+                    :   []
+                )
+            );
+            return {
+                name: el,
+                links: links.map(function (link){
+                    var element = (typeof link === 'string' ? contentLib.get({key: link}) : link);
+                    return {
+                        title: element.data.heading || element.displayName,
+                        link: (!element.isFile ? portal.pageUrl({id: link}) : element.link)
+                    };
+                })
+            };
+        });
+
+        var hasMenuLists = (linkList.length > 0);
+        var params = {
+            relatedContentList: linkList,
+            hasMenuList: hasMenuLists
+        };
+
+        var body = thymeleafLib.render(view, params);
+
         return {
-            menuListName: item.menuListName,
-            text: item.text,
-            link: item.link.map(function(l) {
-                var r;
-                try{
-                    r= contentLib.get({key: l});
-                } catch (e) {
-                    log.info("Failed in marc " + l);
-                }
-                return (r) ? { title: r.data.heading, link: portal.pageUrl({id: r._id}) } : undefined;
-            }).reduce(function(t,e) {
-                if (e) t.push(e);
-                return t;
-            },[] )}
-    }).reduce(function (t, el) {
-        if (el.link && el.link.length > 0) t.push(el);
-        return t;
-    }, []) : [];
+            contentType: 'text/html',
+            body: body
+        };
+    })
 
-    var hasLinks = (content.data.menuListItems.length > 0);
-    var params = {
-        publishedFromText: utils.dateTimePublished(content, 'no'),
-        content: content,
-        hasLinks: hasLinks
-    };
-    var body = thymeleafLib.render(view, params);
-
-    return {
-        contentType: 'text/html',
-        body: body
-    };
 }
 
+
 exports.get = handleGet;
+function forceArr(element) {
+    return (element !== undefined ? (Array.isArray(element) ? element : [element]) : []);
+}

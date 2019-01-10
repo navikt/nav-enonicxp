@@ -1,0 +1,14 @@
+<main class="maincontent container">
+  <div class="row">
+    <div data-portal-region="first" data-th-class="${lClass.first}">
+      <div data-th-each="component : ${firstRegion.components}" data-th-remove="tag" >
+        <div data-portal-component="${component.path}" data-th-remove="tag" />
+      </div>
+    </div>
+    <div data-portal-region="second" data-th-class="${lClass.second}">
+      <div data-th-each="component : ${secondRegion.components}" data-th-remove="tag" >
+        <div data-portal-component="${component.path}" data-th-remove="tag" />
+      </div>
+    </div>
+  </div>
+</main>

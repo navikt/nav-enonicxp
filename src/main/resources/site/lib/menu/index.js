@@ -47,13 +47,13 @@ var globals = {
 
 	// Loop the entire path for current content based on the slashes. Generate one JSON item node for each item.
 	// If on frontpage, skip the path-loop
-	if (content._path != site._path) {
+	if (content._path !== site._path) {
 		var fullPath = content._path;
 		var arrVars = fullPath.split("/");
 		var arrLength = arrVars.length;
 		for (var i = 1; i < arrLength-1; i++) { // Skip first item - the site - since it is handled separately.
 			var lastVar = arrVars.pop();
-			if (lastVar != '') {
+			if (lastVar !== '') {
 				var curItem = libs.content.get({ key: arrVars.join("/") + "/" + lastVar }); // Make sure item exists
 				if (curItem) {
 					var item = {};
@@ -117,35 +117,21 @@ exports.getMenuTree = function (levels) {
     return menu;
 };
 
-/**
- * Returns submenus of a parent menuitem.
- * @param {Content} parentContent - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
- * @param {Integer} levels - The number of submenus to retrieve
- * @return {Array} Array of submenus
- */
 exports.getSubMenus = function (parentContent, levels) {
     var subMenus = [];
 
     if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
         subMenus.push(menuItemToJson(parentContent, 0));
     }
-
-    var children = libs.content.getChildren({
-        key: parentContent._id,
-        count: 200
-    });
-
     levels--;
 
-    var loopLength = children.hits.length;
-    for (var i = 0; i < loopLength; i++) {
-        var child = children.hits[i];
-        if (isMenuItem(child)) {
-            subMenus.push(menuItemToJson(child, levels));
-        }
-    }
-
-    return subMenus;
+    return libs.content.getChildren({
+        key: parentContent._id,
+        count: 200
+    }).hits.reduce(function (t, el) {
+        if (isMenuItem(el)) t.push(menuItemToJson(el, levels));
+        return t;
+    },subMenus);
 };
 
 
@@ -195,12 +181,12 @@ function menuItemToJson(content, levels) {
     var currentContent = libs.portal.getContent();
 
     // Is the menuitem we are processing in the currently viewed content's path?
-    if (content._path == currentContent._path.substring(0, content._path.length)) {
+    if (content._path === currentContent._path.substring(0, content._path.length)) {
         inPath = true;
     }
 
     // Is the currently viewed content the current menuitem we are processing?
-    if (content._path == currentContent._path) {
+    if (content._path === currentContent._path) {
         isActive = true;
         inPath = false; // Reset this so an menuitem isn't both in a path and active (makes no sense)
     }
@@ -209,17 +195,17 @@ function menuItemToJson(content, levels) {
 
     return {
         displayName: content.displayName,
-        menuName: menuItem.menuName && menuItem.menuName.length ? menuItem.menuName : null,
-        path: content._path,
+        menuName: menuItem.menuName && (menuItem.menuName.length ? menuItem.menuName : null),
+        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}).replace("http:", "https:"),
         name: content._name,
         id: content._id,
-        hasChildren: subMenus.length > 0,
+        hasChildren: (subMenus.length > 0),
         inPath: inPath,
         isActive: isActive,
-        newWindow: menuItem.newWindow ? menuItem.newWindow : false,
+        newWindow: (menuItem.newWindow ? menuItem.newWindow : false),
         type: content.type,
         children: subMenus,
-        showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true'
+        showLoginInfo: (libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true')
     };
 }
 

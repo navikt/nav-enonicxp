@@ -1,0 +1,22 @@
+{
+  "name": "navno-enonicxp",
+  "version": "1.0.0",
+  "description": "## Building",
+  "main": "createPhrases.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/navikt/nav-enonicxp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/navikt/nav-enonicxp/issues"
+  },
+  "homepage": "https://github.com/navikt/nav-enonicxp#readme",
+  "devDependencies": {
+    "prompt": "^1.0.0"
+  }
+}

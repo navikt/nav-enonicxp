@@ -3,7 +3,11 @@
   <!--<filters>
     <response-filter name="translateFilter" order="10"/>
   </filters>-->
-  <config/>
+  <!--x-data name="hide-breadcrumbs"/-->
+  <x-data mixin="menu-item"/>
+  <config>
+
+  </config>
   <mappings>
     <mapping controller="/lib/enonic/url-redirect/index.js">
       <match>type:'no.nav.navno:url'</match>

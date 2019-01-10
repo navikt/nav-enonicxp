@@ -10,6 +10,9 @@ exports.handle404 = function (req) {
     var path = req.request.path.split('/').pop();
 
     log.info(path);
+    if (path === 'www.nav.no') return {
+        redirect: 'www.nav.no/forsiden'
+    };
 
     var element = content.getChildren({
         key: '/redirects',
@@ -20,7 +23,7 @@ exports.handle404 = function (req) {
         return t;
     }, false);
     if (element) {
-        var redirect = portal.pageUrl({id: element._id})
+        var redirect = portal.pageUrl({id: element._id});
         if (element.type === app.name + ':url') {
              redirect = portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(appendRoot).andOr(xpInfuse).endValidation);
         }

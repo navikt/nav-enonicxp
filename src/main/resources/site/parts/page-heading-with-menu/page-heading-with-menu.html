@@ -1,0 +1,234 @@
+<header class="siteheader">
+    <div class="site-coltrols-toolbar site-controls-toolbar">
+        <div class="container">
+            <div class="row navbar">
+                <div class="col-md-12">
+                    <div class="settings">
+                        <ul class="nav">
+                            <li class="dropdown">
+                                <button type="button" class="link-btn dropdown-toggle" data-toggle="dropdown"
+                                        data-th-utext="${langBundles.language}"
+                                >
+                                </button>
+                                <ul class="dropdown-menu hidden">
+                                    <li data-th-each="languageSelector : ${langSelectors}" data-th-class="${languageSelector.active}">
+                                        <a data-th-href="${languageSelector.href}"
+                                           data-th-title="${languageSelector.title}"
+                                           data-th-text="${languageSelector.text}"
+                                        >
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li id="high-contrast">
+                                <button type="button" class="link-btn" data-th-utext="${langBundles.highContrast}"></button>
+                            </li>
+                            <li id="text-size-accessibility">
+                                <span class="link-btn"
+                                      role="button"
+                                      tabindex="0"
+                                      data-th-aria-label="${langBundles.textTip}"
+                                      data-th-utext="${langBundles.textSize}"
+                                >
+                                </span>
+                                <div class="text-size-tooltip hidden">
+                                    <p data-th-utext="${langBundles.textTip}"></p>
+                                    <span class="arrow"></span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="login-container">
+                        <div id="login-details" class="hidden">
+                            <span id="name-container">
+                                <img id="idporten-ikon-innlogging"
+                                     data-th-alt="${langBundles.user.authService}"
+                                     data-th-src="${assets.img.idporten}"
+                                />
+                                <span id="name"></span>
+                            </span>
+                            <div class="logout-tooltip hidden">
+                                <a class="lukk hidden" data-th-aria-label="${langBundles.user.authServiceCloseMsg}"> × </a>
+                                <p data-th-utext="${langBundles.user.statusTrue}"></p>
+                                <p data-th-utext="${langBundles.user.reminder}"></p>
+                                <span class="arrow"></span>
+                            </div>
+                        </div>
+                        <div id="auth-btns">
+                            <a id="login" class="hidden knapp mini btn-auth btn-login"
+                               data-th-href="${urls.login}"
+                               data-th-utext="${langBundles.user.logIn}"
+                            >
+                            </a>
+                            <a id="logout" class="hidden btn-auth knapp mini hoved btn-logout"
+                               data-ga="Header"
+                               data-th-href="${urls.logout}"
+                               data-th-utext="${langBundles.user.logOut}"
+                            >
+                            </a>
+                        </div>
+                        <div class="login-tooltip hidden">
+                            <p data-th-utext="${langBundles.logInNAV}"></p>
+                            <span class="arrow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sitelogo sitelogo-large">
+        <div class="container">
+            <a data-th-href="${frontPageUrl}" data-th-title="${langBundles.home}" data-ga="Header/Logo">
+                <img data-th-src="${assets.img.logo}" data-th-alt="${langBundles.logo}" />
+            </a>
+        </div>
+    </div>
+    <div data-portal-region="region-north">
+        <div data-th-if="${region-north}" data-th-remove="tag">
+            <div data-th-each="component : ${region-north.components}" data-th-remove="tag">
+                <div data-portal-component="${component.path}" data-th-remove="tag"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--render-mainmenu-->
+    <div class="topnavsection-wrapper">
+        <div class="topnavsection">
+            <nav class="topnav container" id="mainmenu" aria-labelledby="header-nav-heading" tabindex="-1">
+                <h1 class="visuallyhidden" id="header-nav-heading"
+                    data-th-utext="${langBundles.mainMenuHeading}"
+                >
+                </h1>
+                <input id="no-js-toggle-mobile-mainmenu" type="checkbox" class="visuallyhidden mobile-toggler"/>
+                <label for="no-js-toggle-mobile-mainmenu" class="mobile-toggler toggle-mainmenu"
+                       data-th-utext="${langBundles.menu}"
+                >
+                </label>
+                <button type="button" id="toggle-mobile-mainmenu" class="link-btn mobile-toggler toggle-mainmenu"
+                        data-th-utext="${langBundles.menu}"
+                >
+                </button>
+                <ul class="accessible-megamenu" id="accessible-megamenu">
+                    <li class="topnavitem has-children"
+                        data-th-classappend="${menuItem.inPath or menuItem.isActive}? 'selected-topnavitem'"
+                        data-th-each="menuItem: ${menu.children}"
+                    >
+                        <a role="button"
+                           data-ga="Meny"
+                           data-th-href="${menuItem.path}"
+                           data-th-text="${menuItem.displayName}"
+                        >
+                        </a>
+                        <div class="panel-wrapper">
+                            <div class="accessible-megamenu-panel">
+                                <div data-th-if="${menuItem.showLoginInfo}" class="submenu-logg-inn">
+                                    <h2 class="typo-etikett-stor decorated" data-th-utext="${langBundles.loggedInServices}"></h2>
+                                    <p class="typo-normal"  data-th-utext="${langBundles.loggedInSevicesInfo}"></p>
+                                    <p class="typo-normal" data-th-utext="${langBundles.jobsearch}"></p>
+                                    <a class="knapp hoved knapp-hoved"
+                                       data-ga="Meny/logginn"
+                                       data-th-href="${urls.login}"
+                                       data-th-utext="${langBundles.user.logIn}"
+                                    >
+                                    </a>
+                                </div>
+                                <div data-th-unless="${menuItem.showLoginInfo}" data-th-remove="tag">
+                                    <div class="tilbaketilgruppe typo-normal">
+                                        <a class="home-link"
+                                           data-th-href="${menuItem.path}"
+                                           data-ga="Meny/Person"
+                                        >
+                                            <span class="lenke-fremhevet tilbaketilforsidelink"
+                                                  data-th-utext="${langBundles.goToFrontPage}"
+                                            >
+                                            </span>
+                                        </a>
+                                        <span class="tilbaketittel" data-th-text="${menuItem.displayName}"></span>
+                                    </div>
+
+                                    <ul class="subnavitems">
+                                        <li class="accessible-megamenu-panel-group" data-th-each="subMenuItem: ${menuItem.children}">
+                                            <h2 class="h4 mobile-submenu-expander typo-etikett-stor globalmenu-tittel"
+                                                data-th-text="${subMenuItem.displayName}"
+                                            >
+                                            </h2>
+                                            <ul class="menu-link-list mobile-submenu">
+                                                <li data-th-each="subSubMenuItem : ${subMenuItem.children}">
+                                                    <a data-ga="Meny"
+                                                       data-th-href="${subSubMenuItem.path}"
+                                                       data-th-text="${subSubMenuItem.displayName}"
+                                                    >
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <button type="button"
+                        id="toggle-varsler-mobile"
+                        class="toggle-varsler-mobile link-btn mobile-toggler invisible"
+                        data-th-aria-label="${langBundles.notifications.title}"
+                        data-th-title="${langBundles.notifications.title}"
+                >
+                </button>
+                <input id="no-js-toggle-mobile-search" type="checkbox" class="visuallyhidden mobile-toggler">
+                <label for="no-js-toggle-mobile-search" class="mobile-toggler toggle-search" data-th-utext="${langBundles.search}"></label>
+                <button type="button" id="toggle-mobile-search" class="link-btn mobile-toggler toggle-search">
+                    <span data-th-utext="${langBundles.search}"></span>
+                </button>
+                <form data-th-action="${urls.sok}" method="get" class="sitesearch" id="sitesearch" role="search">
+                    <div class="inputwrapper">
+                        <input type="hidden" name="language" value="no" />
+                        <input type="search"
+                               id="site-search-input"
+                               name="ord"
+                               class="input-sitesearch"
+                               data-th-placeholder="${langBundles.searchPlaceholder}"
+                               data-th-aria-label="${langBundles.search}"
+                        />
+                        <input type="submit" class="btn-sitesearch" data-th-value="${langBundles.search}" />
+                    </div>
+                </form>
+                <div id="toggle-varsler-container" class="toggle-varsler-container">
+                    <button type="button" id="toggle-varsler" class="toggle-varsler invisible"
+                            aria-controls="varsler-display" aria-expanded="false"
+                            data-th-aria-label="${langBundles.notifications.title}"
+                            data-th-title="${langBundles.notifications.title}"
+                            data-th-attr="
+                                data-base-url=${urls.baseurl},
+                                data-tekst-varselurl-lenketekst=${langBundles.notifications.goto},
+                                data-tekst-ingenvarsler=${langBundles.notifications.noMsg},
+                                data-tekst-error=${langBundles.notifications.error},
+                                data-tekst-visalle=${langBundles.notifications.showAll},
+                                data-tekst-visalle-nye-flertall=${langBundles.notifications.showNewPlural},
+                                data-tekst-visalle-nye-entall=${langBundles.notifications.showNewSingular}
+                            "
+                    >
+                    </button>
+                </div>
+                <div role="tooltip" id="globalmenu-upgrade-info-tooltip" class="panel-negativ hidden" aria-hidden="true">
+                    <div class="lukk">
+                        <button id="globalmenu-upgrade-info-close"
+                                onclick="$('#globalmenu-upgrade-info-tooltip').addClass('hidden');"
+                        >
+                            <span class="vekk" data-th-utext="${langBundles.close}"></span>
+                        </button>
+                    </div>
+                    <h3 class="decorated hjelpetekst-tittel js-tittel" data-th-utext="${langBundles.info}"></h3>
+                    <p class="hjelpetekst-tekst js-tekst" data-th-utext="${langBundles.padlock}"></p>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div id="varsler-display" class="varsler-display" aria-expanded="false"></div>
+    <div class="sitelogo sitelogo-small">
+        <a data-th-href="${frontPageUrl}" data-th-title="${langBundles.home}">
+            <img data-th-src="${urls.logo}" data-th-alt="${langBundles.logo}" />
+        </a>
+    </div>
+</header>
