@@ -6,6 +6,7 @@ var libs = {
     i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
+    tools: require('/lib/tools'),
     cache: require('/lib/cacheControll')
 };
 var view = resolve('page-heading-with-menu.html');
@@ -36,6 +37,13 @@ function handleGet(req) {
             return value.name === language;
         })];
         var frontPageUrl = libs.portal.pageUrl({id: site._id});
+
+
+        //TODO: Fjern logging
+        libs.tools.logBeautify(site);
+        libs.tools.logBeautify( "frontPageUrl: " + frontPageUrl);
+
+
         var languageSelectors = [
             {
                 href: frontPageUrl + '/no',

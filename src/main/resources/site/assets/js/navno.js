@@ -4730,7 +4730,7 @@ $(function() {
             , o = $("aside.related-content.accordion");
         if (t.length > 0 && 0 === t.has(e.target).length && t.hasClass("selected") && (t.find("ul").addClass("hide"),
                 t.removeClass("selected")),
-            0 !== n.has(e.target).length || n.find("ul.dropdown-menu").hasClass("hidden") || n.find("ul.dropdown-menu").addClass("hidden"),
+            0 !== n.has(e.target).length || n.find("ul.dropdown-menu").hasClass("hidden") || n.find("ul.dropdown-menu").addClass("hidden").attr("aria-expanded",false),
             i.length > 0 && 0 === i.has(e.target).length && i.hasClass("open") && navno.touchMovedOnArticle === !1) {
             i.toggleClass("open");
             var a = i.find("nav");
