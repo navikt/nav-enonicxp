@@ -36,7 +36,7 @@ function handleGet(req) {
         menuItems = menuItems[menuItems.findIndex(function (value) {
             return value.name === language;
         })];
-        var frontPageUrl = libs.portal.pageUrl({id: site._id});
+        var frontPageUrl = libs.portal.pageUrl({type: "absolute", id: site._id});
 
 
         //TODO: Fjern logging
