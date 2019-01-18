@@ -36,29 +36,23 @@ function handleGet(req) {
         menuItems = menuItems[menuItems.findIndex(function (value) {
             return value.name === language;
         })];
-        var frontPageUrl = libs.portal.pageUrl({type: "absolute", id: site._id});
 
-
-        //TODO: Fjern logging
-        libs.tools.logBeautify(site);
-        libs.tools.logBeautify( "frontPageUrl: " + frontPageUrl);
-
-
+        //Tre separate kall på pageUrl for å sikre korrekt url på tvers av localhost og server (caches uansett)
         var languageSelectors = [
             {
-                href: frontPageUrl + '/no',
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/no"}),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
-                active: (language || language === 'no' ? 'active' : '')
+                active: (language === 'no' ? 'active' : '')
             },
             {
-                href: frontPageUrl + '/en',
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/en"}),
                 title: 'English (Globalt språkvalg)',
                 text: 'English',
                 active: (language === 'en' ? 'active' : '')
             },
             {
-                href: frontPageUrl + '/se',
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/se"}),
                 title: 'Sámegiella (Globalt Språkvalg)',
                 text: 'Sámegiella',
                 active: (language === 'se' ? 'active': '')
@@ -69,7 +63,6 @@ function handleGet(req) {
             urls: urls,
             langBundles: languageBundles,
             langSelectors: languageSelectors,
-            frontPageUrl: frontPageUrl,
             menu: menuItems,
             regionNorth: content.page.regions['region-north']
         };
@@ -79,7 +72,6 @@ function handleGet(req) {
             body: libs.thymeleaf.render(view, model),
         };
     })
-
 }
 
 exports.get = handleGet;
