@@ -37,22 +37,23 @@ function handleGet(req) {
             return value.name === language;
         })];
 
-        //Tre separate kall på pageUrl for å sikre korrekt url på tvers av localhost og server (caches uansett)
+        // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
+        //TODO: Fjerne eksplesitt https når dette er løst på BigIP
         var languageSelectors = [
             {
-                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/no"}),
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/no"}).replace("http:", "https:"),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
                 active: (language === 'no' ? 'active' : '')
             },
             {
-                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/en"}),
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/en"}).replace("http:", "https:"),
                 title: 'English (Globalt språkvalg)',
                 text: 'English',
                 active: (language === 'en' ? 'active' : '')
             },
             {
-                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/se"}),
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/se"}).replace("http:", "https:"),
                 title: 'Sámegiella (Globalt Språkvalg)',
                 text: 'Sámegiella',
                 active: (language === 'se' ? 'active': '')
