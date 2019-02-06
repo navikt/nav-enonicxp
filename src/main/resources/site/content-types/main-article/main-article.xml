@@ -21,6 +21,7 @@
                 </input>
                 <input type="RadioButton" name="hasTableOfContents">
                     <label>Sett inn innholdsfortegnelse</label>
+                    <help-text>Innholdsfortegnelsen blir vist som mellomoverskrifter i toppen av en artikkel. Når du klikker på en av overskriftene blir du tatt ned til det aktuelle avsnittet i brødteksten. Brukes i hovedsak når ytelser og tjenester blir beskrevet på sentrale sider.</help-text>
                     <config>
                         <option value="none">Nei</option>
                         <option value="h3">Ja</option>
@@ -29,19 +30,17 @@
                 </input>
                 <field-set name="Tilbakemelding">
                     <label>Tilbakemelding</label>
-                    <help-text>Denne boksen skal kun brukes på sentrale sider på nav.no</help-text>
                     <items>
                         <input name="vis-tilbakemelding" type="CheckBox">
                             <label>Vis 'Fant du det du lette etter?'</label>
+                            <help-text>Denne boksen skal kun brukes på sentrale sider på nav.no.Funksjonaliteten er forbehold sentrale sider. Dette av hensyn til personvernet. </help-text>
                             <custom-text>contentdata/vis-tilbakemelding</custom-text>
                             <occurrences maximum="1" minimum="0"/>
                         </input>
                     </items>
                 </field-set>
                 <field-set name="priority">
-                    <label>Prioritet</label>
-                    <help-text>Her velger du prioritet på boksene på seksjonssiden/forsiden, tall fra 1-9</help-text>
-                    <items>
+                       <items>
                         <field-set name="table">
                             <label>Bokser</label>
                             <items>
@@ -50,6 +49,7 @@
                                 </input>
                                 <input type="RadioButton" name="icon">
                                     <label>Velg ikon på boksene</label>
+                                    <help-text>Funksjonaliteten er forbehold sentrale sider. Dette av hensyn til personvernet.</help-text>
                                     <config>
                                         <option value="icon-document">Dokument</option>
                                         <option value="icon-application">Selvbetjening</option>
@@ -64,6 +64,7 @@
                             <items>
                                 <input type="Long" name="ntkPriority">
                                     <label>Velg prioritet</label>
+                                    <help-text>Brukes til aktuelle saker, eksempelvis kommende jobbmesser, kurs, satsninger, informasjonsmøter. Vises kun hvis det er publisert innhold til seksjonen.</help-text>
                                 </input>
                             </items>
                         </field-set>
@@ -72,6 +73,7 @@
                             <items>
                                 <input name="newsPriority" type="RadioButton">
                                     <label>Vis rekkefølge etter dato</label>
+                                    <help-text>Brukes til dagsaktuelle saker som viser NAV som samfunnsaktør. Vises kun hvis det er publisert innhold til seksjonen.</help-text>
                                     <config>
                                         <option value="true">Ja</option>
                                         <option value="false">Nei</option>
@@ -85,6 +87,7 @@
                             <items>
                                 <input name="scPriority" type="Long">
                                     <label>Velg prioritet</label>
+                                    <help-text>Brukes når det er relevant å lenke til innhold som ligger et annet sted på nav.no. Vises kun hvis det er publisert innhold til seksjonen.</help-text>
                                 </input>
                             </items>
                         </field-set>
@@ -97,7 +100,7 @@
             <items>
                 <input name="languages" type="ContentSelector">
                     <label>Legg til andre språkversjoner</label>
-                    <help-text>Søk</help-text>
+                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
                         <allow-content-type>no.nav.navno:main-article</allow-content-type>
@@ -110,7 +113,7 @@
             <items>
                 <input name="fact" type="HtmlArea">
                     <label>Faktaboksen vises under brødteksten</label>
-                    <help-text>Faktaboksen skal inneholde maks 500 tegn. Bruk gjerne punktliste.</help-text>
+                    <help-text>Brukes kun om det er spesielle faktaopplysninger tilknyttet saken. Bruk maks 500 tegn.</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
             </items>
@@ -120,7 +123,7 @@
             <items>
                 <input name="image" type="ImageSelector">
                     <label>Bilde</label>
-                    <help-text>Vi bruker normalt ikke illustrasjonsbilder. Bilder skal gi merverdi til teksten. Bildene skal ha en beskrivende tekst.</help-text>
+                    <help-text>Du kan kun legge inn et bilde/illustrasjon. Bilder eller illustrasjoner skal kun brukes hvis det gir merverdi til teksten. Et bilde skal ikke være mindre enn 580 px bredt (tekstfeltets bredde).</help-text>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
                 <input name="imagesize" type="RadioButton">
@@ -143,7 +146,7 @@
             <expanded>false</expanded>
             <occurrences minimum="0" maximum="1"/>
             <options minimum="0" maximum="10">
-                <option name="selvbetjening">
+                <option name="selfservice">
                     <label>Selvbetjening</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -156,7 +159,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="skjema_soknad">
+                <option name="form-and-application">
                     <label>Skjema og søknad</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -171,7 +174,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="saksbehandlingstider">
+                <option name="process-times">
                     <label>Saksbehandlingstider</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -184,7 +187,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="relatert_innhold">
+                <option name="related-information">
                     <label>Relatert innhold</label>
                     <items>
                         <input type="MediaSelector" name="files">
@@ -212,7 +215,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="internasjonalt">
+                <option name="international">
                     <label>Internasjonalt</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -227,7 +230,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="endringer">
+                <option name="report-changes">
                     <label>Meld fra om endringer</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -240,7 +243,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="satser">
+                <option name="rates">
                     <label>Satser</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -254,7 +257,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="klagerettigheter">
+                <option name="appeal-rights">
                     <label>Klagerettigheter</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -267,7 +270,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="folketrygden">
+                <option name="membership">
                     <label>Medlemskap i folketrygden</label>
                     <items>
                         <input name="link" type="ContentSelector">
@@ -280,7 +283,7 @@
                         </input>
                     </items>
                 </option>
-                <option name="regelverk">
+                <option name="rules-and-regulations">
                     <label>Regelverk</label>
                     <items>
                         <input name="link" type="ContentSelector">

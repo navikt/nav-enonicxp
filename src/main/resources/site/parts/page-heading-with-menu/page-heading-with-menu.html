@@ -108,7 +108,7 @@
                         data-th-utext="${langBundles.menu}"
                 >
                 </button>
-                <ul class="accessible-megamenu" id="accessible-megamenu">
+                <ul class="accessible-megamenu" id="accessible-megamenu" data-th-if="${menuItem}">
                     <li class="topnavitem has-children"
                         data-th-classappend="${menuItem.inPath or menuItem.isActive}? 'selected-topnavitem'"
                         data-th-each="menuItem: ${menu.children}"
