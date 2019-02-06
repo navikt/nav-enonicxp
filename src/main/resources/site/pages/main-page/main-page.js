@@ -42,7 +42,7 @@ function handleGet(req) {
             '<script src="' + libs.portal.assetUrl({path: 'js/innloggingslinjen.min.js'}) + '"></script>',
             '<script id="navno-page-js" src="' + libs.portal.assetUrl({path: 'js/navno-page.js'}) + '" seksjonssider="' + seksjonsSider + '"></script>',
             '<script id="google-tag-manager-props" src="' + libs.portal.assetUrl({path:'js/google-tag-manager.js'}) + '"></script>',
-            '<script async src="' + libs.portal.assetUrl({path: 'js/navno.min.js'}) + '"></script>'
+            '<script async src="' + libs.portal.assetUrl({path: 'js/navno.js'}) + '"></script>' //TODO: Husk å sette tilbake til navno.min.js
         ];
         var body = libs.thymeleaf.render(view, model);
         return {
