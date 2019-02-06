@@ -44,7 +44,7 @@ function handleGet(req) {
                 href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/no"}).replace("http:", "https:"),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
-                active: (!language || language === 'no' ? 'active' : '')
+                active: (language === 'no' ? 'active' : '')
             },
             {
                 href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/en"}).replace("http:", "https:"),
