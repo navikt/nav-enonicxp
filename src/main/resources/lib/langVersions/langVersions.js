@@ -51,9 +51,11 @@ var context = require('/lib/xp/context');
 var event = require('/lib/xp/event');
 var affectedIDs = [];
 
+module.exports = {
+    handleLanguageVersions: handleLanguageVersions
+}
 
-
-exports.handleLanguageVersion = function (trans) {
+function handleLanguageVersions(trans) {
 
     function addId(id) {
         affectedIDs.push(id);

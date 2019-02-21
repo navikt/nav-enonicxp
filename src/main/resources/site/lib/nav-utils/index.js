@@ -110,11 +110,12 @@ exports.dateTimePublished = function (content, language) {
     var navPublished = libs.i18n.localize({key: 'main-article.published', locale: language});
     var published = '', lastModified = '';
     var navUpdated = libs.i18n.localize({key: 'main-article.lastChanged', locale: language});
-
+    var p = content.publish.from ? content.publish.from : content.createdTime;
     if (language !== 'no' && language !== 'en') {
-        published = libs.moment(content.publish.from).locale('no').format('L');
+
+        published = libs.moment(p).locale('no').format('L');
     } else {
-        published = libs.moment(content.publish.from).locale(language).format('L');
+        published = libs.moment(p).locale(language).format('L');
     }
 
     if (language !== 'nn' && language !== 'se') {

@@ -16,6 +16,7 @@ exports.handle = function(socket) {
   })
 };
 
+
 function createElements() {
     return {
         isNew: true,
@@ -78,43 +79,68 @@ function createTemplates(socket) {
 }
 
 var tavleListePage = {
-    "controller": "no.nav.navno:page-nav",
+    "controller": "no.nav.navno:main-page",
     "region": [
         {
-            "name": "region-center",
+            "name": "main",
+            "component": [
+                {
+                    "type": "PartComponent",
+                    "PartComponent": {
+                        "name": "page-heading-with-menu",
+                        "template": "no.nav.navno:page-heading-with-menu",
+                        "config": {
+                        }
+                    }
+                },
+                {
+                    "type": "LayoutComponent",
+                    "LayoutComponent": {
+                        "name": "main",
+                        "template": "no.nav.navno:main",
+                        "config": {
+                        },
+                        "region": [
+                            {
+                                "name": "first",
+                                "component": {
+                                    "type": "PartComponent",
+                                    "PartComponent": {
+                                        "name": "tavleliste",
+                                        "template": "no.nav.navno:tavleliste",
+                                        "config": {
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "name": "second",
+                                "component": {
+                                    "type": "PartComponent",
+                                    "PartComponent": {
+                                        "name": "tavleliste-relatert-innhold",
+                                        "template": "no.nav.navno:tavleliste-relatert-innhold",
+                                        "config": {
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "footer",
             "component": {
                 "type": "PartComponent",
                 "PartComponent": {
-                    "name": "tavleliste",
-                    "template": "no.nav.navno:tavleliste",
+                    "name": "page-footer",
+                    "template": "no.nav.navno:page-footer",
                     "config": {
                     }
                 }
             }
-        },
-        {
-            "name": "region-east",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "tavleliste-relatert-innhold",
-                    "template": "no.nav.navno:tavleliste-relatert-innhold",
-                    "config": {
-                    }
-                }
-            }
-        },
-        {
-            "name": "region-north"
-        },
-        {
-            "name": "region-south"
-        },
-        {
-            "name": "region-west"
-        },
-        {
-            "name": "scripts-region"
         }
     ],
     "config": {
@@ -123,54 +149,135 @@ var tavleListePage = {
 };
 
 var mainArticlePage = {
-    "controller": "no.nav.navno:page-nav",
+    "controller": "no.nav.navno:main-page",
     "region": [
         {
-            "name": "region-center",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "main-article",
-                    "template": "no.nav.navno:main-article",
-                    "config": {
-                    }
-                }
-            }
-        },
-        {
-            "name": "region-east",
+            "name": "main",
             "component": [
                 {
                     "type": "PartComponent",
                     "PartComponent": {
-                        "name": "main-article-linked-list",
-                        "template": "no.nav.navno:main-article-linked-list",
+                        "name": "page-heading-with-menu",
+                        "template": "no.nav.navno:page-heading-with-menu",
                         "config": {
                         }
                     }
                 },
                 {
+                    "type": "LayoutComponent",
+                    "LayoutComponent": {
+                        "name": "main",
+                        "template": "no.nav.navno:main",
+                        "config": {
+                        },
+                        "region": [
+                            {
+                                "name": "first",
+                                "component": {
+                                    "type": "PartComponent",
+                                    "PartComponent": {
+                                        "name": "main-article",
+                                        "template": "no.nav.navno:main-article",
+                                        "config": {
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "name": "second",
+                                "component": [
+                                    {
+                                        "type": "PartComponent",
+                                        "PartComponent": {
+                                            "name": "main-article-related-content",
+                                            "template": "no.nav.navno:main-article-related-content",
+                                            "config": {
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "PartComponent",
+                                        "PartComponent": {
+                                            "name": "main-article-linked-list",
+                                            "template": "no.nav.navno:main-article-linked-list",
+                                            "config": {
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "footer",
+            "component": {
+                "type": "PartComponent",
+                "PartComponent": {
+                    "name": "page-footer",
+                    "template": "no.nav.navno:page-footer",
+                    "config": {
+                    }
+                }
+            }
+        }
+    ],
+    "config": {
+    },
+    "customized": false
+}
+
+var transportPage = {
+    "controller": "no.nav.navno:main-page",
+    "region": [
+        {
+            "name": "main",
+            "component": [
+                {
                     "type": "PartComponent",
                     "PartComponent": {
-                        "name": "main-article-related-content",
-                        "template": "no.nav.navno:main-article-related-content",
+                        "name": "page-heading-with-menu",
+                        "template": "no.nav.navno:page-heading-with-menu",
                         "config": {
+                        }
+                    }
+                },
+                {
+                    "type": "LayoutComponent",
+                    "LayoutComponent": {
+                        "name": "1-col",
+                        "template": "no.nav.navno:1-col",
+                        "config": {
+                        },
+                        "region": {
+                            "name": "first",
+                            "component": {
+                                "type": "PartComponent",
+                                "PartComponent": {
+                                    "name": "transport",
+                                    "template": "no.nav.navno:transport",
+                                    "config": {
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             ]
         },
         {
-            "name": "region-north"
-        },
-        {
-            "name": "region-south"
-        },
-        {
-            "name": "region-west"
-        },
-        {
-            "name": "scripts-region"
+            "name": "footer",
+            "component": {
+                "type": "PartComponent",
+                "PartComponent": {
+                    "name": "page-footer",
+                    "template": "no.nav.navno:page-footer",
+                    "config": {
+                    }
+                }
+            }
         }
     ],
     "config": {
@@ -179,64 +286,62 @@ var mainArticlePage = {
 }
 
 var hovedSeksjonPage = {
-    "controller": "no.nav.navno:page-nav",
+    "controller": "no.nav.navno:main-page",
     "region": [
         {
-            "name": "region-center",
+            "name": "main",
+            "component": [
+                {
+                    "type": "PartComponent",
+                    "PartComponent": {
+                        "name": "page-heading-with-menu",
+                        "template": "no.nav.navno:page-heading-with-menu",
+                        "config": {
+                        }
+                    }
+                },
+                {
+                    "type": "LayoutComponent",
+                    "LayoutComponent": {
+                        "name": "main-1-col",
+                        "template": "no.nav.navno:main-1-col",
+                        "config": {
+                        },
+                        "region": {
+                            "name": "first",
+                            "component": {
+                                "type": "PartComponent",
+                                "PartComponent": {
+                                    "name": "Oppslagstavle",
+                                    "template": "no.nav.navno:oppslagstavle",
+                                    "config": {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "footer",
             "component": {
                 "type": "PartComponent",
                 "PartComponent": {
-                    "name": "Oppslagstavle",
-                    "template": "no.nav.navno:oppslagstavle",
+                    "name": "page-footer",
+                    "template": "no.nav.navno:page-footer",
                     "config": {
                     }
                 }
             }
-        },
-        {
-            "name": "region-east"
-        },
-        {
-            "name": "region-north",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "heronighanddaybanner",
-                    "template": "no.nav.navno:heronighanddaybanner",
-                    "config": {
-                    }
-                }
-            }
-        },
-        {
-            "name": "region-south"
-        },
-        {
-            "name": "region-west"
-        },
-        {
-            "name": "scripts-region"
         }
     ],
     "config": {
     },
     "customized": false
-}
+};
 
 var templates = [
-    {
-        content: {
-            displayName: 'Seksjon - Tavleseksjon',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:tavleliste'
-            }
-        },
-        page: tavleListePage
-    },
     {
         content: {
             displayName: 'Artikkel - Hovedartikkel',
@@ -252,6 +357,20 @@ var templates = [
     },
     {
         content: {
+            displayName: 'Seksjon - Tavleseksjon',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:tavleliste'
+            }
+        },
+        page: tavleListePage
+    },
+
+    {
+        content: {
             displayName: 'Seksjon - Hovedseksjon',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
@@ -264,6 +383,19 @@ var templates = [
         page: hovedSeksjonPage
 
 
+    },
+    {
+        content: {
+            displayName: 'Seksjon - Transportside',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:transport'
+            }
+        },
+        page: transportPage
     }
 ]
 

@@ -16,7 +16,7 @@ exports.get = function(req) {
         // Define the model
         var content =portal.getContent();
 
-        var lang = langLib.parseBundle(content.language);
+    var lang = langLib.parseBundle(content.language);
 
         if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
             var ch = 1;
@@ -39,19 +39,19 @@ exports.get = function(req) {
 
         var languages = getLanguageVersions(content);
 
-        var hasFact = false;
-        var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
-        socials = socials ? socials.map(function (el) {
-            var text = 'Del på ';
-            if (el === 'linkedin') text += 'LinkedIn';
-            else if (el === 'facebook') text += 'Facebook';
-            else text += 'Twitter';
-            return {
-                type: el,
-                text: text,
-                href: getSocialRef(el, content, req)
-            }
-        }) : false;
+    var hasFact = false;
+    var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
+    socials = socials ? socials.map(function (el) {
+        var text = 'Del på ';
+        if (el === 'linkedin') text += 'LinkedIn';
+        else if (el === 'facebook') text += 'Facebook';
+        else text += 'Twitter';
+        return {
+            type: el,
+            text: text,
+            href: getSocialRef(el, content, req)
+        }
+    }) : false;
 
         if (content.data.fact && content.data.fact !== '') hasFact = true;
         var model = {

@@ -1,11 +1,11 @@
 
-var trans = require('/lib/contentTranslator');
+
 var content = require('/lib/xp/content');
 var portal = require('/lib/xp/portal');
 
 exports.handle404 = function (req) {
 
-    trans.logBeautify(req);
+    log.info(JSON.stringify(req, null, 4))
 
     var path = req.request.path.split('/').pop();
 
@@ -25,7 +25,7 @@ exports.handle404 = function (req) {
     if (element) {
         var redirect = portal.pageUrl({id: element._id});
         if (element.type === app.name + ':url') {
-             redirect = portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(appendRoot).andOr(xpInfuse).endValidation);
+             redirect = portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(stripProtocol).andOr(appendRoot).andOr(xpInfuse).endValidation);
         }
         log.info('Final ' + redirect);
         return {
@@ -39,6 +39,9 @@ exports.handle404 = function (req) {
 
 }
 
+function stripProtocol(url) {
+    return url.replace(/http[s]?:\/\/www\.nav\.no/, '')
+}
 
 
 function validateUrl(url) {

@@ -2,20 +2,16 @@ var contentLib = require('/lib/xp/content');
 var utils = require('/lib/nav-utils');
 var tools = require('/lib/tools');
 var node = require('/lib/xp/node');
-exports.translate = translate;
-exports.translateTables = translateTables;
+var R = require('/lib/ramda');
+
+
 
 
 function getRefs(a,b,c,d,e) { return tools.getRefs(a,b,c,d,e); }
 function modify(a,b,c,d,e) { return tools.modify(a,b,c,d,e); }
 
 function change_cms2xp_page(content) {
-    var children = [];
-    if (content.hasChildren) {
-        children = contentLib.getChildren({
-            key: content._id
-        }).hits;
-    }
+    var children = content.hasChildren ? contentLib.getChildren({key: content._id}).hits : [];
     var contentKey = utils.getContentParam(content, 'key');
     if (contentKey) {
         var c = utils.getContentByCmsKey(contentKey);
@@ -66,36 +62,33 @@ function removeImageSize(content) {
     if (content.data.imagesize === '') delete content.data.imagesize;
     return content;
 }
-
+function compose(functions) {
+    var composed = functions.reduce(function(t, func) {
+      if (!t) t = func;
+      else t = R.compose(t, func);
+      return t;
+    });
+    return function(content) {
+        return composed(content);
+    }
+}
 var ret = {
-    'Artikkel_Ansattportal': function (content) {
-        content = changePreface(content);
-        content = changeLinks(content);
-        content = changeFactPlacement(content);
-        content = insertContentTypeMetaTag(content);
-        return content;
-    },
-    'Artikkel_Arena-veiviser': function(content) {
-        content = insertContentTypeMetaTag(content);
-        return content;
-    },
-    'Artikkel_Brukerportal': function (content) {
-        content = changePreface(content);
-        content = changeSocial(content);
-        content = changeTilbakemelding(content);
-        content = changeNewsSchemas(content);
-        content = changeLinks(content);
-        content = changeLaws(content);
-        content = changeInternational(content);
-        content = changeSelfService(content);
-        content = changeLanguageVersions(content);
-        content = changeFactPlacement(content);
-        content = changeHideDate(content);
-        content = mapReduceMenuItems(content);
-        content = insertContentTypeMetaTag(content);
-        content = removeImageSize(content);
-        return content;
-    },
+    'Artikkel_Ansattportal': compose([changePreface, changeLinks, changeFactPlacement, insertContentTypeMetaTag]),
+    'Artikkel_Arena-veiviser': compose([insertContentTypeMetaTag]),
+    'Artikkel_Brukerportal': compose([
+        changePreface,
+        changeSocial,
+        changeTilbakemelding,
+        changeNewsSchemas,
+        changeLinks,
+        changeLaws, changeInternational, changeSelfService,
+        changeLanguageVersions,
+        changeFactPlacement,
+        changeHideDate,
+        mapReduceMenuItems,
+        insertContentTypeMetaTag,
+        removeImageSize
+    ]),
     'Artikkel_inspirasjon': function (content) {
         return content;
     },
@@ -114,101 +107,81 @@ var ret = {
     'Bisys_modul': changePreface,
     'Bisys_rutine': changePreface,
     'Blogg_innlegg': changePreface,
-    'Kort_om': function(content) {
-        content = changeRates(changeTitle(changeSocial(
-            changeTilbakemelding(
-                changeNewsSchemas(
-                    changeMembership(
-                        changeInformation(
-                            changeQA(
-                                changeInternational(
-                                    changeNotifications(
-                                        changeAppeals(
-                                            changeLaws(
-                                                changeSelfService(
-                                                    changeLanguageVersions(content)
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )));
-        if (content.data.schemas) {
-            content = insertMetaTag(content, 'schemas', content.data.schemas);
-            delete content.data.schemas;
-        }
-        content = insertContentTypeMetaTag(content);
-        return content
-    },
+    'Kort_om': compose([
+        changeRates,
+        changeTitle,
+        changeNewsSchemas,
+        changeMembership,
+        changeInformation,
+        tools.changeProcedural,
+        changeQA,
+        changeInternational,
+        changeNotifications,
+        changeAppeals,
+        changeLaws,
+        changeSelfService,
+        changeLanguageVersions,
+        insertContentTypeMetaTag
+    ]),
     'cms2xp_page': function (content) {
         change_cms2xp_page(content);
         content = insertContentTypeMetaTag(content);
         return content;
     },
-    'nav.nyhet': function (content) {
-        content = changeHideDate(content);
-        content = changePreface(content);
-        content = changeSocial(content);
-        content = changeNewsSchemas(content);
-        content = changeLinks(content);
-        content = changeFactPlacement(content);
-        content = changeLanguageVersions(content);
-        content = mapReduceMenuItems(content);
-        content = insertContentTypeMetaTag(content);
-        return content;
-    },
-    'nav.pressemelding': function (content) {
-        content = changeHideDate(content);
-        content = changePreface(content);
-        content = changeSocial(content);
-        content = changeNewsSchemas(content);
-        content = changeLinks(content);
-        content = changeFactPlacement(content);
-        content = changeLanguageVersions(content);
-        return content
-    }
-
-
-}
-
-exports.ret = ret;
-
-function def(content) {
-    return content;
-}
-
-function createNewContent(content) {
-    var res = contentLib.create({
-        name: content._name,
-        contentType: 'no.nav.navno:main-article',
-        parentPath: '/sites/www.nav.no/no/test/',
-        displayName: content.displayName,
-        language: content.language,
-        data: content.data,
-        x: content.x
-    });
-    if (res) return contentLib.modify({key: res._id, editor: function (c) {
-            c.x = content.x;
-            return c;
-        }});
-    else return content;
+    'nav.nyhet': compose([
+        changeHideDate,
+        changePreface,
+        changeSocial,
+        changeNewsSchemas,
+        changeLinks,
+        changeFactPlacement,
+        changeLanguageVersions,
+        mapReduceMenuItems,
+        insertContentTypeMetaTag
+    ]),
+    'nav.pressemelding': compose([
+        changeHideDate,
+        changePreface,
+        changeSocial,
+        changeNewsSchemas,
+        changeLinks,
+        changeFactPlacement,
+        changeLanguageVersions,
+        insertContentTypeMetaTag
+    ])
 }
 
 
-
-function shouldTranslate(content) {
-    return (content && content.type) ? ret.hasOwnProperty(content.type.replace(app.name + ":", "")) : false;
+module.exports = {
+    translate: translate,
+    translateTables: translateTables,
+    ret: ret,
+    logBeutify: logBeautify,
+    join: join,
+    changeSidebeskrivelse: changeSidebeskrivelse,
+    shouldTranslateTable: shouldTranslateTable,
+    transcms2xpPages: transcms2xpPage,
+    getTemplate: getTemplate,
+    doTableListTranslation: doTableListTranslation,
+    change: tools.change,
+    trans: trans,
+    changeMenuItem: tools.changeMenuItem,
+    checkTextForRefs: checkTextForRefs,
+    transMainSection: transMainSections,
+    tmins: transMinSections,
+    testNodeLib: testNodeLib,
+    nodeCheck: nodeCheck,
+    testOneNode: testOneNode,
+    refresh: refresh,
+    transSidebeskrivelse: transSidebeskrivelse,
+    changetavleliste: changetavleliste
 }
+
 function logBeautify(a,b,c,d,e) { return tools.logBeautify(a,b,c,d,e); }
 function deleteOldContent(a,b,c,d,e) { return tools.deleteOldContent(a,b,c,d,e); }
 function moveNewContent(a,b,c,d,e) { return tools.moveNewContent(a,b,c,d,e); }
 
-exports.logBeautify = logBeautify;
+
 var repo = node.connect({
     repoId: 'cms-repo',
     branch: 'draft',
@@ -216,29 +189,6 @@ var repo = node.connect({
 });
 function translate(content) {
 
-/*    if (shouldTranslate(content)) {
-
-        if (content.type.split(':')[1] === 'cms2xp_page') return content;
-        var refs = getRefs(content);
-        var newContent;
-       // try {
-            newContent = createNewContent(content);
-       /* } catch (e) {
-            log.info("Failed");
-            log.info(e);
-            logBeautify(content);
-            return content;
-        }*//*
-        deleteOldContent(content, newContent._path);
-        refs.forEach(function (value) {
-
-            modify(value, newContent._id, content._id);
-
-        });
-
-        newContent = moveNewContent(newContent, content._path);
-        return newContent;
-    }*/
     content = repo.get(content._id);
     if (!ret[content.type.split(':')[1]]) return content;
     content = ret[content.type.split(':')[1]](content);
@@ -256,10 +206,6 @@ function translate(content) {
     return content;
 }
 
-function warn(property, el) {
-    log.info(property + ' missing from ' + JSON.stringify(el));
-    return '';
-}
 
 
 
@@ -287,7 +233,6 @@ function getNTKElements(content) {
     if (!sectionIds) {
         return null;
     }
-    //libs.util.log(sectionIds);
     var queryResult = contentLib.query({
         start: 0,
         count: 5,
@@ -381,8 +326,6 @@ function getSCElements(content) {
 }
 
 function verifyPaths() { return tools.verifyPaths(arguments); }
-function inspectContent(a,b,c,d,e) { return tools.inspectContent(a,b,c,d,e); }
-//function shouldTranslateTable(a,b,c,d,e) { return tools.shouldTranslateTable(a,b,c,d,e); }
 function getTableElements(a,b,c,d,e) { return tools.getTableElements(a,b,c,d,e); }
 function createNewTableContent(a,b,c,d,e) { return tools.createNewTableContent(a,b,c,d,e); }
 
@@ -391,37 +334,8 @@ function translateTables(content) {
     var ntkElements = getNTKElements(content) || [];
     var newElements = getNewsElements(content) || [];
     var scElements = getSCElements(content) || [];
-    var ssElements = getSSElements(content) || [];
 
     return createNewTableContent(tableElements, ntkElements, newElements, scElements, content);
-
-    if (newContent === content) return content;
-    getRefs(content._id).forEach(function (value) {
-        modify(value, newContent._id, content._id);
-    });
-   deleteOldContent(content, newContent._path);
-   newContent = moveNewContent(newContent, content._path);
-   return newContent;
-
-}
-
-function getContents(content) {
-    var cms = content.x['no-nav-navno'];
-    var key = cms.cmsContent ? cms.cmsContent.contentKey : cms.cmsMenu.menuItemKey;
-    var c;
-    log.info("Key: " + key);
-    if (key) {
-        c = utils.getContentByCmsKey(key);
-        c = c ? c : utils.getContentByMenuKey(key);
-        if (c) {
-            for (var k in c.data) {
-                if (c.data.hasOwnProperty(k) && !content.data[k]) {
-                    content.data[k] = c.data[k];
-                }
-            }
-        }
-    }
-    return content;
 }
 
 
@@ -429,8 +343,7 @@ function getContents(content) {
 function changeShortcuts(a,b,c,d,e) { return tools.changeShortcuts(a,b,c,d,e); }
 function changeDescription(a,b,c,d,e) { return tools.changeDescription(a,b,c,d,e); }
 function join(a,b,c,d,e) { return tools.join(a,b,c,d,e); }
-exports.join = join;
-exports.changeSidebeskrivelse = changeSidebeskrivelse;
+
 function changeSidebeskrivelse(content) {
     if (content.type && content.type === 'no.nav.navno:nav.sidebeskrivelse') {
         content = changeShortcuts(content);
@@ -456,21 +369,16 @@ function changeSidebeskrivelse(content) {
     return content;
 }
 
-exports.shouldTranslateTable = shouldTranslateTable;
+
 function shouldTranslateTable(content) {
     return tableTranslator.hasOwnProperty(content.type.replace(app.name + ':',""))
 }
 
-function checkForMenuItems(content) {
-    var t = true;
-    var done = false;
 
-    return t && done;
-}
 
 function varifyTableListContent(a,b,c,d,e) { return tools.varifyTableListContent(a,b,c,d,e); }
 function createTableListContent(a,b,c,d,e) { return tools.createTableListContent(a,b,c,d,e); }
-exports.doTableListTranslation = doTableListTranslation;
+
 function doTableListTranslation(content) {
     if (varifyTableListContent(content)) {
         var newContent;
@@ -479,10 +387,6 @@ function doTableListTranslation(content) {
         } catch (e) {
             log.info('Failed table list content');
             log.info(e);
-            if (!content.data.hasOwnProperty('heading')) {
-                content.data.heading = content.displayName;
-                return doTableListTranslation(content);
-            }
             return content;
         }
         getRefs(content).forEach(function (value) {
@@ -490,18 +394,14 @@ function doTableListTranslation(content) {
         });
         deleteOldContent(content, newContent._path);
         newContent = moveNewContent(newContent, content._path);
+    //    moveFromContentSiteToContent(newContent.data.sectionContents, {path: newContent._path, id: newContent._id});
         return newContent
     }
     return content;
 }
 
 
-function mapDisplayName(el) {
-    if (el) return el.data.title || el.data.heading;
-    return 'Ikke funnet'
-}
-exports.change = tools.change;
-exports.changeMenuItem = tools.changeMenuItem;
+
 
 function checkTextForRefs(content) {
     if (!content) return [];
@@ -525,9 +425,9 @@ function checkTextForRefs(content) {
     });
 }
 
-exports.checkTextForRefs = checkTextForRefs;
 
-exports.testNodeLib = testNodeLib;
+
+
 function testNodeLib() {
 
     var qres = contentLib.query({
@@ -548,11 +448,11 @@ function testNodeLib() {
     })
 }
 
-exports.nodeCheck = function (id) {
+function nodeCheck(id) {
     log.info(logBeautify(repo.get(id)))
 }
 
-exports.testOneNode = function (id) {
+function testOneNode(id) {
     var c = repo.get(id);
     c = ret['nav.nyhet'](c);
     repo.modify({
@@ -565,13 +465,13 @@ exports.testOneNode = function (id) {
     log.info(logBeautify(repo.get(id)));
 }
 
-exports.refresh = function () {
+function refresh() {
 
       repo.refresh();
 
 }
 
-exports.trans = function(type) {
+function trans(type) {
     if (!ret[type]) return false;
     else {
         var start = 0;
@@ -611,7 +511,7 @@ exports.trans = function(type) {
 function toContentType(type) {
     return app.name + ':' + type;
 }
-exports.transSidebeskrivelse = function(indexConfigurations, socket) {
+function transSidebeskrivelse(indexConfigurations, socket) {
     var start = 0;
     var count = 100;
     var ar = [];
@@ -634,11 +534,16 @@ exports.transSidebeskrivelse = function(indexConfigurations, socket) {
         if (!r || r.type === toContentType('tavleliste')) return;
         var sidebeskrivelse = r;
         var sideHome = repo.get(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentHome);
+        if (!sideHome) {
+            sideHome = utils.getContentByCmsKey(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentKey);
+            log.info(JSON.stringify(sideHome, null, 4));
+            return;
+        }
         if (!sideHome) return;
         sideHome.data = join(sideHome.data, sidebeskrivelse.data);
-        if (!sideHome.data.hasOwnProperty('heading')) sideHome.data.heading = sideHome.displayName;
         sideHome = changeShortcuts(sideHome);
         sideHome = changeDescription(sideHome);
+        delete sideHome.data.heading;
         sideHome = mapReduceMenuItems(sideHome);
         sideHome = insertMetaTag(sideHome, 'content', 'nav.sidebeskrivelse');
         getRefs(sidebeskrivelse).forEach(function (value) {
@@ -656,11 +561,12 @@ exports.transSidebeskrivelse = function(indexConfigurations, socket) {
                 return sideHome;
             }
         });
+        moveFromContentSiteToContent(sideHome.data.sectionContents, {path: sideHome._path, id: sideHome._id});
     });
 
 }
 var t = true;
-exports.changetavleliste = function (id) {
+function changetavleliste(id) {
     if (!t) return;
     t = false;
     var r = [];
@@ -694,10 +600,9 @@ exports.changetavleliste = function (id) {
     })
 
 }
-var tms = true;
+
 function transMainSections(id, socket) {
-    if (!tms) return;
-    tms = false;
+    log.info('Translating Mains');
     var start = 0;
     var count = 100;
     var r = [];
@@ -711,7 +616,7 @@ function transMainSections(id, socket) {
                     must: {
                         hasValue: {
                             field: 'page.template',
-                            values: ['93e5b5ba-e593-4d43-b055-3234d164f7db']
+                            values: [getTemplate("person-seksjonsforside-niva-1")]
                         }
                     }
                 }
@@ -724,33 +629,33 @@ function transMainSections(id, socket) {
     var indexParams = id;
     if (socket) socket.emit('mainmax', r.length);
     r.forEach(function (value, index) {
-    if (socket) socket.emit('mainval', index +1);
+        if (socket) socket.emit('mainval', index +1);
 
-    var content = repo.get(value._id);
-    var was = content.type;
-    if (was === toContentType('main-article')) return;
-    content.data = translateTables(content);
-    content._indexConfig = indexParams;
-    content.type = toContentType('oppslagstavle');
-   // log.info(logBeautify(content));
-    if (!content.page) content.page = {};
-    content.page.template = getTemplate('seksjon-hovedseksjon');
-    repo.modify({
-        key: content._id,
-        editor: function () {
-            return content;
-        }
-    });
+        var content = repo.get(value._id);
+        var was = content.type;
+        if (was === toContentType('main-article')) return;
+        content.data = translateTables(content);
+        content._indexConfig = indexParams;
+        content.type = toContentType('oppslagstavle');
+       // log.info(logBeautify(content));
+        if (!content.page) content.page = {};
+        content.page.template = getTemplate('seksjon-hovedseksjon');
+        repo.modify({
+            key: content._id,
+            editor: function () {
+                return content;
+            }
+        });
     })
     //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
     //log.info(logBeautify(repo.get(r[0]._id)))
     //log.info(logBeautify(r));
 }
 
-exports.transMainSection = transMainSections;
+
 
 var tmins = true;
-exports.tmins = transMinSections;
+
 function transMinSections(id, socket) {
 
     var start = 0;
@@ -764,7 +669,7 @@ function transMinSections(id, socket) {
 
         }).hits;
         r = r.concat(h.reduce(function(t, el){
-            if (el.page && el.page.template === 'a5316223-aeaf-4f70-9b78-126dba2a0aab') t.push(el);
+            if (el.page && el.page.template === getTemplate('person-seksjonsside-niva-2')) t.push(el);
             return t;
         },[]));
         count = h.length;
@@ -781,20 +686,46 @@ function transMinSections(id, socket) {
             content.type = toContentType('oppslagstavle');
             if (!content.page) content.page = {};
             content.page.template = getTemplate('seksjon-hovedseksjon');
-            log.info(logBeautify(content));
             repo.modify({
                 key: content._id,
                 editor: function () {
                     return content;
                 }
             });
+            moveFromContentSiteToContent(content.data.tableContents, { path: content._path, id: content._id });
         }
         else log.info(logBeautify(value));
     })
-    //log.info(logBeautify(repo.get('ca45a206-54ee-4907-8fde-51e17ba2b6b8')));
-    //log.info(logBeautify(repo.get(r[0]._id)))
-    //log.info(logBeautify(r));
+
+
 }
+function moveFromContentSiteToContent(elements, contentObj) {
+    elements = elements ? Array.isArray(elements) ? elements : [elements] : [];
+    elements.forEach(function (value) {
+        var element = repo.get(value);
+        if (element && element._path.split('/').indexOf('www.nav.no') === -1) {
+            var done = false;
+            var str = '';
+            var int = 2;
+            while (!done) {
+                done = true;
+                try {
+                    repo.move({
+                        source: value,
+                        target: contentObj.path + '/' + str
+                    });
+                } catch (e) {
+                    str = element._name + int++;
+                    done = false;
+
+                }
+            }
+
+
+        }
+    })
+}
+
 function transcms2xpPage(id, socket) {
 
     var r = [];
@@ -826,19 +757,36 @@ function transcms2xpPage(id, socket) {
                 })
             }
             if (article && !ret[stripContentType(article.type)]) {
+                log.info('Article not in ret');
                 log.info(logBeautify(article));
             }
             else {
                 if (article) {
+                    if (article.x && article.x['no-nav-navno'] && article.x['no-nav-navno'].cmsStatus && article.x['no-nav-navno'].cmsStatus.status !== 'approved') {
+                        log.info('Delete article ' + article.displayName);
+                        log.info('Delete cms2xp ' + cms2xp.displayName);
+                        contentLib.delete({ key: cms2xp._id});
+                        contentLib.delete({ key: article._id});
+                        return;
+                    }
                     var originalArticlePath = article._path;
                     if (article&&article.hasOwnProperty('x')&&article.x.hasOwnProperty('no-nav-navno')&&article.x['no-nav-navno'].hasOwnProperty('cmsContent')&&article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')) {
-                        var path = repo.get(article.x['no-nav-navno'].cmsContent.contentHome)._path;
+                        var p = repo.get(article.x['no-nav-navno'].cmsContent.contentHome);
+                        if (p) {
+                            var path = p._path;
                             log.info('Path:' + path);
-                            originalArticlePath = path.split("/").slice(0,-1).join("/")+'/';
-                            log.info('OriginalArticlePath: ' + originalArticlePath);
-
-
-
+                            originalArticlePath = path.split("/").slice(0, -1).join("/") + '/';
+                            if (path.indexOf('relatert-informasjon') !== -1) {
+                                originalArticlePath = cms2xp._path.split('/').slice(0,-1).join('/') + '/';
+                            }
+                        }
+                        else {
+                            log.info(JSON.stringify(article, null, 4));
+                            log.info('Missing shit')
+                        }
+                    }
+                    else if (article._name === cms2xp._name || article._path.split('/').indexOf('relatert-informasjon') !== -1) {
+                        originalArticlePath = cms2xp._path.split('/').slice(0,-1).join('/') + '/';
                     }
                     repo.move({
                         source: article._id,
@@ -876,7 +824,6 @@ function transcms2xpPage(id, socket) {
                      */
 
                      repo.delete(cms2xp._id);
-                    log.info(originalArticlePath);
                     try {
                         repo.move({
                             source: article._id,
@@ -890,6 +837,7 @@ function transcms2xpPage(id, socket) {
                             target: originalArticlePath.split('/').slice(0,-2).join("/")+'/'
                         })
                     }
+                    article = repo.get(article._id);
                      article = ret[stripContentType(article.type)](article);
 
 
@@ -910,17 +858,20 @@ function transcms2xpPage(id, socket) {
         }
     })
 }
-exports.transcms2xpPages = transcms2xpPage;
+
 function stripContentType(type) {
     return type.replace(app.name + ':', "")
 }
 
-exports.getTemplate = getTemplate;
+
 
 function getTemplate(templateName) {
     var ret = '';
     var r = contentLib.query({
         query: '_name LIKE "' + templateName +'"'
     });
+    if (!r.hits[0]) {
+        r = contentLib.get({key: '/www.nav.no/_templates/' + templateName})
+    }
     return r.hits[0]._id
 }
