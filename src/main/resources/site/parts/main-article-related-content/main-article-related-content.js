@@ -2,42 +2,58 @@ var thymeleafLib = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var view = resolve('main-article-related-content.html');
+var cache = require('/lib/cacheControll');
+var langLib = require('/lib/i18nUtil');
+var contentTranslator = require('../../lib/contentTranslator');
 
 function handleGet(req) {
-
-    var content = portal.getContent();
-    var menuListItems = content.data.menuListItems || [];
-    var keys =
-        (menuListItems._selected
-            ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected])
-            : []
-        );
-    var links = keys.map( function(el) {
-        return ({ name: el, links: forceArr(menuListItems[el].link).map(function (link){
-                var element = contentLib.get({key: link});
-                return(
-                    { title: element.data.heading || element.displayName, link: portal.pageUrl({id: link}) }
-                );
-            })
+    return cache.getPaths('main-article-related-content' + req.path, function () {
+        var content = portal.getContent();
+        var selectNames = langLib.parseBundle(content.language).related_content.select;
+        var menuListItems = content.data.menuListItems || {};
+        var keys =
+            (menuListItems._selected
+                    ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected])
+                    : []
+            );
+        var linkList = keys.map( function(el) {
+            var links = forceArr(menuListItems[el].link);
+            return {
+                name: (selectNames[el] !== undefined ? selectNames[el] : ''),
+                links: links.map(function (link){
+                    var element = contentLib.get({ key: link });
+                    if (!element) return undefined;
+                    var isFile = element.type === 'media:document';
+                    //log.info(JSON.stringify(element, null, 4));
+                    return {
+                        title: element.displayName,
+                        link: (!isFile ? portal.pageUrl({id: link}) : portal.attachmentUrl({ id: element._id, download: true }))
+                    };
+                }).reduce(function(t, el) {
+                    if (el) t.push(el);
+                    return t
+                },[])
+            };
         });
-    });
 
-    var hasMenuLists = (links.length > 0);
-    var params = {
-        relatedContentList: links,
-        hasMenuList: hasMenuLists
-    };
+        var hasMenuLists = (linkList.length > 0);
+        var params = {
+            relatedContentList: linkList,
+            hasMenuList: hasMenuLists
+        };
 
-    var body = thymeleafLib.render(view, params);
+        var body = thymeleafLib.render(view, params);
 
-    return {
-        contentType: 'text/html',
-        body: body
-    };
+        return {
+            contentType: 'text/html',
+            body: body
+        };
+    })
+
 }
 
 
 exports.get = handleGet;
 function forceArr(element) {
-    return Array.isArray(element) ? element : [element]
+    return (element !== undefined ? (Array.isArray(element) ? element : [element]) : []);
 }

@@ -4,21 +4,19 @@ var contentLib = require('/lib/xp/content');
 var contentTranslator = require('../../lib/contentTranslator');
 var utils = require('/lib/nav-utils');
 var langLib = require('/lib/i18nUtil');
-var cacheLib = require('/lib/cache');
 // Resolve the view
 var view = resolve('main-article.html');
-var cache = cacheLib.newCache({
-    size: 100,
-    expire: 3600*24
-})
+var cache = require('/lib/cacheControll');
+
 exports.get = function(req) {
     //contentTranslator.logBeautify(req);
-   return cache.get(req.path, function () {
+
+    return cache.getPaths('main-article' + req.path, function () {
         var toc = null;
         // Define the model
         var content =portal.getContent();
 
-        var lang = langLib.parseBundle(content.language);
+    var lang = langLib.parseBundle(content.language);
 
         if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
             var ch = 1;
@@ -37,25 +35,23 @@ exports.get = function(req) {
 
             }
             toc += '</ol></nav>';
-
-
         }
 
         var languages = getLanguageVersions(content);
 
-        var hasFact = false;
-        var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
-        socials = socials ? socials.map(function (el) {
-            var text = 'Del på ';
-            if (el === 'linkedin') text += 'LinkedIn';
-            else if (el === 'facebook') text += 'Facebook';
-            else text += 'Twitter';
-            return {
-                type: el,
-                text: text,
-                href: getSocialRef(el, content, req)
-            }
-        }) : false;
+    var hasFact = false;
+    var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
+    socials = socials ? socials.map(function (el) {
+        var text = 'Del på ';
+        if (el === 'linkedin') text += 'LinkedIn';
+        else if (el === 'facebook') text += 'Facebook';
+        else text += 'Twitter';
+        return {
+            type: el,
+            text: text,
+            href: getSocialRef(el, content, req)
+        }
+    }) : false;
 
         if (content.data.fact && content.data.fact !== '') hasFact = true;
         var model = {
@@ -71,7 +67,6 @@ exports.get = function(req) {
 
         // Render a thymeleaf template
         var body = thymeleaf.render(view, model);
-
         // Return the result
         return {
             body: body

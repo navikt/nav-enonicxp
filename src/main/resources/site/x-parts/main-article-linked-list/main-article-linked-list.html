@@ -1,0 +1,8 @@
+
+<nav class="related-content content-submenu" data-th-if="${ hasList }">
+    <ul>
+        <li data-th-each="item : ${ list }" >
+            <a data-th-href="${ item.link }" data-th-classappend="${item.active} ? 'selected' : ''"><span data-th-text="${ item.heading }"></span></a>
+        </li>
+    </ul>
+</nav>

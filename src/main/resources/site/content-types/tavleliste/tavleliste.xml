@@ -1,7 +1,7 @@
 <content-type>
     <display-name>Artikkelliste</display-name>
     <description/>
-    <super-type>base:structured</super-type>
+    <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
@@ -58,7 +58,7 @@
                             <custom-text>contentdata/links</custom-text>
                             <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Fil</allow-content-type>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
                                 <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
@@ -68,7 +68,7 @@
                                 <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
                                 <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -80,9 +80,35 @@
                             <label>Regelverk</label>
                             <custom-text>contentdata/laws</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                            </config>
+                            </config-->
+                        </input>
+                    </items>
+                </option>
+                <option name="Språkversjoner">
+                    <label>Språkversjoner</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Språkversjoner</label>
+                            <custom-text>contentdata/laws</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <!--config>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                            </config-->
+                        </input>
+                    </items>
+                </option>
+                <option name="related-information">
+                    <label>Relatert Informasjon</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Relatert Informasjon</label>
+                            <custom-text>contentdata/laws</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+
                         </input>
                     </items>
                 </option>
@@ -94,9 +120,9 @@
                             <label>Saksbehandlingstider</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -108,12 +134,13 @@
                             <label>Medlemskap i folketrygden</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
+
                 <option name="Satser">
                     <label>Satser</label>
                     <help-text ></help-text>
@@ -122,10 +149,10 @@
                             <label>Satser</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
                                 <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -137,9 +164,9 @@
                             <label>Selvbetjening</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -151,9 +178,9 @@
                             <label>Klagerettigheter</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -165,11 +192,11 @@
                             <label>Skjema og søknad</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Skjemavedlegg</allow-content-type>
                                 <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
                                 <allow-content-type>no.nav.navno:Skjema</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -181,9 +208,9 @@
                             <label>Meld fra om endringer</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>
@@ -195,11 +222,11 @@
                             <label>Internasjonalt</label>
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
-                            <config>
+                            <!--config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
                                 <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
+                            </config-->
                         </input>
                     </items>
                 </option>

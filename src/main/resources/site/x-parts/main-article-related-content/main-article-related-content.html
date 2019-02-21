@@ -1,0 +1,13 @@
+<aside role="complementary" class="related-content accordion" id="related-content-accordion" data-th-if="${ hasMenuList }">
+    <section class="accordion-item" data-th-each="content : ${relatedContentList}">
+        <header><h1 class="h4"><a href="#accordion-information" class="accordion-toggle" data-th-text="${ content.name }"></a></h1></header>
+        <div id="accordion-information" class="accordion-panel">
+            <p data-th-if="${content.text}" data-th-utext="${portal.processHtml({'_value='+content.text})}">text</p>
+            <ul>
+                <li data-th-each="link : ${ content.links }">
+                    <a data-th-href="${link.link}" data-th-text="${ link.title }"></a>
+                </li>
+            </ul>
+        </div>
+    </section>
+</aside>

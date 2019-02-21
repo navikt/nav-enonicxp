@@ -38,18 +38,42 @@ function convertFromRepoToContent(socket, type) {
         contentLib.modify({
             key: value._id,
             editor: function(c) {
+                /*{
+                    "ntkSelector": "true",
+                    "tableSelector": "true",
+                    "hasNewsElements": "false",
+                    "newsSelector": "true",
+                    "nrNews": 0,
+                    "hasNTKElements": "true",
+                    "nrNTK": 4,
+                    "hasSCElements": "true",
+                    "scSelector": "true",
+                    "nrSC": 4
+                }*/
+                if (c.data.hasTableItems) delete c.data.hasTableItems;
+                if (c.data.ntkSelector) delete c.data.ntkSelector;
+                if (c.data.tableSelector) delete c.data.tableSelector;
+                if (c.data.newsSelector) delete c.data.newsSelector;
+                if (c.data.scSelector) delete c.data.scSelector;
+                if (c.data.hasNewsElements) delete c.data.hasNewsElements;
+                if (c.data.hasSCElements) delete c.data.hasSCElements;
+                if (c.data.hasNTKElements) delete c.data.hasNTKElements;
+
                 if (c.data.languages) {
-                    if (!c.data.menuListItems) c.data.menuListItems = [];
-                    else if (!Array.isArray(c.data.menuListItems)) c.data.menuListItems = [c.data.menuListItems];
-                    c.data.menuListItems.push({
-                        menuListName: 'Språkversjoner',
-                        link: (Array.isArray(c.data.languages)) ? c.data.languages : [ c.data.languages ]
-                    });
+                    if (!c.data.menuListItems) c.data.menuListItems = {
+                        _selected: []
+                    };
+                    c.data.menuListItems._selected = Array.isArray(c.data.menuListItems._selected) ? c.data.menuListItems._selected : [c.data.menuListItems._selected]
+                    c.data.menuListItems['Språkversjoner'] = {
+                        link: [c.data.languages]
+                    };
+                    c.data.menuListItems._selected.push('Språkversjoner');
                     delete c.data.languages;
                 }
-                if (Array.isArray(c.data.heading)) {
+               /* if (Array.isArray(c.data.heading)) {
                     c.data.heading = c.data.heading[0];
-                }
+                }*/
+                if (c.data.heading) delete c.data.heading;
                 return c;
             }
         })

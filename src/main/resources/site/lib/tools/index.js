@@ -1,5 +1,6 @@
 
 var contentLib = require('/lib/xp/content');
+var R = require('/lib/ramda');
 exports.verifyPaths = verifyPaths;
 function verifyPaths(object) {
     var tmp= undefined;
@@ -94,7 +95,7 @@ function changeNewsSchemas(content) {
     content.data.menuListItems = content.data.menuListItems || [];
     var ns = content.data.newsschemas;
     if (!Array.isArray(ns)) ns = [ns];
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Skjema og søknad', ns.reduce(function (t, el) {
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'form-and-application', ns.reduce(function (t, el) {
         if (el) t.push(el);
         return t
     },[]));
@@ -104,19 +105,26 @@ function changeNewsSchemas(content) {
 }
 exports.changeLaws = changeLaws;
 function changeLaws(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Regelverk', content.data.laws);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'rules-and-regulations', content.data.laws);
     delete content.data.laws;
     return content;
 }
 exports.changeInternational = changeInternational;
 function changeInternational(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Internasjonalt', content.data.international);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'international', content.data.international);
     delete content.data.international;
     return content;
 }
+exports.changeProcedural = changeProcedural;
+function changeProcedural(content) {
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'saksbehandling', content.data.saksbehandling);
+    delete content.data.saksbehandling;
+    return content;
+}
+
 exports.changeSelfService = changeSelfService
 function changeSelfService(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Selvbetjening', content.data.selfservice);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'selfservice', content.data.selfservice);
     delete content.data.selfservice;
     return content;
 }
@@ -131,25 +139,25 @@ function changeLanguage(content) {
 }
 exports.changeMembership = changeMembership
 function changeMembership(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Medlemskap i folketrygden', content.data.membership);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'membership', content.data.membership);
     delete content.data.membership;
     return content;
 }
 exports.changeQA = changeQA
 function changeQA(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Spørsmål og svar', content.data.faq);
+    //content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Spørsmål og svar', content.data.faq);
     delete content.data.faq;
     return content;
 }
 exports.changeNotifications = changeNotifications
 function changeNotifications(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Meld fra om endringer', content.data.notifications);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'report-changes', content.data.notifications);
     delete content.data.notifications;
     return content;
 }
 exports.changeAppeals = changeAppeals;
 function changeAppeals(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Klagerettigheter', content.data.appeals);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'appeal-rights', content.data.appeals);
     delete content.data.appeals;
     return content;
 }
@@ -167,7 +175,9 @@ function realyIs(link) {
 }
 exports.mapReduceMenuItems = mapReduceMenuItems;
 function mapReduceMenuItems(content) {
-    var selected = content.data.menuListItems._selected;
+    var selected = R.path(['data', 'menuListItems', '_selected'], content);
+    if (!selected) return content;
+    //var selected = content.data.menuListItems._selected;
     selected = Array.isArray(selected) ? selected : [selected];
     selected.forEach(function (value) {
         if (!realyIs(content.data.menuListItems[value].link)) {
@@ -205,19 +215,19 @@ function changeTitle(content) {
 
 exports.changeLinks = changeLinks;
 function changeLinks(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Relatert innhold', content.data.links);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'related-information', content.data.links);
     delete content.data.links;
     return content;
 }
 exports.changeInformation = changeInformation;
 function changeInformation(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Relatert informasjon', content.data.information);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'related-information', content.data.information);
     delete content.data.information;
     return content;
 }
 exports.changeRates = changeRates
 function changeRates(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Satser', content.data.rates);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'rates', content.data.rates);
     delete content.data.rates;
     return content;
 }
@@ -302,7 +312,7 @@ function createTableListContent(content) {
 }
 exports.changeShortcuts = changeShortcuts;
 function changeShortcuts(content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Relatert innhold', content.data.shortcuts);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'related-information', content.data.shortcuts);
     delete content.data.shortcuts;
     return content;
 }
@@ -310,22 +320,13 @@ function changeShortcuts(content) {
 exports.createNewTableContent = createNewTableContent;
 function createNewTableContent(tableElements, ntkElements, newElements, scElements, content) {
     var data = {
-        hasTableItems: (tableElements.length > 0) ? "true": 'false',
-        heading: content.title || content.heading || content.displayName,
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
         ntkContents: ntkElements.map(mapIds),
         newsContents: newElements.map(mapIds),
         scContents: scElements.map(mapIds),
-        ntkSelector: 'true',
-        tableSelector: 'true',
-        hasNewsElements: (newElements.length > 0) ? 'true': 'false',
-        newsSelector: 'true',
         nrNews: newElements.length,
-        hasNTKElements: (ntkElements.length > 0) ? 'true' : 'false',
         nrNTK: ntkElements.length,
-        hasSCElements: (scElements.length > 0) ? 'true' : 'false',
-        scSelector: 'true',
         nrSC: scElements.length
 
     };
@@ -466,7 +467,7 @@ function modify(value, newId, oldId) {
         });
     } catch (e) {
         log.info(JSON.stringify(contentLib.get({ key: value._id}), null, 4));
-        log.info('Failed modify');
+        log.info('Failed modify ' + e);
         log.info(newId + ' ' + oldId);
     }
 }

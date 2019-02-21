@@ -6,13 +6,10 @@ var libs = {
     i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cache')
+    tools: require('/lib/tools'),
+    cache: require('/lib/cacheControll')
 };
 var view = resolve('page-heading-with-menu.html');
-var cache = libs.cache.newCache({
-    size: 500,
-    expire: 3600*24
-})
 //TODO: URL-er skal være konfigurerbare
 var serviceurl = 'https://tjenester.nav.no';
 var urls = {
@@ -20,13 +17,13 @@ var urls = {
     login: serviceurl + '/oversikt',
     logout: serviceurl + '/esso/logout',
     stillinger: serviceurl + '/stillinger/',
-    sok: serviceurl + '/nav-sok'
+    sok: serviceurl + '/nav-sok',
 };
 
 function handleGet(req) {
-    return cache.get('heading', function() {
-        var site = libs.portal.getSite();
-        var content = libs.portal.getContent();
+    var site = libs.portal.getSite();
+    var content = libs.portal.getContent();
+    return libs.cache.getDecorator('header' + (content.language ? content.language : 'no'), function () {
         var languageBundles = libs.lang.parseBundle(content.language).pagenav;
         var assets = {
             img: {
@@ -39,22 +36,24 @@ function handleGet(req) {
         menuItems = menuItems[menuItems.findIndex(function (value) {
             return value.name === language;
         })];
-        var frontPageUrl = libs.portal.pageUrl({id: site._id});
+
+        // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
+        //TODO: Fjerne eksplesitt https når dette er løst på BigIP
         var languageSelectors = [
             {
-                href: frontPageUrl + '/no',
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/no"}),//.replace("http:", "https:"),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
-                active: (language || language === 'no' ? 'active' : '')
+                active: (language === 'no' ? 'active' : '')
             },
             {
-                href: frontPageUrl + '/en',
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/en"}),//.replace("http:", "https:"),
                 title: 'English (Globalt språkvalg)',
                 text: 'English',
                 active: (language === 'en' ? 'active' : '')
             },
             {
-                href: frontPageUrl + '/se',
+                href: libs.portal.pageUrl({type: "absolute", path: "/www.nav.no/se"}),//.replace("http:", "https:"),
                 title: 'Sámegiella (Globalt Språkvalg)',
                 text: 'Sámegiella',
                 active: (language === 'se' ? 'active': '')
@@ -65,7 +64,6 @@ function handleGet(req) {
             urls: urls,
             langBundles: languageBundles,
             langSelectors: languageSelectors,
-            frontPageUrl: frontPageUrl,
             menu: menuItems,
             regionNorth: content.page.regions['region-north']
         };
@@ -75,7 +73,6 @@ function handleGet(req) {
             body: libs.thymeleaf.render(view, model),
         };
     })
-
 }
 
 exports.get = handleGet;

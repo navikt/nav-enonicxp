@@ -2,17 +2,14 @@ var libs = {
     thymeleaf: require('/lib/xp/thymeleaf'),
     portal: require('/lib/xp/portal'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cache')
+    cache: require('/lib/cacheControll')
 };
 var view = resolve('page-footer.html');
-var cache = libs.cache.newCache({
-    size: 500,
-    expire: 3600 * 24
-})
+
 function handleGet(req) {
-    return cache.get('footer', function () {
-        var site = libs.portal.getSite();
-        var content = libs.portal.getContent();
+    var site = libs.portal.getSite();
+    var content = libs.portal.getContent();
+    return libs.cache.getDecorator('footer' + (content.language ? content.language : 'no'), function() {
         var languageBundles = libs.lang.parseBundle(content.language).pagenav;
         var contentAZPage = libs.portal.serviceUrl({service: 'contentAZ'});
         var accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (content.language === 'no' ? 'æøå' : '');

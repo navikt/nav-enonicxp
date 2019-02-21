@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mixin>
+    <display-name>CMS Content Status</display-name>
+    <items>
+        <input name="status" type="ComboBox">
+            <label>Status</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <option value="draft">Draft</option>
+                <option value="snapshot">Snapshot</option>
+                <option value="approved">Approved</option>
+                <option value="archived">Archived</option>
+            </config>
+        </input>
+    </items>
+</mixin>

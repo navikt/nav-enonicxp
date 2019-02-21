@@ -1,38 +1,11 @@
 <content-type>
     <display-name>Oppslagstavle</display-name>
-    <super-type>base:structured</super-type>
+    <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="meta">
-            <label>Oppslagstavle - informasjon</label>
-            <items>
-                <input type="TextLine" name="ingress">
-                    <label>Beskrivelse</label>
-                    <occurrences minimum="0" maximum="1" />
-                </input>
-                <input name="metaTags" type="Tag">
-                    <label>Meta-tagger for innhold. Er automatisert</label>
-                    <occurrences maximum="0" minimum="0"/>
-                </input>
         <field-set name="table">
             <label>Tavleoppføringer</label>
             <help-text>Tavleoppføringer hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
-                <input type="RadioButton" name="hasTableItems">
-                    <label>Skal ha tavleoppføringer?</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
-                <input name="tableSelector" type="RadioButton">
-                    <label>Ta med prioriterte underartikler</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
                 <input name="tableContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
@@ -47,22 +20,6 @@
             <label>Nyheter</label>
             <help-text>Nyheter hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
-                <input name="hasNewsElements" type="RadioButton">
-                    <label>Ta med nyheter</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
-                <input name="newsSelector" type="RadioButton">
-                    <label>Ta med prioriterte underartikler</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
                 <input name="newsContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
@@ -70,7 +27,6 @@
                 </input>
                 <input type="Long" name="nrNews">
                     <label>Hvor mange elementer i undermenyene er tillatt</label>
-
                 </input>
             </items>
         </field-set>
@@ -78,22 +34,6 @@
             <label>Nyttig å vite</label>
             <help-text>'Nyttig å vite' hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
-                <input name="hasNTKElements" type="RadioButton">
-                    <label>Ta med 'Nyttig å vite'</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
-                <input name="ntkSelector" type="RadioButton">
-                    <label>Ta med prioriterte underartikler</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
                 <input name="ntkContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
@@ -101,7 +41,6 @@
                 </input>
                 <input type="Long" name="nrNTK">
                     <label>Hvor mange elementer i undermenyene er tillatt</label>
-
                 </input>
             </items>
         </field-set>
@@ -109,22 +48,6 @@
             <label>Snarveier</label>
             <help-text>Snarveier hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
-                <input name="hasSCElements" type="RadioButton">
-                    <label>Ta med snarveier</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
-                <input name="scSelector" type="RadioButton">
-                    <label>Ta med prioriterte underartikler</label>
-                    <config>
-                        <option value="true">Ja</option>
-                        <option value="false">Nei</option>
-                    </config>
-
-                </input>
                 <input name="scContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
@@ -132,13 +55,9 @@
                 </input>
                 <input type="Long" name="nrSC">
                     <label>Hvor mange elementer i undermenyene er tillatt</label>
-
                 </input>
             </items>
         </field-set>
-            </items>
-        </field-set>
-
     </form>
     <x-data mixin="menu-item"/>
 </content-type>

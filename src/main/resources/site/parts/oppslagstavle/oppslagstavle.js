@@ -3,14 +3,12 @@ var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 // Resolve the view
 var view = resolve('oppslagstavle.html');
+var t = require('/lib/contentTranslator');
 var langLib = require('/lib/i18nUtil');
-var cacheLib = require('/lib/cache');
-var cache = cacheLib.newCache({
-    size: 100,
-    expire: 3600*24
-});
+var cache = require('/lib/cacheControll');
+
 exports.get = function(req) {
-    return cache.get(req.path, function() {
+    return cache.getPaths('oppslagstavle' + req.path, function () {
         var content = portal.getContent();
         var lang = langLib.parseBundle(content.language).oppslagstavle;
 
@@ -212,12 +210,7 @@ function getElements(els) {
 }
 
 function mapElements(el) {
-
-    var e = (el) ? { heading: el.data.heading || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
-    if (e && e.ingress) {
-        e.isHtml = e.ingress.startsWith('<')
-    }
-    return e
+    return (el) ? { isHtml: el.data.ingress? el.data.ingress.startsWith('<'): false, heading: el.displayName || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
 }
 function removeNullElements(t, el) {
     if (el) t.push(el);

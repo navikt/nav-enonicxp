@@ -1,21 +1,24 @@
 var libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/xp/thymeleaf'),
-    cache: require('/lib/cache')
+    cache: require('/lib/cacheControll')
 };
 var view = resolve('main-page.html');
-var cache = libs.cache.newCache({
-    size: 100,
-    expire: 3600 * 24
-});
+
+var etag = libs.cache.etag;
 function handleGet(req) {
+
+   /* if (req.headers.hasOwnProperty('If-None-Match') && req.headers['If-None-Match'].replace('--gzip','') === etag()) {
+        return { status: 304 };
+    }*/
+   // log.info(JSON.stringify(req, null, 4))
     var content = libs.portal.getContent();
 
     //Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
-    //TODO: avklare komavdelingens krav til  GTM
+    //TODO: Denne må bli smartere
     var path = content._path.split('/');
     var level3 = (path[3] ? path[3] : "").toLowerCase();
-    return cache.get('main' + level3, function () {
+    return libs.cache.getDecorator('main-page' + level3, function () {
         var seksjonsSider = "";
         switch ( level3 ) {
             case "person":
@@ -38,13 +41,17 @@ function handleGet(req) {
             '<script src="' + libs.portal.assetUrl({path: 'libs/modernizr.2.7.1.min.js'}) + '"></script>',
             '<script src="' + libs.portal.assetUrl({path: 'js/innloggingslinjen.min.js'}) + '"></script>',
             '<script id="navno-page-js" src="' + libs.portal.assetUrl({path: 'js/navno-page.js'}) + '" seksjonssider="' + seksjonsSider + '"></script>',
-            '<script async src="' + libs.portal.assetUrl({path: 'js/navno.min.js'}) + '"></script>'
+            '<script id="google-tag-manager-props" src="' + libs.portal.assetUrl({path:'js/google-tag-manager.js'}) + '"></script>',
+            '<script async src="' + libs.portal.assetUrl({path: 'js/navno.js'}) + '"></script>' //TODO: Husk å sette tilbake til navno.min.js
         ];
         var body = libs.thymeleaf.render(view, model);
-
         return {
             contentType: 'text/html',
             body: body,
+            headers: {
+              'Cache-Control': 'must-revalidate',
+              'ETag': etag()
+            },
             pageContributions: {
                 headEnd: assets
             }

@@ -199,7 +199,7 @@ function itterateContents(contents, socket) {
     contents.forEach(function (value, index) {
 
             var el = repo.get(value._id);
-            trans.logBeautify(el);
+
             socket.emit(stripContentType(el.type) + 'val', index + 1);
             repo.modify({
                 key: el._id,
@@ -235,14 +235,14 @@ function getIndexConfig(type) {
     var ret = contentLib.get({key: '/www.nav.no/no/' + type});
     ret = (ret) ? repo.get(ret._id) : null;
     if (!ret) {
-        trans.logBeautify(ret);
+
         var data = (type === 'main-article') ? {
 
                 ingress: type,
                 text: type
 
             } : {
-            ingress: type
+
 
         };
         ret = contentLib.create({

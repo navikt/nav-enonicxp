@@ -1,0 +1,74 @@
+<content-type>
+    <display-name>Artikkelliste</display-name>
+    <description/>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input type="TextArea" name="heading">
+            <label>Tittel</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextArea" name="originaltitle">
+            <label>Orginaltittel</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="RadioButton" name="hide_date">
+            <label>Skjul dato</label>
+            <config>
+                <option value="true">Ja</option>
+                <option value="false">Nei</option>
+            </config>
+        </input>
+        <input type="TextArea" name="ingress">
+            <label>Ingress</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input name="sectionContents" type="ContentSelector">
+            <label>Contents</label>
+            <help-text>Add contents to section</help-text>
+            <occurrences maximum="0" minimum="0"/>
+        </input>
+        <item-set name="parameters">
+            <label>Menu item parameters</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Parameter name</label>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="value" type="TextLine">
+                    <label>Parameter value</label>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="override" type="CheckBox">
+                    <label>Override</label>
+                    <help-text>Can be overridden by the request</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="menuListItems">
+            <label>Menylisteoppføringer</label>
+            <items>
+                <input name="menuListName" type="TextLine">
+                    <label>Navn på listeoppføring</label>
+                </input>
+                <input type="HtmlArea" name="text">
+                    <label>Tekstbasert innhold</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="ContentSelector" name="link">
+                    <label>Linker til innhold</label>
+                    <occurrences maximum="0" minimum="0"/>
+                </input>
+            </items>
+            <occurrences minimum="0" maximum="0"/>
+        </item-set>
+        <input name="metaTags" type="Tag">
+            <label>Meta tagger</label>
+            <occurrences maximum="0" minimum="0"/>
+        </input>
+    </form>
+</content-type>
