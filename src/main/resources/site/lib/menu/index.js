@@ -2,7 +2,9 @@ var libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     navUtils: require('/lib/nav-utils'),
-    util: require('/lib/enonic/util')
+    util: require('/lib/enonic/util'),
+    log: require('/lib/contentTranslator')
+
 };
 
 var globals = {
@@ -100,6 +102,57 @@ var globals = {
 	return breadcrumbMenu;
 };
 
+/***
+ * Per Olav 02.2019: Endret menyhåndtering
+ * Bygger menyen fra elementer i en mappe istedenfor å gå igjennom hele siten.
+ * Beholdt rekursiviteten
+ ***/
+exports.getMegaMenu = function(content, levels)
+{
+	var subMenus = [];
+    levels--;
+    return libs.content.getChildren({key: content._id}).hits.reduce(
+    	function (t, el) {
+    		t.push(menuToJson(el, levels));
+    		return t;
+		},
+		subMenus
+	);
+};
+function menuToJson(content, levels) {
+    var subMenus = [],
+        inPath = false,
+        isActive = false,
+        currentContent = libs.portal.getContent();
+
+    if (levels > 0) {
+        subMenus = exports.getMegaMenu(content, levels);
+    }
+
+    // Is the menuitem we are processing in the currently viewed content's path?
+    if (content._path === currentContent._path.substring(0, content._path.length)) {
+        inPath = true;
+    }
+
+    // Is the currently viewed content the current menuitem we are processing?
+    if (content._path === currentContent._path) {
+        isActive = true;
+        inPath = false; // Reset this so an menuitem isn't both in a path and active (makes no sense)
+    }
+
+    return {
+        displayName: content.displayName,
+        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}).replace("http:", "https:"),
+        id: content._id,
+        inPath: inPath,
+        isActive: isActive,
+        hasChildren: (subMenus.length > 0),
+        children: subMenus,
+        showLoginInfo: (libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true')
+    };
+}
+/*** ***/
+
 /**
  * Get menu tree
  * @param {integer} levels - menu levels to get
@@ -124,7 +177,6 @@ exports.getSubMenus = function (parentContent, levels) {
         subMenus.push(menuItemToJson(parentContent, 0));
     }
     levels--;
-
     return libs.content.getChildren({
         key: parentContent._id,
         count: 200
