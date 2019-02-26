@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Oppslagstavle</display-name>
-    <super-type>base:structured</super-type>
+    <super-type>base:unstructured</super-type>
     <form>
         <field-set name="table">
             <label>Tavleoppføringer</label>

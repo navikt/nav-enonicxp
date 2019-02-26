@@ -21,7 +21,7 @@ exports.get = function(req) {
             });
             if (root.type !== app.name + ':main-article') return []
         }
-        return [{heading: root.data.displayName, link: portal.pageUrl({id: root._id}), active: (root === cont)}].concat(content.getChildren({
+        return [{heading: root.displayName, link: portal.pageUrl({id: root._id}), active: (root === cont)}].concat(content.getChildren({
             key: root._id
         }).hits.reduce(function (previousValue, child) {
             if (!child.type.startsWith("media")) {

@@ -248,7 +248,7 @@ function menuItemToJson(content, levels) {
     return {
         displayName: content.displayName,
         menuName: menuItem.menuName && (menuItem.menuName.length ? menuItem.menuName : null),
-        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}).replace("http:", "https:"),
+        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}),//.replace("http:", "https:"),
         name: content._name,
         id: content._id,
         hasChildren: (subMenus.length > 0),
