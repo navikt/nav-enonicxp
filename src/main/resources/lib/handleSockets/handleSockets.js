@@ -10,6 +10,7 @@ var clean = require('../clean');
 var priorityElements = require('../priorityElements');
 var tweakTavleliste = require('../tweakTavleliste');
 var moveCH = require('../moveContentHome');
+var rapportHandbok = require('../rapportHandbok');
 
 exports.handleSockets = function (io) {
     io.connect(function (socket) {
@@ -24,6 +25,8 @@ exports.handleSockets = function (io) {
         tweakTavleliste.handle(socket);
         moveCH.handle(socket);
         pushToMaster.handle(socket);
+        rapportHandbok.handle(socket);
+
     })
 }
 
