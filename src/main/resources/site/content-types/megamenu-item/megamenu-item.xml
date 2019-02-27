@@ -2,7 +2,7 @@
     <display-name>Menyelement</display-name>
     <super-type>base:structured</super-type>
     <form>
-        <input name="item-content" type="ContentSelector">
+        <input name="itemContent" type="ContentSelector">
             <label>Velg innhold</label>
             <allowPath>${site}/*</allowPath>
             <occurrences maximum="0" minimum="0"/>
