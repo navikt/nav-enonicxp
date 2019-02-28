@@ -187,20 +187,15 @@ function fjernPressemeldinger(socket) {
     var res = content.query({
         start: 0,
         count: 100000,
+        query: 'modifiedTime < instant("2018-01-01T00:00:00.00Z")',
         contentTypes: [
              app.name + ':nav.pressemelding'
          ]
 
     });
-    var date = new Date();
-    var aYearAgo = new Date(date.setFullYear(date.getFullYear() - 1));
-    var reduced = res.hits.reduce(function(t, el) {
-        var md = el.modifiedTime || el.createdTime;
-        if (new Date(md) < aYearAgo) t.push(el);
-        return t;
-    },[])
-    socket.emit('fjern-pressemeldinger-max', reduced.length);
-    reduced.forEach(function(element, index) {
+
+    socket.emit('fjern-pressemeldinger-max', res.hits.length);
+    res.hits.forEach(function(element, index) {
         socket.emit('fjern-pressemeldinger-value', index + 1);
         content.delete({key: element._id}) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
     })
@@ -254,20 +249,15 @@ function fjernNyheter(socket) {
     var res = content.query({
         start: 0,
         count: 100000,
+        query: 'modifiedTime < instant("2018-01-01T00:00:00.00Z")',
         contentTypes: [
             app.name + ':nav.nyhet'
         ]
 
     });
-    var date = new Date();
-    var aYearAgo = new Date(date.setFullYear(date.getFullYear() - 1));
-    var reduced = res.hits.reduce(function(t, el) {
-        var md = el.modifiedTime || el.createdTime;
-        if (new Date(md) < aYearAgo) t.push(el);
-        return t;
-    },[])
-    socket.emit('fjern-nyheter-max', reduced.length);
-    reduced.forEach(function(element, index) {
+
+    socket.emit('fjern-nyheter-max', res.hits.length);
+    res.hits.forEach(function(element, index) {
         socket.emit('fjern-nyheter-value', index + 1);
         content.delete({key: element._id}) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
     })

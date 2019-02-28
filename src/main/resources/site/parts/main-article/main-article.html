@@ -32,6 +32,16 @@
                 <br>
             </p>
             <div data-th-if="${toc}" data-th-utext="${toc}" data-th-remove="tag"></div>
+            <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
+                <nav class="table-of-contents" data-selected-id>
+                    <h2 class="visuallyhidden" role="heading" aria-level="2" data-th-text="${tableOfContents}"></h2>
+                    <ol>
+                        <li data-th-each="toc : ${tocs}">
+                            <a data-th-href="'#chapter-' + ${tocStat.index + 1}" data-th-text="${toc}"></a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
         </header>
         <div class="article-body">
             <div data-th-utext="${portal.processHtml({'_value='+content.data.text})}">text</div>
