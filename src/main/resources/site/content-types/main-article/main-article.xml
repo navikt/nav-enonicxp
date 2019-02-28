@@ -40,6 +40,7 @@
                     </items>
                 </field-set>
                 <field-set name="priority">
+                    <label>Prioritet</label>
                        <items>
                         <field-set name="table">
                             <label>Bokser</label>
@@ -93,6 +94,19 @@
                         </field-set>
                     </items>
                 </field-set>
+            </items>
+        </field-set>
+        <field-set name="expire">
+            <label>Utgangsdato</label>
+            <items>
+            <input name="date" type="DateTime">
+                <label>Velg dato</label>
+                <occurrences maximum="1" minimum="1" />
+                <config>
+                    <timezone>true</timezone>
+                </config>
+                <default>+1year</default>
+            </input>
             </items>
         </field-set>
         <field-set name="Angi andre språkversjoner">
@@ -191,7 +205,7 @@
                     <label>Relatert innhold</label>
                     <items>
                         <input type="MediaSelector" name="files">
-                            <occurrences maximum="0"  minimum="1"/>
+                            <occurrences maximum="0"  minimum="0"/>
                             <label>Legg ved filer</label>
                             <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
                             <config>
@@ -240,6 +254,16 @@
                             <config>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
                             </config>
+                        </input>
+                    </items>
+                </option>
+                <option name="saksbehandling">
+                    <label>Saksbehandling</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Saksbehandling</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
                         </input>
                     </items>
                 </option>

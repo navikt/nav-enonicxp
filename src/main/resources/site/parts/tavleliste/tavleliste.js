@@ -12,9 +12,21 @@ exports.get = function(req) {
         var cont = portal.getContent();
         var ids = cont.data.sectionContents;
         ids = (!Array.isArray(ids)) ? [ids] : ids;
-        var items = content.getChildren({key: cont._id}).hits.map(function (el) {
-            return { src: portal.pageUrl({id: el._id}), heading: el.data.heading, ingress: el.data.ingress }
-        });
+        var items = ids
+            .map(function (value) { return content.get({key: value})})
+            .reduce(function(t, el) {
+                if (el) t.push(el);
+                return t;
+            } ,[])
+            .concat(content.getChildren({key: cont._id}).hits)
+            .map(function (el) {
+            return { src: portal.pageUrl({id: el._id}), heading: el.displayName, ingress: el.data.ingress }
+        }).reduce(function (t, el) {
+            if (!t.reduce(function (to, ele) {
+                return to || ele.src === el.src;
+            }, false)) t.push(el);
+            return t;
+            }, []);
 
         // Define the model
         var model = {

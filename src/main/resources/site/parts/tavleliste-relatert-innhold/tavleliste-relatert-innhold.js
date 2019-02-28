@@ -1,44 +1,33 @@
 var thymeleafLib = require('/lib/xp/thymeleaf');
 var portal = require('/lib/xp/portal');
-var contentLib = require('/lib/xp/content');
-var trans = require('/lib/contentTranslator');
 var cache = require('/lib/cacheControll');
 var view = resolve('tavleliste-relatert-innhold.html');
+var language = require('/lib/i18nUtil');
+var contentLib = require('/lib/xp/content');
 
 function handleGet(req) {
-    return cache.getPaths('tavleliste-relatert-innhold' + req.path, function () {
-        var content = trans.translate(portal.getContent());
-        if (content.data.menuListItems && !Array.isArray(content.data.menuListItems)) content.data.menuListItems = [content.data.menuListItems];
-        content.data.menuListItems = (content.data.menuListItems) ? content.data.menuListItems.map(function (item) {
-            if (!item.link) item.link = [];
-            if (typeof item.link === 'string') item.link = [item.link];
-            return {menuListName: item.menuListName, link: item.link.map(function(l) {
+   // return cache.getPaths('tavleliste-relatert-innhold' + req.path, function () {
+        var content = portal.getContent();
+        var shortcuts = language.parseBundle(content.language).oppslagstavle.shortcuts;
+        var selected = content.data.menuListItems ? content.data.menuListItems._selected : undefined;
 
-                    log.info(l);
-                    var r;
-                    try{
-                        r= contentLib.get({ key: l});
-                    } catch (e) {
-                        log.info("Failed in marc " + l);
-                    }
-
-                    return (r) ? { title: r.data.heading, link: portal.pageUrl({ id: r._id})} : undefined
-                }).reduce(function(t,e) {
-                    if (e) t.push(e);
-                    return t;
-                },[] )}
-        }).reduce(function (t, el) {
-            if (el.link && el.link.length > 0) t.push(el);
-            return t
-        }, []) : [];
-
-
-        var hasLinks = (content.data.menuListItems.length > 0);
-
-
+        var data = selected ?
+            Array.isArray(content.data.menuListItems[selected].link)
+                ? content.data.menuListItems[selected].link
+                : [ content.data.menuListItems[selected].link ]
+        : [];
+        var arefs = data.map(function (value) {
+            var el = contentLib.get({ key: value});
+             return  {
+                title: el.displayName,
+                link: getSrc(el)
+            }
+        });
+        log.info(JSON.stringify(arefs, null, 4))
         var params = {
-            content: content,
-            hasLinks: hasLinks
+            shortcuts: shortcuts,
+            content: arefs,
+            hasLinks: arefs.length > 0
         };
 
         var body = thymeleafLib.render(view, params);
@@ -47,8 +36,12 @@ function handleGet(req) {
             contentType: 'text/html',
             body: body
         };
-    })
+   // })
 
 }
 
 exports.get = handleGet;
+
+function getSrc(element) {
+    return element.type.indexOf('api') === -1 ? portal.pageUrl({ id: element._id }) : element.href
+}

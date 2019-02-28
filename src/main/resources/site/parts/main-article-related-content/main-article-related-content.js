@@ -10,36 +10,29 @@ function handleGet(req) {
     return cache.getPaths('main-article-related-content' + req.path, function () {
         var content = portal.getContent();
         var selectNames = langLib.parseBundle(content.language).related_content.select;
-        var menuListItems = content.data.menuListItems || [];
+        var menuListItems = content.data.menuListItems || {};
         var keys =
             (menuListItems._selected
                     ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected])
                     : []
             );
         var linkList = keys.map( function(el) {
-            var links = forceArr(menuListItems[el].link).concat(
-                (menuListItems[el].files
-                    ?   forceArr(menuListItems[el].files).map(function (fileid) {
-                            var file = contentLib.get({key: fileid});
-                            return {
-                                isFile: true,
-                                link: portal.attachmentUrl({ id: file._id, download: true}),
-                                displayName: file.displayName,
-                                data: {}
-                            }
-                        })
-                    :   []
-                )
-            );
+            var links = forceArr(menuListItems[el].link);
             return {
                 name: (selectNames[el] !== undefined ? selectNames[el] : ''),
                 links: links.map(function (link){
-                    var element = (typeof link === 'string' ? contentLib.get({key: link}) : link);
+                    var element = contentLib.get({ key: link });
+                    if (!element) return undefined;
+                    var isFile = element.type === 'media:document';
+                    //log.info(JSON.stringify(element, null, 4));
                     return {
-                        title: element.data.heading || element.displayName,
-                        link: (!element.isFile ? portal.pageUrl({id: link}) : element.link)
+                        title: element.displayName,
+                        link: (!isFile ? portal.pageUrl({id: link}) : portal.attachmentUrl({ id: element._id, download: true }))
                     };
-                })
+                }).reduce(function(t, el) {
+                    if (el) t.push(el);
+                    return t
+                },[])
             };
         });
 

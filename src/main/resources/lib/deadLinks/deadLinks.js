@@ -13,10 +13,10 @@ var elements = createNewElements();
 exports.handle = function (s) {
     socket = s;
     var c = context.get();
-
+    var tArr = [];
     log.info(JSON.stringify(c));
     log.info(JSON.stringify(contentLib.getSite({
-        key: '0bbae6ac-7e6d-4d65-a5d8-6bbe95e2f7ec'
+        key: '/www.nav.no'
     })));
 
     elements.action = [{
@@ -35,7 +35,30 @@ exports.handle = function (s) {
         task.submit({
             description: 'Lager lenkeråterapport',
             task: function () {
-                deadLinks(false, [], '');
+
+                context.run({
+                    repository: 'cms-repo',
+                    branch: 'draft',
+                    user: {
+                        login: 'pad',
+                        userStore: 'system'
+                    },
+                    principals: ["role:system.admin"]
+                }, function () {
+                    deadLinks(false, [], '');
+                    var fnd = repo.query({
+                        query: '_name LIKE "linkshit"'
+                    }).hits[0];
+                    if (fnd) repo.delete(fnd._id);
+                    repo.create({
+                        _name: 'linkshit',
+                        data: {
+                            shit: tArr
+                        }
+                    })
+                })
+
+
             }
         })
 
@@ -47,14 +70,11 @@ exports.handle = function (s) {
 
     function deadLinks(el, arr, route) {
         if (!el) {
-            var fnd = repo.query({
-                query: '_name LIKE "linkshit"'
-            }).hits[0];
-            if (fnd) repo.delete(fnd._id);
+
             el = contentLib.get({
-                key: '0bbae6ac-7e6d-4d65-a5d8-6bbe95e2f7ec'
+                key: '/www.nav.no'
             });
-            log.info(JSON.stringify(el));
+
             if (!el) return log.info('Failed');
             route = 'www.nav.no'
         } else route = route + '->' + el.displayName;
@@ -83,39 +103,11 @@ exports.handle = function (s) {
                     var address = reg.pop();
                     socket.emit('dlStatus', 'Visiting: ' + address);
                     if (!visit(address)) {
-
-                        var find = repo.query({
-                            query: '_name LIKE "linkshit"'
-                        }).hits[0];
-                        if (!find) {
-                            repo.create({
-                                _name: 'linkshit',
-                                data: {
-                                    shit: [{
-                                        el: el._id,
-                                        route: route,
-                                        address: address
-                                    }]
-                                }
-                            });
-                        }
-                        else {
-                            find = find.id;
-                            repo.modify({
-                                key: find,
-                                editor: function (c) {
-                                    if (!Array.isArray(c.data.shit)) c.data.shit = [c.data.shit];
-                                    c.data.shit.push({
-                                        el: el._id,
-                                        route: route,
-                                        address: address
-                                    })
-                                    return c;
-                                }
-                            })
-                        }
-
-
+                        tArr.push({
+                            el: el._id,
+                            route: route,
+                            address: address
+                        })
                     }
 
 
@@ -237,12 +229,6 @@ function createElements() {
     }
 }
 
-
-
-
-
-
-
 function visit(address) {
     var ret;
     if (address.indexOf(';') !== -1) address = address.split(";")[0];
@@ -263,12 +249,15 @@ function visit(address) {
                 url: address,
                 method: 'HEAD'
             });
-            return ret.status === 200
+            return ret.status === 200 || (ret.status >= 300 && ret.status < 400)
         } catch (e) {
             return false
         }
 
     }
+    else if(address.startsWith('mailto') || address.startsWith('media')) return true;
+
+
 
     else {
         log.info(address);

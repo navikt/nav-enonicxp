@@ -16,12 +16,13 @@ exports.get = function(req) {
         // Define the model
         var content =portal.getContent();
 
-        var lang = langLib.parseBundle(content.language);
+    var lang = langLib.parseBundle(content.language);
+    var tocs = [];
 
         if ((content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') || (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)) {
             var ch = 1;
-            toc = '<nav class="table-of-contents" data-selected-id>' +
-                '<h2 class="visuallyhidden" role="heading" aria-level="2">Innholdsfortegnelse</h2><ol>';
+          /*  tocs = '<nav class="table-of-contents" data-selected-id>' +
+                '<h2 class="visuallyhidden" role="heading" aria-level="2">Innholdsfortegnelse</h2><ol>';*/
             var ind = content.data.text.indexOf('<h3>');
             var count = 0;
             while (ind !== -1 && count < 100) {
@@ -29,34 +30,35 @@ exports.get = function(req) {
                 var h2End = ind + 4;
                 var ssEnd =  content.data.text.indexOf('</h3>',ind);
                 var ss = content.data.text.slice(h2End, ssEnd);
-                toc += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
+                tocs.push(ss)// += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
                 content.data.text = content.data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
                 ind = content.data.text.indexOf('<h3>');
 
             }
-            toc += '</ol></nav>';
+            //toc += '</ol></nav>';
         }
 
         var languages = getLanguageVersions(content);
 
-        var hasFact = false;
-        var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
-        socials = socials ? socials.map(function (el) {
-            var text = 'Del på ';
-            if (el === 'linkedin') text += 'LinkedIn';
-            else if (el === 'facebook') text += 'Facebook';
-            else text += 'Twitter';
-            return {
-                type: el,
-                text: text,
-                href: getSocialRef(el, content, req)
-            }
-        }) : false;
+    var hasFact = false;
+    var socials = content.data.social ? Array.isArray(content.data.social) ? content.data.social : [content.data.social] : false;
+    socials = socials ? socials.map(function (el) {
+        var text = 'Del på ';
+        if (el === 'linkedin') text += 'LinkedIn';
+        else if (el === 'facebook') text += 'Facebook';
+        else text += 'Twitter';
+        return {
+            type: el,
+            text: text,
+            href: getSocialRef(el, content, req)
+        }
+    }) : false;
 
         if (content.data.fact && content.data.fact !== '') hasFact = true;
         var model = {
             published: utils.dateTimePublished(content, content.language || 'no'),
-            toc: toc,
+            tocs: tocs,
+            hasTableOfContents: tocs.length > 0,
             content: content,
             hasFact: hasFact,
             hasLanguageVersions: languages.length > 0,
