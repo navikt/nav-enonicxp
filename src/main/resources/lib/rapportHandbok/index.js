@@ -163,6 +163,9 @@ function handleNavRapportHandbok(socket) {
             }
         });
 
+        // bring contentHome from old to new, in case content home migration hasn't been run
+        bringCmsXProps(value, parent);
+
         // delete original handbok
         content.delete({
             key: value._id
@@ -170,10 +173,15 @@ function handleNavRapportHandbok(socket) {
 
         // move to original handbok path
         var target = getTargetPath(value, socket);
-        content.move({
-            source: parent._id,
-            target: target
-        });
+        try {
+            content.move({
+                source: parent._id,
+                target: target
+            });
+        } catch (e) {
+            log.info("Can't move " + parent._id + ' to ' + target);
+            log.info(e);
+        }
 
         log.info('converted nav rapport handbok from ' + value._id + ' (' + value._path + ') to ' + parent._id + ' (' + target + ')');
         socket.emit('nav-rapport-handbok-value', index + 1);
@@ -234,6 +242,9 @@ function handleRapportHandbok(socket) {
         setTime(articles, value.createdTime, value.modifiedTime);
         updateRef(value._id, parent._id);
 
+        // bring contentHome from old to new, in case content home migration hasn't been run
+        bringCmsXProps(value, parent);
+
         // delete old rapport
         content.delete({
             key: value._id
@@ -241,31 +252,59 @@ function handleRapportHandbok(socket) {
 
         // move article set to old rapports path
         var target = getTargetPath(value, socket);
-        content.move({
-            source: parent._path,
-            target: target
-        });
+        try {
+            content.move({
+                source: parent._path,
+                target: target
+            });
+        } catch (e) {
+            log.info("Can't move " + parent._id + ' to ' + target);
+            log.info(e);
+        }
 
         log.info('converted rapport handbok from ' + value._id + ' (' + value._path + ') to ' + parent._id);
         socket.emit('rapport-handbok-value', index + 1);
     });
 }
 
-function getTargetPath(value, socket) {
+function getTargetPath(value) {
     var target = value._path.replace(value._name, '');
 
-    if (value.x && value.x['no-nav-navno'] && value.x['no-nav-navno'].cmsContent && value.x['no-nav-navno'].cmsContent.contentHome) {
-        var home = content.get({
-            key: value.x['no-nav-navno'].cmsContent.contentHome
-        });
-        if (home) {
-            target = home._path;
-            log.info('target from content home');
-            socket.emit('from home: ', true);
-        }
-    }
+    // if (value.x && value.x['no-nav-navno'] && value.x['no-nav-navno'].cmsContent && value.x['no-nav-navno'].cmsContent.contentHome) {
+    //     var home = content.get({
+    //         key: value.x['no-nav-navno'].cmsContent.contentHome
+    //     });
+    //     if (home) {
+    //         target = home._path;
+    //         log.info('target from content home');
+    //     }
+    // }
 
     return target;
+}
+
+function bringCmsXProps(value, article) {
+    var cmsProps;
+    if (value.x['no-nav-navno']) {
+        cmsProps = value.x['no-nav-navno'];
+    }
+
+    if (cmsProps) {
+        var cmsRepo = node.connect({
+            repoId: 'cms-repo',
+            branch: 'draft'
+        });
+
+        cmsRepo.modify({
+            key: article._id,
+            editor: function(a) {
+                a.x = {
+                    'no-nav-navno': cmsProps
+                };
+                return a;
+            }
+        });
+    }
 }
 
 function getNewSchemas(value) {
