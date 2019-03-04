@@ -1,6 +1,7 @@
 var content = require('/lib/xp/content');
 var context = require('/lib/xp/context');
 var node = require('/lib/xp/node');
+var tools = require('/lib/tools');
 exports.handle = function(socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
@@ -16,8 +17,8 @@ exports.handle = function(socket) {
                 principals: ['role:system.admin']
             },
             function() {
-                logDebugInfoRapportHandbok(socket);
-                // handleRapportHandbok(socket);
+                // logDebugInfoRapportHandbok(socket);
+                handleRapportHandbok(socket);
             }
         );
     });
@@ -33,8 +34,8 @@ exports.handle = function(socket) {
                 principals: ['role:system.admin']
             },
             function() {
-                logDebugInfoNavRapportHandbok(socket);
-                // handleNavRapportHandbok(socket);
+                // logDebugInfoNavRapportHandbok(socket);
+                handleNavRapportHandbok(socket);
             }
         );
     });
@@ -96,7 +97,6 @@ function createElements() {
 }
 
 function handleNavRapportHandbok(socket) {
-    createTmp();
     var navRapportHandbok = content.query({
         start: 0,
         count: 1000,
@@ -104,23 +104,27 @@ function handleNavRapportHandbok(socket) {
     }).hits;
 
     socket.emit('nav-rapport-handbok-max', navRapportHandbok.length);
+    var chapterIdMap = {};
 
     navRapportHandbok.forEach(function(value, index) {
         log.info('start converting nav rapport handbok: ' + value._id);
 
         // re-create nav rapport hanbok as a main article
         var parent = content.create({
-            parentPath: '/tmp',
+            parentPath: '/www.nav.no/tmp/',
             contentType: 'no.nav.navno:main-article',
             displayName: value.displayName,
             data: {
                 ingress: value.data.preface,
-                text: ' '
+                text: ' ',
+                languages: value.data.languages
             }
         });
 
         // update time on the new article to match the old one
         setTime([parent], value.createdTime, value.modifiedTime);
+        // update handbok refs
+        updateRef(value._id, parent._id);
 
         (Array.isArray(value.data.chapters) ? value.data.chapters : value.data.chapters ? [value.data.chapters] : []).forEach(function(chapterKey) {
             log.info('start chapter: ' + chapterKey);
@@ -128,21 +132,31 @@ function handleNavRapportHandbok(socket) {
 
             // re-create chapter as main article as a child of the parent
             if (chapter) {
+                var menuListItems = null;
+                menuListItems = tools.addMenuListItem(menuListItems, 'form-and-application', getNewSchemas(chapter));
+                menuListItems = tools.addMenuListItem(menuListItems, 'related-information', getInformation(chapter));
+
                 var chapterArticle = content.create({
                     parentPath: parent._path,
                     contentType: 'no.nav.navno:main-article',
                     displayName: chapter.displayName,
                     data: {
                         ingress: chapter.data.preface,
-                        text: chapter.data.text
+                        text: chapter.data.text,
+                        menuListItems: menuListItems,
+                        social: getSocial(chapter)
                     }
                 });
                 // update time on the new article to match the old one
                 setTime([chapterArticle], chapter.createdTime, chapter.modifiedTime);
-                // delete original chapter
-                content.delete({
-                    key: chapterKey
-                });
+
+                // map old ids to new ids, unless they are already there
+                if (!chapterIdMap[chapterKey]) {
+                    chapterIdMap[chapterKey] = chapterArticle._id;
+                } else {
+                    log.info('chapter ' + chapter._id + ' (' + chapter._path + ') is used twice, and a duplicate has been created (all refs will point to: ' + chapterIdMap[chapterKey] + ')');
+                }
+
                 log.info('converted nav rapport handbok chapter from ' + chapter._id + ' (' + chapter._path + ') to ' + chapterArticle._id);
             } else {
                 log.info('could not find nav rapport handbok chapter ' + chapterKey);
@@ -150,27 +164,32 @@ function handleNavRapportHandbok(socket) {
         });
 
         // delete original handbok
-        // content.delete({
-        //     key: value._id
-        // });
+        content.delete({
+            key: value._id
+        });
 
-        // // move to original handbok path
-        // var target = value._path.replace(value._name, '');
-        // content.move({
-        //     source: parent._id,
-        //     target: target
-        // });
+        // move to original handbok path
+        var target = getTargetPath(value, socket);
+        content.move({
+            source: parent._id,
+            target: target
+        });
 
-        // log.info('converted nav rapport handbok from ' + value._id + ' (' + value._path + ') to ' + parent._id);
+        log.info('converted nav rapport handbok from ' + value._id + ' (' + value._path + ') to ' + parent._id + ' (' + target + ')');
         socket.emit('nav-rapport-handbok-value', index + 1);
     });
 
-    socket.emit('console.log', refInfo);
-    deleteTmp();
+    // update chapter refs after all articles have been created because of duplicate chapter refs to the same chapter
+    for (var chapterKey in chapterIdMap) {
+        updateRef(chapterKey, chapterIdMap[chapterKey]);
+        // delete original chapter
+        content.delete({
+            key: chapterKey
+        });
+    }
 }
 
 function handleRapportHandbok(socket) {
-    createTmp();
     var rapportHandbok = content.query({
         start: 0,
         count: 1000,
@@ -183,15 +202,15 @@ function handleRapportHandbok(socket) {
         log.info('start converting rapport handbok: ' + value._id);
 
         // create parent article set
+        var links = getLinks(value);
         var parent = content.create({
-            parentPath: '/tmp',
+            parentPath: '/www.nav.no/tmp/',
             contentType: 'no.nav.navno:main-article',
             displayName: value.displayName,
-            createdTime: value.createdTime,
-            modifiedTime: value.modifiedTime,
             data: {
                 ingress: value.data.rapport_description,
-                text: ' '
+                text: ' ',
+                menuListItems: tools.addMenuListItem(null, 'related-information', links)
             }
         });
 
@@ -213,23 +232,91 @@ function handleRapportHandbok(socket) {
         });
 
         setTime(articles, value.createdTime, value.modifiedTime);
+        updateRef(value._id, parent._id);
 
-        // // delete old rapport
-        // content.delete({
-        //     key: value._id
-        // });
+        // delete old rapport
+        content.delete({
+            key: value._id
+        });
 
-        // // move article set to old rapports path
-        // var target = value._path.replace(value._name, '');
-        // content.move({
-        //     source: parent._path,
-        //     target: target
-        // });
+        // move article set to old rapports path
+        var target = getTargetPath(value, socket);
+        content.move({
+            source: parent._path,
+            target: target
+        });
 
         log.info('converted rapport handbok from ' + value._id + ' (' + value._path + ') to ' + parent._id);
         socket.emit('rapport-handbok-value', index + 1);
     });
-    deleteTmp();
+}
+
+function getTargetPath(value, socket) {
+    var target = value._path.replace(value._name, '');
+
+    if (value.x && value.x['no-nav-navno'] && value.x['no-nav-navno'].cmsContent && value.x['no-nav-navno'].cmsContent.contentHome) {
+        var home = content.get({
+            key: value.x['no-nav-navno'].cmsContent.contentHome
+        });
+        if (home) {
+            target = home._path;
+            log.info('target from content home');
+            socket.emit('from home: ', true);
+        }
+    }
+
+    return target;
+}
+
+function getNewSchemas(value) {
+    var ns = value.data.newsschemas;
+    if (!Array.isArray(ns)) ns = [ns];
+    return ns.reduce(function(t, el) {
+        if (el) t.push(el);
+        return t;
+    }, []);
+}
+
+function getSocial(value) {
+    var ret = [];
+    if (value.data.hasOwnProperty('share-facebook')) {
+        if (value.data['share-facebook']) ret.push('facebook');
+    }
+    if (value.data.hasOwnProperty('share-twitter')) {
+        if (value.data['share-twitter']) ret.push('twitter');
+    }
+    if (value.data.hasOwnProperty('share-linkedin')) {
+        if (value.data['share-linkedin']) ret.push('linkedin');
+    }
+    return ret;
+}
+
+function getInformation(value) {
+    if (value && value.data && value.data.information) {
+        if (Array.isArray(value.data.information)) {
+            return value.data.information;
+        }
+        return [value.data.information];
+    }
+    return [];
+}
+
+function getLinks(value) {
+    if (value && value.data && value.data.links) {
+        if (Array.isArray(value.data.links)) {
+            return value.data.links
+                .map(function(link) {
+                    return link && link.contents ? link.contents : null;
+                })
+                .reduce(function(t, v) {
+                    if (v) t.push(v);
+                    return t;
+                }, []);
+        } else if (value.data.links.link && value.data.links.link.contents) {
+            return [value.data.links.link.contents];
+        }
+    }
+    return [];
 }
 
 function getKapRef(chapterKey) {
@@ -267,6 +354,20 @@ function getKapRef(chapterKey) {
 }
 
 function logDebugInfoNavRapportHandbok(socket) {
+    socket.emit(
+        'console.log',
+        content
+            .query({
+                start: 0,
+                count: 10000,
+                contentTypes: ['no.nav.navno:nav.rapporthandbok.kap']
+            })
+            .hits.reduce(function(m, v) {
+                m[v._id] = v.data;
+                return m;
+            }, {})
+    );
+
     var navRapportHandbok = content.query({
         start: 0,
         count: 1000,
@@ -419,6 +520,18 @@ function findRef(path, key, o, id) {
     return { path: addToPath(path, key), key: null };
 }
 
+function updateRef(oldId, newId) {
+    var refs = content.query({
+        start: 0,
+        count: 1000,
+        query: '_references = "' + oldId + '"'
+    }).hits;
+
+    refs.forEach(function(a) {
+        tools.modify(a, oldId, newId);
+    });
+}
+
 function setTime(articles, createdTime, modifiedTime) {
     var cmsRepo = node.connect({
         repoId: 'cms-repo',
@@ -435,21 +548,4 @@ function setTime(articles, createdTime, modifiedTime) {
             }
         });
     });
-}
-
-function createTmp() {
-    if (content.get({ key: '/tmp' })) return;
-    content.create({
-        parentPath: '/',
-        contentType: 'base:folder',
-        displayName: 'tmp',
-        data: {}
-    });
-}
-
-function deleteTmp() {
-    var tmp = content.get({ key: '/tmp' });
-    if (tmp && !tmp.hasChildren) {
-        content.delete({ key: '/tmp' });
-    }
 }

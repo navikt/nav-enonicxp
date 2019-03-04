@@ -472,6 +472,7 @@ function modify(value, newId, oldId) {
     }
 }
 
+exports.addMenuListItem = addMenuListItem;
 function addMenuListItem(menuListItems, name, links) {
     links = links ? Array.isArray(links) ? links : [links] : [];
     if (!menuListItems) {
