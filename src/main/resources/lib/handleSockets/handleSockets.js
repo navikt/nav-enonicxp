@@ -11,6 +11,7 @@ var priorityElements = require('../priorityElements');
 var tweakTavleliste = require('../tweakTavleliste');
 var moveCH = require('../moveContentHome');
 var rapportHandbok = require('../rapportHandbok');
+var genMegaMenu = require('../megaMenu');
 
 exports.handleSockets = function (io) {
     io.connect(function (socket) {
@@ -24,9 +25,9 @@ exports.handleSockets = function (io) {
         translate.handle(socket);
         tweakTavleliste.handle(socket);
         moveCH.handle(socket);
+        genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
         rapportHandbok.handle(socket);
 
     })
 }
-

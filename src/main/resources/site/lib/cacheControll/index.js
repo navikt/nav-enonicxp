@@ -61,6 +61,7 @@ function wipe(name) {
 function wipeOnChange(value) {
     var wipee = repo.get(value.id);
     var w = wipe('paths');
+    w('megamenu-item' + getPath(wipee._path));
     w('main-article' + getPath(wipee._path));
     w('main-article-linked-list' + getPath(wipee._path));
     w('main-article-related-content' + getPath(wipee._path));
@@ -68,7 +69,6 @@ function wipeOnChange(value) {
     w('tavleliste' + getPath(wipee._path));
     w('tavleliste-relatert-innhold' + getPath(wipee._path));
     w('transport' + getPath(wipee._path));
-
 }
 
 function getSome(name) {

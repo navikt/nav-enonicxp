@@ -35,17 +35,30 @@ exports.handle = function (s) {
         task.submit({
             description: 'Lager lenkeråterapport',
             task: function () {
-                deadLinks(false, [], '');
-                var fnd = repo.query({
-                    query: '_name LIKE "linkshit"'
-                }).hits[0];
-                if (fnd) repo.delete(fnd._id);
-                repo.create({
-                    _name: 'linkshit',
-                    data: {
-                        shit: tArr
-                    }
+
+                context.run({
+                    repository: 'cms-repo',
+                    branch: 'draft',
+                    user: {
+                        login: 'pad',
+                        userStore: 'system'
+                    },
+                    principals: ["role:system.admin"]
+                }, function () {
+                    deadLinks(false, [], '');
+                    var fnd = repo.query({
+                        query: '_name LIKE "linkshit"'
+                    }).hits[0];
+                    if (fnd) repo.delete(fnd._id);
+                    repo.create({
+                        _name: 'linkshit',
+                        data: {
+                            shit: tArr
+                        }
+                    })
                 })
+
+
             }
         })
 

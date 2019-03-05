@@ -7,7 +7,8 @@ var libs = {
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
     tools: require('/lib/tools'),
-    cache: require('/lib/cacheControll')
+    cache: require('/lib/cacheControll'),
+    log: require('../../lib/contentTranslator')
 };
 var view = resolve('page-heading-with-menu.html');
 //TODO: URL-er skal være konfigurerbare
@@ -21,21 +22,18 @@ var urls = {
 };
 
 function handleGet(req) {
-    var site = libs.portal.getSite();
     var content = libs.portal.getContent();
-    return libs.cache.getDecorator('header' + (content.language ? content.language : 'no'), function () {
-        var languageBundles = libs.lang.parseBundle(content.language).pagenav;
+    var language = content.language || 'no';
+
+    return libs.cache.getDecorator('header' + language, function () {
+        var languageBundles = libs.lang.parseBundle(language).pagenav;
         var assets = {
             img: {
                 logo: libs.portal.assetUrl({path: 'img/navno/logo.svg'}),
                 idporten: libs.portal.assetUrl({path: 'img/navno/gfx/icons/idporten_ikon.png'})
             }
         };
-        var menuItems = libs.menu.getSubMenus(site, 4);
-        var language = content.language || 'no';
-        menuItems = menuItems[menuItems.findIndex(function (value) {
-            return value.name === language;
-        })];
+        var megaMenu = libs.menu.getMegaMenu(libs.content.get({key:'/www.nav.no/megamenu/'+language}), 4);
 
         // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
         //TODO: Fjerne eksplesitt https når dette er løst på BigIP
@@ -64,7 +62,7 @@ function handleGet(req) {
             urls: urls,
             langBundles: languageBundles,
             langSelectors: languageSelectors,
-            menu: menuItems,
+            menu: megaMenu,
             regionNorth: content.page.regions['region-north']
         };
 
@@ -72,7 +70,7 @@ function handleGet(req) {
             contentType: 'text/html',
             body: libs.thymeleaf.render(view, model),
         };
-    })
+    });
 }
 
 exports.get = handleGet;

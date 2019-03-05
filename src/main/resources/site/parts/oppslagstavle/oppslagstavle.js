@@ -12,20 +12,20 @@ exports.get = function(req) {
         var content = portal.getContent();
         var lang = langLib.parseBundle(content.language).oppslagstavle;
 
-        var table = (getTableElements(content)) ? getTableElements(content).slice(0,content.data.nrTableEntries) : [];
+        var table = getTableElements(content, 'tableContents').slice(0,content.data.nrTableEntries);
 
         var col = 'col-md-';
         var ntk = {
             sectionName: lang.niceToKnow,
-            data: getNTKElements(content)
+            data:  getTableElements(content, 'ntkContents').slice(0,content.data.nrNTK)
         };
         var news = {
             sectionName: lang.news,
-            data: getNewsElements(content)
+            data:  getTableElements(content, 'newsContents').slice(0,content.data.nrNews)
         };
         var shortcuts = {
             sectionName: lang.shortcuts,
-            data: getShortCutElements(content)
+            data: getTableElements(content, 'scContents').slice(0,content.data.nrSC)
         };
         var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));
         if (cont === 0) cont = 1;
@@ -53,40 +53,12 @@ exports.get = function(req) {
 
 
 
-function getTableElements(cont) {
-    if (cont.data.hasTableItems === 'true') {
-        var conf = cont.data;
-        var selector = conf.tableSelector;
-        if (!selector || selector === 'none') return null;
-        var ret = [];
-        if (conf.tableContents) ret = getElements(conf.tableContents);
-        if (selector === 'true') {
-            var query = contentLib.query({
-                start: 0,
-                count: cont.data.nrTableEntries,
-                contentTypes: [
-                    app.name + ':main-article'
-                ],
-                filters: {
-                    boolean: {
-                        must: {
-                            exists: {
-                                field: 'data.tablePriority'
-                            }
-                        }
-                    }
-                },
-                "query": "_path LIKE '/content" + cont._path + "/*'"
-            });
-            ret = ret.concat(query.hits).map(mapElements).slice(0, cont.data.nrTableEntries)
-        }
-        else ret = ret.map(mapElements);
-        return ret
-    }
-    return null;
+function getTableElements(cont, elements) {
+    return (cont.data[elements] ? Array.isArray(cont.data[elements]) ? cont.data[elements] : [ cont.data[elements] ] : []).map(mapElements)
 }
 
 function getNTKElements(cont) {
+
     if (cont.data.hasNTKElements === 'true') {
         var nrSub = cont.data.nrNTK;
         var conf = cont.data;
@@ -116,7 +88,9 @@ function getNTKElements(cont) {
                 sort: "data.ntkPriority DESC"
             });
 
-            ret = ret.concat(query.hits).map(mapElements).slice(0, nrSub)
+            ret = ret.concat(query.hits).reduce(function (t, el) {
+
+            }).map(mapElements).slice(0, nrSub)
         }
         return ret;
 
@@ -209,7 +183,8 @@ function getElements(els) {
     }).reduce(reduceOldElements,[]);
 }
 
-function mapElements(el) {
+function mapElements(els) {
+    var el = contentLib.get({key: els});
     return (el) ? { isHtml: el.data.ingress? el.data.ingress.startsWith('<'): false, heading: el.displayName || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
 }
 function removeNullElements(t, el) {
