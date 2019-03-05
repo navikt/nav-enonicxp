@@ -10,6 +10,7 @@ var clean = require('../clean');
 var priorityElements = require('../priorityElements');
 var tweakTavleliste = require('../tweakTavleliste');
 var moveCH = require('../moveContentHome');
+var rapportHandbok = require('../rapportHandbok');
 var genMegaMenu = require('../megaMenu');
 
 exports.handleSockets = function (io) {
@@ -26,6 +27,7 @@ exports.handleSockets = function (io) {
         moveCH.handle(socket);
         genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
+        rapportHandbok.handle(socket);
+
     })
 }
-
