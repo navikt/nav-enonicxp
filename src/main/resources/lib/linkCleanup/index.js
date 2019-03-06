@@ -21,6 +21,23 @@ exports.handle = function(socket) {
             }
         );
     });
+
+    socket.on('deleteUnusedExternalLinks', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            },
+            function() {
+                deleteUnusedExternalLinks(socket);
+            }
+        );
+    });
 };
 
 function createElements() {
@@ -54,6 +71,42 @@ function createElements() {
                             text: 'Create'
                         }
                     ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Delete unused Ekstern_lenke'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'external-link-find',
+                            progress: {
+                                value: 'external-link-find-value',
+                                max: 'external-link-find-max',
+                                valId: 'external-link-find-val'
+                            }
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'external-link-delete',
+                            progress: {
+                                value: 'external-link-delete-value',
+                                max: 'external-link-delete-max',
+                                valId: 'external-link-delete-val'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'deleteUnusedExternalLinks',
+                            text: 'Delete'
+                        }
+                    ]
                 }
             ]
         }
@@ -79,4 +132,31 @@ function createLinkInfo(socket) {
     });
 
     socket.emit('console.log', refMap);
+}
+
+function deleteUnusedExternalLinks(socket) {
+    var externalLinks = content.query({
+        start: 0,
+        count: 10000,
+        query: 'type = "no.nav.navno:Ekstern_lenke"'
+    }).hits;
+
+    socket.emit('external-link-find-max', externalLinks.length);
+
+    var unusedLinks = [];
+    externalLinks.forEach(function(value, index) {
+        if (tools.getRefInfo(value._id).total === 0 && value._path.indexOf('/content/') === 0) {
+            unusedLinks.push(value);
+        }
+        socket.emit('external-link-find-value', index + 1);
+    });
+
+    socket.emit('external-link-delete-max', unusedLinks.length);
+    unusedLinks.forEach(function(value, index) {
+        // delete Ekstern_lenke
+        content.delete({
+            key: value._id
+        });
+        socket.emit('external-link-delete-value', index + 1);
+    });
 }
