@@ -1,22 +1,20 @@
-
 var contentLib = require('/lib/xp/content');
 var R = require('/lib/ramda');
 exports.verifyPaths = verifyPaths;
 function verifyPaths(object) {
-    var tmp= undefined;
+    var tmp = undefined;
     for (var k in arguments) {
         if (arguments.hasOwnProperty(k)) {
             if (!tmp) tmp = arguments[k];
             else tmp = tmp[arguments[k]];
             if (!tmp) return false;
         }
-
     }
     return true;
 }
-exports.varifyTableListContent =varifyTableListContent
+exports.varifyTableListContent = varifyTableListContent;
 function varifyTableListContent(content) {
-    return content.hasOwnProperty('data') && content.data.hasOwnProperty('sectionContents')
+    return content.hasOwnProperty('data') && content.data.hasOwnProperty('sectionContents');
 }
 exports.inspectContent = inspectContent;
 function inspectContent(content) {
@@ -24,28 +22,32 @@ function inspectContent(content) {
 
     if (verifyPaths(content, 'x', 'no-nav-navno', 'cmsMenu', 'menuKey')) {
         log.info('MenuItem');
-        log.info(logBeutify(utils.getContentByMenuKey(content.x['no-nav-navno'].cmsMenu.menuKey)))
+        log.info(logBeutify(utils.getContentByMenuKey(content.x['no-nav-navno'].cmsMenu.menuKey)));
     }
     if (verifyPaths(content, 'data', 'sectionContents')) {
-        var sids = (Array.isArray(content.data.sectionContents)) ? content.data.sectionContents : [content.data.sectionContents];
-        sids.forEach(function (value) {
+        var sids = Array.isArray(content.data.sectionContents) ? content.data.sectionContents : [content.data.sectionContents];
+        sids.forEach(function(value) {
             log.info('Inspecting: ' + value);
-            log.info(logBeutify(contentLib.get({
-                key: value
-            })))
-        })
+            log.info(
+                logBeutify(
+                    contentLib.get({
+                        key: value
+                    })
+                )
+            );
+        });
     }
 }
 exports.join = join;
 function join(a, b) {
     var set = {
-        a:{},
-        b:{},
-        u:{}
+        a: {},
+        b: {},
+        u: {}
     };
     for (var k in a) {
         if (a.hasOwnProperty(k) && !b.hasOwnProperty(k)) set.a[k] = a[k];
-        else if (a.hasOwnProperty(k) && b.hasOwnProperty(k)) set.u[k] = [a[k],b[k]]
+        else if (a.hasOwnProperty(k) && b.hasOwnProperty(k)) set.u[k] = [a[k], b[k]];
     }
     for (var l in b) {
         if (!a.hasOwnProperty(l) && b.hasOwnProperty(l)) set.b[l] = b[l];
@@ -60,26 +62,24 @@ function join(a, b) {
     for (var o in set.u) {
         if (set.u.hasOwnProperty(o)) {
             ret[o] = set.u[o];
-
         }
     }
     return ret;
-
 }
 exports.changeSocial = changeSocial;
 function changeSocial(content) {
     var ret = [];
     if (content.data.hasOwnProperty('share-facebook')) {
         if (content.data['share-facebook']) ret.push('facebook');
-        delete content.data['share-facebook']
+        delete content.data['share-facebook'];
     }
     if (content.data.hasOwnProperty('share-twitter')) {
         if (content.data['share-twitter']) ret.push('twitter');
-        delete content.data['share-twitter']
+        delete content.data['share-twitter'];
     }
     if (content.data.hasOwnProperty('share-linkedin')) {
         if (content.data['share-linkedin']) ret.push('linkedin');
-        delete content.data['share-linkedin']
+        delete content.data['share-linkedin'];
     }
     if (ret.length !== 0) content.data.social = ret;
     return content;
@@ -95,10 +95,14 @@ function changeNewsSchemas(content) {
     content.data.menuListItems = content.data.menuListItems || [];
     var ns = content.data.newsschemas;
     if (!Array.isArray(ns)) ns = [ns];
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'form-and-application', ns.reduce(function (t, el) {
-        if (el) t.push(el);
-        return t
-    },[]));
+    content.data.menuListItems = addMenuListItem(
+        content.data.menuListItems,
+        'form-and-application',
+        ns.reduce(function(t, el) {
+            if (el) t.push(el);
+            return t;
+        }, [])
+    );
     delete content.data.newschemas;
     if (content.data.forms) delete content.data.forms;
     return content;
@@ -122,34 +126,34 @@ function changeProcedural(content) {
     return content;
 }
 
-exports.changeSelfService = changeSelfService
+exports.changeSelfService = changeSelfService;
 function changeSelfService(content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'selfservice', content.data.selfservice);
     delete content.data.selfservice;
     return content;
 }
-exports.changeLanguageVersions = changeLanguageVersions
+exports.changeLanguageVersions = changeLanguageVersions;
 function changeLanguageVersions(content) {
     return changeLanguage(content);
 }
-exports.changeLanguage = changeLanguage
+exports.changeLanguage = changeLanguage;
 function changeLanguage(content) {
     delete content.data.language;
     return content;
 }
-exports.changeMembership = changeMembership
+exports.changeMembership = changeMembership;
 function changeMembership(content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'membership', content.data.membership);
     delete content.data.membership;
     return content;
 }
-exports.changeQA = changeQA
+exports.changeQA = changeQA;
 function changeQA(content) {
     //content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Spørsmål og svar', content.data.faq);
     delete content.data.faq;
     return content;
 }
-exports.changeNotifications = changeNotifications
+exports.changeNotifications = changeNotifications;
 function changeNotifications(content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'report-changes', content.data.notifications);
     delete content.data.notifications;
@@ -167,11 +171,11 @@ function changeHideDate(content) {
     return content;
 }
 
-exports.realyIs = realyIs
+exports.realyIs = realyIs;
 function realyIs(link) {
     if (!link) return link;
-    else if (typeof link === 'string') return (link);
-    else return (link.length)
+    else if (typeof link === 'string') return link;
+    else return link.length;
 }
 exports.mapReduceMenuItems = mapReduceMenuItems;
 function mapReduceMenuItems(content) {
@@ -179,7 +183,7 @@ function mapReduceMenuItems(content) {
     if (!selected) return content;
     //var selected = content.data.menuListItems._selected;
     selected = Array.isArray(selected) ? selected : [selected];
-    selected.forEach(function (value) {
+    selected.forEach(function(value) {
         if (!realyIs(content.data.menuListItems[value].link)) {
             delete content.data.menuListItems[value];
         }
@@ -191,14 +195,12 @@ function insertMetaTag(content, key, value) {
     content.data.metaTags = content.data.metaTags || [];
     if (!Array.isArray(content.data.metaTags)) content.data.metaTags = [content.data.metaTags];
     content.data.metaTags.push(key + '$$$' + value);
-    return content
+    return content;
 }
 exports.insertContentTypeMetaTag = insertContentTypeMetaTag;
 function insertContentTypeMetaTag(content) {
-    return insertMetaTag(content, 'contentType', content.type.replace(app.name + ':', ""));
+    return insertMetaTag(content, 'contentType', content.type.replace(app.name + ':', ''));
 }
-
-
 
 exports.changePreface = changePreface;
 function changePreface(content) {
@@ -225,13 +227,13 @@ function changeInformation(content) {
     delete content.data.information;
     return content;
 }
-exports.changeRates = changeRates
+exports.changeRates = changeRates;
 function changeRates(content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'rates', content.data.rates);
     delete content.data.rates;
     return content;
 }
-exports.changeFactPlacement = changeFactPlacement
+exports.changeFactPlacement = changeFactPlacement;
 function changeFactPlacement(content) {
     content.data.factLocation = content.data.fact_placement;
     if (content.data.factLocation === 'sidebar') content.data.factLocation = 'left';
@@ -249,21 +251,21 @@ function reduceNullElements(t, el) {
 exports.mapIds = mapIds;
 function mapIds(el) {
     if (el) return el._id;
-    return null
+    return null;
 }
 
-String.prototype.repeat = function (nr) {
+String.prototype.repeat = function(nr) {
     var ret = '';
     for (var i = 0; i < nr; i++) {
-        ret += this.valueOf()
+        ret += this.valueOf();
     }
     return ret;
-}
+};
 exports.logBeautify = function(content) {
     log.info(logBeutify(content));
-}
+};
 function logBeutify(content) {
-    if (!content) return "content undefined";
+    if (!content) return 'content undefined';
     else if (typeof content !== 'object') return content;
     return JSON.stringify(content, null, 4);
 }
@@ -271,15 +273,7 @@ function logBeutify(content) {
 exports.changeMenuItem = changeMenuItem;
 function changeMenuItem(content, name, from) {
     content.data.menuListItems = content.data.menuListItems || [];
-    var items = (content.data[from]) ?
-        (typeof content.data[from] === 'string') ?
-            [content.data[from]] :
-            (Array.isArray(content.data[from])) ?
-                (content.data[from].length > 0) ?
-                    content.data[from] :
-                    undefined :
-                undefined :
-        undefined;
+    var items = content.data[from] ? (typeof content.data[from] === 'string' ? [content.data[from]] : Array.isArray(content.data[from]) ? (content.data[from].length > 0 ? content.data[from] : undefined) : undefined) : undefined;
     if (items) {
         content.data.menuListItems = addMenuListItem(content.menuListItems, name, items);
     }
@@ -303,7 +297,7 @@ function createTableListContent(content) {
     var newContent = {
         name: content._name,
         displayName: content.displayName,
-        parentPath:  '/www.nav.no/tmp/',
+        parentPath: '/www.nav.no/tmp/',
         contentType: 'no.nav.navno:tavleliste',
         data: content.data,
         x: content.x
@@ -328,69 +322,71 @@ function createNewTableContent(tableElements, ntkElements, newElements, scElemen
         nrNews: newElements.length,
         nrNTK: ntkElements.length,
         nrSC: scElements.length
-
     };
     return data;
 
     var newContent = {
         name: content._name,
         displayName: content.displayName,
-        parentPath:  '/sites/www.nav.no/no/test/',
+        parentPath: '/sites/www.nav.no/no/test/',
         contentType: app.name + ':oppslagstavle',
         data: data,
         x: content.x
-    }
+    };
 
     if (content.language) newContent.language = content.language;
-    var mod
+    var mod;
     try {
         var resObj = contentLib.create(newContent);
         mod = contentLib.modify({
             key: resObj._id,
-            editor: function (c) {
-                c.x = content.x
+            editor: function(c) {
+                c.x = content.x;
                 return c;
             }
-
         });
-        log.info("Try to include x");
-        log.info(logBeutify(mod))
-    } catch(e) {
-        log.info("Failed at createNewTableContent");
+        log.info('Try to include x');
+        log.info(logBeutify(mod));
+    } catch (e) {
+        log.info('Failed at createNewTableContent');
         log.info(e);
         log.info(logBeutify(content));
         log.info(logBeutify(newContent));
-        return content
+        return content;
     }
 
-    return mod
-
-
+    return mod;
 }
 exports.getTableElements = getTableElements;
 function getTableElements(content) {
     if (!content) {
-        return []
+        return [];
     }
-    if (typeof content.data.sectionContents === 'string') content.data.sectionContents = [ content.data.sectionContents];
+    if (typeof content.data.sectionContents === 'string') content.data.sectionContents = [content.data.sectionContents];
 
-
-    return (content.data.sectionContents) ? contentLib.query({
-        filters: {
-            ids: {  values: content.data.sectionContents }
-        }
-    }).hits.map(mapIds).reduce(reduceNullElements,[]) : [];
-
+    return content.data.sectionContents
+        ? contentLib
+              .query({
+                  filters: {
+                      ids: { values: content.data.sectionContents }
+                  }
+              })
+              .hits.map(mapIds)
+              .reduce(reduceNullElements, [])
+        : [];
 }
-
-
 
 exports.moveNewContent = moveNewContent;
 function moveNewContent(newContent, path) {
-
     return contentLib.move({
         source: newContent._id,
-        target: "/" + path.split("/").slice(0,-1).join("/") + "/"
+        target:
+            '/' +
+            path
+                .split('/')
+                .slice(0, -1)
+                .join('/') +
+            '/'
     });
 }
 
@@ -411,11 +407,12 @@ function getRefs(content) {
         start += 20;
     }
 
-    return re.map(function (el) {
-        return (re.indexOf({_id: el._id}) === -1) ? { _id: el._id} : null
-    }).reduce(reduceNullElements,[]);
+    return re
+        .map(function(el) {
+            return re.indexOf({ _id: el._id }) === -1 ? { _id: el._id } : null;
+        })
+        .reduce(reduceNullElements, []);
 }
-
 
 function checkTextForRefs(content) {
     var start = 0;
@@ -433,40 +430,39 @@ function checkTextForRefs(content) {
         length = query.hits.length;
         start += length;
     }
-    return ret.map(function (el) {
-        return {_id: el._id}
+    return ret.map(function(el) {
+        return { _id: el._id };
     });
 }
 
-exports.deleteOldContent = deleteOldContent
+exports.deleteOldContent = deleteOldContent;
 function deleteOldContent(content, newPath) {
     var children = contentLib.getChildren({
         key: content._id
     });
-    var ids = (children.count > 0) ? children.hits.map(mapIds) : [];
+    var ids = children.count > 0 ? children.hits.map(mapIds) : [];
     ids.forEach(function(id) {
         contentLib.move({
             source: id,
-            target: newPath + "/"
-        })
+            target: newPath + '/'
+        });
     });
     contentLib.delete({
         key: content._id
-    })
+    });
 }
 exports.modify = modify;
 function modify(value, newId, oldId) {
-
-    log.info("Modify " + value._id);
+    log.info('Modify ' + value._id);
     try {
         var r = contentLib.modify({
             key: value._id,
-            editor: function (c) {
+            editor: function(c) {
                 return JSON.parse(JSON.stringify(c).replace(new RegExp(oldId, 'g'), newId));
             }
         });
     } catch (e) {
-        log.info(JSON.stringify(contentLib.get({ key: value._id}), null, 4));
+        log.info(JSON.stringify(contentLib.get({ key: value._id }), null, 4));
         log.info('Failed modify ' + e);
         log.info(newId + ' ' + oldId);
     }
@@ -474,16 +470,16 @@ function modify(value, newId, oldId) {
 
 exports.addMenuListItem = addMenuListItem;
 function addMenuListItem(menuListItems, name, links) {
-    links = links ? Array.isArray(links) ? links : [links] : [];
+    links = links ? (Array.isArray(links) ? links : [links]) : [];
     if (!menuListItems) {
         menuListItems = {
             _selected: []
-        }
+        };
     }
     if (!menuListItems._selected) {
         menuListItems = {
             _selected: []
-        }
+        };
     }
     if (links.length > 0) {
         if (menuListItems._selected.indexOf(name) === -1) {
@@ -564,4 +560,93 @@ function findRefPathInContent(path, key, o, id) {
         }
     }
     return { path: addToPath(path, key), key: null };
+}
+
+exports.getIdFromUrl = getIdFromUrl;
+function getIdFromUrl(url) {
+    var ret = {
+        external: true,
+        invalid: false,
+        refId: null,
+        pathTo: null
+    };
+    url = url.toLowerCase();
+    if (url.indexOf('https://') !== -1 || url.indexOf('http://') !== -1) {
+        url = url.replace(':443', '');
+        if (url.indexOf('https://www.nav.no/') === 0 || url.indexOf('http://www.nav.no/') === 0) {
+            ret.external = false;
+            url = decodeURIComponent(url);
+            url = url.replace(/\+/g, '-');
+            url = url.replace(/,/g, '');
+            url = url.replace(/å/g, 'a');
+            url = url.replace(/ø/g, 'o');
+            url = url.replace(/æ/g, 'ae');
+            if (url.indexOf('?') > -1) {
+                var s = url.split('?');
+                if (s.length === 2) {
+                    url = s[0];
+                }
+            }
+            var cmsKey;
+            if (url.indexOf('.cms') === url.length - 4) {
+                url = url.replace('.cms', '');
+                var s = url.split('.');
+                var cms = s[s.length - 1];
+                if (isNaN(parseInt(cms))) {
+                    s = url.split('/');
+                    cms = s[s.length - 1];
+                    cmsKey = cms;
+                    url = url.replace('/' + cms, '');
+                } else {
+                    cmsKey = cms;
+                    url = url.replace('.' + cms, '');
+                }
+            }
+            if (url.indexOf('/_attachment/') !== -1) {
+                var s = url.split('/_attachment/');
+                cmsKey = s[s.length - 1];
+            }
+            var path = url.replace('https://', '/').replace('http://', '/');
+
+            var c;
+            if (cmsKey) {
+                var hits = contentLib.query({
+                    start: 0,
+                    count: 10,
+                    query: 'x.no-nav-navno.cmsContent.contentKey LIKE "' + cmsKey + '"'
+                }).hits;
+                if (hits.length === 1) {
+                    c = hits[0];
+                }
+            }
+            if (!c) {
+                var count = 0;
+                var useCount = false;
+                while (count < 10 && !c) {
+                    var testPath = path;
+                    if (!useCount) {
+                        useCount = true;
+                    } else {
+                        testPath += '_' + count;
+                        count += 1;
+                    }
+                    c = contentLib.get({
+                        key: testPath
+                    });
+                    if (c) {
+                        path = testPath;
+                    }
+                }
+            }
+
+            ret.pathTo = path;
+            if (c) {
+                ret.refId = c._id;
+            } else {
+                ret.invalid = true;
+            }
+        }
+    }
+
+    return ret;
 }

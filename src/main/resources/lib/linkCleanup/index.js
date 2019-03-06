@@ -123,15 +123,25 @@ function createLinkInfo(socket) {
     socket.emit('link-info-max', externalLinks.length);
 
     var refMap = {};
+    var urlInfo = {};
     externalLinks.forEach(function(value, index) {
         refMap[value._id] = tools.getRefInfo(value._id);
         refMap[value._id].path = value._path;
         refMap[value._id].displayName = value.displayName;
         refMap[value._id].data = value.data;
         socket.emit('link-info-value', index + 1);
+
+        if (value.data && value.data.url) {
+            urlInfo[value._id] = tools.getIdFromUrl(value.data.url);
+            urlInfo[value._id].url = value.data.url;
+            urlInfo[value._id].path = value._path;
+        }
+
+        urlInfo[value._id].url = value.data.url;
     });
 
     socket.emit('console.log', refMap);
+    socket.emit('console.log', urlInfo);
 }
 
 function deleteUnusedExternalLinks(socket) {
@@ -145,7 +155,16 @@ function deleteUnusedExternalLinks(socket) {
 
     var unusedLinks = [];
     externalLinks.forEach(function(value, index) {
-        if (tools.getRefInfo(value._id).total === 0 && value._path.indexOf('/content/') === 0) {
+        var isRettskilde = false;
+        if(value.data && value.data.url) {
+            var urlInfo = tools.getIdFromUrl(value.data.url);
+            if(urlInfo.external === false && urlInfo.invalid === true && urlInfo.pathTo && urlInfo.pathTo.indexOf('/www.nav.no/rettskildene') !== -1) {
+                isRettskilde = true;
+            }
+            log.info(JSON.stringify(urlInfo, null, 4));
+            log.info('isRettskilde : ' + isRettskilde);
+        }
+        if ((tools.getRefInfo(value._id).total === 0 && value._path.indexOf('/content/') === 0) || isRettskilde) {
             unusedLinks.push(value);
         }
         socket.emit('external-link-find-value', index + 1);
