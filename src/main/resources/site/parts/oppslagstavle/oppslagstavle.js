@@ -8,28 +8,28 @@ var langLib = require('/lib/i18nUtil');
 var cache = require('/lib/cacheControll');
 
 exports.get = function(req) {
-    return cache.getPaths('oppslagstavle' + req.path, function () {
+    return cache.getPaths('oppslagstavle' + req.path, function() {
         var content = portal.getContent();
         var lang = langLib.parseBundle(content.language).oppslagstavle;
 
-        var table = getTableElements(content, 'tableContents').slice(0,content.data.nrTableEntries);
+        var table = getTableElements(content, 'tableContents').slice(0, content.data.nrTableEntries);
 
         var col = 'col-md-';
         var ntk = {
             sectionName: lang.niceToKnow,
-            data:  getTableElements(content, 'ntkContents').slice(0,content.data.nrNTK)
+            data: getTableElements(content, 'ntkContents').slice(0, content.data.nrNTK)
         };
         var news = {
             sectionName: lang.news,
-            data:  getTableElements(content, 'newsContents').slice(0,content.data.nrNews)
+            data: getTableElements(content, 'newsContents').slice(0, content.data.nrNews)
         };
         var shortcuts = {
             sectionName: lang.shortcuts,
-            data: getTableElements(content, 'scContents').slice(0,content.data.nrSC)
+            data: getTableElements(content, 'scContents').slice(0, content.data.nrSC)
         };
         var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));
         if (cont === 0) cont = 1;
-        col += 12/cont;
+        col += 12 / cont;
 
         // Define the model
         var model = {
@@ -47,18 +47,14 @@ exports.get = function(req) {
         return {
             body: body
         };
-    })
-
+    });
 };
 
-
-
 function getTableElements(cont, elements) {
-    return (cont.data[elements] ? Array.isArray(cont.data[elements]) ? cont.data[elements] : [ cont.data[elements] ] : []).map(mapElements)
+    return (cont.data[elements] ? (Array.isArray(cont.data[elements]) ? cont.data[elements] : [cont.data[elements]]) : []).map(mapElements);
 }
 
 function getNTKElements(cont) {
-
     if (cont.data.hasNTKElements === 'true') {
         var nrSub = cont.data.nrNTK;
         var conf = cont.data;
@@ -72,9 +68,7 @@ function getNTKElements(cont) {
             var query = contentLib.query({
                 start: 0,
                 count: 5,
-                contentTypes: [
-                    app.name + ':main-article'
-                ],
+                contentTypes: [app.name + ':main-article'],
                 filters: {
                     boolean: {
                         must: {
@@ -84,16 +78,17 @@ function getNTKElements(cont) {
                         }
                     }
                 },
-                "query": "_path LIKE '/content" + cont._path + "/*'",
-                sort: "data.ntkPriority DESC"
+                query: "_path LIKE '/content" + cont._path + "/*'",
+                sort: 'data.ntkPriority DESC'
             });
 
-            ret = ret.concat(query.hits).reduce(function (t, el) {
-
-            }).map(mapElements).slice(0, nrSub)
+            ret = ret
+                .concat(query.hits)
+                .reduce(function(t, el) {})
+                .map(mapElements)
+                .slice(0, nrSub);
         }
         return ret;
-
     }
     return null;
 }
@@ -110,9 +105,7 @@ function getNewsElements(cont) {
             var query = contentLib.query({
                 start: 0,
                 count: 5,
-                contentTypes: [
-                    app.name + ':main-article'
-                ],
+                contentTypes: [app.name + ':main-article'],
                 filters: {
                     boolean: {
                         must: {
@@ -123,18 +116,21 @@ function getNewsElements(cont) {
                         mustNot: {
                             hasValue: {
                                 field: 'data.newsPriority',
-                                values: [ 'false' ]
+                                values: ['false']
                             }
                         }
                     }
                 },
-                "query": "_path LIKE '/content" + cont._path + "/*'",
+                query: "_path LIKE '/content" + cont._path + "/*'",
                 sort: 'modifiedTime DESC'
             });
 
-            ret = ret.concat(query.hits).map(mapElements).slice(0, nrSub)
+            ret = ret
+                .concat(query.hits)
+                .map(mapElements)
+                .slice(0, nrSub);
         }
-        return ret
+        return ret;
     }
     return null;
 }
@@ -152,9 +148,7 @@ function getShortCutElements(cont) {
             var query = contentLib.query({
                 start: 0,
                 count: 5,
-                contentTypes: [
-                    app.name + ':main-article'
-                ],
+                contentTypes: [app.name + ':main-article'],
                 filters: {
                     boolean: {
                         must: {
@@ -164,28 +158,64 @@ function getShortCutElements(cont) {
                         }
                     }
                 },
-                "query": "_path LIKE '/content" + cont._path + "/*'",
+                query: "_path LIKE '/content" + cont._path + "/*'",
                 sort: 'data.scPriority DESC'
             });
 
-            ret = ret.concat(query.hits).map(mapElements).slice(0, nrSub)
+            ret = ret
+                .concat(query.hits)
+                .map(mapElements)
+                .slice(0, nrSub);
         }
         return ret;
-
     }
     return null;
 }
 
 function getElements(els) {
     if (typeof els === 'string') els = [els];
-    return els.map(function (el) {
-        return contentLib.get({key: el});
-    }).reduce(reduceOldElements,[]);
+    return els
+        .map(function(el) {
+            return contentLib.get({ key: el });
+        })
+        .reduce(reduceOldElements, []);
 }
 
 function mapElements(els) {
-    var el = contentLib.get({key: els});
-    return (el) ? { isHtml: el.data.ingress? el.data.ingress.startsWith('<'): false, heading: el.displayName || el.data.title, icon: el.data.icon || 'icon-document', ingress: el.data.ingress || el.data.description || el.data.list_description, src: (!el.data.url) ? portal.pageUrl({id: el._id}) : portal.pageUrl({path: el.data.url})} : null;
+    var el = contentLib.get({ key: els });
+    return el
+        ? {
+              isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
+              heading: el.displayName || el.data.title,
+              icon: el.data.icon || 'icon-document',
+              ingress: el.data.ingress || el.data.description || el.data.list_description,
+              src: getSrc(el)
+          }
+        : null;
+}
+function getSrc(el) {
+    var url = el.data.url;
+    if (el.data.url) {
+        if (el.data.url.indexOf('https://') !== -1 || el.data.url.indexOf('http://') !== -1) {
+            var url = el.data.url.toLowerCase().replace(':443', '');
+            if (url.indexOf('https://www.nav.no/') === 0 || url.indexOf('http://www.nav.no/') === 0) {
+                log.info('url:  ' + url);
+                url = decodeURIComponent(url);
+                url = url.replace(/\+/g, '-');
+                //// æ ø å Æ Ø Å
+                // %C3%A6 %C3%B8 %C3%A5 %C3%86 %C3%98 %C3%85
+                url = url.replace(/å/g, 'a');
+                var path = url.replace('https://', '/').replace('http://', '/');
+                log.info('path: ' + path);
+                log.info('new url: ' + portal.pageUrl({ path: path }));
+                return portal.pageUrl({ path: path });
+            }
+            return url;
+        }
+        return portal.pageUrl({ path: el.data.url });
+    } else {
+        return portal.pageUrl({ id: el._id });
+    }
 }
 function removeNullElements(t, el) {
     if (el) t.push(el);
@@ -197,8 +227,7 @@ function reduceOldElements(t, el) {
     else if (el.publish && el.publish.to) {
         var d = new Date();
         var n = new Date(el.publish.to);
-        if (d<n) t.push(el)
-    }
-    else t.push(el);
+        if (d < n) t.push(el);
+    } else t.push(el);
     return t;
 }
