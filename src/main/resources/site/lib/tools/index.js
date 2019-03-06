@@ -495,3 +495,73 @@ function addMenuListItem(menuListItems, name, links) {
     }
     return menuListItems;
 }
+
+exports.getRefInfo = getRefInfo;
+function getRefInfo(contentId) {
+    var query = contentLib.query({
+        start: 0,
+        count: 1000,
+        query: '_references = "' + contentId + '" OR fulltext("*", "' + contentId + '", "AND") '
+    });
+
+    var refInfo = {
+        total: query.hits.length,
+        paths: [],
+        pathsExtd: []
+    };
+
+    query.hits.forEach(function(hit) {
+        var ref = findRefPathInContent('', null, hit, contentId);
+        var refKey = ref.key;
+        refInfo.paths.push(ref.path);
+        if (!refInfo[refKey]) {
+            refInfo[refKey] = 0;
+        }
+        refInfo[refKey] += 1;
+        refInfo.pathsExtd.push({
+            id: hit._id,
+            path: hit._path,
+            displayName: hit.displayName,
+            type: hit.type,
+            status: hit.x ? (hit.x['no-nav-navno'] ? (hit.x['no-nav-navno'].cmsStatus ? hit.x['no-nav-navno'].cmsStatus.status : null) : null) : null
+        });
+    });
+
+    return refInfo;
+}
+
+function findRefPathInContent(path, key, o, id) {
+    var addToPath = function(path, key) {
+        if (path) return path + '.' + key;
+        return key;
+    };
+    if (typeof o === 'object') {
+        // check arrays
+        if (Array.isArray(o)) {
+            for (var i = 0; i < o.length; i += 1) {
+                if (o[i] === id) {
+                    return { path: addToPath(path, key + '.' + i), key: key };
+                }
+                if (typeof o[i] === 'object') {
+                    var ref = findRefPathInContent(addToPath(path, key), i, o[i], id);
+                    if (ref.key) {
+                        return ref;
+                    }
+                }
+            }
+        }
+        // check objects
+        for (var subKey in o) {
+            if (o[subKey] === id) {
+                return { path: addToPath(path, key + '.' + subKey), key: key };
+            }
+            if (typeof o[subKey] === 'object') {
+                var ref = findRefPathInContent(addToPath(path, key), subKey, o[subKey], id);
+                if (ref.key) {
+                    return ref;
+                }
+            }
+        }
+    }
+    return { path: addToPath(path, key), key: null };
+}

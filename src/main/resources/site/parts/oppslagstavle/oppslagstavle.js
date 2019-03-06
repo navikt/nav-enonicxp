@@ -202,8 +202,6 @@ function getSrc(el) {
                 log.info('url:  ' + url);
                 url = decodeURIComponent(url);
                 url = url.replace(/\+/g, '-');
-                //// æ ø å Æ Ø Å
-                // %C3%A6 %C3%B8 %C3%A5 %C3%86 %C3%98 %C3%85
                 url = url.replace(/å/g, 'a');
                 var path = url.replace('https://', '/').replace('http://', '/');
                 log.info('path: ' + path);

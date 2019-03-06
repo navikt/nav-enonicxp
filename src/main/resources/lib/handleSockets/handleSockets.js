@@ -12,6 +12,7 @@ var tweakTavleliste = require('../tweakTavleliste');
 var moveCH = require('../moveContentHome');
 var rapportHandbok = require('../rapportHandbok');
 var genMegaMenu = require('../megaMenu');
+var linkCleanup = require('../linkCleanup');
 
 exports.handleSockets = function (io) {
     io.connect(function (socket) {
@@ -28,6 +29,6 @@ exports.handleSockets = function (io) {
         genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
         rapportHandbok.handle(socket);
-
+        linkCleanup.handle(socket);
     })
 }
