@@ -120,16 +120,23 @@ function createLinkInfo(socket) {
         query: 'type = "no.nav.navno:Ekstern_lenke"'
     }).hits;
 
-    socket.emit('link-info-max', externalLinks.length);
+    var urls = content.query({
+        start: 0,
+        count: 1000,
+        query: 'type = "no.nav.navno:url"'
+    }).hits;
+
+    socket.emit('link-info-max', externalLinks.length + urls.length);
 
     var refMap = {};
+    var urlRefMap = {};
     var urlInfo = {};
+    var urlInfo2 = {};
     externalLinks.forEach(function(value, index) {
         refMap[value._id] = tools.getRefInfo(value._id);
         refMap[value._id].path = value._path;
         refMap[value._id].displayName = value.displayName;
         refMap[value._id].data = value.data;
-        socket.emit('link-info-value', index + 1);
 
         if (value.data && value.data.url) {
             urlInfo[value._id] = tools.getIdFromUrl(value.data.url);
@@ -138,10 +145,29 @@ function createLinkInfo(socket) {
         }
 
         urlInfo[value._id].url = value.data.url;
+        socket.emit('link-info-value', index + 1);
     });
 
     socket.emit('console.log', refMap);
     socket.emit('console.log', urlInfo);
+
+    urls.forEach(function(value, index) {
+        urlRefMap[value._id] = tools.getRefInfo(value._id);
+        urlRefMap[value._id].path = value._path;
+        urlRefMap[value._id].displayName = value.displayName;
+        urlRefMap[value._id].data = value.data;
+
+        if (value.data && value.data.url) {
+            urlInfo2[value._id] = tools.getIdFromUrl(value.data.url);
+            urlInfo2[value._id].url = value.data.url;
+            urlInfo2[value._id].path = value._path;
+        }
+
+        socket.emit('link-info-value', externalLinks.length + index + 1);
+    });
+
+    socket.emit('console.log', urlRefMap);
+    socket.emit('console.log', urlInfo2);
 }
 
 function deleteUnusedExternalLinks(socket) {
@@ -156,9 +182,9 @@ function deleteUnusedExternalLinks(socket) {
     var unusedLinks = [];
     externalLinks.forEach(function(value, index) {
         var isRettskilde = false;
-        if(value.data && value.data.url) {
+        if (value.data && value.data.url) {
             var urlInfo = tools.getIdFromUrl(value.data.url);
-            if(urlInfo.external === false && urlInfo.invalid === true && urlInfo.pathTo && urlInfo.pathTo.indexOf('/www.nav.no/rettskildene') !== -1) {
+            if (urlInfo.external === false && urlInfo.invalid === true && urlInfo.pathTo && urlInfo.pathTo.indexOf('/www.nav.no/rettskildene') !== -1) {
                 isRettskilde = true;
             }
             log.info(JSON.stringify(urlInfo, null, 4));
@@ -177,5 +203,22 @@ function deleteUnusedExternalLinks(socket) {
             key: value._id
         });
         socket.emit('external-link-delete-value', index + 1);
+    });
+}
+
+function convertUrlToShortcut(socket) {
+    var urls = content.query({
+        start: 0,
+        count: 1000,
+        query: 'type = "no.nav.navno:url"'
+    }).hits;
+
+    urls.forEach(function(value, index) {
+        if (value.data && value.data.url) {
+            var idInfo = tools.getIdFromUrl(value.data.url);
+            if (!idInfo.external && !idInfo.invalid && value.path.indexOf('/redirects/') === 0) {
+                // TODO convert url to shortcut
+            }
+        }
     });
 }
