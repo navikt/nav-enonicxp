@@ -96,19 +96,6 @@
                 </field-set>
             </items>
         </field-set>
-        <field-set name="expire">
-            <label>Utgangsdato</label>
-            <items>
-            <input name="date" type="DateTime">
-                <label>Velg dato</label>
-                <occurrences maximum="1" minimum="1" />
-                <config>
-                    <timezone>true</timezone>
-                </config>
-                <default>+1year</default>
-            </input>
-            </items>
-        </field-set>
         <field-set name="Angi andre språkversjoner">
             <label>Legg til andre språkversjoner</label>
             <items>
