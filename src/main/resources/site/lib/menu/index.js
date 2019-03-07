@@ -142,7 +142,7 @@ function menuToJson(content, levels) {
 
     return {
         displayName: content.displayName,
-        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}).replace("http:", "https:"),
+        path: libs.portal.pageUrl({id: content.data.itemContent, type: 'absolute'}).replace("http:", "https:"),
         id: content._id,
         inPath: inPath,
         isActive: isActive,
