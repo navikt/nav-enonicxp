@@ -1,14 +1,14 @@
 var libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    navUtils: require('/lib/nav-utils'),
-    util: require('/lib/enonic/util'),
-    log: require('/lib/contentTranslator')
+    navUtils: require('../nav-utils'),
+    // util: require('/lib/enonic/util'),
+    log: require('../contentTranslator')
 
 };
 
 var globals = {
-	appPath: libs.util.app.getJsonName()
+	appPath: app.name.replace(/\./g, '-')
 };
 
 

@@ -1,8 +1,8 @@
 var libs = {
 	content: require('/lib/xp/content'),
 	i18n: require('/lib/xp/i18n'),
-	moment: require('/lib/moment'),
-	util: require('/lib/enonic/util')
+	// moment: require('/lib/moment'),
+	// util: require('/lib/enonic/util')
 }
 
 // *********************************
@@ -85,7 +85,7 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
     var queryResult = libs.content.query({
         start: 0,
         count: 1,
-        query: "x." + libs.util.app.getJsonName() + ".cmsMenu.menuKey = '" + cmsMenuKey + "'"
+        query: "x." + app.name.replace(/\./g, '-') + ".cmsMenu.menuKey = '" + cmsMenuKey + "'"
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
@@ -96,11 +96,11 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
  * @returns {object|null} content object or null if not found.
  */
 exports.getContentByCmsKey = function (contentKey) {
-    log.info('getContentByMenuKey query: ' + "x." + libs.util.app.getJsonName() + ".cmsContent.contentKey = '" + contentKey + "'");
+    log.info('getContentByMenuKey query: ' + "x." + app.name.replace(/\./g, '-') + ".cmsContent.contentKey = '" + contentKey + "'");
     var queryResult = libs.content.query({
         start: 0,
         count: 1,
-        query: "x." + libs.util.app.getJsonName() + ".cmsContent.contentKey = '" + contentKey + "'"
+        query: "x." + app.name.replace(/\./g, '-') + ".cmsContent.contentKey = '" + contentKey + "'"
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
@@ -113,15 +113,15 @@ exports.dateTimePublished = function (content, language) {
     var p = content.publish.from ? content.publish.from : content.createdTime;
     if (language !== 'no' && language !== 'en') {
 
-        published = libs.moment(p).locale('no').format('L');
+        published = p; //libs.moment(p).locale('no').format('L');
     } else {
-        published = libs.moment(p).locale(language).format('L');
+        published = p; //libs.moment(p).locale(language).format('L');
     }
 
     if (language !== 'nn' && language !== 'se') {
-        lastModified = libs.moment(content.modifiedTime).locale('no').format('L');
+        lastModified = content.modifiedTime; //libs.moment(content.modifiedTime).locale('no').format('L');
     } else {
-        lastModified = libs.moment(content.modifiedTime).locale(language).format('L');
+        lastModified = content.modifiedTime; //libs.moment(content.modifiedTime).locale(language).format('L');
     }
     return navPublished + ' ' + published + (published !== lastModified ? ' | ' + navUpdated + ' ' + lastModified : '');
 };

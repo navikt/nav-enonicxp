@@ -1,6 +1,6 @@
 var contentLib = require('/lib/xp/content');
-var utils = require('/lib/nav-utils');
-var tools = require('/lib/tools');
+var utils = require('../nav-utils');
+var tools = require('../tools');
 var node = require('/lib/xp/node');
 var R = require('/lib/ramda');
 

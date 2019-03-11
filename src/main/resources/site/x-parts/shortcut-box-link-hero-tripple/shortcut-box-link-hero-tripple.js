@@ -1,4 +1,4 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var portalLib = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var utils = require('/lib/nav-utils');

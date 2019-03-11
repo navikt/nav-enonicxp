@@ -1,5 +1,5 @@
 var portalLib = require('/lib/xp/portal');
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var menuLib = require('/lib/menu');
 
 var view = resolve('article-related-menuitems.html');

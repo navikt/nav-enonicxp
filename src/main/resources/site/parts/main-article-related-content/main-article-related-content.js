@@ -1,10 +1,10 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 var view = resolve('main-article-related-content.html');
 var cache = require('/lib/cacheControll');
 var langLib = require('/lib/i18nUtil');
-var contentTranslator = require('../../lib/contentTranslator');
+var contentTranslator = require('/lib/contentTranslator');
 
 function handleGet(req) {
     return cache.getPaths('main-article-related-content' + req.path, function () {

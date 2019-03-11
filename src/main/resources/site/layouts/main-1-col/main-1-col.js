@@ -1,5 +1,5 @@
 var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 var lang = require('/lib/i18nUtil');
 var view = resolve('./main-1-col.html');
 

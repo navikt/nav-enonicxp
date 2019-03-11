@@ -1,6 +1,6 @@
 var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/xp/thymeleaf');
-var parsers = require('../../lib/tableFunctions/tableFunctions');
+var thymeleaf = require('/lib/thymeleaf');
+var parsers = require('/lib/tableFunctions/tableFunctions');
 var view = resolve('ekstraStorTabell.html');
 exports.get = function (req) {
 

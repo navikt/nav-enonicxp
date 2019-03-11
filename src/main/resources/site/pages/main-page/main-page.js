@@ -1,6 +1,6 @@
 var libs = {
     portal: require('/lib/xp/portal'),
-    thymeleaf: require('/lib/xp/thymeleaf'),
+    thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/cacheControll')
 };
 var view = resolve('main-page.html');

@@ -1,4 +1,4 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var content = require('/lib/xp/content');
 var view = resolve('contentAZ.html');

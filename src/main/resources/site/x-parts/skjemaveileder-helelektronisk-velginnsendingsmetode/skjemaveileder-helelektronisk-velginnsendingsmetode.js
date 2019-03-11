@@ -1,4 +1,4 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var view = resolve('skjemaveileder-helelektronisk-velginnsendingsmetode.html');
 
 function handleGet(req) {
