@@ -199,13 +199,17 @@ function getSrc(el) {
         if (el.data.url.indexOf('https://') !== -1 || el.data.url.indexOf('http://') !== -1) {
             var url = el.data.url.toLowerCase().replace(':443', '');
             if (url.indexOf('https://www.nav.no/') === 0 || url.indexOf('http://www.nav.no/') === 0) {
-                log.info('url:  ' + url);
+                // TODO this should't be necessary after migration - link cleanup have been run, but its a quick fix for now
+                // log.info('url:  ' + url);
                 url = decodeURIComponent(url);
                 url = url.replace(/\+/g, '-');
+                url = url.replace(/,/g, '');
                 url = url.replace(/å/g, 'a');
+                url = url.replace(/ø/g, 'o');
+                url = url.replace(/æ/g, 'ae');
                 var path = url.replace('https://', '/').replace('http://', '/');
-                log.info('path: ' + path);
-                log.info('new url: ' + portal.pageUrl({ path: path }));
+                // log.info('path: ' + path);
+                // log.info('new url: ' + portal.pageUrl({ path: path }));
                 return portal.pageUrl({ path: path });
             }
             return url;

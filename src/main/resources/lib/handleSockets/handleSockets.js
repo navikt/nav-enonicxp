@@ -29,6 +29,6 @@ exports.handleSockets = function (io) {
         genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
         rapportHandbok.handle(socket);
-        linkCleanup.handle(socket);
+        // linkCleanup.handle(socket);
     })
 }
