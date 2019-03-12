@@ -1,4 +1,4 @@
-var mustacheLib = require('/lib/xp/mustache');
+var mustacheLib = require('/lib/mustache');
 var authLib = require('/lib/xp/auth');
 
 var view = resolve('page.html');
