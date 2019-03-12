@@ -12,7 +12,7 @@ function parseToJSON(html) {
 }
 
 function reParse(e) {
-        e = insertDivAfterTable(e);
+ //       e = insertDivAfterTable(e);
         e = changeTableClass(e);
       //  e = checkIfStatGroupHeadOrStatGroupRestAndChange(e),
         e = changeTh(e);
