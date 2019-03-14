@@ -163,15 +163,12 @@ function menuToJson(content, levels) {
  * @returns {Array}
  */
 exports.getMenuTree = function (levels) {
-
     var menu = [];
-    log.info('getMenuTree:1');
     var site = libs.portal.getSite();
-    log.info('getMenuTree:2');
     levels = (isInt(levels) ? levels : 1);
 
     if (site) {
-        menu = getSubMenus(site, levels);
+        menu = exports.getSubMenus(site, levels);
     }
 
     return menu;
