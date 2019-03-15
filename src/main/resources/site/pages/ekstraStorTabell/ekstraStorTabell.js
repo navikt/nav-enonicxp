@@ -1,6 +1,7 @@
 var portal = require('/lib/xp/portal');
 var thymeleaf = require('/lib/xp/thymeleaf');
 var parsers = require('../../lib/tableFunctions/tableFunctions');
+var trans = require('../../lib/contentTranslator');
 var view = resolve('ekstraStorTabell.html');
 exports.get = function (req) {
 
@@ -12,9 +13,11 @@ exports.get = function (req) {
 
     var parsed = parsers.map(m, true);
 
+    var referer = req.headers.Referer;
     var model = {
         title: content.displayName,
         content: parsed,
+        referer: referer,
         styles: {
             main: portal.assetUrl({path: stylePath + 'main.css'}),
             content: portal.assetUrl({path: stylePath + 'content.css'}),

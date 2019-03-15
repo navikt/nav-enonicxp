@@ -50,6 +50,9 @@
             errorHead.text(message.title);
             error.show();
         })
+        io.on('console.log', function(data) {
+            console.log(data);
+        })
     }
 
     function newCreateElements(elements) {
