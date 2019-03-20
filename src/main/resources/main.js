@@ -36,19 +36,26 @@ event.listener({
     type: 'node.updated',
     callback: handleUpdate
 });
+event.listener({
+    type: 'node.*',
+    localOnly: false,
+    callback: function (event) {
+        log.info(JSON.stringify(event));
+    }
+});
 
 function handleUpdate(event) {
-    var node = repo.get(event.data.nodes.pop().id);
-    // log.info(JSON.stringify(node, null, 4));
-    if (!node.publish || node.publish.to !== node.data.date) {
-        repo.modify({
-            key: node._id,
-            editor: function (n) {
-                if (!n.publish) n.publish = {};
-                n.publish.from = n.modifiedTime || n.createdTime
-                n.publish.to = n.data.date;
-                return n;
-            }
-        })
-    }
+    // var node = repo.get(event.data.nodes.pop().id);
+    // // log.info(JSON.stringify(node, null, 4));
+    // if (!node.publish || node.publish.to !== node.data.date) {
+    //     repo.modify({
+    //         key: node._id,
+    //         editor: function (n) {
+    //             if (!n.publish) n.publish = {};
+    //             n.publish.from = n.modifiedTime || n.createdTime
+    //             n.publish.to = n.data.date;
+    //             return n;
+    //         }
+    //     })
+    // }
 }

@@ -110,14 +110,18 @@ var globals = {
 exports.getMegaMenu = function(content, levels)
 {
 	var subMenus = [];
-    levels--;
-    return libs.content.getChildren({key: content._id}).hits.reduce(
-    	function (t, el) {
-    		t.push(menuToJson(el, levels));
-    		return t;
-		},
-		subMenus
-	);
+	if ( content ) {
+        levels--;
+        return libs.content.getChildren({key: content._id}).hits.reduce(
+            function (t, el) {
+                t.push(menuToJson(el, levels));
+                return t;
+            },
+            subMenus
+        );
+    } else {
+	    return [];
+    }
 };
 function menuToJson(content, levels) {
     var subMenus = [],
@@ -142,7 +146,7 @@ function menuToJson(content, levels) {
 
     return {
         displayName: content.displayName,
-        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}).replace("http:", "https:"),
+        path: libs.portal.pageUrl({id: content.data.itemContent, type: 'absolute'}).replace("http:", "https:"),
         id: content._id,
         inPath: inPath,
         isActive: isActive,

@@ -358,40 +358,6 @@ function getLinks(value) {
     return [];
 }
 
-function getKapRef(chapterKey) {
-    var query = content.query({
-        start: 0,
-        count: 1000,
-        query: '_references = "' + chapterKey + '" AND (x.no-nav-navno.cmsStatus.status LIKE "approved" OR x.no-nav-navno.cmsStatus.status NOT LIKE "*")'
-        // query: '_references = "' + chapterKey + '"'
-    });
-
-    var kapRefs = {
-        total: query.hits.length,
-        paths: [],
-        pathsExtd: []
-    };
-
-    query.hits.forEach(function(hit) {
-        var ref = findRef('', null, hit, chapterKey);
-        var refKey = ref.key;
-        kapRefs.paths.push(ref.path);
-        if (!kapRefs[refKey]) {
-            kapRefs[refKey] = 0;
-        }
-        kapRefs[refKey] += 1;
-        kapRefs.pathsExtd.push({
-            id: hit._id,
-            path: hit._path,
-            displayName: hit.displayName,
-            type: hit.type,
-            status: hit.x ? (hit.x['no-nav-navno'] ? (hit.x['no-nav-navno'].cmsStatus ? hit.x['no-nav-navno'].cmsStatus.status : null) : null) : null
-        });
-    });
-
-    return kapRefs;
-}
-
 function logDebugInfoNavRapportHandbok(socket) {
     socket.emit(
         'console.log',
@@ -420,41 +386,12 @@ function logDebugInfoNavRapportHandbok(socket) {
     var isKapUsed = {};
 
     navRapportHandbok.forEach(function(value, index) {
-        var query = content.query({
-            start: 0,
-            count: 1000,
-            query: '_references = "' + value._id + '" AND (x.no-nav-navno.cmsStatus.status LIKE "approved" OR x.no-nav-navno.cmsStatus.status NOT LIKE "*")'
-            // query: '_references = "' + value._id + '"'
-        });
-
-        var refs = {
-            total: query.hits.length,
-            paths: [],
-            pathsExtd: [],
-            kap: {}
-        };
-
-        query.hits.forEach(function(hit) {
-            var ref = findRef('', null, hit, value._id);
-            var refKey = ref.key;
-            refs.paths.push(ref.path);
-            if (!refs[refKey]) {
-                refs[refKey] = 0;
-            }
-            refs[refKey] += 1;
-            refs.pathsExtd.push({
-                id: hit._id,
-                path: hit._path,
-                displayName: hit.displayName,
-                type: hit.type,
-                status: hit.x ? (hit.x['no-nav-navno'] ? (hit.x['no-nav-navno'].cmsStatus ? hit.x['no-nav-navno'].cmsStatus.status : null) : null) : null
-            });
-        });
-
+        var refs = tools.getRefInfo(value._id);
+        refs.kap = {};
         refInfo[value._id] = refs;
 
         (Array.isArray(value.data.chapters) ? value.data.chapters : value.data.chapters ? [value.data.chapters] : []).forEach(function(chapterKey) {
-            refs.kap[chapterKey] = getKapRef(chapterKey);
+            refs.kap[chapterKey] = tools.getRefInfo(chapterKey);
             isKapUsed[chapterKey] = true;
         });
         socket.emit('nav-rapport-handbok-value', index + 1);
@@ -468,7 +405,7 @@ function logDebugInfoNavRapportHandbok(socket) {
 
     kapHits.forEach(function(kap) {
         if (!isKapUsed[kap._id]) {
-            refInfo.unusedKaps[kap._id] = getKapRef(kap._id);
+            refInfo.unusedKaps[kap._id] = tools.getRefInfo(kap._id);
         }
     });
 
@@ -486,77 +423,11 @@ function logDebugInfoRapportHandbok(socket) {
     var refInfo = {};
 
     rapportHandbok.forEach(function(value, index) {
-        var query = content.query({
-            start: 0,
-            count: 1000,
-            query: '_references = "' + value._id + '" AND (x.no-nav-navno.cmsStatus.status LIKE "approved" OR x.no-nav-navno.cmsStatus.status NOT LIKE "*")'
-            // query: '_references = "' + value._id + '"'
-        });
-
-        var refs = {
-            total: query.hits.length,
-            paths: [],
-            pathsExtd: []
-        };
-
-        query.hits.forEach(function(hit) {
-            var ref = findRef('', null, hit, value._id);
-            var refKey = ref.key;
-            refs.paths.push(ref.path);
-            if (!refs[refKey]) {
-                refs[refKey] = 0;
-            }
-            refs[refKey] += 1;
-            refs.pathsExtd.push({
-                id: hit._id,
-                path: hit._path,
-                displayName: hit.displayName,
-                type: hit.type,
-                status: hit.x ? (hit.x['no-nav-navno'] ? (hit.x['no-nav-navno'].cmsStatus ? hit.x['no-nav-navno'].cmsStatus.status : null) : null) : null
-            });
-        });
-
-        refInfo[value._id] = refs;
+        refInfo[value._id] = tools.getRefInfo(value._id);
         socket.emit('rapport-handbok-value', index + 1);
     });
 
     socket.emit('console.log', refInfo);
-}
-
-function findRef(path, key, o, id) {
-    var addToPath = function(path, key) {
-        if (path) return path + '.' + key;
-        return key;
-    };
-    if (typeof o === 'object') {
-        // check arrays
-        if (Array.isArray(o)) {
-            for (var i = 0; i < o.length; i += 1) {
-                if (o[i] === id) {
-                    return { path: addToPath(path, key + '.' + i), key: key };
-                }
-                if (typeof o[i] === 'object') {
-                    var ref = findRef(addToPath(path, key), i, o[i], id);
-                    if (ref.key) {
-                        return ref;
-                    }
-                }
-            }
-        }
-        // check objects
-        for (var subKey in o) {
-            if (o[subKey] === id) {
-                return { path: addToPath(path, key + '.' + subKey), key: key };
-            }
-            if (typeof o[subKey] === 'object') {
-                var ref = findRef(addToPath(path, key), subKey, o[subKey], id);
-                if (ref.key) {
-                    return ref;
-                }
-            }
-        }
-    }
-    return { path: addToPath(path, key), key: null };
 }
 
 function updateRef(oldId, newId) {
