@@ -21,7 +21,7 @@ exports.get = function(req) {
         };
         var news = {
             sectionName: lang.news,
-            data: getTableElements(content, 'newsContents').slice(0, content.data.nrNews)
+            data: getTableElements(content, 'newsContents').reduce(orderByPublished, []).slice(0, content.data.nrNews)
         };
         var shortcuts = {
             sectionName: lang.shortcuts,
@@ -50,8 +50,8 @@ exports.get = function(req) {
     });
 };
 
-function getTableElements(cont, elements) {
-    return (cont.data[elements] ? (Array.isArray(cont.data[elements]) ? cont.data[elements] : [cont.data[elements]]) : []).map(mapElements);
+function getTableElements(content, contentType) {
+    return (content.data[contentType] ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]]) : []).map(mapElements);
 }
 
 function getNTKElements(cont) {
@@ -181,15 +181,16 @@ function getElements(els) {
         .reduce(reduceOldElements, []);
 }
 
-function mapElements(els) {
-    var el = contentLib.get({ key: els });
+function mapElements(elementId) {
+    var el = contentLib.get({ key: elementId });
     return el
         ? {
               isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
               heading: el.displayName || el.data.title,
               icon: el.data.icon || 'icon-document',
               ingress: el.data.ingress || el.data.description || el.data.list_description,
-              src: getSrc(el)
+              src: getSrc(el),
+              published: (el.publish && el.publish.first) ? el.publish.first : el.createdTime,
           }
         : null;
 }
@@ -232,4 +233,15 @@ function reduceOldElements(t, el) {
         if (d < n) t.push(el);
     } else t.push(el);
     return t;
+}
+
+function orderByPublished(list, element) {
+    for(var i = 0; i < list.length; i += 1) {
+        if(new Date(list[i].published) < new Date(element.published)) {
+            list.splice(i, 0, element);
+            return list;
+        }
+    }
+    list.push(element);
+    return list
 }
