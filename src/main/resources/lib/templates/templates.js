@@ -189,8 +189,8 @@ var mainArticlePage = {
                                     {
                                         "type": "PartComponent",
                                         "PartComponent": {
-                                            "name": "main-article-related-content",
-                                            "template": "no.nav.navno:main-article-related-content",
+                                            "name": "main-article-linked-list",
+                                            "template": "no.nav.navno:main-article-linked-list",
                                             "config": {
                                             }
                                         }
@@ -198,8 +198,8 @@ var mainArticlePage = {
                                     {
                                         "type": "PartComponent",
                                         "PartComponent": {
-                                            "name": "main-article-linked-list",
-                                            "template": "no.nav.navno:main-article-linked-list",
+                                            "name": "main-article-related-content",
+                                            "template": "no.nav.navno:main-article-related-content",
                                             "config": {
                                             }
                                         }
