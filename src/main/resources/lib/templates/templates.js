@@ -61,20 +61,34 @@ function createTemplates(socket) {
         principals: ["role:system.admin"]
     }, function () {
         templates.forEach(function (value) {
-            var id = content.create(value.content);
+            var parent = content.get({
+                key: value.content.parentPath,
+            });
+            if(!parent) {
+                parent = content.create({
+                    displayName: 'Templates',
+                    parentPath: value.content.parentPath.replace('_templates/', ''),
+                    name: '_templates',
+                    contentType: 'portal:template-folder',
+                    data: {},
+                });
+            }
+            var exists = content.get({
+                key: value.content.parentPath + value.content.displayName.toLowerCase().replace(/ - /g, '-').replace(/ /g, '-'),
+            });
+            var elem = exists ? exists : content.create(value.content);
             repo.modify({
-                key: id._id,
+                key: elem._id,
                 editor: function (c) {
                     c.page = value.page;
+                    if(exists) {
+                        c.data = value.content.data;
+                    }
                     return c;
                 }
             });
-            socket.emit('templateUpdate', id.displayName + ' created');
+            socket.emit('templateUpdate', elem.displayName + ' created');
         })
-
-
-
-
     })
 }
 
@@ -341,6 +355,12 @@ var hovedSeksjonPage = {
     "customized": false
 };
 
+var ekstraStorTabell = {
+    "controller": "no.nav.navno:ekstraStorTabell",
+    "config": {},
+    "customized": false
+}
+
 var templates = [
     {
         content: {
@@ -381,8 +401,6 @@ var templates = [
             }
         },
         page: hovedSeksjonPage
-
-
     },
     {
         content: {
@@ -396,6 +414,32 @@ var templates = [
             }
         },
         page: transportPage
+    },
+    {
+        content: {
+            displayName: 'Page - Ekstra Stor Tabell',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:Ekstra_stor_tabell',
+            }
+        },
+        page: ekstraStorTabell
+    },
+    {
+        content: {
+            displayName: 'Page - Ekstra Stor Tabell',
+            parentPath: '/content/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:Ekstra_stor_tabell',
+            }
+        },
+        page: ekstraStorTabell
     }
 ]
 

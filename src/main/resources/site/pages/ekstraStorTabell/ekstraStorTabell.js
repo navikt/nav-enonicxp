@@ -9,9 +9,11 @@ exports.get = function (req) {
     var stylePath = 'www.nav.no/styles/';
     var content = portal.getContent();
 
-    var m = parsers.parse(content.data.article.text);
-
-    var parsed = parsers.map(m, true);
+    var parsed
+    if(content.data.article && content.data.article.text) {
+        var m = parsers.parse(content.data.article.text);
+        parsed = parsers.map(m, true);
+    }
 
     var referer = req.headers.Referer;
     var model = {
