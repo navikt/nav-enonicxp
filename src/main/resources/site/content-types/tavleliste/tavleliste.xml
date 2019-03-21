@@ -16,6 +16,7 @@
                 <option value="true">Ja</option>
                 <option value="false">Nei</option>
             </config>
+            <default>true</default>
         </input>
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
