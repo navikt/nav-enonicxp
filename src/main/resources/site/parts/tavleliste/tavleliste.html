@@ -24,6 +24,6 @@
   <article data-th-each="item : ${items}">
     <h2 role="heading" aria-level="2"><a data-th-href="${item.src}" data-th-text="${item.heading}"></a></h2>
     <p data-th-text="${item.ingress}"></p>
-    <time data-th-if="${!hideSectionContentsDate}" data-th-text="${item.published}"></time>
+    <time data-th-if="${!hideSectionContentsDate}" data-th-text="${item.publishedText}"></time>
   </article>
 </article>

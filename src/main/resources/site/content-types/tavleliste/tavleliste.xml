@@ -10,25 +10,21 @@
             <label>Orginaltittel</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
-        <input type="RadioButton" name="hide_date">
+        <input type="CheckBox" name="hide_date">
             <label>Skjul dato</label>
-            <config>
-                <option value="true">Ja</option>
-                <option value="false">Nei</option>
-            </config>
-            <default>true</default>
+            <default>checked</default>
         </input>
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
-        <input type="RadioButton" name="hideSectionContentsDate">
+        <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på content</label>
-            <config>
-                <option value="true">Ja</option>
-                <option value="false">Nei</option>
-            </config>
-            <default>true</default>
+            <default>checked</default>
+        </input>
+        <input type="CheckBox" name="orderSectionContentsByPublished">
+            <label>Sorter contents etter publiseringsdato</label>
+            <default>checked</default>
         </input>
         <input name="sectionContents" type="ContentSelector">
             <label>Contents</label>
