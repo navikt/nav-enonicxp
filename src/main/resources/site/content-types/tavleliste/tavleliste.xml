@@ -22,6 +22,14 @@
             <label>Ingress</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
+        <input type="RadioButton" name="hideSectionContentsDate">
+            <label>Skjul dato på content</label>
+            <config>
+                <option value="true">Ja</option>
+                <option value="false">Nei</option>
+            </config>
+            <default>true</default>
+        </input>
         <input name="sectionContents" type="ContentSelector">
             <label>Contents</label>
             <help-text>Add contents to section</help-text>

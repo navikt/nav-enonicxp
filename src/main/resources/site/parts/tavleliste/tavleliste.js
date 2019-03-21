@@ -20,7 +20,7 @@ exports.get = function(req) {
             } ,[])
             .concat(content.getChildren({key: cont._id}).hits)
             .map(function (el) {
-            return { src: portal.pageUrl({id: el._id}), heading: el.displayName, ingress: el.data.ingress }
+            return { src: portal.pageUrl({id: el._id}), heading: el.displayName, ingress: el.data.ingress, published: utils.dateTimePublished(el, el.language || 'no') }
         }).reduce(function (t, el) {
             if (!t.reduce(function (to, ele) {
                 return to || ele.src === el.src;
@@ -35,7 +35,8 @@ exports.get = function(req) {
             heading: cont.data.heading || cont.displayName,
             ingress: cont.data.ingress,
             items: items,
-            hideDate: cont.data.hide_date === 'true'
+            hideDate: cont.data.hide_date !== 'false',
+            hideSectionContentsDate: cont.data.hideSectionContentsDate !== 'false',
         };
 
         // Render a thymeleaf template
