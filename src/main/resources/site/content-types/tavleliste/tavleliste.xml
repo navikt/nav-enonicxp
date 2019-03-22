@@ -19,11 +19,11 @@
             <occurrences minimum="0" maximum="1"/>
         </input>
         <input type="CheckBox" name="hideSectionContentsDate">
-            <label>Skjul dato på content</label>
+            <label>Skjul dato på artikkellisten</label>
             <default>checked</default>
         </input>
         <input type="CheckBox" name="orderSectionContentsByPublished">
-            <label>Sorter contents etter publiseringsdato</label>
+            <label>Sorter artikkelisten etter publiseringsdato</label>
             <default>checked</default>
         </input>
         <input name="sectionContents" type="ContentSelector">
