@@ -51,8 +51,8 @@ exports.get = function(req) {
       heading: cont.data.heading || cont.displayName,
       ingress: cont.data.ingress,
       items: items,
-      hideDate: cont.data.hide_date !== false,
-      hideSectionContentsDate: cont.data.hideSectionContentsDate !== false
+      hideDate: cont.data.hide_date === true,
+      hideSectionContentsDate: cont.data.hideSectionContentsDate === true
     };
 
     // Render a thymeleaf template

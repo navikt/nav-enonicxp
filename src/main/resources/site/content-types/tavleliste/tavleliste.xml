@@ -12,7 +12,7 @@
         </input>
         <input type="CheckBox" name="hide_date">
             <label>Skjul dato</label>
-            <default>checked</default>
+            <default>unchecked</default>
         </input>
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
@@ -20,7 +20,7 @@
         </input>
         <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på artikkellisten</label>
-            <default>checked</default>
+            <default>unchecked</default>
         </input>
         <input type="CheckBox" name="orderSectionContentsByPublished">
             <label>Sorter artikkelisten etter publiseringsdato</label>
