@@ -265,7 +265,9 @@ function fjernOld(socket) {
         'sprak',
         'selvbetjening',
         'satser-og-datoer',
-        'bilder-nav.no'
+        'bilder-nav.no',
+        'nav.no-lokalt/fylke/arkiv-fylkessider',
+        'nav.no-lokalt/arbeidslivssenter/arkiv-arbeidslivssider'
     ];
     socket.emit('fjern-old-max', pathsToRemove.length);
     pathsToRemove.forEach(function(value, index) {
