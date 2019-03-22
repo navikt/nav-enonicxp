@@ -1,14 +1,20 @@
 <main id="maincontent" class="container">
+  <div class="container page-head">
+    <h1 data-th-if="${title}" data-th-text="${title}"></h1>
+  </div>
   <div class="maincontent container">
-  <div class="row">
-    <div data-portal-region="first" class="col-md-12 col-sm-12">
-      <div data-th-each="component : ${firstRegion.components}" data-th-remove="tag">
-        <div data-portal-component="${component.path}" data-th-remove="tag" />
+    <div class="row">
+      <div data-portal-region="first" class="col-md-12 col-sm-12">
+        <div data-th-each="component : ${firstRegion.components}" data-th-remove="tag">
+          <div data-portal-component="${component.path}" data-th-remove="tag" />
+        </div>
       </div>
     </div>
   </div>
+  <div class="placeholder hide" style="height: 44px;">
+    <div class="top-link-wrapper">
+      <a href="#page-top" id="top-scroll-link" data-th-text="${toTop}">Til toppen</a>
+    </div>
   </div>
-  <div class="placeholder hide" style="height: 44px;"><div class="top-link-wrapper"><a href="#page-top" id="top-scroll-link" data-th-text="${toTop}">Til toppen</a></div></div>
-
 </main>
 
