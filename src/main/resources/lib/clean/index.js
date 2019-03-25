@@ -5,85 +5,131 @@ exports.handle = function (socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
 
-
-
-
     // TODO Fjern nav-old
 
-    socket.on('fjern-old', function () {
-        context.run({
-            repository: 'cms-repo',
-            branch: 'draft',
-            user: {
-                login: 'pad',
-                userStore: 'system'
+    socket.on('fjern-old', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
             },
-            principals: ["role:system.admin"]
-        }, function () {
-            fjernOld(socket);
-        })
-
+            function() {
+                fjernOld(socket);
+            }
+        );
     });
 
-
-
-    socket.on('fjern-nyheter', function () {
-        context.run({
-            repository: 'cms-repo',
-            branch: 'draft',
-            user: {
-                login: 'pad',
-                userStore: 'system'
+    socket.on('fjern-nyheter', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
             },
-            principals: ["role:system.admin"]
-        }, function () {
-            fjernNyheter(socket);
-        })
-
-    })
-    socket.on('fjern-pressemeldinger', function () {
-        context.run({
-            repository: 'cms-repo',
-            branch: 'draft',
-            user: {
-                login: 'pad',
-                userStore: 'system'
+            function() {
+                fjernNyheter(socket);
+            }
+        );
+    });
+    socket.on('fjern-pressemeldinger', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
             },
-            principals: ["role:system.admin"]
-        }, function () {
-            fjernPressemeldinger(socket);
-        })
-
-    })
-    socket.on('fjern-nyheter-brukerportal', function () {
-        context.run({
-            repository: 'cms-repo',
-            branch: 'draft',
-            user: {
-                login: 'pad',
-                userStore: 'system'
+            function() {
+                fjernPressemeldinger(socket);
+            }
+        );
+    });
+    socket.on('fjern-nyheter-brukerportal', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
             },
-            principals: ["role:system.admin"]
-        }, function () {
-            fjernNyheterBrukerPortal(socket);
-        })
-
-    })
-    socket.on('fjern-non-approved', function () {
-        context.run({
-            repository: 'cms-repo',
-            branch: 'draft',
-            user: {
-                login: 'pad',
-                userStore: 'system'
+            function() {
+                fjernNyheterBrukerPortal(socket);
+            }
+        );
+    });
+    socket.on('fjern-non-approved', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
             },
-            principals: ["role:system.admin"]
-        }, function () {
-            fjernNonApproved(socket);
-        })
+            function() {
+                fjernNonApproved(socket);
+            }
+        );
+    });
+    socket.on('remove-empty-folders', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            },
+            function() {
+                removeEmptyFolders(socket);
+            }
+        );
+    });
+};
 
-    })
+function removeEmptyFolders(socket) {
+    var folders = content.query({
+        start: 0,
+        count: 5000,
+        query: 'type = "base:folder" AND _state NOT LIKE "PENDING_DELETE"'
+    }).hits;
 
+    socket.emit('remove-empty-folders-max', folders.length);
+    var anyDeletions = false;
+    folders.forEach(function(folder, index) {
+        if (folder.hasChildren === false) {
+            content.delete({
+                key: folder._id
+            });
+            anyDeletions = true;
+            log.info('deleted : ' + folder._id + ' (' + folder._path + ')');
+        }
+        socket.emit('remove-empty-folders-value', index + 1);
+    });
+
+    // if this is logged, it should run again
+    if (anyDeletions) {
+        log.info('try again');
+    }
 }
 
 function fjernNonApproved(socket) {
@@ -107,13 +153,17 @@ function fjernNonApproved(socket) {
         }
     });
     socket.emit('fjern-non-approved-max', nonApproved.hits.length);
-    nonApproved.hits.forEach(function (value, index) {
-        socket.emit('fjern-non-approved-value', index +1);
+    nonApproved.hits.forEach(function(value, index) {
+        socket.emit('fjern-non-approved-value', index + 1);
         var contentKey;
-        if (value.hasOwnProperty('x') && value.x.hasOwnProperty('no-nav-navno') && value.x['no-nav-navno'].hasOwnProperty('cmsContent') && value.x['no-nav-navno'].cmsContent.hasOwnProperty('contentKey')) {
+        if (
+            value.hasOwnProperty('x') &&
+            value.x.hasOwnProperty('no-nav-navno') &&
+            value.x['no-nav-navno'].hasOwnProperty('cmsContent') &&
+            value.x['no-nav-navno'].cmsContent.hasOwnProperty('contentKey')
+        ) {
             contentKey = value.x['no-nav-navno'].cmsContent.contentKey;
-        }
-        else {
+        } else {
             log.info(JSON.stringify(value, 4, null));
         }
         var cmsContent = content.query({
@@ -123,29 +173,24 @@ function fjernNonApproved(socket) {
         }).hits;
         if (cmsContent.length > 0) {
             cmsContent.forEach(function(v) {
-                content.delete({ key: v._id});
-            })
+                content.delete({ key: v._id });
+            });
         }
-        content.delete({ key: value._id});
+        content.delete({ key: value._id });
         //log.info(JSON.stringify([cmsContent, value], null, 4));
-    })
-
-
-
+    });
 }
 function fjernNyheterBrukerPortal(socket) {
     var res = content.query({
         start: 0,
         count: 100000,
-        contentTypes: [
-            app.name + ':Nyhet_brukerportal'
-        ]
+        contentTypes: [app.name + ':Nyhet_brukerportal']
     });
     socket.emit('fjern-nyheter-brukerportal-max', res.total);
-    res.hits.forEach(function (value, index) {
+    res.hits.forEach(function(value, index) {
         socket.emit('fjern-nyheter-brukerportal-value', index + 1);
-        content.delete({key: value._id}) ? log.info('Removed ' + value._path) : log.info('Failed to remove ' + value._path);
-    })
+        content.delete({ key: value._id }) ? log.info('Removed ' + value._path) : log.info('Failed to remove ' + value._path);
+    });
 }
 
 function fjernRettskilder(socket) {
@@ -177,10 +222,10 @@ function fjernRettskilder(socket) {
         ]
     });
     socket.emit('fjern-rettskildene-max', res.total);
-    res.hits.forEach(function (value, index) {
+    res.hits.forEach(function(value, index) {
         socket.emit('fjern-rettskildene-value', index + 1);
-        content.delete({key: value._id}) ? log.info('Removed ' + value._path) : log.info('Failed to remove ' + value._path);
-    })
+        content.delete({ key: value._id }) ? log.info('Removed ' + value._path) : log.info('Failed to remove ' + value._path);
+    });
 }
 
 function fjernPressemeldinger(socket) {
@@ -188,21 +233,17 @@ function fjernPressemeldinger(socket) {
         start: 0,
         count: 100000,
         query: 'modifiedTime < instant("2018-01-01T00:00:00.00Z")',
-        contentTypes: [
-             app.name + ':nav.pressemelding'
-         ]
-
+        contentTypes: [app.name + ':nav.pressemelding']
     });
 
     socket.emit('fjern-pressemeldinger-max', res.hits.length);
     res.hits.forEach(function(element, index) {
         socket.emit('fjern-pressemeldinger-value', index + 1);
-        content.delete({key: element._id}) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
-    })
+        content.delete({ key: element._id }) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
+    });
 }
 
 function fjernOld(socket) {
-
     var pathsToRemove = [
         'oppfolging',
         'inspirasjon',
@@ -224,16 +265,17 @@ function fjernOld(socket) {
         'sprak',
         'selvbetjening',
         'satser-og-datoer',
-        'bilder-nav.no'
-    ]
+        'bilder-nav.no',
+        'nav.no-lokalt/fylke/arkiv-fylkessider',
+        'nav.no-lokalt/arbeidslivssenter/arkiv-arbeidslivssider'
+    ];
     socket.emit('fjern-old-max', pathsToRemove.length);
-    pathsToRemove.forEach(function (value, index) {
+    pathsToRemove.forEach(function(value, index) {
         socket.emit('fjern-old-value', index + 1);
         content.delete({
             key: '/content/' + value
-        })
-    })
-
+        });
+    });
 }
 
 function fjernKN(socket) {
@@ -244,23 +286,19 @@ function fjernKN(socket) {
     socket.emit('fjern-kn-value', 1);
 }
 
-
 function fjernNyheter(socket) {
     var res = content.query({
         start: 0,
         count: 100000,
         query: 'modifiedTime < instant("2018-01-01T00:00:00.00Z")',
-        contentTypes: [
-            app.name + ':nav.nyhet'
-        ]
-
+        contentTypes: [app.name + ':nav.nyhet']
     });
 
     socket.emit('fjern-nyheter-max', res.hits.length);
     res.hits.forEach(function(element, index) {
         socket.emit('fjern-nyheter-value', index + 1);
-        content.delete({key: element._id}) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
-    })
+        content.delete({ key: element._id }) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
+    });
 }
 
 function createElements() {
@@ -269,7 +307,6 @@ function createElements() {
         head: 'Fjern gammalt skrot',
         body: {
             elements: [
-
                 {
                     tag: 'div',
                     tagClass: 'row',
@@ -294,7 +331,6 @@ function createElements() {
                             action: 'fjern-old',
                             text: 'Fjern'
                         }
-
                     ]
                 },
 
@@ -398,13 +434,33 @@ function createElements() {
                             text: 'Fjern'
                         }
                     ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Fjern tomme mapper'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            progress: {
+                                value: 'remove-empty-folders-value',
+                                max: 'remove-empty-folders-max',
+                                valId: 'remove-empty-folders-id'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'remove-empty-folders',
+                            text: 'Fjern'
+                        }
+                    ]
                 }
-
-
-
             ]
         }
-
-
-    }
+    };
 }

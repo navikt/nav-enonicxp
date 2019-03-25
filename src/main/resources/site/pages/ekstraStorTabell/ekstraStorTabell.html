@@ -21,8 +21,11 @@
 <div id="NAVlargeTableHeader"><img alt=""
                                    data-th-src="${icons.nav}">
 </div>
+
 <div class="NAVlargeTableContentContainer">
 
+    <a data-th-href="${referer}" data-th-if="${referer}" >Tilbake</a>
+    <a href="//www.nav.no" data-th-unless="${referer}">Til forside</a>
     <div class="NAVportletseperator">&nbsp;</div>
     <div data-th-utext="${content}" data-th-remove="tag"></div>
     <div class="NAVportletseperator">&nbsp;</div>

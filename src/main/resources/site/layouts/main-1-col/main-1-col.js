@@ -6,12 +6,14 @@ var view = resolve('./main-1-col.html');
 exports.get = function(req) {
 
   // Find the current component.
+  var content = portal.getContent();
   var component = portal.getComponent();
-  var language = portal.getContent().language || 'no';
+  var language = content.language || 'no';
   var toTop = lang.parseBundle(language).pagenav.toTheTop;
 
   // Define the model
   var model = {
+    title: content.displayName,
     firstRegion: component.regions["first"],
     toTop: toTop
   };

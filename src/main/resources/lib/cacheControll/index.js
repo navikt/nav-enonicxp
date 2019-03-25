@@ -50,7 +50,7 @@ function wipeAll() {
 
 function wipe(name) {
     return function(key) {
-       // log.info('Cache remove key ' + getPath(key))
+       log.info('Cache remove key ' + getPath(key))
         if (!key) {
             caches[name].clear();
         }
@@ -86,7 +86,7 @@ function getSome(name) {
 function activateEventListener() {
     wipeAll();
     event.listener({
-        type: 'node.updated',
+        type: 'node.*',
         localOnly: false,
         callback: function (event) {
             var node = event.data.nodes.pop();
@@ -98,5 +98,5 @@ function activateEventListener() {
                 query: "_references LIKE '" + node.id + "'"
             }).hits.forEach(wipeOnChange);
         }
-    })
+    });
 }
