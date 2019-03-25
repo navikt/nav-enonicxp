@@ -21,7 +21,9 @@ exports.get = function(req) {
         };
         var news = {
             sectionName: lang.news,
-            data: getTableElements(content, 'newsContents').reduce(orderByPublished, []).slice(0, content.data.nrNews)
+            data: getTableElements(content, 'newsContents')
+                .reduce(orderByPublished, [])
+                .slice(0, content.data.nrNews)
         };
         var shortcuts = {
             sectionName: lang.shortcuts,
@@ -51,7 +53,9 @@ exports.get = function(req) {
 };
 
 function getTableElements(content, contentType) {
-    return (content.data[contentType] ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]]) : []).map(mapElements);
+    return (content.data[contentType] ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]]) : []).map(
+        mapElements
+    );
 }
 
 function getNTKElements(cont) {
@@ -190,7 +194,7 @@ function mapElements(elementId) {
               icon: el.data.icon || 'icon-document',
               ingress: el.data.ingress || el.data.description || el.data.list_description,
               src: getSrc(el),
-              published: (el.publish && el.publish.first) ? el.publish.first : el.createdTime,
+              published: el.publish && el.publish.first ? el.publish.first : el.createdTime
           }
         : null;
 }
@@ -236,12 +240,14 @@ function reduceOldElements(t, el) {
 }
 
 function orderByPublished(list, element) {
-    for(var i = 0; i < list.length; i += 1) {
-        if(new Date(list[i].published) < new Date(element.published)) {
+    for (var i = 0; i < list.length; i += 1) {
+        if (element && new Date(list[i].published) < new Date(element.published)) {
             list.splice(i, 0, element);
             return list;
         }
     }
-    list.push(element);
-    return list
+    if (element) {
+        list.push(element);
+    }
+    return list;
 }
