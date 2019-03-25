@@ -9,13 +9,12 @@ var repo = nodeLib.connect({
 });
 
 exports.handle = function(socket) {
-  var elements = createElements();
-  socket.emit('newTask', elements);
-  socket.on('do', function(message) {
-      createTemplates(socket);
-  })
+    var elements = createElements();
+    socket.emit('newTask', elements);
+    socket.on('do', function(message) {
+        createTemplates(socket);
+    });
 };
-
 
 function createElements() {
     return {
@@ -25,19 +24,18 @@ function createElements() {
             elements: [
                 {
                     tag: 'div',
-                    tagClass: [ 'row' ],
+                    tagClass: ['row'],
                     elements: [
                         {
                             tag: 'p',
                             text: 'Lag nye sidemaler'
-
                         },
                         {
                             tag: 'button',
                             text: 'Lag',
                             action: 'do',
                             id: 'testid',
-                            tagClass: [ 'button', 'is-info' ]
+                            tagClass: ['button', 'is-info']
                         },
                         {
                             tag: 'div',
@@ -47,95 +45,99 @@ function createElements() {
                 }
             ]
         }
-    }
+    };
 }
 
 function createTemplates(socket) {
-    context.run({
-        repository: 'cms-repo',
-        branch: 'draft',
-        user: {
-            login: 'su',
-            userStore: 'system'
+    context.run(
+        {
+            repository: 'cms-repo',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system'
+            },
+            principals: ['role:system.admin']
         },
-        principals: ["role:system.admin"]
-    }, function () {
-        templates.forEach(function (value) {
-            var parent = content.get({
-                key: value.content.parentPath,
-            });
-            if(!parent) {
-                parent = content.create({
-                    displayName: 'Templates',
-                    parentPath: value.content.parentPath.replace('_templates/', ''),
-                    name: '_templates',
-                    contentType: 'portal:template-folder',
-                    data: {},
+        function() {
+            templates.forEach(function(value) {
+                var parent = content.get({
+                    key: value.content.parentPath
                 });
-            }
-            var exists = content.get({
-                key: value.content.parentPath + value.content.displayName.toLowerCase().replace(/ - /g, '-').replace(/ /g, '-'),
-            });
-            var elem = exists ? exists : content.create(value.content);
-            repo.modify({
-                key: elem._id,
-                editor: function (c) {
-                    c.page = value.page;
-                    if(exists) {
-                        c.data = value.content.data;
-                    }
-                    return c;
+                if (!parent) {
+                    parent = content.create({
+                        displayName: 'Templates',
+                        parentPath: value.content.parentPath.replace('_templates/', ''),
+                        name: '_templates',
+                        contentType: 'portal:template-folder',
+                        data: {}
+                    });
                 }
+                var exists = content.get({
+                    key:
+                        value.content.parentPath +
+                        value.content.displayName
+                            .toLowerCase()
+                            .replace(/ - /g, '-')
+                            .replace(/ /g, '-')
+                });
+                var elem = exists ? exists : content.create(value.content);
+                repo.modify({
+                    key: elem._id,
+                    editor: function(c) {
+                        c.page = value.page;
+                        if (exists) {
+                            c.data = value.content.data;
+                        }
+                        return c;
+                    }
+                });
+                socket.emit('templateUpdate', elem.displayName + ' created');
             });
-            socket.emit('templateUpdate', elem.displayName + ' created');
-        })
-    })
+        }
+    );
 }
 
 var tavleListePage = {
-    "controller": "no.nav.navno:main-page",
-    "region": [
+    controller: 'no.nav.navno:main-page',
+    region: [
         {
-            "name": "main",
-            "component": [
+            name: 'main',
+            component: [
                 {
-                    "type": "PartComponent",
-                    "PartComponent": {
-                        "name": "page-heading-with-menu",
-                        "template": "no.nav.navno:page-heading-with-menu",
-                        "config": {
-                        }
+                    type: 'PartComponent',
+                    PartComponent: {
+                        name: 'page-heading-with-menu',
+                        template: 'no.nav.navno:page-heading-with-menu',
+                        config: {}
                     }
                 },
                 {
-                    "type": "LayoutComponent",
-                    "LayoutComponent": {
-                        "name": "main",
-                        "template": "no.nav.navno:main",
-                        "config": {
-                        },
-                        "region": [
+                    type: 'LayoutComponent',
+                    LayoutComponent: {
+                        name: 'main',
+                        template: 'no.nav.navno:main',
+                        config: {},
+                        region: [
                             {
-                                "name": "first",
-                                "component": {
-                                    "type": "PartComponent",
-                                    "PartComponent": {
-                                        "name": "tavleliste",
-                                        "template": "no.nav.navno:tavleliste",
-                                        "config": {
-                                        }
+                                name: 'first',
+                                component: {
+                                    type: 'PartComponent',
+                                    PartComponent: {
+                                        name: 'tavleliste',
+                                        template: 'no.nav.navno:tavleliste',
+                                        config: {}
                                     }
                                 }
                             },
                             {
-                                "name": "second",
-                                "component": {
-                                    "type": "PartComponent",
-                                    "PartComponent": {
-                                        "name": "tavleliste-relatert-innhold",
-                                        "template": "no.nav.navno:tavleliste-relatert-innhold",
-                                        "config": {
-                                        }
+                                name: 'second',
+                                component: {
+                                    type: 'PartComponent',
+                                    PartComponent: {
+                                        name: 'tavleliste-relatert-innhold',
+                                        template: 'no.nav.navno:tavleliste-relatert-innhold',
+                                        config: {}
                                     }
                                 }
                             }
@@ -145,77 +147,70 @@ var tavleListePage = {
             ]
         },
         {
-            "name": "footer",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "page-footer",
-                    "template": "no.nav.navno:page-footer",
-                    "config": {
-                    }
+            name: 'footer',
+            component: {
+                type: 'PartComponent',
+                PartComponent: {
+                    name: 'page-footer',
+                    template: 'no.nav.navno:page-footer',
+                    config: {}
                 }
             }
         }
     ],
-    "config": {
-    },
-    "customized": false
+    config: {},
+    customized: false
 };
 
 var mainArticlePage = {
-    "controller": "no.nav.navno:main-page",
-    "region": [
+    controller: 'no.nav.navno:main-page',
+    region: [
         {
-            "name": "main",
-            "component": [
+            name: 'main',
+            component: [
                 {
-                    "type": "PartComponent",
-                    "PartComponent": {
-                        "name": "page-heading-with-menu",
-                        "template": "no.nav.navno:page-heading-with-menu",
-                        "config": {
-                        }
+                    type: 'PartComponent',
+                    PartComponent: {
+                        name: 'page-heading-with-menu',
+                        template: 'no.nav.navno:page-heading-with-menu',
+                        config: {}
                     }
                 },
                 {
-                    "type": "LayoutComponent",
-                    "LayoutComponent": {
-                        "name": "main",
-                        "template": "no.nav.navno:main",
-                        "config": {
-                        },
-                        "region": [
+                    type: 'LayoutComponent',
+                    LayoutComponent: {
+                        name: 'main',
+                        template: 'no.nav.navno:main',
+                        config: {},
+                        region: [
                             {
-                                "name": "first",
-                                "component": {
-                                    "type": "PartComponent",
-                                    "PartComponent": {
-                                        "name": "main-article",
-                                        "template": "no.nav.navno:main-article",
-                                        "config": {
-                                        }
+                                name: 'first',
+                                component: {
+                                    type: 'PartComponent',
+                                    PartComponent: {
+                                        name: 'main-article',
+                                        template: 'no.nav.navno:main-article',
+                                        config: {}
                                     }
                                 }
                             },
                             {
-                                "name": "second",
-                                "component": [
+                                name: 'second',
+                                component: [
                                     {
-                                        "type": "PartComponent",
-                                        "PartComponent": {
-                                            "name": "main-article-linked-list",
-                                            "template": "no.nav.navno:main-article-linked-list",
-                                            "config": {
-                                            }
+                                        type: 'PartComponent',
+                                        PartComponent: {
+                                            name: 'main-article-linked-list',
+                                            template: 'no.nav.navno:main-article-linked-list',
+                                            config: {}
                                         }
                                     },
                                     {
-                                        "type": "PartComponent",
-                                        "PartComponent": {
-                                            "name": "main-article-related-content",
-                                            "template": "no.nav.navno:main-article-related-content",
-                                            "config": {
-                                            }
+                                        type: 'PartComponent',
+                                        PartComponent: {
+                                            name: 'main-article-related-content',
+                                            template: 'no.nav.navno:main-article-related-content',
+                                            config: {}
                                         }
                                     }
                                 ]
@@ -226,54 +221,49 @@ var mainArticlePage = {
             ]
         },
         {
-            "name": "footer",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "page-footer",
-                    "template": "no.nav.navno:page-footer",
-                    "config": {
-                    }
+            name: 'footer',
+            component: {
+                type: 'PartComponent',
+                PartComponent: {
+                    name: 'page-footer',
+                    template: 'no.nav.navno:page-footer',
+                    config: {}
                 }
             }
         }
     ],
-    "config": {
-    },
-    "customized": false
-}
+    config: {},
+    customized: false
+};
 
 var transportPage = {
-    "controller": "no.nav.navno:main-page",
-    "region": [
+    controller: 'no.nav.navno:main-page',
+    region: [
         {
-            "name": "main",
-            "component": [
+            name: 'main',
+            component: [
                 {
-                    "type": "PartComponent",
-                    "PartComponent": {
-                        "name": "page-heading-with-menu",
-                        "template": "no.nav.navno:page-heading-with-menu",
-                        "config": {
-                        }
+                    type: 'PartComponent',
+                    PartComponent: {
+                        name: 'page-heading-with-menu',
+                        template: 'no.nav.navno:page-heading-with-menu',
+                        config: {}
                     }
                 },
                 {
-                    "type": "LayoutComponent",
-                    "LayoutComponent": {
-                        "name": "1-col",
-                        "template": "no.nav.navno:1-col",
-                        "config": {
-                        },
-                        "region": {
-                            "name": "first",
-                            "component": {
-                                "type": "PartComponent",
-                                "PartComponent": {
-                                    "name": "transport",
-                                    "template": "no.nav.navno:transport",
-                                    "config": {
-                                    }
+                    type: 'LayoutComponent',
+                    LayoutComponent: {
+                        name: '1-col',
+                        template: 'no.nav.navno:1-col',
+                        config: {},
+                        region: {
+                            name: 'first',
+                            component: {
+                                type: 'PartComponent',
+                                PartComponent: {
+                                    name: 'transport',
+                                    template: 'no.nav.navno:transport',
+                                    config: {}
                                 }
                             }
                         }
@@ -282,54 +272,49 @@ var transportPage = {
             ]
         },
         {
-            "name": "footer",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "page-footer",
-                    "template": "no.nav.navno:page-footer",
-                    "config": {
-                    }
+            name: 'footer',
+            component: {
+                type: 'PartComponent',
+                PartComponent: {
+                    name: 'page-footer',
+                    template: 'no.nav.navno:page-footer',
+                    config: {}
                 }
             }
         }
     ],
-    "config": {
-    },
-    "customized": false
-}
+    config: {},
+    customized: false
+};
 
 var hovedSeksjonPage = {
-    "controller": "no.nav.navno:main-page",
-    "region": [
+    controller: 'no.nav.navno:main-page',
+    region: [
         {
-            "name": "main",
-            "component": [
+            name: 'main',
+            component: [
                 {
-                    "type": "PartComponent",
-                    "PartComponent": {
-                        "name": "page-heading-with-menu",
-                        "template": "no.nav.navno:page-heading-with-menu",
-                        "config": {
-                        }
+                    type: 'PartComponent',
+                    PartComponent: {
+                        name: 'page-heading-with-menu',
+                        template: 'no.nav.navno:page-heading-with-menu',
+                        config: {}
                     }
                 },
                 {
-                    "type": "LayoutComponent",
-                    "LayoutComponent": {
-                        "name": "main-1-col",
-                        "template": "no.nav.navno:main-1-col",
-                        "config": {
-                        },
-                        "region": {
-                            "name": "first",
-                            "component": {
-                                "type": "PartComponent",
-                                "PartComponent": {
-                                    "name": "Oppslagstavle",
-                                    "template": "no.nav.navno:oppslagstavle",
-                                    "config": {
-                                    }
+                    type: 'LayoutComponent',
+                    LayoutComponent: {
+                        name: 'main-1-col',
+                        template: 'no.nav.navno:main-1-col',
+                        config: {},
+                        region: {
+                            name: 'first',
+                            component: {
+                                type: 'PartComponent',
+                                PartComponent: {
+                                    name: 'Oppslagstavle',
+                                    template: 'no.nav.navno:oppslagstavle',
+                                    config: {}
                                 }
                             }
                         }
@@ -338,28 +323,26 @@ var hovedSeksjonPage = {
             ]
         },
         {
-            "name": "footer",
-            "component": {
-                "type": "PartComponent",
-                "PartComponent": {
-                    "name": "page-footer",
-                    "template": "no.nav.navno:page-footer",
-                    "config": {
-                    }
+            name: 'footer',
+            component: {
+                type: 'PartComponent',
+                PartComponent: {
+                    name: 'page-footer',
+                    template: 'no.nav.navno:page-footer',
+                    config: {}
                 }
             }
         }
     ],
-    "config": {
-    },
-    "customized": false
+    config: {},
+    customized: false
 };
 
 var ekstraStorTabell = {
-    "controller": "no.nav.navno:ekstraStorTabell",
-    "config": {},
-    "customized": false
-}
+    controller: 'no.nav.navno:ekstraStorTabell',
+    config: {},
+    customized: false
+};
 
 var templates = [
     {
@@ -423,7 +406,7 @@ var templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:Ekstra_stor_tabell',
+                supports: 'no.nav.navno:Ekstra_stor_tabell'
             }
         },
         page: ekstraStorTabell
@@ -436,11 +419,9 @@ var templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:Ekstra_stor_tabell',
+                supports: 'no.nav.navno:Ekstra_stor_tabell'
             }
         },
         page: ekstraStorTabell
     }
-]
-
-
+];
