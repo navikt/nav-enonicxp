@@ -12,7 +12,6 @@ var tweakTavleliste = require('../tweakTavleliste');
 var moveCH = require('../moveContentHome');
 var rapportHandbok = require('../rapportHandbok');
 var genMegaMenu = require('../megaMenu');
-var oppslagstavle = require('../oppslagstavle'); // used for debug only
 var linkCleanup = require('../linkCleanup');
 
 exports.handleSockets = function (io) {
@@ -30,7 +29,6 @@ exports.handleSockets = function (io) {
         genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
         rapportHandbok.handle(socket);
-        oppslagstavle.handle(socket);
         // linkCleanup.handle(socket);
     })
 }

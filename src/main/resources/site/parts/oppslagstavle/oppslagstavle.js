@@ -17,17 +17,17 @@ exports.get = function(req) {
         var col = 'col-md-';
         var ntk = {
             sectionName: lang.niceToKnow,
-            data: getTableElements(content, 'ntkContents').slice(0, content.data.nrNTK)
+            data: getContentLists(content, 'ntkContents').slice(0, content.data.nrNTK)
         };
         var news = {
             sectionName: lang.news,
-            data: getTableElements(content, 'newsContents')
+            data: getContentLists(content, 'newsContents')
                 .reduce(orderByPublished, [])
                 .slice(0, content.data.nrNews)
         };
         var shortcuts = {
             sectionName: lang.shortcuts,
-            data: getTableElements(content, 'scContents').slice(0, content.data.nrSC)
+            data: getContentLists(content, 'scContents').slice(0, content.data.nrSC)
         };
         var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));
         if (cont === 0) cont = 1;
@@ -52,137 +52,27 @@ exports.get = function(req) {
     });
 };
 
+function getContentLists(content, contentType) {
+    if (content.data[contentType]) {
+        var section = contentLib.get({
+            key: content.data[contentType]
+        });
+
+        if (section && section.data.sectionContents) {
+            if (Array.isArray(section.data.sectionContents)) {
+                return section.data.sectionContents.map(mapElements);
+            } else {
+                return [section.data.sectionContents].map(mapElements);
+            }
+        }
+    }
+    return [];
+}
+
 function getTableElements(content, contentType) {
     return (content.data[contentType] ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]]) : []).map(
         mapElements
     );
-}
-
-function getNTKElements(cont) {
-    if (cont.data.hasNTKElements === 'true') {
-        var nrSub = cont.data.nrNTK;
-        var conf = cont.data;
-        var selector = conf.ntkSelector;
-        if (!selector || selector === 'none') return null;
-        var ret = [];
-        if (conf.ntkContents) {
-            ret = getElements(conf.ntkContents);
-        }
-        if (selector === 'true') {
-            var query = contentLib.query({
-                start: 0,
-                count: 5,
-                contentTypes: [app.name + ':main-article'],
-                filters: {
-                    boolean: {
-                        must: {
-                            exists: {
-                                field: 'data.ntkPriority'
-                            }
-                        }
-                    }
-                },
-                query: "_path LIKE '/content" + cont._path + "/*'",
-                sort: 'data.ntkPriority DESC'
-            });
-
-            ret = ret
-                .concat(query.hits)
-                .reduce(function(t, el) {})
-                .map(mapElements)
-                .slice(0, nrSub);
-        }
-        return ret;
-    }
-    return null;
-}
-
-function getNewsElements(cont) {
-    if (cont.data.hasNewsElements === 'true') {
-        var nrSub = cont.data.nrNews;
-        var conf = cont.data;
-        var selector = conf.newsSelector;
-        if (!selector || selector === 'none') return null;
-        var ret = [];
-        if (conf.newsContents) ret = getElements(conf.newsContents);
-        if (selector === 'true') {
-            var query = contentLib.query({
-                start: 0,
-                count: 5,
-                contentTypes: [app.name + ':main-article'],
-                filters: {
-                    boolean: {
-                        must: {
-                            exists: {
-                                field: 'data.newsPriority'
-                            }
-                        },
-                        mustNot: {
-                            hasValue: {
-                                field: 'data.newsPriority',
-                                values: ['false']
-                            }
-                        }
-                    }
-                },
-                query: "_path LIKE '/content" + cont._path + "/*'",
-                sort: 'modifiedTime DESC'
-            });
-
-            ret = ret
-                .concat(query.hits)
-                .map(mapElements)
-                .slice(0, nrSub);
-        }
-        return ret;
-    }
-    return null;
-}
-function getShortCutElements(cont) {
-    if (cont.data.hasSCElements === 'true') {
-        var nrSub = cont.data.nrSC;
-        var conf = cont.data;
-        var selector = conf.scSelector;
-        if (!selector || selector === 'none') return null;
-        var ret = [];
-        if (conf.scContents) {
-            ret = getElements(conf.scContents);
-        }
-        if (selector === 'true') {
-            var query = contentLib.query({
-                start: 0,
-                count: 5,
-                contentTypes: [app.name + ':main-article'],
-                filters: {
-                    boolean: {
-                        must: {
-                            exists: {
-                                field: 'data.scPriority'
-                            }
-                        }
-                    }
-                },
-                query: "_path LIKE '/content" + cont._path + "/*'",
-                sort: 'data.scPriority DESC'
-            });
-
-            ret = ret
-                .concat(query.hits)
-                .map(mapElements)
-                .slice(0, nrSub);
-        }
-        return ret;
-    }
-    return null;
-}
-
-function getElements(els) {
-    if (typeof els === 'string') els = [els];
-    return els
-        .map(function(el) {
-            return contentLib.get({ key: el });
-        })
-        .reduce(reduceOldElements, []);
 }
 
 function mapElements(elementId) {
@@ -198,6 +88,7 @@ function mapElements(elementId) {
           }
         : null;
 }
+
 function getSrc(el) {
     var url = el.data.url;
     if (el.data.url) {
@@ -223,20 +114,6 @@ function getSrc(el) {
     } else {
         return portal.pageUrl({ id: el._id });
     }
-}
-function removeNullElements(t, el) {
-    if (el) t.push(el);
-    return t;
-}
-
-function reduceOldElements(t, el) {
-    if (!el) return t;
-    else if (el.publish && el.publish.to) {
-        var d = new Date();
-        var n = new Date(el.publish.to);
-        if (d < n) t.push(el);
-    } else t.push(el);
-    return t;
 }
 
 function orderByPublished(list, element) {

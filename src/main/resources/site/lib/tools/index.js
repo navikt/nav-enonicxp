@@ -312,17 +312,20 @@ function changeShortcuts(content) {
 }
 
 exports.createNewTableContent = createNewTableContent;
-function createNewTableContent(tableElements, ntkElements, newElements, scElements, content) {
+function createNewTableContent(tableElements, ntkElementId, newElementId, scElementId, content) {
     var data = {
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
-        ntkContents: ntkElements.map(mapIds),
-        newsContents: newElements.map(mapIds),
-        scContents: scElements.map(mapIds),
-        nrNews: newElements.length,
-        nrNTK: ntkElements.length,
-        nrSC: scElements.length
     };
+    if (ntkElementId) {
+        data.ntkContents = ntkElementId;
+    }
+    if (newElementId) {
+        data.newsContents = newElementId;
+    }
+    if (scElementId) {
+        data.scContents = scElementId;
+    }
     return data;
 
     var newContent = {
