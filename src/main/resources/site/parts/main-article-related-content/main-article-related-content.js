@@ -49,6 +49,12 @@ function handleGet(req) {
             };
         });
 
+        linkList = linkList.reduce(function(list, el) {
+            if ((el.files && el.files.length > 0) || (el.links && el.links.length > 0)) {
+                list.push(el);
+            }
+            return list;
+        }, []);
         var hasMenuLists = linkList.length > 0;
         var params = {
             relatedContentList: linkList,
