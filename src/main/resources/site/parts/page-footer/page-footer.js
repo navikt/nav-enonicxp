@@ -9,7 +9,7 @@ var view = resolve('page-footer.html');
 function handleGet(req) {
     var site = libs.portal.getSite();
     var content = libs.portal.getContent();
-    return libs.cache.getDecorator('footer' + (content.language ? content.language : 'no'), function() {
+    return libs.cache.getDecorator('footer' + (content.language ? content.language : 'no'), undefined, function() {
         var languageBundles = libs.lang.parseBundle(content.language).pagenav;
         var contentAZPage = libs.portal.serviceUrl({service: 'contentAZ'});
         var accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (content.language === 'no' ? 'æøå' : '');

@@ -18,7 +18,7 @@ function handleGet(req) {
     //TODO: Denne må bli smartere
     var path = content._path.split('/');
     var level3 = (path[3] ? path[3] : "").toLowerCase();
-    return libs.cache.getDecorator('main-page' + level3, function () {
+    return libs.cache.getDecorator('main-page' + level3, undefined,  function () {
         var seksjonsSider = "";
         switch ( level3 ) {
             case "person":
