@@ -134,11 +134,11 @@
                         <option value="100">100%</option>
                         <option value="70">70%</option>
                         <option value="40">40%</option>
-                        <option value="">Ingen</option>
                     </config>
                 </input>
                 <input name="caption" type="TextLine">
                     <label>Bildetekst</label>
+                    <help-text>Bildene skal ha en beskrivende tekst og skal gi merverdi til artikkelen!</help-text>
                 </input>
             </items>
         </field-set>
