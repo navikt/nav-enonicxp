@@ -316,6 +316,9 @@ function createNewTableContent(tableElements, ntkElementId, newElementId, scElem
     var data = {
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
+        nrNTK: 5, 
+        nrSC: 5,
+        nrNews: 3,
     };
     if (ntkElementId) {
         data.ntkContents = ntkElementId;
