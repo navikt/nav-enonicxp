@@ -1,0 +1,20 @@
+<content-type>
+    <display-name>Innholdsliste</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="innholdsliste">
+            <label>Innholdsliste</label>
+            <help-text>Innhold som skal vises i nyheter, snarveier, eller nyttig å vite i oppslagstavle</help-text>
+            <items>
+                <input name="sectionContents" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

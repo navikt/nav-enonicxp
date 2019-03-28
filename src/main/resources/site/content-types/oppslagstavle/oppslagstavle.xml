@@ -26,7 +26,10 @@
                 <input name="newsContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
-                    <occurrences maximum="0" minimum="0"/>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <treeMode>true</treeMode>
+                    </config>
                 </input>
             </items>
         </field-set>
@@ -40,7 +43,10 @@
                 <input name="ntkContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
-                    <occurrences maximum="0" minimum="0"/>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <treeMode>true</treeMode>
+                    </config>
                 </input>
             </items>
         </field-set>
@@ -54,7 +60,10 @@
                 <input name="scContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>
-                    <occurrences maximum="0" minimum="0"/>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <treeMode>true</treeMode>
+                    </config>
                 </input>
             </items>
         </field-set>
