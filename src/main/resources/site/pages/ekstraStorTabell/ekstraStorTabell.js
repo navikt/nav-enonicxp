@@ -3,7 +3,8 @@ var thymeleaf = require('/lib/thymeleaf');
 var parsers = require('/lib/tableFunctions/tableFunctions');
 var view = resolve('ekstraStorTabell.html');
 exports.get = function(req) {
-    var stylePath = 'www.nav.no/styles/';
+    // NOTE It works to get styles and images from xx-www.nav.no, but this should probably be moved at some point
+    var stylePath = 'xx-www.nav.no/styles/';
     var content = portal.getContent();
 
     var parsed;
@@ -24,9 +25,9 @@ exports.get = function(req) {
             print: portal.assetUrl({ path: stylePath + 'print.css' })
         },
         icons: {
-            nav: portal.assetUrl({ path: 'www.nav.no/bilder/global/navlogohvit.gif' }),
-            close: portal.assetUrl({ path: 'www.nav.no/bilder/global/ikonlukk.gif' }),
-            favicon: portal.assetUrl({ path: 'shared/bilder/favicon.ico' })
+            nav: portal.assetUrl({ path: 'xx-www.nav.no/bilder/global/navlogohvit.gif' }),
+            close: portal.assetUrl({ path: 'xx-www.nav.no/bilder/global/ikonlukk.gif' }),
+            favicon: portal.assetUrl({ path: 'img/favicon.ico' })
         }
     };
 

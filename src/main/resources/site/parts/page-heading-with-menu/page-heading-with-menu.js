@@ -25,7 +25,7 @@ function handleGet(req) {
     var content = libs.portal.getContent();
     var language = content.language || 'no';
 
-    return libs.cache.getDecorator('header' + language, function () {
+    return libs.cache.getDecorator('header' + language, undefined, function () {
         var languageBundles = libs.lang.parseBundle(language).pagenav;
         var assets = {
             img: {

@@ -8,7 +8,7 @@ var cache = require('/lib/cacheControll');
 var view = resolve('tavleliste.html');
 
 exports.get = function(req) {
-  return cache.getPaths('tavleliste' + req.path, function() {
+  return cache.getPaths(req.path, 'tavleliste', function () {
     var cont = portal.getContent();
     var ids = cont.data.sectionContents;
     ids = !Array.isArray(ids) ? [ids] : ids;

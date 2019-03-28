@@ -7,7 +7,7 @@ var langLib = require('/lib/i18nUtil');
 var contentTranslator = require('/lib/contentTranslator');
 
 function handleGet(req) {
-    return cache.getPaths('main-article-related-content' + req.path, function() {
+    return cache.getPaths(req.path, 'main-article-related-content', function() {
         var content = portal.getContent();
         var selectNames = langLib.parseBundle(content.language).related_content.select;
         var menuListItems = content.data.menuListItems || {};
@@ -49,6 +49,12 @@ function handleGet(req) {
             };
         });
 
+        linkList = linkList.reduce(function(list, el) {
+            if ((el.files && el.files.length > 0) || (el.links && el.links.length > 0)) {
+                list.push(el);
+            }
+            return list;
+        }, []);
         var hasMenuLists = linkList.length > 0;
         var params = {
             relatedContentList: linkList,
