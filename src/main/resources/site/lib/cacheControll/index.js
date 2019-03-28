@@ -8,7 +8,7 @@ var etag = Date.now().toString(16);
 var nodeLib = require('/lib/xp/node');
 var repo = nodeLib.connect({
     repoId: 'cms-repo',
-    branch: 'draft',
+    branch: 'master',
     principals: ['role:system.admin']
 });
 var caches = {
@@ -26,12 +26,12 @@ module.exports = {
     etag: getEtag
 };
 
-function getPath(path) {
+function getPath(path, type) {
     if (!path) return;
     var arr = path.split('/www.nav.no/');
     /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
     /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
-    return arr[arr.length - 1];
+    return (type ? type + '::' : '') + arr[arr.length - 1];
 }
 
 function getEtag() {
@@ -50,38 +50,42 @@ function wipeAll() {
 
 function wipe(name) {
     return function(key) {
-        log.info('Cache remove key ' + getPath(key));
         if (!key) {
+            log.info('Cache remove complete cache ' + name);
             caches[name].clear();
-        } else caches[name].remove(getPath(key));
+        } else {
+            log.info('Cache remove key ' + key);
+            caches[name].remove(key);
+        }
     };
 }
 
 function wipeOnChange(value) {
     var wipee = repo.get(value.id);
     var w = wipe('paths');
-    log.info('WIPE: ' + 'main-article-related-content/' + getPath(wipee._path) + ' :: ' + wipee._path);
-    w('megamenu-item/' + getPath(wipee._path));
-    w('main-article/' + getPath(wipee._path));
-    w('main-article-linked-list/' + getPath(wipee._path));
-    w('main-article-related-content/' + getPath(wipee._path));
-    w('oppslagstavle/' + getPath(wipee._path));
-    w('tavleliste/' + getPath(wipee._path));
-    w('tavleliste-relatert-innhold/' + getPath(wipee._path));
-    w('transport/' + getPath(wipee._path));
+    log.info('WIPE: ' + getPath(wipee._path) + ' ~ ' + wipee._path);
+    w(getPath(wipee._path, 'megamenu-item'));
+    w(getPath(wipee._path, 'main-article'));
+    w(getPath(wipee._path, 'main-article-linked-list'));
+    w(getPath(wipee._path, 'main-article-related-content'));
+    w(getPath(wipee._path, 'oppslagstavle'));
+    w(getPath(wipee._path, 'tavleliste'));
+    w(getPath(wipee._path, 'tavleliste-relatert-innhold'));
+    w(getPath(wipee._path, 'transport'));
 }
 
 function getSome(name) {
-    return function(key, f, params) {
+    return function(key, type, f, params) {
         /* Vil ikke cache innhold som redigeres */
         // TODO test for www-x adresser
         if (key.indexOf('/admin/portal/edit') === -1 && key.indexOf('/preview/draft') === -1) {
-            return caches[name].get(getPath(key), function() {
-                log.info('Store cache key: ' + getPath(key) + ' :: ' + key);
+            return caches[name].get(getPath(key, type), function() {
+                log.info('Store cache key: ' + getPath(key, type) + ' ~ ' + key);
                 // log.info('Cache ' + name + ': ' + caches[name].getSize());
                 return f(params);
             });
         } else {
+            log.info('Not from cache ' + getPath(key, type) + ' ~ ' + key);
             return f(params);
         }
     };

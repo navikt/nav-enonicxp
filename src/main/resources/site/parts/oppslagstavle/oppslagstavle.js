@@ -8,7 +8,7 @@ var langLib = require('/lib/i18nUtil');
 var cache = require('/lib/cacheControll');
 
 exports.get = function(req) {
-    return cache.getPaths('oppslagstavle' + req.path, function() {
+    return cache.getPaths(req.path, 'oppslagstavle', function() {
         var content = portal.getContent();
         var lang = langLib.parseBundle(content.language).oppslagstavle;
 

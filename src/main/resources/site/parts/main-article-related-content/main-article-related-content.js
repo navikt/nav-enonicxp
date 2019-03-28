@@ -7,7 +7,7 @@ var langLib = require('/lib/i18nUtil');
 var contentTranslator = require('../../lib/contentTranslator');
 
 function handleGet(req) {
-    return cache.getPaths('main-article-related-content' + req.path, function() {
+    return cache.getPaths(req.path, 'main-article-related-content', function() {
         var content = portal.getContent();
         var selectNames = langLib.parseBundle(content.language).related_content.select;
         var menuListItems = content.data.menuListItems || {};
