@@ -7,7 +7,7 @@ var standardCache = {
 var etag = Date.now().toString(16);
 var nodeLib = require('/lib/xp/node');
 var repo = nodeLib.connect({
-    repoId: 'cms-repo',
+    repoId: 'com.enonic.cms.default',
     branch: 'master',
     principals: ['role:system.admin']
 });
