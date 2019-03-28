@@ -132,29 +132,20 @@ function handleNavRapportHandbok(socket) {
 
             // re-create chapter as main article as a child of the parent
             if (chapter) {
-                var menuListItems = null;
-                menuListItems = tools.addMenuListItem(menuListItems, 'form-and-application', getNewSchemas(chapter));
-                menuListItems = tools.addMenuListItem(menuListItems, 'related-information', getInformation(chapter));
-
-                var chapterArticle = content.create({
-                    parentPath: parent._path,
-                    contentType: 'no.nav.navno:main-article',
-                    displayName: chapter.displayName,
-                    data: {
-                        ingress: chapter.data.preface,
-                        text: chapter.data.text,
-                        menuListItems: menuListItems,
-                        social: getSocial(chapter)
-                    }
-                });
-                // update time on the new article to match the old one
-                setTime([chapterArticle], chapter.createdTime, chapter.modifiedTime);
-
+                var chapterArticle = convertChapter(chapter, parent._path);
                 // map old ids to new ids, unless they are already there
                 if (!chapterIdMap[chapterKey]) {
                     chapterIdMap[chapterKey] = chapterArticle._id;
                 } else {
-                    log.info('chapter ' + chapter._id + ' (' + chapter._path + ') is used twice, and a duplicate has been created (all refs will point to: ' + chapterIdMap[chapterKey] + ')');
+                    log.info(
+                        'chapter ' +
+                            chapter._id +
+                            ' (' +
+                            chapter._path +
+                            ') is used twice, and a duplicate has been created (all refs will point to: ' +
+                            chapterIdMap[chapterKey] +
+                            ')'
+                    );
                 }
 
                 log.info('converted nav rapport handbok chapter from ' + chapter._id + ' (' + chapter._path + ') to ' + chapterArticle._id);
@@ -172,7 +163,7 @@ function handleNavRapportHandbok(socket) {
         });
 
         // move to original handbok path
-        var target = getTargetPath(value, socket);
+        var target = getTargetPath(value);
         try {
             content.move({
                 source: parent._id,
@@ -187,6 +178,41 @@ function handleNavRapportHandbok(socket) {
         socket.emit('nav-rapport-handbok-value', index + 1);
     });
 
+    // convert chapters not connected to a rapport
+    var navRapportHandbokChapters = content.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:nav.rapporthandbok.kap']
+    }).hits;
+    socket.emit('nav-rapport-handbok-max', navRapportHandbok.length + navRapportHandbokChapters.length);
+
+    navRapportHandbokChapters.forEach(function(chapter, index) {
+        // only convert chapters that are not already converted
+        if (!chapterIdMap[chapterKey]) {
+            var chapterArticle = convertChapter(chapter, '/www.nav.no/tmp/');
+
+            // update refs for lose chapters
+            updateRef(chapter._id, chapterArticle._id);
+            // delete old chapter
+            content.delete({
+                key: chapter._id
+            });
+            // move new chapter to old chapters position
+            var target = getTargetPath(chapter);
+            try {
+                content.move({
+                    source: chapterArticle._id,
+                    target: target
+                });
+            } catch (e) {
+                log.info("Can't move " + chapter._id + ' to ' + target);
+                log.info(e);
+            }
+            log.info('converted nav rapport handbok chapter from ' + chapter._id + ' (' + chapter._path + ') to ' + chapterArticle._id);
+        }
+        socket.emit('nav-rapport-handbok-value', navRapportHandbok.length + index + 1);
+    });
+
     // update chapter refs after all articles have been created because of duplicate chapter refs to the same chapter
     for (var chapterKey in chapterIdMap) {
         updateRef(chapterKey, chapterIdMap[chapterKey]);
@@ -195,6 +221,27 @@ function handleNavRapportHandbok(socket) {
             key: chapterKey
         });
     }
+}
+
+function convertChapter(chapter, path) {
+    var menuListItems = null;
+    menuListItems = tools.addMenuListItem(menuListItems, 'form-and-application', getNewSchemas(chapter));
+    menuListItems = tools.addMenuListItem(menuListItems, 'related-information', getInformation(chapter));
+
+    var chapterArticle = content.create({
+        parentPath: path,
+        contentType: 'no.nav.navno:main-article',
+        displayName: chapter.displayName,
+        data: {
+            ingress: chapter.data.preface,
+            text: chapter.data.text,
+            menuListItems: menuListItems,
+            social: getSocial(chapter)
+        }
+    });
+    // update time on the new article to match the old one
+    setTime([chapterArticle], chapter.createdTime, chapter.modifiedTime);
+    return chapterArticle;
 }
 
 function handleRapportHandbok(socket) {
@@ -225,19 +272,21 @@ function handleRapportHandbok(socket) {
         var articles = [parent];
 
         // create main articles for all rapports
-        (Array.isArray(value.data.rapports.rapport) ? value.data.rapports.rapport : value.data.rapports.rapport ? [value.data.rapports.rapport] : []).forEach(function(rapport, rapportIndex) {
-            var rapportArticle = content.create({
-                parentPath: parent._path,
-                contentType: 'no.nav.navno:main-article',
-                displayName: rapport.subtitle,
-                data: {
-                    text: rapport.text,
-                    ingress: ' '
-                }
-            });
-            articles.push(rapportArticle);
-            log.info('created article from rapport: ' + rapportArticle._id);
-        });
+        (Array.isArray(value.data.rapports.rapport) ? value.data.rapports.rapport : value.data.rapports.rapport ? [value.data.rapports.rapport] : []).forEach(
+            function(rapport, rapportIndex) {
+                var rapportArticle = content.create({
+                    parentPath: parent._path,
+                    contentType: 'no.nav.navno:main-article',
+                    displayName: rapport.subtitle,
+                    data: {
+                        text: rapport.text,
+                        ingress: ' '
+                    }
+                });
+                articles.push(rapportArticle);
+                log.info('created article from rapport: ' + rapportArticle._id);
+            }
+        );
 
         setTime(articles, value.createdTime, value.modifiedTime);
         updateRef(value._id, parent._id);
@@ -251,7 +300,7 @@ function handleRapportHandbok(socket) {
         });
 
         // move article set to old rapports path
-        var target = getTargetPath(value, socket);
+        var target = getTargetPath(value);
         try {
             content.move({
                 source: parent._path,
@@ -269,17 +318,6 @@ function handleRapportHandbok(socket) {
 
 function getTargetPath(value) {
     var target = value._path.replace(value._name, '');
-
-    // if (value.x && value.x['no-nav-navno'] && value.x['no-nav-navno'].cmsContent && value.x['no-nav-navno'].cmsContent.contentHome) {
-    //     var home = content.get({
-    //         key: value.x['no-nav-navno'].cmsContent.contentHome
-    //     });
-    //     if (home) {
-    //         target = home._path;
-    //         log.info('target from content home');
-    //     }
-    // }
-
     return target;
 }
 

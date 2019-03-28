@@ -241,11 +241,13 @@ function reduceOldElements(t, el) {
 
 function orderByPublished(list, element) {
     for (var i = 0; i < list.length; i += 1) {
-        if (new Date(list[i].published) < new Date(element.published)) {
+        if (element && new Date(list[i].published) < new Date(element.published)) {
             list.splice(i, 0, element);
             return list;
         }
     }
-    list.push(element);
+    if (element) {
+        list.push(element);
+    }
     return list;
 }

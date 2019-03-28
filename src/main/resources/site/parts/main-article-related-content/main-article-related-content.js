@@ -14,14 +14,29 @@ function handleGet(req) {
         var keys = menuListItems._selected ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected]) : [];
         var linkList = keys.map(function(el) {
             var links = forceArr(menuListItems[el].link);
+            var files = forceArr(menuListItems[el].files);
             return {
                 name: selectNames[el] !== undefined ? selectNames[el] : '',
+                files: files
+                    .map(function(file) {
+                        var file = contentLib.get({
+                            key: file
+                        });
+                        if (!file) return undefined;
+                        return {
+                            title: file.displayName,
+                            link: portal.attachmentUrl({ id: file._id, download: true })
+                        };
+                    })
+                    .reduce(function(t, el) {
+                        if (el) t.push(el);
+                        return t;
+                    }, []),
                 links: links
                     .map(function(link) {
                         var element = contentLib.get({ key: link });
                         if (!element) return undefined;
                         var isFile = element.type === 'media:document';
-                        //log.info(JSON.stringify(element, null, 4));
                         return {
                             title: element.displayName,
                             link: !isFile ? portal.pageUrl({ id: link }) : portal.attachmentUrl({ id: element._id, download: true })
@@ -34,6 +49,12 @@ function handleGet(req) {
             };
         });
 
+        linkList = linkList.reduce(function(list, el) {
+            if ((el.files && el.files.length > 0) || (el.links && el.links.length > 0)) {
+                list.push(el);
+            }
+            return list;
+        }, []);
         var hasMenuLists = linkList.length > 0;
         var params = {
             relatedContentList: linkList,
