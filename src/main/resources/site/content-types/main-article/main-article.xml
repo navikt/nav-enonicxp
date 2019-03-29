@@ -204,15 +204,14 @@
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="0"/>
                             <config>
-                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                <allow-content-type>no.nav.navno:tavleliste</allow-content-type>
                                 <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
+                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <allow-content-type>no.nav.navno:Oppslagstavle</allow-content-type>
+                                <allow-content-type>no.nav.navno:shortcut</allow-content-type>
+                                <allow-content-type>no.nav.navno:Ekstra_stor_tabell</allow-content-type>
+                             </config>
                         </input>
                     </items>
                 </option>
