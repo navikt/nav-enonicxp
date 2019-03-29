@@ -4,6 +4,54 @@ var context = require('/lib/xp/context');
 exports.handle = function(socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
+    socket.on('permissionsNav', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            },
+            function() {
+                setPermissions('/www.nav.no', socket);
+            }
+        );
+    });
+    socket.on('permissionsRedirects', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            },
+            function() {
+                setPermissions('/redirects', socket);
+            }
+        );
+    });
+    socket.on('permissionsContent', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            },
+            function() {
+                setPermissions('/content', socket);
+            }
+        );
+    });
     socket.on('push', function() {
         context.run(
             {
@@ -18,7 +66,6 @@ exports.handle = function(socket) {
             function() {
                 convertFromRepoToContent(socket, 'tavleliste');
                 convertFromRepoToContent(socket, 'oppslagstavle');
-                setPermissions(socket);
                 socket.emit('ptmStatus', 'Starts publishing');
                 var res = contentLib.publish({
                     keys: ['/www.nav.no'],
@@ -37,9 +84,9 @@ exports.handle = function(socket) {
     });
 };
 
-function setPermissions(socket) {
+function setPermissions(key, socket) {
     var p = contentLib.getPermissions({
-        key: '/www.nav.no'
+        key: key
     });
     var permissions = p.permissions;
     var everyone = {
@@ -54,13 +101,19 @@ function setPermissions(socket) {
         return list;
     }, []);
     permissions.push(everyone);
-    socket.emit('ptmStatus', 'Setting Everyone:READ permission, this might take a while');
-    contentLib.setPermissions({
-        key: '/www.nav.no',
+    socket.emit('ptmStatus', 'Setting Everyone:READ permission on ' + key + ', this might take a while');
+    var ok = contentLib.setPermissions({
+        key: key,
         inheritPermissions: false,
         overwriteChildPermissions: true,
         permissions: permissions
     });
+
+    if (ok) {
+        socket.emit('ptmStatus', 'Permissions successfully set on ' + key);
+    } else {
+        socket.emit('ptmStatus', 'ERROR: Permissions not successfully set on ' + key);
+    }
 }
 
 function convertFromRepoToContent(socket, type) {
@@ -129,14 +182,76 @@ function createElements() {
             elements: [
                 {
                     tag: 'div',
-                    tagClass: ['row'],
+                    tagClass: 'card',
                     elements: [
                         {
-                            tag: 'button',
-                            tagClass: ['button', 'is-success', 'is-large'],
-                            text: 'Push to master!',
-                            status: 'ptmStatus',
-                            action: 'push'
+                            tag: 'header',
+                            tagClass: 'card-header',
+                            elements: [
+                                {
+                                    tag: 'p',
+                                    tagClass: 'card-header-title',
+                                    text: 'Publish'
+                                }
+                            ]
+                        },
+                        {
+                            tag: 'div',
+                            tagClass: 'card-content',
+                            elements: [
+                                {
+                                    tag: 'div',
+                                    tagClass: ['column'],
+                                    elements: [
+                                        {
+                                            tag: 'button',
+                                            tagClass: ['button', 'is-info'],
+                                            text: 'Set permissions on www.nav.no',
+                                            status: 'ptmStatus',
+                                            action: 'permissionsNav'
+                                        }
+                                    ]
+                                },
+                                {
+                                    tag: 'div',
+                                    tagClass: ['column'],
+                                    elements: [
+                                        {
+                                            tag: 'button',
+                                            tagClass: ['button', 'is-info'],
+                                            text: 'Set permissions on redirects',
+                                            status: 'ptmStatus',
+                                            action: 'permissionsRedirects'
+                                        }
+                                    ]
+                                },
+                                {
+                                    tag: 'div',
+                                    tagClass: ['column'],
+                                    elements: [
+                                        {
+                                            tag: 'button',
+                                            tagClass: ['button', 'is-info'],
+                                            text: 'Set permission on content',
+                                            status: 'ptmStatus',
+                                            action: 'permissionsContent'
+                                        }
+                                    ]
+                                },
+                                {
+                                    tag: 'div',
+                                    tagClass: ['column'],
+                                    elements: [
+                                        {
+                                            tag: 'button',
+                                            tagClass: ['button', 'is-success', 'is-large'],
+                                            text: 'Push to master!',
+                                            status: 'ptmStatus',
+                                            action: 'push'
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
