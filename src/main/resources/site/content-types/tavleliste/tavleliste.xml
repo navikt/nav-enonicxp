@@ -8,10 +8,11 @@
     <form>
         <input type="TextArea" name="originaltitle">
             <label>Orginaltittel</label>
+            <help-text>Norsk tittel (hvis fremmedspråklig innhold)</help-text>
             <occurrences minimum="0" maximum="1"/>
         </input>
         <input type="CheckBox" name="hide_date">
-            <label>Skjul dato</label>
+            <label>Skjul dato på artikkellisten</label>
             <default>unchecked</default>
         </input>
         <input type="TextArea" name="ingress">
@@ -19,11 +20,11 @@
             <occurrences minimum="0" maximum="1"/>
         </input>
         <input type="CheckBox" name="hideSectionContentsDate">
-            <label>Skjul dato på artikkellisten</label>
+            <label>Skjul dato på artiklene i artikkellisten</label>
             <default>unchecked</default>
         </input>
         <input type="CheckBox" name="orderSectionContentsByPublished">
-            <label>Sorter artikkelisten etter publiseringsdato</label>
+            <label>Sorter artikkellisten etter publiseringsdato</label>
             <default>checked</default>
         </input>
         <input name="sectionContents" type="ContentSelector">
