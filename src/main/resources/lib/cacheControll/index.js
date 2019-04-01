@@ -29,9 +29,15 @@ module.exports = {
 function getPath(path, type) {
     if (!path) return;
     var arr = path.split('/www.nav.no/');
+    // remove / from start of key. Because of how the vhost changes the url on the server, 
+    // we won't have www.nav.no in the path and the key ends up starting with a /
+    var key = arr[arr.length - 1];
+    if(key[0] === '/') {
+        key = key.replace('/', '');
+    }
     /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
     /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
-    return (type ? type + '::' : '') + arr[arr.length - 1];
+    return (type ? type + '::' : '') + key;
 }
 
 function getEtag() {
