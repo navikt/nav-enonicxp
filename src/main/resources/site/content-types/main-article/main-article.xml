@@ -39,61 +39,6 @@
                         </input>
                     </items>
                 </field-set>
-                <field-set name="priority">
-                    <label>Prioritet</label>
-                    <items>
-                        <field-set name="table">
-                            <label>Bokser</label>
-                            <items>
-                                <input type="Long" name="tablePriority">
-                                    <label>Velg prioritet</label>
-                                </input>
-                                <input type="RadioButton" name="icon">
-                                    <label>Velg ikon på boksene</label>
-                                    <help-text>Kun for nav.no-redaksjonen.</help-text>
-                                    <config>
-                                        <option value="icon-document">Dokument</option>
-                                        <option value="icon-application">Selvbetjening</option>
-                                        <option value="icon-padlock">Innloggingstjeneste</option>
-                                    </config>
-                                    <default>icon-document</default>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set name="ntk">
-                            <label>Nyttig å vite</label>
-                            <items>
-                                <input type="Long" name="ntkPriority">
-                                    <label>Velg prioritet</label>
-                                    <help-text>Vises kun hvis det er publisert innhold til seksjonen.</help-text>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set name="news">
-                            <label>Nyheter</label>
-                            <items>
-                                <input name="newsPriority" type="RadioButton">
-                                    <label>Vis rekkefølge etter dato</label>
-                                    <help-text>Vises kun hvis det er publisert innhold til seksjonen.</help-text>
-                                    <config>
-                                        <option value="true">Ja</option>
-                                        <option value="false">Nei</option>
-                                    </config>
-                                    <default>false</default>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set name="shortcut">
-                            <label>Snarveier</label>
-                            <items>
-                                <input name="scPriority" type="Long">
-                                    <label>Velg prioritet</label>
-                                    <help-text>Vises kun hvis det er publisert innhold til seksjonen.</help-text>
-                                </input>
-                            </items>
-                        </field-set>
-                    </items>
-                </field-set>
             </items>
         </field-set>
         <field-set name="Angi andre språkversjoner">
@@ -211,7 +156,7 @@
                                 <allow-content-type>no.nav.navno:Oppslagstavle</allow-content-type>
                                 <allow-content-type>no.nav.navno:shortcut</allow-content-type>
                                 <allow-content-type>no.nav.navno:Ekstra_stor_tabell</allow-content-type>
-                             </config>
+                            </config>
                         </input>
                     </items>
                 </option>
