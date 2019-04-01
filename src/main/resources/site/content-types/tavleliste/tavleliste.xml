@@ -72,5 +72,18 @@
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
+        <field-set name="Angi andre språkversjoner">
+            <label>Legg til andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Legg til andre språkversjoner</label>
+                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:tavleliste</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </content-type>
