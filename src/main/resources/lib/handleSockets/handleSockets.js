@@ -13,6 +13,7 @@ var moveCH = require('../moveContentHome');
 var rapportHandbok = require('../rapportHandbok');
 var genMegaMenu = require('../megaMenu');
 var linkCleanup = require('../linkCleanup');
+var unusedContent = require('../unusedContent');
 
 exports.handleSockets = function (io) {
     io.connect(function (socket) {
@@ -29,6 +30,7 @@ exports.handleSockets = function (io) {
         genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
         rapportHandbok.handle(socket);
-        // linkCleanup.handle(socket);
+        linkCleanup.handle(socket);
+        unusedContent.handle(socket);
     })
 }

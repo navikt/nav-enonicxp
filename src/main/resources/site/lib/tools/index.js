@@ -273,7 +273,15 @@ function logBeutify(content) {
 exports.changeMenuItem = changeMenuItem;
 function changeMenuItem(content, name, from) {
     content.data.menuListItems = content.data.menuListItems || [];
-    var items = content.data[from] ? (typeof content.data[from] === 'string' ? [content.data[from]] : Array.isArray(content.data[from]) ? (content.data[from].length > 0 ? content.data[from] : undefined) : undefined) : undefined;
+    var items = content.data[from]
+        ? typeof content.data[from] === 'string'
+            ? [content.data[from]]
+            : Array.isArray(content.data[from])
+            ? content.data[from].length > 0
+                ? content.data[from]
+                : undefined
+            : undefined
+        : undefined;
     if (items) {
         content.data.menuListItems = addMenuListItem(content.menuListItems, name, items);
     }
@@ -316,9 +324,9 @@ function createNewTableContent(tableElements, ntkElementId, newElementId, scElem
     var data = {
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
-        nrNTK: 5, 
+        nrNTK: 5,
         nrSC: 5,
-        nrNews: 3,
+        nrNews: 3
     };
     if (ntkElementId) {
         data.ntkContents = ntkElementId;
@@ -500,19 +508,42 @@ function addMenuListItem(menuListItems, name, links) {
 
 exports.getRefInfo = getRefInfo;
 function getRefInfo(contentId) {
-    var query = contentLib.query({
+    var refs = contentLib.query({
         start: 0,
         count: 1000,
         query: '_references = "' + contentId + '" OR fulltext("*", "' + contentId + '", "AND") '
+    }).hits;
+
+    var refIds = getRefsInRefMap(contentId);
+    var refsFromRefMap = contentLib.query({
+        start: 0,
+        count: refIds.length,
+        filters: {
+            ids: {
+                values: refIds
+            }
+        }
+    }).hits;
+
+    refsFromRefMap.forEach(function(r) {
+        var inRefs = false;
+        refs.forEach(function(ref) {
+            if (ref._id === r._id) {
+                inRefs = true;
+            }
+        });
+        if (!inRefs) {
+            refs.push(r);
+        }
     });
 
     var refInfo = {
-        total: query.hits.length,
+        total: refs.length,
         paths: [],
         pathsExtd: []
     };
 
-    query.hits.forEach(function(hit) {
+    refs.forEach(function(hit) {
         var ref = findRefPathInContent('', null, hit, contentId);
         var refKey = ref.key;
         refInfo.paths.push(ref.path);
@@ -655,4 +686,70 @@ function getIdFromUrl(url) {
     }
 
     return ret;
+}
+
+exports.createRefMap = createRefMap;
+var refMap = {};
+function createRefMap() {
+    var navno = content.get({ key: '/www.nav.no' });
+    var contentSite = content.get({ key: '/content' });
+    var redirects = content.get({ key: '/redirects' });
+
+    // reset refMap
+    refMap = {};
+
+    findRefsInElements([navno, contentSite, redirects], refMap);
+}
+
+function findRefsInElements(elements, refMap) {
+    elements.forEach(function(elem) {
+        var dataString = JSON.stringify(elem.data);
+        var refs = [];
+        var match;
+
+        var hrefPtrn = /href=\\"(.*?)\\"/g;
+        while ((match = hrefPtrn.exec(dataString)) != null) {
+            refs.push(
+                match[1]
+                    .replace(/\\"/g)
+                    .replace('content://', '')
+                    .replace('media://download/', '')
+                    .replace('image://', '')
+            ); // we only care about group 1, not the whole match
+        }
+        var srcPtrn = /src=\\"(.*?)\\"/g;
+        while ((match = srcPtrn.exec(dataString)) != null) {
+            refs.push(
+                match[1]
+                    .replace(/\\"/g)
+                    .replace('content://', '')
+                    .replace('media://download/', '')
+                    .replace('image://', '')
+            ); // we only care about group 1, not the whole match
+        }
+
+        if (refs.length > 0) {
+            refMap[elem._id] = refs;
+        }
+
+        var children = content.getChildren({
+            key: elem._id,
+            count: 10000,
+            start: 0
+        }).hits;
+        findRefsInElements(children, refMap);
+    });
+}
+
+exports.isInRefMap = getRefsInRefMap;
+function getRefsInRefMap(id) {
+    var usedIn = [];
+    for (var key in refMap) {
+        refMap[key].forEach(function(refId) {
+            if (refId === id) {
+                usedIn.push(key);
+            }
+        });
+    }
+    return usedIn;
 }
