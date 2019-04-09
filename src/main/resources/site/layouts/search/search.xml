@@ -1,0 +1,8 @@
+<layout>
+    <display-name>Search layout</display-name>
+   <regions>
+       <region name="result"/>
+       <region name="facett"/>
+       <region name="searchbar"/>
+   </regions>
+</layout>
