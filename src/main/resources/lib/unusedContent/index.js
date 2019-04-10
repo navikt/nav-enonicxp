@@ -55,6 +55,23 @@ exports.handle = function(socket) {
             }
         );
     });
+
+    socket.on('logContentRefs', function() {
+        context.run(
+            {
+                repository: 'cms-repo',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system'
+                },
+                principals: ['role:system.admin']
+            },
+            function() {
+                logContentRefs(socket);
+            }
+        );
+    });
 };
 
 function createElements() {
@@ -180,6 +197,32 @@ function createElements() {
                             text: 'Delete'
                         }
                     ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Log /content refs'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'log-content-refs',
+                            progress: {
+                                value: 'log-content-refs-value',
+                                max: 'log-content-refs-max',
+                                valId: 'log-content-refs-val'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'logContentRefs',
+                            text: 'Log'
+                        }
+                    ]
                 }
             ]
         }
@@ -287,5 +330,50 @@ function deleteUnusedExternalLinks(socket) {
             key: value._id
         });
         socket.emit('external-link-delete-value', index + 1);
+    });
+}
+
+var csv = '';
+var contentRefsMax = 0;
+var contentRefsCurrent = 0;
+function logContentRefs(socket) {
+    csv = 'id;path;type;hits;refId;refPath;refType;refProp;\r\n';
+    contentRefsMax = 0;
+    contentRefsCurrent = 0;
+
+    getContentRefs(socket, [content.get({ key: '/content' })]);
+
+    socket.emit('console.log', csv);
+}
+
+function getContentRefs(socket, elems) {
+    contentRefsMax += elems.length;
+    socket.emit('log-content-refs-max', contentRefsMax);
+
+    elems.forEach(function(elem) {
+        contentRefsCurrent += 1;
+        socket.emit('log-content-refs-value', contentRefsCurrent);
+        var refInfo = tools.getRefInfo(elem._id);
+        csv += elem._id + ';'; // id
+        csv += elem._path + ';'; // path
+        csv += elem.type + ';'; // type
+        csv += refInfo.total + ';;;;;\r\n'; //hits - ignore refId, refPath and refProp
+
+        refInfo.pathsExtd.forEach(function(ref, index) {
+            csv += ';;;;';
+            csv += ref.id + ';';
+            csv += ref.path + ';';
+            csv += ref.type + ';';
+            csv += refInfo.paths[index] + ';\r\n';
+        });
+
+        var children = content.getChildren({
+            key: elem._id,
+            start: 0,
+            count: 5000
+        }).hits;
+        if (children.length > 0) {
+            getContentRefs(socket, children);
+        }
     });
 }

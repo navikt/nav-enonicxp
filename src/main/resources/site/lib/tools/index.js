@@ -572,27 +572,27 @@ function findRefPathInContent(path, key, o, id) {
         // check arrays
         if (Array.isArray(o)) {
             for (var i = 0; i < o.length; i += 1) {
-                if (o[i] === id) {
-                    return { path: addToPath(path, key + '.' + i), key: key };
-                }
                 if (typeof o[i] === 'object') {
                     var ref = findRefPathInContent(addToPath(path, key), i, o[i], id);
                     if (ref.key) {
                         return ref;
                     }
                 }
+                if (o[i] === id || (typeof o[id] === 'string' && o[id].indexOf(id))) {
+                    return { path: addToPath(path, key + '.' + i), key: key };
+                }
             }
         }
         // check objects
         for (var subKey in o) {
-            if (o[subKey] === id) {
-                return { path: addToPath(path, key + '.' + subKey), key: key };
-            }
             if (typeof o[subKey] === 'object') {
                 var ref = findRefPathInContent(addToPath(path, key), subKey, o[subKey], id);
                 if (ref.key) {
                     return ref;
                 }
+            }
+            if (o[subKey] === id || (typeof o[id] === 'string' && o[id].indexOf(id))) {
+                return { path: addToPath(path, key + '.' + subKey), key: key };
             }
         }
     }
@@ -691,14 +691,15 @@ function getIdFromUrl(url) {
 exports.createRefMap = createRefMap;
 var refMap = {};
 function createRefMap() {
-    var navno = content.get({ key: '/www.nav.no' });
-    var contentSite = content.get({ key: '/content' });
-    var redirects = content.get({ key: '/redirects' });
+    var navno = contentLib.get({ key: '/www.nav.no' });
+    var contentSite = contentLib.get({ key: '/content' });
+    var redirects = contentLib.get({ key: '/redirects' });
 
     // reset refMap
     refMap = {};
 
     findRefsInElements([navno, contentSite, redirects], refMap);
+    log.info(JSON.stringify(refMap, null, 2));
 }
 
 function findRefsInElements(elements, refMap) {
@@ -729,10 +730,19 @@ function findRefsInElements(elements, refMap) {
         }
 
         if (refs.length > 0) {
+            // convert url to id if possible
+            refs.map(function(ref) {
+                var idInfo = getIdFromUrl(ref);
+                if (idInfo.external === false && idInfo.invalid === false) {
+                    log.info('CONVERTED ' + ref + ' => ' + idInfo.refId);
+                    return idInfo.refId;
+                }
+                return ref;
+            });
             refMap[elem._id] = refs;
         }
 
-        var children = content.getChildren({
+        var children = contentLib.getChildren({
             key: elem._id,
             count: 10000,
             start: 0
