@@ -50,6 +50,7 @@
                     <occurrences maximum="0" minimum="0"/>
                     <config>
                         <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                        <showStatus>true</showStatus>
                     </config>
                 </input>
             </items>
@@ -101,6 +102,7 @@
                             <occurrences maximum="0" minimum="1"/>
                             <config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -116,6 +118,7 @@
                                 <allow-content-type>no.nav.navno:Skjemavedlegg</allow-content-type>
                                 <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
                                 <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -128,7 +131,8 @@
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -142,6 +146,7 @@
                             <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
                             <config>
                                 <allowContentType>media:document</allowContentType>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                         <input name="link" type="ContentSelector">
@@ -156,6 +161,7 @@
                                 <allow-content-type>no.nav.navno:Oppslagstavle</allow-content-type>
                                 <allow-content-type>no.nav.navno:shortcut</allow-content-type>
                                 <allow-content-type>no.nav.navno:Ekstra_stor_tabell</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -171,6 +177,7 @@
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
                                 <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
                                 <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -183,7 +190,8 @@
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -206,8 +214,8 @@
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -220,7 +228,8 @@
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -233,7 +242,8 @@
                             <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
@@ -243,10 +253,11 @@
                     <items>
                         <input name="link" type="ContentSelector">
                             <label>Regelverk</label>
-                            <custom-text>contentdata/laws</custom-text>
+                            <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                             <config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                <showStatus>true</showStatus>
                             </config>
                         </input>
                     </items>
