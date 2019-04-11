@@ -21,15 +21,11 @@
                     <div aria-atomic="true" aria-live="polite" class="pull-left">
                         <p class="treffInfo" id="id19c">
                             <span data-th-text="${total}"></span>
-                            treff
-
-                            for:
-                            <span class="sokeord" data-th-text="${word}">ordførere</span>
+                            treff for:
+                            <span class="sokeord" data-th-text="${word}"></span>
                         </p>
-
                     </div>
-                    <a class="soketips"
-                       href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Brukerstotte+nav+no/Soketips">
+                    <a class="soketips" href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Brukerstotte+nav+no/Soketips">
                         Søketips
                     </a>
                 </div>
@@ -39,41 +35,31 @@
                             Søket er tomt
                         </p>
                     </div>
-                    <a class="soketips"
-                       href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Brukerstotte+nav+no/Soketips">
+                    <a class="soketips" href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Brukerstotte+nav+no/Soketips">
                         Søketips
                     </a>
                 </div>
             </div>
             <div>
                 <form data-th-action="${form}" id="sort" method="get">
-                    <div class="alternativerForSortering" id="ida0"><input data-th-checked="${isSortDate}" id="ida0-0"
-                                                                           name="s" type="radio" value="0"><label
-                            for="ida0-0">Beste treff</label>&nbsp;&nbsp;&nbsp;&nbsp;<input
-                            data-th-checked="${!isSortDate}" id="ida0-1" name="s" type="radio" value="1"><label
-                            for="ida0-1">Dato</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="alternativerForSortering" id="ida0">
+                        <input data-th-checked="${isSortDate}" id="ida0-0" name="s" type="radio" value="0" />
+                        <label for="ida0-0">Beste treff</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input data-th-checked="${!isSortDate}" id="ida0-1" name="s" type="radio" value="1" />
+                        <label for="ida0-1">Dato</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
                     </div>
-                    <input type="hidden" name="ord" data-th-value="${word}">
-
+                    <input type="hidden" name="ord" data-th-value="${word}" />
                 </form>
-
             </div>
             <ul class="sokeresultatliste" data-th-if="${word}">
-
                 <li data-th-class="${hit.className}" data-th-each="hit : ${hits}">
-
                     <a data-th-href="${hit.href}">
-                        <h2 data-th-text="${hit.displayName}">Ordførere skal vurderes som frilansere </h2>
-
-
-                        <p class="resultattekst" data-th-utext="${hit.highlight}">
-                            Høyesterett har slått fast at
-                            <strong>ordførere</strong> ikke er å anse som arbeidstakere, men som frilansere.
-                        </p>
+                        <h2 data-th-text="${hit.displayName}"></h2>
+                        <p class="resultattekst" data-th-utext="${hit.highlight}"></p>
                         <p data-th-if="${hit.priority}">Innhold anbefalt av NAV</p>
                     </a>
-
-
                 </li>
             </ul>
             <a class="flereResultater null" data-th-if="${isMore}" href="javascript:;" id="flere" role="button">
@@ -85,101 +71,81 @@
         <form data-th-action="${form}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
                 <ul class="fasettListe" id="id33">
-                    <li class="utvidbar" data-th-classappend="${agg.className}"
-                        data-th-each="agg : ${aggregations.fasetter.buckets}">
+                    <li class="utvidbar" data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}">
                         <!--div style="width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden"><input type="hidden" name="ord" data-th-value="${word}" id="id12_hf_1"></div-->
                         <input
-                                class="wicket-id33"
-                                data-th-checked="${agg.checked}"
-                                data-th-disabled="${agg.docCount} == 0"
-                                data-th-id="${agg.key}"
-                                data-th-value="${aggStat.index}"
-                                name="f"
-                                type="radio">
+                            class="wicket-id33"
+                            data-th-checked="${agg.checked}"
+                            data-th-disabled="${agg.docCount} == 0"
+                            data-th-id="${agg.key}"
+                            data-th-value="${aggStat.index}"
+                            name="f"
+                            type="radio"
+                        />
 
-                        <label data-th-for="${agg.key}" data-th-text="${agg.key}">Sentralt innhold</label>
+                        <label data-th-for="${agg.key}" data-th-text="${agg.key}"></label>
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
                         <div data-th-if="${agg.checked}">
-
                             <ul class="underFasettListe clearfix">
                                 <li class="defaultFasett" data-th-classappend="${agg.defaultClassName}">
-
-                                    <input class="defaultFasett"
-                                           data-th-checked="${agg.default}"
-                                           data-th-id="${agg.key + 'all'}"
-                                           type="checkbox"
-                                    >
+                                    <input class="defaultFasett" data-th-checked="${agg.default}" data-th-id="${agg.key + 'all'}" type="checkbox" />
 
                                     <label data-th-for="${agg.key + 'all'}">Alt innhold</label>
 
-                                    <span class="antallTreff" data-th-text="${agg.docCount}">(2450)</span>
+                                    <span class="antallTreff" data-th-text="${agg.docCount}"></span>
                                 </li>
-                                <li data-th-classappend="${bucket.className}"
-                                    data-th-each="bucket : ${agg.underaggregeringer.buckets}">
-                                    <input class="wic"
-                                           data-th-checked="${bucket.checked}"
-                                           data-th-disabled="${bucket.docCount} == 0"
-                                           data-th-id="${agg.key + bucket.key}"
-                                           data-th-value="${bucketStat.index}"
-                                           name="uf"
-                                           type="checkbox"
-                                    >
-                                    <label data-th-for="${agg.key + bucket.key}" data-th-text="${bucket.key}">Alt
-                                        innhold</label>
-                                    <span class="antallTreff" data-th-text="${bucket.docCount}">(2450)</span>
+                                <li data-th-classappend="${bucket.className}" data-th-each="bucket : ${agg.underaggregeringer.buckets}">
+                                    <input
+                                        class="wic"
+                                        data-th-checked="${bucket.checked}"
+                                        data-th-disabled="${bucket.docCount} == 0"
+                                        data-th-id="${agg.key + bucket.key}"
+                                        data-th-value="${bucketStat.index}"
+                                        name="uf"
+                                        type="checkbox"
+                                    />
+                                    <label data-th-for="${agg.key + bucket.key}" data-th-text="${bucket.key}"></label>
+                                    <span class="antallTreff" data-th-text="${bucket.docCount}"></span>
                                 </li>
                             </ul>
-
                         </div>
-
                     </li>
-
                 </ul>
-
-
             </div>
             <div class="fasettGruppeElement radiobuttons">
                 <h2>Tidsperiode</h2>
 
                 <ul class="fasettListe" id="id34">
                     <li>
-
                         <input
-                                class="wicket-id33 svart"
-                                data-th-checked="${aggregations.Tidsperiode.checked}"
-                                id="tpfirst"
-                                name="daterange"
-                                type="radio"
-                                value="-1"
-
-                        >
+                            class="wicket-id33 svart"
+                            data-th-checked="${aggregations.Tidsperiode.checked}"
+                            id="tpfirst"
+                            name="daterange"
+                            type="radio"
+                            value="-1"
+                        />
                         <label for="tpfirst">Alle datoer</label>
                         <span class="antallTreff" data-th-text="${aggregations.Tidsperiode.docCount} "></span>
-
                     </li>
                     <li data-th-each="agg : ${aggregations.Tidsperiode.buckets}">
-
                         <input
-                                class="wicket-id33 svart"
-                                data-th-checked="${agg.checked}"
-                                data-th-disabled="${agg.docCount} == 0"
-                                data-th-id="${'f' + aggStat.index}"
-                                data-th-value="${aggStat.index}"
-                                name="daterange"
-                                type="radio"
-                        >
-                        <label data-th-for="${'f' + aggStat.index}" data-th-text="${agg.key}">Sentralt innhold</label>
+                            class="wicket-id33 svart"
+                            data-th-checked="${agg.checked}"
+                            data-th-disabled="${agg.docCount} == 0"
+                            data-th-id="${'f' + aggStat.index}"
+                            data-th-value="${aggStat.index}"
+                            name="daterange"
+                            type="radio"
+                        />
+                        <label data-th-for="${'f' + aggStat.index}" data-th-text="${agg.key}"></label>
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
-
                     </li>
-
                 </ul>
-                <input data-th-value="${word}" name="ord" type="hidden">
-                <input data-th-value="${c}" name="c" type="hidden">
-                <input type="hidden" name="s" data-th-value="${s}">
+                <input data-th-value="${word}" name="ord" type="hidden" />
+                <input data-th-value="${c}" name="c" type="hidden" />
+                <input type="hidden" name="s" data-th-value="${s}" />
             </div>
         </form>
     </section>
 </div>
-
-
