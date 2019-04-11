@@ -3699,7 +3699,7 @@ a.knapp {
 }
 
 .form-standard input[type="radio"] + label {
-    background: url(../img/radio.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/radio.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:checked + label {
@@ -3719,7 +3719,7 @@ a.knapp {
 }
 
 .form-standard input[type="checkbox"]:disabled + label {
-    background: url(../img/check_inactive.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/check_inactive.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:checked + label {

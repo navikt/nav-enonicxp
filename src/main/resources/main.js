@@ -32,15 +32,15 @@ exports.webSocketEvent = ws.getWsEvents;
 
 cache.activateEventListener();
 
-event.listener({
-    type: 'node.updated',
-    callback: handleUpdate
-});
+// event.listener({
+//     type: 'node.updated',
+//     callback: handleUpdate
+// });
 event.listener({
     type: 'node.*',
     localOnly: false,
     callback: function (event) {
-        log.info(JSON.stringify(event));
+        // log.info(JSON.stringify(event));
     }
 });
 
