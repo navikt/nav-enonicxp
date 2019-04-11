@@ -7,19 +7,29 @@ var libs = {
 var view = resolve('page-footer.html');
 
 function handleGet(req) {
-    var site = libs.portal.getSite();
     var content = libs.portal.getContent();
-    return libs.cache.getDecorator('footer' + (content.language ? content.language : 'no'), undefined, function() {
-        var languageBundles = libs.lang.parseBundle(content.language).pagenav;
+    var language = content.language || 'no';
+
+    return libs.cache.getDecorator('footer-' + language, undefined, function() {
+        var languageBundles = libs.lang.parseBundle(language).pagenav;
         var contentAZPage = libs.portal.serviceUrl({service: 'contentAZ'});
-        var accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (content.language === 'no' ? 'æøå' : '');
-        var frontPageUrl = libs.portal.pageUrl({id: site._id});
+        var accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (language === 'no' || language === 'se' ? 'æøå' : '');
         var urls = {
-            contactUs:      frontPageUrl + '/kontaktoss',
-            accessibility:  frontPageUrl + '/tilgjengelighet',
-            privacy:        frontPageUrl + '/personvern',
-            rss:            frontPageUrl + '/rss'
-        };
+            contactUs:
+                libs.portal.pageUrl({type: 'absolute', path: '/www.nav.no/footer-contactus-'+language}),
+            accessibility:
+                language !== 'en' ?
+                libs.portal.pageUrl({type: 'absolute', path: '/www.nav.no/footer-accessibility-no'}) :
+                undefined,
+            privacy:
+                language !== 'en' ?
+                libs.portal.pageUrl({type: 'absolute', path: '/www.nav.no/personvern'}) :
+                undefined,
+            rss:
+                language !== 'en' ?
+                libs.portal.pageUrl({type: 'absolute', path: '/www.nav.no/no/rss'}) :
+                undefined
+            };
         var dato = new Date();
         var model = {
             contentAZPage: contentAZPage,
@@ -33,8 +43,7 @@ function handleGet(req) {
             contentType: 'text/html',
             body: libs.thymeleaf.render(view, model)
         };
-    })
-
+    });
 }
 
 exports.get = handleGet;
