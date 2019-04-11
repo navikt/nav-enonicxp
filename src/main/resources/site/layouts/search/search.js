@@ -9,7 +9,6 @@ exports.get = function(req) {
         contentType: 'text/html',
         pageContributions: {
             headEnd: [
-                '<link rel="stylesheet" href="' + portal.assetUrl({ path: 'search-styles/search-appres.css' }) + '" />',
                 '<link rel="stylesheet" href="' + portal.assetUrl({ path: 'search-styles/search.css' }) + '" />',
                 '<link rel="stylesheet" href="' + portal.assetUrl({ path: 'search-styles/search-nav.css' }) + '" />'
             ],
