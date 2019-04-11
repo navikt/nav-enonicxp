@@ -175,8 +175,7 @@
                             <occurrences maximum="0" minimum="1"/>
                             <config>
                                 <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
+                                <allow-content-type>no.nav.navno:main-article</allow-content-type>
                                 <showStatus>true</showStatus>
                             </config>
                         </input>
