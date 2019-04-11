@@ -80,6 +80,7 @@ function createTemplates(socket) {
                             .toLowerCase()
                             .replace(/ - /g, '-')
                             .replace(/ /g, '-')
+                            .replace(/ø/g, 'o')
                 });
                 var elem = exists ? exists : content.create(value.content);
                 repo.modify({
@@ -344,6 +345,70 @@ var ekstraStorTabell = {
     customized: false
 };
 
+var searchResult = {
+    controller: 'no.nav.navno:main-page',
+    region: [
+        {
+            name: 'main',
+            component: [
+                {
+                    type: 'PartComponent',
+                    PartComponent: {
+                        name: 'page-heading-with-menu',
+                        template: 'no.nav.navno:page-heading-with-menu',
+                        config: {}
+                    }
+                },
+                {
+                    type: 'LayoutComponent',
+                    LayoutComponent: {
+                        name: 'search',
+                        template: 'no.nav.navno:search',
+                        config: {},
+                        region: [
+                            {
+                                name: 'searchbar',
+                                component: {
+                                    type: 'PartComponent',
+                                    PartComponent: {
+                                        name: 'searchbar',
+                                        template: 'no.nav.navno:searchbar',
+                                        config: {}
+                                    }
+                                }
+                            },
+                            {
+                                name: 'result',
+                                component: {
+                                    type: 'PartComponent',
+                                    PartComponent: {
+                                        name: 'searchresult',
+                                        template: 'no.nav.navno:searchresult',
+                                        config: {}
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            name: 'footer',
+            component: {
+                type: 'PartComponent',
+                PartComponent: {
+                    name: 'page-footer',
+                    template: 'no.nav.navno:page-footer',
+                    config: {}
+                }
+            }
+        }
+    ],
+    config: {},
+    customized: false
+};
+
 var templates = [
     {
         content: {
@@ -423,5 +488,18 @@ var templates = [
             }
         },
         page: ekstraStorTabell
+    },
+    {
+        content: {
+            displayName: 'Søkeresultat',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:searchresult'
+            }
+        },
+        page: searchResult
     }
 ];

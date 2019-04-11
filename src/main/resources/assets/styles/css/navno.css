@@ -3700,35 +3700,35 @@ a.knapp {
 }
 
 .form-standard input[type="radio"] + label {
-    background: url(../img/radio.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/radio.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:checked + label {
-    background: url(../img/radio_valgt.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/radio_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:disabled:checked + label {
-    background: url(../img/radio_inactive_valgt.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/radio_inactive_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:disabled + label {
-    background: url(../img/radio_inactive.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/radio_inactive.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"] + label {
-    background: url(../img/check.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/check.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:disabled + label {
-    background: url(../img/check_inactive.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/check_inactive.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:checked + label {
-    background: url(../img/check_valgt.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/check_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:disabled:checked + label {
-    background: url(../img/check_inactive_valgt.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/check_inactive_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type=checkbox].bryter {
@@ -3737,7 +3737,7 @@ a.knapp {
 }
 
 .form-standard input[type=checkbox].bryter + label {
-    background: url(../img/bryter.svg) 0 0 no-repeat;
+    background: url(../../img/navno/gfx/forms/bryter.svg) 0 0 no-repeat;
     height: 32px;
     color: #333;
     margin: 0 0 0.75em;
@@ -3749,7 +3749,7 @@ a.knapp {
 }
 
 .form-standard input[type=checkbox].bryter:checked + label {
-    background: url(../img/bryter_valgt.svg) 0 0 no-repeat
+    background: url(../../img/navno/gfx/forms/bryter_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"] + label, .form-standard input[type="checkbox"] + label {
