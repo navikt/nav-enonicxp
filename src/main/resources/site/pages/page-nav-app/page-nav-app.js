@@ -1,5 +1,5 @@
 var libs = {
-	thymeleaf: require('/lib/xp/thymeleaf'),
+	thymeleaf: require('/lib/thymeleaf'),
 	portal: require('/lib/xp/portal'),
 	content: require('/lib/xp/content'),
 	menu: require('/lib/menu'),
@@ -8,7 +8,7 @@ var libs = {
     navUtils: require('/lib/nav-utils')
 };
 var view = resolve('page-nav-app.html');
-var lang = require('../../lib/i18nUtil');
+var lang = require('/lib/i18nUtil');
 var globals = {
     appPath: libs.util.app.getJsonName()
 };

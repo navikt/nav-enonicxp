@@ -1,7 +1,6 @@
 var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/xp/thymeleaf');
-var parsers = require('../../lib/tableFunctions/tableFunctions');
-var trans = require('../../lib/contentTranslator');
+var thymeleaf = require('/lib/thymeleaf');
+var parsers = require('/lib/tableFunctions/tableFunctions');
 var view = resolve('ekstraStorTabell.html');
 exports.get = function(req) {
     // NOTE It works to get styles and images from xx-www.nav.no, but this should probably be moved at some point

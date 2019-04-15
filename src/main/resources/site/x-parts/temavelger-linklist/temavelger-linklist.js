@@ -1,4 +1,4 @@
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var view = resolve('temavelger-linklist.html');
 
 function handleGet(req) {

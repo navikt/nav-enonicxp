@@ -1,7 +1,7 @@
 
 var content = require('/lib/xp/content');
 var context = require('/lib/xp/context');
-var trans = require('../../site/lib/contentTranslator');
+var trans = require('/lib/contentTranslator');
 var nodeLib = require('/lib/xp/node');
 var repo = nodeLib.connect({
     repoId: 'cms-repo',

@@ -1,7 +1,7 @@
 var libs = {
     portal: require('/lib/xp/portal'),
 	content: require('/lib/xp/content'),
-	thymeleaf: require('/lib/xp/thymeleaf'),
+	thymeleaf: require('/lib/thymeleaf'),
     i18n: require('/lib/xp/i18n'),
     skjema: require('/lib/skjema'),
 	util: require('/lib/enonic/util')

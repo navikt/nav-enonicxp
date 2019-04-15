@@ -1,7 +1,7 @@
 var content = require('/lib/xp/content');
 var context = require('/lib/xp/context');
-var utils = require('/site/lib/nav-utils');
-exports.handle = function(socket) {
+var utils = require('/lib/nav-utils');
+exports.handle = function (socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
 

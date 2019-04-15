@@ -7,7 +7,7 @@ var standardCache = {
 var etag = Date.now().toString(16);
 var nodeLib = require('/lib/xp/node');
 var repo = nodeLib.connect({
-    repoId: 'cms-repo',
+    repoId: 'com.enonic.cms.default',
     branch: 'master',
     principals: ['role:system.admin']
 });
@@ -83,8 +83,7 @@ function wipeOnChange(value) {
 function getSome(name) {
     return function(key, type, f, params) {
         /* Vil ikke cache innhold som redigeres */
-        // TODO test for www-x adresser
-        if (key.indexOf('/admin/portal/edit') === -1 && key.indexOf('/preview/draft') === -1) {
+        if (key.indexOf('/default/draft/') === -1) {
             return caches[name].get(getPath(key, type), function() {
                 log.info('Store cache key: ' + getPath(key, type) + ' ~ ' + key);
                 // log.info('Cache ' + name + ': ' + caches[name].getSize());

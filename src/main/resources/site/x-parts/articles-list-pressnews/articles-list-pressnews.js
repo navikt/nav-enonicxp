@@ -1,5 +1,5 @@
 var libs = {
-	thymeleaf: require('/lib/xp/thymeleaf'),
+	thymeleaf: require('/lib/thymeleaf'),
 	portal: require('/lib/xp/portal'),
 	content: require('/lib/xp/content')
 };

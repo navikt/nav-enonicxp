@@ -2,7 +2,7 @@
 var portal = require('/lib/xp/portal');
 var trans = require('/lib/contentTranslator');
 var contentLib = require('/lib/xp/content');
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 exports.responseFilter = function (req, res) {
     var content = portal.getContent();
     log.info("From filter");

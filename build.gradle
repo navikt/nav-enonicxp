@@ -23,7 +23,7 @@ buildscript {
 
 app {
     name = project.appName
-    displayName = 'Nav.no - XP 2018'
+    displayName = 'Nav.no - XP 2019'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
 	systemVersion = "${xpVersion}"
@@ -36,9 +36,9 @@ dependencies {
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-event:${xpVersion}"
-    include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
+    include "com.enonic.lib:lib-thymeleaf:2.0.0-B1"
     include "com.enonic.xp:lib-i18n:${xpVersion}"
-    include "com.enonic.xp:lib-mustache:${xpVersion}"
+    include "com.enonic.lib:lib-mustache:2.0.0-B1"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "com.enonic.xp:lib-context:${xpVersion}"
