@@ -1,6 +1,5 @@
 var content = require('/lib/xp/content');
 var context = require('/lib/xp/context');
-var utils = require('/lib/nav-utils');
 exports.handle = function (socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
@@ -10,7 +9,7 @@ exports.handle = function (socket) {
     socket.on('fjern-old', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -27,7 +26,7 @@ exports.handle = function (socket) {
     socket.on('fjern-nyheter', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -43,7 +42,7 @@ exports.handle = function (socket) {
     socket.on('fjern-pressemeldinger', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -59,7 +58,7 @@ exports.handle = function (socket) {
     socket.on('fjern-nyheter-brukerportal', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -75,7 +74,7 @@ exports.handle = function (socket) {
     socket.on('fjern-non-approved', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -91,7 +90,7 @@ exports.handle = function (socket) {
     socket.on('remove-empty-folders', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -193,41 +192,6 @@ function fjernNyheterBrukerPortal(socket) {
     });
 }
 
-function fjernRettskilder(socket) {
-    var res = content.query({
-        start: 0,
-        count: 100000,
-        contentTypes: [
-            'no.nav.navno:Rettskildene_norsk_lovkommentar',
-            app.name + ':Rettskildene_paragrafendring',
-            app.name + ':Rettskildene_paragraf',
-            app.name + ':Rettskildene_kapittelendring',
-            'no.nav.navno:Rettskildene_forskrift',
-            'no.nav.navno:Rettskildene_trygderettkjennels',
-            'no.nav.navno:Rettskildene_kapittel',
-            'no.nav.navno:Rettskildene_lovendring',
-            'no.nav.navno:Rettskildene_rundskriv',
-            'no.nav.navno:Rettskildene_preparat',
-            'no.nav.navno:Rettskildene_vedlegg',
-            'no.nav.navno:Rettskildene_virkestoff',
-            'no.nav.navno:Rettskildene_artikkel',
-            'no.nav.navno:Rettskildene_lov',
-            'no.nav.navno:Rettskildene_eu_artikkel',
-            'no.nav.navno:Rettskildene_lovoversikt',
-            'no.nav.navno:Rettskildene_kapitteloversikt',
-            'no.nav.navno:Rettskildene_oversikt',
-            'no.nav.navno:Rettskildene_endringslogg',
-            'no.nav.navno:Rettskildene_legemiddelliste',
-            'no.nav.navno:Rettskildene_prinsippkjennelse'
-        ]
-    });
-    socket.emit('fjern-rettskildene-max', res.total);
-    res.hits.forEach(function(value, index) {
-        socket.emit('fjern-rettskildene-value', index + 1);
-        content.delete({ key: value._id }) ? log.info('Removed ' + value._path) : log.info('Failed to remove ' + value._path);
-    });
-}
-
 function fjernPressemeldinger(socket) {
     var res = content.query({
         start: 0,
@@ -278,14 +242,6 @@ function fjernOld(socket) {
     });
 }
 
-function fjernKN(socket) {
-    socket.emit('fjern-kn-max', 1);
-    content.delete({
-        key: '/content/kommunenavet'
-    });
-    socket.emit('fjern-kn-value', 1);
-}
-
 function fjernNyheter(socket) {
     var res = content.query({
         start: 0,
@@ -330,6 +286,10 @@ function createElements() {
                             tagClass: ['button', 'is-info'],
                             action: 'fjern-old',
                             text: 'Fjern'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -357,6 +317,10 @@ function createElements() {
                             tagClass: ['button', 'is-info'],
                             action: 'fjern-nyheter',
                             text: 'Fjern'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -382,6 +346,10 @@ function createElements() {
                             tagClass: ['button', 'is-info'],
                             action: 'fjern-pressemeldinger',
                             text: 'Fjern'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -397,7 +365,7 @@ function createElements() {
                             tag: 'progress',
                             tagClass: ['progress', 'is-info'],
                             progress: {
-                                value: 'fjern-nyheter-brukerportal',
+                                value: 'fjern-nyheter-brukerportal-value',
                                 max: 'fjern-nyheter-brukerportal-max',
                                 valId: 'fjern-nyheter-brukerportal-progress-id'
                             }
@@ -407,6 +375,10 @@ function createElements() {
                             tagClass: ['button', 'is-info'],
                             action: 'fjern-nyheter-brukerportal',
                             text: 'Fjern'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -432,6 +404,10 @@ function createElements() {
                             tagClass: ['button', 'is-info'],
                             action: 'fjern-non-approved',
                             text: 'Fjern'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -457,6 +433,10 @@ function createElements() {
                             tagClass: ['button', 'is-info'],
                             action: 'remove-empty-folders',
                             text: 'Fjern'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 }

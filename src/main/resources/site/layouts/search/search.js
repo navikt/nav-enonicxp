@@ -1,5 +1,5 @@
 var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var view = resolve('./search.html');
 exports.get = function(req) {

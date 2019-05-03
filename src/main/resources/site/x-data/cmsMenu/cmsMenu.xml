@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mixin>
+<x-data>
   <display-name>CMS Menu Item</display-name>
-  <items>
+  <form>
     <input type="TextLine" name="menuKey">
       <label>Menu item key</label>
       <occurrences minimum="0" maximum="1"/>
@@ -10,5 +10,5 @@
       <label>Menu item related content</label>
       <occurrences minimum="0" maximum="1"/>
     </input>
-  </items>
-</mixin>
+  </form>
+</x-data>

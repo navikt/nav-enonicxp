@@ -7,12 +7,11 @@ var utils = require('/lib/nav-utils');
 var view = resolve('tavleliste.html');
 
 exports.get = function(req) {
-
     var cont = portal.getContent();
     var ids = cont.data.sectionContents;
-    ids = (!Array.isArray(ids)) ? [ids] : ids;
-    var items = content.getChildren({key: cont._id}).hits.map(function (el) {
-        return { src: portal.pageUrl({id: el._id}), heading: el.data.heading, ingress: el.data.ingress }
+    ids = !Array.isArray(ids) ? [ids] : ids;
+    var items = content.getChildren({ key: cont._id, start: 0, count: 100 }).hits.map(function(el) {
+        return { src: portal.pageUrl({ id: el._id }), heading: el.data.heading, ingress: el.data.ingress };
     });
 
     // Define the model

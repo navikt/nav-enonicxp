@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mixin>
+<x-data>
     <display-name>CMS Content Status</display-name>
-    <items>
+    <form>
         <input name="status" type="ComboBox">
             <label>Status</label>
             <occurrences minimum="0" maximum="1"/>
@@ -12,5 +12,5 @@
                 <option value="archived">Archived</option>
             </config>
         </input>
-    </items>
-</mixin>
+    </form>
+</x-data>

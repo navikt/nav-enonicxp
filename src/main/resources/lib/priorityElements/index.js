@@ -9,7 +9,7 @@ exports.handle = function(socket) {
     socket.on('convert-priority', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -26,7 +26,7 @@ exports.handle = function(socket) {
     socket.on('create-facets', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -43,7 +43,7 @@ exports.handle = function(socket) {
 
 function hasSearchApp() {
     var req = http.request({
-        url: 'http://localhost:8080/status/osgi.bundle',
+        url: 'http://localhost:2609/osgi.bundle',
         contentType: 'application/json'
     });
     // log.info(JSON.stringify(JSON.parse(req.body), null, 4));

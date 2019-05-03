@@ -5,7 +5,7 @@ exports.handle = function (socket) {
     socket.emit('newTask', elements);
     socket.on('move-contenthome', function () {
         context.run({
-            repository: 'cms-repo',
+            repository: 'com.enonic.cms.default',
             branch: 'draft',
             user: {
                 login: 'pad',

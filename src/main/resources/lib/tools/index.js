@@ -1,5 +1,14 @@
 var contentLib = require('/lib/xp/content');
+var valueLib = require('/lib/xp/value');
 var R = require('/lib/ramda');
+
+var nodeLib = require('/lib/xp/node');
+var repo = nodeLib.connect({
+    repoId: 'com.enonic.cms.default',
+    branch: 'draft',
+    principals: ['role:system.admin']
+});
+
 exports.verifyPaths = verifyPaths;
 function verifyPaths(object) {
     var tmp = undefined;
@@ -273,7 +282,15 @@ function logBeutify(content) {
 exports.changeMenuItem = changeMenuItem;
 function changeMenuItem(content, name, from) {
     content.data.menuListItems = content.data.menuListItems || [];
-    var items = content.data[from] ? (typeof content.data[from] === 'string' ? [content.data[from]] : Array.isArray(content.data[from]) ? (content.data[from].length > 0 ? content.data[from] : undefined) : undefined) : undefined;
+    var items = content.data[from]
+        ? typeof content.data[from] === 'string'
+            ? [content.data[from]]
+            : Array.isArray(content.data[from])
+            ? content.data[from].length > 0
+                ? content.data[from]
+                : undefined
+            : undefined
+        : undefined;
     if (items) {
         content.data.menuListItems = addMenuListItem(content.menuListItems, name, items);
     }
@@ -316,9 +333,9 @@ function createNewTableContent(tableElements, ntkElementId, newElementId, scElem
     var data = {
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
-        nrNTK: 5, 
+        nrNTK: 5,
         nrSC: 5,
-        nrNews: 3,
+        nrNews: 3
     };
     if (ntkElementId) {
         data.ntkContents = ntkElementId;
@@ -420,37 +437,21 @@ function getRefs(content) {
         .reduce(reduceNullElements, []);
 }
 
-function checkTextForRefs(content) {
-    var start = 0;
-    var length = 100;
-    var ret = [];
-    var query;
-    while (length === 100) {
-        query = contentLib.query({
-            start: start,
-            length: length,
-            query: "fulltext('data.text', 'href=\\\"content://" + content._id + "*', 'OR')"
-        });
-
-        ret = ret.concat(query.hits);
-        length = query.hits.length;
-        start += length;
-    }
-    return ret.map(function(el) {
-        return { _id: el._id };
-    });
-}
-
 exports.deleteOldContent = deleteOldContent;
 function deleteOldContent(content, newPath) {
-    var children = contentLib.getChildren({
-        key: content._id
-    });
-    var ids = children.count > 0 ? children.hits.map(mapIds) : [];
-    ids.forEach(function(id) {
-        contentLib.move({
-            source: id,
-            target: newPath + '/'
+    var children = repo
+        .findChildren({
+            parentKey: content._id,
+            start: 0,
+            count: 100
+        })
+        .hits.map(function(c) {
+            return repo.get(c.id);
+        });
+    children.forEach(function(child) {
+        repo.move({
+            source: child._id,
+            target: '/content' + newPath + '/'
         });
     });
     contentLib.delete({
@@ -459,12 +460,33 @@ function deleteOldContent(content, newPath) {
 }
 exports.modify = modify;
 function modify(value, newId, oldId) {
-    log.info('Modify ' + value._id);
     try {
-        var r = contentLib.modify({
+        repo.modify({
             key: value._id,
             editor: function(c) {
-                return JSON.parse(JSON.stringify(c).replace(new RegExp(oldId, 'g'), newId));
+                var contentString = JSON.stringify(c);
+                contentString = contentString.replace(new RegExp(oldId, 'g'), newId);
+                var content = JSON.parse(contentString);
+                // dates are somehow removed on content, so we have to get them from the original c instead
+                if (c.createdTime) {
+                    content.createdTime = valueLib.instant(c.createdTime);
+                }
+                if (c.modifiedTime) {
+                    content.modifiedTime = valueLib.instant(c.modifiedTime);
+                }
+                if (c.publish) {
+                    content.publish = c.publish;
+                    if (c.publish.first) {
+                        content.publish.first = valueLib.instant(c.publish.first);
+                    }
+                    if (c.publish.from) {
+                        content.publish.from = valueLib.instant(c.publish.from);
+                    }
+                    if (c.publish.to) {
+                        content.publish.to = valueLib.instant(c.publish.to);
+                    }
+                }
+                return content;
             }
         });
     } catch (e) {

@@ -16,8 +16,7 @@ buildscript {
      }
  }
  plugins {
-     id 'java'
-     
+    id 'com.enonic.xp.app' version '2.0.0' // A plugin developed by Enonic that adds some needed things to Gradle and makes app-building easier. It is required to use in any Enonic App.
  }
  apply plugin: "com.enonic.xp.app"
 
@@ -47,7 +46,6 @@ dependencies {
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include 'com.enonic.lib:lib-router:1.0.0'
-    include 'no.iskald.lib:moment:1.0.0'
     include 'com.enonic.lib:menu:2.0.1'
     include 'com.enonic.lib:util:1.3.0'
     include 'com.enonic.lib:urlredirect:2.0.0'

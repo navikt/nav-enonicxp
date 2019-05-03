@@ -8,7 +8,7 @@ exports.handle = function(socket) {
     socket.on('createLinkInfo', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -25,7 +25,7 @@ exports.handle = function(socket) {
     socket.on('deleteUnusedExternalLinks', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',

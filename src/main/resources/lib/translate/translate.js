@@ -1,149 +1,99 @@
 var contentLib = require('/lib/xp/content');
 var nodeLib = require('/lib/xp/node');
-var task = require('/lib/xp/task');
 var trans = require('/lib/contentTranslator');
-var auth = require('/lib/xp/auth');
 var contextLib = require('/lib/xp/context');
+var translateRapportHandbok = require('/lib/translate/translateRapportHandbok');
 var repo = nodeLib.connect({
-    repoId: 'cms-repo',
+    repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin']
 });
 exports.handle = function(socket) {
-    var elements = {
-        elements: createElements()
-    };
-    elements.action = [
-        {
-            id: 'navnyhet',
-            emit: 'navnyhet',
-            action: 'hello'
-        },
-        {
-            id: 'navpressemelding',
-            emit: 'navpressemelding',
-            action: 'hello'
-        }
-    ];
-    elements.progress = [
-        {
-            id: 'tnyhet',
-            value: 'nav.nyhetval',
-            max: 'nav.nyhetmax',
-            valId: 'tnyhetvalue'
-        },
-        {
-            id: 'tpressemelding',
-            value: 'nav.pressemeldingval',
-            max: 'nav.pressemeldingmax',
-            valId: 'tpressemeldingvalue'
-        }
-    ];
-    socket.emit('newTask', elements);
-    socket.on('navnyhet', function(message) {
-        task.submit({
-            description: 'Translating nav-nyhet',
-            task: function() {
-                updateNavNyhet(socket, message);
-            }
-        });
+    socket.emit('newTask', createElements());
+    socket.on('navnyhet', function() {
+        runInContext(socket, updateNavNyhet);
     });
-    socket.on('navpressemelding', function(message) {
-        task.submit({
-            description: 'Translating navpressemeldinger',
-            task: function() {
-                updatePressemelding(socket, message);
-            }
-        });
+    socket.on('navpressemelding', function() {
+        runInContext(socket, updatePressemelding);
+    });
+    socket.on('sidebeskrivelse', function() {
+        runInContext(socket, updateTavleliste);
+    });
+    socket.on('cms2xp_page', function() {
+        runInContext(socket, updateCms2xpPage);
+    });
+    socket.on('main', function() {
+        runInContext(socket, updateMainOppslagstavle);
+    });
+    socket.on('min', function() {
+        runInContext(socket, updateOppslagstavle);
+    });
+    socket.on('cms2xp_section', function() {
+        runInContext(socket, changeSection2TavleListe);
+    });
+    socket.on('Kort_om', function() {
+        runInContext(socket, updateKortOm);
+    });
+    socket.on('Artikkel_Brukerportal', function() {
+        runInContext(socket, updateArtikkelBrukerportal);
+    });
+    socket.on('rapportHandbok', function() {
+        runInContext(socket, translateRapportHandbok.handleRapportHandbok);
+    });
+    socket.on('navRapportHandbok', function() {
+        runInContext(socket, translateRapportHandbok.handleNavRapportHandbok);
     });
 };
 
-function updatePressemelding(socket, message) {
+function runInContext(socket, func) {
+    contextLib.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system'
+            },
+            principals: ['role:system.admin']
+        },
+        function() {
+            func(socket);
+        }
+    );
+}
+
+function updatePressemelding(socket) {
     transl8('nav.pressemelding', socket);
-    createCmsStuff(socket);
 }
 
-function updateNavNyhet(socket, message) {
-    translateNavNyhet(socket);
+function updateNavNyhet(socket) {
+    transl8('nav.nyhet', socket);
 }
 
-function createElements() {
-    return {
-        tag: '<div class="column"></div>',
-        elements: [
-            {
-                tag: '<div class="card"></div>',
-                elements: [
-                    {
-                        tag: '<header class="card-header"></header>',
-                        elements: [
-                            {
-                                tag: '<p class="card-header-title is-center">Translate</p>',
-                                elements: []
-                            }
-                        ]
-                    },
-                    {
-                        tag: '<div class="card-content"></div>',
-                        elements: [
-                            {
-                                tag: '<div class="row"></div>',
-                                elements: [
-                                    {
-                                        tag: '<div class="column"></div>',
-                                        elements: [
-                                            {
-                                                tag: '<p>nav.nyhet</p>',
-                                                elements: []
-                                            },
-                                            {
-                                                tag: '<progress id="tnyhet" class="progress is-info" value="0" max="100"></progress>',
-                                                elements: []
-                                            },
-                                            {
-                                                tag: '<p id="tnhyhetvalue"></p>',
-                                                elements: []
-                                            },
-                                            {
-                                                tag: '<button class="button is-info" id="navnyhet">Translate</button>',
-                                                elements: []
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        tag: '<div class="column"></div>',
-                                        elements: [
-                                            {
-                                                tag: '<p>nav.pressemelding</p>',
-                                                elements: []
-                                            },
-                                            {
-                                                tag: '<progress id="tpressemelding" class="progress is-info" value="0" max="100"></progress>',
-                                                elements: []
-                                            },
-                                            {
-                                                tag: '<p id="tpressemeldingvalue"></p>',
-                                                elements: []
-                                            },
-                                            {
-                                                tag: '<button class="button is-info" id="navpressemelding">Translate</button>',
-                                                elements: []
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    };
+function updateTavleliste(socket) {
+    trans.transSidebeskrivelse(getIndexConfig('tavleliste'), socket);
 }
 
-function translateNavNyhet(socket) {
-    return transl8('nav.nyhet', socket);
+function updateCms2xpPage(socket) {
+    trans.transcms2xpPages(getIndexConfig('main-article'), socket);
 }
+
+function updateMainOppslagstavle(socket) {
+    trans.transMainSection(getIndexConfig('oppslagstavle'), socket);
+}
+
+function updateOppslagstavle(socket) {
+    trans.tmins(getIndexConfig('oppslagstavle'), socket);
+}
+
+function updateKortOm(socket) {
+    transl8('Kort_om', socket);
+}
+
+function updateArtikkelBrukerportal(socket) {
+    transl8('Artikkel_Brukerportal', socket);
+}
+
 function stripContentType(type) {
     return type.replace(app.name + ':', '');
 }
@@ -193,6 +143,10 @@ function itterateContents(contents, socket) {
             editor: editor
         });
     });
+    // repo.modify({
+    //     key: contents[0]._id,
+    //     editor: editor
+    // });
 
     return ret;
 }
@@ -202,15 +156,16 @@ function editor(c) {
 }
 
 function updateContent(c) {
+    // log.info('****************BEFORE*******************');
+    // log.info(JSON.stringify(c, null, 4));
     if (stripContentType(c.type) in trans.ret) {
         c = trans.ret[stripContentType(c.type)](c);
         c.type = toContentType('main-article');
-        c.page = {
-            template: trans.getTemplate('artikkel-hovedartikkel')
-        };
+        trans.addTemplateToContent(c, trans.getTemplate('artikkel-hovedartikkel'));
         c._indexConfig = getIndexConfig('main-article');
     }
-
+    // log.info('****************AFTER********************');
+    // log.info(JSON.stringify(c, null, 4));
     return c;
 }
 
@@ -235,51 +190,6 @@ function getIndexConfig(type) {
     }
     if (!ret) throw 'No index config';
     return ret._indexConfig;
-}
-
-function translateCMSStuff(socket) {
-    socket.on('sidebeskrivelse', function() {
-        task.submit({
-            description: 'Changing sidebeskrivelse',
-            task: function() {
-                trans.transSidebeskrivelse(getIndexConfig('tavleliste'), socket);
-            }
-        });
-    });
-    socket.on('cms2xp_page', function() {
-        task.submit({
-            description: 'Changing cms2xp_page',
-            task: function() {
-                trans.transcms2xpPages(getIndexConfig('main-article'), socket);
-            }
-        });
-    });
-    socket.on('main', function() {
-        task.submit({
-            description: 'Changing Main sections',
-            task: function() {
-                trans.transMainSection(getIndexConfig('oppslagstavle'), socket);
-            }
-        });
-    });
-    socket.on('min', function() {
-        task.submit({
-            description: 'Changing secondary sections',
-            task: function() {
-                trans.tmins(getIndexConfig('oppslagstavle'), socket);
-            }
-        });
-    });
-    socket.on('cms2xp_section', function() {
-        task.submit({
-            description: 'Changing cms2xp_sections',
-            task: function() {
-                changeSection2TavleListe(socket);
-            }
-        });
-    });
-
-    return false;
 }
 
 function getTemplate(templateName) {
@@ -316,140 +226,10 @@ function changeSection2TavleListe(socket) {
     });
 }
 
-var cmsUpdates = {
-    main: false,
-    sidebeskrivelse: false,
-    c2xp: false,
-    min: false,
-    c2xs: false
-};
-
-function checkCU(key, socket) {
-    cmsUpdates[key] = true;
-    if (cmsUpdates.main && cmsUpdates.sidebeskrivelse && cmsUpdates.c2xp && cmsUpdates.c2xs && cmsUpdates.min) {
-        createKA(socket);
-    }
-}
-
-function createCmsStuff(socket) {
-    var elements = createAllElements();
-    socket.emit('newTask', elements);
-    socket.on('sidebeskrivelse', function() {
-        task.submit({
-            description: 'Changing sidebeskrivelse',
-            task: function() {
-                contextLib.run(
-                    {
-                        repository: 'cms-repo',
-                        branch: 'draft',
-                        user: {
-                            login: 'su',
-                            userStore: 'system'
-                        },
-                        principals: ['role:system.admin']
-                    },
-                    function() {
-                        trans.transSidebeskrivelse(getIndexConfig('tavleliste'), socket);
-                        checkCU('sidebeskrivelse', socket);
-                    }
-                );
-            }
-        });
-    });
-    socket.on('cms2xp_page', function() {
-        task.submit({
-            description: 'Changing cms2xp_page',
-            task: function() {
-                contextLib.run(
-                    {
-                        repository: 'cms-repo',
-                        branch: 'draft',
-                        user: {
-                            login: 'su',
-                            userStore: 'system'
-                        },
-                        principals: ['role:system.admin']
-                    },
-                    function() {
-                        trans.transcms2xpPages(getIndexConfig('main-article'), socket);
-                        checkCU('c2xp', socket);
-                    }
-                );
-            }
-        });
-    });
-    socket.on('main', function() {
-        task.submit({
-            description: 'Changing Main sections',
-            task: function() {
-                contextLib.run(
-                    {
-                        repository: 'cms-repo',
-                        branch: 'draft',
-                        user: {
-                            login: 'su',
-                            userStore: 'system'
-                        },
-                        principals: ['role:system.admin']
-                    },
-                    function() {
-                        trans.transMainSection(getIndexConfig('oppslagstavle'), socket);
-                        checkCU('main', socket);
-                    }
-                );
-            }
-        });
-    });
-    socket.on('min', function() {
-        task.submit({
-            description: 'Changing secondary sections',
-            task: function() {
-                contextLib.run(
-                    {
-                        repository: 'cms-repo',
-                        branch: 'draft',
-                        user: {
-                            login: 'su',
-                            userStore: 'system'
-                        },
-                        principals: ['role:system.admin']
-                    },
-                    function() {
-                        trans.tmins(getIndexConfig('oppslagstavle'), socket);
-                        checkCU('min', socket);
-                    }
-                );
-            }
-        });
-    });
-    socket.on('cms2xp_section', function() {
-        task.submit({
-            description: 'Changing cms2xp_sections',
-            task: function() {
-                contextLib.run(
-                    {
-                        repository: 'cms-repo',
-                        branch: 'draft',
-                        user: {
-                            login: 'su',
-                            userStore: 'system'
-                        },
-                        principals: ['role:system.admin']
-                    },
-                    function() {
-                        changeSection2TavleListe(socket);
-                        checkCU('c2xs', socket);
-                    }
-                );
-            }
-        });
-    });
-}
-
-function createAllElements() {
+function createElements() {
     return {
         isNew: true,
-        head: 'Translate CMS stuff',
+        head: 'Translate',
         body: {
             elements: [
                 {
@@ -458,51 +238,28 @@ function createAllElements() {
                     elements: [
                         {
                             tag: 'span',
-                            text: 'Sidebeskrivelse'
+                            text: 'Hovedseksjonssider'
                         },
                         {
                             tag: 'progress',
                             tagClass: ['progress', 'is-info'],
-                            id: 'sidebeskrivelse',
+                            id: 'main',
                             progress: {
-                                value: 'sidebeskrivelseval',
-                                max: 'sidebeskrivelsemax',
+                                value: 'mainval',
+                                max: 'mainmax',
                                 valId: 'sidebeskrivelseval'
                             }
                         },
                         {
                             tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
-                            id: 'sidebeskrivelsebutton',
-                            action: 'sidebeskrivelse',
+                            tagClass: ['button', 'is-info'],
+                            id: 'mainbutton',
+                            action: 'main',
                             text: 'Translate'
-                        }
-                    ]
-                },
-                {
-                    tag: 'div',
-                    tagClass: 'row',
-                    elements: [
-                        {
-                            tag: 'span',
-                            text: 'Cms2Xp Page'
                         },
                         {
-                            tag: 'progress',
-                            tagClass: ['progress', 'is-info'],
-                            id: 'cms2xp_page',
-                            progress: {
-                                value: 'cms2xp_pageval',
-                                max: 'cms2xp_pagemax',
-                                valId: 'sidebeskrivelseval'
-                            }
-                        },
-                        {
-                            tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
-                            id: 'cms2xp_pagebutton',
-                            action: 'cms2xp_page',
-                            text: 'Translate'
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -526,37 +283,14 @@ function createAllElements() {
                         },
                         {
                             tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
+                            tagClass: ['button', 'is-info'],
                             id: 'minbutton',
                             action: 'min',
                             text: 'Translate'
-                        }
-                    ]
-                },
-                {
-                    tag: 'div',
-                    tagClass: 'row',
-                    elements: [
-                        {
-                            tag: 'span',
-                            text: 'Hovedseksjonssider'
                         },
                         {
-                            tag: 'progress',
-                            tagClass: ['progress', 'is-info'],
-                            id: 'main',
-                            progress: {
-                                value: 'mainval',
-                                max: 'mainmax',
-                                valId: 'sidebeskrivelseval'
-                            }
-                        },
-                        {
-                            tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
-                            id: 'mainbutton',
-                            action: 'main',
-                            text: 'Translate'
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -580,37 +314,139 @@ function createAllElements() {
                         },
                         {
                             tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
+                            tagClass: ['button', 'is-info'],
                             id: 'cms2xp_sectionbutton',
                             action: 'cms2xp_section',
                             text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
-                }
-            ]
-        }
-    };
-}
-
-function createKA(socket) {
-    var elements = createKAElements();
-
-    socket.emit('newTask', elements);
-
-    socket.on('Kort_om', function() {
-        transl8('Kort_om', socket);
-    });
-    socket.on('Artikkel_Brukerportal', function() {
-        transl8('Artikkel_Brukerportal', socket);
-    });
-}
-
-function createKAElements() {
-    return {
-        isNew: true,
-        head: 'Translate Kort Om og Artikkel brukerportal',
-        body: {
-            elements: [
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Sidebeskrivelse'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'sidebeskrivelse',
+                            progress: {
+                                value: 'sidebeskrivelseval',
+                                max: 'sidebeskrivelsemax',
+                                valId: 'sidebeskrivelseval'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'sidebeskrivelsebutton',
+                            action: 'sidebeskrivelse',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Cms2Xp Page'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'cms2xp_page',
+                            progress: {
+                                value: 'cms2xp_pageval',
+                                max: 'cms2xp_pagemax',
+                                valId: 'sidebeskrivelseval'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'cms2xp_pagebutton',
+                            action: 'cms2xp_page',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'nav.nyhet'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'tnyhet',
+                            progress: {
+                                value: 'nav.nyhetval',
+                                max: 'nav.nyhetmax',
+                                valId: 'tnyhetvalue'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'navnyhet',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'nav.pressemelding'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'tpressemelding',
+                            progress: {
+                                value: 'nav.pressemeldingval',
+                                max: 'nav.pressemeldingmax',
+                                valId: 'tpressemeldingvalue'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'navpressemelding',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
                 {
                     tag: 'div',
                     tagClass: 'row',
@@ -631,10 +467,14 @@ function createKAElements() {
                         },
                         {
                             tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
+                            tagClass: ['button', 'is-info'],
                             id: 'kort_ombutton',
                             action: 'Kort_om',
                             text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 },
@@ -658,10 +498,74 @@ function createKAElements() {
                         },
                         {
                             tag: 'button',
-                            tagClass: ['button', 'is-small', 'is-info'],
+                            tagClass: ['button', 'is-info'],
                             id: 'Artikkel_Brukerportalbutton',
                             action: 'Artikkel_Brukerportal',
                             text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Rapport-handbok'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'rapport-handbok',
+                            progress: {
+                                value: 'rapport-handbok-value',
+                                max: 'rapport-handbok-max',
+                                valId: 'rapport-handbok-val-id'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'rapportHandbok',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Nav Rapport-hanbok'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'nav-rapport-handbok',
+                            progress: {
+                                value: 'nav-rapport-handbok-value',
+                                max: 'nav-rapport-handbok-max',
+                                valId: 'nav-rapport-handbok-val-id'
+                            }
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'navRapportHandbok',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
                         }
                     ]
                 }

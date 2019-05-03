@@ -1,7 +1,7 @@
 <content-type>
     <display-name>Section</display-name>
     <description/>
-    <super-type>base:structured</super-type>
+    <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
