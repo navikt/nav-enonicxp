@@ -2,23 +2,23 @@
 buildscript {
     repositories {
     	maven {
-	    url "http://central.maven.org/maven2/"
-	}
+	        url "http://central.maven.org/maven2/"
+	    }
     	maven {
-	    url "http://maven.adeo.no/nexus/content/groups/public/"
-	}
-         maven {
+	        url "http://maven.adeo.no/nexus/content/groups/public/"
+	    }
+        maven {
             url "https://plugins.gradle.org/m2/"
-         }
-      }
-     dependencies {
-         classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
-     }
- }
- plugins {
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
+    }
+}
+plugins {
     id 'com.enonic.xp.app' version '2.0.0' // A plugin developed by Enonic that adds some needed things to Gradle and makes app-building easier. It is required to use in any Enonic App.
- }
- apply plugin: "com.enonic.xp.app"
+}
+apply plugin: "com.enonic.xp.app"
 
 app {
     name = project.appName
@@ -54,23 +54,19 @@ dependencies {
     
     include "no.item.wsUtil:wsUtil:1.1.1"
     include 'no.iskald.lib:moment:1.0.0'
-    
-    testCompile 'com.enonic.xp:testing:6.12.0'
 }
 
 repositories {
-	maven {
-	url "http://maven.adeo.no/nexus/content/groups/public"
-	}
     mavenLocal()
     jcenter()
     xp.enonicRepo()
+	maven {
+	    url "http://maven.adeo.no/nexus/content/groups/public"
+	}
     maven {
         url  "https://dl.bintray.com/ljl/maven"
-
     }
     maven {
         url  "https://dl.bintray.com/pdrevland/wsUtil"
     }
-
 }

@@ -1,8 +1,0 @@
-<page>
-    <display-name>Main Page</display-name>
-    <config/>
-    <regions>
-        <region name="main"/>
-        <region name="footer"/>
-    </regions>
-</page>
