@@ -12,8 +12,9 @@ var tweakTavleliste = require('../tweakTavleliste');
 var moveCH = require('../moveContentHome');
 var rapportHandbok = require('../rapportHandbok');
 var genMegaMenu = require('../megaMenu');
-var linkCleanup = require('../linkCleanup');
-var unusedContent = require('../unusedContent');
+// var linkCleanup = require('../linkCleanup');
+// var unusedContent = require('../unusedContent');
+var dateTimeFix = require('../dateTimeFix');
 
 exports.handleSockets = function (io) {
     io.connect(function (socket) {
@@ -30,7 +31,8 @@ exports.handleSockets = function (io) {
         genMegaMenu.handle(socket);
         pushToMaster.handle(socket);
         rapportHandbok.handle(socket);
-        linkCleanup.handle(socket);
-        unusedContent.handle(socket);
+        // linkCleanup.handle(socket);
+        // unusedContent.handle(socket);
+        dateTimeFix.handle(socket);
     })
 }
