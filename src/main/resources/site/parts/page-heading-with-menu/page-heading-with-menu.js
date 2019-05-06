@@ -8,7 +8,6 @@ var libs = {
     lang: require('/lib/i18nUtil'),
     tools: require('/lib/tools'),
     cache: require('/lib/cacheControll'),
-    log: require('/lib/contentTranslator')
 };
 var view = resolve('page-heading-with-menu.html');
 //TODO: URL-er skal være konfigurerbare
