@@ -1,4 +1,3 @@
-
 var deadLinks = require('../deadLinks/deadLinks');
 var translate = require('../translate/translate');
 var templates = require('../templates/templates');
@@ -9,9 +8,11 @@ var priorityElements = require('../priorityElements');
 var moveCH = require('../moveContentHome');
 var genMegaMenu = require('../megaMenu');
 var dataValidation = require('../dataValidation');
+// var linkCleanup = require('../linkCleanup');
+// var unusedContent = require('../unusedContent');
 
-exports.handleSockets = function (io) {
-    io.connect(function (socket) {
+exports.handleSockets = function(io) {
+    io.connect(function(socket) {
         clean.handle(socket);
         move.handle(socket);
         templates.handle(socket);
@@ -22,5 +23,5 @@ exports.handleSockets = function (io) {
         priorityElements.handle(socket);
         deadLinks.handle(socket);
         pushToMaster.handle(socket);
-    })
-}
+    });
+};

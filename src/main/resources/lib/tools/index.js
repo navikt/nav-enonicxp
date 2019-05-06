@@ -522,19 +522,42 @@ function addMenuListItem(menuListItems, name, links) {
 
 exports.getRefInfo = getRefInfo;
 function getRefInfo(contentId) {
-    var query = contentLib.query({
+    var refs = contentLib.query({
         start: 0,
         count: 1000,
         query: '_references = "' + contentId + '" OR fulltext("*", "' + contentId + '", "AND") '
+    }).hits;
+
+    var refIds = getRefsInRefMap(contentId);
+    var refsFromRefMap = contentLib.query({
+        start: 0,
+        count: refIds.length,
+        filters: {
+            ids: {
+                values: refIds
+            }
+        }
+    }).hits;
+
+    refsFromRefMap.forEach(function(r) {
+        var inRefs = false;
+        refs.forEach(function(ref) {
+            if (ref._id === r._id) {
+                inRefs = true;
+            }
+        });
+        if (!inRefs) {
+            refs.push(r);
+        }
     });
 
     var refInfo = {
-        total: query.hits.length,
+        total: refs.length,
         paths: [],
         pathsExtd: []
     };
 
-    query.hits.forEach(function(hit) {
+    refs.forEach(function(hit) {
         var ref = findRefPathInContent('', null, hit, contentId);
         var refKey = ref.key;
         refInfo.paths.push(ref.path);
@@ -563,27 +586,27 @@ function findRefPathInContent(path, key, o, id) {
         // check arrays
         if (Array.isArray(o)) {
             for (var i = 0; i < o.length; i += 1) {
-                if (o[i] === id) {
-                    return { path: addToPath(path, key + '.' + i), key: key };
-                }
                 if (typeof o[i] === 'object') {
                     var ref = findRefPathInContent(addToPath(path, key), i, o[i], id);
                     if (ref.key) {
                         return ref;
                     }
                 }
+                if (o[i] === id || (typeof o[id] === 'string' && o[id].indexOf(id))) {
+                    return { path: addToPath(path, key + '.' + i), key: key };
+                }
             }
         }
         // check objects
         for (var subKey in o) {
-            if (o[subKey] === id) {
-                return { path: addToPath(path, key + '.' + subKey), key: key };
-            }
             if (typeof o[subKey] === 'object') {
                 var ref = findRefPathInContent(addToPath(path, key), subKey, o[subKey], id);
                 if (ref.key) {
                     return ref;
                 }
+            }
+            if (o[subKey] === id || (typeof o[id] === 'string' && o[id].indexOf(id))) {
+                return { path: addToPath(path, key + '.' + subKey), key: key };
             }
         }
     }
@@ -677,4 +700,80 @@ function getIdFromUrl(url) {
     }
 
     return ret;
+}
+
+exports.createRefMap = createRefMap;
+var refMap = {};
+function createRefMap() {
+    var navno = contentLib.get({ key: '/www.nav.no' });
+    var contentSite = contentLib.get({ key: '/content' });
+    var redirects = contentLib.get({ key: '/redirects' });
+
+    // reset refMap
+    refMap = {};
+
+    findRefsInElements([navno, contentSite, redirects], refMap);
+    log.info(JSON.stringify(refMap, null, 2));
+}
+
+function findRefsInElements(elements, refMap) {
+    elements.forEach(function(elem) {
+        var dataString = JSON.stringify(elem.data);
+        var refs = [];
+        var match;
+
+        var hrefPtrn = /href=\\"(.*?)\\"/g;
+        while ((match = hrefPtrn.exec(dataString)) != null) {
+            refs.push(
+                match[1]
+                    .replace(/\\"/g)
+                    .replace('content://', '')
+                    .replace('media://download/', '')
+                    .replace('image://', '')
+            ); // we only care about group 1, not the whole match
+        }
+        var srcPtrn = /src=\\"(.*?)\\"/g;
+        while ((match = srcPtrn.exec(dataString)) != null) {
+            refs.push(
+                match[1]
+                    .replace(/\\"/g)
+                    .replace('content://', '')
+                    .replace('media://download/', '')
+                    .replace('image://', '')
+            ); // we only care about group 1, not the whole match
+        }
+
+        if (refs.length > 0) {
+            // convert url to id if possible
+            refs.map(function(ref) {
+                var idInfo = getIdFromUrl(ref);
+                if (idInfo.external === false && idInfo.invalid === false) {
+                    log.info('CONVERTED ' + ref + ' => ' + idInfo.refId);
+                    return idInfo.refId;
+                }
+                return ref;
+            });
+            refMap[elem._id] = refs;
+        }
+
+        var children = contentLib.getChildren({
+            key: elem._id,
+            count: 10000,
+            start: 0
+        }).hits;
+        findRefsInElements(children, refMap);
+    });
+}
+
+exports.isInRefMap = getRefsInRefMap;
+function getRefsInRefMap(id) {
+    var usedIn = [];
+    for (var key in refMap) {
+        refMap[key].forEach(function(refId) {
+            if (refId === id) {
+                usedIn.push(key);
+            }
+        });
+    }
+    return usedIn;
 }
