@@ -1,0 +1,6 @@
+<content-type>
+    <display-name>Søkeresultat</display-name>
+    <super-type>base:structured</super-type>
+    <form>
+    </form>
+</content-type>

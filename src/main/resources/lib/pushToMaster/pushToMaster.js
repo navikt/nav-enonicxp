@@ -7,7 +7,7 @@ exports.handle = function(socket) {
     socket.on('permissionsNav', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -23,7 +23,7 @@ exports.handle = function(socket) {
     socket.on('permissionsRedirects', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -39,7 +39,7 @@ exports.handle = function(socket) {
     socket.on('permissionsContent', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -55,7 +55,7 @@ exports.handle = function(socket) {
     socket.on('push', function() {
         context.run(
             {
-                repository: 'cms-repo',
+                repository: 'com.enonic.cms.default',
                 branch: 'draft',
                 user: {
                     login: 'pad',
@@ -124,7 +124,7 @@ function convertFromRepoToContent(socket, type) {
             contentTypes: [toContentType(type)]
         })
         .hits.forEach(function(value) {
-            socket.emit('ptmStatus', 'Modifying ' + value.displayName);
+            socket.emit('ptmStatus', 'Modifying ' + value.displayName + ' (' + value._id + ')');
             contentLib.modify({
                 key: value._id,
                 editor: function(c) {

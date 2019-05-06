@@ -83,7 +83,7 @@ function wipeOnChange(value) {
 function getSome(name) {
     return function(key, type, f, params) {
         /* Vil ikke cache innhold som redigeres */
-        if (key.indexOf('/default/draft/') === -1) {
+        if (key.indexOf('/default/draft/') === -1 && key.indexOf('/edit/') === -1 && key.indexOf('/_templates/') === -1) {
             return caches[name].get(getPath(key, type), function() {
                 log.info('Store cache key: ' + getPath(key, type) + ' ~ ' + key);
                 // log.info('Cache ' + name + ': ' + caches[name].getSize());

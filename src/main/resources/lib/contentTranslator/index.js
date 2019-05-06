@@ -10,34 +10,6 @@ function getRefs(a, b, c, d, e) {
 function modify(a, b, c, d, e) {
     return tools.modify(a, b, c, d, e);
 }
-
-function change_cms2xp_page(content) {
-    var children = content.hasChildren ? contentLib.getChildren({ key: content._id }).hits : [];
-    var contentKey = utils.getContentParam(content, 'key');
-    if (contentKey) {
-        var c = utils.getContentByCmsKey(contentKey);
-        var newContent = translate(c);
-        if (newContent !== c) {
-            children.forEach(function(value) {
-                contentLib.move({
-                    source: value._path,
-                    target: newContent._path + '/'
-                });
-            });
-            getRefs(content).forEach(function(value) {
-                modify(value, newContent._id, content._id);
-            });
-
-            contentLib.delete({
-                key: content._id
-            });
-            newContent = moveNewContent(newContent, content._path);
-            return newContent;
-        }
-        return c;
-    }
-    return content;
-}
 function changePreface(a, b, c, d, e) {
     return tools.changePreface(a, b, c, d, e);
 }
@@ -172,11 +144,6 @@ var ret = {
         changeLanguageVersions,
         insertContentTypeMetaTag
     ]),
-    cms2xp_page: function(content) {
-        change_cms2xp_page(content);
-        content = insertContentTypeMetaTag(content);
-        return content;
-    },
     'nav.nyhet': compose([
         changeHideDate,
         changePreface,
@@ -214,15 +181,14 @@ module.exports = {
     change: tools.change,
     trans: trans,
     changeMenuItem: tools.changeMenuItem,
-    checkTextForRefs: checkTextForRefs,
     transMainSection: transMainSections,
     tmins: transMinSections,
-    testNodeLib: testNodeLib,
     nodeCheck: nodeCheck,
     testOneNode: testOneNode,
     refresh: refresh,
     transSidebeskrivelse: transSidebeskrivelse,
-    changetavleliste: changetavleliste
+    changetavleliste: changetavleliste,
+    addTemplateToContent: addTemplateToContent
 };
 
 function logBeautify(a, b, c, d, e) {
@@ -236,7 +202,7 @@ function moveNewContent(a, b, c, d, e) {
 }
 
 var repo = node.connect({
-    repoId: 'cms-repo',
+    repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin']
 });
@@ -245,9 +211,7 @@ function translate(content) {
     if (!ret[content.type.split(':')[1]]) return content;
     content = ret[content.type.split(':')[1]](content);
     content.type = app.name + ':main-article';
-    content.page = {
-        template: '4b75315f-e500-42d4-81d9-4840a19f286e'
-    };
+    addTemplateToContent(content, '4b75315f-e500-42d4-81d9-4840a19f286e');
 
     repo.modify({
         key: content._id,
@@ -256,6 +220,20 @@ function translate(content) {
         }
     });
     return content;
+}
+
+function addTemplateToContent(c, templateId) {
+    if (!c.components) {
+        c.components = {
+            type: 'page',
+            path: '/'
+        };
+    }
+    if (!c.components.page) {
+        c.components.page = {};
+    }
+    c.components.page.template = templateId;
+    return c;
 }
 
 var tableTranslator = {
@@ -391,47 +369,6 @@ function doTableListTranslation(content) {
     return content;
 }
 
-function checkTextForRefs(content) {
-    if (!content) return [];
-    var start = 0;
-    var length = 100;
-    var ret = [];
-    var query;
-    while (length === 100) {
-        query = contentLib.query({
-            start: start,
-            length: length,
-            query: "fulltext('data.text', 'href=\\\"content://" + content._id + "', 'OR')"
-        });
-        // log.info(logBeautify(query.hits));
-        ret = ret.concat(query.hits);
-        length = query.hits.length;
-        start += length;
-    }
-    return ret.map(function(el) {
-        return el._id;
-    });
-}
-
-function testNodeLib() {
-    var qres = contentLib.query({
-        contentTypes: ['nav.nyhet']
-    }).hits;
-    qres.forEach(function(value) {
-        var content = repo.get(value._id);
-        translate(content);
-    });
-
-    //content = ret[content.type.replace(app.name + ':','')](content);
-    repo.modify({
-        key: content._id,
-        editor: function(c) {
-            content.type = app.name + ':main-article';
-            return content;
-        }
-    });
-}
-
 function nodeCheck(id) {
     log.info(logBeautify(repo.get(id)));
 }
@@ -512,40 +449,36 @@ function transSidebeskrivelse(indexConfigurations, socket) {
             })
         );
     }
-    if (socket) socket.emit('sidebeskrivelsemax', ar.length);
+    socket.emit('sidebeskrivelsemax', ar.length);
     ar.forEach(function(id, index) {
-        if (socket) socket.emit('sidebeskrivelseval', index + 1);
-        var r = contentLib.get({ key: id });
-        if (!r || r.type === toContentType('tavleliste')) return;
-        var sidebeskrivelse = r;
+        socket.emit('sidebeskrivelseval', index + 1);
+
+        var sidebeskrivelse = contentLib.get({ key: id });
         var sideHome = repo.get(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentHome);
+        // NOTE: Why? This doesn't do anything
         if (!sideHome) {
             sideHome = utils.getContentByCmsKey(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentKey);
-            log.info(JSON.stringify(sideHome, null, 4));
+            // log.info(JSON.stringify(sideHome, null, 4));
             return;
         }
         if (!sideHome) return;
-        sideHome.data = join(sideHome.data, sidebeskrivelse.data);
-        sideHome = changeShortcuts(sideHome);
-        sideHome = changeDescription(sideHome);
-        delete sideHome.data.heading;
-        sideHome = mapReduceMenuItems(sideHome);
-        sideHome = insertMetaTag(sideHome, 'content', 'nav.sidebeskrivelse');
+        sideHome.data.ingress = sidebeskrivelse.data.description;
+        // replace all sidebeskrivelse refs with home refs
         getRefs(sidebeskrivelse).forEach(function(value) {
             modify(value, sideHome._id, sidebeskrivelse._id);
         });
+        // delete sidebeskrivelse because all the content is now moved into home
         contentLib.delete({ key: sidebeskrivelse._id });
+        // modify home with the new ingress
         repo.modify({
             key: sideHome._id,
             editor: function() {
-                sideHome._id = sidebeskrivelse._id;
-                sideHome.type = toContentType('tavleliste');
-                if (!sideHome.page) sideHome.page = {};
-                sideHome.page.template = getTemplate('seksjon-tavleseksjon');
-                sideHome._indexConfig = indexConfigurations;
                 return sideHome;
             }
         });
+        // NOTE: Why? Some of the sectionContents elements are located in /content and not in /www.nav.no, but is this the correct place to move them?
+        // And why do it here and not where home (cms2xp_section => tavleliste, translate.js -> changeSection2TavleListe())?
+        // move all elements in the list to be children of home
         moveFromContentSiteToContent(sideHome.data.sectionContents, { path: sideHome._path, id: sideHome._id });
     });
 }
@@ -572,9 +505,7 @@ function changetavleliste(id) {
         var wrong = repo.get(el._id);
         log.info(logBeautify(wrong));
         wrong._indexConfig = correct;
-        if (!wrong.page) wrong.page = {};
-        wrong.page.template = getTemplate('seksjon-tavleseksjon');
-
+        addTemplateToContent(wrong, getTemplate('seksjon-tavleseksjon'));
         repo.modify({
             key: wrong._id,
             editor: function() {
@@ -584,45 +515,35 @@ function changetavleliste(id) {
     });
 }
 
-function transMainSections(id, socket) {
+function transMainSections(indexConfig, socket) {
     log.info('Translating Mains');
     var start = 0;
     var count = 100;
     var r = [];
+    log.info(toContentType('cms2xp_section'));
     while (count === 100) {
         var h = contentLib.query({
             start: start,
             count: count,
-            contentTypes: [toContentType('cms2xp_section')],
-            filters: {
-                boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'page.template',
-                            values: [getTemplate('person-seksjonsforside-niva-1')]
-                        }
-                    }
-                }
-            }
+            query: 'type = "' + toContentType('cms2xp_section') + '" AND components.page.template = "' + getTemplate('person-seksjonsforside-niva-1') + '"'
         }).hits;
         r = r.concat(h);
         count = h.length;
         start += count;
     }
-    var indexParams = id;
-    if (socket) socket.emit('mainmax', r.length);
+    socket.emit('mainmax', r.length);
     r.forEach(function(value, index) {
         log.info(value._id);
-        if (socket) socket.emit('mainval', index + 1);
+        socket.emit('mainval', index + 1);
+
         var content = repo.get(value._id);
         var was = content.type;
         if (was === toContentType('main-article')) return;
         content.data = translateTables(content);
-        content._indexConfig = indexParams;
+        content._indexConfig = indexConfig;
         content.type = toContentType('oppslagstavle');
         // log.info(logBeautify(content));
-        if (!content.page) content.page = {};
-        content.page.template = getTemplate('seksjon-hovedseksjon');
+        addTemplateToContent(content, getTemplate('seksjon-hovedseksjon'));
         repo.modify({
             key: content._id,
             editor: function() {
@@ -666,8 +587,7 @@ function transMinSections(id, socket) {
             content.data = translateTables(content);
             content._indexConfig = indexParams;
             content.type = toContentType('oppslagstavle');
-            if (!content.page) content.page = {};
-            content.page.template = getTemplate('seksjon-hovedseksjon');
+            addTemplateToContent(content, getTemplate('seksjon-hovedseksjon'));
             repo.modify({
                 key: content._id,
                 editor: function() {
@@ -702,7 +622,10 @@ function moveFromContentSiteToContent(elements, contentObj) {
     });
 }
 
-function transcms2xpPage(id, socket) {
+function transcms2xpPage(indexConfig, socket) {
+    // map over articles to move refs from and delete after
+    var articles = {};
+    // find all cms2xp_pages
     var r = [];
     var start = 0;
     var count = 100;
@@ -716,153 +639,110 @@ function transcms2xpPage(id, socket) {
         count = h.length;
         start += count;
     }
-    if (socket) socket.emit('cms2xp_pagemax', r.length);
+    socket.emit('cms2xp_pagemax', r.length);
+
     r.forEach(function(value, index) {
-        if (socket) socket.emit('cms2xp_pageval', index + 1);
+        socket.emit('cms2xp_pageval', index + 1);
+
         var cms2xp = repo.get(value._id);
-        if (
-            cms2xp &&
-            cms2xp.hasOwnProperty('x') &&
-            cms2xp.x.hasOwnProperty('no-nav-navno') &&
-            cms2xp.x['no-nav-navno'].hasOwnProperty('cmsMenu') &&
-            cms2xp.x['no-nav-navno'].cmsMenu.hasOwnProperty('content')
-        ) {
+        // try to get content article or move the cms2xp_page to not found
+        if (cms2xp && cms2xp.x && cms2xp.x['no-nav-navno'] && cms2xp.x['no-nav-navno'].cmsMenu && cms2xp.x['no-nav-navno'].cmsMenu.content) {
             var article = null;
             try {
                 article = repo.get(cms2xp.x['no-nav-navno'].cmsMenu.content);
             } catch (e) {
                 log.info('Node not found');
-                repo.move({
-                    source: cms2xp._id,
-                    target: '/content/www.nav.no/not-found/'
-                });
+                // repo.move({
+                //     source: cms2xp._id,
+                //     target: '/content/www.nav.no/not-found/'
+                // });
             }
-            if (article && !ret[stripContentType(article.type)]) {
-                log.info('Article not in ret');
-                log.info(logBeautify(article));
-            } else {
-                if (article) {
-                    if (
-                        article.x &&
-                        article.x['no-nav-navno'] &&
-                        article.x['no-nav-navno'].cmsStatus &&
-                        article.x['no-nav-navno'].cmsStatus.status !== 'approved'
-                    ) {
-                        log.info('Delete article ' + article.displayName);
-                        log.info('Delete cms2xp ' + cms2xp.displayName);
-                        contentLib.delete({ key: cms2xp._id });
-                        contentLib.delete({ key: article._id });
-                        return;
-                    }
-                    var originalArticlePath = article._path;
-                    if (
-                        article &&
-                        article.hasOwnProperty('x') &&
-                        article.x.hasOwnProperty('no-nav-navno') &&
-                        article.x['no-nav-navno'].hasOwnProperty('cmsContent') &&
-                        article.x['no-nav-navno'].cmsContent.hasOwnProperty('contentHome')
-                    ) {
-                        var p = repo.get(article.x['no-nav-navno'].cmsContent.contentHome);
-                        if (p) {
-                            var path = p._path;
-                            log.info('Path:' + path);
-                            originalArticlePath =
-                                path
-                                    .split('/')
-                                    .slice(0, -1)
-                                    .join('/') + '/';
-                            if (path.indexOf('relatert-informasjon') !== -1) {
-                                originalArticlePath =
-                                    cms2xp._path
-                                        .split('/')
-                                        .slice(0, -1)
-                                        .join('/') + '/';
-                            }
-                        } else {
-                            log.info(JSON.stringify(article, null, 4));
-                            log.info('Missing shit');
-                        }
-                    } else if (article._name === cms2xp._name || article._path.split('/').indexOf('relatert-informasjon') !== -1) {
-                        originalArticlePath =
-                            cms2xp._path
-                                .split('/')
-                                .slice(0, -1)
-                                .join('/') + '/';
-                    }
-                    repo.move({
-                        source: article._id,
-                        target: '/content/www.nav.no/tmp/'
-                    });
-                    article = repo.get(article._id);
-                    var cms2xpchildren = repo.findChildren({
-                        start: 0,
-                        count: 10000,
-                        parentKey: cms2xp._id
-                    }).hits;
-                    cms2xpchildren.forEach(function(value2) {
-                        if (value2.id !== article._id) {
-                            try {
-                                repo.move({
-                                    source: value2.id,
-                                    target: article._path + '/'
-                                });
-                            } catch (e) {
-                                log.info('Error:');
-                                log.info(logBeautify(repo.get(value2.id)));
-                            }
-                        }
-                    });
 
-                    /**
-                     * I have my article from a cms2xp_page
-                     * I have have moved the children from the cms2xp_page to the actual article
-                     * All refs points to the article
-                     *
-                     *
-                     */
-
-                    repo.delete(cms2xp._id);
-                    try {
-                        repo.move({
-                            source: article._id,
-                            target: originalArticlePath
-                        });
-                    } catch (e) {
-                        log.info('Deleting: ' + cms2xp._path);
-                        log.info(
-                            'Watch: ' +
-                                originalArticlePath
-                                    .split('/')
-                                    .slice(0, -2)
-                                    .join('/') +
-                                '/'
-                        );
-                        repo.move({
-                            source: article._id,
-                            target:
-                                originalArticlePath
-                                    .split('/')
-                                    .slice(0, -2)
-                                    .join('/') + '/'
-                        });
-                    }
-                    article = repo.get(article._id);
+            // check if its possible to convert article to a new navno content-type
+            // log.info('****************************************************************************************');
+            // log.info(JSON.stringify(cms2xp, null, 4));
+            if (article) {
+                log.info(stripContentType(article.type));
+                if (!ret[stripContentType(article.type)]) {
+                    log.info('Article not in ret');
+                    log.info(logBeautify(article));
+                    return;
+                } else {
+                    // convert article from old content-type to a new navno content-type (most likely main-article)
                     article = ret[stripContentType(article.type)](article);
+                    // log.info(JSON.stringify(article, null, 4));
 
+                    // modify the article and write new data, type and indexConfig to repo
                     repo.modify({
-                        key: article._id,
+                        key: cms2xp._id,
                         editor: function() {
-                            article.type = toContentType('main-article');
-                            article._indexConfig = id;
-                            if (!article.page) article.page = {};
-                            article.page.template = getTemplate('artikkel-hovedartikkel');
-                            return article;
+                            // update type and set correct indexConfig
+                            cms2xp.type = toContentType('main-article');
+                            cms2xp._indexConfig = indexConfig;
+                            // set new template
+                            addTemplateToContent(cms2xp, getTemplate('artikkel-hovedartikkel'));
+                            // keep menu params
+                            var parameters = cms2xp.data.parameters;
+                            // take all data from article and add params
+                            cms2xp.data = article.data;
+                            if (parameters) {
+                                cms2xp.data.parameters;
+                            }
+                            // delete old content ref
+                            delete cms2xp.x['no-nav-navno'].cmsMenu.content;
+                            return cms2xp;
                         }
                     });
+
+                    if (!articles[article._id]) {
+                        articles[article._id] = [];
+                    }
+                    articles[article._id].push(cms2xp);
                 }
+            } else {
+                log.info('article missing');
             }
         }
     });
+
+    // delete all articles used by cms2xp_pages and update refs
+    for (var articleId in articles) {
+        var cms2xpPages = articles[articleId];
+        // find all references to the article
+        var refInfo = tools.getRefInfo(articleId);
+        // update with closest cms2xp_page if there are more than one
+        refInfo.pathsExtd.forEach(function(ref) {
+            // split ref and cms2xp_page paths on / and update ref to point to the cms2xp_page with the most matching path parts
+            var cms2xpPage;
+            var pathMatches = 0;
+            var refPaths = ref.path.split('/');
+            cms2xpPages.forEach(function(c) {
+                var cms2xpPaths = c._path.split('/');
+                var currentCms2xpPagePathMatches = 0;
+                // count matching path parts
+                for (var i = 0; i < cms2xpPaths.length; i += 1) {
+                    if (cms2xpPaths[i] !== refPaths[i]) {
+                        break;
+                    }
+                    currentCms2xpPagePathMatches = i + 1;
+                }
+                // update cms2xp_page if its a better match then the preceeding cms2xp_pages
+                if (currentCms2xpPagePathMatches > pathMatches) {
+                    pathMatches = currentCms2xpPagePathMatches;
+                    cms2xpPage = c;
+                }
+            });
+            // use the first if there are no matches
+            if (!cms2xpPage) {
+                cms2xpPage = cms2xpPages[0];
+            }
+            // update refs from article id to cms2xp_page id in ref
+            tools.modify(contentLib.get({ key: ref.id }), articleId, cms2xpPage._id);
+        });
+
+        // delete article
+        contentLib.delete({ key: articleId });
+    }
 }
 
 function stripContentType(type) {

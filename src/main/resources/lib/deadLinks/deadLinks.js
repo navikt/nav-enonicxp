@@ -4,7 +4,7 @@ var http = require('/lib/http-client');
 var nodeLib = require('/lib/xp/node');
 var task = require('/lib/xp/task');
 var repo = nodeLib.connect({
-    repoId: 'cms-repo',
+    repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin']
 });
@@ -14,10 +14,10 @@ exports.handle = function (s) {
     socket = s;
     var c = context.get();
     var tArr = [];
-    log.info(JSON.stringify(c));
-    log.info(JSON.stringify(contentLib.getSite({
-        key: '/www.nav.no'
-    })));
+    // log.info(JSON.stringify(c));
+    // log.info(JSON.stringify(contentLib.getSite({
+    //     key: '/www.nav.no'
+    // })));
 
     elements.action = [{
         id: 'lenke',
@@ -37,7 +37,7 @@ exports.handle = function (s) {
             task: function () {
 
                 context.run({
-                    repository: 'cms-repo',
+                    repository: 'com.enonic.cms.default',
                     branch: 'draft',
                     user: {
                         login: 'pad',

@@ -5,18 +5,18 @@
 -->
 <x-data>
 	<display-name>Menu settings</display-name>
-	<items>
+	<form>
 		<input type="Checkbox" name="menuItem">
 			<label>Show in Menu?</label>
 			<occurrences minimum="0" maximum="1"/>
 		</input>
 		<input type="TextLine" name="menuName">
-			<label>Override menu name</label><!-- Name to be used in menu. Optional -->
+			<label>Override menu name</label>			<!-- Name to be used in menu. Optional -->
 			<occurrences minimum="0" maximum="1"/>
 		</input>
 		<input type="Checkbox" name="newWindow">
 			<label>Open in new window?</label>
 			<occurrences minimum="0" maximum="1"/>
 		</input>
-	</items>
+	</form>
 </x-data>

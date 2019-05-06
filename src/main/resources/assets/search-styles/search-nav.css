@@ -1,0 +1,1232 @@
+.ui-front {
+    z-index: 100;
+}
+
+.ui-autocomplete {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: default;
+}
+
+.ui-menu {
+    list-style: none;
+    padding: 2px;
+    margin: 0;
+    display: block;
+    outline: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0px 5px 10px rgba(187, 187, 187, 0.8);
+}
+
+.ui-menu .ui-menu {
+    margin-top: -3px;
+    position: absolute;
+}
+
+.ui-menu .ui-menu-item {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.ui-menu .ui-menu-item:first-child {
+    margin-top: 0.5rem;
+}
+
+.ui-menu .ui-menu-item:last-child {
+    margin-bottom: 0.5rem;
+}
+
+.ui-menu .ui-menu-item a {
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.875rem;
+    font-weight: bold;
+    text-decoration: none;
+    display: block;
+    padding: 0.4rem 1rem;
+    color: #3e3832;
+    margin-left: 8px;
+}
+
+.ui-menu .ui-menu-item a:hover,
+.ui-menu .ui-menu-item a.ui-state-focus {
+    color: #0074c2;
+}
+
+.ui-menu .ui-menu-item a:hover:before,
+.ui-menu .ui-menu-item a.ui-state-focus:before {
+    position: absolute;
+    border: 3px solid #0067c5;
+    border-radius: 50%;
+    content: " ";
+    text-align: left;
+    float: left;
+    left: 6px;
+    top: 13.5px;
+}
+
+::-webkit-input-placeholder {
+    color: #7d726a;
+}
+
+:-moz-placeholder {
+    color: #7d726a;
+}
+
+::-moz-placeholder {
+    color: #7d726a;
+}
+
+:-ms-input-placeholder {
+    color: #7d726a;
+}
+
+.vekk {
+    position: absolute;
+    left: -3000px;
+}
+
+.pull-left {
+    float: left;
+}
+
+.pull-right {
+    float: right;
+}
+
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+    line-height: 0;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+label {
+    cursor: pointer;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+input[type=checkbox]:focus + label,
+input[type=radio]:focus + label {
+    border: 1px dotted;
+}
+
+.col-md-4 {
+    float: right;
+}
+
+.sokeForm {
+    display: none;
+}
+
+.sokeForm .sokeElement {
+    display: block;
+    position: relative;
+    border: 1px inset #ccc;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sokeForm .sokeElement .sokefelt {
+    border: none;
+    display: block;
+    width: 100%;
+    padding: 10px 60px 10px 20px;
+    font-size: 1.875rem;
+}
+
+.sokeForm .sokeElement .sokeknapp {
+    position: absolute;
+    top: 13px;
+    right: 14px;
+    bottom: 0;
+    width: 30px;
+    border: none;
+}
+
+.sokeForm .sokeElement #knappers {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    width: 59px;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.sokeresultatContainer {
+    padding: 20px 0;
+    background: #fff;
+    border-top: 1px solid #ddd;
+
+}
+
+.sokeresultatContainer h1 {
+    display: none;
+}
+
+.sokeresultatContainer .soketips {
+    font-size: 0.875rem;
+    float: right;
+    margin-right: 2px;
+}
+
+.sokeresultatContainer .treffInfo {
+    font-size: 1.1rem;
+    display: block;
+    margin-top: -4px;
+}
+
+.sokeresultatContainer .sokeord {
+    font-weight: bold;
+}
+
+.sokeresultatContainer .sorteringListe {
+    display: inline-block;
+    padding: 17px 0 0;
+    margin: 0;
+}
+
+.sokeresultatContainer .sorteringListe + .soketips {
+    margin: 1.3rem 2px 0 0;
+}
+
+.sokeresultatContainer .sorteringListe li {
+    display: inline-block;
+    white-space: nowrap;
+    padding-right: 2em;
+    font-size: 0.875rem;
+}
+
+.sokeresultatContainer .sorteringListe li a {
+    display: block;
+    color: #3e3832;
+    padding: 4px 0 4px 30px;
+    background: url(../img/navno/gfx/forms/radio_svart_bg.svg) no-repeat left 3px;
+}
+
+.sokeresultatContainer .sorteringListe li a:hover,
+.sokeresultatContainer .sorteringListe li a:active,
+.sokeresultatContainer .sorteringListe li a:focus,
+.sokeresultatContainer .sorteringListe li a:visited {
+    color: #3e3832 !important;
+}
+
+.sokeresultatContainer .sorteringListe li:hover a {
+    text-decoration: none;
+}
+
+.sokeresultatContainer .sorteringListe li.erValgt a {
+    background: url(../img/navno/gfx/forms/radio_valgt_svart_bg.svg) no-repeat left 3px;
+}
+
+.sokeresultatContainer .treffInfo + .soketips {
+    margin: -1.3rem 2px 0 0;
+}
+
+.sokeresultatContainer .sokeresultatliste .listeinnisoketreff {
+    border-top: 0;
+    padding: 0;
+}
+
+.sokeresultatContainer .sokeresultatliste li {
+    border-top: 1px solid #c8c5c4;
+    padding: 15px 0;
+
+}
+
+.sokeresultatContainer .sokeresultatliste li:last-child {
+    padding-bottom: 0;
+}
+
+.sokeresultatContainer .sokeresultatliste li a {
+    color: #3e3832;
+    display: block;
+
+}
+
+.sokeresultatContainer .sokeresultatliste li a:hover {
+    text-decoration: none;
+}
+
+.sokeresultatContainer .sokeresultatliste li a:focus {
+    outline: none;
+    text-decoration: none;
+}
+
+.sokeresultatContainer .sokeresultatliste li a:focus h2 {
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .sokeresultatliste li a h2 {
+    color: #0074c2;
+    margin-bottom: 0;
+    font-size: 1.1rem;
+}
+
+.sokeresultatContainer .sokeresultatliste li a h2:hover {
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .sokeresultatliste li a p:nth-child(2) {
+    color: #7d726a;
+    margin: 0;
+}
+
+.sokeresultatContainer .sokeresultatliste li a p.resultattekst {
+    margin-top: 11px;
+    font-size: 1rem;
+}
+
+.sokeresultatContainer .sokeresultatliste li a p:last-child {
+    color: #675c53;
+    margin: 10px 0 0;
+}
+
+.sokeresultatContainer .sokeresultatliste li > div:focus {
+    outline: none;
+}
+
+.sokeresultatContainer .sokeresultatliste li > div:focus h2 {
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .sokeresultatliste li > div h2 {
+    font-size: 1.1rem;
+}
+
+.sokeresultatContainer .sokeresultatliste li > div a {
+    color: #0074c2;
+}
+
+.sokeresultatContainer .sokeresultatliste li > div a:hover {
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .sokeresultatliste li > div a:focus {
+    text-decoration: underline;
+    outline: none;
+}
+
+.sokeresultatContainer .sokeresultatliste li.kontor table {
+    width: 100%;
+    margin-top: 11px;
+}
+
+.sokeresultatContainer .sokeresultatliste li.kontor table tr {
+    border-bottom: 1px solid #c8c5c4;
+}
+
+.sokeresultatContainer .sokeresultatliste li.kontor table tr:last-child {
+    border-bottom: none;
+}
+
+.sokeresultatContainer .sokeresultatliste li.kontor table td {
+    font-size: 0.875rem;
+    padding: 0.3rem 0;
+}
+
+.sokeresultatContainer .sokeresultatliste li.kontor table td:first-child {
+    width: 35%;
+    vertical-align: text-top;
+}
+
+.sokeresultatContainer .sokeresultatliste li.kontor table td:last-child {
+    font-size: 0.75rem;
+    padding-top: 0.4rem;
+}
+
+.sokeresultatContainer .sokeresultatliste li.skjema > a p {
+    margin-top: 10px;
+}
+
+.sokeresultatContainer .sokeresultatliste li.skjema > ul {
+    list-style-type: disc;
+    padding: 10px 0;
+}
+
+.sokeresultatContainer .sokeresultatliste li.skjema > ul li {
+    float: left;
+    padding: 0 30px 0 0;
+    border: none;
+}
+
+.sokeresultatContainer .sokeresultatliste li.skjema > ul li a {
+    color: #0074c2;
+    display: inline;
+}
+
+.sokeresultatContainer .sokeresultatliste li.skjema > ul li a:hover {
+    color: #0074c2;
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .sokeresultatliste li.skjema > ul li:first-child {
+    list-style-type: none;
+}
+
+.sokeresultatContainer .sokeresultatliste:hover .resultattittel {
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .flereResultater {
+    font-family: Modus, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    margin-top: 28px;
+}
+
+.sokeresultatContainer .postnummersok {
+    border-top: 1px solid #c8c5c4;
+    padding-top: 25px;
+}
+
+.sokeresultatContainer .postnummersok a {
+    color: #0074c2;
+}
+
+.sokeresultatContainer .postnummersok a:hover {
+    text-decoration: underline;
+}
+
+.sokeresultatContainer .postnummersok h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.sokeresultatContainer .postnummersok table {
+    width: 100%;
+}
+
+.sokeresultatContainer .postnummersok table tr {
+    border-bottom: 1px solid #c8c5c4;
+}
+
+.sokeresultatContainer .postnummersok table tr:last-child {
+    border-bottom: none;
+}
+
+.sokeresultatContainer .postnummersok table td {
+    font-size: 0.875rem;
+    padding: 0.3rem 0;
+}
+
+.sokeresultatContainer .postnummersok table td.lenkecelle {
+    width: 35%;
+    vertical-align: text-top;
+}
+
+.sokeresultatContainer .forklaringstekstVedIngenTreff {
+    margin-top: 20px;
+    padding-top: 30px;
+    border-top: 1px solid #c8c5c4;
+    font-size: 1rem;
+}
+
+.minimertFiltreringspanel {
+    border-top: 1px solid #ddd;
+    padding-bottom: 25px;
+    margin-top: 20px;
+}
+
+.minimertFiltreringspanel a {
+    color: #fff;
+    display: block;
+}
+
+.minimertFiltreringspanel li {
+    background-color: #333;
+    width: 50%;
+    border-right: 1px solid #ddd;
+    display: inline-block;
+    font-size: 1.3em;
+}
+
+.minimertFiltreringspanel li.erValgt {
+    background-color: #0074c2;
+}
+
+.minimertFiltreringspanel li:nth-child(3),
+.minimertFiltreringspanel li:nth-child(4) {
+    display: none;
+}
+
+.minimertFiltreringspanel li:nth-child(4) {
+    border-right: none;
+}
+
+.minimertFiltreringspanel li:last-child {
+    display: none;
+}
+
+.minimertFiltreringspanel li a {
+    text-align: center;
+    padding-left: 0;
+}
+
+.minimertFiltreringspanel li a.fasettLinkHode {
+    text-transform: none;
+}
+
+.minimertFiltreringspanel .fasettListe > li {
+    padding: 0 10px;
+}
+
+.fasettListe {
+    padding: 0;
+    margin: 0;
+}
+
+.fasettListe.tid li.erValgt label {
+    font-weight: bold;
+}
+
+.fasettListe li {
+    padding: 10px 25px 6px 20px;
+    text-align: left;
+}
+
+.fasettListe li.utvidbar {
+    border-top: 1px solid #675c53;
+}
+
+.fasettListe li.utvidbar em {
+    display: block;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.fasettListe li.utvidbar input[type=radio] + label {
+    background: url(../img/navno/gfx/icons/pluss.svg) 4px 5px no-repeat;
+}
+
+.fasettListe li.utvidbar input[type=radio]:checked + label {
+    background: url(../img/navno/gfx/icons/minus.svg) 4px 5px no-repeat;
+}
+
+.fasettListe li.utvidbar input[type=radio]:disabled + label {
+    background: url(../img/navno/gfx/icons/minus_graa.svg) 4px 5px no-repeat;
+}
+
+.fasettListe li.utvidbar label {
+    font-family: Modus, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #b7b1a9;
+}
+
+.fasettListe li label {
+    font-family: Modus, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.fasettListe li .antallTreff {
+    margin-right: 0;
+}
+
+.fasettListe li.erValgt label {
+    color: #fff;
+}
+
+.fasettListe li.erValgt span {
+    color: #fff;
+}
+
+.fasettListe li.erValgt a:hover {
+    color: #000;
+}
+
+.fasettListe li div {
+    margin-top: -5px;
+}
+
+.fasettListe li em:before,
+.fasettListe li a:before,
+.fasettListe li em:after,
+.fasettListe li a:after {
+    display: table;
+    content: "";
+    line-height: 0;
+}
+
+.fasettListe li em:after,
+.fasettListe li a:after {
+    clear: both;
+}
+
+.fasettListe li em span:first-child,
+.fasettListe li a span:first-child {
+    float: left;
+}
+
+.fasettListe li em span:last-child,
+.fasettListe li a span:last-child {
+    float: right;
+}
+
+.fasettListe li a {
+    display: block;
+}
+
+.fasettListe li a h2 {
+    font-size: 1rem;
+    font-family: Modus, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0;
+}
+
+.fasettListe li a:hover {
+    text-decoration: none;
+    color: #00a9e0;
+}
+
+.fasettListe li a:hover h2 span {
+    color: #00a9e0;
+}
+
+.fasettListe li span {
+    display: block;
+}
+
+.fasettListe li span h2 {
+    font-size: 1rem;
+    font-family: Modus, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0;
+}
+
+.fasettListe li em {
+    display: block;
+    padding-bottom: 10px;
+    padding-top: 3px;
+}
+
+.fasettListe li form input[type=radio] + label,
+.fasettListe li form input[type=checkbox] + label {
+    max-width: 117px;
+}
+
+.fasettListe .underFasettListe {
+    margin-top: 10px;
+}
+
+.fasettListe .underFasettListe li {
+    border: none;
+    padding: 6px 0;
+}
+
+.fasettListe .underFasettListe li label {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.875rem;
+    text-transform: none;
+    font-weight: normal;
+}
+
+.fasettListe .underFasettListe li:last-child {
+    margin-bottom: 10px;
+}
+
+.fasettLinkHode {
+    padding: 9px 0 9px 0;
+    text-transform: uppercase;
+    margin-top: 0 !important;
+}
+
+.fasettLinkHode em {
+    display: inline !important;
+    padding: 0 !important;
+    font-style: normal;
+    text-transform: none !important;
+    text-align: center !important;
+}
+
+.fasettLinkHode h2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 22px;
+    white-space: nowrap;
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    text-transform: none;
+    margin: 0;
+}
+
+.underFasettListe li .antallTreff {
+    color: #b7b1a9;
+    font-weight: normal;
+}
+
+.underFasettListe li a {
+    background-image: url(../img/navno/gfx/forms/check_mork.svg);
+    padding: 3px 0 10px 18px;
+    color: #b7b1a9;
+    font-weight: normal;
+}
+
+.underFasettListe li em {
+    display: block;
+    padding-bottom: 10px;
+    padding-top: 3px;
+}
+
+.underFasettListe li .erValgt a {
+    background-image: url(../img/navno/gfx/forms/check_valgt_mork.svg);
+    color: #fff;
+    font-weight: bold;
+}
+
+.underFasettListe li .erValgt .antallTreff {
+    color: #fff;
+}
+
+.underFasettListe li.defaultFasett.erValgt a {
+    background-image: url(../img/navno/gfx/icons/hake.svg);
+}
+
+.underFasettListe li.fasettHarNullTreff em {
+    background-image: url(../img/navno/gfx/forms/check_inactive_mork.svg);
+    padding-left: 44px;
+}
+
+.underFasettListe li a,
+.underFasettListe li.erValgt a,
+.underFasettListe li.defaultFasett.erValgt a,
+.underFasettListe li.fasettHarNullTreff em {
+    background-repeat: no-repeat;
+    background-position: 5px 2px;
+}
+
+.fasettGruppeElement {
+    background-color: #333;
+    margin-bottom: 20px;
+}
+
+.fasettGruppeElement h2 {
+    padding: 12px 20px;
+    border-bottom: 1px solid #675c53;
+    color: #b7b1a9;
+    font-size: 1rem;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.fasettGruppeElement .erValgt .fasettLinkHode {
+    margin-bottom: -10px;
+}
+
+.fasettGruppeElement.radiobuttons li {
+    border: none;
+    padding: 4px 25px 3px 20px;
+}
+
+.fasettGruppeElement.radiobuttons li a {
+    background-image: url(../img/navno/gfx/forms/radio_svart_bg.svg);
+}
+
+.fasettGruppeElement.radiobuttons li.erValgt a {
+    background-image: url(../img/navno/gfx/forms/radio_valgt_svart_bg.svg);
+    color: #fff;
+    font-weight: bold;
+}
+
+.fasettGruppeElement.radiobuttons li.erValgt .antallTreff {
+    color: #fff;
+    font-weight: normal;
+}
+
+.fasettGruppeElement.radiobuttons li.erValgt .fasettLinkHode .antallTreff {
+    display: none;
+}
+
+.fasettGruppeElement.radiobuttons li:first-child {
+    padding-top: inherit;
+}
+
+.fasettGruppeElement.radiobuttons li.fasettHarNullTreff em {
+    background-image: url(../img/navno/gfx/forms/radio_inactive_mork.svg);
+    padding-left: 44px;
+}
+
+.fasettGruppeElement.radiobuttons li a,
+.fasettGruppeElement.radiobuttons li.erValgt a,
+.fasettGruppeElement.radiobuttons li.fasettHarNullTreff em {
+    background-repeat: no-repeat;
+    background-position: 5px 2px;
+}
+
+.fasettGruppeElement.radiobuttons a {
+    color: #b7b1a9;
+    padding-bottom: 10px;
+    padding-top: 3px;
+}
+
+.fasettGruppeElement.radiobuttons .fasettListe {
+    padding: 10px 0;
+}
+
+.antallTreff {
+    color: #b7b1a9;
+    float: right;
+    font-size: 0.687rem;
+    margin-top: 6px;
+}
+
+.fasettHarNullTreff {
+    color: #b7b1a9;
+}
+
+.fasettHarNullTreff li label:hover {
+    text-decoration: none;
+}
+
+.fasettHarNullTreff em {
+    font-size: 0.875rem;
+    font-style: normal;
+    padding-left: 24px;
+}
+
+.fasettHarNullTreff.erValgt .antallTreff {
+    font-weight: normal;
+}
+
+@media (min-width: 20em) {
+    body {
+        background-color: #fff;
+    }
+}
+
+@media (min-width: 38.75em) {
+    body {
+        background-color: #f1f1f1;
+    }
+
+    .sokeresultatContainer {
+        padding: 20px 25px;
+        border-top: none;
+        margin-top: 45px;
+    }
+
+    .sokeresultatContainer .sokeresultatliste li {
+        padding: 25px 0 25px 95px;
+    }
+
+    .postnummersok {
+        background-image: url(../img/navno/gfx/icons/postnummersok.svg);
+        margin-top: 1.5rem;
+        padding: 25px 0 0 95px;
+    }
+
+    .informasjon {
+        background-image: url(../img/navno/gfx/icons/info_stor.svg);
+    }
+
+    .skjema {
+        background-image: url(../img/navno/gfx/icons/skjema_stor.svg);
+    }
+
+    .tjenester {
+        background-image: url(../img/navno/gfx/icons/kalkulator_stor.svg);
+    }
+
+    .kontor {
+        background: url(../img/navno/gfx/icons/kontor_stor.svg);
+    }
+
+    .statistikk {
+        background-image: url(../img/navno/gfx/icons/statistikk_stor.svg);
+    }
+
+    .nyheter {
+        background-image: url(../img/navno/gfx/icons/nyhet_stor.svg);
+    }
+
+    .lokalt {
+        background-image: url(../img/navno/gfx/icons/lokalt_stor.svg);
+    }
+
+    .word {
+        background-image: url(../img/navno/gfx/icons/doc.svg);
+    }
+
+    .pdf {
+        background-image: url(../img/navno/gfx/icons/pdf.svg);
+    }
+
+    .ppt {
+        background-image: url(../img/navno/gfx/icons/ppt.svg);
+    }
+
+    .excel {
+        background-image: url(../img/navno/gfx/icons/excel.svg);
+    }
+
+    .annenFiltype {
+        background-image: url(../img/navno/gfx/icons/fil.svg);
+    }
+
+    .postnummersok,
+    .informasjon,
+    .skjema,
+    .tjenester,
+    .kontor,
+    .statistikk,
+    .nyheter,
+    .lokalt,
+    .word,
+    .pdf,
+    .ppt,
+    .excel,
+    .annenFiltype {
+        background-repeat: no-repeat;
+        background-position: 3px 15px;
+    }
+}
+
+@media (min-width: 38.75em) and (max-width: 48em) {
+    .maincontent {
+        padding-left: 60px;
+        padding-right: 60px;
+    }
+}
+
+@media (min-width: 48em) {
+    .fasettListe li label {
+        max-width: 140px;
+    }
+
+    .sokeForm {
+        display: block;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        width: 100%;
+    }
+
+    .sokeresultatContainer {
+        padding: 30px;
+        margin-top: 0;
+    }
+
+    .sokeresultatContainer h1 {
+        display: block;
+        font-size: 1.875rem;
+        margin-top: 0;
+    }
+
+    .sokeresultatContainer .sokeresultatliste li a p.resultattekst {
+        font-size: 0.875rem;
+    }
+
+    .underFasettListe li {
+        background: none;
+    }
+
+    .topnavitem.selected-topnavitem > a {
+        color: #3e3832;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        display: none;
+    }
+
+    .sitesearch .btn-sitesearch {
+        width: 13.4%;
+    }
+}
+
+@media (max-width: 480px) {
+    .sitesearch .btn-sitesearch {
+        width: 18%;
+    }
+}
+
+@media (min-width: 769px) {
+    .minimertFiltreringspanel {
+        display: none;
+    }
+}
+
+@media (max-width: 820px) {
+    .col-md-4 .fasettListe li a,
+    .fasettHarNullTreff em {
+        font-size: 0.75rem;
+    }
+
+    .fasettListe > li {
+        padding: 12px 18px 5px 22px;
+    }
+}
+
+@media (min-width: 820px) {
+    .fasettListe li label {
+        max-width: 155px;
+    }
+}
+
+@media (min-width: 960px) {
+    .fasettListe li label {
+        max-width: 260px;
+    }
+}
+
+@media (min-width: 62em) {
+    .fasettListe li label {
+        max-width: inherit;
+    }
+
+    .utvidbar .underFasettListe li .antallTreff {
+        margin-right: 40px;
+    }
+
+    .underFasettListe li a,
+    .underFasettListe li em {
+        padding-right: 44px;
+    }
+
+    .underFasettListe li.informasjon {
+        background-image: url(../img/navno/gfx/icons/info_liten.svg);
+    }
+
+    .underFasettListe li.informasjon.erValgt {
+        background-image: url(../img/navno/gfx/icons/info_liten_valgt.svg);
+    }
+
+    .underFasettListe li.skjema {
+        background-image: url(../img/navno/gfx/icons/skjema_liten.svg);
+    }
+
+    .underFasettListe li.skjema.erValgt {
+        background-image: url(../img/navno/gfx/icons/skjema_liten_valgt.svg);
+    }
+
+    .underFasettListe li.tjenester {
+        background-image: url(../img/navno/gfx/icons/kalkulator_liten.svg);
+    }
+
+    .underFasettListe li.tjenester.erValgt {
+        background-image: url(../img/navno/gfx/icons/kalkulator_liten_valgt.svg);
+    }
+
+    .underFasettListe li.kontor {
+        background-image: url(../img/navno/gfx/icons/kontor_liten.svg);
+    }
+
+    .underFasettListe li.kontor.erValgt {
+        background-image: url(../img/navno/gfx/icons/kontor_liten_valgt.svg);
+    }
+
+    .underFasettListe li.statistikk {
+        background-image: url(../img/navno/gfx/icons/statistikk_liten.svg);
+    }
+
+    .underFasettListe li.statistikk.erValgt {
+        background-image: url(../img/navno/gfx/icons/statistikk_liten_valgt.svg);
+    }
+
+    .underFasettListe li.nyheter {
+        background-image: url(../img/navno/gfx/icons/nyhet_liten.svg);
+    }
+
+    .underFasettListe li.nyheter.erValgt {
+        background-image: url(../img/navno/gfx/icons/nyhet_liten_valgt.svg);
+    }
+
+    .underFasettListe li.lokalt {
+        background-image: url(../img/navno/gfx/icons/lokalt_liten.svg);
+    }
+
+    .underFasettListe li.lokalt.erValgt {
+        background-image: url(../img/navno/gfx/icons/lokalt_liten_valgt.svg);
+    }
+
+    .underFasettListe li.filer {
+        background-image: url(../img/navno/gfx/icons/fil_liten.svg);
+    }
+
+    .underFasettListe li.filer.erValgt {
+        background-image: url(../img/navno/gfx/icons/fil_liten_valgt.svg);
+    }
+
+    .underFasettListe li.informasjon,
+    .underFasettListe li.informasjon.erValgt,
+    .underFasettListe li.skjema,
+    .underFasettListe li.skjema.erValgt,
+    .underFasettListe li.tjenester,
+    .underFasettListe li.tjenester.erValgt,
+    .underFasettListe li.kontor,
+    .underFasettListe li.kontor.erValgt,
+    .underFasettListe li.statistikk,
+    .underFasettListe li.statistikk.erValgt,
+    .underFasettListe li.nyheter,
+    .underFasettListe li.nyheter.erValgt,
+    .underFasettListe li.lokalt,
+    .underFasettListe li.lokalt.erValgt,
+    .underFasettListe li.filer,
+    .underFasettListe li.filer.erValgt {
+        background-repeat: no-repeat;
+        background-position: right 8px;
+    }
+}
+
+header h1 {
+    display: none;
+}
+
+.maincontent {
+    padding-top: 0 !important;
+    padding-bottom: 20px;
+    margin-top: -2px;
+}
+
+.sitelogo {
+    padding: 18px 0 18px;
+}
+
+p,
+.paragraph,
+input,
+button {
+    font-size: 0.75rem;
+}
+
+p,
+.paragraph {
+    margin: 0 0 10px;
+}
+
+.placeholder {
+    margin-top: 20px;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    position: absolute;
+    opacity: 0;
+    height: 0;
+}
+
+input[type=radio] + label {
+    background: url(../img/navno/gfx/forms/radio.svg) 0 0 no-repeat;
+}
+
+input[type=radio]:checked + label {
+    background: url(../img/navno/gfx/forms/radio_valgt.svg) 0 0 no-repeat;
+}
+
+input[type=radio].svart + label {
+    background: url(../img/navno/gfx/forms/radio_svart_bg.svg) 0 0 no-repeat;
+}
+
+input[type=radio].svart:checked + label {
+    background: url(../img/navno/gfx/forms/radio_valgt_svart_bg.svg) 0 0 no-repeat;
+}
+
+input[type=radio]:disabled + label {
+    background: url(../img/navno/gfx/forms/radio_inactive_mork.svg) 0 0 no-repeat;
+    color: #b7b1a9;
+}
+
+input[type=checkbox] + label {
+    background: url(../img/navno/gfx/forms/check_inactive.svg) 0 0 no-repeat;
+}
+
+input[type=checkbox]:checked + label {
+    background: url(../img/navno/gfx/forms/check_valgt.svg) 0 0 no-repeat;
+    color: #fff;
+    font-weight: bold;
+}
+
+.defaultFasett * input[type=checkbox]:checked + label {
+    background: url(../img/navno/gfx/icons/hake.svg) 0 0 no-repeat;
+}
+
+input[type=checkbox]:disabled + label {
+    background: url(../img/navno/gfx/forms/check_inactive_mork.svg) 0 0 no-repeat;
+    color: #b7b1a9;
+}
+
+form input[type=radio] + label,
+form input[type=checkbox] + label {
+    display: inline-block;
+    position: relative;
+    padding: 2px 0 0 32px;
+    min-height: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.875rem;
+    text-transform: none;
+}
+
+label.mobile-toggler,
+button.mobile-toggler {
+    width: 47%;
+}
+
+.selfTestStatusoverskrift {
+    padding-top: 15px;
+    padding-bottom: 3px;
+    margin: 0px;
+}
+
+@media print {
+    .sokeresultatContainer .treffInfo,
+    .soketips,
+    .alternativerForSortering {
+        display: none;
+    }
+
+    .informasjon {
+        background-image: url(../img/navno/gfx/icons/info_stor.png) !important;
+    }
+
+    .kontor {
+        background-image: url(../img/navno/gfx/icons/kontor_stor.png) !important;
+    }
+
+    .skjema {
+        background-image: url(../img/navno/gfx/icons/skjema_stor.png) !important;
+    }
+
+    .tjenester {
+        background-image: url(../img/navno/gfx/icons/kalkulator_stor.png) !important;
+    }
+
+    .informasjon,
+    .kontor,
+    .skjema,
+    .tjenester {
+        padding-left: 6.25rem !important;
+        background-position: 1% 50% !important;
+        background-repeat: no-repeat !important;
+    }
+
+    .minimertFiltreringspanel {
+        display: none !important;
+    }
+
+    .sokeresultatContainer {
+        border: 0 !important;
+        padding: 0 !important;
+    }
+}
+#sres {
+    width: 100%;
+}

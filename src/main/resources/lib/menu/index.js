@@ -112,7 +112,7 @@ exports.getMegaMenu = function(content, levels)
 	var subMenus = [];
 	if ( content ) {
         levels--;
-        return libs.content.getChildren({key: content._id}).hits.reduce(
+        return libs.content.getChildren({ key: content._id, start: 0, count: 100 }).hits.reduce(
             function (t, el) {
                 t.push(menuToJson(el, levels));
                 return t;

@@ -3,7 +3,7 @@ var context = require('/lib/xp/context');
 var trans = require('/lib/contentTranslator');
 var nodeLib = require('/lib/xp/node');
 var repo = nodeLib.connect({
-    repoId: 'cms-repo',
+    repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin']
 });
@@ -51,7 +51,7 @@ function createElements() {
 function createTemplates(socket) {
     context.run(
         {
-            repository: 'cms-repo',
+            repository: 'com.enonic.cms.default',
             branch: 'draft',
             user: {
                 login: 'su',
@@ -80,12 +80,13 @@ function createTemplates(socket) {
                             .toLowerCase()
                             .replace(/ - /g, '-')
                             .replace(/ /g, '-')
+                            .replace(/ø/g, 'o')
                 });
                 var elem = exists ? exists : content.create(value.content);
                 repo.modify({
                     key: elem._id,
                     editor: function(c) {
-                        c.page = value.page;
+                        c.components = value.components;
                         if (exists) {
                             c.data = value.content.data;
                         }
@@ -98,251 +99,327 @@ function createTemplates(socket) {
     );
 }
 
-var tavleListePage = {
-    controller: 'no.nav.navno:main-page',
-    region: [
-        {
-            name: 'main',
-            component: [
-                {
-                    type: 'PartComponent',
-                    PartComponent: {
-                        name: 'page-heading-with-menu',
-                        template: 'no.nav.navno:page-heading-with-menu',
-                        config: {}
-                    }
-                },
-                {
-                    type: 'LayoutComponent',
-                    LayoutComponent: {
-                        name: 'main',
-                        template: 'no.nav.navno:main',
-                        config: {},
-                        region: [
-                            {
-                                name: 'first',
-                                component: {
-                                    type: 'PartComponent',
-                                    PartComponent: {
-                                        name: 'tavleliste',
-                                        template: 'no.nav.navno:tavleliste',
-                                        config: {}
-                                    }
-                                }
-                            },
-                            {
-                                name: 'second',
-                                component: {
-                                    type: 'PartComponent',
-                                    PartComponent: {
-                                        name: 'tavleliste-relatert-innhold',
-                                        template: 'no.nav.navno:tavleliste-relatert-innhold',
-                                        config: {}
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        {
-            name: 'footer',
-            component: {
-                type: 'PartComponent',
-                PartComponent: {
-                    name: 'page-footer',
-                    template: 'no.nav.navno:page-footer',
-                    config: {}
-                }
+var tavleListePage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {}
             }
         }
-    ],
-    config: {},
-    customized: false
-};
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'layout',
+        path: '/main/1',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/first/0',
+        part: {
+            descriptor: 'no.nav.navno:tavleliste',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/second/0',
+        part: {
+            descriptor: 'no.nav.navno:tavleliste-relatert-innhold',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    }
+];
 
-var mainArticlePage = {
-    controller: 'no.nav.navno:main-page',
-    region: [
-        {
-            name: 'main',
-            component: [
-                {
-                    type: 'PartComponent',
-                    PartComponent: {
-                        name: 'page-heading-with-menu',
-                        template: 'no.nav.navno:page-heading-with-menu',
-                        config: {}
-                    }
-                },
-                {
-                    type: 'LayoutComponent',
-                    LayoutComponent: {
-                        name: 'main',
-                        template: 'no.nav.navno:main',
-                        config: {},
-                        region: [
-                            {
-                                name: 'first',
-                                component: {
-                                    type: 'PartComponent',
-                                    PartComponent: {
-                                        name: 'main-article',
-                                        template: 'no.nav.navno:main-article',
-                                        config: {}
-                                    }
-                                }
-                            },
-                            {
-                                name: 'second',
-                                component: [
-                                    {
-                                        type: 'PartComponent',
-                                        PartComponent: {
-                                            name: 'main-article-linked-list',
-                                            template: 'no.nav.navno:main-article-linked-list',
-                                            config: {}
-                                        }
-                                    },
-                                    {
-                                        type: 'PartComponent',
-                                        PartComponent: {
-                                            name: 'main-article-related-content',
-                                            template: 'no.nav.navno:main-article-related-content',
-                                            config: {}
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        {
-            name: 'footer',
-            component: {
-                type: 'PartComponent',
-                PartComponent: {
-                    name: 'page-footer',
-                    template: 'no.nav.navno:page-footer',
-                    config: {}
-                }
+var mainArticlePage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {}
             }
         }
-    ],
-    config: {},
-    customized: false
-};
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'layout',
+        path: '/main/1',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/first/0',
+        part: {
+            descriptor: 'no.nav.navno:main-article',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/second/0',
+        part: {
+            descriptor: 'no.nav.navno:main-article-linked-list',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/second/1',
+        part: {
+            descriptor: 'no.nav.navno:main-article-related-content',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    }
+];
 
-var transportPage = {
-    controller: 'no.nav.navno:main-page',
-    region: [
-        {
-            name: 'main',
-            component: [
-                {
-                    type: 'PartComponent',
-                    PartComponent: {
-                        name: 'page-heading-with-menu',
-                        template: 'no.nav.navno:page-heading-with-menu',
-                        config: {}
-                    }
-                },
-                {
-                    type: 'LayoutComponent',
-                    LayoutComponent: {
-                        name: '1-col',
-                        template: 'no.nav.navno:1-col',
-                        config: {},
-                        region: {
-                            name: 'first',
-                            component: {
-                                type: 'PartComponent',
-                                PartComponent: {
-                                    name: 'transport',
-                                    template: 'no.nav.navno:transport',
-                                    config: {}
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            name: 'footer',
-            component: {
-                type: 'PartComponent',
-                PartComponent: {
-                    name: 'page-footer',
-                    template: 'no.nav.navno:page-footer',
-                    config: {}
-                }
+var transportPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {}
             }
         }
-    ],
-    config: {},
-    customized: false
-};
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'layout',
+        path: '/main/1',
+        layout: {
+            descriptor: 'no.nav.navno:1-col',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/first/0',
+        part: {
+            descriptor: 'no.nav.navno:transport',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    }
+];
 
-var hovedSeksjonPage = {
-    controller: 'no.nav.navno:main-page',
-    region: [
-        {
-            name: 'main',
-            component: [
-                {
-                    type: 'PartComponent',
-                    PartComponent: {
-                        name: 'page-heading-with-menu',
-                        template: 'no.nav.navno:page-heading-with-menu',
-                        config: {}
-                    }
-                },
-                {
-                    type: 'LayoutComponent',
-                    LayoutComponent: {
-                        name: 'main-1-col',
-                        template: 'no.nav.navno:main-1-col',
-                        config: {},
-                        region: {
-                            name: 'first',
-                            component: {
-                                type: 'PartComponent',
-                                PartComponent: {
-                                    name: 'Oppslagstavle',
-                                    template: 'no.nav.navno:oppslagstavle',
-                                    config: {}
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            name: 'footer',
-            component: {
-                type: 'PartComponent',
-                PartComponent: {
-                    name: 'page-footer',
-                    template: 'no.nav.navno:page-footer',
-                    config: {}
-                }
+var hovedSeksjonPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {}
             }
         }
-    ],
-    config: {},
-    customized: false
-};
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'layout',
+        path: '/main/1',
+        layout: {
+            descriptor: 'no.nav.navno:main-1-col',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/first/0',
+        part: {
+            descriptor: 'no.nav.navno:oppslagstavle',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    }
+];
 
 var ekstraStorTabell = {
-    controller: 'no.nav.navno:ekstraStorTabell',
-    config: {},
-    customized: false
+    type: 'page',
+    path: '/',
+    page: {
+        descriptor: 'no.nav.navno:ekstraStorTabell',
+        customized: true,
+        config: {
+            'no-nav-navno': {}
+        }
+    }
 };
+
+var searchResult = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: false,
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'layout',
+        path: '/main/1',
+        layout: {
+            descriptor: 'no.nav.navno:search',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/searchbar/0',
+        part: {
+            descriptor: 'no.nav.navno:searchbar',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/main/1/result/0',
+        part: {
+            descriptor: 'no.nav.navno:searchresult',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    }
+];
 
 var templates = [
     {
@@ -356,7 +433,7 @@ var templates = [
                 supports: 'no.nav.navno:main-article'
             }
         },
-        page: mainArticlePage
+        components: mainArticlePage
     },
     {
         content: {
@@ -369,7 +446,7 @@ var templates = [
                 supports: 'no.nav.navno:tavleliste'
             }
         },
-        page: tavleListePage
+        components: tavleListePage
     },
 
     {
@@ -383,7 +460,7 @@ var templates = [
                 supports: 'no.nav.navno:oppslagstavle'
             }
         },
-        page: hovedSeksjonPage
+        components: hovedSeksjonPage
     },
     {
         content: {
@@ -396,7 +473,7 @@ var templates = [
                 supports: 'no.nav.navno:transport'
             }
         },
-        page: transportPage
+        components: transportPage
     },
     {
         content: {
@@ -409,7 +486,7 @@ var templates = [
                 supports: 'no.nav.navno:Ekstra_stor_tabell'
             }
         },
-        page: ekstraStorTabell
+        components: ekstraStorTabell
     },
     {
         content: {
@@ -422,6 +499,19 @@ var templates = [
                 supports: 'no.nav.navno:Ekstra_stor_tabell'
             }
         },
-        page: ekstraStorTabell
+        components: ekstraStorTabell
+    },
+    {
+        content: {
+            displayName: 'Søkeresultat',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:searchresult'
+            }
+        },
+        components: searchResult
     }
 ];
