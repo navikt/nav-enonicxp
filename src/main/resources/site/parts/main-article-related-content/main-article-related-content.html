@@ -6,9 +6,6 @@
         <div id="accordion-information" class="accordion-panel">
             <p data-th-if="${content.text}" data-th-utext="${portal.processHtml({'_value='+content.text})}">text</p>
             <ul>
-                <li data-th-each="file : ${ content.files }">
-                    <a data-th-href="${file.link}" data-th-text="${ file.title }"></a>
-                </li>
                 <li data-th-each="link : ${ content.links }">
                     <a data-th-href="${link.link}" data-th-text="${ link.title }"></a>
                 </li>
