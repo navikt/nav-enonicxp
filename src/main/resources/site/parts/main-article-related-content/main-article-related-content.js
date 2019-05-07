@@ -11,50 +11,44 @@ function handleGet(req) {
         var content = portal.getContent();
         var selectNames = langLib.parseBundle(content.language).related_content.select;
         var menuListItems = content.data.menuListItems || {};
-        var keys = menuListItems._selected ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected]) : [];
+        var keys = ["selfservice", "form-and-application",  "process-times", "related-information", "international", "report-changes", "rates",  "appeal-rights", "membership", "rules-and-regulations"];
         var linkList = keys.map(function(el) {
+            if(!menuListItems[el]) return undefined;
             var links = forceArr(menuListItems[el].link);
-            var files = forceArr(menuListItems[el].files);
             return {
                 name: selectNames[el] !== undefined ? selectNames[el] : '',
-                files: files
-                    .map(function(file) {
-                        var file = contentLib.get({
-                            key: file
-                        });
-                        if (!file) return undefined;
-                        return {
-                            title: file.displayName,
-                            link: portal.attachmentUrl({ id: file._id, download: true })
-                        };
-                    })
-                    .reduce(function(t, el) {
-                        if (el) t.push(el);
-                        return t;
-                    }, []),
                 links: links
-                    .map(function(link) {
-                        var element = contentLib.get({ key: link });
+                    .map(function(contentId) {
+                        var element = contentLib.get({ key: contentId });
                         if (!element) return undefined;
-                        var isFile = element.type === 'media:document';
+                        var link = "";
+                        if(element.type === 'media:document') {
+                            link = portal.attachmentUrl({ id: element._id, download: true });
+                        } else if(element.type === 'no.nav.navno:Ekstern_lenke'){
+                            var url = element.data.url;
+                            if(url.indexOf('http') !== 0) {
+                                url = 'https://' + url;
+                            }
+                            link = url;
+                        } else {
+                            link = portal.pageUrl({ id: contentId });
+                        }
                         return {
                             title: element.displayName,
-                            link: !isFile ? portal.pageUrl({ id: link }) : portal.attachmentUrl({ id: element._id, download: true })
+                            link: link
                         };
-                    })
-                    .reduce(function(t, el) {
+                    }).reduce(function(t, el) {
                         if (el) t.push(el);
                         return t;
                     }, [])
             };
-        });
 
-        linkList = linkList.reduce(function(list, el) {
-            if ((el.files && el.files.length > 0) || (el.links && el.links.length > 0)) {
-                list.push(el);
-            }
-            return list;
+        })
+        .reduce(function(t, el) {
+            if (el && el.links && el.links.length > 0) t.push(el);
+            return t;
         }, []);
+
         var hasMenuLists = linkList.length > 0;
         var params = {
             relatedContentList: linkList,
