@@ -700,7 +700,7 @@ function transcms2xpPage(indexConfig, socket) {
             if (article) {
                 log.info(stripContentType(article.type));
                 if (!ret[stripContentType(article.type)]) {
-                    log.info('Article not in ret');
+                    log.info('Article not in ret :: ' + article.type);
                     log.info(logBeautify(article));
                     return;
                 } else {
@@ -773,7 +773,7 @@ function transcms2xpPage(indexConfig, socket) {
                 cms2xpPage = cms2xpPages[0];
             }
             // update refs from article id to cms2xp_page id in ref
-            tools.modify(contentLib.get({ key: ref.id }), articleId, cms2xpPage._id);
+            tools.modify(contentLib.get({ key: ref.id }), cms2xpPage._id, articleId);
         });
 
         // delete article
