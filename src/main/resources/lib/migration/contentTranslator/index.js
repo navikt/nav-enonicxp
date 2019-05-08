@@ -428,9 +428,11 @@ function trans(type) {
         });
     }
 }
+
 function toContentType(type) {
     return app.name + ':' + type;
 }
+
 function transSidebeskrivelse(indexConfigurations, socket) {
     var start = 0;
     var count = 100;
@@ -450,18 +452,50 @@ function transSidebeskrivelse(indexConfigurations, socket) {
         );
     }
     socket.emit('sidebeskrivelsemax', ar.length);
+    var noHomeCount = 0;
     ar.forEach(function(id, index) {
         socket.emit('sidebeskrivelseval', index + 1);
 
         var sidebeskrivelse = contentLib.get({ key: id });
         var sideHome = repo.get(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentHome);
-        // NOTE: Why? This doesn't do anything
+
+        // if sideHome is missing, we're assuming the sidebeskrivelse belongs to its parent
         if (!sideHome) {
-            sideHome = utils.getContentByCmsKey(sidebeskrivelse.x['no-nav-navno'].cmsContent.contentKey);
-            // log.info(JSON.stringify(sideHome, null, 4));
+            var parentPath =
+                '/content' +
+                sidebeskrivelse._path
+                    .split('/')
+                    .slice(0, -1)
+                    .join('/');
+            var parent = repo.get(parentPath);
+
+            // parent has to be a tavleliste
+            if (parent.type === 'no.nav.navno:tavleliste') {
+                var parentsChildren = contentLib.getChildren({
+                    key: parent._id,
+                    start: 0,
+                    count: 100
+                }).hits;
+
+                // if the parent has multiple sidebeskrivelse children we won't know which to select and stop instead
+                for (var i = 0; i < parentsChildren.length; i += 1) {
+                    var child = parentsChildren[i];
+                    if (child.type === 'no.nav.navno:nav.sidebeskrivelse' && child._id !== id) {
+                        log.info('ERROR: Parent has multiple sidebeskrivelse children :: ' + sidebeskrivelse._path);
+                        return;
+                    }
+                }
+
+                // set sideHome to parent as this is most likely the intended home for this sidebeskrivelse
+                sideHome = parent;
+            } else {
+                log.info('parent of invalid type :: ' + sidebeskrivelse._path);
+            }
+        }
+        if (!sideHome) {
+            noHomeCount += 1;
             return;
         }
-        if (!sideHome) return;
         sideHome.data.ingress = sidebeskrivelse.data.description;
         // replace all sidebeskrivelse refs with home refs
         getRefs(sidebeskrivelse).forEach(function(value) {
@@ -481,7 +515,9 @@ function transSidebeskrivelse(indexConfigurations, socket) {
         // move all elements in the list to be children of home
         moveFromContentSiteToContent(sideHome.data.sectionContents, { path: sideHome._path, id: sideHome._id });
     });
+    log.info('no home count :: ' + noHomeCount);
 }
+
 var t = true;
 function changetavleliste(id) {
     if (!t) return;
