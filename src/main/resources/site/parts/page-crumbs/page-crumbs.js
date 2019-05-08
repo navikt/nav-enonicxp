@@ -1,9 +1,9 @@
 var libs = {
-    thymeleaf: require('/lib/xp/thymeleaf'),
+    thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     menu: require('/lib/menu'),
-    lang: require('../../lib/i18nUtil'),
+    lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll')
 };
 var view = resolve('page-crumbs.html');

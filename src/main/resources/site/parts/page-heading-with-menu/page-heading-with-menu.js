@@ -1,14 +1,13 @@
 var libs = {
-	thymeleaf: require('/lib/xp/thymeleaf'),
+	thymeleaf: require('/lib/thymeleaf'),
 	portal: require('/lib/xp/portal'),
 	content: require('/lib/xp/content'),
-	util: require('/lib/enonic/util'),
+	// util: require('/lib/enonic/util'),
     i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
     tools: require('/lib/tools'),
     cache: require('/lib/cacheControll'),
-    log: require('../../lib/contentTranslator')
 };
 var view = resolve('page-heading-with-menu.html');
 //TODO: URL-er skal være konfigurerbare

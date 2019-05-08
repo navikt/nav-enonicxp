@@ -1,7 +1,6 @@
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var content = require('/lib/xp/content');
-var trans = require('/lib/contentTranslator');
 var utils = require('/lib/nav-utils');
 var cache = require('/lib/cacheControll');
 // Resolve the view
@@ -20,7 +19,7 @@ exports.get = function(req) {
                 if (el) t.push(el);
                 return t;
             }, [])
-            .concat(content.getChildren({ key: cont._id }).hits)
+            .concat(content.getChildren({ key: cont._id, start: 0, count: 100 }).hits)
             .map(function(el) {
                 return {
                     src: portal.pageUrl({ id: el._id }),
@@ -56,7 +55,7 @@ exports.get = function(req) {
             hideDate: cont.data.hide_date === true,
             hideSectionContentsDate: cont.data.hideSectionContentsDate === true,
             hasLanguageVersions: languages.length > 0,
-            languages: languages,
+            languages: languages
         };
 
         // Render a thymeleaf template

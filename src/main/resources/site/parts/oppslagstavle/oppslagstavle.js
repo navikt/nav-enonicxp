@@ -1,9 +1,8 @@
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var contentLib = require('/lib/xp/content');
 // Resolve the view
 var view = resolve('oppslagstavle.html');
-var t = require('/lib/contentTranslator');
 var langLib = require('/lib/i18nUtil');
 var cache = require('/lib/cacheControll');
 

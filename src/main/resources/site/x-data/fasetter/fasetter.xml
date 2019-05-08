@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+    <display-name>Fasetter</display-name>
+    <form>
+        <input type="TextLine" name="fasett">
+            <label>Fasett</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="TextLine" name="underfasett">
+            <label>Underfasett</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="TextLine" name="className">
+            <label>Class name</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</x-data>

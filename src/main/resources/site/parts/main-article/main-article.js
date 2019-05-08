@@ -1,7 +1,5 @@
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
-var contentLib = require('/lib/xp/content');
-var contentTranslator = require('../../lib/contentTranslator');
 var utils = require('/lib/nav-utils');
 var langLib = require('/lib/i18nUtil');
 // Resolve the view
@@ -9,8 +7,6 @@ var view = resolve('main-article.html');
 var cache = require('/lib/cacheControll');
 
 exports.get = function(req) {
-    //contentTranslator.logBeautify(req);
-
     return cache.getPaths(req.path, 'main-article', function() {
         var toc = null;
         // Define the model

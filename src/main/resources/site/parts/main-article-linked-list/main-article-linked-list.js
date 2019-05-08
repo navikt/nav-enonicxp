@@ -1,4 +1,4 @@
-var thymeleaf = require('/lib/xp/thymeleaf');
+var thymeleaf = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var content = require('/lib/xp/content');
 // Resolve the view
@@ -26,7 +26,9 @@ exports.get = function(req) {
             return [{ heading: root.displayName, link: portal.pageUrl({ id: root._id }), active: root === cont }].concat(
                 content
                     .getChildren({
-                        key: root._id
+                        key: root._id,
+                        start: 0,
+                        count: 100
                     })
                     .hits.reduce(function(previousValue, child) {
                         if (!child.type.startsWith('media')) {

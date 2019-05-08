@@ -1,5 +1,5 @@
 var content = require('/lib/xp/content');
-var thymeleafLib = require('/lib/xp/thymeleaf');
+var thymeleafLib = require('/lib/thymeleaf');
 var utils = require('/lib/nav-utils');
 
 var view = resolve('printArticle.html');
