@@ -1,16 +1,12 @@
 var libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    navUtils: require('../nav-utils'),
-    // util: require('/lib/enonic/util'),
-    log: require('../contentTranslator')
-
+    navUtils: require('../nav-utils')
 };
 
 var globals = {
-	appPath: app.name.replace(/\./g, '-')
+    appPath: app.name.replace(/\./g, '-')
 };
-
 
 /**
  * Returns the full breadcrumb menu path for the current content and site.
@@ -22,84 +18,87 @@ var globals = {
  *   @param {String} [params.urlType=null] - Control type of URL to be generated for menu items, default is 'server', only other option is 'absolute'.
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
- exports.getBreadcrumbMenu = function(params) {
-	var content = libs.portal.getContent();
-	var site = libs.portal.getSite();
-	var breadcrumbItems = []; // Stores each menu item
-	var breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf
+exports.getBreadcrumbMenu = function(params) {
+    var content = libs.portal.getContent();
+    var site = libs.portal.getSite();
+    var breadcrumbItems = []; // Stores each menu item
+    var breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf
 
-	// Safely take care of all incoming settings and set defaults, for use in current scope only
-	var settings = {
-		linkActiveItem: params.linkActiveItem || false,
-		showHomepage: params.showHomepage || true,
-		homepageTitle: params.homepageTitle || null,
-		dividerHtml: params.dividerHtml || null,
-		urlType: params.urlType || null
-	};
+    // Safely take care of all incoming settings and set defaults, for use in current scope only
+    var settings = {
+        linkActiveItem: params.linkActiveItem || false,
+        showHomepage: params.showHomepage || true,
+        homepageTitle: params.homepageTitle || null,
+        dividerHtml: params.dividerHtml || null,
+        urlType: params.urlType || null
+    };
 
-	// We only allow 'server' or 'absolute' options for URL type.
-	if (settings.urlType) {
-		switch (settings.urlType) {
-			case 'absolute':
-				break; // Pass through
-			default:
-				settings.urlType = 'server';
-		}
-	}
+    // We only allow 'server' or 'absolute' options for URL type.
+    if (settings.urlType) {
+        switch (settings.urlType) {
+            case 'absolute':
+                break; // Pass through
+            default:
+                settings.urlType = 'server';
+        }
+    }
 
-	// Loop the entire path for current content based on the slashes. Generate one JSON item node for each item.
-	// If on frontpage, skip the path-loop
-	if (content._path !== site._path) {
-		var fullPath = content._path;
-		var arrVars = fullPath.split("/");
-		var arrLength = arrVars.length;
-		for (var i = 1; i < arrLength-1; i++) { // Skip first item - the site - since it is handled separately.
-			var lastVar = arrVars.pop();
-			if (lastVar !== '') {
-				var curItem = libs.content.get({ key: arrVars.join("/") + "/" + lastVar }); // Make sure item exists
-				if (curItem) {
-					var item = {};
-					var curItemUrl = libs.portal.pageUrl({
-						path: curItem._path,
-						type: settings.urlType
-					});
-					item.text = curItem.displayName;
-					if (content._path === curItem._path) { // Is current node active?
-						item.active = true;
-						if (settings.linkActiveItem) { // Respect setting for creating links for active item
-							item.url = curItemUrl;
-						}
-					} else {
-						item.active = false;
-						item.url = curItemUrl;
-					}
-					item.type = curItem.type;
-					breadcrumbItems.push(item);
-				}
-			}
-		}
-	}
+    // Loop the entire path for current content based on the slashes. Generate one JSON item node for each item.
+    // If on frontpage, skip the path-loop
+    if (content._path !== site._path) {
+        var fullPath = content._path;
+        var arrVars = fullPath.split('/');
+        var arrLength = arrVars.length;
+        for (var i = 1; i < arrLength - 1; i++) {
+            // Skip first item - the site - since it is handled separately.
+            var lastVar = arrVars.pop();
+            if (lastVar !== '') {
+                var curItem = libs.content.get({ key: arrVars.join('/') + '/' + lastVar }); // Make sure item exists
+                if (curItem) {
+                    var item = {};
+                    var curItemUrl = libs.portal.pageUrl({
+                        path: curItem._path,
+                        type: settings.urlType
+                    });
+                    item.text = curItem.displayName;
+                    if (content._path === curItem._path) {
+                        // Is current node active?
+                        item.active = true;
+                        if (settings.linkActiveItem) {
+                            // Respect setting for creating links for active item
+                            item.url = curItemUrl;
+                        }
+                    } else {
+                        item.active = false;
+                        item.url = curItemUrl;
+                    }
+                    item.type = curItem.type;
+                    breadcrumbItems.push(item);
+                }
+            }
+        }
+    }
 
-	// Add Home button linking to site home, if wanted
-	if (settings.showHomepage) {
-		var homeUrl = libs.portal.pageUrl({
-			path: site._path,
-			type: settings.urlType
-		});
-		var item = {
-			text: settings.homepageTitle || site.displayName, // Fallback to site displayName if no custom name given
-			url: homeUrl,
-			active: (content._path === site._path),
-			type: site.type
-		};
-		breadcrumbItems.push(item);
-	}
+    // Add Home button linking to site home, if wanted
+    if (settings.showHomepage) {
+        var homeUrl = libs.portal.pageUrl({
+            path: site._path,
+            type: settings.urlType
+        });
+        var item = {
+            text: settings.homepageTitle || site.displayName, // Fallback to site displayName if no custom name given
+            url: homeUrl,
+            active: content._path === site._path,
+            type: site.type
+        };
+        breadcrumbItems.push(item);
+    }
 
-	// Add divider html (if any) and reverse the menu item array
-	breadcrumbMenu.divider = settings.dividerHtml || null;
-	breadcrumbMenu.items = breadcrumbItems.reverse();
+    // Add divider html (if any) and reverse the menu item array
+    breadcrumbMenu.divider = settings.dividerHtml || null;
+    breadcrumbMenu.items = breadcrumbItems.reverse();
 
-	return breadcrumbMenu;
+    return breadcrumbMenu;
 };
 
 /***
@@ -107,20 +106,16 @@ var globals = {
  * Bygger menyen fra elementer i en mappe istedenfor å gå igjennom hele siten.
  * Beholdt rekursiviteten
  ***/
-exports.getMegaMenu = function(content, levels)
-{
-	var subMenus = [];
-	if ( content ) {
+exports.getMegaMenu = function(content, levels) {
+    var subMenus = [];
+    if (content) {
         levels--;
-        return libs.content.getChildren({ key: content._id, start: 0, count: 100 }).hits.reduce(
-            function (t, el) {
-                t.push(menuToJson(el, levels));
-                return t;
-            },
-            subMenus
-        );
+        return libs.content.getChildren({ key: content._id, start: 0, count: 100 }).hits.reduce(function(t, el) {
+            t.push(menuToJson(el, levels));
+            return t;
+        }, subMenus);
     } else {
-	    return [];
+        return [];
     }
 };
 function menuToJson(content, levels) {
@@ -146,13 +141,13 @@ function menuToJson(content, levels) {
 
     return {
         displayName: content.displayName,
-        path: libs.portal.pageUrl({id: content.data.itemContent, type: 'absolute'}).replace("http:", "https:"),
+        path: libs.portal.pageUrl({ id: content.data.itemContent, type: 'absolute' }).replace('http:', 'https:'),
         id: content._id,
         inPath: inPath,
         isActive: isActive,
-        hasChildren: (subMenus.length > 0),
+        hasChildren: subMenus.length > 0,
         children: subMenus,
-        showLoginInfo: (libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true')
+        showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true'
     };
 }
 /*** ***/
@@ -162,10 +157,10 @@ function menuToJson(content, levels) {
  * @param {integer} levels - menu levels to get
  * @returns {Array}
  */
-exports.getMenuTree = function (levels) {
+exports.getMenuTree = function(levels) {
     var menu = [];
     var site = libs.portal.getSite();
-    levels = (isInt(levels) ? levels : 1);
+    levels = isInt(levels) ? levels : 1;
 
     if (site) {
         menu = exports.getSubMenus(site, levels);
@@ -174,22 +169,23 @@ exports.getMenuTree = function (levels) {
     return menu;
 };
 
-exports.getSubMenus = function (parentContent, levels) {
+exports.getSubMenus = function(parentContent, levels) {
     var subMenus = [];
 
     if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
         subMenus.push(menuItemToJson(parentContent, 0));
     }
     levels--;
-    return libs.content.getChildren({
-        key: parentContent._id,
-        count: 200
-    }).hits.reduce(function (t, el) {
-        if (isMenuItem(el)) t.push(menuItemToJson(el, levels));
-        return t;
-    },subMenus);
+    return libs.content
+        .getChildren({
+            key: parentContent._id,
+            count: 200
+        })
+        .hits.reduce(function(t, el) {
+            if (isMenuItem(el)) t.push(menuItemToJson(el, levels));
+            return t;
+        }, subMenus);
 };
-
 
 /**
  * Checks if the content is a menu item.
@@ -207,7 +203,7 @@ function isMenuItem(content) {
     }
     var menuItemMetadata = extraDataModule['menu-item'] || {};
 
-    return menuItemMetadata['menuItem'] && (!excludeFromMainMenu(content));
+    return menuItemMetadata['menuItem'] && !excludeFromMainMenu(content);
 }
 
 /**
@@ -252,16 +248,16 @@ function menuItemToJson(content, levels) {
     return {
         displayName: content.displayName,
         menuName: menuItem.menuName && (menuItem.menuName.length ? menuItem.menuName : null),
-        path: libs.portal.pageUrl({path: content._path, type: 'absolute'}),//.replace("http:", "https:"),
+        path: libs.portal.pageUrl({ path: content._path, type: 'absolute' }), //.replace("http:", "https:"),
         name: content._name,
         id: content._id,
-        hasChildren: (subMenus.length > 0),
+        hasChildren: subMenus.length > 0,
         inPath: inPath,
         isActive: isActive,
-        newWindow: (menuItem.newWindow ? menuItem.newWindow : false),
+        newWindow: menuItem.newWindow ? menuItem.newWindow : false,
         type: content.type,
         children: subMenus,
-        showLoginInfo: (libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true')
+        showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true'
     };
 }
 
@@ -271,7 +267,5 @@ function menuItemToJson(content, levels) {
  * @returns {boolean}
  */
 function isInt(value) {
-    return !isNaN(value) &&
-           parseInt(Number(value)) == value &&
-           !isNaN(parseInt(value, 10));
+    return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
 }

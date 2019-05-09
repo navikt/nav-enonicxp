@@ -1,8 +1,8 @@
 var contentLib = require('/lib/xp/content');
 var nodeLib = require('/lib/xp/node');
-var trans = require('/lib/contentTranslator');
+var trans = require('/lib/migration/contentTranslator');
 var contextLib = require('/lib/xp/context');
-var translateRapportHandbok = require('/lib/translate/translateRapportHandbok');
+var translateRapportHandbok = require('./translateRapportHandbok');
 var repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',

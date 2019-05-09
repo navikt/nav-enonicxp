@@ -4,57 +4,62 @@ var contentLib = require('/lib/xp/content');
 var view = resolve('main-article-related-content.html');
 var cache = require('/lib/cacheControll');
 var langLib = require('/lib/i18nUtil');
-var contentTranslator = require('/lib/contentTranslator');
 
 function handleGet(req) {
     return cache.getPaths(req.path, 'main-article-related-content', function() {
         var content = portal.getContent();
         var selectNames = langLib.parseBundle(content.language).related_content.select;
         var menuListItems = content.data.menuListItems || {};
-        var keys = menuListItems._selected ? (Array.isArray(menuListItems._selected) ? menuListItems._selected : [menuListItems._selected]) : [];
-        var linkList = keys.map(function(el) {
-            var links = forceArr(menuListItems[el].link);
-            var files = forceArr(menuListItems[el].files);
-            return {
-                name: selectNames[el] !== undefined ? selectNames[el] : '',
-                files: files
-                    .map(function(file) {
-                        var file = contentLib.get({
-                            key: file
-                        });
-                        if (!file) return undefined;
-                        return {
-                            title: file.displayName,
-                            link: portal.attachmentUrl({ id: file._id, download: true })
-                        };
-                    })
-                    .reduce(function(t, el) {
-                        if (el) t.push(el);
-                        return t;
-                    }, []),
-                links: links
-                    .map(function(link) {
-                        var element = contentLib.get({ key: link });
-                        if (!element) return undefined;
-                        var isFile = element.type === 'media:document';
-                        return {
-                            title: element.displayName,
-                            link: !isFile ? portal.pageUrl({ id: link }) : portal.attachmentUrl({ id: element._id, download: true })
-                        };
-                    })
-                    .reduce(function(t, el) {
-                        if (el) t.push(el);
-                        return t;
-                    }, [])
-            };
-        });
+        var keys = [
+            'selfservice',
+            'form-and-application',
+            'process-times',
+            'related-information',
+            'international',
+            'report-changes',
+            'rates',
+            'appeal-rights',
+            'membership',
+            'rules-and-regulations'
+        ];
+        var linkList = keys
+            .map(function(el) {
+                if (!menuListItems[el]) return undefined;
+                var links = forceArr(menuListItems[el].link);
+                return {
+                    name: selectNames[el] !== undefined ? selectNames[el] : '',
+                    links: links
+                        .map(function(contentId) {
+                            var element = contentLib.get({ key: contentId });
+                            if (!element) return undefined;
+                            var link = '';
+                            if (element.type === 'media:document') {
+                                link = portal.attachmentUrl({ id: element._id, download: true });
+                            } else if (element.type === 'no.nav.navno:Ekstern_lenke') {
+                                var url = element.data.url;
+                                if (url.indexOf('http') !== 0) {
+                                    url = 'https://' + url;
+                                }
+                                link = url;
+                            } else {
+                                link = portal.pageUrl({ id: contentId });
+                            }
+                            return {
+                                title: element.displayName,
+                                link: link
+                            };
+                        })
+                        .reduce(function(t, el) {
+                            if (el) t.push(el);
+                            return t;
+                        }, [])
+                };
+            })
+            .reduce(function(t, el) {
+                if (el && el.links && el.links.length > 0) t.push(el);
+                return t;
+            }, []);
 
-        linkList = linkList.reduce(function(list, el) {
-            if ((el.files && el.files.length > 0) || (el.links && el.links.length > 0)) {
-                list.push(el);
-            }
-            return list;
-        }, []);
         var hasMenuLists = linkList.length > 0;
         var params = {
             relatedContentList: linkList,

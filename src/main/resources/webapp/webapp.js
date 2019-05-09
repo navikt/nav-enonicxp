@@ -1,5 +1,5 @@
 var t = require('../translation/translation');
-var handleSockets = require('/lib/handleSockets/handleSockets');
+var handleSockets = require('/lib/migration/handleSockets/handleSockets');
 var ws = require('/lib/wsUtil');
 var emitter = new ws.SocketEmitter();
 

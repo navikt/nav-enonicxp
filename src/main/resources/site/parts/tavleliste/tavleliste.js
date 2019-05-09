@@ -1,7 +1,6 @@
 var thymeleaf = require('/lib/thymeleaf');
 var portal = require('/lib/xp/portal');
 var content = require('/lib/xp/content');
-var trans = require('/lib/contentTranslator');
 var utils = require('/lib/nav-utils');
 var cache = require('/lib/cacheControll');
 // Resolve the view

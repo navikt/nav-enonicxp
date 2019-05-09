@@ -130,16 +130,6 @@
                                 </input>
                             </items>
                         </option>
-                        <option name="saksbehandling">
-                            <label>Saksbehandling</label>
-                            <items>
-                                <input name="link" type="ContentSelector">
-                                    <label>Saksbehandling</label>
-                                    <custom-text>contentdata/links</custom-text>
-                                    <occurrences maximum="0" minimum="1"/>
-                                </input>
-                            </items>
-                        </option>
                         <option name="rates">
                             <label>Satser</label>
                             <items>
