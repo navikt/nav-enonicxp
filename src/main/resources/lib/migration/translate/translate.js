@@ -1,8 +1,9 @@
 var contentLib = require('/lib/xp/content');
 var nodeLib = require('/lib/xp/node');
 var trans = require('/lib/migration/contentTranslator');
-var contextLib = require('/lib/xp/context');
 var translateRapportHandbok = require('./translateRapportHandbok');
+var translateContentAZ = require('./translateContentAZ');
+var tools = require('/lib/tools');
 var repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',
@@ -11,56 +12,42 @@ var repo = nodeLib.connect({
 exports.handle = function(socket) {
     socket.emit('newTask', createElements());
     socket.on('navnyhet', function() {
-        runInContext(socket, updateNavNyhet);
+        tools.runInContext(socket, updateNavNyhet);
     });
     socket.on('navpressemelding', function() {
-        runInContext(socket, updatePressemelding);
+        tools.runInContext(socket, updatePressemelding);
     });
     socket.on('sidebeskrivelse', function() {
-        runInContext(socket, updateTavleliste);
+        tools.runInContext(socket, updateTavleliste);
     });
     socket.on('cms2xp_page', function() {
-        runInContext(socket, updateCms2xpPage);
+        tools.runInContext(socket, updateCms2xpPage);
     });
     socket.on('main', function() {
-        runInContext(socket, updateMainOppslagstavle);
+        tools.runInContext(socket, updateMainOppslagstavle);
     });
     socket.on('min', function() {
-        runInContext(socket, updateOppslagstavle);
+        tools.runInContext(socket, updateOppslagstavle);
     });
     socket.on('cms2xp_section', function() {
-        runInContext(socket, changeSection2TavleListe);
+        tools.runInContext(socket, changeSection2TavleListe);
     });
     socket.on('Kort_om', function() {
-        runInContext(socket, updateKortOm);
+        tools.runInContext(socket, updateKortOm);
     });
     socket.on('Artikkel_Brukerportal', function() {
-        runInContext(socket, updateArtikkelBrukerportal);
+        tools.runInContext(socket, updateArtikkelBrukerportal);
     });
     socket.on('rapportHandbok', function() {
-        runInContext(socket, translateRapportHandbok.handleRapportHandbok);
+        tools.runInContext(socket, translateRapportHandbok.handleRapportHandbok);
     });
     socket.on('navRapportHandbok', function() {
-        runInContext(socket, translateRapportHandbok.handleNavRapportHandbok);
+        tools.runInContext(socket, translateRapportHandbok.handleNavRapportHandbok);
+    });
+    socket.on('contentAZ', function() {
+        tools.runInContext(socket, translateContentAZ.handleContentAZ);
     });
 };
-
-function runInContext(socket, func) {
-    contextLib.run(
-        {
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            user: {
-                login: 'su',
-                userStore: 'system'
-            },
-            principals: ['role:system.admin']
-        },
-        function() {
-            func(socket);
-        }
-    );
-}
 
 function updatePressemelding(socket) {
     transl8('nav.pressemelding', socket);
@@ -561,6 +548,40 @@ function createElements() {
                             tag: 'button',
                             tagClass: ['is-info', 'button'],
                             action: 'navRapportHandbok',
+                            text: 'Translate'
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider']
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Content A-Z'
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'content-az',
+                            progress: {
+                                value: 'content-az-value',
+                                max: 'content-az-max',
+                                valId: 'content-az-val-id'
+                            }
+                        },
+                        {
+                            tag: 'p',
+                            status: 'content-az-status'
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'contentAZ',
                             text: 'Translate'
                         },
                         {
