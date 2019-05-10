@@ -20,12 +20,12 @@ function handleGet(req) {
             principals: ['role:system.admin']
         },
         function() {
-            //Henter ut eventuell publisert driftsmelding
+            //Henter ut eventuell publisert driftsmelding. Hvis flere er publisert, hentes sist endret
             var message = libs.content.getChildren({
                 key:'/www.nav.no/no/driftsmeldinger',
                 start: 0,
                 count: 1,
-                sort: '_modifiedTime DESC'
+                sort: 'modifiedtime DESC'
             });
             if ( message && message.hits.length > 0 ) {
                 var content = libs.portal.getContent();
