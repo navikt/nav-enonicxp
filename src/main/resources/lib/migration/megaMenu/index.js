@@ -2,6 +2,13 @@ var content = require('/lib/xp/content');
 var context = require('/lib/xp/context');
 var navUtils = require('/lib/nav-utils');
 
+var nodeLib = require('/lib/xp/node');
+var repo = nodeLib.connect({
+    repoId: 'com.enonic.cms.default',
+    branch: 'draft',
+    principals: ['role:system.admin']
+});
+
 exports.handle = function(socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
@@ -62,7 +69,7 @@ function createElements() {
 
 function handleMegaMenu(socket) {
     log.info('Starter');
-    
+
     // create megamenu folder if it doesn't exist
     if (!content.get({ key: '/www.nav.no/megamenu' })) {
         content.create({
@@ -76,9 +83,10 @@ function handleMegaMenu(socket) {
 
     var siteContent = content.get({ key: '/www.nav.no/' });
     getSubMenus('/www.nav.no/megamenu', siteContent, 4);
+    orderMenuItems();
 }
 
-var getSubMenus = function(path, parentContent, levels) {
+function getSubMenus(path, parentContent, levels) {
     levels--;
     return content
         .getChildren({
@@ -90,7 +98,7 @@ var getSubMenus = function(path, parentContent, levels) {
                 menuItemToMenuContent(path, el, levels);
             }
         });
-};
+}
 
 function menuItemToMenuContent(path, element, levels) {
     var menuContent;
@@ -144,4 +152,25 @@ function isMenuItem(content) {
  */
 function excludeFromMainMenu(content) {
     return navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
+}
+
+/**
+ * Order megamenu items correctly. Set manual order with a fallback to modifiedtime
+ */
+function orderMenuItems() {
+    var menuItems = content.query({
+        start: 0,
+        count: 500,
+        query: 'type = "no.nav.navno:megamenu-item"'
+    }).hits;
+
+    menuItems.forEach(function(menuItem) {
+        repo.modify({
+            key: menuItem._id,
+            editor: function(m) {
+                m._childOrder = '_manualordervalue DESC, modifiedtime ASC';
+                return m;
+            }
+        });
+    });
 }
