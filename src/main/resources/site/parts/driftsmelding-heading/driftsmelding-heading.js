@@ -20,14 +20,13 @@ function handleGet(req) {
             principals: ['role:system.admin']
         },
         function() {
-            //Henter ut eventuell publisert driftsmelding. Hvis flere er publisert, hentes sist endret
+            //Henter ut eventuell publisert driftsmelding. Hvis flere er publisert, hentes sist publiserte
             var message = libs.content.getChildren({
                 key:'/www.nav.no/no/driftsmeldinger',
                 start: 0,
                 count: 1,
                 sort: 'publish.from DESC'
             });
-            log.info(JSON.stringify(message, null, 4))
             if ( message && message.hits.length > 0 ) {
                 var content = libs.portal.getContent();
                 var language = content.language || 'no';
@@ -35,7 +34,8 @@ function handleGet(req) {
                 var model = {
                     heading: message.hits[0].displayName,
                     linkurl: libs.portal.pageUrl({type: "absolute", path: message.hits[0]._path}).replace("http:", "https:"),
-                    linktext: libs.lang.parseBundle(language).driftsmelding.linktext
+                    //TODO: fjerne hardkoding av HTTPS når dette er løst i serveroppsettet
+                    linktext: libs.lang.parseBundle(language).message.linktext
                 };
 
                 return {
