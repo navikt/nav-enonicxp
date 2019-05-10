@@ -25,8 +25,9 @@ function handleGet(req) {
                 key:'/www.nav.no/no/driftsmeldinger',
                 start: 0,
                 count: 1,
-                sort: 'modifiedtime DESC'
+                sort: 'publish.from DESC'
             });
+            log.info(JSON.stringify(message, null, 4))
             if ( message && message.hits.length > 0 ) {
                 var content = libs.portal.getContent();
                 var language = content.language || 'no';
