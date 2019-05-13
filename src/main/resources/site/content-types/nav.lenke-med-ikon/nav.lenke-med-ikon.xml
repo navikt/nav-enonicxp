@@ -1,0 +1,28 @@
+<content-type>
+    <display-name>Lenke med ikon</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <input name="description" type="TextArea">
+            <label>Beskrivelse</label>
+            <occurrences maximum="1" minimum="0"/>
+        </input>
+        <input name="icon" type="RadioButton">
+            <label>Ikon</label>
+            <occurrences minimum="0" maximum="0"/>
+            <config>
+                <option value="document">Dokument</option>
+                <option value="application">Applikasjon</option>
+            </config>
+            <default>document</default>
+        </input>
+        <input name="target" type="ContentSelector">
+            <label>Link</label>
+            <occurrences maximum="1" minimum="0"/>
+        </input>
+        <input name="url" type="TextArea">
+            <label>URL</label>
+            <help-text>Skal kun brukes for eksterne URLer. Bruk link for internt innhold.</help-text>
+            <occurrences maximum="1" minimum="0"/>
+        </input>
+    </form>
+</content-type>
