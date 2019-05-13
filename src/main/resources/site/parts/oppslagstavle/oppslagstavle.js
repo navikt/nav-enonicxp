@@ -80,7 +80,7 @@ function mapElements(elementId) {
         ? {
               isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
               heading: el.displayName || el.data.title,
-              icon: el.data.icon || 'icon-document',
+              icon: 'icon-' + (el.data.icon || 'document'),
               ingress: el.data.ingress || el.data.description || el.data.list_description,
               src: getSrc(el),
               published: el.publish && el.publish.first ? el.publish.first : el.createdTime
