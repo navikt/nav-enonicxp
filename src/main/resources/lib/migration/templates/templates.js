@@ -441,7 +441,7 @@ var templates = [
             data: {
                 supports: [
                     'no.nav.navno:main-article',
-                    'no.nav.navno:Driftsmelding_nav'
+                    'no.nav.navno:melding'
                 ]
             }
         },
