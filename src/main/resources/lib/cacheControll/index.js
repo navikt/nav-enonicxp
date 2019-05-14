@@ -66,20 +66,19 @@ function wipe(name) {
     };
 }
 
-function wipeOnChange(id) {
-    var wipee = repo.get(id);
+function wipeOnChange(path) {
     var w = wipe('paths');
-    if ( wipee ) {
-        log.info('WIPE: ' + getPath(wipee._path) + ' ~ ' + wipee._path);
-        w(getPath(wipee._path, 'megamenu-item'));
-        w(getPath(wipee._path, 'main-article'));
-        w(getPath(wipee._path, 'main-article-linked-list'));
-        w(getPath(wipee._path, 'main-article-related-content'));
-        w(getPath(wipee._path, 'oppslagstavle'));
-        w(getPath(wipee._path, 'tavleliste'));
-        w(getPath(wipee._path, 'tavleliste-relatert-innhold'));
-        w(getPath(wipee._path, 'transport'));
-        if ( wipee._path.indexOf('/www.nav.no/no/driftsmeldinger/') !== -1 ) {
+    if ( path ) {
+        log.info('WIPE: ' + getPath(path) + ' ~ ' + path);
+        w(getPath(path, 'megamenu-item'));
+        w(getPath(path, 'main-article'));
+        w(getPath(path, 'main-article-linked-list'));
+        w(getPath(path, 'main-article-related-content'));
+        w(getPath(path, 'oppslagstavle'));
+        w(getPath(path, 'tavleliste'));
+        w(getPath(path, 'tavleliste-relatert-innhold'));
+        w(getPath(path, 'transport'));
+        if ( path.indexOf('/www.nav.no/no/driftsmeldinger/') !== -1 ) {
              w('driftsmelding-heading');
         }
     }
@@ -91,7 +90,6 @@ function getSome(name) {
         if (key.indexOf('/default/draft/') === -1 && key.indexOf('/edit/') === -1 && key.indexOf('/_templates/') === -1) {
             return caches[name].get(getPath(key, type), function() {
                 log.info('Store cache key: ' + getPath(key, type) + ' ~ ' + key);
-                // log.info('Cache ' + name + ': ' + caches[name].getSize());
                 return f(params);
             });
         } else {
@@ -109,13 +107,13 @@ function activateEventListener() {
         callback: function(event) {
             event.data.nodes.forEach(function(node) {
                 if (node.branch === 'master') {
-                    wipeOnChange(node.id);
+                    wipeOnChange(node.path);
                     repo.query({
                         start: 0,
                         count: 100,
                         branch: 'master',
                         query: "_references LIKE '" + node.id + "'"
-                    }).hits.forEach(function(el){wipeOnChange(el._id)});
+                    }).hits.forEach(function(el){wipeOnChange(el._path)});
                 }
             });
         }

@@ -47,7 +47,10 @@ function handleGet(req) {
                 }
                 else {
                     //Ingen publiserte driftsmeldinger
-                    return null;
+                    return {
+                        contentType: 'text/html',
+                        body: null
+                    };
                 }
             }
         );
