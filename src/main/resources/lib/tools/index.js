@@ -1,5 +1,6 @@
 var contentLib = require('/lib/xp/content');
 var valueLib = require('/lib/xp/value');
+var contextLib = require('/lib/xp/context');
 var R = require('/lib/ramda');
 
 var nodeLib = require('/lib/xp/node');
@@ -776,4 +777,22 @@ function getRefsInRefMap(id) {
         });
     }
     return usedIn;
+}
+
+exports.runInContext = runInContext;
+function runInContext(socket, func) {
+    contextLib.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system'
+            },
+            principals: ['role:system.admin']
+        },
+        function() {
+            func(socket);
+        }
+    );
 }
