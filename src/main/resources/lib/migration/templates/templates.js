@@ -313,8 +313,18 @@ var hovedSeksjonPage = [
         }
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:driftsmelding-heading',
+            config: {
+                'no-nav-navno': {}
+            }
+        }
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main-1-col',
             config: {
@@ -324,7 +334,7 @@ var hovedSeksjonPage = [
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:oppslagstavle',
             config: {
@@ -429,7 +439,10 @@ var templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:main-article'
+                supports: [
+                    'no.nav.navno:main-article',
+                    'no.nav.navno:melding'
+                ]
             }
         },
         components: mainArticlePage
