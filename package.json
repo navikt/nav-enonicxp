@@ -1,22 +1,33 @@
 {
-  "name": "navno-enonicxp",
-  "version": "1.0.0",
-  "description": "## Building",
-  "main": "createPhrases.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/navikt/nav-enonicxp.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/navikt/nav-enonicxp/issues"
-  },
-  "homepage": "https://github.com/navikt/nav-enonicxp#readme",
-  "devDependencies": {
-    "prompt": "^1.0.0"
-  }
+    "name": "navno-enonicxp",
+    "version": "1.0.0",
+    "description": "## Building",
+    "main": "createPhrases.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "babel src/main/resources --out-dir build/resources/main --ignore \"**/*.js\"",
+        "dev": "babel src/main/resources --out-dir build/resources/main --ignore \"**/*.js\" --watch"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/navikt/nav-enonicxp.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/navikt/nav-enonicxp/issues"
+    },
+    "homepage": "https://github.com/navikt/nav-enonicxp#readme",
+    "devDependencies": {
+        "@babel/cli": "^7.1.2",
+        "@babel/core": "^7.1.2",
+        "@babel/preset-env": "^7.1.0",
+        "eslint": "^5.16.0",
+        "eslint-config-standard": "^12.0.0",
+        "eslint-plugin-import": "^2.17.2",
+        "eslint-plugin-node": "^9.0.1",
+        "eslint-plugin-promise": "^4.1.1",
+        "eslint-plugin-standard": "^4.0.0",
+        "prompt": "^1.0.0"
+    }
 }
