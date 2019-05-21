@@ -91,3 +91,4 @@ crashlytics-build.properties
 *.css.map
 
 node_modules/
+.enonic

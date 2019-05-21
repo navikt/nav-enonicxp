@@ -2,21 +2,19 @@
     <div data-th-if="${contentAZPage}" class="footernavsection-wrapper">
         <div class="footernavsection">
             <button class="letter-scroll-left">
-                <span class="visuallyhidden"  data-th-utext="${lang.scrollStart}"></span>
+                <span class="visuallyhidden" data-th-utext="${lang.scrollStart}"></span>
             </button>
             <button class="letter-scroll-right">
-                <span class="visuallyhidden"  data-th-utext="${lang.scrollEnd}"></span>
+                <span class="visuallyhidden" data-th-utext="${lang.scrollEnd}"></span>
             </button>
             <nav class="container letters-container" id="footer-content-menu" aria-labelledby="footer-nav-heading">
-                <h1 class="visuallyhidden" id="footer-nav-heading"
-                    data-th-utext="${lang.contentAZ}"
-                >
-                </h1>
+                <h1 class="visuallyhidden" id="footer-nav-heading" data-th-utext="${lang.contentAZ}"></h1>
                 <ul class="accessible-megafooter">
                     <li class="letter" data-th-each="accessibleLetter: ${accessibleLetters}">
-                        <a data-ga="Footer: A til AA"
-                           data-th-href="${portal.pageUrl({'_path=' + contentAZPage, 'letter='+accessibleLetter})}"
-                           data-th-text="${accessibleLetter}"
+                        <a
+                            data-ga="Footer: A til AA"
+                            data-th-href="${portal.pageUrl({'_path=' + contentAZPage, 'letter='+accessibleLetter})}"
+                            data-th-text="${accessibleLetter}"
                         >
                         </a>
                         <div class="panel-wrapper footer-container">
