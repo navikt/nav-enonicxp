@@ -9,7 +9,8 @@ module.exports = {
         Atomics: 'readonly',
         SharedArrayBuffer: 'readonly',
         log: 'readonly',
-        app: 'readonly'
+        app: 'readonly',
+        resolve: 'readonly'
     },
     parserOptions: {
         ecmaVersion: 2018
@@ -18,6 +19,7 @@ module.exports = {
         semi: ['error', 'always'],
         indent: ['error', 4],
         curly: ['error', 'all'],
-        'no-extra-parens': ['off', 'all']
+        'no-extra-parens': ['off', 'all'],
+        'comma-dangle': ['error', 'always-multiline']
     }
 };
