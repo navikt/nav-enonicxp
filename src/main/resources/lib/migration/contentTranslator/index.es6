@@ -2,7 +2,6 @@ var contentLib = require('/lib/xp/content');
 var utils = require('/lib/nav-utils');
 var tools = require('/lib/tools');
 var node = require('/lib/xp/node');
-var R = require('/lib/ramda');
 
 function getRefs (a, b, c, d, e) {
     return tools.getRefs(a, b, c, d, e);
@@ -75,20 +74,8 @@ function removeImageSize (content) {
     return content;
 }
 function compose (functions) {
-    var composed = functions.reduce(function (t, func) {
-        if (!t) {
-            t = func;
-        } else {
-            t = R.compose(
-                t,
-                func
-            );
-        }
-        return t;
-    });
-    return function (content) {
-        return composed(content);
-    };
+    const emptyFunc = v => v;
+    return initialVal => functions.reduce((val, fn) => (fn ? fn(val) : emptyFunc(val)), initialVal);
 }
 var ret = {
     Artikkel_Ansattportal: compose([changePreface, changeLinks, changeFactPlacement, insertContentTypeMetaTag]),

@@ -1,7 +1,6 @@
 var contentLib = require('/lib/xp/content');
 var valueLib = require('/lib/xp/value');
 var contextLib = require('/lib/xp/context');
-var R = require('/lib/ramda');
 var utils = require('/lib/nav-utils');
 
 var nodeLib = require('/lib/xp/node');
@@ -230,7 +229,10 @@ function realyIs (link) {
 }
 exports.mapReduceMenuItems = mapReduceMenuItems;
 function mapReduceMenuItems (content) {
-    var selected = R.path(['data', 'menuListItems', '_selected'], content);
+    var selected;
+    if (content && content.data && content.data.menuListItems && content.data.menuListItems._selected) {
+        selected = content.data.menuListItems._selected;
+    }
     if (!selected) {
         return content;
     }
