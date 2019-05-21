@@ -1,13 +1,12 @@
-<aside role="complementary" class="related-content subsection-related-content"  data-th-if="${ hasLinks }">
+<aside role="complementary" class="related-content subsection-related-content" data-th-if="${ hasLinks }">
     <section class="accordion-item expanded">
-        <header><h1 class="h5"><span class="accordion-toggle" data-th-text="${ shortcuts }"></span></h1></header>
-
-
-            <ul>
-                <li data-th-each="link : ${ content }">
-                    <a data-th-href="${link.link}" data-th-text="${ link.title }"></a>
-                </li>
-
-            </ul>
+        <header>
+            <h1 class="h5"><span class="accordion-toggle" data-th-text="${ shortcuts }"></span></h1>
+        </header>
+        <ul>
+            <li data-th-each="link : ${ content }">
+                <a data-th-href="${link.link}" data-th-text="${ link.title }"></a>
+            </li>
+        </ul>
     </section>
 </aside>
