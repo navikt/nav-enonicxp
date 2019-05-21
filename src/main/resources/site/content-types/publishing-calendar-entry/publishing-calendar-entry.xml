@@ -1,0 +1,21 @@
+<content-type>
+    <display-name>Kalenderhendelse</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="publishing-calendar-entry">
+            <label>Kalenderhendelse</label>
+            <items>
+                <input type="TextArea" name="period">
+                    <label>Periode</label>
+                    <help-text></help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="Date">
+                    <label>Dato for publisering</label>
+                    <help-text></help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>
