@@ -1,45 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAV Migration Tools</title>
-    <link rel="stylesheet" href="{{assetsUri}}/main.css" data-serviceurl="{{serviceUrl}}">
-</head>
-<body>
-<section class="hero is-link">
-    <div class="hero-body">
-        <div class="container">
-            <h1 class="title">NAV - Migration Tools</h1>
-        </div>
-    </div>
-</section>
-<br/>
-<section>
-    <div class="container has-text-centered">
-        <article class="message is-danger" id="error">
-            <div class="message-header" >
-                <p id="error-header"></p>
-                <button class="delete" aria-label="delete"></button>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>NAV Migration Tools</title>
+        <link rel="stylesheet" href="{{ assetsUri }}/main.css" data-serviceurl="{{ serviceUrl }}" />
+    </head>
+    <body>
+        <section class="hero is-link">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">NAV - Migration Tools</h1>
+                </div>
             </div>
-            <div class="message-body" id="error-body"></div>
-        </article>
-        <article class="message is-info" id="status">
-            <div class="message-header">
-                <p id="status-header">Status</p>
-                <button class="delete" aria-label="delete"></button>
+        </section>
+        <br />
+        <section>
+            <div class="container has-text-centered">
+                <article class="message is-danger" id="error">
+                    <div class="message-header">
+                        <p id="error-header"></p>
+                        <button class="delete" aria-label="delete"></button>
+                    </div>
+                    <div class="message-body" id="error-body"></div>
+                </article>
+                <article class="message is-info" id="status">
+                    <div class="message-header">
+                        <p id="status-header">Status</p>
+                        <button class="delete" aria-label="delete"></button>
+                    </div>
+                    <div class="message-body" id="status-body"></div>
+                </article>
+                <div class="columns" id="columns"></div>
             </div>
-            <div class="message-body" id="status-body"></div>
-        </article>
-        <div class="columns" id="columns">
-
-
-        </div>
-    </div>
-</section>
-<script src="{{assetsUri}}/migration/js/jquery.js" data-serviceurl="{{serviceUrl}}"></script>
-<script src="/webapp/no.nav.navno/_/services/socket/index.js"></script>
-<script src="{{assetsUri}}/migration/js/client.js" data-serviceurl="{{serviceUrl}}"></script>
-</body>
+        </section>
+        <script src="{{ assetsUri }}/migration/js/jquery.js" data-serviceurl="{{ serviceUrl }}"></script>
+        <script src="/webapp/no.nav.navno/_/services/socket/index.js"></script>
+        <script src="{{ assetsUri }}/migration/js/client.js" data-serviceurl="{{ serviceUrl }}"></script>
+    </body>
 </html>

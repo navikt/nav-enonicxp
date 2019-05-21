@@ -1,12 +1,16 @@
 <section class="row inner-row">
     <div class="hero-links">
-        <h1 class="visuallyhidden" data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
-            data-th-text="${portal.localize({'_key=nav.site.key-shortcuts'})}">nav.site.key-shortcuts</h1>
+        <h1
+            class="visuallyhidden"
+            data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
+            data-th-text="${portal.localize({'_key=nav.site.key-shortcuts'})}"
+        >
+            nav.site.key-shortcuts
+        </h1>
 
         <div class="col-md-4 col-sm-12 hero-link-wrapper" data-th-each="content : ${table}">
             <a data-th-href="${content.src}" class="hero-link">
-                <h2 data-th-text="${content.heading}" class="h4 decorated leading-icon"
-                    data-th-classappend="${content.icon}"></h2>
+                <h2 data-th-text="${content.heading}" class="h4 decorated leading-icon" data-th-classappend="${content.icon}"></h2>
                 <p data-th-text="${content.ingress }" data-th-if="${!content.isHtml}"></p>
                 <p data-th-utext="${content.ingress }" data-th-if="${content.isHtml}" data-th-remove="tag"></p>
             </a>
@@ -15,8 +19,13 @@
 </section>
 
 <section class="row inner-row linklists-container">
-    <h1 class="visuallyhidden" data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
-        data-th-text="${portal.localize({'_key=nav.site.priority-services-and-content'})}">nav.site.priority-services-and-content</h1>
+    <h1
+        class="visuallyhidden"
+        data-th-attr="aria-label=${portal.localize({'_key=nav.site.visually-hidden-heading'})}"
+        data-th-text="${portal.localize({'_key=nav.site.priority-services-and-content'})}"
+    >
+        nav.site.priority-services-and-content
+    </h1>
     <!--/*
         <h1 class="visuallyhidden" aria-label="{portal:localize('nav.site.visually-hidden-heading', (), $stk:language)}">
             <xsl:value-of select="portal:localize('nav.site.priority-services-and-content', (), $stk:language)"/>
@@ -25,8 +34,7 @@
 
     <div class="col-sm-12" data-th-classappend="${col}" data-th-if="${nicetoknow.data}">
         <div data-th-remove="tag" data-th-if="${nicetoknow.data}">
-            <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}">
-            </h2>
+            <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}"></h2>
             <ul class="link-list">
                 <li data-th-each="content : ${nicetoknow.data}">
                     <a href="#" data-th-href="${content.src}" data-th-text="${content.heading}"></a>
