@@ -23,12 +23,9 @@ function handleGet (req) {
             // Ta vekk de øverste to nivåene: <hjem>/<språk>
             breadcrumbs.items = breadcrumbs.items.slice(2);
             // Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg (kan ikke navigere hit)
-            breadcrumbs.items = breadcrumbs.items.reduce((t, el) => {
-                if (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder') {
-                    t.push(el);
-                }
-                return t;
-            }, []);
+            breadcrumbs.items = breadcrumbs.items.filter(
+                el => (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder')
+            );
         }
         const model = {
             langBundles,
