@@ -1,4 +1,4 @@
-var libs = {
+const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
@@ -6,30 +6,33 @@ var libs = {
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
-var view = resolve('page-crumbs.html');
+const view = resolve('page-crumbs.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'breadCrumbs', function () {
-        var content = libs.portal.getContent();
-        var langBundles = libs.lang.parseBundle(content.language).pagenav.breadcrumbs;
-        var breadcrumbs = libs.menu.getBreadcrumbMenu({
+    return libs.cache.getPaths(req.path, 'breadCrumbs', () => {
+        const content = libs.portal.getContent();
+        const langBundles = libs.lang.parseBundle(content.language).pagenav.breadcrumbs;
+        let breadcrumbs = libs.menu.getBreadcrumbMenu({
             linkActiveItem: false,
             showHomepage: false,
         });
-        // Tar vekk de første tre nivåene: <hjem>/<språk>/<seksjon>
-        if (breadcrumbs.items.length >= 3) {
-            breadcrumbs.items = breadcrumbs.items.slice(3);
-            // Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg
-            breadcrumbs.items = breadcrumbs.items.reduce(function (t, el) {
+        // Vise brødsmulesti bare når du er under nivå 3 (hovedseksjon)
+        if (breadcrumbs.items.length <= 3) {
+            breadcrumbs = undefined;
+        } else {
+            // Ta vekk de øverste to nivåene: <hjem>/<språk>
+            breadcrumbs.items = breadcrumbs.items.slice(2);
+            // Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg (kan ikke navigere hit)
+            breadcrumbs.items = breadcrumbs.items.reduce((t, el) => {
                 if (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder') {
                     t.push(el);
                 }
                 return t;
             }, []);
         }
-        var model = {
-            langBundles: langBundles,
-            breadcrumbs: breadcrumbs,
+        const model = {
+            langBundles,
+            breadcrumbs,
         };
 
         return {
