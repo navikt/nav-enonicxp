@@ -16,25 +16,27 @@ function handleGet (req) {
             linkActiveItem: false,
             showHomepage: false,
         });
+
         // Vise brødsmulesti bare når du er under nivå 3 (hovedseksjon)
-        if (breadcrumbs.items.length <= 3) {
-            breadcrumbs = undefined;
-        } else {
+        if (breadcrumbs.items.length > 3) {
             // Ta vekk de øverste to nivåene: <hjem>/<språk>
             breadcrumbs.items = breadcrumbs.items.slice(2);
             // Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg (kan ikke navigere hit)
             breadcrumbs.items = breadcrumbs.items.filter(
                 el => (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder')
             );
+            const model = {
+                langBundles,
+                breadcrumbs,
+            };
+            return {
+                contentType: 'text/html',
+                body: libs.thymeleaf.render(view, model),
+            };
         }
-        const model = {
-            langBundles,
-            breadcrumbs,
-        };
-
         return {
             contentType: 'text/html',
-            body: libs.thymeleaf.render(view, model),
+            body: null,
         };
     });
 }
