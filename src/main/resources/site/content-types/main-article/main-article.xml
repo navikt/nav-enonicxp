@@ -37,10 +37,10 @@
                     <occurrences minimum="0" maximum="1"/>
                     <options minimum="0" maximum="10">
                         <option name="selfservice">
-                            <label>Selvbetjening</label>
+                            <label>Logg inn</label>
                             <items>
                                 <input name="link" type="ContentSelector">
-                                    <label>Selvbetjening</label>
+                                    <label>Logg inn</label>
                                     <custom-text>contentdata/links</custom-text>
                                     <occurrences maximum="0" minimum="1"/>
                                     <config>
