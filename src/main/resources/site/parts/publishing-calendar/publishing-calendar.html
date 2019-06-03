@@ -1,0 +1,32 @@
+<div class="events-list" id="pagecontent">
+    <header class="article-head">
+        <h1 data-th-text="${heading}"></h1>
+        <div class="toolbar">
+            <div class="content-print leftmost-in-toolbar" id="print-page" role="button" tabindex="0">
+                <span data-th-text="${langBundles.printpage}"></span>
+            </div>
+        </div>
+    </header>
+    <table data-th-title="${heading}">
+        <thead>
+            <tr>
+                <th scope="col"><span data-th-class="visuallyhidden" data-th-text="${langBudles.publishdate}"></span></th>
+                <th scope="col"><span data-th-class="visuallyhidden" data-th-text="${langBudles.event}"></span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-th-each="item : ${items}">
+                <td>
+                    <time>
+                        <span data-th-text="${item.day}"></span>
+                        <span data-th-text="${item.month}></span>
+                    </time>
+                </td>
+                <td data-th-class="event-info">
+                    <span data-th-text="${item.period}"></span>
+                    <h2 data-th-text="${item.displayname}"></h2>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

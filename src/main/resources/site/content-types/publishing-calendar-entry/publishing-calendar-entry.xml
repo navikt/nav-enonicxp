@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Kalenderhendelse</display-name>
+    <description>Statistikk for publisering</description>
     <super-type>base:unstructured</super-type>
     <form>
         <field-set name="publishing-calendar-entry">
@@ -10,7 +11,7 @@
                     <help-text></help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-                <input type="Date">
+                <input type="Date" name="date">
                     <label>Dato for publisering</label>
                     <help-text></help-text>
                     <occurrences minimum="1" maximum="1"/>
