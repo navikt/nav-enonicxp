@@ -1,6 +1,6 @@
 var content = require('/lib/xp/content');
 var context = require('/lib/xp/context');
-var tools = require('/lib/tools');
+var tools = require('/lib/migration/tools');
 
 exports.handle = function (socket) {
     var elements = createElements();

@@ -6,7 +6,6 @@ var libs = {
     i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
-    tools: require('/lib/tools'),
     cache: require('/lib/cacheControll'),
 };
 var view = resolve('page-heading-with-menu.html');

@@ -1,59 +1,41 @@
-var contentLib = require('/lib/xp/content');
-var valueLib = require('/lib/xp/value');
-var contextLib = require('/lib/xp/context');
-var utils = require('/lib/nav-utils');
-
-var nodeLib = require('/lib/xp/node');
-var repo = nodeLib.connect({
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    value: require('/lib/xp/value'),
+    navUtils: require('/lib/nav-utils'),
+    node: require('/lib/xp/node'),
+};
+var repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin'],
 });
 
 exports.verifyPaths = verifyPaths;
-function verifyPaths () {
-    var tmp;
-    for (var k in arguments) {
-        if (arguments.hasOwnProperty(k)) {
-            if (!tmp) {
-                tmp = arguments[k];
-            } else {
-                tmp = tmp[arguments[k]];
-            }
-            if (!tmp) {
-                return false;
-            }
+/**
+ * @description verify that a property path exists in the content object
+ * @param {Object} content object to test
+ * @param {Array<String>} keys path to test on content
+ * @returns {Boolean} true if the path exists
+ */
+function verifyPaths (content, keys) {
+    let tmp = content;
+    return keys.reduce((hasKey, key) => {
+        if (hasKey && tmp[key]) {
+            tmp = tmp[key];
+        } else {
+            hasKey = false;
         }
-    }
-    return true;
+        return hasKey;
+    }, true);
 }
-exports.varifyTableListContent = varifyTableListContent;
-function varifyTableListContent (content) {
-    return content.hasOwnProperty('data') && content.data.hasOwnProperty('sectionContents');
-}
-exports.inspectContent = inspectContent;
-function inspectContent (content) {
-    log.info(logBeutify(content));
 
-    if (verifyPaths(content, 'x', 'no-nav-navno', 'cmsMenu', 'menuKey')) {
-        log.info('MenuItem');
-        log.info(logBeutify(utils.getContentByMenuKey(content.x['no-nav-navno'].cmsMenu.menuKey)));
-    }
-    if (verifyPaths(content, 'data', 'sectionContents')) {
-        var sids = Array.isArray(content.data.sectionContents) ? content.data.sectionContents : [content.data.sectionContents];
-        sids.forEach(function (value) {
-            log.info('Inspecting: ' + value);
-            log.info(
-                logBeutify(
-                    contentLib.get({
-                        key: value,
-                    })
-                )
-            );
-        });
-    }
-}
 exports.join = join;
+/**
+ * @description merge two objects
+ * @param {Object} a
+ * @param {Object} b
+ */
 function join (a, b) {
     var set = {
         a: {
@@ -98,7 +80,12 @@ function join (a, b) {
     }
     return ret;
 }
+
 exports.changeSocial = changeSocial;
+/**
+ * @description update socials on content from old to new structure
+ * @param {Object} content
+ */
 function changeSocial (content) {
     var ret = [];
     if (content.data.hasOwnProperty('share-facebook')) {
@@ -124,13 +111,23 @@ function changeSocial (content) {
     }
     return content;
 }
+
 exports.changeTilbakemelding = changeTilbakemelding;
+/**
+ * @description remove "vis-tilbakemelding" from content
+ * @param {Object} content
+ */
 function changeTilbakemelding (content) {
-    content.data.tilbakemelding = content.data['vis-tilbakemelding'];
+    // content.data.tilbakemelding = content.data['vis-tilbakemelding'];
     delete content.data['vis-tilbakemelding'];
     return content;
 }
+
 exports.changeNewsSchemas = changeNewsSchemas;
+/**
+ * @description update news schemas on content from old to new structure
+ * @param {Object} content
+ */
 function changeNewsSchemas (content) {
     content.data.menuListItems = content.data.menuListItems || [];
     var ns = content.data.newsschemas;
@@ -153,72 +150,119 @@ function changeNewsSchemas (content) {
     }
     return content;
 }
+
 exports.changeLaws = changeLaws;
+/**
+ * @description update laws on content from old to new structure
+ * @param {Object} content
+ */
 function changeLaws (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'rules-and-regulations', content.data.laws);
     delete content.data.laws;
     return content;
 }
+
 exports.changeInternational = changeInternational;
+/**
+ * @description update international on content from old to new structure
+ * @param {Object} content
+ */
 function changeInternational (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'international', content.data.international);
     delete content.data.international;
     return content;
 }
+
 exports.changeProcedural = changeProcedural;
+/**
+ * @description update "saksbehandling" on content from old to new structure
+ * @param {Object} content
+ */
 function changeProcedural (content) {
-    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'saksbehandling', content.data.saksbehandling);
+    content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'process-times', content.data.saksbehandling);
     delete content.data.saksbehandling;
     return content;
 }
 
 exports.changeSelfService = changeSelfService;
+/**
+ * @description update self service on content from old to new structure
+ * @param {Object} content
+ */
 function changeSelfService (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'selfservice', content.data.selfservice);
     delete content.data.selfservice;
     return content;
 }
+
 exports.changeLanguageVersions = changeLanguageVersions;
+/**
+ * @description remove language from content
+ * @param {Object} content
+ */
 function changeLanguageVersions (content) {
-    return changeLanguage(content);
-}
-exports.changeLanguage = changeLanguage;
-function changeLanguage (content) {
     delete content.data.language;
     return content;
 }
+
 exports.changeMembership = changeMembership;
+/**
+ * @description update membership on content from old to new structure
+ * @param {Object} content
+ */
 function changeMembership (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'membership', content.data.membership);
     delete content.data.membership;
     return content;
 }
+
 exports.changeQA = changeQA;
+/**
+ * @description remove Q&A on content
+ * @param {Object} content
+ */
 function changeQA (content) {
-    // content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'Spørsmål og svar', content.data.faq);
     delete content.data.faq;
     return content;
 }
+
 exports.changeNotifications = changeNotifications;
+/**
+ * @description update notifications on content from old to new structure
+ * @param {Object} content
+ */
 function changeNotifications (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'report-changes', content.data.notifications);
     delete content.data.notifications;
     return content;
 }
+
 exports.changeAppeals = changeAppeals;
+/**
+ * @description update appeal rights on content from old to new structure
+ * @param {Object} content
+ */
 function changeAppeals (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'appeal-rights', content.data.appeals);
     delete content.data.appeals;
     return content;
 }
+
 exports.changeHideDate = changeHideDate;
+/**
+ * @description remove hide_date from content
+ * @param {Object} content
+ */
 function changeHideDate (content) {
     delete content.data['hide_date'];
     return content;
 }
 
-exports.realyIs = realyIs;
-function realyIs (link) {
+/**
+ * @description checks if the link is valid
+ * @param {any} link
+ */
+function isLink (link) {
     if (!link) {
         return link;
     } else if (typeof link === 'string') {
@@ -227,7 +271,12 @@ function realyIs (link) {
         return link.length;
     }
 }
+
 exports.mapReduceMenuItems = mapReduceMenuItems;
+/**
+ * @description remove invalid menu items or menu items without links
+ * @param {Object} content
+ */
 function mapReduceMenuItems (content) {
     var selected;
     if (content && content.data && content.data.menuListItems && content.data.menuListItems._selected) {
@@ -239,13 +288,19 @@ function mapReduceMenuItems (content) {
     // var selected = content.data.menuListItems._selected;
     selected = Array.isArray(selected) ? selected : [selected];
     selected.forEach(function (value) {
-        if (!realyIs(content.data.menuListItems[value].link)) {
+        if (!isLink(content.data.menuListItems[value].link)) {
             delete content.data.menuListItems[value];
         }
     });
     return content;
 }
-exports.insertMetaTag = insertMetaTag;
+
+/**
+ * @description add meta tag to content
+ * @param {Object} content
+ * @param {String} key metatag key (contentType)
+ * @param {String} value metatag value (old contentType)
+ */
 function insertMetaTag (content, key, value) {
     content.data.metaTags = content.data.metaTags || [];
     if (!Array.isArray(content.data.metaTags)) {
@@ -254,55 +309,104 @@ function insertMetaTag (content, key, value) {
     content.data.metaTags.push(key + '$$$' + value);
     return content;
 }
+
 exports.insertContentTypeMetaTag = insertContentTypeMetaTag;
+/**
+ * @description add content type meta tag and contentType to data for future reference and cleanup
+ * @param {Object} content
+ */
 function insertContentTypeMetaTag (content) {
-    return insertMetaTag(content, 'contentType', content.type.replace(app.name + ':', ''));
+    // content = insertMetaTag(content, 'contentType', content.type.replace(app.name + ':', ''));
+    // add content type to main-articles
+    if (content.type === app.name + ':Kort_om') {
+        content.data.contentType = 'fact';
+    } else if (content.type === app.name + ':nav.nyhet') {
+        content.data.contentType = 'news';
+    } else if (content.type === app.name + ':pressemelding') {
+        content.data.contentType = 'pressRelease';
+    } else {
+        content.data.contentType = 'article';
+    }
+    return content;
 }
 
 exports.changePreface = changePreface;
+/**
+ * @description move data.preface into data.ingress
+ * @param {Object} content
+ */
 function changePreface (content) {
     content.data.ingress = content.data.preface;
     delete content.data.preface;
     return content;
 }
+
 exports.changeTitle = changeTitle;
+/**
+ * @description remove old title/heading, we're just using displayname not title/heading
+ * @param {Object} content
+ */
 function changeTitle (content) {
-    content.data.heading = content.data.title;
+    // content.data.heading = content.data.title;
+    delete content.data.heading;
     delete content.data.title;
     return content;
 }
 
 exports.changeLinks = changeLinks;
+/**
+ * @description move links into menuListItems -> related-information
+ * @param {Object} content
+ */
 function changeLinks (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'related-information', content.data.links);
     delete content.data.links;
     return content;
 }
+
 exports.changeInformation = changeInformation;
+/**
+ * @description move information links into menuListItems -> related-information
+ * @param {Object} content
+ */
 function changeInformation (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'related-information', content.data.information);
     delete content.data.information;
     return content;
 }
+
 exports.changeRates = changeRates;
+/**
+ * @description move rates links into menuListItems -> rates
+ * @param {Object} content
+ */
 function changeRates (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'rates', content.data.rates);
     delete content.data.rates;
     return content;
 }
+
 exports.changeFactPlacement = changeFactPlacement;
+/**
+ * @description delete fact_placement on content
+ * @param {Object} content
+ */
 function changeFactPlacement (content) {
-    content.data.factLocation = content.data.fact_placement;
-    if (content.data.factLocation === 'sidebar') {
-        content.data.factLocation = 'left';
-    } else if (content.data.factLocation === 'maincol') {
-        content.data.factLocation = 'bottom';
-    }
+    // content.data.factLocation = content.data.fact_placement;
+    // if (content.data.factLocation === 'sidebar') {
+    //     content.data.factLocation = 'left';
+    // } else if (content.data.factLocation === 'maincol') {
+    //     content.data.factLocation = 'bottom';
+    // }
     delete content.data.fact_placement;
     return content;
 }
 
-exports.reduceNullElements = reduceNullElements;
+/**
+ * @description remove null|undefined from array
+ * @param {Array<any>} t
+ * @param {any} el
+ */
 function reduceNullElements (t, el) {
     if (el) {
         t.push(el);
@@ -310,7 +414,10 @@ function reduceNullElements (t, el) {
     return t;
 }
 
-exports.mapIds = mapIds;
+/**
+ * @description to be used in map to an array of ._ids from content
+ * @param {Object} el
+ */
 function mapIds (el) {
     if (el) {
         return el._id;
@@ -318,61 +425,39 @@ function mapIds (el) {
     return null;
 }
 
-exports.logBeautify = function (content) {
-    log.info(logBeutify(content));
-};
-function logBeutify (content) {
+exports.logBeautify = logBeautify;
+/**
+ * @description safe log for objects, arrays, strings etc
+ * @param {Object} content
+ */
+function logBeautify (content) {
+    let contentString = '';
     if (!content) {
-        return 'content undefined';
+        contentString = 'content undefined';
     } else if (typeof content !== 'object') {
-        return content;
+        contentString = content;
+    } else {
+        contentString = JSON.stringify(content, null, 4);
     }
-    return JSON.stringify(content, null, 4);
+    log.info(contentString);
 }
 
-exports.changeMenuItem = changeMenuItem;
-function changeMenuItem (content, name, from) {
-    content.data.menuListItems = content.data.menuListItems || [];
-    var items = content.data[from]
-        ? typeof content.data[from] === 'string'
-            ? [content.data[from]]
-            : Array.isArray(content.data[from])
-                ? content.data[from].length > 0
-                    ? content.data[from]
-                    : undefined
-                : undefined
-        : undefined;
-    if (items) {
-        content.data.menuListItems = addMenuListItem(content.menuListItems, name, items);
-    }
-    delete content.data[from];
-    return content;
-}
-exports.change = change;
-function change (content, to, from) {
-    content.data[to] = content.data[from];
-    delete content.data[from];
-    return content;
-}
 exports.changeDescription = changeDescription;
+/**
+ * @description move description into ingress
+ * @param {Object} content
+ */
 function changeDescription (content) {
     content.data.ingress = content.data.description;
     delete content.data.description;
     return content;
 }
-exports.createTableListContent = createTableListContent;
-function createTableListContent (content) {
-    var newContent = {
-        name: content._name,
-        displayName: content.displayName,
-        parentPath: '/www.nav.no/tmp/',
-        contentType: 'no.nav.navno:tavleliste',
-        data: content.data,
-        x: content.x,
-    };
-    return contentLib.create(newContent);
-}
+
 exports.changeShortcuts = changeShortcuts;
+/**
+ * @description move shortcut links into menuListItems -> related-information
+ * @param {Object} content
+ */
 function changeShortcuts (content) {
     content.data.menuListItems = addMenuListItem(content.data.menuListItems, 'related-information', content.data.shortcuts);
     delete content.data.shortcuts;
@@ -380,7 +465,14 @@ function changeShortcuts (content) {
 }
 
 exports.createNewTableContent = createNewTableContent;
-function createNewTableContent (tableElements, ntkElementId, newElementId, scElementId, content) {
+/**
+ * @description Creates the data object for "oppslagstavle" with news, nice to know, shortcuts and table contents
+ * @param {Array<Object>} tableElements
+ * @param {string} ntkElementId id to ntk content list
+ * @param {string} newElementId id to news content list
+ * @param {string} scElementId id to shortcuts content list
+ */
+function createNewTableContent (tableElements, ntkElementId, newElementId, scElementId) {
     var data = {
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
@@ -399,7 +491,13 @@ function createNewTableContent (tableElements, ntkElementId, newElementId, scEle
     }
     return data;
 }
+
 exports.getTableElements = getTableElements;
+/**
+ * @description creates a list of tableContents for "oppslagstavle"
+ * @param {Object} content old cms2xp_section
+ * @return {Array<Object>}
+ */
 function getTableElements (content) {
     if (!content) {
         return [];
@@ -409,7 +507,7 @@ function getTableElements (content) {
     }
 
     return content.data.sectionContents
-        ? contentLib
+        ? libs.content
             .query({
                 filters: {
                     ids: {
@@ -423,8 +521,13 @@ function getTableElements (content) {
 }
 
 exports.moveNewContent = moveNewContent;
+/**
+ * @description move content to path
+ * @param {object} newContent
+ * @param {string} path
+ */
 function moveNewContent (newContent, path) {
-    return contentLib.move({
+    return libs.content.move({
         source: newContent._id,
         target:
             '/' +
@@ -437,36 +540,36 @@ function moveNewContent (newContent, path) {
 }
 
 exports.getRefs = getRefs;
+/**
+ * @description gets all references to content
+ * @param {object} content
+ * @returns {Array<{object}>}
+ */
 function getRefs (content) {
     var re = [];
     var start = 0;
     var count = 20;
-    var length = 20;
-    while (length === 20) {
-        var res = contentLib.query({
+    var length = count;
+    while (length === count) {
+        var res = libs.content.query({
             start: start,
             count: count,
-            query: '_references LIKE "' + content._id + '"',
+            query: '_references LIKE "' + content._id + '" AND x.no-nav-navno.cmsContent.contentHome NOT LIKE "' + content._id + '"',
         });
         re = re.concat(res.hits);
         length = res.count;
-        start += 20;
+        start += count;
     }
 
-    return re
-        .map(function (el) {
-            return re.indexOf({
-                _id: el._id,
-            }) === -1
-                ? {
-                    _id: el._id,
-                }
-                : null;
-        })
-        .reduce(reduceNullElements, []);
+    return re;
 }
 
 exports.deleteOldContent = deleteOldContent;
+/**
+ * @description moves all children of content to a new path and deletes content element
+ * @param {object} content content element to delete
+ * @param {string} newPath path to childrens new parent
+ */
 function deleteOldContent (content, newPath) {
     var children = repo
         .findChildren({
@@ -483,45 +586,33 @@ function deleteOldContent (content, newPath) {
             target: '/content' + newPath + '/',
         });
     });
-    contentLib.delete({
+    libs.content.delete({
         key: content._id,
     });
 }
+
 exports.modify = modify;
+/**
+ * @description replaces old reference in value with a new reference
+ * @param {object} value content to replace references on
+ * @param {string} newId new reference id
+ * @param {string} oldId old reference id
+ */
 function modify (value, newId, oldId) {
     try {
         repo.modify({
             key: value._id,
             editor: function (c) {
-                var contentString = JSON.stringify(c);
-                contentString = contentString.replace(new RegExp(oldId, 'g'), newId);
-                var content = JSON.parse(contentString);
-                // dates are somehow removed on content, so we have to get them from the original c instead
-                if (c.createdTime) {
-                    content.createdTime = valueLib.instant(c.createdTime);
-                }
-                if (c.modifiedTime) {
-                    content.modifiedTime = valueLib.instant(c.modifiedTime);
-                }
-                if (c.publish) {
-                    content.publish = c.publish;
-                    if (c.publish.first) {
-                        content.publish.first = valueLib.instant(c.publish.first);
-                    }
-                    if (c.publish.from) {
-                        content.publish.from = valueLib.instant(c.publish.from);
-                    }
-                    if (c.publish.to) {
-                        content.publish.to = valueLib.instant(c.publish.to);
-                    }
-                }
-                return content;
+                log.info('*****UPDATED REFS ON  ' + c._path + '*****');
+                log.info(oldId + ' => ' + newId);
+                replaceIdInContent(c, oldId, newId);
+                return c;
             },
         });
     } catch (e) {
         log.info(
             JSON.stringify(
-                contentLib.get({
+                libs.content.get({
                     key: value._id,
                 }),
                 null,
@@ -529,11 +620,64 @@ function modify (value, newId, oldId) {
             )
         );
         log.info('Failed modify ' + e);
-        log.info(newId + ' ' + oldId);
+        log.info(oldId + ' ==> ' + newId);
+    }
+}
+
+/**
+ * @description loops recursively through content object and replaces oldId with newId
+ * @param {object} content
+ * @param {string} oldId
+ * @param {string} newId
+ */
+function replaceIdInContent (content, oldId, newId) {
+    if (typeof content === 'object') {
+        // check arrays
+        if (Array.isArray(content)) {
+            content.forEach(function (arrayEl, index) {
+                var isIdObject = arrayEl.toString && arrayEl.toString() !== '[object Object]' && !Array.isArray(arrayEl);
+                // replace the id if it's a string and it's more than just the id
+                if (typeof arrayEl === 'string' && arrayEl.indexOf(oldId) !== -1 && arrayEl.length !== oldId.length) {
+                    log.info('replace id in array at ' + index);
+                    content[index] = arrayEl.replace(new RegExp(oldId, 'g'), newId);
+                } else if (isIdObject && arrayEl.toString() === oldId) {
+                    // replace the reference if its a reference
+                    content[index] = libs.value.reference(newId);
+                    log.info('update with ref');
+                } else if (typeof arrayEl === 'object') {
+                    // keep looping recursively if it's an array of objects
+                    replaceIdInContent(arrayEl, oldId, newId);
+                }
+            });
+            // normal objects
+        } else {
+            for (var key in content) {
+                var isIdObject = content[key].toString && content[key].toString() !== '[object Object]' && !Array.isArray(content[key]);
+                // replace the id if the property is a string and if it's more than just the id
+                if (typeof content[key] === 'string' && content[key].indexOf(oldId) !== -1 && content[key].length !== oldId.length) {
+                    log.info('Found id in object at ' + key);
+                    content[key] = content[key].replace(new RegExp(oldId, 'g'), newId);
+                } else if (isIdObject && content[key].toString() === oldId) {
+                    // replace the reference if it's a reference
+                    content[key] = libs.value.reference(newId);
+                    log.info('update with ref');
+                } else if (typeof content[key] === 'object') {
+                    // keep looping recursively if the property is an object
+                    replaceIdInContent(content[key], oldId, newId);
+                }
+            }
+        }
     }
 }
 
 exports.addMenuListItem = addMenuListItem;
+/**
+ * @description add links to a named menu list
+ * @param {object} menuListItems the complete menu list
+ * @param {string} name the name of the list of links
+ * @param {array<string>} links
+ * @returns {object} the menu list complete with the new links
+ */
 function addMenuListItem (menuListItems, name, links) {
     links = links ? (Array.isArray(links) ? links : [links]) : [];
     if (!menuListItems) {
@@ -558,15 +702,21 @@ function addMenuListItem (menuListItems, name, links) {
 }
 
 exports.getRefInfo = getRefInfo;
+/**
+ * @deprecated this should no longer be necessary in 7.0
+ * @description A more in depth and complete version of getRefs
+ * @param {string} contentId
+ * @returns {array<{id: string, path:string, displayName:string, type:string, status:string|null}>}
+ */
 function getRefInfo (contentId) {
-    var refs = contentLib.query({
+    var refs = libs.content.query({
         start: 0,
         count: 1000,
         query: '_references = "' + contentId + '" OR fulltext("*", "' + contentId + '", "AND") ',
     }).hits;
 
     var refIds = getRefsInRefMap(contentId);
-    var refsFromRefMap = contentLib.query({
+    var refsFromRefMap = libs.content.query({
         start: 0,
         count: refIds.length,
         filters: {
@@ -614,6 +764,15 @@ function getRefInfo (contentId) {
     return refInfo;
 }
 
+/**
+ * @deprecated
+ * @description loops recursively over an object and builds a path to where the id is found
+ * @param {string} path path.to.id
+ * @param {string} key the current object/array key, to add to path if the id is found
+ * @param {object|array<any>} o
+ * @param {string} id id to find in o
+ * @returns {{path: string, key: string}}
+ */
 function findRefPathInContent (path, key, o, id) {
     var addToPath = function (path, key) {
         if (path) {
@@ -662,6 +821,11 @@ function findRefPathInContent (path, key, o, id) {
 }
 
 exports.getIdFromUrl = getIdFromUrl;
+/**
+ * @description tries to find an id based on the url
+ * @param url
+ * @returns {{external: boolean, invalid: boolean, refId: string|null, pathTo: string|null}}
+ */
 function getIdFromUrl (url) {
     var ret = {
         external: true,
@@ -709,7 +873,7 @@ function getIdFromUrl (url) {
 
             var c;
             if (cmsKey) {
-                var hits = contentLib.query({
+                var hits = libs.content.query({
                     start: 0,
                     count: 10,
                     query: 'x.no-nav-navno.cmsContent.contentKey LIKE "' + cmsKey + '"',
@@ -729,7 +893,7 @@ function getIdFromUrl (url) {
                         testPath += '_' + count;
                         count += 1;
                     }
-                    c = contentLib.get({
+                    c = libs.content.get({
                         key: testPath,
                     });
                     if (c) {
@@ -754,14 +918,18 @@ exports.createRefMap = createRefMap;
 var refMap = {
 
 };
+/**
+ * @deprecated should no longer be necessary to run in 7.0 because references in html should now be tracked correctly
+ * @description creates a map of all references on all content in /www.nav.no, /redirects and /content
+ */
 function createRefMap () {
-    var navno = contentLib.get({
+    var navno = libs.content.get({
         key: '/www.nav.no',
     });
-    var contentSite = contentLib.get({
+    var contentSite = libs.content.get({
         key: '/content',
     });
-    var redirects = contentLib.get({
+    var redirects = libs.content.get({
         key: '/redirects',
     });
 
@@ -774,6 +942,12 @@ function createRefMap () {
     log.info(JSON.stringify(refMap, null, 2));
 }
 
+/**
+ * @deprecated
+ * @description takes a list of elements and finds all references in each elements and loops in through the elements children as well
+ * @param {array<object>} elements
+ * @param {object} refMap
+ */
 function findRefsInElements (elements, refMap) {
     elements.forEach(function (elem) {
         var dataString = JSON.stringify(elem.data);
@@ -814,7 +988,7 @@ function findRefsInElements (elements, refMap) {
             refMap[elem._id] = refs;
         }
 
-        var children = contentLib.getChildren({
+        var children = libs.content.getChildren({
             key: elem._id,
             count: 10000,
             start: 0,
@@ -823,7 +997,12 @@ function findRefsInElements (elements, refMap) {
     });
 }
 
-exports.isInRefMap = getRefsInRefMap;
+/**
+ * @deprecated
+ * @description checks if the id exists in the refsMap
+ * @param {string} id id to find
+ * @returns {array<string>} array of ids to content referencing the id
+ */
 function getRefsInRefMap (id) {
     var usedIn = [];
     for (var key in refMap) {
@@ -837,8 +1016,13 @@ function getRefsInRefMap (id) {
 }
 
 exports.runInContext = runInContext;
+/**
+ * @description run a function in admin context on the draft branch
+ * @param socket socket to pass into func as a param
+ * @param func the function to run
+ */
 function runInContext (socket, func) {
-    contextLib.run(
+    libs.context.run(
         {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
@@ -852,4 +1036,39 @@ function runInContext (socket, func) {
             func(socket);
         }
     );
+}
+
+exports.removeImageSize = removeImageSize;
+/**
+ * @description removes imagesize from data on content
+ * @param {Object} content
+ */
+function removeImageSize (content) {
+    if (content.data.imagesize === '') {
+        delete content.data.imagesize;
+    }
+    return content;
+}
+
+exports.compose = compose;
+/**
+ * @description get a new function that runs a series of functions in order and sends the return into the next function
+ * @param {array<function>} functions
+ */
+function compose (functions) {
+    const emptyFunc = v => v;
+    return initialVal => functions.reduce((val, fn) => (fn ? fn(val) : emptyFunc(val)), initialVal);
+}
+
+exports.getTemplate = getTemplate;
+function getTemplate (templateName) {
+    var r = libs.content.query({
+        query: '_name LIKE "' + templateName + '"',
+    });
+    if (!r.hits[0]) {
+        r = libs.content.get({
+            key: '/www.nav.no/_templates/' + templateName,
+        });
+    }
+    return r.hits[0]._id;
 }
