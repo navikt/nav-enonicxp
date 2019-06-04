@@ -127,8 +127,20 @@ var tavleListePage = [
         },
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -140,7 +152,7 @@ var tavleListePage = [
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:tavleliste',
             config: {
@@ -152,7 +164,7 @@ var tavleListePage = [
     },
     {
         type: 'part',
-        path: '/main/1/second/0',
+        path: '/main/2/second/0',
         part: {
             descriptor: 'no.nav.navno:tavleliste-relatert-innhold',
             config: {
@@ -203,8 +215,20 @@ var mainArticlePage = [
         },
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -216,7 +240,7 @@ var mainArticlePage = [
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:main-article',
             config: {
@@ -228,7 +252,7 @@ var mainArticlePage = [
     },
     {
         type: 'part',
-        path: '/main/1/second/0',
+        path: '/main/2/second/0',
         part: {
             descriptor: 'no.nav.navno:main-article-linked-list',
             config: {
@@ -240,7 +264,7 @@ var mainArticlePage = [
     },
     {
         type: 'part',
-        path: '/main/1/second/1',
+        path: '/main/2/second/1',
         part: {
             descriptor: 'no.nav.navno:main-article-related-content',
             config: {
@@ -291,8 +315,20 @@ var transportPage = [
         },
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:1-col',
             config: {
@@ -304,7 +340,7 @@ var transportPage = [
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:transport',
             config: {
@@ -367,8 +403,20 @@ var hovedSeksjonPage = [
         },
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/2',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/3',
         layout: {
             descriptor: 'no.nav.navno:main-1-col',
             config: {
@@ -380,7 +428,7 @@ var hovedSeksjonPage = [
     },
     {
         type: 'part',
-        path: '/main/2/first/0',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:oppslagstavle',
             config: {
