@@ -521,8 +521,20 @@ var publishingCalendarPage = [
         },
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -534,7 +546,7 @@ var publishingCalendarPage = [
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:publishing-calendar',
             config: {
