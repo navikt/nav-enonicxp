@@ -8,7 +8,6 @@ var priorityElements = require('/lib/migration/priorityElements');
 var moveCH = require('/lib/migration/moveContentHome');
 var genMegaMenu = require('/lib/migration/megaMenu');
 var dataValidation = require('/lib/migration/dataValidation');
-// var linkCleanup = require('/lib/migration/linkCleanup');
 // var unusedContent = require('/lib/migration/unusedContent');
 
 exports.handleSockets = function (io) {
