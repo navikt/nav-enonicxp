@@ -70,7 +70,8 @@ function translateContent (content) {
         content.type === app.name + ':cms2xp_section' &&
         content.page &&
         content.page.template &&
-        content.page.template === libs.tools.getTemplate('artikkelliste-med-sidebeskrivelse-subseksjon')
+        (content.page.template === libs.tools.getTemplate('artikkelliste-med-sidebeskrivelse-subseksjon') ||
+        content.page.template === libs.tools.getTemplate('artikkelliste-for-pressemeldinger-subseksjon'))
     ) {
         newContent = translateCms2xpSectionToTavleliste(content);
     }
