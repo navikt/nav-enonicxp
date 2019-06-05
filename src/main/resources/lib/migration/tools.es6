@@ -639,7 +639,7 @@ function replaceIdInContent (content, oldId, newId) {
                 // replace the id if it's a string and it's more than just the id
                 if (typeof arrayEl === 'string' && arrayEl.indexOf(oldId) !== -1 && arrayEl.length !== oldId.length) {
                     log.info('replace id in array at ' + index);
-                    content[index] = arrayEl.replace(new RegExp(oldId, 'g'), newId);
+                    content[index] = arrayEl.replace(oldId, newId);
                 } else if (isIdObject && arrayEl.toString() === oldId) {
                     // replace the reference if its a reference
                     content[index] = libs.value.reference(newId);
@@ -656,7 +656,7 @@ function replaceIdInContent (content, oldId, newId) {
                 // replace the id if the property is a string and if it's more than just the id
                 if (typeof content[key] === 'string' && content[key].indexOf(oldId) !== -1 && content[key].length !== oldId.length) {
                     log.info('Found id in object at ' + key);
-                    content[key] = content[key].replace(new RegExp(oldId, 'g'), newId);
+                    content[key] = content[key].replace(oldId, newId);
                 } else if (isIdObject && content[key].toString() === oldId) {
                     // replace the reference if it's a reference
                     content[key] = libs.value.reference(newId);
@@ -699,125 +699,6 @@ function addMenuListItem (menuListItems, name, links) {
         };
     }
     return menuListItems;
-}
-
-exports.getRefInfo = getRefInfo;
-/**
- * @deprecated this should no longer be necessary in 7.0
- * @description A more in depth and complete version of getRefs
- * @param {string} contentId
- * @returns {array<{id: string, path:string, displayName:string, type:string, status:string|null}>}
- */
-function getRefInfo (contentId) {
-    var refs = libs.content.query({
-        start: 0,
-        count: 1000,
-        query: '_references = "' + contentId + '" OR fulltext("*", "' + contentId + '", "AND") ',
-    }).hits;
-
-    var refIds = getRefsInRefMap(contentId);
-    var refsFromRefMap = libs.content.query({
-        start: 0,
-        count: refIds.length,
-        filters: {
-            ids: {
-                values: refIds,
-            },
-        },
-    }).hits;
-
-    refsFromRefMap.forEach(function (r) {
-        var inRefs = false;
-        refs.forEach(function (ref) {
-            if (ref._id === r._id) {
-                inRefs = true;
-            }
-        });
-        if (!inRefs) {
-            refs.push(r);
-        }
-    });
-
-    var refInfo = {
-        total: refs.length,
-        paths: [],
-        pathsExtd: [],
-    };
-
-    refs.forEach(function (hit) {
-        var ref = findRefPathInContent('', null, hit, contentId);
-        var refKey = ref.key;
-        refInfo.paths.push(ref.path);
-        if (!refInfo[refKey]) {
-            refInfo[refKey] = 0;
-        }
-        refInfo[refKey] += 1;
-        refInfo.pathsExtd.push({
-            id: hit._id,
-            path: hit._path,
-            displayName: hit.displayName,
-            type: hit.type,
-            status: hit.x ? (hit.x['no-nav-navno'] ? (hit.x['no-nav-navno'].cmsStatus ? hit.x['no-nav-navno'].cmsStatus.status : null) : null) : null,
-        });
-    });
-
-    return refInfo;
-}
-
-/**
- * @deprecated
- * @description loops recursively over an object and builds a path to where the id is found
- * @param {string} path path.to.id
- * @param {string} key the current object/array key, to add to path if the id is found
- * @param {object|array<any>} o
- * @param {string} id id to find in o
- * @returns {{path: string, key: string}}
- */
-function findRefPathInContent (path, key, o, id) {
-    var addToPath = function (path, key) {
-        if (path) {
-            return path + '.' + key;
-        }
-        return key;
-    };
-    if (typeof o === 'object') {
-        // check arrays
-        if (Array.isArray(o)) {
-            for (var i = 0; i < o.length; i += 1) {
-                if (typeof o[i] === 'object') {
-                    var ref = findRefPathInContent(addToPath(path, key), i, o[i], id);
-                    if (ref.key) {
-                        return ref;
-                    }
-                }
-                if (o[i] === id || (typeof o[id] === 'string' && o[id].indexOf(id))) {
-                    return {
-                        path: addToPath(path, key + '.' + i),
-                        key: key,
-                    };
-                }
-            }
-        }
-        // check objects
-        for (var subKey in o) {
-            if (typeof o[subKey] === 'object') {
-                var objRef = findRefPathInContent(addToPath(path, key), subKey, o[subKey], id);
-                if (objRef.key) {
-                    return objRef;
-                }
-            }
-            if (o[subKey] === id || (typeof o[id] === 'string' && o[id].indexOf(id))) {
-                return {
-                    path: addToPath(path, key + '.' + subKey),
-                    key: key,
-                };
-            }
-        }
-    }
-    return {
-        path: addToPath(path, key),
-        key: null,
-    };
 }
 
 exports.getIdFromUrl = getIdFromUrl;
@@ -914,105 +795,25 @@ function getIdFromUrl (url) {
     return ret;
 }
 
-exports.createRefMap = createRefMap;
-var refMap = {
-
-};
+exports.getUrlsInContent = getUrlsInContent;
 /**
- * @deprecated should no longer be necessary to run in 7.0 because references in html should now be tracked correctly
- * @description creates a map of all references on all content in /www.nav.no, /redirects and /content
+ * @description finds all urls in an element
+ * @param {object} element
+ * @returns {array<string>} list of urls found
  */
-function createRefMap () {
-    var navno = libs.content.get({
-        key: '/www.nav.no',
-    });
-    var contentSite = libs.content.get({
-        key: '/content',
-    });
-    var redirects = libs.content.get({
-        key: '/redirects',
-    });
+function getUrlsInContent (elem) {
+    const dataString = JSON.stringify(elem.data);
+    const urls = [];
+    let match;
 
-    // reset refMap
-    refMap = {
-
-    };
-
-    findRefsInElements([navno, contentSite, redirects], refMap);
-    log.info(JSON.stringify(refMap, null, 2));
-}
-
-/**
- * @deprecated
- * @description takes a list of elements and finds all references in each elements and loops in through the elements children as well
- * @param {array<object>} elements
- * @param {object} refMap
- */
-function findRefsInElements (elements, refMap) {
-    elements.forEach(function (elem) {
-        var dataString = JSON.stringify(elem.data);
-        var refs = [];
-        var match;
-
-        var hrefPtrn = /href=\\"(.*?)\\"/g;
-        while ((match = hrefPtrn.exec(dataString)) != null) {
-            refs.push(
-                match[1]
-                    .replace(/\\"/g)
-                    .replace('content://', '')
-                    .replace('media://download/', '')
-                    .replace('image://', '')
-            ); // we only care about group 1, not the whole match
+    var hrefPtrn = /href=\\"(.*?)\\"/g;
+    while ((match = hrefPtrn.exec(dataString)) != null) {
+        const url = match[1];// we only care about group 1, not the whole match
+        if (url.indexOf('https://') === 0 || url.indexOf('http://') === 0) {
+            urls.push(url);
         }
-        var srcPtrn = /src=\\"(.*?)\\"/g;
-        while ((match = srcPtrn.exec(dataString)) != null) {
-            refs.push(
-                match[1]
-                    .replace(/\\"/g)
-                    .replace('content://', '')
-                    .replace('media://download/', '')
-                    .replace('image://', '')
-            ); // we only care about group 1, not the whole match
-        }
-
-        if (refs.length > 0) {
-            // convert url to id if possible
-            refs.map(function (ref) {
-                var idInfo = getIdFromUrl(ref);
-                if (idInfo.external === false && idInfo.invalid === false) {
-                    log.info('CONVERTED ' + ref + ' => ' + idInfo.refId);
-                    return idInfo.refId;
-                }
-                return ref;
-            });
-            refMap[elem._id] = refs;
-        }
-
-        var children = libs.content.getChildren({
-            key: elem._id,
-            count: 10000,
-            start: 0,
-        }).hits;
-        findRefsInElements(children, refMap);
-    });
-}
-
-/**
- * @deprecated
- * @description checks if the id exists in the refsMap
- * @param {string} id id to find
- * @returns {array<string>} array of ids to content referencing the id
- */
-function getRefsInRefMap (id) {
-    var usedIn = [];
-    for (var key in refMap) {
-        refMap[key].forEach(function (refId) {
-            if (refId === id) {
-                usedIn.push(key);
-            }
-        });
     }
-    return usedIn;
+    return urls;
 }
 
 exports.runInContext = runInContext;
