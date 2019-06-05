@@ -567,11 +567,18 @@ function commonTranslate (oldContent, newContent) {
 }
 
 function updateTimeAndOrder (oldContent, newContent) {
+    const newContentNode = repo.get(oldContent._id);
+
     repo.modify({
         key: newContent._id,
         editor: function (c) {
             // set child order
             c._childOrder = oldContent.childOrder;
+
+            // keep manual order if any
+            if (newContentNode && newContentNode._manualOrderValue) {
+                c._manualOrderValue = newContentNode._manualOrderValue;
+            }
 
             // set correct created, modified and publish dates
             if (oldContent.createdTime) {
