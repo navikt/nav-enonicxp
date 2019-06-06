@@ -10,31 +10,33 @@ const view = resolve('main-article.html');
 exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'main-article', () => {
         const content = libs.portal.getContent();
-        const lang = libs.lang.parseBundle(content.language);
+        const langBundle = libs.lang.parseBundle(content.language).main_article;
+        const languages = libs.utils.getLanguageVersions(content);
         const data = content.data;
-        let text = data.text;
-        let tocs = [];
+        const hasFact = data.fact && data.fact !== '';
 
+        // Innholdsfortegnelse
+        let toc = [];
         if (
             (data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
             (data.metaTags && data.metaTags.indexOf('contentType$$$Kort_om') !== -1)
         ) {
             let count = 0;
             let ch = 1;
-            let ind = text.indexOf('<h3>');
+            let ind = data.text.indexOf('<h3>');
 
             while (ind !== -1 && count < 100) {
                 const h2End = ind + 4;
-                const ssEnd = text.indexOf('</h3>', ind);
-                const ss = text.slice(h2End, ssEnd);
+                const ssEnd = data.text.indexOf('</h3>', ind);
+                const ss = data.text.slice(h2End, ssEnd);
                 count++;
-                tocs.push(ss);
-                text = text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
-                ind = text.indexOf('<h3>');
+                toc.push(ss);
+                data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
+                ind = data.text.indexOf('<h3>');
             }
         }
 
-        const languages = libs.utils.getLanguageVersions(content);
+        // Sosiale medier
         let socials = data.social ? (Array.isArray(data.social) ? data.social : [data.social]) : false;
         socials = socials
             ? socials.map(el => {
@@ -48,27 +50,41 @@ exports.get = function (req) {
                 }
                 return {
                     type: el,
-                    text: text,
+                    text: tmpText,
                     href: getSocialRef(el, content, req),
                 };
             })
             : false;
 
+        // Prosessering av HTML-felter (håndtere url-er inne i html-en)
+        data.text = libs.portal.processHtml({
+            value: data.text,
+        });
+        if (hasFact) {
+            data.fact = libs.portal.processHtml({
+                value: data.fact,
+            });
+        }
+        if (data.image) {
+            data.imageUrl = libs.portal.imageUrl({
+                id: data.image,
+                scale: 'block(1024,768)',
+            });
+        }
+
+        // Definer modell og kall rendring (view)
         const model = {
             published: libs.utils.dateTimePublished(content, content.language || 'no'),
-            hasTableOfContents: tocs.length > 0,
-            tocs,
+            hasTableOfContents: toc.length > 0,
+            toc,
             content,
-            hasFact: data.fact && data.fact !== '',
+            hasFact,
             hasLanguageVersions: languages.length > 0,
             languages,
             socials,
-            lang,
+            langBundle,
         };
-
-        // Render a thymeleaf template
         const body = libs.thymeleaf.render(view, model);
-        // Return the result
         return {
             body,
         };
