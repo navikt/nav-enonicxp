@@ -100,7 +100,8 @@ function updateCms2xpPage (socket) {
     }
     socket.emit('cms2xp_pagemax', r.length);
 
-    // NOTE: this is done because there are cases where multiple cms2xpPages link to the same article
+    // NOTE: Save all articles, delete them, and change refs after all cms2xp_pages are translated
+    // This is because multiple cms2xp_pages link to the same article
     const articles = {
         // empty ref map for articles and new cms2xp pages
     };
