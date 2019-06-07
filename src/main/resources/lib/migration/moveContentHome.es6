@@ -1,10 +1,14 @@
-var content = require('/lib/xp/content');
-var context = require('/lib/xp/context');
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    node: require('/lib/xp/node'),
+};
+
 exports.handle = function (socket) {
     var elements = createElements();
     socket.emit('newTask', elements);
     socket.on('move-contenthome', function () {
-        context.run({
+        libs.context.run({
             repository: 'com.enonic.cms.default',
             branch: 'draft',
             user: {
@@ -13,13 +17,13 @@ exports.handle = function (socket) {
             },
             principals: ['role:system.admin'],
         }, function () {
-            moveContenthome(socket);
+            moveContentHome(socket);
         });
     });
 };
 
-function moveContenthome (socket) {
-    var alle = content.query({
+function moveContentHome (socket) {
+    var elemsWithContentHome = libs.content.query({
         start: 0,
         count: 100000,
         query: '_parentpath LIKE "/*"',
@@ -28,24 +32,30 @@ function moveContenthome (socket) {
                 field: 'x.no-nav-navno.cmsContent.contentHome',
             },
         },
-    });
-    socket.emit('flytt-ch-max', alle.hits.length);
-    alle.hits.forEach(function (value, index) {
+    }).hits;
+    socket.emit('flytt-ch-max', elemsWithContentHome.length);
+    elemsWithContentHome.forEach(function (value, index) {
         socket.emit('flytt-ch-value', index + 1);
-        var p = content.get({
+        var parent = libs.content.get({
             key: value.x['no-nav-navno'].cmsContent.contentHome,
         });
-        if (p && p._path !== value._path.substring(0, value._path.length - (value._name.length + 1))) {
-            try {
-                content.move({
-                    source: value._id,
-                    target: p._path + '/',
-                });
-            } catch (e) {
-                log.info(p._path + ' ' + value._path.replace('/' + value._name, ''));
-                log.info(value._path);
+
+        // move to parent if it's not already correct
+        if (parent) {
+            let newPath = parent._path + '/';
+            let oldParentPath = value._path.split('/').slice(0, -1).join('/') + '/';
+            if (newPath !== oldParentPath) {
+                try {
+                    libs.content.move({
+                        source: value._id,
+                        target: parent._path + '/',
+                    });
+                } catch (e) {
+                    log.info(e.message);
+                    log.info(parent._path + ' ' + value._path.replace('/' + value._name, ''));
+                    log.info(value._path);
+                }
             }
-            // log.info(p._path + ' ' + value._path.substring(0, value._path.length - (value._name.length + 1)));
         }
     });
 }

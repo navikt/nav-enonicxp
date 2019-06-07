@@ -87,4 +87,12 @@ task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
     outputs.dir "$buildDir/resources/main"
 }
 
+// task copyCoreJs( type: Copy ) {
+//     description = 'Copy core-js.'
+//     from "node_modules/core-js"
+//     into 'build/resources/main/lib/core-js'
+//     includeEmptyDirs = false
+// }
+
 jar.dependsOn += babelJs
+// jar.dependsOn += copyCoreJs
