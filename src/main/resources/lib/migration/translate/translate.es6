@@ -4,14 +4,13 @@ const libs = {
     tools: require('/lib/migration/tools'),
 };
 
-// TODO: move into contentTranslator
-var translateContentAZ = require('./translateContentAZ');
-var translateLinks = require('./translateLinks');
+const translateContentAZ = require('./translateContentAZ');
+const translateLinks = require('./translateLinks');
 
 exports.handle = function (socket) {
     socket.emit('newTask', createElements());
     socket.on('main', () => {
-        libs.tools.runInContext(socket, updateMainOppslagstavle); // OK
+        libs.tools.runInContext(socket, updateMainOppslagstavle);
     });
     socket.on('artikkel_brukerportal', () => {
         libs.tools.runInContext(socket, translateMissingArtikkelBrukerportal);
@@ -20,13 +19,13 @@ exports.handle = function (socket) {
         libs.tools.runInContext(socket, translateMissingKortOm);
     });
     socket.on('cms2xp_page', () => {
-        libs.tools.runInContext(socket, updateCms2xpPage); // OK
+        libs.tools.runInContext(socket, updateCms2xpPage);
     });
     socket.on('contentAZ', () => {
-        libs.tools.runInContext(socket, translateContentAZ.handleContentAZ); // OK
+        libs.tools.runInContext(socket, translateContentAZ.handleContentAZ);
     });
     socket.on('fixLinks', () => {
-        libs.tools.runInContext(socket, translateLinks.handleLinks); // OK
+        libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
 };
 
@@ -35,11 +34,11 @@ exports.handle = function (socket) {
  * @param socket
  */
 function translateMissingArtikkelBrukerportal (socket) {
-    var r = [];
-    var start = 0;
-    var count = 100;
+    let r = [];
+    let start = 0;
+    let count = 100;
     while (count === 100) {
-        var h = libs.content.query({
+        const h = libs.content.query({
             start: start,
             count: count,
             contentTypes: [app.name + ':Artikkel_Brukerportal'],
@@ -62,11 +61,11 @@ function translateMissingArtikkelBrukerportal (socket) {
  * @param socket
  */
 function translateMissingKortOm (socket) {
-    var r = [];
-    var start = 0;
-    var count = 100;
+    let r = [];
+    let start = 0;
+    let count = 100;
     while (count === 100) {
-        var h = libs.content.query({
+        const h = libs.content.query({
             start: start,
             count: count,
             contentTypes: [app.name + ':Kort_om'],
@@ -86,11 +85,11 @@ function translateMissingKortOm (socket) {
 
 function updateCms2xpPage (socket) {
     // find all cms2xp_pages
-    var r = [];
-    var start = 0;
-    var count = 100;
+    let r = [];
+    let start = 0;
+    let count = 100;
     while (count === 100) {
-        var h = libs.content.query({
+        const h = libs.content.query({
             start: start,
             count: count,
             contentTypes: [app.name + ':cms2xp_page'],
@@ -122,21 +121,21 @@ function updateCms2xpPage (socket) {
     });
 
     // delete all articles used by cms2xp_pages and update refs
-    for (var articleId in articles) {
+    for (let articleId in articles) {
         const cms2xpPages = articles[articleId];
         // find all references to the article
         const refs = libs.tools.getRefs(articleId);
         // update with closest cms2xp_page if there are more than one
-        refs.forEach(function (ref) {
+        refs.forEach((ref) => {
             // split ref and cms2xp_page paths on / and update ref to point to the cms2xp_page with the most matching path parts
-            var cms2xpPage;
-            var pathMatches = 0;
-            var refPaths = ref._path.split('/');
-            cms2xpPages.forEach(function (c) {
-                var cms2xpPaths = c._path.split('/');
-                var currentCms2xpPagePathMatches = 0;
+            let cms2xpPage;
+            let pathMatches = 0;
+            const refPaths = ref._path.split('/');
+            cms2xpPages.forEach((c) => {
+                const cms2xpPaths = c._path.split('/');
+                let currentCms2xpPagePathMatches = 0;
                 // count matching path parts
-                for (var i = 0; i < cms2xpPaths.length; i += 1) {
+                for (let i = 0; i < cms2xpPaths.length; i += 1) {
                     if (cms2xpPaths[i] !== refPaths[i]) {
                         break;
                     }
