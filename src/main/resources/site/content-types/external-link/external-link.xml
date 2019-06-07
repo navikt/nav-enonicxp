@@ -14,7 +14,7 @@
                 </input>
                 <input name="url" type="TextLine">
                     <label>URL</label>
-                    <help-text>Benytt fullstendig URL. Eksempelvis slik: http://www.nav.no</help-text>
+                    <help-text>Benytt fullstendig URL. Eksempelvis slik: https://skatteetaten.no</help-text>
                     <occurrences maximum="1" minimum="1"/>
                 </input>
             </items>
