@@ -5,7 +5,7 @@ const libs = {
     navUtils: require('/lib/nav-utils'),
     node: require('/lib/xp/node'),
 };
-var repo = libs.node.connect({
+const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin'],
@@ -37,7 +37,7 @@ exports.join = join;
  * @param {Object} b
  */
 function join (a, b) {
-    var set = {
+    const set = {
         a: {
 
         },
@@ -48,32 +48,32 @@ function join (a, b) {
 
         },
     };
-    for (var k in a) {
+    for (let k in a) {
         if (a.hasOwnProperty(k) && !b.hasOwnProperty(k)) {
             set.a[k] = a[k];
         } else if (a.hasOwnProperty(k) && b.hasOwnProperty(k)) {
             set.u[k] = [a[k], b[k]];
         }
     }
-    for (var l in b) {
+    for (let l in b) {
         if (!a.hasOwnProperty(l) && b.hasOwnProperty(l)) {
             set.b[l] = b[l];
         }
     }
-    var ret = {
+    const ret = {
 
     };
-    for (var m in set.a) {
+    for (let m in set.a) {
         if (set.a.hasOwnProperty(m)) {
             ret[m] = set.a[m];
         }
     }
-    for (var n in set.b) {
+    for (let n in set.b) {
         if (set.b.hasOwnProperty(n)) {
             ret[n] = set.b[n];
         }
     }
-    for (var o in set.u) {
+    for (let o in set.u) {
         if (set.u.hasOwnProperty(o)) {
             ret[o] = set.u[o];
         }
@@ -87,7 +87,7 @@ exports.changeSocial = changeSocial;
  * @param {Object} content
  */
 function changeSocial (content) {
-    var ret = [];
+    const ret = [];
     if (content.data.hasOwnProperty('share-facebook')) {
         if (content.data['share-facebook']) {
             ret.push('facebook');
@@ -130,14 +130,14 @@ exports.changeNewsSchemas = changeNewsSchemas;
  */
 function changeNewsSchemas (content) {
     content.data.menuListItems = content.data.menuListItems || [];
-    var ns = content.data.newsschemas;
+    let ns = content.data.newsschemas;
     if (!Array.isArray(ns)) {
         ns = [ns];
     }
     content.data.menuListItems = addMenuListItem(
         content.data.menuListItems,
         'form-and-application',
-        ns.reduce(function (t, el) {
+        ns.reduce((t, el) => {
             if (el) {
                 t.push(el);
             }
@@ -278,16 +278,15 @@ exports.mapReduceMenuItems = mapReduceMenuItems;
  * @param {Object} content
  */
 function mapReduceMenuItems (content) {
-    var selected;
+    let selected;
     if (content && content.data && content.data.menuListItems && content.data.menuListItems._selected) {
         selected = content.data.menuListItems._selected;
     }
     if (!selected) {
         return content;
     }
-    // var selected = content.data.menuListItems._selected;
     selected = Array.isArray(selected) ? selected : [selected];
-    selected.forEach(function (value) {
+    selected.forEach(value => {
         if (!isLink(content.data.menuListItems[value].link)) {
             delete content.data.menuListItems[value];
         }
@@ -473,7 +472,7 @@ exports.createNewTableContent = createNewTableContent;
  * @param {string} scElementId id to shortcuts content list
  */
 function createNewTableContent (tableElements, ntkElementId, newElementId, scElementId) {
-    var data = {
+    const data = {
         nrTableEntries: tableElements.length,
         tableContents: tableElements,
         nrNTK: 5,
@@ -546,12 +545,12 @@ exports.getRefs = getRefs;
  * @returns {Array<{object}>}
  */
 function getRefs (content) {
-    var re = [];
-    var start = 0;
-    var count = 20;
-    var length = count;
+    let re = [];
+    let start = 0;
+    const count = 20;
+    let length = count;
     while (length === count) {
-        var res = libs.content.query({
+        const res = libs.content.query({
             start: start,
             count: count,
             query: '_references LIKE "' + content._id + '" AND x.no-nav-navno.cmsContent.contentHome NOT LIKE "' + content._id + '"',
@@ -571,16 +570,16 @@ exports.deleteOldContent = deleteOldContent;
  * @param {string} newPath path to childrens new parent
  */
 function deleteOldContent (content, newPath) {
-    var children = repo
+    const children = repo
         .findChildren({
             parentKey: content._id,
             start: 0,
             count: 100,
         })
-        .hits.map(function (c) {
+        .hits.map((c) => {
             return repo.get(c.id);
         });
-    children.forEach(function (child) {
+    children.forEach((child) => {
         repo.move({
             source: child._id,
             target: '/content' + newPath + '/',
@@ -602,7 +601,7 @@ function modify (value, newId, oldId) {
     try {
         repo.modify({
             key: value._id,
-            editor: function (c) {
+            editor: (c) => {
                 log.info('*****UPDATED REFS ON  ' + c._path + '*****');
                 log.info(oldId + ' => ' + newId);
                 replaceIdInContent(c, oldId, newId);
@@ -634,8 +633,8 @@ function replaceIdInContent (content, oldId, newId) {
     if (typeof content === 'object') {
         // check arrays
         if (Array.isArray(content)) {
-            content.forEach(function (arrayEl, index) {
-                var isIdObject = arrayEl.toString && arrayEl.toString() !== '[object Object]' && !Array.isArray(arrayEl);
+            content.forEach((arrayEl, index) => {
+                const isIdObject = arrayEl.toString && arrayEl.toString() !== '[object Object]' && !Array.isArray(arrayEl);
                 // replace the id if it's a string and it's more than just the id
                 if (typeof arrayEl === 'string' && arrayEl.indexOf(oldId) !== -1 && arrayEl.length !== oldId.length) {
                     log.info('replace id in array at ' + index);
@@ -651,8 +650,8 @@ function replaceIdInContent (content, oldId, newId) {
             });
             // normal objects
         } else {
-            for (var key in content) {
-                var isIdObject = content[key].toString && content[key].toString() !== '[object Object]' && !Array.isArray(content[key]);
+            for (let key in content) {
+                const isIdObject = content[key].toString && content[key].toString() !== '[object Object]' && !Array.isArray(content[key]);
                 // replace the id if the property is a string and if it's more than just the id
                 if (typeof content[key] === 'string' && content[key].indexOf(oldId) !== -1 && content[key].length !== oldId.length) {
                     log.info('Found id in object at ' + key);
@@ -708,7 +707,7 @@ exports.getIdFromUrl = getIdFromUrl;
  * @returns {{external: boolean, invalid: boolean, refId: string|null, pathTo: string|null}}
  */
 function getIdFromUrl (url) {
-    var ret = {
+    const ret = {
         external: true,
         invalid: false,
         refId: null,
@@ -726,16 +725,16 @@ function getIdFromUrl (url) {
             url = url.replace(/ø/g, 'o');
             url = url.replace(/æ/g, 'ae');
             if (url.indexOf('?') > -1) {
-                var urlSplitOnQuestionmark = url.split('?');
+                const urlSplitOnQuestionmark = url.split('?');
                 if (urlSplitOnQuestionmark.length === 2) {
                     url = urlSplitOnQuestionmark[0];
                 }
             }
-            var cmsKey;
+            let cmsKey;
             if (url.indexOf('.cms') === url.length - 4) {
                 url = url.replace('.cms', '');
-                var urlSplit = url.split('.');
-                var cms = urlSplit[urlSplit.length - 1];
+                let urlSplit = url.split('.');
+                let cms = urlSplit[urlSplit.length - 1];
                 if (isNaN(parseInt(cms))) {
                     urlSplit = url.split('/');
                     cms = urlSplit[urlSplit.length - 1];
@@ -747,14 +746,14 @@ function getIdFromUrl (url) {
                 }
             }
             if (url.indexOf('/_attachment/') !== -1) {
-                var urlSplitOnAttachment = url.split('/_attachment/');
+                const urlSplitOnAttachment = url.split('/_attachment/');
                 cmsKey = urlSplitOnAttachment[urlSplitOnAttachment.length - 1];
             }
-            var path = url.replace('https://', '/').replace('http://', '/');
+            let path = url.replace('https://', '/').replace('http://', '/');
 
-            var c;
+            let c;
             if (cmsKey) {
-                var hits = libs.content.query({
+                const hits = libs.content.query({
                     start: 0,
                     count: 10,
                     query: 'x.no-nav-navno.cmsContent.contentKey LIKE "' + cmsKey + '"',
@@ -764,10 +763,10 @@ function getIdFromUrl (url) {
                 }
             }
             if (!c) {
-                var count = 0;
-                var useCount = false;
+                let count = 0;
+                let useCount = false;
                 while (count < 10 && !c) {
-                    var testPath = path;
+                    let testPath = path;
                     if (!useCount) {
                         useCount = true;
                     } else {
@@ -806,7 +805,7 @@ function getUrlsInContent (elem) {
     const urls = [];
     let match;
 
-    var hrefPtrn = /href=\\"(.*?)\\"/g;
+    const hrefPtrn = /href=\\"(.*?)\\"/g;
     while ((match = hrefPtrn.exec(dataString)) != null) {
         const url = match[1];// we only care about group 1, not the whole match
         if (url.indexOf('https://') === 0 || url.indexOf('http://') === 0) {
@@ -863,7 +862,7 @@ function compose (functions) {
 
 exports.getTemplate = getTemplate;
 function getTemplate (templateName) {
-    var r = libs.content.query({
+    let r = libs.content.query({
         query: '_name LIKE "' + templateName + '"',
     });
     if (!r.hits[0]) {
