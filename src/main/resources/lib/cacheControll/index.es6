@@ -78,8 +78,11 @@ function wipeOnChange (path) {
         w(getPath(path, 'tavleliste'));
         w(getPath(path, 'tavleliste-relatert-innhold'));
         w(getPath(path, 'transport'));
-        if (path.indexOf('/www.nav.no/no/driftsmeldinger/') !== -1) {
+        if (path.indexOf('/driftsmeldinger/') !== -1) {
             w('driftsmelding-heading');
+        }
+        if (path.indexOf('/publiseringskalender/') !== -1) {
+            w('publiseringskalender');
         }
     }
 }
