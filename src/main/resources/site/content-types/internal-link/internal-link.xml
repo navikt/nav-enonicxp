@@ -1,0 +1,14 @@
+<content-type>
+    <display-name>Intern Lenke</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <input name="description" type="TextArea">
+            <label>Beskrivelse</label>
+            <occurrences maximum="1" minimum="0"/>
+        </input>
+        <input name="target" type="ContentSelector">
+            <label>Link</label>
+            <occurrences maximum="1" minimum="0"/>
+        </input>
+    </form>
+</content-type>
