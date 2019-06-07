@@ -1,0 +1,23 @@
+<content-type>
+    <display-name>Melding</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="melding">
+            <label>Melding</label>
+            <items>
+                <input type="HtmlArea" name="text">
+                    <label>Brødtekst</label>
+                    <help-text>Kort og konsis meldingstekst.</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="RadioButton" name="type">
+                    <label>Type</label>
+                    <config>
+                        <option value="prodstatus">Driftsmelding</option>
+                    </config>
+                    <default>prodstatus</default>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>

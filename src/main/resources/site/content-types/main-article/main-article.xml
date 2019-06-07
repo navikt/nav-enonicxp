@@ -11,98 +11,183 @@
                 </input>
                 <input name="ingress" type="TextArea">
                     <label>Ingress</label>
-                    <help-text>Ingressen skal være maks. 240 tegn.</help-text>
+                    <help-text>Ingressen bør være maks. 240 tegn.</help-text>
                     <occurrences maximum="1" minimum="1"/>
                 </input>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst</label>
-                    <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn. Lengre artikler bør deles opp. </help-text>
+                    <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
                     <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <include>Undo | Redo</include>
+                    </config>
                 </input>
                 <input type="RadioButton" name="hasTableOfContents">
                     <label>Sett inn innholdsfortegnelse</label>
+                    <help-text>Innholdsfortegnelsen blir vist som lenker i toppen av en artikkel. Skal ikke brukes på nyheter og pressemeldinger.</help-text>
                     <config>
                         <option value="none">Nei</option>
                         <option value="h3">Ja</option>
                     </config>
                     <default>none</default>
                 </input>
-                <field-set name="Tilbakemelding">
-                    <label>Tilbakemelding</label>
-                    <help-text>Denne boksen skal kun brukes på sentrale sider på nav.no</help-text>
-                    <items>
-                        <input name="vis-tilbakemelding" type="CheckBox">
-                            <label>Vis 'Fant du det du lette etter?'</label>
-                            <custom-text>contentdata/vis-tilbakemelding</custom-text>
-                            <occurrences maximum="1" minimum="0"/>
-                        </input>
-                    </items>
-                </field-set>
-                <field-set name="priority">
-                    <label>Prioritet</label>
-                    <help-text>Her velger du prioritet på boksene på seksjonssiden/forsiden, tall fra 1-9</help-text>
-                    <items>
-                        <field-set name="table">
-                            <label>Bokser</label>
+                <option-set name="menuListItems">
+                    <label>Innhold i høyremenyen</label>
+                    <expanded>false</expanded>
+                    <occurrences minimum="0" maximum="1"/>
+                    <options minimum="0" maximum="10">
+                        <option name="selfservice">
+                            <label>Logg inn</label>
                             <items>
-                                <input type="Long" name="tablePriority">
-                                    <label>Velg prioritet</label>
-                                </input>
-                                <input type="RadioButton" name="icon">
-                                    <label>Velg ikon på boksene</label>
+                                <input name="link" type="ContentSelector">
+                                    <label>Logg inn</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
                                     <config>
-                                        <option value="icon-document">Dokument</option>
-                                        <option value="icon-application">Selvbetjening</option>
-                                        <option value="icon-padlock">Innloggingstjeneste</option>
+                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                        <showStatus>true</showStatus>
                                     </config>
-                                    <default>icon-document</default>
                                 </input>
                             </items>
-                        </field-set>
-                        <field-set name="ntk">
-                            <label>Nyttig å vite</label>
+                        </option>
+                        <option name="form-and-application">
+                            <label>Skjema og søknad</label>
                             <items>
-                                <input type="Long" name="ntkPriority">
-                                    <label>Velg prioritet</label>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set name="news">
-                            <label>Nyheter</label>
-                            <items>
-                                <input name="newsPriority" type="RadioButton">
-                                    <label>Vis rekkefølge etter dato</label>
+                                <input name="link" type="ContentSelector">
+                                    <label>Skjema og søknad</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
                                     <config>
-                                        <option value="true">Ja</option>
-                                        <option value="false">Nei</option>
+                                        <allow-content-type>no.nav.navno:Skjemavedlegg</allow-content-type>
+                                        <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
+                                        <allow-content-type>no.nav.navno:Skjema</allow-content-type>
+                                        <showStatus>true</showStatus>
                                     </config>
-                                    <default>false</default>
                                 </input>
                             </items>
-                        </field-set>
-                        <field-set name="shortcut">
-                            <label>Snarveier</label>
+                        </option>
+                        <option name="process-times">
+                            <label>Saksbehandlingstider</label>
                             <items>
-                                <input name="scPriority" type="Long">
-                                    <label>Velg prioritet</label>
+                                <input name="link" type="ContentSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
                                 </input>
                             </items>
-                        </field-set>
-                    </items>
-                </field-set>
-            </items>
-        </field-set>
-        <field-set name="Angi andre språkversjoner">
-            <label>Legg til andre språkversjoner</label>
-            <items>
-                <input name="languages" type="ContentSelector">
-                    <label>Legg til andre språkversjoner</label>
-                    <help-text>Søk</help-text>
-                    <occurrences maximum="0" minimum="0"/>
-                    <config>
-                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                    </config>
-                </input>
+                        </option>
+                        <option name="related-information">
+                            <label>Relatert informasjon</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Innhold</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="0"/>
+                                    <config>
+                                        <allow-content-type>media:document</allow-content-type>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <allow-content-type>no.nav.navno:tavleliste</allow-content-type>
+                                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
+                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                        <allow-content-type>no.nav.navno:Oppslagstavle</allow-content-type>
+                                        <allow-content-type>no.nav.navno:shortcut</allow-content-type>
+                                        <allow-content-type>no.nav.navno:Ekstra_stor_tabell</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="international">
+                            <label>Internasjonalt</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Internasjonalt</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="report-changes">
+                            <label>Meld fra om endringer</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Meld fra om endringer</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="rates">
+                            <label>Satser</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Satser</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="appeal-rights">
+                            <label>Klagerettigheter</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Klagerettigheter</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="membership">
+                            <label>Medlemskap i folketrygden</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Medlemskap i folketrygden</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="rules-and-regulations">
+                            <label>Regelverk</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Regelverk</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
             </items>
         </field-set>
         <field-set name="facts">
@@ -110,7 +195,7 @@
             <items>
                 <input name="fact" type="HtmlArea">
                     <label>Faktaboksen vises under brødteksten</label>
-                    <help-text>Faktaboksen skal inneholde maks 500 tegn. Bruk gjerne punktliste.</help-text>
+                    <help-text>Bruk maks 500 tegn.</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
             </items>
@@ -120,181 +205,24 @@
             <items>
                 <input name="image" type="ImageSelector">
                     <label>Bilde</label>
-                    <help-text>Vi bruker normalt ikke illustrasjonsbilder. Bilder skal gi merverdi til teksten. Bildene skal ha en beskrivende tekst.</help-text>
+                    <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
                 <input name="imagesize" type="RadioButton">
                     <label>Velg bildestørrelse</label>
-                    <help-text>Bredden på bilder skal ikke være mindre enn 500 piksler. Velg bildestørrelse.</help-text>
+                    <help-text>Bredden på bildet skal ikke være mindre enn 580 piksler.</help-text>
                     <config>
                         <option value="100">100%</option>
                         <option value="70">70%</option>
                         <option value="40">40%</option>
-                        <option value="">Ingen</option>
                     </config>
                 </input>
                 <input name="caption" type="TextLine">
                     <label>Bildetekst</label>
+                    <help-text>Bildene skal ha en beskrivende tekst og skal gi merverdi til artikkelen!</help-text>
                 </input>
             </items>
         </field-set>
-        <option-set name="menuListItems">
-            <label>Innhold i høyremenyen</label>
-            <expanded>false</expanded>
-            <occurrences minimum="0" maximum="1"/>
-            <options minimum="0" maximum="10">
-                <option name="Selvbetjening">
-                    <label>Selvbetjening</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Selvbetjening</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Skjema og søknad">
-                    <label>Skjema og søknad</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Skjema og søknad</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Skjemavedlegg</allow-content-type>
-                                <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
-                                <allow-content-type>no.nav.navno:Skjema</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Saksbehandlingstider">
-                    <label>Saksbehandlingstider</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Saksbehandlingstider</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Relatert_innhold">
-                    <label>Relatert innhold</label>
-                    <items>
-                        <input type="MediaSelector" name="files">
-                            <occurrences maximum="0"  minimum="1"/>
-                            <label>Legg ved filer</label>
-                            <help-text>Vi bruker som hovedregel bare pdf-filer. Filer skal ha logiske navn da disse er synlige under Relatert informasjon.</help-text>
-                            <config>
-                                <allowContentType>media:document</allowContentType>
-                            </config>
-                        </input>
-                        <input name="link" type="ContentSelector">
-                            <label>Innhold</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Fil</allow-content-type>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                                <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.nyhet</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Internasjonalt">
-                    <label>Internasjonalt</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Internasjonalt</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                                <allow-content-type>no.nav.navno:Kort_om</allow-content-type>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Meld fra om endringer">
-                    <label>Meld fra om endringer</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Meld fra om endringer</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Satser">
-                    <label>Satser</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Satser</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                                <allow-content-type>no.nav.navno:nav.rapporthandbok</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Klagerettigheter">
-                    <label>Klagerettigheter</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Klagerettigheter</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Artikkel_Brukerportal</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Medlemskap i folketrygden">
-                    <label>Medlemskap i folketrygden</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Medlemskap i folketrygden</label>
-                            <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Rapport_handbok</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-                <option name="Regelverk">
-                    <label>Regelverk</label>
-                    <items>
-                        <input name="link" type="ContentSelector">
-                            <label>Regelverk</label>
-                            <custom-text>contentdata/laws</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
-                            <config>
-                                <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                            </config>
-                        </input>
-                    </items>
-                </option>
-            </options>
-        </option-set>
         <field-set name="socialSharing">
             <label>Del på sosiale medier</label>
             <items>
@@ -307,6 +235,20 @@
                         <option value="linkedin">LinkedIn</option>
                     </config>
                     <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Angi andre språkversjoner">
+            <label>Legg til andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Legg til andre språkversjoner</label>
+                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                        <showStatus>true</showStatus>
+                    </config>
                 </input>
             </items>
         </field-set>

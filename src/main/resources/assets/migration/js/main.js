@@ -1,4 +1,4 @@
-const serviceUrl = document.currentScript.getAttribute('data-serviceurl');
+var serviceUrl = document.currentScript.getAttribute('data-serviceurl');
 
 var deleteTaskId, listTaskId;
 $(function () {

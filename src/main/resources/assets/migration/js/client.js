@@ -8,6 +8,7 @@
     var errorBody;
     var status;
     var statusBody;
+    var items = 0;
 
     $(function() {
         colums = $('#columns');
@@ -32,15 +33,25 @@
             }
         });
         io.on('newTask', function (message) {
+            items = items +1;
+            if (items % 5 === 0) {
+                var newColumns = '<div class="columns" id="c' + items+ '"></div>';
+                colums.after(newColumns);
+                colums = $('#c' + items);
+            }
             if (message.isNew) return newCreateElements(message);
             colums.append(createNewElements(message.elements));
             addAction(message.action);
             addProgress(message.progress);
+
         });
         io.on('error', function(message) {
             errorBody.text(message.body);
             errorHead.text(message.title);
             error.show();
+        })
+        io.on('console.log', function(data) {
+            console.log(data);
         })
     }
 
@@ -118,6 +129,7 @@
 
             newElement.append(newCard);
             colums.append(newElement);
+            colums.find('.card').height(colums.innerHeight())
         }
         else {
             colums.after(body);

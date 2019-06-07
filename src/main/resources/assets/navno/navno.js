@@ -4720,7 +4720,7 @@ $(function() {
     $(function() {
         $(".site-coltrols-toolbar ul li.dropdown").click(function() {
             var e = $(this).find("ul.dropdown-menu");
-            e.hasClass("hidden") ? e.removeClass("hidden") : e.addClass("hidden")
+            e.hasClass("hidden") ? e.removeClass("hidden").attr("aria-expanded",true) : e.addClass("hidden").attr("aria-expanded",false)
         })
     }),
     navno.handleDocClickTouch = function(e) {

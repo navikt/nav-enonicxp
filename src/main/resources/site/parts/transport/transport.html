@@ -4,12 +4,10 @@
             <h1 class="typo-sidetittel text-center" data-th-text="${title}"></h1>
         </div>
         <div class="din-situasjon-wrapper">
-            <p class="ingress typo-infotekst" data-th-text="${ingress}">
-
-            </p>
+            <p class="ingress typo-infotekst" data-th-text="${ingress}"></p>
             <a data-th-href="${item.url}" data-th-each="item : ${items}" class="lenkeboks" data-th-classappend="${item.className}">
                 <div class="icon">
-                    <img data-th-src="${item.logo}" src="" class="icon-size">
+                    <img data-th-src="${item.logo}" src="" class="icon-size" />
                 </div>
                 <div class="tekst">
                     <h2 class="typo-innholdstittel" data-th-text="${item.title}"></h2>

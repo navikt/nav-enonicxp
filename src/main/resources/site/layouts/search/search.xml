@@ -1,0 +1,7 @@
+<layout>
+    <display-name>Search layout</display-name>
+    <regions>
+        <region name="searchbar"/>
+        <region name="result"/>
+    </regions>
+</layout>

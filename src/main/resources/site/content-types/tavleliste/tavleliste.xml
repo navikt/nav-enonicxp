@@ -1,29 +1,31 @@
 <content-type>
     <display-name>Artikkelliste</display-name>
     <description/>
-    <super-type>base:structured</super-type>
+    <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input type="TextArea" name="heading">
-            <label>Tittel</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
         <input type="TextArea" name="originaltitle">
             <label>Orginaltittel</label>
+            <help-text>Norsk tittel (hvis fremmedspråklig innhold)</help-text>
             <occurrences minimum="0" maximum="1"/>
         </input>
-        <input type="RadioButton" name="hide_date">
-            <label>Skjul dato</label>
-            <config>
-                <option value="true">Ja</option>
-                <option value="false">Nei</option>
-            </config>
+        <input type="CheckBox" name="hide_date">
+            <label>Skjul dato på artikkellisten</label>
+            <default>unchecked</default>
         </input>
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
             <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="CheckBox" name="hideSectionContentsDate">
+            <label>Skjul dato på artiklene i artikkellisten</label>
+            <default>unchecked</default>
+        </input>
+        <input type="CheckBox" name="orderSectionContentsByPublished">
+            <label>Sorter artikkellisten etter publiseringsdato</label>
+            <default>checked</default>
         </input>
         <input name="sectionContents" type="ContentSelector">
             <label>Contents</label>
@@ -49,26 +51,40 @@
                 </input>
             </items>
         </item-set>
-        <item-set name="menuListItems">
-            <label>Menylisteoppføringer</label>
-            <items>
-                <input name="menuListName" type="TextLine">
-                    <label>Navn på listeoppføring</label>
-                </input>
-                <input type="HtmlArea" name="text">
-                    <label>Tekstbasert innhold</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input type="ContentSelector" name="link">
-                    <label>Linker til innhold</label>
-                    <occurrences maximum="0" minimum="0"/>
-                </input>
-            </items>
-            <occurrences minimum="0" maximum="0"/>
-        </item-set>
+        <option-set name="menuListItems">
+            <label >Innhold i høyremenyen</label>
+            <expanded>false</expanded>
+            <occurrences minimum="0" maximum="1"/>
+            <options minimum="0" maximum="11">
+                <option name="related-information">
+                    <label>Snarveier</label>
+                    <help-text ></help-text>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Snarveier</label>
+                            <custom-text>contentdata/laws</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
         <input name="metaTags" type="Tag">
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
+        <field-set name="Angi andre språkversjoner">
+            <label>Legg til andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Legg til andre språkversjoner</label>
+                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:tavleliste</allow-content-type>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </content-type>

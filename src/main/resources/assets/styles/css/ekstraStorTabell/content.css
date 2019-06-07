@@ -1,0 +1,297 @@
+/**********************************************
+*
+*	STYLES FOR SERVICES TO USE
+*
+***********************************************/
+
+/**********************************************
+*
+*	SELFDEFINED GLOBAL ELEMENTS
+*
+***********************************************/
+/* Normal table */
+.NAVtbl { width: 100%; border-collapse: collapse;}
+.NAVtbl th { text-align: left; color: #675C53;}
+.NAVtbl td { padding:  5px 0px 5px 7px; vertical-align: top;}
+.NAVtbl th div, .NAVnumTbl th div { background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; padding: 3px 0px 3px 7px; margin-bottom: 8px; }
+.NAVtbl .NAValternateRow, .NAVnumTbl .NAValternateRow { background-color: #EFEFEE;}
+.NAVtbl tr:nth-child(even), NAVnumTbl tr:nth-child(even) { background-color: #EFEFEE; }
+.NAVtbl td p { padding: 0; margin: 0; }
+
+/* Numeric table */
+.NAVnumTbl { border-collapse: collapse; margin: 10px 0px 1.9em 0px;}
+.NAVnumTbl th { text-align: right; color: #675C53;}
+.NAVnumTbl td { padding: 5px 7px 5px 7px; vertical-align: bottom; text-align: right; white-space: nowrap;}
+.NAVnumTbl .NAVtextColumn { text-align: left!important; vertical-align: top;}
+.NAVnumTbl th div { padding-right: 7px;}
+.NAVnumTbl td.NAVtextColumn { color: #675C53; font-weight: bold;}
+.NAVnumTbl .NAVsemiHead { padding-top: 15px;}
+
+.NAValternateRow { background-color: #F2F1F0;}
+
+/*Form elementer*/
+fieldset { background-color: #F1F0ED; border: 0px; margin-bottom: 5px; padding: 10px 10px 0px 10px;}
+fieldset label { display: block; margin-bottom: 2px;}
+fieldset input { width: 25em; margin-bottom: 10px;}
+fieldset textarea { width: 25em; height: 10em; overflow: auto; margin-bottom: 10px;}
+fieldset .NAVtbSmall { width: 8em;}
+fieldset em { color: #CE3231; }
+
+.NAVform { margin: 0px; padding: 0px;}
+
+
+/* Object spacers */
+.NAVportletSeperator { height: 1.9em; width: 100%; clear: left;}
+.NAVportletSeperatorExtra { height: 3em; width: 100%; clear: left;}
+.NAVportletSeparatorSmall { height: 1em; width: 100%; clear: left;}
+
+/* Normal list */
+ul.NAVsquarelist { list-style-type: square; list-style-position: inside; }
+ul.NAVsquarelist li { margin-bottom: 0.2em; }
+
+/* Linklist */
+.NAVsquareLinkList ul { list-style-type: square; list-style-position: outside; color: #0074C2; }
+.NAVsquareLinkList ul li { margin-bottom: 0.2em; margin-left: 20px;}
+
+/* Kurslist */
+.NAVkursList { float: left; width: 100%;}
+.NAVkursList ul { list-style-type: square; list-style-position: outside; clear: left; margin: 15px 0px 0px 7px;}
+.NAVkursList ul li { margin-bottom: 0.2em; margin-left: 20px;}
+.NAVkursList h5 { color: #675C53;}
+.NAVkursList p { padding: 0px 0px 0px 10px;}
+
+/* Dashed linje */
+.dashedLine { background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; width: 100%; clear: left; font-size: 0px; height: 1px; padding-top: 15px;}
+
+/* Services menu */
+.NAVsheetFlip { background-image: url('../bilder/global/sheetflip.gif'); background-repeat: no-repeat; background-position: top left; width: 14px; height: 16px;}
+.NAVfastNavBordemBottom { height: 4px; font-size: 0px; background-image: url('../bilder/global/fastnavborderbottom.gif'); background-repeat: repeat-x; background-position: bottom left;}
+.NAVfastNavborderBottomRight { height: 4px; background-image: url('../bilder/global/fastnavbottomright.gif'); background-repeat: no-repeat; background-position: bottom right;}
+
+/* Next and previous links */
+.NAVnext { float: right;}
+.NAVprev { float: left;}
+
+.NAVclearLeft { clear: left;}
+
+/***********************************************************
+*
+*	breadcrumbContainer
+*
+************************************************************/
+#NAVbreadcrumbContainer { margin-left:14px; margin-top:14px; }
+#NAVbreadcrumbContainer a:hover { text-decoration: underline;}
+
+
+/************************************************************
+*
+*	 submenuContainer (leftcolumn)
+*
+*************************************************************/
+/* submenu */
+#NAVsubmenuContainer ul.NAVsubmenu { width: 100%; }
+#NAVsubmenuContainer .nativesubmenu {margin-bottom:1.9em} /*Not used in apps*/
+#NAVsubmenuContainer ul.NAVsubmenu li div { background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; }
+#NAVsubmenuContainer ul.NAVsubmenu li div { padding: 8px 0em 8px 14px}
+#NAVsubmenuContainer ul.NAVsubmenu a { font-size: 1.2em; text-decoration: none;}
+#NAVsubmenuContainer ul.NAVsubmenu a:hover { font-weight: bold;}
+#NAVsubmenuContainer ul.NAVsubmenu a.rtl { font-size: 1.53em; }
+#NAVsubmenuContainer ul.NAVsubmenu ol { margin-bottom: 10px;}
+#NAVsubmenuContainer ul.NAVsubmenu ol a { font-size: 1em;}
+#NAVsubmenuContainer ul.NAVsubmenu li ol li div { padding-top: 5px; padding-bottom: 5px; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; }
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol li div { background-image: none; padding-bottom: 2px; padding-top: 2px }
+#NAVsubmenuContainer a { color: #675C53;}
+#NAVsubmenuContainer .NAVselected { background: url('../bilder/venstremeny/submenuselected.gif') no-repeat 0px 0px;}
+#NAVsubmenuContainer .NAVlevelOne { color: #C30000; font-weight: bold; }
+#NAVsubmenuContainer .NAVlevelTwo { color: #C30000; font-weight: bold;}
+#NAVsubmenuContainer .NAVlevelThree { color: #C30000; font-weight: bold;}
+#NAVsubmenuContainer .NAVlevelFour { color: #C30000; font-weight: bold;}
+#NAVsubmenuContainer .NAVarrow { background-image: url('../bilder/venstremeny/arrowsubmenu.gif'); background-repeat: no-repeat; background-position: 0px 7px;/*0em 0.7em;*/}
+#NAVsubmenuContainer .NAVarrowSelected { background-image: url('../bilder/venstremeny/arrowsubmenuselected.gif'); background-repeat: no-repeat; background-position: 0px 9px;/* 0em 0.8em;*/ }
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol .NAVarrow { background-position: 0px 5px;}
+#NAVsubmenuContainer ul.NAVsubmenu li ol li ol .NAVarrowSelected { background-position: 0px 7px;}
+
+/* servicemenu */
+#NAVsubmenuContainer .NAVfastNavBorderRight { padding-right: 4px; background-image: url('../bilder/global/fastnavrightborder.gif'); background-repeat: repeat-y; background-position: top right;}
+#NAVsubmenuContainer .NAVfastNavContainer { padding: 0px 0em 8px 0em; background-color: #FFFFFF;}
+#NAVsubmenuContainer .NAVfastNavContainer h5 { padding-left: 20px; margin-right: 8px;}
+#NAVsubmenuContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { background-color: #F9F8F7; padding: 14px 15px 19px 14px; margin: 4px 8px 0px 0px;}
+#NAVsubmenuContainer .NAVfastNavContainer a { text-decoration: none; color: #0074C2;}
+#NAVsubmenuContainer .NAVfastNavContainer a:hover { text-decoration: underline;}
+#NAVsubmenuContainer .NAVfastNavContainer a:visited { color: #8B32E5; }
+
+/************************************************************
+*
+*	 classes in content (maincolumn)
+*
+*************************************************************/
+/* errorBox */
+.NAVerrorBox { border: 1px dashed #CE3231; padding-left: 20px; padding-right:20px; margin-bottom: 20px;}
+.NAVerrorBox p { color: #CE3231; margin: 10px 0px 10px 0px}
+.NAVerrorBoxAlt2 { border: 1px dashed #CE3231; padding-left: 20px; padding-right:20px; margin-bottom: 20px;}
+.NAVerrorBoxAlt2 p { color: #CE3231; margin: 0;}
+.NAVerrorBoxAlt2 ul li { color: #CE3231; margin:0;}
+.NAVerrorBoxAlt2 ul { list-style:disc inside; margin:0;}
+
+
+/* Newslist */
+.NAVnewsContainer { margin: 0px 0px 15px 0px; padding: 0px; float: left; width: 100%;}
+.NAVnewsContainer img { float: left; margin-right: 12px; border: 2px solid #B7B1A9;}
+.NAVnewsContainer h2 { display: inline;}
+.NAVnewsContainer span { font-size: 0.8em; margin-left: 0.5em;}
+.NAVnewsContainer p { margin: 0em;}
+
+/* Newslist two columns */
+.NAVnewsTwoColumn, .NAVnewsTwoColumnSpacer { width: 48%;}
+.NAVnewsTwoColumn span, .NAVnewsTwoColumnSpacer span { margin-left: 0em; display: block;}
+.NAVnewsTwoColumnSpacer { margin-right: 1em;}
+
+/* Big campaign */
+#NAVbigCampaignFrame { height: 120px; position: relative; }
+.NAVbigCampaign { background-color: #EDEBE9; float: left; width: 100%; position: absolute; }
+.NAVbigCampaign img { float: right;}
+.NAVbigCampaign h5 { color: #675C53; background-image: url('../bilder/global/bigcampaigndashed.gif'); font-size: 1.6em; padding: 4px 0px 4px 20px;}
+.NAVbigCampaign h5 a, .NAVbigCampaign h5 a:visited  { color: #675C53;}
+.NAVbigCampaign h5 a:hover { text-decoration: none;}
+.NAVbigCampaign .NAVcampaignContent { margin-top: 15px; margin-right: 200px;}
+.NAVbigCampaign .NAVlnkBigCampaign { margin-left: 20px; padding-top: 10px; display: block; font-size: 1.1em;}
+
+/* Campaign */
+#NAVcampaignPortlet .NAVcampaign { float: left; width: 138px; margin-right: 21px; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; padding-bottom: 15px;}
+#NAVcampaignPortlet img { float: left; display: block;}
+#NAVcampaignPortlet p { margin:0.7em 0em 0em 0em;}
+#NAVcampaignPortlet .NAVkampanjeHeader { font-size: 2.5ex; color: #FFFFFF; background-color: #988F86; clear:left; padding: 0.5em;}
+#NAVcampaignPortlet .NAVnoMarginRight { margin-right: 0px;}
+
+/* Banner two columns */
+.NAVtwoColumnBannerContainer { width: 49%; float: left;}
+.NAVtwoColumnBanner { width: 222px; background-color: #E1DED9;}
+.NAVtwoColumnBanner h5, .NAVtwoColumnBanner h5 a, .NAVtwoColumnBanner h5 a:visited { color: #675C53; }
+.NAVtwoColumnBanner h5 a:hover { text-decoration: none;}
+.NAVtwoColumnBanner h5 { background-image: url('../bilder/global/bigcampaigndashed.gif'); font-size: 1.6em; padding: 4px 0px 4px 20px;}
+.NAVtwoColumnBannerContent { padding: 24px 0px 16px 0px;}
+.NAVtwoColumnBannerContent .NAVlinkTwoColumnBannerContent { margin-left: 20px; padding-top: 10px; display: block; font-size: 1.1em;}
+
+/* Footer for page */
+.NAVpageFooter { background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; padding-bottom: 4px; float: left; width: 100%; clear: left;}
+.NAVpageFooter a { margin-right: 1em;}
+.enhetsinformasjon .NAVpageFooter a { margin-right: 0;}
+
+/* Linklist two columns */
+.NAVlinkListContainer { float: left; width: 100%;}
+.NAVlinkListContainer div { float: left; width: 50%;}
+.NAVlinkListContainer h5 { color: #675C53;}
+.NAVlinkListContainer h2 { margin-bottom: 10px;}
+.NAVlinkListContainer .spacing { margin-right: 3.9%; width: 46%;}
+.NAVlinkListContainer .NAVsquareLinkList { width: 100%; float: left;}
+.NAVlinkListContainer .NAVsquareLinkList ul { clear: left; margin: 15px 0px 0px 7px;}
+.NAVlinkListContainer .NAVportletSeperator { height: 15px;}
+
+/* dashedBox */
+.NAVdashedBox { padding: 5px 6px 5px 10px; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left;}
+.NAVdashedBox {padding: 10px 0px 10px 0px; float: left; width: 100%;}
+.NAVdashedBox form { float: left;}
+.NAVdashedBox .NAVbtn { margin-left: 6px; }
+.NAVdashedBox label { margin-left: 7px;}
+
+/* Loggin 
+.NAVlogginnLine { background-color: #F1F0ED; margin-bottom: 4px; padding: 15px 15px 15px 15px; float: left; width: 90%;}
+.NAVlogginnLine input { float: right; margin-right: 10%;}
+.NAVlogginnLine label { margin-left: 10%; float: left; }
+.NAVlogginnLine .NAVbtn { margin-left: 5px; margin-right: 0px;}*/
+
+/* service menu */
+#NAVcontentContainer .NAVfastNavBorderRight { padding-right: 4px; background-image: url('../bilder/global/fastnavrightborder.gif'); background-repeat: repeat-y; background-position: top right;}
+#NAVcontentContainer .NAVfastNavContainer { padding: 0px 0em 8px 0em; background-color: #FFFFFF;}
+#NAVcontentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder { background-color: #F9F8F7; padding: 14px 15px 19px 14px; margin: 4px 8px 0px 8px;}
+#NAVcontentContainer .NAVfastNavContainer .NAVsquareLinkList ul { color: #3E3832!important;}
+#NAVcontentContainer .NAVfastNavContainer h5 { font-size: 1em; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; padding: 0em 0em 4px 10px; color: #988F86; margin-right: 8px;}
+
+.threeColumnCampaign li { float: left; width: 138px; margin-right: 21px; margin-bottom: 22px; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left;}
+.threeColumnCampaign img { float: left;}
+.threeColumnCampaign .lastCampaign { margin-right: 0px;}
+.threeColumnCampaign .header { background-color: #988F86; width: 138px; clear: left;}
+.threeColumnCampaign h3 { background-color: #988F86; padding: 11px 0px 9px 7px; margin: 0px; font-size: 1.2em;}
+.threeColumnCampaign h3, .threeColumnCampaign h3 a, .threeColumnCampaign h3 a:visited { color: #FFFFFF;}
+.threeColumnCampaign h3 a:hover { text-decoration: none;}
+.threeColumnCampaign p { margin-left: 7px; width: 129px; margin-top: 9px;}
+.threeColumnCampaign .campaignLink { display: block; margin: 0px 0px 3px 7px;}
+
+
+
+/********************************************
+*
+*	Searchpage
+*
+*********************************************/
+.NAVsearchResultRightContainer h5 { margin-top: 0.8em;}
+.NAVsearchList li {margin-bottom: 20px;}
+.NAVsearchList li img { margin-right: 5px;}
+.NAVadvancedSearchContainer { border: 1px solid #E0DED8;}
+.NAVsearchResultRightContainer .NAVdrilldown { background-image: url('../bilder/searchpage/bgadvancedsearch.gif'); background-repeat: repeat-x; background-position: bottom left; }
+.NAVsearchResultRightContainer .NAVdrilldown { height: 2.9em; }
+.NAVsearchResultRightContainer .NAVdrilldown a { color: #675C53; font-weight: bold; display: block; float: left; line-height: 2.9em; margin-left: 8px;}
+.NAVsearchResultRightContainer .NAVdrilldown img { margin-left: 6px; margin-top: 7px; display: block; float: left; clear: left;}
+
+.NAVsearchResultRightContainer .NAVbtn { float: left; margin-top: 24px; }
+.NAVsearchResultRightContainer .NAVresetContainer { clear: left; float: left; padding-top: 8px; }
+.NAVsearchResultRightContainer .NAVdrillDownOptionContainer { background-color: #E1DFD9; border-bottom: 1px solid #E0DED8; background-image: url('../bilder/searchpage/bgdrilldownoption.gif'); background-repeat: repeat-x; background-position: top left; }
+.NAVsearchResultRightContainer .NAVdrilldownOption { margin: 0px 15px 0px 15px; padding: 5px 0px 5px 0px; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; }
+.NAVsearchResultRightContainer .NAVdrilldownOption img { margin-right: 5px;}
+.NAVsearchResultRightContainer .NAVfirst { padding-top: 1em;}
+.NAVsearchResultRightContainer .NAVlast { margin-bottom: 1em;}
+
+/****************************************
+*
+*	Services - Service specific styles
+*
+*****************************************/
+.NAVtjenesterSeperatorHeader, #NAVtjenesterSeparatorHeader { height: 22px; width: 100%; clear: left;}
+#NAVtjenesterHeaderContainer { background: #E0DED8; min-height: 3em; padding: 10px 0px 14px 14px;}
+#NAVtjenesterHeaderContainer h1 { float: left; color: #675C53;}
+#NAVtjenesterHeaderContainer .NAVtjenesteLoginContainer { float: right; margin-right: 3em;}
+#NAVtjenesterHeaderContainer .NAVtjenesteLoginContainer strong { margin-left: 0.2em; margin-right: 1em;}
+#NAVtjenesterHeaderContainer .NAVbackground { float: left; width: 100%; background-image: url('../bilder/tjenester/headerbackground.gif'); background-repeat: repeat-x; background-position: bottom left;}
+
+/*********************************************************
+*
+*	Styles for EDI
+*
+*********************************************************/
+.NAVEDITable td {  padding: 5px 10px 5px 10px; vertical-align: bottom;  background-color: #F2F1F0; }
+.NAVEDITable tr.NAVEDIAltRow td { padding-top: 15px; padding-left: 0px; background-color: #F9F8F7;}
+.NAVEDITable td.lastcolumn { width: 150px; }
+.NAVEDIInput { width: 80px; }
+.NAVEDITable select { width: 180px; }
+.NAVEDITable input.wide { width: 365px; }
+.NAVEDITable .NAVbtn, .NAVEDITableWhite .NAVbtn {float:right; margin-left: 5px; width: 120px}
+.NAVEDITable input[type=submit] { margin-left: 10px;}
+.NAVEDITable {width: 455px;border-collapse: collapse;}
+.NAVEDITable .floatRight span, .NAVEDITableWhite .floatRight span {float:left; color: #0074C4;}
+.NAVEDITable .floatRight span a, .NAVEDITableWhite .floatRight span a {padding-left: 6px;}
+.NAVEDITable a, .NAVEDITableWhite a {color: #0074C4;}
+.NAVEDITable a:visited, .NAVEDITableWhite a:visited  {color: #0074C4;}
+.NAVEDITable tr.lastRow td, .NAVEDITableWhite tr.lastRow td { padding: 25px 0px 0px 10px; background-color: #F9F8F7; background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: 0px 15px}
+.NAVEDIErrorBox { border: 1px dashed #CE3231; padding-left: 5px; padding-right:5px; margin-bottom: 5px;}
+.NAVEDIErrorBox { color: #CE3231; margin: 10px 0px 10px 0px}
+.NAVEDIMessageBox { border: 1px dashed #00A9E0; padding: 5px; margin-bottom: 5px;}
+.NAVEDIMessageBox img { margin-right:10px; vertical-align: middle; }
+.NAVEDITableWhite td {padding: 5px 10px 5px 10px; vertical-align: bottom; }
+.NAVEDITableWhite tr.NAVEDIAltRow td { padding-top: 15px; padding-left: 0px; }
+
+/*********************************************************
+*
+*	Styles for NAV Help
+*
+*********************************************************/
+#NAVhelp      { position:absolute;margin:0;padding:60px 0 0 0; width:230px; display:none;background-image: url('../bilder/helpback.gif'); background-repeat: no-repeat; background-position: top left; }
+#NAVhelpTxt   { padding:10px 10px 10px 20px; background-color:white; color:#555; }
+#NAVhelplukk  { float:right;margin:12px;cursor:pointer; }
+#NAVhelpSpacer{ border:solid 1px #ccc; margin:0px; background-color:white;}
+
+
+
+
+
+
+

@@ -2,33 +2,37 @@
 buildscript {
     repositories {
     	maven {
-	    url "http://central.maven.org/maven2/"
-	}
+	        url "http://central.maven.org/maven2/"
+	    }
     	maven {
-	    url "http://maven.adeo.no/nexus/content/groups/public/"
-	}
-         maven {
+	        url "http://maven.adeo.no/nexus/content/groups/public/"
+	    }
+        maven {
             url "https://plugins.gradle.org/m2/"
-         }
-      }
-     dependencies {
-         classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
-     }
- }
- plugins {
-     id 'java'
-     
- }
- apply plugin: "com.enonic.xp.app"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
+    }
+}
+plugins {
+    id 'com.enonic.xp.app' version '2.0.0' // A plugin developed by Enonic that adds some needed things to Gradle and makes app-building easier. It is required to use in any Enonic App.
+    id "com.moowork.node" version '1.3.1'
+}
+apply plugin: "com.enonic.xp.app"
 
 app {
     name = project.appName
-    displayName = 'Nav.no - XP 2018'
+    displayName = 'Nav.no - XP 2019'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
 	systemVersion = "${xpVersion}"
 }
 
+node {
+    download = true
+    version = '10.15.3'
+}
 
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
@@ -36,9 +40,9 @@ dependencies {
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-event:${xpVersion}"
-    include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
+    include "com.enonic.lib:lib-thymeleaf:2.0.0-B1"
     include "com.enonic.xp:lib-i18n:${xpVersion}"
-    include "com.enonic.xp:lib-mustache:${xpVersion}"
+    include "com.enonic.lib:lib-mustache:2.0.0-B1"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "com.enonic.xp:lib-context:${xpVersion}"
@@ -47,7 +51,6 @@ dependencies {
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include 'com.enonic.lib:lib-router:1.0.0'
-    include 'no.iskald.lib:moment:1.0.0'
     include 'com.enonic.lib:menu:2.0.1'
     include 'com.enonic.lib:util:1.3.0'
     include 'com.enonic.lib:urlredirect:2.0.0'
@@ -56,23 +59,32 @@ dependencies {
     
     include "no.item.wsUtil:wsUtil:1.1.1"
     include 'no.iskald.lib:moment:1.0.0'
-    
-    testCompile 'com.enonic.xp:testing:6.12.0'
 }
 
 repositories {
-	maven {
-	url "http://maven.adeo.no/nexus/content/groups/public"
-	}
     mavenLocal()
     jcenter()
     xp.enonicRepo()
+	maven {
+	    url "http://maven.adeo.no/nexus/content/groups/public"
+	}
     maven {
         url  "https://dl.bintray.com/ljl/maven"
-
     }
     maven {
         url  "https://dl.bintray.com/pdrevland/wsUtil"
     }
-
 }
+
+task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
+    if (project.hasProperty( 'watch' )) {
+        args = ['run', 'dev']
+    } else {
+        args = ['run', 'build']
+    }
+
+    inputs.dir 'src/main/resources'
+    outputs.dir "$buildDir/resources/main"
+}
+
+jar.dependsOn += babelJs

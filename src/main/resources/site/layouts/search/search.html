@@ -1,0 +1,14 @@
+<main>
+    <div class="container maincontent">
+    <div class="search-bar" data-portal-region="searchbar">
+        <div data-th-each="component: ${regions.searchbar.components}">
+            <div data-portal-component="${component.path}" data-th-remove="tag" />
+        </div>
+    </div>
+        <div data-portal-region="result" id="sres">
+            <div data-th-each="component: ${regions.result.components}" data-th-remove="tag">
+                <div data-portal-component="${component.path}" />
+            </div>
+     </div>
+    </div>
+</main>
