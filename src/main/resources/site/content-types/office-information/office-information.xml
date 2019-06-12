@@ -1,0 +1,256 @@
+<content-type>
+    <display-name>Enhetsinformasjon</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <item-set name="enhet">
+            <label>Enhet</label>
+            <occurrences minimum="1" maximum="1"/>
+            <items>
+                <input type="TextLine" name="enhetId">
+                    <label>EnhetId</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="navn">
+                    <label>Navn</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="enhetNr">
+                    <label>EnhetNr</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="Long" name="antallRessurser">
+                    <label>Antall Ressurser</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="status">
+                    <label>Status</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="orgNivaa">
+                    <label>Org Nivå</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="type">
+                    <label>Type</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="organisasjonsnummer">
+                    <label>Organisasjonsnummer</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="underEtableringDato">
+                    <label>Under Etablering Dato</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="aktiveringsdato">
+                    <label>Aktiveringsdato</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="underAvviklingDato">
+                    <label>Under Avvikling Dato</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="nedleggelsesdato">
+                    <label>Nedleggelsesdato</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="oppgavebehandler">
+                    <label>Oppgavebehandler</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="Long" name="versjon">
+                    <label>Versjon</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="Long" name="sosialeTjenester">
+                    <label>Sosiale Tjenester</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+            </items>
+        </item-set>
+        <input type="TextLine" name="overordnetEnhet">
+            <label>Overordnet Enhet</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="TextLine" name="habilitetskontor">
+            <label>Habilitetskontor</label>
+            <occurrences minimum="0" maximum="0"/>
+        </input>
+        <item-set name="kontaktinformasjon">
+            <label>Kontaktinformasjon</label>
+            <occurrences minimum="1" maximum="1"/>
+            <items>
+                <input type="Long" name="id">
+                    <label>Id</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="enhetNr">
+                    <label>EnhetNr</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="telefonnummer">
+                    <label>Telefonnummer</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="telefonnummerKommentar">
+                    <label>Telefonnummer Kommentar</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="faksnummer">
+                    <label>Faksnummer</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input type="TextLine" name="epost">
+                    <label>Epost</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <item-set name="postadresse">
+                    <label>Postadresse</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <items>
+                        <input type="TextLine" name="type">
+                            <label>Type</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="postnummer">
+                            <label>Postnummer</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="poststed">
+                            <label>Poststed</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="postboksnummer">
+                            <label>Postboksnummer</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="postboksanlegg">
+                            <label>Postboksanlegg</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                </item-set>
+                <item-set name="besoeksadresse">
+                    <label>Besøksadresse</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <items>
+                        <input type="TextLine" name="type">
+                            <label>Type</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="postnummer">
+                            <label>Postnummer</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="poststed">
+                            <label>Poststed</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="gatenavn">
+                            <label>Gatenavn</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="husnummer">
+                            <label>Husnummer</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="husbokstav">
+                            <label>Husbokstav</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="adresseTilleggsnavn">
+                            <label>Adresse Tilleggsnavn</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                </item-set>
+                <input type="TextLine" name="spesielleOpplysninger">
+                    <label>Spesielle Opplysninger</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <item-set name="publikumsmottak">
+                    <label>Publikumsmottak</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <items>
+                        <input type="Long" name="id">
+                            <label>Id</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="stedsbeskrivelse">
+                            <label>Stedsbeskrivelse</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <item-set name="besoeksadresse">
+                            <label>Besøksadresse</label>
+                            <occurrences minimum="0" maximum="1"/>
+                            <items>
+                                <input type="TextLine" name="type">
+                                    <label>Type</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="postnummer">
+                                    <label>Postnummer</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="poststed">
+                                    <label>Poststed</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="gatenavn">
+                                    <label>Gatenavn</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="husnummer">
+                                    <label>Husnummer</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="husbokstav">
+                                    <label>Husbokstav</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="adresseTilleggsnavn">
+                                    <label>Adresse Tilleggsnavn</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </item-set>
+                        <item-set name="aapningstider">
+                            <label>Åpningstider</label>
+                            <occurrences minimum="0" maximum="0"/>
+                            <items>
+                                <input type="Long" name="id">
+                                    <label>Id</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="dag">
+                                    <label>Dag</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="dato">
+                                    <label>Dato</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="fra">
+                                    <label>Fra</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="til">
+                                    <label>Til</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="kommentar">
+                                    <label>Kommentar</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                                <input type="TextLine" name="stengt">
+                                    <label>Stengt</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </item-set>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+    </form>
+</content-type>
