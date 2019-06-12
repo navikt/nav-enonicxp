@@ -1,0 +1,68 @@
+<div class="col-md-8 col-sm-12">
+    <article id="pagecontent" class="full-article office-details h-card" itemscope="" itemtype="http://schema.org/Organization">
+        <header>
+            <time class="pubdate muted" datetime="2018-08-06 11:00">Publisert 06.08.2018</time>
+            <h1 data-th-text="${enhet.navn} + ' - kontorinformasjon'"></h1>
+            <div class="toolbar">
+                <div class="content-print leftmost-in-toolbar" id="print-page" role="button" tabindex="0">
+                    <span>Skriv ut side</span>
+                </div>
+            </div>
+        </header>
+        <div class="article-body">
+            <div itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint">
+                <h3 itemprop="contactType">Telefon</h3>
+                <p class="p-tel" itemprop="telephone" data-th-text="${enhet.telefon}"></p>
+                <p data-th-text="${enhet.telefonkommentar}">kl. 08:00 - 15:30</p>
+            </div>
+            <div class="p-note">
+                <h3>Innsending av skjemaer</h3>
+                <p>
+                    Skal du sende inn skjemaer, må du bruke
+                    <a href="https://www.nav.no/no/Person/Skjemaer-for-privatpersoner" rel="external">NAVs skjemaveileder.</a> Skjemaveilederen gir deg hjelp
+                    til å velge rett skjema og rett adresse det skal sendes til.
+                </p>
+            </div>
+            <div itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress">
+                <h3>Postadresse</h3>
+                <p>
+                    <span class="p-post-office-box" itemprop="postOfficeBoxNumber" data-th-text="${enhet.postaddresse}">Postboks 1508</span>,
+                    <span class="p-postal-code" itemprop="postalCode" data-th-text="${enhet.postnummer}">6025</span>
+                    <span class="p-locality" itemprop="addressRegion" data-th-text="${enhet.poststed}"> ÅLESUND</span>
+                </p>
+            </div>
+            <div itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint" data-th-if="${enhet.faks}">
+                <h3 itemprop="contactType">Telefaks</h3>
+                <p class="p-tel-fax" itemprop="faxNumber" data-th-text="${enhet.faks}">70322101</p>
+            </div>
+            <h3>Organisasjonsnummer</h3>
+            <p data-th-text="${enhet.orgNr}">993585254</p>
+            <h3>Kontornummer</h3>
+            <p data-th-text="${enhet.kontornr}">1504</p>
+            <h1>Publikumsmottak</h1>
+            <div itemscope="" itemtype="http://schema.org/LocalBusiness" data-th-each="pm : ${enhet.pms}">
+                <h2 itemprop="name" data-th-text="${pm.stedbeskrivelse}">Daaegården</h2>
+                <p></p>
+                <p class="p-street-address" itemprop="address" itemtype="http://schema.org/PostalAddress" data-th-text="${pm.besokkom}">
+                    Langelandsvegen 1, 6010 Ålesund
+                </p>
+                <h5>Åpningstider</h5>
+                <meta itemprop="openingHours" content="Mo 10:00-15:00" />
+                <meta itemprop="openingHours" content="Tu 10:00-15:00" />
+                <meta itemprop="openingHours" content="We 11:00-15:00" />
+                <meta itemprop="openingHours" content="Th 10:00-15:00" />
+                <meta itemprop="openingHours" content="Fr 10:00-15:00" />
+                <table style="margin-bottom: 25px; border: none; width: auto;">
+                    <tbody>
+                        <tr data-th-each="dag : ${pm.apning}">
+                            <td data-th-text="${dag.dag}">Mandag</td>
+                            <td data-th-text="${dag.a}" data-th-if="${!dag.stengt}">10:00 - 15:00</td>
+                            <td data-th-if="${dag.stengt}" data-th-text="${lang.closed}"></td>
+                            <td data-th-text="${dag.kommentar}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+</div>
