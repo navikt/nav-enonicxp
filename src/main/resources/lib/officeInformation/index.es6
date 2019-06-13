@@ -3,10 +3,27 @@ const libs = {
     node: require('/lib/xp/node'),
     content: require('/lib/xp/content'),
     httpClient: require('/lib/http-client'),
+    task: require('/lib/xp/task'),
 };
 
-const DAY = 24 * 60 * 60; // HOUR * MIN * SEC
-exports.checkForRefresh = function () {
+const HOUR = 60 * 60 * 1000; // MINUTES * SECONDS * MS
+const DAY = 24 * HOUR;
+let lastCheckOnNode = null;
+
+exports.submitCheckTask = function () {
+    // only create task once an hour
+    if (!lastCheckOnNode || lastCheckOnNode + HOUR < Date.now()) {
+        lastCheckOnNode = Date.now();
+        libs.task.submit({
+            description: 'Check norg for office information',
+            task: () => {
+                checkForRefresh();
+            },
+        });
+    }
+};
+
+function checkForRefresh () {
     const hasNavRepo = libs.repo.get('no.nav.navno');
     if (!hasNavRepo) {
         log.info('Create no.nav.navno repo');
@@ -69,6 +86,13 @@ exports.checkForRefresh = function () {
 
             const officeInformationList = JSON.parse(response.body);
             refreshOfficeInformation(officeInformationList);
+
+            libs.content.publish({
+                keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer'],
+                sourceBranch: 'draft',
+                targetBranch: 'master',
+                includeDependencies: true,
+            });
         } catch (e) {
             log.info('FAILED TO GET OFFICE INFORMATION FROM NORG2');
             log.info(e);

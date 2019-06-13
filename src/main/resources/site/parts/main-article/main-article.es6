@@ -4,10 +4,12 @@ const libs = {
     utils: require('/lib/nav-utils'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
+    officeInformation: require('/lib/officeInformation'),
 };
 const view = resolve('main-article.html');
 
 exports.get = function (req) {
+    libs.officeInformation.submitCheckTask();
     return libs.cache.getPaths(req.path, 'main-article', () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).main_article;
