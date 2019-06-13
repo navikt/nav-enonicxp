@@ -618,6 +618,82 @@ var publishingCalendarPage = [
     },
 ];
 
+var officeInformationPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/0',
+        part: {
+            descriptor: 'no.nav.navno:office-information',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+];
+
 var templates = [
     {
         content: {
@@ -726,5 +802,17 @@ var templates = [
         },
         components: publishingCalendarPage,
     },
-
+    {
+        content: {
+            displayName: 'Enhetsinformasjon',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:office-information',
+            },
+        },
+        components: officeInformationPage,
+    },
 ];
