@@ -1,74 +1,92 @@
-var thymeleaf = require('/lib/thymeleaf');
-var portal = require('/lib/xp/portal');
-var utils = require('/lib/nav-utils');
-var langLib = require('/lib/i18nUtil');
-// Resolve the view
-var view = resolve('main-article.html');
-var cache = require('/lib/cacheControll');
+const libs = {
+    thymeleaf: require('/lib/thymeleaf'),
+    portal: require('/lib/xp/portal'),
+    utils: require('/lib/nav-utils'),
+    lang: require('/lib/i18nUtil'),
+    cache: require('/lib/cacheControll'),
+};
+const view = resolve('main-article.html');
 
 exports.get = function (req) {
-    return cache.getPaths(req.path, 'main-article', function () {
-        // Define the model
-        var content = portal.getContent();
+    return libs.cache.getPaths(req.path, 'main-article', () => {
+        const content = libs.portal.getContent();
+        const langBundle = libs.lang.parseBundle(content.language).main_article;
+        const languages = libs.utils.getLanguageVersions(content);
+        const data = content.data;
+        const hasFact = data.fact && data.fact !== '';
 
-        var lang = langLib.parseBundle(content.language);
-        var tocs = [];
-
+        // Innholdsfortegnelse
+        let toc = [];
         if (
-            (content.data.hasTableOfContents && content.data.hasTableOfContents !== 'none') ||
-            (content.data.metaTags && content.data.metaTags.indexOf('contentType$$$Kort_om') !== -1)
+            (data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
+            (data.metaTags && data.metaTags.indexOf('contentType$$$Kort_om') !== -1)
         ) {
-            var ch = 1;
-            /*  tocs = '<nav class="table-of-contents" data-selected-id>' +
-                '<h2 class="visuallyhidden" role="heading" aria-level="2">Innholdsfortegnelse</h2><ol>'; */
-            var ind = content.data.text.indexOf('<h3>');
-            var count = 0;
+            let count = 0;
+            let ch = 1;
+            let ind = data.text.indexOf('<h3>');
+
             while (ind !== -1 && count < 100) {
+                const h2End = ind + 4;
+                const ssEnd = data.text.indexOf('</h3>', ind);
+                const ss = data.text.slice(h2End, ssEnd);
                 count++;
-                var h2End = ind + 4;
-                var ssEnd = content.data.text.indexOf('</h3>', ind);
-                var ss = content.data.text.slice(h2End, ssEnd);
-                tocs.push(ss); // += '<li><a href="#chapter-' + ch + '" title="' + ss + '(innholdsfortegnelse)">' + ss +'</a></li>';
-                content.data.text = content.data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
-                ind = content.data.text.indexOf('<h3>');
+                toc.push(ss);
+                data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
+                ind = data.text.indexOf('<h3>');
             }
-            // toc += '</ol></nav>';
         }
 
-        var languages = utils.getLanguageVersions(content);
-
-        var hasFact = false;
-        var socials = content.data.social ? (Array.isArray(content.data.social) ? content.data.social : [content.data.social]) : false;
+        // Sosiale medier
+        let socials = data.social ? (Array.isArray(data.social) ? data.social : [data.social]) : false;
         socials = socials
-            ? socials.map(function (el) {
-                var text = 'Del på ';
-                if (el === 'linkedin') { text += 'LinkedIn'; } else if (el === 'facebook') { text += 'Facebook'; } else { text += 'Twitter'; }
+            ? socials.map(el => {
+                let tmpText = 'Del på ';
+                if (el === 'linkedin') {
+                    tmpText += 'LinkedIn';
+                } else if (el === 'facebook') {
+                    tmpText += 'Facebook';
+                } else {
+                    tmpText += 'Twitter';
+                }
                 return {
                     type: el,
-                    text: text,
+                    text: tmpText,
                     href: getSocialRef(el, content, req),
                 };
             })
             : false;
 
-        if (content.data.fact && content.data.fact !== '') { hasFact = true; }
-        var model = {
-            published: utils.dateTimePublished(content, content.language || 'no'),
-            tocs: tocs,
-            hasTableOfContents: tocs.length > 0,
-            content: content,
-            hasFact: hasFact,
-            hasLanguageVersions: languages.length > 0,
-            languages: languages,
-            socials: socials,
-            lang: lang,
-        };
+        // Prosessering av HTML-felter (håndtere url-er inne i html-en)
+        data.text = libs.portal.processHtml({
+            value: data.text,
+        });
+        if (hasFact) {
+            data.fact = libs.portal.processHtml({
+                value: data.fact,
+            });
+        }
+        if (data.image) {
+            data.imageUrl = libs.portal.imageUrl({
+                id: data.image,
+                scale: 'block(1024,768)',
+            });
+        }
 
-        // Render a thymeleaf template
-        var body = thymeleaf.render(view, model);
-        // Return the result
+        // Definer modell og kall rendring (view)
+        const model = {
+            published: libs.utils.dateTimePublished(content, content.language || 'no'),
+            hasTableOfContents: toc.length > 0,
+            toc,
+            content,
+            hasFact,
+            hasLanguageVersions: languages.length > 0,
+            languages,
+            socials,
+            langBundle,
+        };
+        const body = libs.thymeleaf.render(view, model);
         return {
-            body: body,
+            body,
         };
     });
 };

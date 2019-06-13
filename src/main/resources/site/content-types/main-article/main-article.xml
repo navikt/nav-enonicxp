@@ -237,7 +237,7 @@
                 <input name="image" type="ImageSelector">
                     <label>Bilde</label>
                     <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
-                    <occurrences minimum="0" maximum="0"/>
+                    <occurrences minimum="0" maximum="1"/>
                 </input>
                 <input name="imagesize" type="RadioButton">
                     <label>Velg bildestørrelse</label>
