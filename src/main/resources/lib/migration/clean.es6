@@ -103,6 +103,22 @@ exports.handle = function (socket) {
             }
         );
     });
+    socket.on('remove-enhetsinformasjon', function () {
+        context.run(
+            {
+                repository: 'com.enonic.cms.default',
+                branch: 'draft',
+                user: {
+                    login: 'pad',
+                    userStore: 'system',
+                },
+                principals: ['role:system.admin'],
+            },
+            function () {
+                removeEnhetsinformasjon(socket);
+            }
+        );
+    });
 };
 
 function removeEmptyFolders (socket) {
@@ -194,7 +210,9 @@ function fjernNyheterBrukerPortal (socket) {
         socket.emit('fjern-nyheter-brukerportal-value', index + 1);
         content.delete({
             key: value._id,
-        }) ? log.info('Removed ' + value._path) : log.info('Failed to remove ' + value._path);
+        })
+            ? log.info('Removed ' + value._path)
+            : log.info('Failed to remove ' + value._path);
     });
 }
 
@@ -211,7 +229,9 @@ function fjernPressemeldinger (socket) {
         socket.emit('fjern-pressemeldinger-value', index + 1);
         content.delete({
             key: element._id,
-        }) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
+        })
+            ? log.info('Removed ' + element._path)
+            : log.info('Failed to remove ' + element._path);
     });
 }
 
@@ -263,7 +283,25 @@ function fjernNyheter (socket) {
         socket.emit('fjern-nyheter-value', index + 1);
         content.delete({
             key: element._id,
-        }) ? log.info('Removed ' + element._path) : log.info('Failed to remove ' + element._path);
+        })
+            ? log.info('Removed ' + element._path)
+            : log.info('Failed to remove ' + element._path);
+    });
+}
+
+function removeEnhetsinformasjon (socket) {
+    const hits = content.query({
+        start: 0,
+        count: 1000,
+        query: `type = ${app.name}:Enhetsinformasjon`,
+    }).hits;
+
+    socket.emit('remove-enhetsinformasjon-max', hits.length);
+    hits.forEach((enhet, index) => {
+        content.delete({
+            key: enhet._id,
+        });
+        socket.emit('remove-enhetsinformasjon-value', index + 1);
     });
 }
 
@@ -442,6 +480,35 @@ function createElements () {
                             tag: 'button',
                             tagClass: ['button', 'is-info'],
                             action: 'remove-empty-folders',
+                            text: 'Fjern',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Fjern enhetsinformasjon',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            progress: {
+                                value: 'remove-enhetsinformasjon-value',
+                                max: 'remove-enhetsinformasjon-max',
+                                valId: 'remove-enhetsinformasjon-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'remove-enhetsinformasjon',
                             text: 'Fjern',
                         },
                         {
