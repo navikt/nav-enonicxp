@@ -1,70 +1,41 @@
 const libs = {
-    thymeleaf: require('/lib/xp/thymeleaf'),
-    enhetsInfoCache: require('/lib/enhetsInfoCache'),
+    thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
+    navUtils: require('/lib/nav-utils'),
 };
 
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];
-const view = resolve('office-details.html');
+const view = resolve('office-information.html');
 function handleGet (req) {
-    // log.info(JSON.stringify(JSON.parse(cache.get('alleEnheter').body),null,4));
-
-    const params = req.params;
-    let enhet;
+    const content = libs.portal.getContent();
     const lang = {
         closed: 'stengt',
     };
-    if (!params.hasOwnProperty('eid')) {
-        return {
-            redirect: libs.portal.pageUrl({
-                path: '/www.nav.no',
-            }),
-        };
-    }
 
-    const kontaktInformasjon = libs.enhetsInfoCache.get('kontaktinformasjon', params.eid);
-    const orgNr = libs.enhetsInfoCache.get('enhet', params.eid);
+    const kontaktInformasjon = content.data.kontaktinformasjon;
+    const postadresse = kontaktInformasjon.postadresse;
+    const postAdr = formatAddress(postadresse, false);
+    let publikumsmottak = kontaktInformasjon.publikumsmottak;
+    publikumsmottak = publikumsmottak ? Array.isArray(publikumsmottak) ? publikumsmottak : [publikumsmottak] : [];
 
-    if (!kontaktInformasjon || kontaktInformasjon.message) {
-        return {
-            redirect: libs.portal.pageUrl({
-                path: '/www.nav.no/no/person',
-            }),
-        };
-    }
-
-    const pre = kontaktInformasjon.postadresse.type === 'postboksadresse' ? 'Postboks ' + kontaktInformasjon.postadresse.postboksnummer : kontaktInformasjon.postadresse.gatenavn;
-    enhet = {
-        postaddresse: pre,
-        poststed: kontaktInformasjon.postadresse.poststed.toUpperCase(),
-        postnummer: kontaktInformasjon.postadresse.postnummer,
+    const enhet = {
+        navn: `${content.data.enhet.navn} - kontorinformasjon`,
+        orgNr: content.data.enhet.organisasjonsnummer,
+        kontornr: content.data.enhet.enhetNr,
+        postaddresse: postAdr,
+        poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
+        postnummer: postadresse ? postadresse.postnummer : '',
         faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
-        orgNr: parsePhoneNumber(orgNr.organisasjonsnummer, 3),
-        navn: orgNr.navn,
-        kontornr: params.eid,
-        pms: kontaktInformasjon.publikumsmottak.map((pm) => {
-            return {
-                besokkom: getBesokskontor(pm.besoeksadresse),
-                stedbeskrivelse: pm.stedsbeskrivelse || pm.besoeksadresse.poststed,
-                apning: pm.aapningstider.map((el) => {
-                    el.a = el.fra + ' - ' + el.til;
-                    return el;
-                }).sort((a, b) => {
-                    return dagArr.indexOf(a.dag) - dagArr.indexOf(b.dag);
-                }),
-            };
-        }),
         telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
         telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
+        pms: publikumsmottak.map(formatAudienceReception),
     };
 
-    /* var alleEnheter = JSON.parse(cache.get('alleEnheter').body).reduce(function(t,el) {
-      if (el.type === 'LOKAL' && el.status === 'Aktiv') t.push(el);
-      return t;
-   },[]); */
-    // log.info(JSON.stringify(alleEnheter, null, 4));
     const body = libs.thymeleaf.render(view, {
-        enhet: enhet, lang: lang,
+        content,
+        published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
+        enhet,
+        lang,
     });
 
     return {
@@ -72,9 +43,9 @@ function handleGet (req) {
         body: body,
         pageContributions: {
             headEnd: [
-                '<link rel="stylesheet" href="' + libs.portal.assetUrl({
+                `<link rel="stylesheet" href="${libs.portal.assetUrl({
                     path: 'styles/css/enhetsinfo.css',
-                }) + '" />',
+                })}" />`,
             ],
         },
     };
@@ -82,32 +53,68 @@ function handleGet (req) {
 
 exports.get = handleGet;
 
-function getBesokskontor (address) {
-    return address.gatenavn + (address.husnummer ? ' ' + address.husnummer + ' ' : '') + (address.husbokstav ? ' ' + address.husbokstav : '') + ', ' + address.postnummer + ' ' + address.poststed.toUpperCase();
+function formatAudienceReception (audienceReception) {
+    let aapningstider = audienceReception.aapningstider;
+    aapningstider = aapningstider ? Array.isArray(aapningstider) ? aapningstider : [aapningstider] : [];
+    return {
+        besokkom: formatAddress(audienceReception.besoeksadresse, true),
+        stedbeskrivelse: audienceReception.stedsbeskrivelse || audienceReception.besoeksadresse.poststed,
+        apning: aapningstider
+            .map(el => {
+                el.a = el.fra + ' - ' + el.til;
+                return el;
+            })
+            .map(formatMetaOpeningHours)
+            .sort(sortOpeningHours),
+    };
+}
+
+function formatMetaOpeningHours (el) {
+    let day;
+    if (el.dag === 'Mandag') {
+        day = 'Mo';
+    } else if (el.dag === 'Tirsdag') {
+        day = 'Tu';
+    } else if (el.dag === 'Onsdag') {
+        day = 'We';
+    } else if (el.dag === 'Torsdag') {
+        day = 'Th';
+    } else if (el.dag === 'Fredag') {
+        day = 'Fr';
+    }
+    el.meta = `${day} ${el.fra}-${el.til}`;
+    return el;
+}
+
+function sortOpeningHours (a, b) {
+    return dagArr.indexOf(a.dag) - dagArr.indexOf(b.dag);
+}
+
+function formatAddress (address, withZip) {
+    if (!address) {
+        return '';
+    }
+    let formatedAddress;
+    if (address.type === 'postboksadresse') {
+        const postboksanlegg = address.postboksanlegg ? ` ${address.postboksanlegg}` : '';
+        formatedAddress = `Postboks ${address.postboksnummer}${postboksanlegg}`;
+    } else {
+        const husnummer = address.husnummer ? ` ${address.husnummer}` : '';
+        const husbokstav = address.husbokstav ? `${address.husbokstav}` : '';
+        formatedAddress = `${address.gatenavn}${husnummer}${husbokstav}`;
+    }
+    if (withZip) {
+        formatedAddress += `, ${address.postnummer} ${address.poststed.toUpperCase()}`;
+    }
+    return formatedAddress;
 }
 
 function parsePhoneNumber (number, mod) {
     mod = mod || 2;
-    return number ? number.split('').reduce((t, e, i) => {
-        t += e + (i % mod === 1 ? ' ' : '');
-        return t;
-    }, '') : null;
+    return number
+        ? number.split('').reduce((t, e, i) => {
+            t += e + (i % mod === 1 ? ' ' : '');
+            return t;
+        }, '')
+        : null;
 }
-
-/*
- * The following DataSources were used in the original CMS portlet:
-
-<datasources>
-    <datasource name="getContent" result-element="office">
-      <parameter name="contentKeys">${select(param.key, -1)}</parameter>
-      <parameter name="query"/>
-      <parameter name="orderBy"/>
-      <parameter name="index">0</parameter>
-      <parameter name="count">1</parameter>
-      <parameter name="includeData">true</parameter>
-      <parameter name="childrenLevel">1</parameter>
-      <parameter name="parentLevel">0</parameter>
-    </datasource>
-  </datasources>
-
-*/
