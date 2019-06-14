@@ -12,7 +12,13 @@ function handleGet (req) {
         closed: 'stengt',
     };
 
-    const kontaktInformasjon = content.data.kontaktinformasjon;
+    const kontaktInformasjon = content.data.kontaktinformasjon || {
+        postaddresse: undefined,
+        faksnummer: undefined,
+        telefonnummer: undefined,
+        telefonnummerKommentar: undefined,
+        publikumsmottak: undefined,
+    };
     const postadresse = kontaktInformasjon.postadresse;
     const postAdr = formatAddress(postadresse, false);
     let publikumsmottak = kontaktInformasjon.publikumsmottak;
