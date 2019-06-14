@@ -2,59 +2,62 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     navUtils: require('/lib/nav-utils'),
+    cache: require('/lib/cacheControll'),
 };
 
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];
 const view = resolve('office-information.html');
 function handleGet (req) {
-    const content = libs.portal.getContent();
-    const lang = {
-        closed: 'stengt',
-    };
+    return libs.cache.getPaths(req.path, 'office-information', () => {
+        const content = libs.portal.getContent();
+        const lang = {
+            closed: 'stengt',
+        };
 
-    const kontaktInformasjon = content.data.kontaktinformasjon || {
-        postaddresse: undefined,
-        faksnummer: undefined,
-        telefonnummer: undefined,
-        telefonnummerKommentar: undefined,
-        publikumsmottak: undefined,
-    };
-    const postadresse = kontaktInformasjon.postadresse;
-    const postAdr = formatAddress(postadresse, false);
-    let publikumsmottak = kontaktInformasjon.publikumsmottak;
-    publikumsmottak = publikumsmottak ? Array.isArray(publikumsmottak) ? publikumsmottak : [publikumsmottak] : [];
+        const kontaktInformasjon = content.data.kontaktinformasjon || {
+            postaddresse: undefined,
+            faksnummer: undefined,
+            telefonnummer: undefined,
+            telefonnummerKommentar: undefined,
+            publikumsmottak: undefined,
+        };
+        const postadresse = kontaktInformasjon.postadresse;
+        const postAdr = formatAddress(postadresse, false);
+        let publikumsmottak = kontaktInformasjon.publikumsmottak;
+        publikumsmottak = publikumsmottak ? Array.isArray(publikumsmottak) ? publikumsmottak : [publikumsmottak] : [];
 
-    const enhet = {
-        navn: `${content.data.enhet.navn} - kontorinformasjon`,
-        orgNr: content.data.enhet.organisasjonsnummer,
-        kontornr: content.data.enhet.enhetNr,
-        postaddresse: postAdr,
-        poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
-        postnummer: postadresse ? postadresse.postnummer : '',
-        faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
-        telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
-        telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
-        pms: publikumsmottak.map(formatAudienceReception),
-    };
+        const enhet = {
+            navn: `${content.data.enhet.navn} - kontorinformasjon`,
+            orgNr: content.data.enhet.organisasjonsnummer,
+            kontornr: content.data.enhet.enhetNr,
+            postaddresse: postAdr,
+            poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
+            postnummer: postadresse ? postadresse.postnummer : '',
+            faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
+            telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
+            telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
+            pms: publikumsmottak.map(formatAudienceReception),
+        };
 
-    const body = libs.thymeleaf.render(view, {
-        content,
-        published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
-        enhet,
-        lang,
+        const body = libs.thymeleaf.render(view, {
+            content,
+            published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
+            enhet,
+            lang,
+        });
+
+        return {
+            contentType: 'text/html',
+            body: body,
+            pageContributions: {
+                headEnd: [
+                    `<link rel="stylesheet" href="${libs.portal.assetUrl({
+                        path: 'styles/css/enhetsinfo.css',
+                    })}" />`,
+                ],
+            },
+        };
     });
-
-    return {
-        contentType: 'text/html',
-        body: body,
-        pageContributions: {
-            headEnd: [
-                `<link rel="stylesheet" href="${libs.portal.assetUrl({
-                    path: 'styles/css/enhetsinfo.css',
-                })}" />`,
-            ],
-        },
-    };
 }
 
 exports.get = handleGet;
