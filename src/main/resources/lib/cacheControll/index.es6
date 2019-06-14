@@ -78,6 +78,7 @@ function wipeOnChange (path) {
         w(getPath(path, 'tavleliste'));
         w(getPath(path, 'tavleliste-relatert-innhold'));
         w(getPath(path, 'transport'));
+        w(getPath(path, 'office-information'));
         if (path.indexOf('/driftsmeldinger/') !== -1) {
             w('driftsmelding-heading');
         }
