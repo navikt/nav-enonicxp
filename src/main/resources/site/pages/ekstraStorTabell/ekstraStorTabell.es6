@@ -1,52 +1,56 @@
-var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/thymeleaf');
-var parsers = require('/lib/tableFunctions/tableFunctions');
-var view = resolve('ekstraStorTabell.html');
+const libs = {
+    portal: require('/lib/xp/portal'),
+    parsers: require('/lib/tableFunctions/tableFunctions'),
+    thymeleaf: require('/lib/thymeleaf'),
+    cache: require('/lib/cacheControll'),
+};
+const etag = libs.cache.etag;
+const view = resolve('ekstraStorTabell.html');
+
 exports.get = function (req) {
-    // NOTE It works to get styles and images from xx-www.nav.no, but this should probably be moved at some point
-    var stylePath = 'styles/css/ekstraStorTabell/';
-    var content = portal.getContent();
-
-    var parsed;
+    const content = libs.portal.getContent();
+    let parsed;
     if (content.data.article && content.data.article.text) {
-        var m = parsers.parse(content.data.article.text);
-        parsed = parsers.map(m, true);
+        parsed = libs.parsers.map(libs.parsers.parse(content.data.article.text), true);
     }
-
-    var referer = req.headers.Referer;
-    var model = {
-        title: content.displayName,
+    const assets = [
+        '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
+            path: 'img/navno/logo.png',
+        }) + '" />',
+        '<link rel="shortcut icon" type="image/x-icon" href="' + libs.portal.assetUrl({
+            path: 'img/navno/favicon.ico',
+        }) + '" />',
+        '<link rel="stylesheet" href="' + libs.portal.assetUrl({
+            path: 'styles/ekstraStorTabell/main.css',
+        }) + '" />',
+        '<link rel="stylesheet" href="' + libs.portal.assetUrl({
+            path: 'styles/ekstraStorTabell/content.css',
+        }) + '" />',
+        '<link rel="stylesheet" media="print" href="' + libs.portal.assetUrl({
+            path: 'styles/ekstraStorTabell/print.css',
+        }) + '" />',
+    ];
+    const model = {
+        title: content.displayName + ' - www.nav.no',
         content: parsed,
-        referer: referer,
-        styles: {
-            main: portal.assetUrl({
-                path: stylePath + 'main.css',
-            }),
-            content: portal.assetUrl({
-                path: stylePath + 'content.css',
-            }),
-            ie: portal.assetUrl({
-                path: stylePath + 'ie.css',
-            }),
-            print: portal.assetUrl({
-                path: stylePath + 'print.css',
-            }),
-        },
+        referer: req.headers.Referer,
         icons: {
-            nav: portal.assetUrl({
-                path: 'img/navno/ekstraStorTabell/navlogohvit.gif',
-            }),
-            close: portal.assetUrl({
-                path: 'img/navno/ekstraStorTabell/ikonlukk.gif',
-            }),
-            favicon: portal.assetUrl({
-                path: 'img/navno/favicon.ico',
+            nav: libs.portal.assetUrl({
+                path: 'img/navno/logo.svg',
             }),
         },
     };
+    const body = libs.thymeleaf.render(view, model);
 
-    var body = thymeleaf.render(view, model);
     return {
-        body: body,
+        contentType: 'text/html',
+        body,
+        headers: {
+            'Cache-Control': 'must-revalidate',
+            'ETag': etag(),
+        },
+        pageContributions: {
+            headEnd: assets,
+        },
     };
 };

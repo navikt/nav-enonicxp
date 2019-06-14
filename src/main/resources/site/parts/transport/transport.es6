@@ -29,7 +29,7 @@ exports.get = function (req) {
             body: body,
             pageContributions: {
                 headEnd: ['<link rel="stylesheet" href="' + portal.assetUrl({
-                    path: 'styles/css/navno.css',
+                    path: 'styles/navno.css',
                 }) + '"/>'],
             },
         };

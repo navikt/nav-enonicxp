@@ -15,9 +15,8 @@ body.font_large .faner li a, body.font_largest .faner li a {width:auto}
 /***********************************************
 *	GLOBAL ELEMENTS
 ***********************************************/
-html { background: url('../../../img/navno/ekstraStorTabell/background.gif') left top; }
 body { margin: 0; padding: 0; border-collapse: collapse; font-size: 73%; }
-body, select, input, label, textarea { font-family: arial, verdana, sans-serif; color: #3E3832; }
+body, select, input, label, textarea { font-family: arial, verdana, sans-serif; }
 table { font-size: 100%; }
 select, input, textarea { font-size: 1em; }
 a { text-decoration: none; color: #0074C2; }
@@ -32,10 +31,9 @@ h1 { font-size: 3.2em; } /* Tittel på siden */
 h2, h2 a, h2 a:visited { font-size: 1em; color: #C30000; } /* Tittel på nyheter etc. */
 h2 a:hover { text-decoration: none; }
 h3 { font-size: 1em; color: #675C53; } /* Nivå 2 brødtekst. */
-h4 { font-size: 1em; color: #3E3832; } /* nivå 3 brødtekst */
-h5 { font-size: 1em; background: url('../../../img/navno/dashedhorizontal.gif') repeat-x bottom left; padding: 0 0 4px 10px; color: #988F86; } /* Relevantinfo */
+h4, .h4 { font-size: 1.5em; } /* nivå 3 brødtekst */
+h5 { font-size: 1em; background: url('../../img/navno/dashedhorizontal.gif') repeat-x bottom left; padding: 0 0 4px 10px; color: #988F86; } /* Relevantinfo */
 form { margin: 0; padding: 0; }
-strong, b { color: #3E3832; }
 samp { font-size: 1.3em; }
 .rtl { text-align: right; }
 .clear {clear: both; }
@@ -205,7 +203,7 @@ samp { font-size: 1.3em; }
 .NAVSearchResultContainer { float: left; width: 80%; }
 .NAVSearchResultContainer li { margin-bottom: 10px; }
 .NAVsearchResultRightContainer { float: left; width: 20%; }
-.NAVsearchFirstLine { background: url('../../../img/navno/dashedhorizontal.gif') repeat-x bottom left; /*margin-bottom: 5px;*/ padding-bottom: 2px; padding-left: 29px; text-indent: -29px; }
+.NAVsearchFirstLine { background: url('../../img/navno/dashedhorizontal.gif') repeat-x bottom left; /*margin-bottom: 5px;*/ padding-bottom: 2px; padding-left: 29px; text-indent: -29px; }
 .NAVsearchFirstLine a { font-weight: bold; }
 .NAVsearchIngress { color: #988F86; }
 .NAVsearchHitBody { margin-left: 29px; margin-top: 5px; }
@@ -311,10 +309,9 @@ samp { font-size: 1.3em; }
 /*********************************************************
 *	Large table site
 **********************************************************/
-#NAVlargeTableHeader { background-color: #C30000; height: 7em; margin-bottom: 14px; }
+#NAVlargeTableHeader { height: 7em; margin-bottom: 14px; }
 #NAVlargeTableHeader img { margin: 8px 0 8px 1em; }
 .NAVlargeTableContentContainer { padding: 1em; }
-.NAVlargeTableBody { background-color: #F9F8F7; }
 
 /**************** relevantContentContainer **************/
 #NAVrelevantContentContainer ul { margin: 12px 3px 0 20px; }
@@ -375,7 +372,7 @@ samp { font-size: 1.3em; }
 .opwrapper a strong, .opwrapper a:visited, .opwrapper a:visited strong {color:#fff}
 
 /*Tjenester og linkbokser*/
-#NAVquicklinksContainer .linkbox  { float: left; width: 48%; margin-right:4%;padding-top:10px;padding-bottom:13px;background: url('../../../img/navno/dashedhorizontal.gif') repeat-x top left; }
+#NAVquicklinksContainer .linkbox  { float: left; width: 48%; margin-right:4%;padding-top:10px;padding-bottom:13px;background: url('../../img/navno/dashedhorizontal.gif') repeat-x top left; }
 #NAVquicklinksContainer .serviceswrapper .linkbox {padding-top:13px;}
 #NAVquicklinksContainer .linkbox.last {margin-right: 0 !important;}
 #NAVquicklinksContainer .newssection .linkbox,
@@ -397,7 +394,7 @@ samp { font-size: 1.3em; }
 .serviceswrapper h3 {font-size:1.1em;font-weight:normal}
 .serviceswrapper h3 a {display:inline-block; padding-right:23px;background:url(../bilder/global/box-arrow-right.png) no-repeat 96% 50%}
 .serviceswrapper ul li a {color:#675C53}
-.serviceswrapper .firstgroup, .serviceswrapper .lastgroup {padding-top:15px;background: url('../../../img/navno/dashedhorizontal.gif') repeat-x top left;}
+.serviceswrapper .firstgroup, .serviceswrapper .lastgroup {padding-top:15px;background: url('../../img/navno/dashedhorizontal.gif') repeat-x top left;}
 .serviceswrapper p#userloginstatus {margin-top:0;}
 /*Infobokser i midtkol*/
 .linkboxwrapper h2.accessible {position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;}
@@ -411,15 +408,15 @@ samp { font-size: 1.3em; }
 .linkboxwrapper .linkbox .linkboxfooter a, #aboutNAV .linkboxfooter a { color: #988F86; }
 #NAVsubmenuContainer .linkboxfooter {padding:10px 20px} /*Sitemaplink*/
 
-.linkboxwrapper .newssection {margin-bottom:10px;background: url('../../../img/navno/dashedhorizontal.gif') repeat-x bottom left;}
+.linkboxwrapper .newssection {margin-bottom:10px;background: url('../../img/navno/dashedhorizontal.gif') repeat-x bottom left;}
 .linkboxwrapper .newssection ul {list-style-type:square;color:#988f86;padding-left:14px}
 
 /*aside - høyre kol*/
-.asidesubsection {margin-bottom:15px;padding-top:10px;background: url( ../../../img/navno/dashedhorizontal.gif ) repeat-x top left;}
+.asidesubsection {margin-bottom:15px;padding-top:10px;background: url( ../../img/navno/dashedhorizontal.gif ) repeat-x top left;}
 #findlocaloffice {padding-top:0;background-image:none !important}
 .asidesubsection .NAValfabet {padding:0 !important;}
 
-#NAVmainQuicklinksContainer .NAVportletSeperator.extraService { margin: 0 10px; width: auto; background: url( ../../../img/navno/dashedhorizontal.gif ) repeat-x top left; }
+#NAVmainQuicklinksContainer .NAVportletSeperator.extraService { margin: 0 10px; width: auto; background: url( ../../img/navno/dashedhorizontal.gif ) repeat-x top left; }
 .borderQuicklinksBottom { background: url(../bilder/global/fastnavborderbottom.gif) repeat-x left bottom;  margin: -5px; padding: 0 7px 49px 0; }
 .newsListBox .mouseoverContent { display: none; }
 #molly.mouseoverBox { display: none; position: absolute; border: 1px solid #888; padding: 8px; background: #fff; z-index: 100; width: 350px; }
@@ -437,7 +434,7 @@ samp { font-size: 1.3em; }
 #sitemap .fragment {padding-bottom:1.2em} /*Services*/
 #sitemap .last {margin-right:0 !important;padding-bottom:0 !important;}
 
-#sitemap .branch h2 {font-size:1.5em;color:#685D54;padding-bottom:.3em;margin-bottom:.3em;background:url(../../../img/navno/dashedhorizontal.gif) repeat-x bottom left}
+#sitemap .branch h2 {font-size:1.5em;color:#685D54;padding-bottom:.3em;margin-bottom:.3em;background:url(../../img/navno/dashedhorizontal.gif) repeat-x bottom left}
 #sitemap .branch h2 a {color:#685D54;}
 #sitemap .level-2 ul {margin-left:1.4em; list-style:square;color:#988F86;font-size:10px}
 #sitemap .level-2 ul a {font-size:1.2em}
@@ -446,7 +443,7 @@ a.sitemapurl {color:#0074C2 !important;display:block;padding:5px 0 10px 35px;bac
 
 /*faktaboks nyhet*/
 .article-factsection {margin-top:15px;padding:5px 16px 10px;background-color:#D4F0FB}
-.article-factsection .fact-title {margin: 5px -16px !important;padding:0 16px 5px;background:url("../../../img/navno/dashedhorizontal.gif") repeat-x bottom left}
+.article-factsection .fact-title {margin: 5px -16px !important;padding:0 16px 5px;background:url("../../img/navno/dashedhorizontal.gif") repeat-x bottom left}
 .article-factsection ul { list-style: disc outside; margin: 5px 0 8px 16px; }
 #NAVrelevantContentContainer .article-factsection {margin-left:10px;margin-top:0}
 
@@ -474,7 +471,7 @@ a.sitemapurl {color:#0074C2 !important;display:block;padding:5px 0 10px 35px;bac
 .form-details .submit input.goback { float: none; cursor:pointer;font-weight:normal;border:none;color:#0074C2;background:transparent;margin:0;padding:0;text-align:left}
 .form-details .attachmentbody {float:left;width:100%;padding-top:2px;}
 .form-details .velgBoks {float:left;margin-right:12px;margin-left:0;}
-.form-details .attachmentList div.brodtekst { background: url( ../../../img/navno/dashedhorizontal.gif ) repeat-x left top; padding-top:10px;margin-top:10px; }
+.form-details .attachmentList div.brodtekst { background: url( ../../img/navno/dashedhorizontal.gif ) repeat-x left top; padding-top:10px;margin-top:10px; }
 .form-details .attachmentList .obligatoriskeVedlegg {margin-top:5px;}
 .form-details .attachmentList div.underpunkter div.input-wrapper {float:left;width:100%;margin:.5em 0;height:1.2em;}
 .form-details .attachmentList div.underpunkter input {margin:0 12px 0 0 !important; padding:0 !important;}
@@ -505,7 +502,7 @@ a.sitemapurl {color:#0074C2 !important;display:block;padding:5px 0 10px 35px;bac
 .form-details .stor span {font-weight: normal; color: #988f86;}
 .form-details .clear {clear:both;}
 .form-details .text-wrapper {float:left;width:90%;}
-.form-details .horizontal-separator {float:left;width:100%;margin-bottom:1em;padding-bottom:1em; background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left bottom;}
+.form-details .horizontal-separator {float:left;width:100%;margin-bottom:1em;padding-bottom:1em; background:url('../../img/navno/dashedhorizontal.gif') repeat-x left bottom;}
 
 .form-details .reset-defaults {float:none !important;font-weight:normal !important;} /*Kun for utlandscheckbox og label*/
 .form-details input#utland {margin-left:0; vertical-align:middle} /*Kun for utlandscheckbox og label*/
@@ -545,7 +542,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 #userDetails .addressinputbody .inputfieldset div.zip input {width:34%}
 #userDetails .addressinputbody .inputfieldset div label { display:inline-block;font-weight: normal;width:7.5em;background:transparent url(../bilder/vedleggsveileder/pil-hoyre.gif) no-repeat right 50%}
 #userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;} 
-#userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left top; } /*Fjernes!*/
+#userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top; } /*Fjernes!*/
 #userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group{background: none; }
 
 /*Folkereg i Norge*/
@@ -556,10 +553,10 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 #enhetsSelectBox .detail-inputs {width:30em;margin-right:3em}
 #enhetsSelectBox .detail-text {width:33%;float:left}
 #userDetails .addressinputbody .navdepartment input.selectednavdepartment {width:98%}
-#userDetails  .moreaddressoptions  .checked .addressinputbody {margin:1em 0 0 28px;padding:1em 0 0 0 ;background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left top;}
+#userDetails  .moreaddressoptions  .checked .addressinputbody {margin:1em 0 0 28px;padding:1em 0 0 0 ;background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top;}
 
-.form-details .top-horizontal-separator {padding-top:1em;margin-top:1em;width:100%;background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left top;}
-.form-details #userIdNumber {padding-top:2em;background: url("../../../img/navno/dashedhorizontal.gif") repeat-x scroll left top transparent}
+.form-details .top-horizontal-separator {padding-top:1em;margin-top:1em;width:100%;background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top;}
+.form-details #userIdNumber {padding-top:2em;background: url("../../img/navno/dashedhorizontal.gif") repeat-x scroll left top transparent}
 .form-details .NAVpostnummer {padding: 1em 0;}
 
 /*Ettersendelse:*/
@@ -568,7 +565,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 #userDetails .moreaddressoptions .secondoption .addressinputbody {padding-top:2em;margin-top:2em}
 
 .shipping-guidelines-wrapper {width:100%;top:0;margin-bottom:20px;}
-#NAVvedleggsveilederDownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {padding:20px 15px 30px 15px;background: #F6F6F4 url('../../../img/navno/dashedhorizontal.gif') repeat-x left bottom !important;}
+#NAVvedleggsveilederDownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {padding:20px 15px 30px 15px;background: #F6F6F4 url('../../img/navno/dashedhorizontal.gif') repeat-x left bottom !important;}
 .shipping-guidelines h2 {margin-bottom:30px;}
 .shipping-guidelines div h4 {padding-bottom:90px;background:transparent url(../bilder/vedleggsveileder/ikon-pluss.gif) no-repeat 80px 65%}
 .shipping-guidelines div {float:left;width:125px;position:relative}
@@ -616,7 +613,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 .form-list .focus {background-color: #E7E6E1 !important;} /*Darker*/
 .form-list .NAVtbl tr:nth-child(2n) {background-color:#fff !important;}
 
-.form-list h2.section-heading, .form-details h2.section-heading { font-size:1em;color:#675C53;margin-bottom:.5em;background: url('../../../img/navno/dashedhorizontal.gif') repeat-x bottom left; padding: 0 0 4px 3px; color: #675C53;}
+.form-list h2.section-heading, .form-details h2.section-heading { font-size:1em;color:#675C53;margin-bottom:.5em;background: url('../../img/navno/dashedhorizontal.gif') repeat-x bottom left; padding: 0 0 4px 3px; color: #675C53;}
 .form-list label, .form-details label, .form-details h2.section-heading, #userDetails h4 {font-weight:bold;color:#675C53;line-height:1.5}
 .relationRadioOptions label, .relationRadioOptions input {line-height:2} /*Alternativ 3 på finn adresse-steget*/
 .form-list select, .form-details select {padding:1px}
@@ -632,7 +629,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 .outercontent {background-color:#e6e5e0;padding: 16px 14px; margin-bottom:5px; } /*Samme som NAVskjemaBakgrunn og NAVskjemaIndre - men bedre navn?*/
 .innercontent {background-color:#fff;color:#675C53;padding:15px;margin-top:3px;}
 
-.pagesection, .col-wrapper {margin-bottom:20px;padding-bottom:20px;background:transparent url(../../../img/navno/dashedhorizontal.gif) repeat-x left bottom}
+.pagesection, .col-wrapper {margin-bottom:20px;padding-bottom:20px;background:transparent url(../../img/navno/dashedhorizontal.gif) repeat-x left bottom}
 .col-wrapper.lastrow {margin-bottom:0;}
 .pagesection form#findmyform {float:left;margin-right:15px;}
 .pagesection #findmyform fieldset {display:inline;background:transparent;margin:0;padding:0}
@@ -642,7 +639,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 .pagesection #findmyform label {display:block;font-size:1.2em;font-weight:bold;margin-bottom:1.1em}
 
 .formarchivebutton {float:left;margin-top:3em;}
-.footersection {margin-top:10px;padding-top:10px;background:transparent url(../../../img/navno/dashedhorizontal.gif) repeat-x left top}
+.footersection {margin-top:10px;padding-top:10px;background:transparent url(../../img/navno/dashedhorizontal.gif) repeat-x left top}
 
 .col-wrapper .col {float:left;width:47%;margin-right:5%;}
 .col-wrapper .last {margin-right:0px !important;}
@@ -657,7 +654,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 #innsendingsveileder ul li a {padding-left:22px;display:block;background:transparent url(../bilder/vedleggsveileder/ikon-pil-tykk-blaa.gif) no-repeat left .25em}
 #innsendingsveileder ul li.moreinfo a {padding-bottom:2px;padding-top:4px;background-image: url(../bilder/vedleggsveileder/ikon-faktaark.gif)}
 
-#steg_i_innsendingsveileder ul {margin-bottom:10px;padding-bottom:20px;background:transparent url(../../../img/navno/dashedhorizontal.gif) repeat-x scroll left bottom;}
+#steg_i_innsendingsveileder ul {margin-bottom:10px;padding-bottom:20px;background:transparent url(../../img/navno/dashedhorizontal.gif) repeat-x scroll left bottom;}
 #steg_i_innsendingsveileder ul li {float: left; margin-right:15px; font-size:1.5em;font-weight:bold;color:#685D54;}
 #steg_i_innsendingsveileder ul li.last {float:none;}
 #steg_i_innsendingsveileder ul li.selected {color:#C30000;}
@@ -692,8 +689,8 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 .artist ul.genres li {float:left;margin-right:5px;}
 .artist ul.genres li.last {margin-right:0;}
 .artist ul.genres,
-.artist .searchmeta {margin-bottom:12px;background:transparent url(../../../img/navno/dashedhorizontal.gif) repeat-x scroll left bottom;} 
-.artistaside h2 {padding: 0 10px 4px 10px;margin-bottom:12px;color:#988F86; background:transparent url(../../../img/navno/dashedhorizontal.gif) repeat-x scroll left bottom;}
+.artist .searchmeta {margin-bottom:12px;background:transparent url(../../img/navno/dashedhorizontal.gif) repeat-x scroll left bottom;}
+.artistaside h2 {padding: 0 10px 4px 10px;margin-bottom:12px;color:#988F86; background:transparent url(../../img/navno/dashedhorizontal.gif) repeat-x scroll left bottom;}
 .artistaside .section {margin-bottom:12px;}
 .artistaside .section {padding:0 10px 12px 10px}
 .artistaside .section ul {margin:0 !important;padding:0 !important;list-style:none}
@@ -703,7 +700,7 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 .artistaside .vcard .url {display:block;}
 .artistaside .vcard .type {display:inline-block;margin-right:4px}
 
-.shareinsocialmedia {padding:10px 0;margin-top:10px;background:transparent url(../../../img/navno/dashedhorizontal.gif) repeat-x scroll left top;}
+.shareinsocialmedia {padding:10px 0;margin-top:10px;background:transparent url(../../img/navno/dashedhorizontal.gif) repeat-x scroll left top;}
 .shareinsocialmedia a {display:inline-block;line-height:1.4;padding:7px 20px;text-decoration:none;}
 .shareinsocialmedia .facebook{background:url("../../shared/bilder/facebook.gif") no-repeat scroll left 50% transparent;}
 .shareinsocialmedia .twitter{background:url("../../shared/bilder/twitter.gif") no-repeat scroll left 50% transparent;}
@@ -768,7 +765,7 @@ input#searchartist {border:1px solid #A69D97;margin:0 5px 0 0;width:70%}
 .newsarchive a.btn-standard strong {color:#fff}
 .newsarchive .btn-standard, .newsarchive .btn-alternativ {float:none;display:inline-block;font-size:1em;line-height:1.5;padding:2px 5px;margin-right:6px}
 .newsarchive ul.newsitems {padding:10px 20px 20px}
-.newsarchive .archivecategories, .newsarchive ul.newsitems li {background: url("../../../img/navno/dashedhorizontal.gif") repeat-x bottom left}
+.newsarchive .archivecategories, .newsarchive ul.newsitems li {background: url("../../img/navno/dashedhorizontal.gif") repeat-x bottom left}
 .newsarchive ul.newsitems li {margin:0 -20px;padding:10px 20px}
 .newsarchive ul.newsitems li.hover {background-color:#EEE}
 .newsarchive .newsitems h2 {margin-bottom:.2em}
@@ -974,7 +971,7 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 #skjema2011userDetails .sublabel.small {width:8em !important}
 #skjema2011userDetails .sublabel.big {width:8em !important}
 
-#NAVskjema2011DownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {padding:20px 15px 30px 15px;background: #F6F6F4 url('../../../img/navno/dashedhorizontal.gif') repeat-x left bottom !important;}
+#NAVskjema2011DownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {padding:20px 15px 30px 15px;background: #F6F6F4 url('../../img/navno/dashedhorizontal.gif') repeat-x left bottom !important;}
 #skjema2011userDetails .navUnitsSelectBox select#selectEnhet2 {width:20em; float: left}
 
 #skjema2011userDetails .addressinputbody .NAVpostnummer .sublabel, 
@@ -996,7 +993,7 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 #skjema2011userDetails .addressinputbody .inputfieldset div.zip input {width:34%}
 #skjema2011userDetails .addressinputbody .inputfieldset div label { display:inline-block;font-weight: normal;width:7.5em;background:transparent url(../bilder/vedleggsveileder/pil-hoyre.gif) no-repeat right 50%}
 #skjema2011userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;} 
-#skjema2011userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left top; }
+#skjema2011userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top; }
 #skjema2011userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group{background: none; }
 
 #skjema2011userDetails #navUnitOrgSelected {float:left}
@@ -1025,10 +1022,10 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 #skjema2011userDetails  .moreaddressoptions  .addressettersendelseright {float: left; width: 60%}
 #skjema2011userDetails  .moreaddressoptions  .navunitaddressright {float: left; width: 35%}
 #skjema2011userDetails  .moreaddressoptions  .navunitaddressleft {float: left; width: 53%}
-#skjema2011userDetails .top-horizontal-separator {padding-top:1em;margin-top:1em;width:96%;background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left top;}
+#skjema2011userDetails .top-horizontal-separator {padding-top:1em;margin-top:1em;width:96%;background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top;}
 
-.skjema2011form-details .top-horizontal-separator {padding-top:1em;margin-top:1em;width:96%;background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left top;}
-.skjema2011form-details #userIdNumber {padding-top:2em;background: url("../../../img/navno/dashedhorizontal.gif") repeat-x scroll left top transparent}
+.skjema2011form-details .top-horizontal-separator {padding-top:1em;margin-top:1em;width:96%;background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top;}
+.skjema2011form-details #userIdNumber {padding-top:2em;background: url("../../img/navno/dashedhorizontal.gif") repeat-x scroll left top transparent}
 .skjema2011form-details .NAVpostnummer {padding: 1em 0;}
 
 #skjema2011userDetails .moreaddressoptions {clear:both; padding-top:2em; margin-left:2em; }
@@ -1062,7 +1059,7 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 .skjema2011form-details #senderChosen {margin-left: 12px}
 .skjema2011form-details .attachmentbody {float:left;width:100%;padding-top:2px;}
 .skjema2011form-details .velgBoks {float:left;margin-right:12px;margin-left:0;}
-.skjema2011form-details .attachmentList div.brodtekst { background: url( ../../../img/navno/dashedhorizontal.gif ) repeat-x left top; padding-top:10px;margin-top:10px; }
+.skjema2011form-details .attachmentList div.brodtekst { background: url( ../../img/navno/dashedhorizontal.gif ) repeat-x left top; padding-top:10px;margin-top:10px; }
 .skjema2011form-details .attachmentList .obligatoriskeVedlegg {margin-top:5px;}
 .skjema2011form-details .attachmentList div.underpunkter div.input-wrapper {float:left;width:100%;margin:.5em 0;height:1.2em;}
 .skjema2011form-details .attachmentList div.underpunkter input {margin:0 12px 0 0 !important; padding:0 !important;}
@@ -1095,7 +1092,7 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 .skjema2011form-details .stor span {font-weight: normal; color: #988f86;}
 .skjema2011form-details .clear {clear:both;}
 .skjema2011form-details .text-wrapper {float:left;width:90%;}
-.skjema2011form-details .horizontal-separator {float:left;width:100%;margin-bottom:1em;padding-bottom:1em; background:url('../../../img/navno/dashedhorizontal.gif') repeat-x left bottom;}
+.skjema2011form-details .horizontal-separator {float:left;width:100%;margin-bottom:1em;padding-bottom:1em; background:url('../../img/navno/dashedhorizontal.gif') repeat-x left bottom;}
 
 .skjema2011form-details .reset-defaults {float:none !important;font-weight:normal !important;} /*Kun for utlandscheckbox og label*/
 .skjema2011form-details input#utland {margin-left:0; vertical-align:middle} /*Kun for utlandscheckbox og label*/

@@ -13,14 +13,14 @@
 .NAVtbl { width: 100%; border-collapse: collapse;}
 .NAVtbl th { text-align: left; color: #675C53;}
 .NAVtbl td { padding:  5px 0px 5px 7px; vertical-align: top;}
-.NAVtbl th div, .NAVnumTbl th div { background-image: url('../../../img/navno/dashedhorizontal.gif'); background-repeat: repeat-x; background-position: bottom left; padding: 3px 0px 3px 7px; margin-bottom: 8px; }
+.NAVtbl th div, .NAVnumTbl th div { padding: 3px 0px 3px 7px; margin-bottom: 8px;}
 .NAVtbl .NAValternateRow, .NAVnumTbl .NAValternateRow { background-color: #EFEFEE;}
 .NAVtbl tr:nth-child(even), NAVnumTbl tr:nth-child(even) { background-color: #EFEFEE; }
 .NAVtbl td p { padding: 0; margin: 0; }
 
 /* Numeric table */
 .NAVnumTbl { border-collapse: collapse; margin: 10px 0px 1.9em 0px;}
-.NAVnumTbl th { text-align: right; color: #675C53;}
+.NAVnumTbl th { text-align: right; }
 .NAVnumTbl td { padding: 5px 7px 5px 7px; vertical-align: bottom; text-align: right; white-space: nowrap;}
 .NAVnumTbl .NAVtextColumn { text-align: left!important; vertical-align: top;}
 .NAVnumTbl th div { padding-right: 7px;}
@@ -194,7 +194,7 @@ ul.NAVsquarelist li { margin-bottom: 0.2em; }
 .NAVdashedBox .NAVbtn { margin-left: 6px; }
 .NAVdashedBox label { margin-left: 7px;}
 
-/* Loggin 
+/* Loggin
 .NAVlogginnLine { background-color: #F1F0ED; margin-bottom: 4px; padding: 15px 15px 15px 15px; float: left; width: 90%;}
 .NAVlogginnLine input { float: right; margin-right: 10%;}
 .NAVlogginnLine label { margin-left: 10%; float: left; }
@@ -288,10 +288,3 @@ ul.NAVsquarelist li { margin-bottom: 0.2em; }
 #NAVhelpTxt   { padding:10px 10px 10px 20px; background-color:white; color:#555; }
 #NAVhelplukk  { float:right;margin:12px;cursor:pointer; }
 #NAVhelpSpacer{ border:solid 1px #ccc; margin:0px; background-color:white;}
-
-
-
-
-
-
-
