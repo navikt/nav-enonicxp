@@ -164,5 +164,18 @@ function refreshOfficeInformation (officeInformationList) {
         }
     });
 
-    // TODO delete old offices no longer in norg2
+    // delete old offices
+    existingOffices.forEach((existingOffice) => {
+        log.info('DELETE :: ' + existingOffice._id);
+        let enhetId;
+        if (existingOffice && existingOffice.data && existingOffice.data.enhet && existingOffice.data.enhet.enhetId) {
+            enhetId = existingOffice.data.enhet.enhetId;
+            log.info('ENHET :: ' + enhetId);
+        }
+        if (!officesInNorg[enhetId]) {
+            libs.content.delete({
+                key: existingOffice._id,
+            });
+        }
+    });
 }
