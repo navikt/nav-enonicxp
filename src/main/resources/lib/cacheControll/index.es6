@@ -109,7 +109,7 @@ function activateEventListener () {
         localOnly: false,
         callback: function (event) {
             event.data.nodes.forEach(function (node) {
-                if (node.branch === 'master') {
+                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
                     wipeOnChange(node.path);
                     repo.query({
                         start: 0,
