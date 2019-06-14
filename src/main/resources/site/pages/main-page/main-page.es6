@@ -1,24 +1,20 @@
-var libs = {
+const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/cacheControll'),
 };
-var view = resolve('main-page.html');
+const etag = libs.cache.etag;
+const view = resolve('main-page.html');
 
-var etag = libs.cache.etag;
 function handleGet (req) {
-    /* if (req.headers.hasOwnProperty('If-None-Match') && req.headers['If-None-Match'].replace('--gzip','') === etag()) {
-        return { status: 304 };
-    } */
-    // log.info(JSON.stringify(req, null, 4))
-    var content = libs.portal.getContent();
+    const content = libs.portal.getContent();
 
     // Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
     // TODO: Denne må bli smartere
-    var path = content._path.split('/');
-    var level3 = (path[3] ? path[3] : '').toLowerCase();
-    return libs.cache.getDecorator('main-page' + level3, undefined, function () {
-        var seksjonsSider = '';
+    const path = content._path.split('/');
+    const level3 = (path[3] ? path[3] : '').toLowerCase();
+    return libs.cache.getDecorator('main-page' + level3, undefined, () => {
+        let seksjonsSider = '';
         switch (level3) {
         case 'person':
         case 'bedrift':
@@ -28,16 +24,22 @@ function handleGet (req) {
         default:
         }
 
-        var mainRegion = content.page.regions.main;
-        var footer = content.page.regions.footer;
-        var model = {
+        const mainRegion = content.page.regions.main;
+        const footer = content.page.regions.footer;
+        const model = {
             title: content.displayName + ' - www.nav.no',
             mainRegion: mainRegion,
             footerRegion: footer,
         };
-        var assets = [
+        const assets = [
+            '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
+                path: 'img/navno/logo.png',
+            }) + '" />',
+            '<link rel="shortcut icon" type="image/x-icon" href="' + libs.portal.assetUrl({
+                path: 'img/navno/favicon.ico',
+            }) + '" />',
             '<link rel="stylesheet" href="' + libs.portal.assetUrl({
-                path: 'styles/css/navno.css',
+                path: 'styles/navno.css',
             }) + '" />',
             '<script src="' + libs.portal.assetUrl({
                 path: 'libs/modernizr.2.7.1.min.js',
@@ -55,10 +57,10 @@ function handleGet (req) {
                 path: 'js/navno.js',
             }) + '"></script>', // TODO: Husk å sette tilbake til navno.min.js
         ];
-        var body = libs.thymeleaf.render(view, model);
+        const body = libs.thymeleaf.render(view, model);
         return {
             contentType: 'text/html',
-            body: body,
+            body,
             headers: {
                 'Cache-Control': 'must-revalidate',
                 'ETag': etag(),

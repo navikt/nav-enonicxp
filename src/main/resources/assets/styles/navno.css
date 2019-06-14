@@ -853,7 +853,7 @@ label.mobile-toggler, button.mobile-toggler {
 label.mobile-toggler.toggle-mainmenu, button.mobile-toggler.toggle-mainmenu {
     padding-left: 1.2em;
     text-align: left;
-    background: transparent url('../../img/navno/gfx/mainmenu/meny_mobil_hvit.png') no-repeat left 50%
+    background: transparent url('../img/navno/gfx/mainmenu/meny_mobil_hvit.png') no-repeat left 50%
 }
 
 label.mobile-toggler.toggle-search, button.mobile-toggler.toggle-search {
@@ -865,7 +865,7 @@ label.mobile-toggler.toggle-search span, button.mobile-toggler.toggle-search spa
     pointer-events: none;
     display: inline-block;
     padding-left: 1.2em;
-    background: transparent url('../../img/navno/gfx/mainmenu/sok_liten_hvit.png') no-repeat left 50%
+    background: transparent url('../img/navno/gfx/mainmenu/sok_liten_hvit.png') no-repeat left 50%
 }
 
 label.mobile-toggler:focus, button.mobile-toggler:focus {
@@ -891,12 +891,12 @@ input#no-js-toggle-mobile-search:checked ~ label.toggle-search {
 
 button.toggle-mainmenu.m-open {
     color: #0ca9e1;
-    background: transparent url('../../img/navno/gfx/mainmenu/meny_mobil_blaa.png') no-repeat left 50%
+    background: transparent url('../img/navno/gfx/mainmenu/meny_mobil_blaa.png') no-repeat left 50%
 }
 
 button.toggle-search.m-open span {
     color: #0ca9e1;
-    background: transparent url('../../img/navno/gfx/mainmenu/sok_liten_lyseblaa.png') no-repeat left 50%
+    background: transparent url('../img/navno/gfx/mainmenu/sok_liten_lyseblaa.png') no-repeat left 50%
 }
 
 @media (max-width: 48em) {
@@ -1002,7 +1002,7 @@ button.toggle-search.m-open span {
         display: inline-block;
         margin: 0;
         padding: .9375em;
-        background: transparent url('../../img/navno/gfx/mainmenu/sok_stor_morkeblaa.png') no-repeat right .9375em center
+        background: transparent url('../img/navno/gfx/mainmenu/sok_stor_morkeblaa.png') no-repeat right .9375em center
     }
 
     .accessible-megamenu .h4 {
@@ -1100,14 +1100,14 @@ button.toggle-search.m-open span {
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link:before {
         height: 30px;
-        background: transparent url('../../img/navno/gfx/mainmenu/hjem_hvit.png') no-repeat;
+        background: transparent url('../img/navno/gfx/mainmenu/hjem_hvit.png') no-repeat;
         background-position: 66% 100%;
         background-size: 43%
     }
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link:hover:before, .accessible-megamenu-panel .tilbaketilgruppe .home-link:active:before, .accessible-megamenu-panel .tilbaketilgruppe .home-link:focus:before {
         height: 30px;
-        background: transparent url('../../img/navno/gfx/mainmenu/hjem_hvit.png') no-repeat;
+        background: transparent url('../img/navno/gfx/mainmenu/hjem_hvit.png') no-repeat;
         background-position: 66% 100%;
         background-size: 43%
     }
@@ -1126,13 +1126,13 @@ button.toggle-search.m-open span {
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link.dittnav:before {
         height: 30px;
-        background: transparent url('../../img/navno/gfx/icons/person_graa.png') no-repeat 42% 30%;
+        background: transparent url('../img/navno/gfx/icons/person_graa.png') no-repeat 42% 30%;
         background-size: 62%
     }
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link.dittnav:hover:before, .accessible-megamenu-panel .tilbaketilgruppe .home-link.dittnav:active:before, .accessible-megamenu-panel .tilbaketilgruppe .home-link.dittnav:focus:before {
         height: 30px;
-        background: transparent url('../../img/navno/gfx/icons/person_graa.png') no-repeat 42% 30%;
+        background: transparent url('../img/navno/gfx/icons/person_graa.png') no-repeat 42% 30%;
         background-size: 62%
     }
 
@@ -1421,7 +1421,7 @@ button.toggle-search.m-open span {
     }
 
     .sitesearch .btn-sitesearch {
-        background: transparent url('../../img/navno/gfx/mainmenu/sok_liten_graa.png') no-repeat 50% 50%
+        background: transparent url('../img/navno/gfx/mainmenu/sok_liten_graa.png') no-repeat 50% 50%
     }
 }
 
@@ -1456,7 +1456,7 @@ button.toggle-search.m-open span {
 }
 
 .toggle-varsler-container.har-nye-varsler .toggle-varsler {
-    background: url('../../img/varsel/bjelle1x.png') no-repeat center;
+    background: url('../img/varsel/bjelle1x.png') no-repeat center;
     background-size: 17px 20px;
     width: 100%;
     height: 100%;
@@ -1471,12 +1471,12 @@ button.toggle-search.m-open span {
 }
 
 .toggle-varsler-container.har-nye-varsler .toggle-varsler:hover {
-    background: url('../../img/varsel/varsel_blaa_pulse.png') no-repeat center;
+    background: url('../img/varsel/varsel_blaa_pulse.png') no-repeat center;
     background-size: 17px 20px
 }
 
 .toggle-varsler {
-    background: url('../../img/varsel/varsel_graa.png') no-repeat center;
+    background: url('../img/varsel/varsel_graa.png') no-repeat center;
     border: 0;
     position: absolute;
     left: 0;
@@ -1485,7 +1485,7 @@ button.toggle-search.m-open span {
 }
 
 .toggle-varsler:hover {
-    background: url('../../img/varsel/varsel_blaa.png') no-repeat center
+    background: url('../img/varsel/varsel_blaa.png') no-repeat center
 }
 
 .toggle-varsler:focus {
@@ -1500,7 +1500,7 @@ button.toggle-search.m-open span {
 
 @media (-webkit-min-device-pixel-ratio: 1.5),(min-resolution: 144dpi) {
     .varsel-bjelle {
-        background-image: url("../../img/varsel/bjelle1.5x.png")
+        background-image: url("../img/varsel/bjelle1.5x.png")
     }
 }
 
@@ -1596,7 +1596,7 @@ button.toggle-search.m-open span {
     margin: 50px auto;
     width: 64px;
     height: 64px;
-    background: url('../../img/navno/gfx/ajaxloader/hvit/loader_hvit_64.gif') no-repeat center
+    background: url('../img/navno/gfx/ajaxloader/hvit/loader_hvit_64.gif') no-repeat center
 }
 
 .skillelinje-topp {
@@ -2053,7 +2053,7 @@ button.toggle-search.m-open span {
     }
 
     .ingen-varsler-container {
-        background: url('../../img/navno/gfx/ajaxloader/svart/loader_svart_64.gif') no-repeat center
+        background: url('../img/navno/gfx/ajaxloader/svart/loader_svart_64.gif') no-repeat center
     }
 
     .varsel-innhold-container {
@@ -2082,16 +2082,16 @@ button.toggle-search.m-open span {
     }
 
     .toggle-varsler-mobile {
-        background: url('../../img/varsel/varsel_mobil_graa.png') no-repeat center;
+        background: url('../img/varsel/varsel_mobil_graa.png') no-repeat center;
         vertical-align: middle
     }
 
     .toggle-varsler-mobile.m-open {
-        background: url('../../img/varsel/varsel_mobil_blaa.png') no-repeat center
+        background: url('../img/varsel/varsel_mobil_blaa.png') no-repeat center
     }
 
     .toggle-varsler-mobile.har-nye-varsler {
-        background: url('../../img/varsel/varsel_mobil_oransje.png') no-repeat center
+        background: url('../img/varsel/varsel_mobil_oransje.png') no-repeat center
     }
 
     .toggle-varsler-mobile.skjul {
@@ -2469,7 +2469,7 @@ body > img[src*="nav.tns-cs.net"] {
     content: "";
     width: 46px;
     height: 60px;
-    background: transparent url('../../img/navno/gfx/mainmenu/hjem_sort.png') no-repeat 66% 20%;
+    background: transparent url('../img/navno/gfx/mainmenu/hjem_sort.png') no-repeat 66% 20%;
     background-size: 55%
 }
 
@@ -2501,7 +2501,7 @@ body > img[src*="nav.tns-cs.net"] {
     content: "";
     width: 46px;
     height: 60px;
-    background: transparent url('../../img/navno/gfx/mainmenu/hjem_blaa.png') no-repeat 66% 20%;
+    background: transparent url('../img/navno/gfx/mainmenu/hjem_blaa.png') no-repeat 66% 20%;
     background-size: 55%
 }
 
@@ -3067,7 +3067,7 @@ body > img[src*="nav.tns-cs.net"] {
     height: 64px;
     width: 64px;
     margin: 0 auto;
-    background: transparent url('../../img/navno/gfx/icons/loader_64.gif') no-repeat top left
+    background: transparent url('../img/navno/gfx/icons/loader_64.gif') no-repeat top left
 }
 
 .footernavsection-wrapper {
@@ -3163,7 +3163,7 @@ body > img[src*="nav.tns-cs.net"] {
     margin-top: 20px;
     height: 80px;
     padding-top: 42px;
-    background: transparent url('../../img/navno/gfx/icons/no-content-icon.png') no-repeat 50% 0
+    background: transparent url('../img/navno/gfx/icons/no-content-icon.png') no-repeat 50% 0
 }
 
 .accessible-megafooter-panel ul {
@@ -3700,35 +3700,35 @@ a.knapp {
 }
 
 .form-standard input[type="radio"] + label {
-    background: url(../../img/navno/gfx/forms/radio.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/radio.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:checked + label {
-    background: url(../../img/navno/gfx/forms/radio_valgt.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/radio_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:disabled:checked + label {
-    background: url(../../img/navno/gfx/forms/radio_inactive_valgt.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/radio_inactive_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"]:disabled + label {
-    background: url(../../img/navno/gfx/forms/radio_inactive.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/radio_inactive.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"] + label {
-    background: url(../../img/navno/gfx/forms/check.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/check.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:disabled + label {
-    background: url(../../img/navno/gfx/forms/check_inactive.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/check_inactive.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:checked + label {
-    background: url(../../img/navno/gfx/forms/check_valgt.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/check_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="checkbox"]:disabled:checked + label {
-    background: url(../../img/navno/gfx/forms/check_inactive_valgt.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/check_inactive_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type=checkbox].bryter {
@@ -3737,7 +3737,7 @@ a.knapp {
 }
 
 .form-standard input[type=checkbox].bryter + label {
-    background: url(../../img/navno/gfx/forms/bryter.svg) 0 0 no-repeat;
+    background: url(../img/navno/gfx/forms/bryter.svg) 0 0 no-repeat;
     height: 32px;
     color: #333;
     margin: 0 0 0.75em;
@@ -3749,7 +3749,7 @@ a.knapp {
 }
 
 .form-standard input[type=checkbox].bryter:checked + label {
-    background: url(../../img/navno/gfx/forms/bryter_valgt.svg) 0 0 no-repeat
+    background: url(../img/navno/gfx/forms/bryter_valgt.svg) 0 0 no-repeat
 }
 
 .form-standard input[type="radio"] + label, .form-standard input[type="checkbox"] + label {
@@ -3853,11 +3853,11 @@ a.knapp {
 }
 
 .form-standard form input[type="radio"] + label {
-    background: url('../../img/navno/gfx/forms/radio.png') 0 .15rem no-repeat
+    background: url('../img/navno/gfx/forms/radio.png') 0 .15rem no-repeat
 }
 
 .form-standard form input[type="radio"]:checked + label {
-    background: url('../../img/navno/gfx/forms/radio_valgt.png') 0 .15rem no-repeat
+    background: url('../img/navno/gfx/forms/radio_valgt.png') 0 .15rem no-repeat
 }
 
 .form-standard form input[type="radio"]:disabled:checked + label {
@@ -3869,7 +3869,7 @@ a.knapp {
 }
 
 .form-standard form input[type="checkbox"] + label {
-    background: url('../../img/navno/gfx/forms/check.png') 0 .15rem no-repeat
+    background: url('../img/navno/gfx/forms/check.png') 0 .15rem no-repeat
 }
 
 .form-standard form input[type="checkbox"]:disabled + label {
@@ -3877,11 +3877,11 @@ a.knapp {
 }
 
 .form-standard form input[type="checkbox"]:checked + label {
-    background: url('../../img/navno/gfx/forms/check_valgt.png') 0 .15rem no-repeat
+    background: url('../img/navno/gfx/forms/check_valgt.png') 0 .15rem no-repeat
 }
 
 .form-standard form input[type="checkbox"]:disabled:checked + label {
-    background: url('../../img/navno/gfx/forms/check_inactive_valgt.png') 0 .15rem no-repeat
+    background: url('../img/navno/gfx/forms/check_inactive_valgt.png') 0 .15rem no-repeat
 }
 
 .article-body table {
@@ -4530,27 +4530,27 @@ a.knapp {
 }
 
 .icon-application {
-    background: url('../../img/navno/gfx/icons/soknad_rod.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/soknad_rod.png') center 0 no-repeat
 }
 
 .icon-application:hover {
-    background: url('../../img/navno/gfx/icons/soknad_hover.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/soknad_hover.png') center 0 no-repeat
 }
 
 .icon-login {
-    background: url('../../img/navno/gfx/icons/logg_inn_rod.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/logg_inn_rod.png') center 0 no-repeat
 }
 
 .icon-login:hover {
-    background: url('../../img/navno/gfx/icons/logg_inn_hover.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/logg_inn_hover.png') center 0 no-repeat
 }
 
 .icon-document {
-    background: url('../../img/navno/gfx/icons/dokument_rod.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/dokument_rod.png') center 0 no-repeat
 }
 
 .icon-document:hover {
-    background: url('../../img/navno/gfx/icons/dokument_hover.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/dokument_hover.png') center 0 no-repeat
 }
 
 .leading-icon-large.icon-utenarbeid {
@@ -4602,7 +4602,7 @@ a.knapp {
 }
 
 .icon-soknad {
-    background: url('../../img/navno/gfx/icons/soknad.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/soknad.png') center 0 no-repeat
 }
 
 .btn-tts {
@@ -4706,39 +4706,39 @@ a.knapp {
 }
 
 .tts-panel .tts-btn-group .tts-play {
-    background: #000 url('../../img/navno/gfx/tts/play.png') no-repeat center center
+    background: #000 url('../img/navno/gfx/tts/play.png') no-repeat center center
 }
 
 .tts-panel .tts-btn-group .tts-stop {
-    background: #000 url('../../img/navno/gfx/tts/stop.png') no-repeat center center
+    background: #000 url('../img/navno/gfx/tts/stop.png') no-repeat center center
 }
 
 .tts-panel .tts-btn-group .tts-help {
-    background: #000 url('../../img/navno/gfx/tts/help.png') no-repeat center center
+    background: #000 url('../img/navno/gfx/tts/help.png') no-repeat center center
 }
 
 .tts-panel .tts-btn-group .tts-settings {
-    background: #000 url('../../img/navno/gfx/tts/settings.png') no-repeat center center
+    background: #000 url('../img/navno/gfx/tts/settings.png') no-repeat center center
 }
 
 .tts-panel .tts-btn-expanded {
-    background: transparent url('../../img/navno/gfx/tts/tale_selected.png') no-repeat 8px center;
+    background: transparent url('../img/navno/gfx/tts/tale_selected.png') no-repeat 8px center;
     background-color: #000;
     color: #fff
 }
 
 .tts-panel .tts-btn-collapsed {
-    background: transparent url('../../img/navno/gfx/tts/tale.png') no-repeat 8px center;
+    background: transparent url('../img/navno/gfx/tts/tale.png') no-repeat 8px center;
     color: #3e3832
 }
 
 .tts-panel .tts-btn-collapsed:hover, .tts-panel .tts-btn-collapsed:active, .tts-panel .tts-btn-collapsed:focus {
-    background: transparent url('../../img/navno/gfx/tts/tale_hover.png') no-repeat 8px center;
+    background: transparent url('../img/navno/gfx/tts/tale_hover.png') no-repeat 8px center;
     color: #0ca9e1
 }
 
 .tts-panel .tts-btn-collapsed:active {
-    background: transparent url('../../img/navno/gfx/tts/tale_hover.png') no-repeat 8px center;
+    background: transparent url('../img/navno/gfx/tts/tale_hover.png') no-repeat 8px center;
     color: #0ca9e1
 }
 
@@ -4878,7 +4878,7 @@ a.knapp {
 }
 
 .article-facts {
-    background: #f1f1f1 url('../../img/navno/gfx/icons/info.png') no-repeat center 20px;
+    background: #f1f1f1 url('../img/navno/gfx/icons/info.png') no-repeat center 20px;
     border: 1px solid #d1d1d1;
     padding: 72px 30px 30px;
     margin-top: 60px
@@ -4897,7 +4897,7 @@ a.knapp {
 }
 
 .content-languages.selected {
-    background: #000 url('../../img/navno/gfx/tts/language_selected.png') no-repeat 1% center
+    background: #000 url('../img/navno/gfx/tts/language_selected.png') no-repeat 1% center
 }
 
 .content-languages.selected > span {
@@ -4918,7 +4918,7 @@ a.knapp {
 }
 
 .content-languages.selected:hover, .content-languages.selected:focus, .content-languages.selected:active {
-    background: #000 url('../../img/navno/gfx/tts/language_selected.png') no-repeat 1% center
+    background: #000 url('../img/navno/gfx/tts/language_selected.png') no-repeat 1% center
 }
 
 .content-languages.selected:hover span, .content-languages.selected:focus span, .content-languages.selected:active span {
@@ -4937,7 +4937,7 @@ a.knapp {
 }
 
 .content-languages {
-    background: transparent url('../../img/navno/gfx/tts/language_default.png') no-repeat 1% center;
+    background: transparent url('../img/navno/gfx/tts/language_default.png') no-repeat 1% center;
     display: inline-block;
     padding: 3px 7px 3px 21px;
     position: relative;
@@ -5023,7 +5023,7 @@ a.knapp {
 }
 
 .content-languages:hover, .content-languages:focus, .content-languages:active {
-    background-image: url('../../img/navno/gfx/tts/language_hover.png');
+    background-image: url('../img/navno/gfx/tts/language_hover.png');
     background-repeat: no-repeat;
     background-position: 1% center
 }
@@ -5217,7 +5217,7 @@ a.knapp {
 }
 
 .article-body ul.fancy {
-    list-style-image: url('../../img/navno/gfx/icons/hake.png')
+    list-style-image: url('../img/navno/gfx/icons/hake.png')
 }
 
 .article-body ol.fancy {
@@ -5255,7 +5255,7 @@ a.knapp {
     margin-left: 4%;
     display: inline-block;
     padding-left: 21px;
-    background: transparent url('../../img/navno/gfx/tts/print.png') no-repeat left center;
+    background: transparent url('../img/navno/gfx/tts/print.png') no-repeat left center;
     cursor: pointer
 }
 
@@ -5271,7 +5271,7 @@ a.knapp {
 }
 
 .content-print:hover, .content-print:focus, .content-print:active {
-    background: transparent url('../../img/navno/gfx/tts/print_hover.png') no-repeat left center
+    background: transparent url('../img/navno/gfx/tts/print_hover.png') no-repeat left center
 }
 
 .content-print:hover span, .content-print:active span, .content-print:focus span {
@@ -5634,11 +5634,11 @@ a.knapp {
     }
 
     .carousel-inner > .item .icon-document {
-        background-image: url("../../img/navno/gfx/icons/dokument_rod.png")
+        background-image: url("../img/navno/gfx/icons/dokument_rod.png")
     }
 
     .carousel-inner > .item .icon-document:hover, .carousel-inner > .item .icon-document:focus, .carousel-inner > .item .icon-document:active {
-        background-image: url("../../img/navno/gfx/icons/dokument_hover.png")
+        background-image: url("../img/navno/gfx/icons/dokument_hover.png")
     }
 
     .carousel-inner > .item .leading-icon {
@@ -5777,33 +5777,33 @@ a.knapp {
 }
 
 .carousel-control.right {
-    background: transparent url('../../img/navno/gfx/carousel/rod_hoyre.png') no-repeat 0 0;
+    background: transparent url('../img/navno/gfx/carousel/rod_hoyre.png') no-repeat 0 0;
     left: auto;
     right: -25px;
     z-index: 20
 }
 
 .carousel-control.right:hover, .carousel-control.right:focus, .carousel-control.right:active {
-    background: transparent url('../../img/navno/gfx/carousel/blaa_hoyre.png') no-repeat 0 0
+    background: transparent url('../img/navno/gfx/carousel/blaa_hoyre.png') no-repeat 0 0
 }
 
 .carousel-control.left {
-    background: transparent url('../../img/navno/gfx/carousel/rod_venstre.png') no-repeat 0 0;
+    background: transparent url('../img/navno/gfx/carousel/rod_venstre.png') no-repeat 0 0;
     right: auto;
     left: -25px;
     z-index: 20
 }
 
 .carousel-control.left:hover, .carousel-control.left:focus, .carousel-control.left:active {
-    background: transparent url('../../img/navno/gfx/carousel/blaa_venstre.png') no-repeat 0 0
+    background: transparent url('../img/navno/gfx/carousel/blaa_venstre.png') no-repeat 0 0
 }
 
 .carousel-control.left:active {
-    background: transparent url('../../img/navno/gfx/carousel/blaa_venstre_down.png') no-repeat 0 0
+    background: transparent url('../img/navno/gfx/carousel/blaa_venstre_down.png') no-repeat 0 0
 }
 
 .carousel-control.right:active {
-    background: transparent url('../../img/navno/gfx/carousel/blaa_hoyre_down.png') no-repeat 0 0
+    background: transparent url('../img/navno/gfx/carousel/blaa_hoyre_down.png') no-repeat 0 0
 }
 
 .carousel-control:hover, .carousel-control:focus {
@@ -6044,7 +6044,7 @@ a.knapp {
     padding-top: 155px;
     background-repeat: no-repeat;
     background-position: top center;
-    background-image: url('../../img/navno/gfx/icons/utropstegn_stor.png')
+    background-image: url('../img/navno/gfx/icons/utropstegn_stor.png')
 }
 
 .error-container ul {
@@ -6136,30 +6136,30 @@ a.knapp {
 }
 
 .share-twitter {
-    background-image: url('../../img/navno/gfx/icons/share-twitter.png');
+    background-image: url('../img/navno/gfx/icons/share-twitter.png');
     background-size: 19px 16px
 }
 
 .share-twitter:hover {
-    background-image: url('../../img/navno/gfx/icons/share-twitter-hover.png')
+    background-image: url('../img/navno/gfx/icons/share-twitter-hover.png')
 }
 
 .share-facebook {
-    background-image: url('../../img/navno/gfx/icons/share-facebook.png');
+    background-image: url('../img/navno/gfx/icons/share-facebook.png');
     background-size: 9px 18px
 }
 
 .share-facebook:hover {
-    background-image: url('../../img/navno/gfx/icons/share-facebook-hover.png')
+    background-image: url('../img/navno/gfx/icons/share-facebook-hover.png')
 }
 
 .share-linkedin {
-    background-image: url('../../img/navno/gfx/icons/share-linkedin.png');
+    background-image: url('../img/navno/gfx/icons/share-linkedin.png');
     background-size: 16px 16px
 }
 
 .share-linkedin:hover {
-    background-image: url('../../img/navno/gfx/icons/share-linkedin-hover.png')
+    background-image: url('../img/navno/gfx/icons/share-linkedin-hover.png')
 }
 
 .din-situasjon-wrapper {
@@ -6833,7 +6833,7 @@ header.decorated .following-heading {
 }
 
 .input-spinner {
-    background: url('../../img/navno/gfx/ajaxloader/loader_graa_16.gif') center right no-repeat;
+    background: url('../img/navno/gfx/ajaxloader/loader_graa_16.gif') center right no-repeat;
     display: inline-block;
     min-width: 2rem;
     min-height: 1rem
@@ -7077,7 +7077,7 @@ ul.regular {
 
 .user-message-panel .leading-icon.icon-warning {
     padding-top: 46px;
-    background: url('../../img/navno/gfx/icons/utropstegn_sirkel.png') center 0 no-repeat
+    background: url('../img/navno/gfx/icons/utropstegn_sirkel.png') center 0 no-repeat
 }
 
 .user-message-panel p {
@@ -8865,7 +8865,7 @@ div.jobfairsNoneFound {
 }
 
 .leading-icon.icon-mail {
-    background: url('../../img/navno/gfx/forms/melding_graa.png') center 0 no-repeat
+    background: url('../img/navno/gfx/forms/melding_graa.png') center 0 no-repeat
 }
 
 .decorated {
@@ -9203,7 +9203,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
         content: "";
         width: 46px;
         height: 60px;
-        background-image: url('../../img/navno/gfx/mainmenu/hjem_gul.png')
+        background-image: url('../img/navno/gfx/mainmenu/hjem_gul.png')
     }
 
     .contrast .accessible-megamenu .home-link:hover:before {
@@ -9211,7 +9211,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
         content: "";
         width: 46px;
         height: 60px;
-        background-image: url('../../img/navno/gfx/mainmenu/hjem_blaa.png')
+        background-image: url('../img/navno/gfx/mainmenu/hjem_blaa.png')
     }
 
     .contrast .accessible-megamenu .home-link:active, .contrast .accessible-megamenu .home-link:focus {
@@ -9239,7 +9239,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast .sitesearch .btn-sitesearch {
-        background-image: url('../../img/navno/gfx/mainmenu/sok_liten_gul.png')
+        background-image: url('../img/navno/gfx/mainmenu/sok_liten_gul.png')
     }
 
     .contrast .btn-small {
@@ -9253,12 +9253,12 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast .content-languages {
-        background: url('../../img/navno/gfx/tts/spraak_gult.png') no-repeat 6px 6px;
+        background: url('../img/navno/gfx/tts/spraak_gult.png') no-repeat 6px 6px;
         background-color: transparent !important
     }
 
     .contrast .content-languages:hover, .contrast .content-languages:focus, .contrast .content-languages:active {
-        background: transparent url('../../img/navno/gfx/tts/language_hover.png') no-repeat 6px 6px !important;
+        background: transparent url('../img/navno/gfx/tts/language_hover.png') no-repeat 6px 6px !important;
         color: #0ca9e1 !important
     }
 
@@ -9279,7 +9279,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast .tts-btn-listen, .contrast .tts-btn-collapsed, .contrast .tts-btn-expanded {
-        background-image: url('../../img/navno/gfx/tts/tale_gult.png')
+        background-image: url('../img/navno/gfx/tts/tale_gult.png')
     }
 
     .contrast .tts-btn-listen span, .contrast .tts-btn-collapsed span, .contrast .tts-btn-expanded span {
@@ -9287,7 +9287,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast .tts-btn-listen:hover, .contrast .tts-btn-collapsed:hover, .contrast .tts-btn-expanded:hover, .contrast .tts-btn-listen:focus, .contrast .tts-btn-collapsed:focus, .contrast .tts-btn-expanded:focus, .contrast .tts-btn-listen:active, .contrast .tts-btn-collapsed:active, .contrast .tts-btn-expanded:active {
-        background-image: url('../../img/navno/gfx/tts/tale_hover.png')
+        background-image: url('../img/navno/gfx/tts/tale_hover.png')
     }
 
     .contrast .tts-btn-listen:hover span, .contrast .tts-btn-collapsed:hover span, .contrast .tts-btn-expanded:hover span, .contrast .tts-btn-listen:focus span, .contrast .tts-btn-collapsed:focus span, .contrast .tts-btn-expanded:focus span, .contrast .tts-btn-listen:active span, .contrast .tts-btn-collapsed:active span, .contrast .tts-btn-expanded:active span {
@@ -9295,7 +9295,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast #tts-group .tts-play {
-        background-image: url('../../img/navno/gfx/tts/play_hc.png')
+        background-image: url('../img/navno/gfx/tts/play_hc.png')
     }
 
     .contrast #tts-group .tts-play:hover, .contrast #tts-group .tts-play:focus, .contrast #tts-group .tts-play:active {
@@ -9303,7 +9303,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast #tts-group .tts-stop {
-        background-image: url('../../img/navno/gfx/tts/stop_hc.png')
+        background-image: url('../img/navno/gfx/tts/stop_hc.png')
     }
 
     .contrast #tts-group .tts-stop:hover, .contrast #tts-group .tts-stop:focus, .contrast #tts-group .tts-stop:active {
@@ -9311,7 +9311,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast #tts-group .tts-help {
-        background-image: url('../../img/navno/gfx/tts/help_hc.png')
+        background-image: url('../img/navno/gfx/tts/help_hc.png')
     }
 
     .contrast #tts-group .tts-help:hover, .contrast #tts-group .tts-help:focus, .contrast #tts-group .tts-help:active {
@@ -9319,7 +9319,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast #tts-group .tts-settings {
-        background-image: url('../../img/navno/gfx/tts/settings_hc.png')
+        background-image: url('../img/navno/gfx/tts/settings_hc.png')
     }
 
     .contrast #tts-group .tts-settings:hover, .contrast #tts-group .tts-settings:focus, .contrast #tts-group .tts-settings:active {
@@ -9327,7 +9327,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast #print-page, .contrast #print-all {
-        background-image: url('../../img/navno/gfx/tts/print_gult.png')
+        background-image: url('../img/navno/gfx/tts/print_gult.png')
     }
 
     .contrast #print-page span, .contrast #print-all span {
@@ -9335,7 +9335,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .contrast #print-page:hover, .contrast #print-all:hover, .contrast #print-page:focus, .contrast #print-all:focus, .contrast #print-page:active, .contrast #print-all:active {
-        background-image: url('../../img/navno/gfx/tts/print_hover.png')
+        background-image: url('../img/navno/gfx/tts/print_hover.png')
     }
 
     .contrast #print-page:hover span, .contrast #print-all:hover span, .contrast #print-page:focus span, .contrast #print-all:focus span, .contrast #print-page:active span, .contrast #print-all:active span {
@@ -9361,7 +9361,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
 
 @media only screen and (max-width: 48em) {
     .contrast .sitesearch .btn-sitesearch {
-        background-image: url('../../img/navno/gfx/mainmenu/sok_stor_gul.png')
+        background-image: url('../img/navno/gfx/mainmenu/sok_stor_gul.png')
     }
 }
 

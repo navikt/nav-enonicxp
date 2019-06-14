@@ -118,7 +118,7 @@ function alterElementsIfTbody (element) {
 }
 
 function changeH1Tag (element) {
-    return doIf(element.tag === 'h1', changeTagValue('tag', 'h4'), returnElement, element);
+    return doIf(element.tag === 'h1', changeTagValue('tag', 'h1 class="h4"'), returnElement, element);
 }
 
 // General functions
