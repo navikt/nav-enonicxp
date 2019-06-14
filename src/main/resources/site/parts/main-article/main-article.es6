@@ -15,14 +15,11 @@ exports.get = function (req) {
         const langBundle = libs.lang.parseBundle(content.language).main_article;
         const languages = libs.utils.getLanguageVersions(content);
         const data = content.data;
-        const hasFact = data.fact && data.fact !== '';
+        const hasFact = !!data.fact;
 
         // Innholdsfortegnelse
         let toc = [];
-        if (
-            (data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
-            (data.metaTags && data.metaTags.indexOf('contentType$$$Kort_om') !== -1)
-        ) {
+        if ( data.hasTableOfContents && data.hasTableOfContents !== 'none') {
             let count = 0;
             let ch = 1;
             let ind = data.text.indexOf('<h3>');
