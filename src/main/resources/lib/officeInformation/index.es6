@@ -11,6 +11,10 @@ const DAY = 24 * HOUR;
 let lastCheckOnNode = null;
 
 exports.submitCheckTask = function () {
+    // ignore this if the config is missing
+    if (!app.config || !app.config.norg2 || !app.config.norg2ApiKey || !app.config.norg2ConsumerId) {
+        return;
+    }
     // only create task once an hour
     if (!lastCheckOnNode || lastCheckOnNode + HOUR < Date.now()) {
         lastCheckOnNode = Date.now();
