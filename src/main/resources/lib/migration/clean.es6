@@ -1,138 +1,48 @@
-var content = require('/lib/xp/content');
-var context = require('/lib/xp/context');
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    tools: require('/lib/migration/tools'),
+};
+
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
 
-    // TODO Fjern nav-old
-
-    socket.on('fjern-old', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                fjernOld(socket);
-            }
-        );
+    socket.on('fjern-old', () => {
+        libs.tools.runInContext(socket, fjernOld);
     });
-
-    socket.on('fjern-nyheter', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                fjernNyheter(socket);
-            }
-        );
+    socket.on('fjern-nyheter', () => {
+        libs.tools.runInContext(socket, fjernNyheter);
     });
-    socket.on('fjern-pressemeldinger', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                fjernPressemeldinger(socket);
-            }
-        );
+    socket.on('fjern-pressemeldinger', () => {
+        libs.tools.runInContext(socket, fjernPressemeldinger);
     });
-    socket.on('fjern-nyheter-brukerportal', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                fjernNyheterBrukerPortal(socket);
-            }
-        );
+    socket.on('fjern-nyheter-brukerportal', () => {
+        libs.tools.runInContext(socket, fjernNyheterBrukerPortal);
     });
-    socket.on('fjern-non-approved', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                fjernNonApproved(socket);
-            }
-        );
+    socket.on('fjern-non-approved', () => {
+        libs.tools.runInContext(socket, fjernNonApproved);
     });
-    socket.on('remove-empty-folders', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                removeEmptyFolders(socket);
-            }
-        );
+    socket.on('remove-empty-folders', () => {
+        libs.tools.runInContext(socket, removeEmptyFolders);
     });
-    socket.on('remove-enhetsinformasjon', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                removeEnhetsinformasjon(socket);
-            }
-        );
+    socket.on('remove-enhetsinformasjon', () => {
+        libs.tools.runInContext(socket, removeEnhetsinformasjon);
     });
 };
 
 function removeEmptyFolders (socket) {
-    var folders = content.query({
+    const folders = libs.content.query({
         start: 0,
         count: 5000,
         query: 'type = "base:folder" AND _state NOT LIKE "PENDING_DELETE"',
     }).hits;
 
     socket.emit('remove-empty-folders-max', folders.length);
-    var anyDeletions = false;
-    folders.forEach(function (folder, index) {
+    let anyDeletions = false;
+    folders.forEach((folder, index) => {
         if (folder.hasChildren === false) {
-            content.delete({
+            libs.content.delete({
                 key: folder._id,
             });
             anyDeletions = true;
@@ -148,7 +58,7 @@ function removeEmptyFolders (socket) {
 }
 
 function fjernNonApproved (socket) {
-    var nonApproved = content.query({
+    const nonApproved = libs.content.query({
         start: 0,
         count: 90000,
         filters: {
@@ -168,9 +78,9 @@ function fjernNonApproved (socket) {
         },
     });
     socket.emit('fjern-non-approved-max', nonApproved.hits.length);
-    nonApproved.hits.forEach(function (value, index) {
+    nonApproved.hits.forEach((value, index) => {
         socket.emit('fjern-non-approved-value', index + 1);
-        var contentKey;
+        let contentKey;
         if (
             value.hasOwnProperty('x') &&
             value.x.hasOwnProperty('no-nav-navno') &&
@@ -181,34 +91,34 @@ function fjernNonApproved (socket) {
         } else {
             log.info(JSON.stringify(value, 4, null));
         }
-        var cmsContent = content.query({
+        const cmsContent = libs.content.query({
             start: 0,
             count: 10000,
             query: 'data.parameters.value = "' + contentKey + '"',
         }).hits;
         if (cmsContent.length > 0) {
-            cmsContent.forEach(function (v) {
-                content.delete({
+            cmsContent.forEach((v) => {
+                libs.content.delete({
                     key: v._id,
                 });
             });
         }
-        content.delete({
+        libs.content.delete({
             key: value._id,
         });
         // log.info(JSON.stringify([cmsContent, value], null, 4));
     });
 }
 function fjernNyheterBrukerPortal (socket) {
-    var res = content.query({
+    const res = libs.content.query({
         start: 0,
         count: 100000,
         contentTypes: [app.name + ':Nyhet_brukerportal'],
     });
     socket.emit('fjern-nyheter-brukerportal-max', res.total);
-    res.hits.forEach(function (value, index) {
+    res.hits.forEach((value, index) => {
         socket.emit('fjern-nyheter-brukerportal-value', index + 1);
-        content.delete({
+        libs.content.delete({
             key: value._id,
         })
             ? log.info('Removed ' + value._path)
@@ -217,7 +127,7 @@ function fjernNyheterBrukerPortal (socket) {
 }
 
 function fjernPressemeldinger (socket) {
-    var res = content.query({
+    const res = libs.content.query({
         start: 0,
         count: 100000,
         query: 'modifiedTime < instant("2018-01-01T00:00:00.00Z")',
@@ -225,9 +135,9 @@ function fjernPressemeldinger (socket) {
     });
 
     socket.emit('fjern-pressemeldinger-max', res.hits.length);
-    res.hits.forEach(function (element, index) {
+    res.hits.forEach((element, index) => {
         socket.emit('fjern-pressemeldinger-value', index + 1);
-        content.delete({
+        libs.content.delete({
             key: element._id,
         })
             ? log.info('Removed ' + element._path)
@@ -236,7 +146,7 @@ function fjernPressemeldinger (socket) {
 }
 
 function fjernOld (socket) {
-    var pathsToRemove = [
+    const pathsToRemove = [
         'oppfolging',
         'inspirasjon',
         'njava',
@@ -262,16 +172,16 @@ function fjernOld (socket) {
         'nav.no-lokalt/arbeidslivssenter/arkiv-arbeidslivssider',
     ];
     socket.emit('fjern-old-max', pathsToRemove.length);
-    pathsToRemove.forEach(function (value, index) {
+    pathsToRemove.forEach((value, index) => {
         socket.emit('fjern-old-value', index + 1);
-        content.delete({
+        libs.content.delete({
             key: '/content/' + value,
         });
     });
 }
 
 function fjernNyheter (socket) {
-    var res = content.query({
+    const res = libs.content.query({
         start: 0,
         count: 100000,
         query: 'modifiedTime < instant("2018-01-01T00:00:00.00Z")',
@@ -279,9 +189,9 @@ function fjernNyheter (socket) {
     });
 
     socket.emit('fjern-nyheter-max', res.hits.length);
-    res.hits.forEach(function (element, index) {
+    res.hits.forEach((element, index) => {
         socket.emit('fjern-nyheter-value', index + 1);
-        content.delete({
+        libs.content.delete({
             key: element._id,
         })
             ? log.info('Removed ' + element._path)
@@ -290,7 +200,7 @@ function fjernNyheter (socket) {
 }
 
 function removeEnhetsinformasjon (socket) {
-    const hits = content.query({
+    const hits = libs.content.query({
         start: 0,
         count: 1000,
         query: `type = ${app.name}:Enhetsinformasjon`,
@@ -298,7 +208,7 @@ function removeEnhetsinformasjon (socket) {
 
     socket.emit('remove-enhetsinformasjon-max', hits.length);
     hits.forEach((enhet, index) => {
-        content.delete({
+        libs.content.delete({
             key: enhet._id,
         });
         socket.emit('remove-enhetsinformasjon-value', index + 1);

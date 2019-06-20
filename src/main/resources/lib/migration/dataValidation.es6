@@ -1,115 +1,77 @@
-var contentLib = require('/lib/xp/content');
-var context = require('/lib/xp/context');
-var node = require('/lib/xp/node');
-var valueLib = require('/lib/xp/value');
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    node: require('/lib/xp/node'),
+    value: require('/lib/xp/value'),
+    tools: require('/lib/migration/tools'),
+};
 
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('convertStringToDateTime', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                convertStringToDateTime(socket);
-            }
-        );
+    socket.on('convertStringToDateTime', () => {
+        libs.tools.runInContext(socket, convertStringToDateTime);
     });
-
-    socket.on('oma-start', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                changeMainArticle(socket);
-            }
-        );
+    socket.on('oma-start', () => {
+        libs.tools.runInContext(socket, changeMainArticle);
     });
-
-    socket.on('fiks-tavlelistene', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                fiksTavlelistene(socket);
-            }
-        );
+    socket.on('fiks-tavlelistene', () => {
+        libs.tools.runInContext(socket, fiksTavlelistene);
     });
 };
 
-var totalCount = 0;
-var currentCount = 0;
+let totalCount = 0;
+let currentCount = 0;
 function convertStringToDateTime (socket) {
     totalCount = 0;
     currentCount = 0;
-    var repo = node.connect({
+    const repo = libs.node.connect({
         repoId: 'com.enonic.cms.default',
         branch: 'draft',
         principals: ['role:system.admin'],
     });
-    var startElems = ['/content/www.nav.no', '/content/content', '/content/redirects'];
+    const startElems = ['/content/www.nav.no', '/content/content', '/content/redirects'];
     convert(repo, socket, startElems);
 }
 
 function convert (repo, socket, elems) {
     totalCount += elems.length;
     socket.emit('convert-string-to-datetime-max', totalCount);
-    elems.forEach(function (key) {
+    elems.forEach((key) => {
         log.info(key);
         currentCount += 1;
         socket.emit('convert-string-to-datetime-value', currentCount);
         repo.modify({
             key: key,
-            editor: function (elem) {
+            editor: (elem) => {
                 if (elem.createdTime) {
-                    elem.createdTime = valueLib.instant(elem.createdTime);
+                    elem.createdTime = libs.value.instant(elem.createdTime);
                 }
                 if (elem.modifiedTime) {
-                    elem.modifiedTime = valueLib.instant(elem.modifiedTime);
+                    elem.modifiedTime = libs.value.instant(elem.modifiedTime);
                 }
                 if (elem.publish) {
                     if (elem.publish.first) {
-                        elem.publish.first = valueLib.instant(elem.publish.first);
+                        elem.publish.first = libs.value.instant(elem.publish.first);
                     }
                     if (elem.publish.from) {
-                        elem.publish.from = valueLib.instant(elem.publish.from);
+                        elem.publish.from = libs.value.instant(elem.publish.from);
                     }
                     if (elem.publish.to) {
-                        elem.publish.to = valueLib.instant(elem.publish.to);
+                        elem.publish.to = libs.value.instant(elem.publish.to);
                     }
                 }
                 return elem;
             },
         });
 
-        var children = repo
+        const children = repo
             .findChildren({
                 start: 0,
                 count: 5000,
                 parentKey: key,
             })
-            .hits.map(function (c) {
+            .hits.map((c) => {
                 return c.id;
             });
 
@@ -120,23 +82,23 @@ function convert (repo, socket, elems) {
 }
 
 function changeMainArticle (socket) {
-    var hits = contentLib.query({
+    const hits = libs.content.query({
         start: 0,
         count: 100000,
         contentTypes: [app.name + ':main-article'],
     }).hits;
     socket.emit('omm', hits.length);
-    hits.map(function mapMain (element, index) {
+    hits.map((element, index) => {
         socket.emit('omv', index + 1);
         // update menu list items and language for all norwegian articles with menu list items
         if (element.data.hasOwnProperty('menuListItems') && (!element.language || element.language === 'no')) {
-            var newMenuListItems = {
+            let newMenuListItems = {
                 _selected: [],
             };
 
             // loop over old menu list items and push into new structure
-            var oldMenuListItems = Array.isArray(element.data.menuListItems) ? element.data.menuListItems : [element.data.menuListItems];
-            newMenuListItems = oldMenuListItems.reduce(function (t, value) {
+            const oldMenuListItems = Array.isArray(element.data.menuListItems) ? element.data.menuListItems : [element.data.menuListItems];
+            newMenuListItems = oldMenuListItems.reduce((t, value) => {
                 // rename relatert innhold to match
                 if (value.menuListName === 'Relatert innhold' || value.menuListName === 'Relatert informasjon' || value.menuListName === 'Spørsmål og svar') {
                     value.menuListName = 'Relatert_innhold';
@@ -144,8 +106,8 @@ function changeMainArticle (socket) {
                 // check for valid links in list
                 if (value.link) {
                     value.link = Array.isArray(value.link) ? value.link : [value.link];
-                    value.link.forEach(function (link) {
-                        if (contentLib.get({
+                    value.link.forEach((link) => {
+                        if (libs.content.get({
                             key: link,
                         })) {
                             // add to list of selected menu list items if it's not already there
@@ -172,9 +134,9 @@ function changeMainArticle (socket) {
             }, newMenuListItems);
             try {
                 // modify main-article with new menu list and remove old cms data
-                contentLib.modify({
+                libs.content.modify({
                     key: element._id,
-                    editor: function (c) {
+                    editor: (c) => {
                         delete c.data.heading;
                         delete c.data.factLocation;
                         delete c.data.tilbakemelding;
@@ -196,13 +158,13 @@ function changeMainArticle (socket) {
 }
 
 function fiksTavlelistene (socket) {
-    var alle = contentLib.query({
+    const alle = libs.content.query({
         start: 0,
         count: 100000,
         contentTypes: [app.name + ':tavleliste'],
     }).hits;
     socket.emit('fiks-tavlelistene-max', alle.length);
-    alle.forEach(function (value, index) {
+    alle.forEach((value, index) => {
         socket.emit('fiks-tavlelistene-value', index + 1);
         (Array.isArray(value.data.sectionContents) ? value.data.sectionContents : [value.data.sectionContents]).forEach(function (id) {
             log.info(id);
@@ -210,16 +172,16 @@ function fiksTavlelistene (socket) {
                 log.info(JSON.stringify(value, null, 4));
                 return;
             }
-            var val = contentLib.get({
+            const val = libs.content.get({
                 key: id,
             });
             if (!val) {
                 return;
             }
             if (val.type === app.name + ':nav.sidebeskrivelse') {
-                contentLib.modify({
+                libs.content.modify({
                     key: value._id,
-                    editor: function (c) {
+                    editor: (c) => {
                         c.data.ingress = val.data.ingress || val.data.description;
                         if (c.data.parameters) { delete c.data.parameters; }
                         if (c.data.heading) { delete c.data.heading; }
@@ -227,7 +189,7 @@ function fiksTavlelistene (socket) {
                     },
                 });
                 try {
-                    contentLib.delete({
+                    libs.content.delete({
                         key: id,
                     });
                 } catch (e) {
@@ -235,7 +197,7 @@ function fiksTavlelistene (socket) {
                 }
             } else {
                 if (val._path.indexOf('/www.nav.no/') === -1) {
-                    contentLib.move({
+                    libs.content.move({
                         source: val._id,
                         target: value._path + '/',
                     });

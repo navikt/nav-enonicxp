@@ -1,17 +1,21 @@
-var content = require('/lib/xp/content');
-var context = require('/lib/xp/context');
-var nodeLib = require('/lib/xp/node');
-var repo = nodeLib.connect({
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    node: require('/lib/xp/node'),
+    tools: require('/lib/migration/tools'),
+};
+const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin'],
 });
 
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('do', function (message) {
-        createTemplates(socket);
+
+    socket.on('do', () => {
+        libs.tools.runInContext(socket, createTemplates);
     });
 };
 
@@ -48,59 +52,46 @@ function createElements () {
 }
 
 function createTemplates (socket) {
-    context.run(
-        {
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            user: {
-                login: 'su',
-                userStore: 'system',
-            },
-            principals: ['role:system.admin'],
-        },
-        function () {
-            templates.forEach(function (value) {
-                var parent = content.get({
-                    key: value.content.parentPath,
-                });
-                if (!parent) {
-                    parent = content.create({
-                        displayName: 'Templates',
-                        parentPath: value.content.parentPath.replace('_templates/', ''),
-                        name: '_templates',
-                        contentType: 'portal:template-folder',
-                        data: {
+    templates.forEach(function (value) {
+        let parent = libs.content.get({
+            key: value.content.parentPath,
+        });
+        if (!parent) {
+            parent = libs.content.create({
+                displayName: 'Templates',
+                parentPath: value.content.parentPath.replace('_templates/', ''),
+                name: '_templates',
+                contentType: 'portal:template-folder',
+                data: {
 
-                        },
-                    });
-                }
-                var exists = content.get({
-                    key:
+                },
+            });
+        }
+        const exists = libs.content.get({
+            key:
                         value.content.parentPath +
                         value.content.displayName
                             .toLowerCase()
                             .replace(/ - /g, '-')
                             .replace(/ /g, '-')
                             .replace(/ø/g, 'o'),
-                });
-                var elem = exists || content.create(value.content);
-                repo.modify({
-                    key: elem._id,
-                    editor: function (c) {
-                        c.components = value.components;
-                        if (exists) {
-                            c.data = value.content.data;
-                        }
-                        return c;
-                    },
-                });
-                socket.emit('templateUpdate', elem.displayName + ' created');
-            });
-        }
-    );
+        });
+        const elem = exists || libs.content.create(value.content);
+        repo.modify({
+            key: elem._id,
+            editor: (c) => {
+                c.components = value.components;
+                if (exists) {
+                    c.data = value.content.data;
+                }
+                return c;
+            },
+        });
+        socket.emit('templateUpdate', elem.displayName + ' created');
+    });
 }
 
-var tavleListePage = [
+const tavleListePage = [
     {
         type: 'page',
         path: '/',
@@ -188,7 +179,7 @@ var tavleListePage = [
     },
 ];
 
-var mainArticlePage = [
+const mainArticlePage = [
     {
         type: 'page',
         path: '/',
@@ -288,7 +279,7 @@ var mainArticlePage = [
     },
 ];
 
-var transportPage = [
+const transportPage = [
     {
         type: 'page',
         path: '/',
@@ -364,7 +355,7 @@ var transportPage = [
     },
 ];
 
-var hovedSeksjonPage = [
+const hovedSeksjonPage = [
     {
         type: 'page',
         path: '/',
@@ -452,7 +443,7 @@ var hovedSeksjonPage = [
     },
 ];
 
-var ekstraStorTabell = {
+const ekstraStorTabell = {
     type: 'page',
     path: '/',
     page: {
@@ -466,7 +457,7 @@ var ekstraStorTabell = {
     },
 };
 
-var searchResult = [
+const searchResult = [
     {
         type: 'page',
         path: '/',
@@ -542,7 +533,7 @@ var searchResult = [
     },
 ];
 
-var publishingCalendarPage = [
+const publishingCalendarPage = [
     {
         type: 'page',
         path: '/',
@@ -618,7 +609,7 @@ var publishingCalendarPage = [
     },
 ];
 
-var officeInformationPage = [
+const officeInformationPage = [
     {
         type: 'page',
         path: '/',
@@ -694,7 +685,7 @@ var officeInformationPage = [
     },
 ];
 
-var templates = [
+const templates = [
     {
         content: {
             displayName: 'Artikkel - Hovedartikkel',
