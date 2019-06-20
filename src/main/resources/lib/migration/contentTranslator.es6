@@ -576,6 +576,14 @@ function updateTimeAndOrder (oldContent, newContent) {
             // set child order
             c._childOrder = oldContent.childOrder;
 
+            // order news and pressreleases by publish.first
+            if (c.type === app.name + ':innholdslist' || c.type === app.name + ':tavleliste') {
+                const validNames = ['nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
+                if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
+                    c._childOrder = 'publish.first DESC';
+                }
+            }
+
             // keep manual order if any
             if (newContentNode && newContentNode._manualOrderValue) {
                 c._manualOrderValue = newContentNode._manualOrderValue;
