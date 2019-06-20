@@ -13,14 +13,6 @@ exports.get = function (req) {
     const alle = libs.enhetsInfoCache
         .get('alleEnheter')
         .sort((a, b) => {
-            // sorterer fra a-å
-            /* var na = a.navn.toLowerCase().split('');
-        var nb = b.navn.toLowerCase().split('');
-        var al;
-        var bl;
-        while ((al = na.shift()) === (bl = nb.shift()) && al && bl){}
-
-        return (letters.split('').indexOf(al) || 0) - (letters.indexOf(bl) || 0) */
             return a.navn.localeCompare(b.navn, 'no');
         })
         .reduce((t, element) => {
