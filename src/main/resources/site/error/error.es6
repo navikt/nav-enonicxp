@@ -81,7 +81,7 @@ function stripProtocol (url) {
 }
 
 function validateUrl (url) {
-    var valid = url.startsWith('http') && url.indexOf('www.nav.no') === -1;
+    const valid = url.startsWith('http') && url.indexOf('www.nav.no') === -1;
 
     function andOr (f) {
         if (!valid) {
@@ -100,7 +100,7 @@ function validateUrl (url) {
     function splitParams (url) {
         return {
             path: url.split('?')[0],
-            params: url.split('?')[1] ? url.split('?')[1].split('&').reduce(function (t, el) {
+            params: url.split('?')[1] ? url.split('?')[1].split('&').reduce((t, el) => {
                 t[el.split('=')[0]] = el.split('=')[1];
             }, {
 
