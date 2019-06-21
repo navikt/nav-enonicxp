@@ -25,7 +25,7 @@ exports.handle404 = function (req) {
         key: path,
     });
 
-    // if its an internal-link, redirect the user
+    // if its an internal- or external-link, redirect the user
     if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
         element = content;
     }
@@ -54,7 +54,13 @@ exports.handle404 = function (req) {
     if (element) {
         let redirect;
         if (element.type === app.name + ':external-link') {
-            redirect = libs.portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(stripProtocol).andOr(appendRoot).andOr(xpInfuse).endValidation);
+            redirect = libs.portal.pageUrl(
+                validateUrl(element.data.url.toLowerCase())
+                    .andOr(stripProtocol)
+                    .andOr(appendRoot)
+                    .andOr(xpInfuse)
+                    .endValidation
+            );
         } else {
             redirect = libs.portal.pageUrl({
                 id: element.data.target,
@@ -62,7 +68,7 @@ exports.handle404 = function (req) {
         }
         if (redirect) {
             return {
-                redirect: redirect,
+                redirect,
             };
         }
     }
