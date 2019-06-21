@@ -1,43 +1,75 @@
 
-var content = require('/lib/xp/content');
-var portal = require('/lib/xp/portal');
+const libs = {
+    content: require('/lib/xp/content'),
+    portal: require('/lib/xp/portal'),
+};
 
 exports.handle404 = function (req) {
-    log.info(JSON.stringify(req, null, 4));
-
-    var path = req.request.path.split('/').pop();
-
-    log.info(path);
-    if (path === 'www.nav.no') {
-        return {
-            redirect: 'www.nav.no/forsiden',
-        };
+    // get path relative to www.nav.no site
+    let path = '/www.nav.no' + (req.request.rawPath.split('/www.nav.no')[1]);
+    // remove trailing /
+    if (path[path.length - 1] === '/') {
+        path = path.substr(0, path.length - 1);
     }
 
-    var element = content.getChildren({
-        key: '/redirects',
-        start: 0,
-        count: 10000,
-    }).hits.reduce(function (t, el) {
-        if (el.displayName === path) {
-            t = (el.type === app.name + ':url') ? el : content.get({
-                key: el.data.target,
+    let element;
+    // redirect the user to /forsiden if the user is trying to reach www.nav.no/ directly
+    if (path === '/www.nav.no') {
+        element = libs.content.get({
+            key: '/www.nav.no/forsiden',
+        });
+    }
+
+    // get content
+    const content = libs.content.get({
+        key: path,
+    });
+
+    // if its an internal-link, redirect the user
+    if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
+        element = content;
+    }
+
+    // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
+    const contentName = path.split('/').pop().toLowerCase();
+    if (!element) {
+        const redirects = libs.content.getChildren({
+            key: '/redirects',
+            start: 0,
+            count: 10000,
+        }).hits;
+
+        for (let i = 0; i < redirects.length; i += 1) {
+            const el = redirects[i];
+            if (el.displayName.toLowerCase() === contentName) {
+                if (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link') {
+                    element = el;
+                    break;
+                }
+            }
+        }
+    }
+
+    // if we found a matching redirect, send the user there
+    if (element) {
+        let redirect;
+        if (element.type === app.name + ':external-link') {
+            redirect = libs.portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(stripProtocol).andOr(appendRoot).andOr(xpInfuse).endValidation);
+        } else {
+            redirect = libs.portal.pageUrl({
+                id: element.data.target,
             });
         }
-        return t;
-    }, false);
-    if (element) {
-        var redirect = portal.pageUrl({
-            id: element._id,
-        });
-        if (element.type === app.name + ':url') {
-            redirect = portal.pageUrl(validateUrl(element.data.url.toLowerCase()).andOr(stripProtocol).andOr(appendRoot).andOr(xpInfuse).endValidation);
+        if (redirect) {
+            return {
+                redirect: redirect,
+            };
         }
-        log.info('Final ' + redirect);
-        return {
-            redirect: redirect,
-        };
     }
+
+    // log error and send the user to a 404 page
+    // TODO: create 404 page
+    log.info(JSON.stringify(req, null, 4));
     return {
         body: 'Missing',
         contentType: 'text/plain',
@@ -49,7 +81,6 @@ function stripProtocol (url) {
 }
 
 function validateUrl (url) {
-    log.info(url);
     var valid = url.startsWith('http') && url.indexOf('www.nav.no') === -1;
 
     function andOr (f) {
