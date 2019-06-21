@@ -22,17 +22,16 @@
                         <include>Undo | Redo</include>
                     </config>
                 </input>
-                <input name="contentType" type="ComboBox">
+                <input type="RadioButton" name="contentType">
                     <label>Innholdstype</label>
-                    <help-text>Denne informasjonen blir brukt i forbindelse med vedlikeholdsarbeid på nav.no. Artikler og faktaark er statistisk informasjon</help-text>
+                    <help-text>På grunn av vedlikeholdsarbeid på nav.no ber vi deg velge riktig innholdstype</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
-                        <option value="article">Artikkel</option>
-                        <option value="fact">Faktaark</option>
+                        <option value="lastingContent">Varig innhold</option>
                         <option value="news">Nyhet</option>
                         <option value="pressRelease">Pressemelding</option>
                     </config>
-                    <default>article</default>
+                    <default>none</default>
                 </input>
                 <input type="RadioButton" name="hasTableOfContents">
                     <label>Sett inn innholdsfortegnelse</label>
