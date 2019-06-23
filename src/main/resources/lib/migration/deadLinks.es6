@@ -1,7 +1,7 @@
 const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
-    http: require('/lib/xp/http-client'),
+    http: require('/lib/http-client'),
     node: require('/lib/xp/node'),
     task: require('/lib/xp/task'),
     tools: require('/lib/migration/tools'),

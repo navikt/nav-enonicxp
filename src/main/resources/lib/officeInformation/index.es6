@@ -4,6 +4,7 @@ const libs = {
     content: require('/lib/xp/content'),
     httpClient: require('/lib/http-client'),
     task: require('/lib/xp/task'),
+    tools: require('/lib/migration/tools'),
 };
 
 const HOUR = 60 * 60 * 1000; // MINUTES * SECONDS * MS
@@ -21,7 +22,9 @@ exports.submitCheckTask = function () {
         libs.task.submit({
             description: 'Check norg for office information',
             task: () => {
-                checkForRefresh();
+                libs.tools.runInContext(undefined, () => {
+                    checkForRefresh();
+                });
             },
         });
     }
