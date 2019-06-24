@@ -31,7 +31,6 @@
                         <option value="news">Nyhet</option>
                         <option value="pressRelease">Pressemelding</option>
                     </config>
-                    <default>none</default>
                 </input>
                 <input type="RadioButton" name="hasTableOfContents">
                     <label>Sett inn innholdsfortegnelse</label>
