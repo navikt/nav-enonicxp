@@ -27,11 +27,10 @@
                     <help-text>På grunn av vedlikeholdsarbeid på nav.no ber vi deg velge riktig innholdstype</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
-                        <option value="lastingContent">Varig innhold</option>
                         <option value="news">Nyhet</option>
                         <option value="pressRelease">Pressemelding</option>
+                        <option value="lastingContent">Varig innhold</option>
                     </config>
-                    <default>none</default>
                 </input>
                 <input type="RadioButton" name="hasTableOfContents">
                     <label>Sett inn innholdsfortegnelse</label>
