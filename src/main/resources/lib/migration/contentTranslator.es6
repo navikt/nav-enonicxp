@@ -361,13 +361,17 @@ function translateKortOmToMainArticle (kortOm, tmpParentPath) {
         libs.tools.changeTilbakemelding,
     ])(kortOm);
 
+    // add table of contents to all kort_om main-articles
+    const data = kortOm.data;
+    data.hasTableOfContents = 'h3';
+
     // create new main article based on the old article
     let mainArticle = libs.content.create({
         name: kortOm._name,
         displayName: kortOm.displayName,
         contentType: app.name + ':main-article',
         parentPath: tmpParentPath,
-        data: kortOm.data,
+        data: data,
         x: getXData(kortOm),
     });
 
