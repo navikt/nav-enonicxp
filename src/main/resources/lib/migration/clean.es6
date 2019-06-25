@@ -213,6 +213,22 @@ function removeEnhetsinformasjon (socket) {
         });
         socket.emit('remove-enhetsinformasjon-value', index + 1);
     });
+
+    // delete old cms2xpSection
+    libs.content.delete({
+        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer',
+    });
+
+    // create new folder instead
+    libs.content.create({
+        displayName: 'kontorer',
+        contentType: 'base:folder',
+        parentPath: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/',
+        branch: 'draft',
+        data: {
+
+        },
+    });
 }
 
 function createElements () {

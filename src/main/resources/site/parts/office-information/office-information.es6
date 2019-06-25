@@ -52,7 +52,7 @@ function handleGet (req) {
             pageContributions: {
                 headEnd: [
                     `<link rel="stylesheet" href="${libs.portal.assetUrl({
-                        path: 'styles/css/enhetsinfo.css',
+                        path: 'styles/enhetsinfo/enhetsinfo.css',
                     })}" />`,
                 ],
             },

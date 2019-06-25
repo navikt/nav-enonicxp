@@ -94,6 +94,7 @@ function checkForRefresh () {
             const officeInformationList = JSON.parse(response.body);
             refreshOfficeInformation(officeInformationList);
 
+            log.info('PUBLISH OFFICE INFORMATION');
             libs.content.publish({
                 keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer'],
                 sourceBranch: 'draft',
