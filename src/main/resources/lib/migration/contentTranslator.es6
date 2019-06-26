@@ -732,13 +732,33 @@ function translateNavRapportHandbok (rapportHandbok) {
         },
     });
 
+    // create main-article-chapter elements as children of the main-article
+    rapportHandbok.data.chapters.forEach((chapterId) => {
+        let chapter = libs.content.get({
+            key: oldToNewRefMap[chapterId] ? oldToNewRefMap[chapterId] : chapterId,
+        });
+        libs.content.create({
+            parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
+            contentType: app.name + ':main-article-chapter',
+            displayName: chapter.displayName,
+            name: chapter._name + '_kap',
+            data: {
+                article: chapter._id,
+            },
+        });
+    });
+
     mainArticle = updateTimeAndOrder(rapportHandbok, mainArticle);
 
     return mainArticle;
 }
 
 function translateNavRapportHandbokKap (rapportHandbokKap) {
-    libs.tools.compose([libs.tools.changeNewsSchemas, libs.tools.changeInformation, libs.tools.changeSocial])(rapportHandbokKap);
+    libs.tools.compose([
+        libs.tools.changeNewsSchemas,
+        libs.tools.changeInformation,
+        libs.tools.changeSocial]
+    )(rapportHandbokKap);
 
     let mainArticle = libs.content.create({
         parentPath: getTmpParentPath(rapportHandbokKap),
@@ -805,6 +825,15 @@ function translateRapportHandbok (rapportHandbok) {
                 text: rapport.text,
                 ingress: ' ',
                 contentType: 'article',
+            },
+        });
+        libs.content.create({
+            parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
+            contentType: app.name + ':main-article-chapter',
+            displayName: rapport.subtitle,
+            name: rapport.subtitle + '_kap',
+            data: {
+                article: rapportArticle._id,
             },
         });
         updateTimeAndOrder(rapportHandbok, rapportArticle);
