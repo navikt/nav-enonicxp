@@ -166,3 +166,30 @@ exports.getLanguageVersions = function (content) {
     });
     return ret;
 };
+
+/**
+ * @description get all children of content
+ * @param {object} content content to find all children of
+ */
+exports.getAllChildren = function (content) {
+    let children = [];
+    if (content.hasChildren) {
+        let start = 0;
+        const count = 100;
+        let length = count;
+        while (count === length) {
+            const hits = libs.content.getChildren({
+                key: content._id,
+                start: start,
+                count: count,
+            }).hits;
+
+            length = hits.length;
+            start += length;
+
+            children = children.concat(hits);
+        }
+    }
+
+    return children;
+};

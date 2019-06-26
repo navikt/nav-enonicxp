@@ -1,6 +1,7 @@
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
     utils: require('/lib/nav-utils'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
@@ -9,7 +10,12 @@ const view = resolve('main-article.html');
 
 exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'main-article', () => {
-        const content = libs.portal.getContent();
+        let content = libs.portal.getContent();
+        if (content.type === app.name + ':main-article-chapter') {
+            content = libs.content.get({
+                key: content.data.article,
+            });
+        }
         const langBundle = libs.lang.parseBundle(content.language).main_article;
         const languages = libs.utils.getLanguageVersions(content);
         const data = content.data;
@@ -17,7 +23,7 @@ exports.get = function (req) {
 
         // Innholdsfortegnelse
         let toc = [];
-        if ( data.hasTableOfContents && data.hasTableOfContents !== 'none') {
+        if (data.hasTableOfContents && data.hasTableOfContents !== 'none') {
             let count = 0;
             let ch = 1;
             let ind = data.text.indexOf('<h3>');
