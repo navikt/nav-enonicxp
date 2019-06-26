@@ -33,7 +33,7 @@ app {
 }
 
 node {
-    download = true
+    // download = true
     version = '10.15.3'
 }
 
