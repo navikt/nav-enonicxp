@@ -1,18 +1,25 @@
-var thymeleafLib = require('/lib/thymeleaf');
-var portal = require('/lib/xp/portal');
-var contentLib = require('/lib/xp/content');
-var view = resolve('main-article-related-content.html');
-var cache = require('/lib/cacheControll');
-var langLib = require('/lib/i18nUtil');
+const libs = {
+    thymeleaf: require('/lib/thymeleaf'),
+    portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
+    cache: require('/lib/cacheControll'),
+    lang: require('/lib/i18nUtil'),
+};
+const view = resolve('main-article-related-content.html');
 
 function handleGet (req) {
-    return cache.getPaths(req.path, 'main-article-related-content', function () {
-        var content = portal.getContent();
-        var selectNames = langLib.parseBundle(content.language).related_content.select;
-        var menuListItems = content.data.menuListItems || {
+    return libs.cache.getPaths(req.path, 'main-article-related-content', () => {
+        let content = libs.portal.getContent();
+        if (content.type === app.name + ':main-article-chapter') {
+            content = libs.content.get({
+                key: content.data.article,
+            });
+        }
+        const selectNames = libs.lang.parseBundle(content.language).related_content.select;
+        const menuListItems = content.data.menuListItems || {
 
         };
-        var keys = [
+        const keys = [
             'selfservice',
             'form-and-application',
             'process-times',
@@ -24,31 +31,36 @@ function handleGet (req) {
             'membership',
             'rules-and-regulations',
         ];
-        var linkList = keys
-            .map(function (el) {
-                if (!menuListItems[el]) { return undefined; }
-                var links = forceArr(menuListItems[el].link);
+        const linkList = keys
+            .map(el => {
+                if (!menuListItems[el]) {
+                    return undefined;
+                }
+                const links = forceArr(menuListItems[el].link);
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     links: links
-                        .map(function (contentId) {
-                            var element = contentLib.get({
+                        .map(contentId => {
+                            const element = libs.content.get({
                                 key: contentId,
                             });
-                            if (!element) { return undefined; }
-                            var link = '';
+                            if (!element) {
+                                return undefined;
+                            }
+                            let link = '';
                             if (element.type === 'media:document') {
-                                link = portal.attachmentUrl({
-                                    id: element._id, download: true,
+                                link = libs.portal.attachmentUrl({
+                                    id: element._id,
+                                    download: true,
                                 });
                             } else if (element.type === 'no.nav.navno:Ekstern_lenke') {
-                                var url = element.data.url;
+                                let url = element.data.url;
                                 if (url.indexOf('http') !== 0) {
                                     url = 'https://' + url;
                                 }
                                 link = url;
                             } else {
-                                link = portal.pageUrl({
+                                link = libs.portal.pageUrl({
                                     id: contentId,
                                 });
                             }
@@ -57,24 +69,28 @@ function handleGet (req) {
                                 link: link,
                             };
                         })
-                        .reduce(function (t, el) {
-                            if (el) { t.push(el); }
-                            return t;
-                        }, []),
+                        .filter(el => {
+                            if (el) {
+                                return true;
+                            }
+                            return false;
+                        }),
                 };
             })
-            .reduce(function (t, el) {
-                if (el && el.links && el.links.length > 0) { t.push(el); }
-                return t;
-            }, []);
+            .filter(el => {
+                if (el && el.links && el.links.length > 0) {
+                    return true;
+                }
+                return false;
+            });
 
-        var hasMenuLists = linkList.length > 0;
-        var params = {
+        const hasMenuLists = linkList.length > 0;
+        const params = {
             relatedContentList: linkList,
             hasMenuList: hasMenuLists,
         };
 
-        var body = thymeleafLib.render(view, params);
+        const body = libs.thymeleaf.render(view, params);
 
         return {
             contentType: 'text/html',
