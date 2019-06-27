@@ -13,5 +13,4 @@ RUN apt-get install -y libssl-dev
 RUN git clone https://github.com/nodejs/node.git \
  && cd node \
  && ./configure \
- && make \
- && sudo make install
+ && make install
