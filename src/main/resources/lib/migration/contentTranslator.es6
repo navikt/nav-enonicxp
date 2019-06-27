@@ -105,12 +105,14 @@ function translateContent (content) {
 
             },
         });
+
         log.info('GET CHILDREN');
         const children = libs.content.getChildren({
             key: content._id,
             start: 0,
             count: 10000,
         }).hits;
+
         log.info('MOVE CHILDREN');
         children.forEach(child => {
             libs.content.move({
