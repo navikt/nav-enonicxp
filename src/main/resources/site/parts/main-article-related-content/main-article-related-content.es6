@@ -32,13 +32,15 @@ function handleGet (req) {
             'rules-and-regulations',
         ];
         const linkList = keys
-            .map((el) => {
-                if (!menuListItems[el]) { return undefined; }
+            .map(el => {
+                if (!menuListItems[el]) {
+                    return undefined;
+                }
                 const links = forceArr(menuListItems[el].link);
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     links: links
-                        .map((contentId) => {
+                        .map(contentId => {
                             const element = libs.content.get({
                                 key: contentId,
                             });
@@ -48,7 +50,8 @@ function handleGet (req) {
                             let link = '';
                             if (element.type === 'media:document') {
                                 link = libs.portal.attachmentUrl({
-                                    id: element._id, download: true,
+                                    id: element._id,
+                                    download: true,
                                 });
                             } else if (element.type === 'no.nav.navno:Ekstern_lenke') {
                                 let url = element.data.url;
@@ -66,18 +69,20 @@ function handleGet (req) {
                                 link: link,
                             };
                         })
-                        .reduce((t, el) => {
-                            if (el) { t.push(el); }
-                            return t;
-                        }, []),
+                        .filter(el => {
+                            if (el) {
+                                return true;
+                            }
+                            return false;
+                        }),
                 };
             })
-            .reduce((t, el) => {
+            .filter(el => {
                 if (el && el.links && el.links.length > 0) {
-                    t.push(el);
+                    return true;
                 }
-                return t;
-            }, []);
+                return false;
+            });
 
         const hasMenuLists = linkList.length > 0;
         const params = {

@@ -16,7 +16,7 @@ exports.get = function (req) {
         // Define the model
         const model = {
             hasList: list.length > 1,
-            list: list,
+            list,
         };
 
         // Render a thymeleaf template
