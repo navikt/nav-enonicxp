@@ -728,7 +728,7 @@ function translateNavRapportHandbok (rapportHandbok) {
             ingress: rapportHandbok.data.preface,
             text: ' ',
             languages: rapportHandbok.data.languages,
-            contentType: 'article',
+            contentType: 'lastingContent',
         },
     });
 
@@ -769,7 +769,7 @@ function translateNavRapportHandbokKap (rapportHandbokKap) {
             text: rapportHandbokKap.data.text,
             menuListItems: rapportHandbokKap.data.menuListItems,
             social: rapportHandbokKap.data.social,
-            contentType: 'article',
+            contentType: 'lastingContent',
         },
     });
 
@@ -804,7 +804,7 @@ function translateRapportHandbok (rapportHandbok) {
         data: {
             ingress: rapportHandbok.data.rapport_description,
             text: ' ',
-            contentType: 'article',
+            contentType: 'lastingContent',
             menuListItems: libs.tools.addMenuListItem(null, 'related-information', getLinks(rapportHandbok)),
         },
     });
@@ -824,7 +824,7 @@ function translateRapportHandbok (rapportHandbok) {
             data: {
                 text: rapport.text,
                 ingress: ' ',
-                contentType: 'article',
+                contentType: 'lastingContent',
             },
         });
         libs.content.create({

@@ -324,7 +324,7 @@ function insertContentTypeMetaTag (content) {
     } else if (content.type === app.name + ':pressemelding') {
         content.data.contentType = 'pressRelease';
     } else {
-        content.data.contentType = 'article';
+        content.data.contentType = 'lastingContent';
     }
     return content;
 }
