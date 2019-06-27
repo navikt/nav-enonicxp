@@ -581,7 +581,7 @@ function updateTimeAndOrder (oldContent, newContent) {
             c._childOrder = oldContent.childOrder;
 
             // order news and pressreleases by publish.first
-            if (c.type === app.name + ':innholdslist' || c.type === app.name + ':tavleliste') {
+            if (c.type === app.name + ':innholdsliste' || c.type === app.name + ':tavleliste') {
                 const validNames = ['nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
                 if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
                     c._childOrder = 'publish.first DESC';
@@ -611,6 +611,18 @@ function updateTimeAndOrder (oldContent, newContent) {
                 if (oldContent.publish.to) {
                     c.publish.to = libs.value.instant(oldContent.publish.to);
                 }
+            }
+
+            // set content in /en to english and /se to Northern Sami - davvisámegiella
+            if (c._path.indexOf('/www.nav.no/en/') !== -1) {
+                c.language = 'en';
+            } else if (c._path.indexOf('/www.nav.no/se/') !== -1) {
+                c.language = 'se_NO';
+            }
+
+            // set language to norwegian if it's missing
+            if (!c.language) {
+                c.language = 'no';
             }
             return c;
         },
