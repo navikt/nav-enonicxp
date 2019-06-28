@@ -23,7 +23,7 @@ function handleGet (req) {
             breadcrumbs.items = breadcrumbs.items.slice(2);
             // Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg (kan ikke navigere hit)
             breadcrumbs.items = breadcrumbs.items.filter(
-                el => (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder')
+                el => (el.type !== app.name + ':innholdsliste' && el.type !== 'base:folder')
             );
             const model = {
                 langBundles,
