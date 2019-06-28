@@ -71,9 +71,17 @@ function translateContent (content) {
         content.page &&
         content.page.template &&
         (content.page.template === libs.tools.getTemplate('artikkelliste-med-sidebeskrivelse-subseksjon') ||
-        content.page.template === libs.tools.getTemplate('artikkelliste-for-pressemeldinger-subseksjon'))
+            content.page.template === libs.tools.getTemplate('artikkelliste-for-pressemeldinger-subseksjon'))
     ) {
         newContent = translateCms2xpSectionToTavleliste(content);
+    }
+
+    if (content.type === app.name + ':cms2xp_section' &&
+        content.page &&
+        content.page.template &&
+        content.page.template === libs.tools.getTemplate('skriv-til-oss-temavelger-lenkeliste')
+    ) {
+        newContent = translateCms2xpSectionToLinkList(content);
     }
 
     // TODO: do this after everything else is translated
@@ -293,6 +301,41 @@ function translateCms2xpSectionToOppslagstavle (cms2xpSection) {
     }
 
     return oppslagstavle;
+}
+
+function translateCms2xpSectionToLinkList (cms2xpSection) {
+    // get the link list data and description
+    let oldLinkList = libs.content.get({
+        key: cms2xpSection.data.sectionContents,
+    });
+
+    // create new link-list with cms2xpSection position and name, and with oldLinkList data
+    let linkList = libs.content.create({
+        name: cms2xpSection._name,
+        displayName: cms2xpSection.displayName,
+        contentType: app.name + ':link-list',
+        parentPath: getTmpParentPath(cms2xpSection),
+        data: {
+            linkList: oldLinkList.data.linklist,
+            description: oldLinkList.data.description,
+        },
+        x: getXData(cms2xpSection),
+    });
+
+    // move all links out from /content site
+    oldLinkList.data.linklist.forEach((link) => {
+        libs.content.move({
+            source: link,
+            target: cms2xpSection._path + '/',
+        });
+    });
+
+    linkList = updateTimeAndOrder(cms2xpSection, linkList);
+
+    libs.content.delete({
+        key: oldLinkList._id,
+    });
+    return linkList;
 }
 
 exports.translateArtikkelBrukerportalToMainArticle = translateArtikkelBrukerportalToMainArticle;
@@ -747,7 +790,7 @@ function translateNavRapportHandbok (rapportHandbok) {
     });
 
     // create main-article-chapter elements as children of the main-article
-    rapportHandbok.data.chapters.forEach((chapterId) => {
+    rapportHandbok.data.chapters.forEach(chapterId => {
         let chapter = libs.content.get({
             key: oldToNewRefMap[chapterId] ? oldToNewRefMap[chapterId] : chapterId,
         });
@@ -768,11 +811,7 @@ function translateNavRapportHandbok (rapportHandbok) {
 }
 
 function translateNavRapportHandbokKap (rapportHandbokKap) {
-    libs.tools.compose([
-        libs.tools.changeNewsSchemas,
-        libs.tools.changeInformation,
-        libs.tools.changeSocial]
-    )(rapportHandbokKap);
+    libs.tools.compose([libs.tools.changeNewsSchemas, libs.tools.changeInformation, libs.tools.changeSocial])(rapportHandbokKap);
 
     let mainArticle = libs.content.create({
         parentPath: getTmpParentPath(rapportHandbokKap),
@@ -800,7 +839,9 @@ function getLinks (value) {
                     return link && link.contents ? link.contents : null;
                 })
                 .reduce(function (t, v) {
-                    if (v) { t.push(v); }
+                    if (v) {
+                        t.push(v);
+                    }
                     return t;
                 }, []);
         } else if (value.data.links.link && value.data.links.link.contents) {
