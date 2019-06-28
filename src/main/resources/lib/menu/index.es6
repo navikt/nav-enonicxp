@@ -1,10 +1,10 @@
-var libs = {
+const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     navUtils: require('../nav-utils'),
 };
 
-var globals = {
+const globals = {
     appPath: app.name.replace(/\./g, '-'),
 };
 
@@ -19,15 +19,13 @@ var globals = {
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
 exports.getBreadcrumbMenu = function (params) {
-    var content = libs.portal.getContent();
-    var site = libs.portal.getSite();
-    var breadcrumbItems = []; // Stores each menu item
-    var breadcrumbMenu = {
-
-    }; // Stores the final JSON sent to Thymeleaf
+    const content = libs.portal.getContent();
+    const site = libs.portal.getSite();
+    let breadcrumbItems = []; // Stores each menu item
+    let breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf
 
     // Safely take care of all incoming settings and set defaults, for use in current scope only
-    var settings = {
+    const settings = {
         linkActiveItem: params.linkActiveItem || false,
         showHomepage: params.showHomepage || true,
         homepageTitle: params.homepageTitle || null,
@@ -48,21 +46,19 @@ exports.getBreadcrumbMenu = function (params) {
     // Loop the entire path for current content based on the slashes. Generate one JSON item node for each item.
     // If on frontpage, skip the path-loop
     if (content._path !== site._path) {
-        var fullPath = content._path;
-        var arrVars = fullPath.split('/');
-        var arrLength = arrVars.length;
-        for (var i = 1; i < arrLength - 1; i++) {
+        const fullPath = content._path;
+        const arrVars = fullPath.split('/');
+        const arrLength = arrVars.length;
+        for (let i = 1; i < arrLength - 1; i++) {
             // Skip first item - the site - since it is handled separately.
-            var lastVar = arrVars.pop();
+            const lastVar = arrVars.pop();
             if (lastVar !== '') {
-                var curItem = libs.content.get({
+                const curItem = libs.content.get({
                     key: arrVars.join('/') + '/' + lastVar,
                 }); // Make sure item exists
                 if (curItem) {
-                    var item = {
-
-                    };
-                    var curItemUrl = libs.portal.pageUrl({
+                    let item = {};
+                    const curItemUrl = libs.portal.pageUrl({
                         path: curItem._path,
                         type: settings.urlType,
                     });
@@ -87,7 +83,7 @@ exports.getBreadcrumbMenu = function (params) {
 
     // Add Home button linking to site home, if wanted
     if (settings.showHomepage) {
-        var homeUrl = libs.portal.pageUrl({
+        const homeUrl = libs.portal.pageUrl({
             path: site._path,
             type: settings.urlType,
         });
@@ -112,7 +108,7 @@ exports.getBreadcrumbMenu = function (params) {
  * Beholdt rekursiviteten
  ***/
 exports.getMegaMenu = function (content, levels) {
-    var subMenus = [];
+    let subMenus = [];
     if (content) {
         levels--;
         return libs.content
@@ -121,7 +117,7 @@ exports.getMegaMenu = function (content, levels) {
                 start: 0,
                 count: 100,
             })
-            .hits.reduce(function (t, el) {
+            .hits.reduce((t, el) => {
                 t.push(menuToJson(el, levels));
                 return t;
             }, subMenus);
@@ -130,10 +126,10 @@ exports.getMegaMenu = function (content, levels) {
     }
 };
 function menuToJson (content, levels) {
-    var subMenus = [];
-    var inPath = false;
-    var isActive = false;
-    var currentContent = libs.portal.getContent();
+    let subMenus = [];
+    let inPath = false;
+    let isActive = false;
+    const currentContent = libs.portal.getContent();
 
     if (levels > 0) {
         subMenus = exports.getMegaMenu(content, levels);
@@ -152,15 +148,12 @@ function menuToJson (content, levels) {
 
     return {
         displayName: content.displayName,
-        path: libs.portal
-            .pageUrl({
-                id: content.data.itemContent,
-                // type: 'absolute',
-            }),
-        // .replace('http:', 'https:'),
+        path: libs.portal.pageUrl({
+            id: content.data.itemContent,
+        }),
         id: content._id,
-        inPath: inPath,
-        isActive: isActive,
+        inPath,
+        isActive,
         hasChildren: subMenus.length > 0,
         children: subMenus,
         showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true',
@@ -174,8 +167,8 @@ function menuToJson (content, levels) {
  * @returns {Array}
  */
 exports.getMenuTree = function (levels) {
-    var menu = [];
-    var site = libs.portal.getSite();
+    let menu = [];
+    const site = libs.portal.getSite();
     levels = isInt(levels) ? levels : 1;
 
     if (site) {
@@ -186,7 +179,7 @@ exports.getMenuTree = function (levels) {
 };
 
 exports.getSubMenus = function (parentContent, levels) {
-    var subMenus = [];
+    let subMenus = [];
 
     if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
         subMenus.push(menuItemToJson(parentContent, 0));
@@ -211,15 +204,15 @@ exports.getSubMenus = function (parentContent, levels) {
  * @return {Boolean} true if the content is marked as menu item
  */
 function isMenuItem (content) {
-    var extraData = content.x;
+    const extraData = content.x;
     if (!extraData) {
         return false;
     }
-    var extraDataModule = extraData[globals.appPath];
+    const extraDataModule = extraData[globals.appPath];
     if (!extraDataModule || !extraDataModule['menu-item']) {
         return false;
     }
-    var menuItemMetadata = extraDataModule['menu-item'] || {
+    const menuItemMetadata = extraDataModule['menu-item'] || {
 
     };
 
@@ -242,15 +235,14 @@ function excludeFromMainMenu (content) {
  * @return {Object} Menuitem JSON data
  */
 function menuItemToJson (content, levels) {
-    var subMenus = [];
+    let subMenus = [];
     if (levels > 0) {
         subMenus = exports.getSubMenus(content, levels);
     }
 
-    var inPath = false;
-    var isActive = false;
-
-    var currentContent = libs.portal.getContent();
+    let inPath = false;
+    let isActive = false;
+    const currentContent = libs.portal.getContent();
 
     // Is the menuitem we are processing in the currently viewed content's path?
     if (content._path === currentContent._path.substring(0, content._path.length)) {
@@ -263,20 +255,19 @@ function menuItemToJson (content, levels) {
         inPath = false; // Reset this so an menuitem isn't both in a path and active (makes no sense)
     }
 
-    var menuItem = content.x[globals.appPath]['menu-item'];
+    const menuItem = content.x[globals.appPath]['menu-item'];
 
     return {
         displayName: content.displayName,
         menuName: menuItem.menuName && (menuItem.menuName.length ? menuItem.menuName : null),
         path: libs.portal.pageUrl({
             path: content._path,
-            type: 'absolute',
-        }), // .replace("http:", "https:"),
+        }),
         name: content._name,
         id: content._id,
         hasChildren: subMenus.length > 0,
-        inPath: inPath,
-        isActive: isActive,
+        inPath,
+        isActive,
         newWindow: menuItem.newWindow ? menuItem.newWindow : false,
         type: content.type,
         children: subMenus,
