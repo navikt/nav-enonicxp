@@ -66,15 +66,10 @@ function handleGet (req) {
                             }
                             return {
                                 title: element.displayName,
-                                link: link,
+                                link,
                             };
                         })
-                        .filter(el => {
-                            if (el) {
-                                return true;
-                            }
-                            return false;
-                        }),
+                        .filter(el => !!el),
                 };
             })
             .filter(el => {
@@ -87,14 +82,12 @@ function handleGet (req) {
         const hasMenuLists = linkList.length > 0;
         const params = {
             relatedContentList: linkList,
-            hasMenuList: hasMenuLists,
+            hasMenuLists,
         };
-
-        const body = libs.thymeleaf.render(view, params);
 
         return {
             contentType: 'text/html',
-            body: body,
+            body: libs.thymeleaf.render(view, params),
         };
     });
 }

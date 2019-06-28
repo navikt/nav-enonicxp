@@ -1,17 +1,16 @@
-var libs = {
+const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    // util: require('/lib/enonic/util'),
     i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
-var view = resolve('page-heading-with-menu.html');
+const view = resolve('page-heading-with-menu.html');
 // TODO: URL-er skal være konfigurerbare
-var serviceurl = 'https://tjenester.nav.no';
-var urls = {
+const serviceurl = 'https://tjenester.nav.no';
+const urls = {
     baseurl: serviceurl,
     login: serviceurl + '/oversikt',
     logout: serviceurl + '/esso/logout',
@@ -20,12 +19,12 @@ var urls = {
 };
 
 function handleGet (req) {
-    var content = libs.portal.getContent();
-    var language = content.language || 'no';
+    const content = libs.portal.getContent();
+    const language = content.language || 'no';
 
     return libs.cache.getDecorator('header' + language, undefined, req.branch, () => {
-        var languageBundles = libs.lang.parseBundle(language).pagenav;
-        var assets = {
+        const langBundles = libs.lang.parseBundle(language).pagenav;
+        const assets = {
             img: {
                 logo: libs.portal.assetUrl({
                     path: 'img/navno/logo.svg',
@@ -35,12 +34,12 @@ function handleGet (req) {
                 }),
             },
         };
-        var megaMenu = libs.menu.getMegaMenu(libs.content.get({
+        const menu = libs.menu.getMegaMenu(libs.content.get({
             key: '/www.nav.no/megamenu/' + language,
         }), 4);
 
         // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
-        var languageSelectors = [
+        const langSelectors = [
             {
                 href: libs.portal.pageUrl({ path: '/www.nav.no/no' }),
                 title: 'Norsk (Globalt språkvalg)',
@@ -60,12 +59,12 @@ function handleGet (req) {
                 active: (language === 'se' ? 'active' : ''),
             },
         ];
-        var model = {
-            assets: assets,
-            urls: urls,
-            langBundles: languageBundles,
-            langSelectors: languageSelectors,
-            menu: megaMenu,
+        const model = {
+            assets,
+            urls,
+            langBundles,
+            langSelectors,
+            menu,
             regionNorth: content.page.regions['region-north'],
         };
 

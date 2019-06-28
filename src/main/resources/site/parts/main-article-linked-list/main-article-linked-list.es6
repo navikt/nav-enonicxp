@@ -12,19 +12,13 @@ exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'main-article-linked-list', req.branch, () => {
         const content = libs.portal.getContent();
         const list = createList(content);
-
-        // Define the model
         const model = {
             hasList: list.length > 1,
             list,
         };
 
-        // Render a thymeleaf template
-        const body = libs.thymeleaf.render(view, model);
-
-        // Return the result
         return {
-            body,
+            body: libs.thymeleaf.render(view, model),
         };
     });
 };

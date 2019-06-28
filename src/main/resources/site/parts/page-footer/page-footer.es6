@@ -1,36 +1,36 @@
-var libs = {
+const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
-var view = resolve('page-footer.html');
+const view = resolve('page-footer.html');
 
 function handleGet (req) {
-    var content = libs.portal.getContent();
-    var language = content.language || 'no';
+    const content = libs.portal.getContent();
+    const language = content.language || 'no';
 
-    return libs.cache.getDecorator('footer-' + language, undefined, req.branch, function () {
-        var languageBundles = libs.lang.parseBundle(language).pagenav;
-        var contentAZPage = libs.portal.serviceUrl({
+    return libs.cache.getDecorator('footer-' + language, undefined, req.branch, () => {
+        const languageBundles = libs.lang.parseBundle(language).pagenav;
+        const contentAZPage = libs.portal.serviceUrl({
             service: 'contentAZ',
         });
-        var accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (language === 'no' || language === 'se' ? 'æøå' : '');
-        var urls = {
+        const accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (language === 'no' || language === 'se' ? 'æøå' : '');
+        const urls = {
             contactUs: libs.portal.pageUrl({
-                type: 'absolute', path: '/www.nav.no/footer-contactus-' + language,
+                path: '/www.nav.no/footer-contactus-' + language,
             }),
             accessibility: language !== 'en' ? libs.portal.pageUrl({
-                type: 'absolute', path: '/www.nav.no/footer-accessibility-no',
+                path: '/www.nav.no/footer-accessibility-no',
             }) : undefined,
             privacy: language !== 'en' ? libs.portal.pageUrl({
-                type: 'absolute', path: '/www.nav.no/personvern',
+                path: '/www.nav.no/personvern',
             }) : undefined,
             rss: language !== 'en' ? libs.portal.pageUrl({
-                type: 'absolute', path: '/www.nav.no/no/rss',
+                path: '/www.nav.no/no/rss',
             }) : undefined,
         };
-        var dato = new Date();
+        const dato = new Date();
         var model = {
             contentAZPage: contentAZPage,
             accessibleLetters: accessibleLetters.split(''),

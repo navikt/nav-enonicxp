@@ -87,9 +87,8 @@ exports.get = function (req) {
             socials,
             langBundle,
         };
-        const body = libs.thymeleaf.render(view, model);
         return {
-            body,
+            body: libs.thymeleaf.render(view, model),
         };
     });
 };

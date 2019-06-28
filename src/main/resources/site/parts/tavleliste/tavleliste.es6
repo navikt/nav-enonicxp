@@ -1,82 +1,69 @@
-var thymeleaf = require('/lib/thymeleaf');
-var portal = require('/lib/xp/portal');
-var content = require('/lib/xp/content');
-var utils = require('/lib/nav-utils');
-var cache = require('/lib/cacheControll');
-// Resolve the view
-var view = resolve('tavleliste.html');
+const libs = {
+    thymeleaf: require('/lib/thymeleaf'),
+    portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
+    utils: require('/lib/nav-utils'),
+    cache: require('/lib/cacheControll'),
+};
+const view = resolve('tavleliste.html');
 
 exports.get = function (req) {
-    return cache.getPaths(req.path, 'tavleliste', req.branch, function () {
-        var cont = portal.getContent();
-        var ids = cont.data.sectionContents;
+    return libs.cache.getPaths(req.path, 'tavleliste', req.branch, () => {
+        const content = libs.portal.getContent();
+        let ids = content.data.sectionContents;
         ids = ids ? (!Array.isArray(ids) ? [ids] : ids) : [];
-        var items = ids
+        let items = ids
             .map(function (value) {
-                return content.get({
+                return libs.content.get({
                     key: value,
                 });
             })
-            .reduce(function (t, el) {
-                if (el) { t.push(el); }
-                return t;
-            }, [])
-            .concat(content.getChildren({
-                key: cont._id, start: 0, count: 100,
+            .filter(el => !!el)
+            .concat(libs.content.getChildren({
+                key: content._id, start: 0, count: 100,
             }).hits)
             .map(function (el) {
                 return {
-                    src: portal.pageUrl({
+                    src: libs.portal.pageUrl({
                         id: el._id,
                     }),
                     heading: el.displayName,
                     ingress: el.data.ingress,
-                    publishedText: utils.dateTimePublished(el, el.language || 'no'),
+                    publishedText: libs.utils.dateTimePublished(el, el.language || 'no'),
                     published: el.publish && el.publish.first ? el.publish.first : el.createdTime,
                 };
             })
-            .reduce(function (t, el) {
-                if (
-                    !t.reduce(function (to, ele) {
-                        return to || ele.src === el.src;
-                    }, false)
-                ) {
+            .reduce((t, el) => {
+                if (t.filter(ele => ele.src === el.src).length === 0) {
                     t.push(el);
                 }
                 return t;
             }, []);
-
-        if (cont.data.orderSectionContentsByPublished !== false) {
+        if (content.data.orderSectionContentsByPublished) {
             items = items.reduce(orderByPublished, []);
         }
+        const languages = libs.utils.getLanguageVersions(content);
 
-        var languages = utils.getLanguageVersions(cont);
-
-        // Define the model
-        var model = {
-            published: utils.dateTimePublished(cont, cont.language || 'no'),
-            from: cont.publish.from,
-            heading: cont.data.heading || cont.displayName,
-            ingress: cont.data.ingress,
-            items: items,
-            hideDate: cont.data.hide_date === true,
-            hideSectionContentsDate: cont.data.hideSectionContentsDate === true,
+        const model = {
+            published: libs.utils.dateTimePublished(content, content.language || 'no'),
+            from: content.publish.from,
+            heading: content.data.heading || content.displayName,
+            ingress: content.data.ingress,
+            items,
+            hideDate: !!content.data.hide_date,
+            hideSectionContentsDate: !!content.data.hideSectionContentsDate,
             hasLanguageVersions: languages.length > 0,
-            languages: languages,
+            languages,
         };
 
-        // Render a thymeleaf template
-        var body = thymeleaf.render(view, model);
-
-        // Return the result
         return {
-            body: body,
+            body: libs.thymeleaf.render(view, model),
         };
     });
 };
 
 function orderByPublished (list, element) {
-    for (var i = 0; i < list.length; i += 1) {
+    for (let i = 0; i < list.length; i += 1) {
         if (new Date(list[i].published) < new Date(element.published)) {
             list.splice(i, 0, element);
             return list;
