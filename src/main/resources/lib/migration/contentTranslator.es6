@@ -105,12 +105,14 @@ function translateContent (content) {
 
             },
         });
+
         log.info('GET CHILDREN');
         const children = libs.content.getChildren({
             key: content._id,
             start: 0,
             count: 10000,
         }).hits;
+
         log.info('MOVE CHILDREN');
         children.forEach(child => {
             libs.content.move({
@@ -581,7 +583,7 @@ function updateTimeAndOrder (oldContent, newContent) {
             c._childOrder = oldContent.childOrder;
 
             // order news and pressreleases by publish.first
-            if (c.type === app.name + ':innholdslist' || c.type === app.name + ':tavleliste') {
+            if (c.type === app.name + ':innholdsliste' || c.type === app.name + ':tavleliste') {
                 const validNames = ['nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
                 if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
                     c._childOrder = 'publish.first DESC';
@@ -611,6 +613,18 @@ function updateTimeAndOrder (oldContent, newContent) {
                 if (oldContent.publish.to) {
                     c.publish.to = libs.value.instant(oldContent.publish.to);
                 }
+            }
+
+            // set content in /en to english and /se to Northern Sami - davvisámegiella
+            if (c._path.indexOf('/www.nav.no/en/') !== -1) {
+                c.language = 'en';
+            } else if (c._path.indexOf('/www.nav.no/se/') !== -1) {
+                c.language = 'se_NO';
+            }
+
+            // set language to norwegian if it's missing
+            if (!c.language) {
+                c.language = 'no';
             }
             return c;
         },
@@ -728,7 +742,7 @@ function translateNavRapportHandbok (rapportHandbok) {
             ingress: rapportHandbok.data.preface,
             text: ' ',
             languages: rapportHandbok.data.languages,
-            contentType: 'article',
+            contentType: 'lastingContent',
         },
     });
 
@@ -769,7 +783,7 @@ function translateNavRapportHandbokKap (rapportHandbokKap) {
             text: rapportHandbokKap.data.text,
             menuListItems: rapportHandbokKap.data.menuListItems,
             social: rapportHandbokKap.data.social,
-            contentType: 'article',
+            contentType: 'lastingContent',
         },
     });
 
@@ -804,7 +818,7 @@ function translateRapportHandbok (rapportHandbok) {
         data: {
             ingress: rapportHandbok.data.rapport_description,
             text: ' ',
-            contentType: 'article',
+            contentType: 'lastingContent',
             menuListItems: libs.tools.addMenuListItem(null, 'related-information', getLinks(rapportHandbok)),
         },
     });
@@ -824,7 +838,7 @@ function translateRapportHandbok (rapportHandbok) {
             data: {
                 text: rapport.text,
                 ingress: ' ',
-                contentType: 'article',
+                contentType: 'lastingContent',
             },
         });
         libs.content.create({
