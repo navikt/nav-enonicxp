@@ -1,0 +1,13 @@
+<content-type>
+    <display-name>Kapittel</display-name>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <input name="article" type="ContentSelector">
+            <label>Artikkel</label>
+            <occurrences maximum="1" minimum="1"/>
+            <config>
+                <allowContentType>${app}:main-article</allowContentType>
+            </config>
+        </input>
+    </form>
+</content-type>

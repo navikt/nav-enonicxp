@@ -1,72 +1,85 @@
-var thymeleaf = require('/lib/thymeleaf');
-var portal = require('/lib/xp/portal');
-var content = require('/lib/xp/content');
+const libs = {
+    thymeleaf: require('/lib/thymeleaf'),
+    portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
+    cache: require('/lib/cacheControll'),
+    navUtils: require('/lib/nav-utils'),
+};
 // Resolve the view
-var view = resolve('main-article-linked-list.html');
-var cache = require('/lib/cacheControll');
+const view = resolve('main-article-linked-list.html');
 
 exports.get = function (req) {
-    return cache.getPaths(req.path, 'main-article-linked-list', function () {
-        var cont = portal.getContent();
-        var list = createList(cont);
+    return libs.cache.getPaths(req.path, 'main-article-linked-list', () => {
+        const content = libs.portal.getContent();
+        const list = createList(content);
 
-        function createList (cont) {
-            var root = {
-
-            };
-            if (cont.hasChildren) {
-                root = cont;
-            } else {
-                root = content.get({
-                    key: cont._path
-                        .split('/')
-                        .slice(0, -1)
-                        .join('/'),
-                });
-                if (root.type !== app.name + ':main-article') { return []; }
-            }
-            return [{
-                heading: root.displayName,
-                link: portal.pageUrl({
-                    id: root._id,
-                }),
-                active: root === cont,
-            }].concat(
-                content
-                    .getChildren({
-                        key: root._id,
-                        start: 0,
-                        count: 100,
-                    })
-                    .hits.reduce(function (previousValue, child) {
-                        if (!child.type.startsWith('media')) {
-                            previousValue.push(child);
-                        }
-                        return previousValue;
-                    }, [])
-                    .map(function (el) {
-                        return {
-                            heading: el.data.heading || el.displayName,
-                            link: portal.pageUrl({
-                                id: el._id,
-                            }),
-                            active: el._id === cont._id,
-                        };
-                    })
-            );
-        }
         // Define the model
-        var model = {
+        const model = {
             hasList: list.length > 1,
-            list: list,
+            list,
         };
 
         // Render a thymeleaf template
-        var body = thymeleaf.render(view, model);
+        const body = libs.thymeleaf.render(view, model);
 
         // Return the result
         return {
-            body: body,
+            body,
         };
     });
 };
+
+function hasMainArticleChapterChildren (content) {
+    const children = libs.navUtils.getAllChildren(content);
+    const hasChapters = children.filter((child) => {
+        return child.type === app.name + ':main-article-chapter';
+    }).length > 0;
+    return hasChapters;
+}
+
+function createList (content) {
+    let root;
+    if (content.type === app.name + ':main-article' && hasMainArticleChapterChildren(content)) {
+        // set content to root if its a main-article with main-article-chapters as children
+        root = content;
+    } else if (content.type === app.name + ':main-article-chapter') {
+        // set parent as root if its a main-article
+        const parent = libs.content.get({
+            key: content._path
+                .split('/')
+                .slice(0, -1)
+                .join('/'),
+        });
+        if (parent.type === app.name + ':main-article') {
+            root = parent;
+        }
+    }
+
+    // we have no linked list
+    if (!root) {
+        return [];
+    }
+
+    // return linked list
+    return [{
+        heading: root.displayName,
+        link: libs.portal.pageUrl({
+            id: root._id,
+        }),
+        active: root === content,
+    }].concat(
+        libs.navUtils.getAllChildren(root)
+            .filter((child) => {
+                return child.type === app.name + ':main-article-chapter';
+            })
+            .map((el) => {
+                return {
+                    heading: el.displayName,
+                    link: libs.portal.pageUrl({
+                        id: el._id,
+                    }),
+                    active: el._id === content._id,
+                };
+            })
+    );
+}

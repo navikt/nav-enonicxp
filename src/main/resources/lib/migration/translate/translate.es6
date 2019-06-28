@@ -2,6 +2,7 @@ const libs = {
     content: require('/lib/xp/content'),
     contentTranslator: require('/lib/migration/contentTranslator'),
     tools: require('/lib/migration/tools'),
+    navUtils: require('/lib/nav-utils'),
 };
 
 const translateContentAZ = require('./translateContentAZ');
@@ -241,11 +242,11 @@ function deleteOldAndMoveNew (contentKey, newContentKey) {
 let max = 0;
 let current = 0;
 function translateChildrenOf (socket, contentKey) {
-    const children = libs.content.getChildren({
-        key: contentKey,
-        start: 0,
-        count: 1000,
-    }).hits;
+    // get all children
+    const children = libs.navUtils.getAllChildren({
+        _id: contentKey,
+        hasChildren: true,
+    });
 
     max += children.length;
     socket.emit('mainmax', max);

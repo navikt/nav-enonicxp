@@ -7,6 +7,9 @@ buildscript {
     	maven {
 	        url "http://maven.adeo.no/nexus/content/groups/public/"
 	    }
+	maven {
+	        url "http://maven.adeo.no/nexus/content/repositories/m2internal/"
+	    }    
         maven {
             url "https://plugins.gradle.org/m2/"
         }
@@ -30,7 +33,7 @@ app {
 }
 
 node {
-    download = true
+    // download = true
     version = '10.15.3'
 }
 

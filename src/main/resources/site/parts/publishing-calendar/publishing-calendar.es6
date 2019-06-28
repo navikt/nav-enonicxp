@@ -13,7 +13,7 @@ function handleGet (req) {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).publishing_calendar;
         const items = libs.content.getChildren({
-            key: '/www.nav.no/no/nav-og-samfunn/statistikk/publiseringskalender',
+            key: content._id,
             start: 0,
             count: 100,
         }).hits
