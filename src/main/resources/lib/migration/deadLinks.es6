@@ -1,18 +1,21 @@
-var contentLib = require('/lib/xp/content');
-var context = require('/lib/xp/context');
-var http = require('/lib/http-client');
-var nodeLib = require('/lib/xp/node');
-var task = require('/lib/xp/task');
-var repo = nodeLib.connect({
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    http: require('/lib/http-client'),
+    node: require('/lib/xp/node'),
+    task: require('/lib/xp/task'),
+    tools: require('/lib/migration/tools'),
+};
+const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin'],
 });
-var socket;
-var elements = createNewElements();
+let socket;
+const elements = createNewElements();
 exports.handle = function (s) {
     socket = s;
-    var tArr = [];
+    const tArr = [];
 
     elements.action = [{
         id: 'lenke',
@@ -26,21 +29,13 @@ exports.handle = function (s) {
         valId: 'lprogval',
     }];
     socket.emit('newTask', elements);
-    socket.on('lenke', function (action) {
-        task.submit({
+    socket.on('lenke', () => {
+        libs.task.submit({
             description: 'Lager lenkeråterapport',
-            task: function () {
-                context.run({
-                    repository: 'com.enonic.cms.default',
-                    branch: 'draft',
-                    user: {
-                        login: 'pad',
-                        userStore: 'system',
-                    },
-                    principals: ['role:system.admin'],
-                }, function () {
+            task: () => {
+                libs.tools.runInContext(socket, () => {
                     deadLinks(false, [], '');
-                    var fnd = repo.query({
+                    const fnd = repo.query({
                         query: '_name LIKE "linkshit"',
                     }).hits[0];
                     if (fnd) { repo.delete(fnd._id); }
@@ -55,12 +50,12 @@ exports.handle = function (s) {
         });
     });
 
-    var val = 0;
-    var childC = 0;
+    let val = 0;
+    let childC = 0;
 
     function deadLinks (el, arr, route) {
         if (!el) {
-            el = contentLib.get({
+            el = libs.content.get({
                 key: '/www.nav.no',
             });
 
@@ -69,28 +64,29 @@ exports.handle = function (s) {
         } else { route = route + '->' + el.displayName; }
         socket.emit('dlStatusTree', 'Working in ' + route);
         if (el.hasChildren) {
-            var childs = contentLib.getChildren({
+            const childs = libs.content.getChildren({
                 key: el._id,
                 count: 10000,
                 start: 0,
             }).hits;
             childC += childs.length;
             socket.emit('dl-childCount', childC);
-            childs.forEach(function (child) {
+            childs.forEach((child) => {
                 socket.emit('d-Value', ++val);
                 arr = deadLinks(child, arr, route);
             });
         }
         runDeep(el.data);
         return arr;
+
         function runDeep (something) {
             if (typeof something === 'string') {
-                var reg;
+                let reg;
                 // eslint-disable-next-line no-useless-escape
-                var rx = /href=\"(.*?)\".*/g;
+                const rx = /href=\"(.*?)\".*/g;
                 // eslint-disable-next-line no-cond-assign
                 while (reg = rx.exec(something)) {
-                    var address = reg.pop();
+                    const address = reg.pop();
                     socket.emit('dlStatus', 'Visiting: ' + address);
                     if (!visit(address)) {
                         tArr.push({
@@ -103,7 +99,7 @@ exports.handle = function (s) {
             } else if (Array.isArray(something)) {
                 something.forEach(runDeep);
             } else if (typeof something === 'object') {
-                for (var key in something) {
+                for (let key in something) {
                     if (something.hasOwnProperty(key)) { runDeep(something[key]); }
                 }
             }
@@ -158,11 +154,11 @@ function createNewElements () {
 }
 
 function visit (address) {
-    var ret;
+    let ret;
     if (address.indexOf(';') !== -1) { address = address.split(';')[0]; }
     if (address.startsWith('content://')) {
         try {
-            ret = contentLib.get({
+            ret = libs.content.get({
                 key: address.replace('content://', ''),
             });
             return !!ret;
@@ -171,7 +167,7 @@ function visit (address) {
         }
     } else if (address.startsWith('http://') || address.startsWith('https://')) {
         try {
-            ret = http.request({
+            ret = libs.http.request({
                 url: address,
                 method: 'HEAD',
             });
