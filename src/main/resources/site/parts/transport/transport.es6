@@ -3,7 +3,7 @@ var thymeleaf = require('/lib/thymeleaf');
 var cache = require('/lib/cacheControll');
 var view = resolve('transport.html');
 exports.get = function (req) {
-    return cache.getPaths(req.path, 'transport', function () {
+    return cache.getPaths(req.path, 'transport', req.branch, function () {
         var content = portal.getContent();
 
         var items = Array.isArray(content.data.items) ? content.data.items : [content.data.items];

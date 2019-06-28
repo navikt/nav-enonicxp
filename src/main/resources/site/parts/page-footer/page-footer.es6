@@ -10,7 +10,7 @@ function handleGet (req) {
     var content = libs.portal.getContent();
     var language = content.language || 'no';
 
-    return libs.cache.getDecorator('footer-' + language, undefined, function () {
+    return libs.cache.getDecorator('footer-' + language, undefined, req.branch, function () {
         var languageBundles = libs.lang.parseBundle(language).pagenav;
         var contentAZPage = libs.portal.serviceUrl({
             service: 'contentAZ',

@@ -9,7 +9,7 @@ const libs = {
 const view = resolve('main-article.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'main-article', () => {
+    return libs.cache.getPaths(req.path, 'main-article', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
             content = libs.content.get({

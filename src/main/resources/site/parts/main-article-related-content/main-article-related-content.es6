@@ -8,7 +8,7 @@ const libs = {
 const view = resolve('main-article-related-content.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'main-article-related-content', () => {
+    return libs.cache.getPaths(req.path, 'main-article-related-content', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
             content = libs.content.get({

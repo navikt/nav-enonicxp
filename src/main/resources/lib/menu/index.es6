@@ -155,9 +155,9 @@ function menuToJson (content, levels) {
         path: libs.portal
             .pageUrl({
                 id: content.data.itemContent,
-                type: 'absolute',
-            })
-            .replace('http:', 'https:'),
+                // type: 'absolute',
+            }),
+        // .replace('http:', 'https:'),
         id: content._id,
         inPath: inPath,
         isActive: isActive,

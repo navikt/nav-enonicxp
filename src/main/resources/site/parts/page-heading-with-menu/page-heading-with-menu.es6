@@ -23,7 +23,7 @@ function handleGet (req) {
     var content = libs.portal.getContent();
     var language = content.language || 'no';
 
-    return libs.cache.getDecorator('header' + language, undefined, function () {
+    return libs.cache.getDecorator('header' + language, undefined, req.branch, () => {
         var languageBundles = libs.lang.parseBundle(language).pagenav;
         var assets = {
             img: {
@@ -40,28 +40,21 @@ function handleGet (req) {
         }), 4);
 
         // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
-        // TODO: Fjerne eksplesitt https når dette er løst på BigIP
         var languageSelectors = [
             {
-                href: libs.portal.pageUrl({
-                    type: 'absolute', path: '/www.nav.no/no',
-                }).replace('http:', 'https:'),
+                href: libs.portal.pageUrl({ path: '/www.nav.no/no' }),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
                 active: (language === 'no' ? 'active' : ''),
             },
             {
-                href: libs.portal.pageUrl({
-                    type: 'absolute', path: '/www.nav.no/en',
-                }).replace('http:', 'https:'),
+                href: libs.portal.pageUrl({ path: '/www.nav.no/en' }),
                 title: 'English (Globalt språkvalg)',
                 text: 'English',
                 active: (language === 'en' ? 'active' : ''),
             },
             {
-                href: libs.portal.pageUrl({
-                    type: 'absolute', path: '/www.nav.no/se',
-                }).replace('http:', 'https:'),
+                href: libs.portal.pageUrl({ path: '/www.nav.no/se' }),
                 title: 'Sámegiella (Globalt Språkvalg)',
                 text: 'Sámegiella',
                 active: (language === 'se' ? 'active' : ''),

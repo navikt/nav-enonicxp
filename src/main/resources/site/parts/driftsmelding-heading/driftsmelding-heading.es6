@@ -10,7 +10,7 @@ var view = resolve('driftsmelding-heading.html');
 
 function handleGet (req) {
     // Må kjøre i context av master-branch, ellers vil preview i Content studio alltid vise en driftsmelding
-    return libs.cache.getPaths('driftsmelding-heading', undefined, function () {
+    return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, function () {
         return libs.context.run(
             {
                 repository: 'com.enonic.cms.default',
