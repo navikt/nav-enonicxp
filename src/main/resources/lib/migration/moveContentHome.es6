@@ -2,28 +2,19 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     node: require('/lib/xp/node'),
+    tools: require('/lib/migration/tools'),
 };
 
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('move-contenthome', function () {
-        libs.context.run({
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            user: {
-                login: 'pad',
-                userStore: 'system',
-            },
-            principals: ['role:system.admin'],
-        }, function () {
-            moveContentHome(socket);
-        });
+    socket.on('move-contenthome', () => {
+        libs.tools.runInContext(socket, moveContentHome);
     });
 };
 
 function moveContentHome (socket) {
-    var elemsWithContentHome = libs.content.query({
+    const elemsWithContentHome = libs.content.query({
         start: 0,
         count: 100000,
         query: '_parentpath LIKE "/*"',
@@ -34,16 +25,17 @@ function moveContentHome (socket) {
         },
     }).hits;
     socket.emit('flytt-ch-max', elemsWithContentHome.length);
-    elemsWithContentHome.forEach(function (value, index) {
+
+    elemsWithContentHome.forEach((value, index) => {
         socket.emit('flytt-ch-value', index + 1);
-        var parent = libs.content.get({
+        const parent = libs.content.get({
             key: value.x['no-nav-navno'].cmsContent.contentHome,
         });
 
         // move to parent if it's not already correct
         if (parent) {
-            let newPath = parent._path + '/';
-            let oldParentPath = value._path.split('/').slice(0, -1).join('/') + '/';
+            const newPath = parent._path + '/';
+            const oldParentPath = value._path.split('/').slice(0, -1).join('/') + '/';
             if (newPath !== oldParentPath) {
                 try {
                     libs.content.move({

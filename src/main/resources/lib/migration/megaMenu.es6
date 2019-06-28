@@ -1,32 +1,21 @@
-var content = require('/lib/xp/content');
-var context = require('/lib/xp/context');
-var navUtils = require('/lib/nav-utils');
-
-var nodeLib = require('/lib/xp/node');
-var repo = nodeLib.connect({
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    navUtils: require('/lib/nav-utils'),
+    node: require('/lib/xp/node'),
+    tools: require('/lib/migration/tools'),
+};
+const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'draft',
     principals: ['role:system.admin'],
 });
 
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('megaMenu', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                handleMegaMenu(socket);
-            }
-        );
+    socket.on('megaMenu', () => {
+        libs.tools.runInContext(socket, handleMegaMenu);
     });
 };
 
@@ -71,10 +60,10 @@ function handleMegaMenu (socket) {
     log.info('Starter');
 
     // create megamenu folder if it doesn't exist
-    if (!content.get({
+    if (!libs.content.get({
         key: '/www.nav.no/megamenu',
     })) {
-        content.create({
+        libs.content.create({
             displayName: 'megamenu',
             contentType: 'base:folder',
             parentPath: '/www.nav.no',
@@ -85,7 +74,7 @@ function handleMegaMenu (socket) {
         });
     }
 
-    var siteContent = content.get({
+    const siteContent = libs.content.get({
         key: '/www.nav.no/',
     });
     getSubMenus('/www.nav.no/megamenu', siteContent, 4);
@@ -94,12 +83,12 @@ function handleMegaMenu (socket) {
 
 function getSubMenus (path, parentContent, levels) {
     levels--;
-    return content
+    return libs.content
         .getChildren({
             key: parentContent._id,
             count: 200,
         })
-        .hits.forEach(function (el) {
+        .hits.forEach((el) => {
             if (isMenuItem(el)) {
                 menuItemToMenuContent(path, el, levels);
             }
@@ -107,11 +96,11 @@ function getSubMenus (path, parentContent, levels) {
 }
 
 function menuItemToMenuContent (path, element, levels) {
-    var menuContent;
-    var menuItem = element.x['no-nav-navno']['menu-item'];
+    let menuContent;
+    const menuItem = element.x['no-nav-navno']['menu-item'];
 
     try {
-        menuContent = content.create({
+        menuContent = libs.content.create({
             parentPath: path,
             contentType: 'no.nav.navno:megamenu-item',
             displayName: menuItem.menuName && menuItem.menuName.length ? menuItem.menuName : element.displayName,
@@ -139,15 +128,15 @@ function menuItemToMenuContent (path, element, levels) {
  * @return {Boolean} true if the content is marked as menu item
  */
 function isMenuItem (content) {
-    var extraData = content.x;
+    const extraData = content.x;
     if (!extraData) {
         return false;
     }
-    var extraDataModule = extraData['no-nav-navno'];
+    const extraDataModule = extraData['no-nav-navno'];
     if (!extraDataModule || !extraDataModule['menu-item']) {
         return false;
     }
-    var menuItemMetadata = extraDataModule['menu-item'] || {
+    const menuItemMetadata = extraDataModule['menu-item'] || {
 
     };
 
@@ -159,23 +148,23 @@ function isMenuItem (content) {
  * @return {Boolean} true if the content should be excluded from the menu
  */
 function excludeFromMainMenu (content) {
-    return navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
+    return libs.navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
 }
 
 /**
  * Order megamenu items correctly. Set manual order with a fallback to modifiedtime
  */
 function orderMenuItems () {
-    var menuItems = content.query({
+    const menuItems = libs.content.query({
         start: 0,
         count: 500,
         query: 'type = "no.nav.navno:megamenu-item"',
     }).hits;
 
-    menuItems.forEach(function (menuItem) {
+    menuItems.forEach((menuItem) => {
         repo.modify({
             key: menuItem._id,
-            editor: function (m) {
+            editor: (m) => {
                 m._childOrder = '_manualordervalue DESC, modifiedtime ASC';
                 return m;
             },
