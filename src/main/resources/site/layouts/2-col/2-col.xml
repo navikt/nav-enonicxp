@@ -1,8 +1,0 @@
-<layout>
-  <display-name>2-col</display-name>
-  <config/>
-  <regions>
-    <region name="first"/>
-    <region name="second"/>
-  </regions>
-</layout>

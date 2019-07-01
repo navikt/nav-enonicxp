@@ -1,23 +1,25 @@
-var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/thymeleaf');
-var view = resolve('./search.html');
+const libs = {
+    portal: require('/lib/xp/portal'),
+    thymeleaf: require('/lib/thymeleaf'),
+};
+const view = resolve('./search.html');
+
 exports.get = function (req) {
-    // Return the result
     return {
-        body: thymeleaf.render(view, portal.getComponent()),
+        body: libs.thymeleaf.render(view, libs.portal.getComponent()),
         contentType: 'text/html',
         pageContributions: {
             headEnd: [
-                '<link rel="stylesheet" href="' + portal.assetUrl({
+                '<link rel="stylesheet" href="' + libs.portal.assetUrl({
                     path: 'search-styles/search.css',
                 }) + '" />',
-                '<link rel="stylesheet" href="' + portal.assetUrl({
+                '<link rel="stylesheet" href="' + libs.portal.assetUrl({
                     path: 'search-styles/search-nav.css',
                 }) + '" />',
             ],
             bodyEnd: [
                 '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>',
-                '<script src="' + portal.assetUrl({
+                '<script src="' + libs.portal.assetUrl({
                     path: 'search-js/search-appres.js',
                 }) + '"></script>',
             ],

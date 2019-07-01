@@ -321,7 +321,7 @@ const transportPage = [
         type: 'layout',
         path: '/main/2',
         layout: {
-            descriptor: 'no.nav.navno:1-col',
+            descriptor: 'no.nav.navno:main-1-col',
             config: {
                 'no-nav-navno': {
 
