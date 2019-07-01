@@ -11,7 +11,7 @@ const view = resolve('main-article.html');
 
 exports.get = function (req) {
     libs.officeInformation.submitCheckTask();
-    return libs.cache.getPaths(req.path, 'main-article', () => {
+    return libs.cache.getPaths(req.path, 'main-article', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
             content = libs.content.get({
@@ -89,9 +89,8 @@ exports.get = function (req) {
             socials,
             langBundle,
         };
-        const body = libs.thymeleaf.render(view, model);
         return {
-            body,
+            body: libs.thymeleaf.render(view, model),
         };
     });
 };

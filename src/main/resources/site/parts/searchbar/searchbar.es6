@@ -1,20 +1,19 @@
-var thymeleaf = require('/lib/thymeleaf');
-var portal = require('/lib/xp/portal');
-
-var view = resolve('./searchbar.html');
+const libs = {
+    thymeleaf: require('/lib/thymeleaf'),
+    portal: require('/lib/xp/portal'),
+};
+const view = resolve('./searchbar.html');
 
 function get (req) {
-    var ord = req.params.ord || '';
-    var model = {
-        ord: ord,
-        form: portal.pageUrl({
-            id: portal.getContent()._id,
+    const ord = req.params.ord || '';
+    const model = {
+        ord,
+        form: libs.portal.pageUrl({
+            id: libs.portal.getContent()._id,
         }),
     };
-    var body = thymeleaf.render(view, model);
-
     return {
-        body: body,
+        body: libs.thymeleaf.render(view, model),
     };
 }
 

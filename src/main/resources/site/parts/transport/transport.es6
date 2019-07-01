@@ -1,22 +1,23 @@
-var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/thymeleaf');
-var cache = require('/lib/cacheControll');
-var view = resolve('transport.html');
+const libs = {
+    portal: require('/lib/xp/portal'),
+    thymeleaf: require('/lib/thymeleaf'),
+    cache: require('/lib/cacheControll'),
+};
+const view = resolve('transport.html');
+
 exports.get = function (req) {
-    return cache.getPaths(req.path, 'transport', function () {
-        var content = portal.getContent();
-
-        var items = Array.isArray(content.data.items) ? content.data.items : [content.data.items];
-
-        var model = {
+    return libs.cache.getPaths(req.path, 'transport', req.branch, () => {
+        const content = libs.portal.getContent();
+        const items = Array.isArray(content.data.items) ? content.data.items : [content.data.items];
+        const model = {
             title: content.data.title,
             ingress: content.data.ingress,
-            items: items.map(function (value) {
+            items: items.map(value => {
                 return {
                     title: value.title,
                     ingress: value.ingress,
                     url: getUrl(value.url),
-                    logo: portal.attachmentUrl({
+                    logo: libs.portal.attachmentUrl({
                         id: value.logo,
                     }),
                     className: value.spanning ? 'heldekkende' : '',
@@ -24,11 +25,10 @@ exports.get = function (req) {
             }),
         };
 
-        var body = thymeleaf.render(view, model);
         return {
-            body: body,
+            body: libs.thymeleaf.render(view, model),
             pageContributions: {
-                headEnd: ['<link rel="stylesheet" href="' + portal.assetUrl({
+                headEnd: ['<link rel="stylesheet" href="' + libs.portal.assetUrl({
                     path: 'styles/navno.css',
                 }) + '"/>'],
             },
@@ -38,7 +38,7 @@ exports.get = function (req) {
 
 function getUrl (url) {
     if (url.text) { return url.text; }
-    return portal.pageUrl({
+    return libs.portal.pageUrl({
         id: url.ref,
     });
 }

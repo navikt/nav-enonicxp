@@ -8,7 +8,7 @@ const etag = libs.cache.etag;
 const view = resolve('ekstraStorTabell.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'ekstraStorTabell', () => {
+    return libs.cache.getPaths(req.path, 'ekstraStorTabell', req.branch, () => {
         const content = libs.portal.getContent();
         let parsed;
         if (content.data.article && content.data.article.text) {

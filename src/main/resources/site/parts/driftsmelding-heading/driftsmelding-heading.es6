@@ -1,4 +1,4 @@
-var libs = {
+const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
@@ -6,11 +6,11 @@ var libs = {
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
-var view = resolve('driftsmelding-heading.html');
+const view = resolve('driftsmelding-heading.html');
 
 function handleGet (req) {
     // Må kjøre i context av master-branch, ellers vil preview i Content studio alltid vise en driftsmelding
-    return libs.cache.getPaths('driftsmelding-heading', undefined, function () {
+    return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
         return libs.context.run(
             {
                 repository: 'com.enonic.cms.default',
@@ -21,24 +21,21 @@ function handleGet (req) {
                 },
                 principals: ['role:system.admin'],
             },
-            function () {
+            () => {
                 // Henter ut eventuell publisert driftsmelding. Hvis flere er publisert, hentes sist publiserte
-                var message = libs.content.getChildren({
+                const message = libs.content.getChildren({
                     key: '/www.nav.no/no/driftsmeldinger',
                     start: 0,
                     count: 1,
                     sort: 'publish.from DESC',
                 });
                 if (message && message.hits.length > 0) {
-                    var content = libs.portal.getContent();
-                    var language = content.language || 'no';
+                    const content = libs.portal.getContent();
+                    const language = content.language || 'no';
                     // Henter ut visningsnavnet og urlen til meldingen, lenketeksten er fast
-                    var model = {
+                    const model = {
                         heading: message.hits[0].displayName,
-                        linkurl: libs.portal.pageUrl({
-                            type: 'absolute', path: message.hits[0]._path,
-                        }).replace('http:', 'https:'),
-                        // TODO: fjerne hardkoding av HTTPS når dette er løst i serveroppsettet
+                        linkurl: libs.portal.pageUrl({ path: message.hits[0]._path }),
                         linktext: libs.lang.parseBundle(language).message.linktext,
                     };
 

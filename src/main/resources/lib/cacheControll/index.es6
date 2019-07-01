@@ -90,9 +90,9 @@ function wipeOnChange (path) {
 }
 
 function getSome (name) {
-    return function (key, type, f, params) {
-        /* Vil ikke cache innhold som redigeres */
-        if (key.indexOf('/default/draft/') === -1 && key.indexOf('/edit/') === -1 && key.indexOf('/_templates/') === -1) {
+    return function (key, type, branch, f, params) {
+        /* Vil ikke cache innhold på draft */
+        if (branch !== 'draft') {
             return caches[name].get(getPath(key, type), function () {
                 log.info('Store cache key: ' + getPath(key, type) + ' ~ ' + key);
                 return f(params);

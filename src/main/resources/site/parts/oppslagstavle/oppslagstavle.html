@@ -32,11 +32,11 @@
         </h1>
     */-->
 
-    <div class="col-sm-12" data-th-classappend="${col}" data-th-if="${nicetoknow.data}">
-        <div data-th-remove="tag" data-th-if="${nicetoknow.data}">
-            <h2 class="h4 decorated" data-th-text="${nicetoknow.sectionName}"></h2>
+    <div class="col-sm-12" data-th-classappend="${col}" data-th-if="${niceToKnow.data}">
+        <div data-th-remove="tag" data-th-if="${niceToKnow.data}">
+            <h2 class="h4 decorated" data-th-text="${niceToKnow.sectionName}"></h2>
             <ul class="link-list">
-                <li data-th-each="content : ${nicetoknow.data}">
+                <li data-th-each="content : ${niceToKnow.data}">
                     <a href="#" data-th-href="${content.src}" data-th-text="${content.heading}"></a>
                 </li>
             </ul>

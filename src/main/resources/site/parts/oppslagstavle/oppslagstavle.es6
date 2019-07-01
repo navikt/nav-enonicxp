@@ -1,59 +1,53 @@
-var thymeleaf = require('/lib/thymeleaf');
-var portal = require('/lib/xp/portal');
-var contentLib = require('/lib/xp/content');
-// Resolve the view
-var view = resolve('oppslagstavle.html');
-var langLib = require('/lib/i18nUtil');
-var cache = require('/lib/cacheControll');
+const libs = {
+    thymeleaf: require('/lib/thymeleaf'),
+    portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
+    lang: require('/lib/i18nUtil'),
+    cache: require('/lib/cacheControll'),
+};
+const view = resolve('oppslagstavle.html');
 
 exports.get = function (req) {
-    return cache.getPaths(req.path, 'oppslagstavle', function () {
-        var content = portal.getContent();
-        var lang = langLib.parseBundle(content.language).oppslagstavle;
-
-        var table = getTableElements(content, 'tableContents').slice(0, content.data.nrTableEntries);
-
-        var col = 'col-md-';
-        var ntk = {
+    return libs.cache.getPaths(req.path, 'oppslagstavle', req.branch, () => {
+        const content = libs.portal.getContent();
+        const lang = libs.lang.parseBundle(content.language).oppslagstavle;
+        const table = getTableElements(content, 'tableContents').slice(0, content.data.nrTableEntries);
+        let col = 'col-md-';
+        const niceToKnow = {
             sectionName: lang.niceToKnow,
             data: getContentLists(content, 'ntkContents').slice(0, content.data.nrNTK),
         };
-        var news = {
+        const news = {
             sectionName: lang.news,
             data: getContentLists(content, 'newsContents')
                 .reduce(orderByPublished, [])
                 .slice(0, content.data.nrNews),
         };
-        var shortcuts = {
+        const shortcuts = {
             sectionName: lang.shortcuts,
             data: getContentLists(content, 'scContents').slice(0, content.data.nrSC),
         };
-        var cont = Number(Boolean(ntk.data)) + Number(Boolean(news.data)) + Number(Boolean(shortcuts.data));
-        if (cont === 0) { cont = 1; }
-        col += 12 / cont;
+        let antCol = !!niceToKnow.data + !!news.data + !!shortcuts.data;
+        if (antCol === 0) { antCol = 1; }
+        col += 12 / antCol;
 
-        // Define the model
-        var model = {
-            table: table,
-            nicetoknow: ntk,
-            news: news,
-            shortcuts: shortcuts,
-            col: col,
+        const model = {
+            table,
+            niceToKnow,
+            news,
+            shortcuts,
+            col,
         };
 
-        // Render a thymeleaf template
-        var body = thymeleaf.render(view, model);
-
-        // Return the result
         return {
-            body: body,
+            body: libs.thymeleaf.render(view, model),
         };
     });
 };
 
 function getContentLists (content, contentType) {
     if (content.data[contentType]) {
-        var section = contentLib.get({
+        const section = libs.content.get({
             key: content.data[contentType],
         });
 
@@ -75,7 +69,7 @@ function getTableElements (content, contentType) {
 }
 
 function mapElements (elementId) {
-    var el = contentLib.get({
+    const el = libs.content.get({
         key: elementId,
     });
     return el
@@ -93,30 +87,13 @@ function mapElements (elementId) {
 function getSrc (el) {
     if (el.data.url) {
         if (el.data.url.indexOf('https://') !== -1 || el.data.url.indexOf('http://') !== -1) {
-            var url = el.data.url.toLowerCase().replace(':443', '');
-            if (url.indexOf('https://www.nav.no/') === 0 || url.indexOf('http://www.nav.no/') === 0) {
-                // TODO this should't be necessary after migration - link cleanup have been run, but its a quick fix for now
-                // log.info('url:  ' + url);
-                url = decodeURIComponent(url);
-                url = url.replace(/\+/g, '-');
-                url = url.replace(/,/g, '');
-                url = url.replace(/å/g, 'a');
-                url = url.replace(/ø/g, 'o');
-                url = url.replace(/æ/g, 'ae');
-                var path = url.replace('https://', '/').replace('http://', '/');
-                // log.info('path: ' + path);
-                // log.info('new url: ' + portal.pageUrl({ path: path }));
-                return portal.pageUrl({
-                    path: path,
-                });
-            }
-            return url;
+            return el.data.url;
         }
-        return portal.pageUrl({
+        return libs.portal.pageUrl({
             path: el.data.url,
         });
     } else {
-        return portal.pageUrl({
+        return libs.portal.pageUrl({
             id: el._id,
         });
     }

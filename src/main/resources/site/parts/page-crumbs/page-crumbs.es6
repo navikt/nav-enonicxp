@@ -9,7 +9,7 @@ const libs = {
 const view = resolve('page-crumbs.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'breadCrumbs', () => {
+    return libs.cache.getPaths(req.path, 'breadCrumbs', req.branch, () => {
         const content = libs.portal.getContent();
         const langBundles = libs.lang.parseBundle(content.language).pagenav.breadcrumbs;
         let breadcrumbs = libs.menu.getBreadcrumbMenu({
@@ -21,10 +21,14 @@ function handleGet (req) {
         if (breadcrumbs.items.length > 3) {
             // Ta vekk de øverste to nivåene: <hjem>/<språk>
             breadcrumbs.items = breadcrumbs.items.slice(2);
-            // Tar ikke med mapper fordi disse ikke har noen sidevisning knyttet til seg (kan ikke navigere hit)
-            breadcrumbs.items = breadcrumbs.items.filter(
-                el => (el.type !== app.name + ':magic-folder' && el.type !== 'base:folder')
-            );
+            // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
+            breadcrumbs.items = breadcrumbs.items.filter(el => (
+                el.type === app.name + ':main-article' ||
+                el.type === app.name + ':oppslagstavle' ||
+                el.type === app.name + ':tavleliste' ||
+                el.type === app.name + ':transport-page' ||
+                el.type === app.name + ':generic-page'
+            ));
             const model = {
                 langBundles,
                 breadcrumbs,

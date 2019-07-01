@@ -9,7 +9,7 @@ const monthShortName = ['JAN', 'FEB', 'MAR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 
 const view = resolve('publishing-calendar.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths('publiseringskalender', undefined, () => {
+    return libs.cache.getPaths('publiseringskalender', undefined, req.branch, () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).publishing_calendar;
         const items = libs.content.getChildren({

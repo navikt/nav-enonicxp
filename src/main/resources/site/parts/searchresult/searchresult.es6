@@ -1,10 +1,12 @@
-var thymeleaf = require('/lib/thymeleaf');
-var view = resolve('./searchresult.html');
-var http = require('/lib/http-client');
-var portal = require('/lib/xp/portal');
+const libs = {
+    hymeleaf: require('/lib/thymeleaf'),
+    http: require('/lib/http-client'),
+    portal: require('/lib/xp/portal'),
+};
+const view = resolve('./searchresult.html');
 
 function get (req) {
-    var url = portal.serviceUrl({
+    let url = libs.portal.serviceUrl({
         service: 'search', application: 'navno.nav.no.search', type: 'absolute',
     });
     log.info(url);
@@ -12,27 +14,24 @@ function get (req) {
         url = url.replace('http', 'https');
     }
     log.info(url);
-    var response = http.request({
-        url: url,
+    const response = libs.http.request({
+        url,
         params: req.params,
         method: 'GET',
     });
-
-    var model;
+    let model;
     try {
         model = JSON.parse(response.body);
     } catch (e) {
         log.info(e);
         log.info(response.body);
     }
-
-    model.form = portal.pageUrl({
-        id: portal.getContent()._id,
+    model.form = libs.portal.pageUrl({
+        id: libs.portal.getContent()._id,
     });
 
-    var body = thymeleaf.render(view, model);
     return {
-        body: body,
+        body: libs.thymeleaf.render(view, model),
     };
 }
 
