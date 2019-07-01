@@ -465,7 +465,7 @@ function changeShortcuts (content) {
 
 exports.createNewTableContent = createNewTableContent;
 /**
- * @description Creates the data object for "oppslagstavle" with news, nice to know, shortcuts and table contents
+ * @description Creates the data object for "section-page" with news, nice to know, shortcuts and table contents
  * @param {Array<Object>} tableElements
  * @param {string} ntkElementId id to ntk content list
  * @param {string} newElementId id to news content list
@@ -493,7 +493,7 @@ function createNewTableContent (tableElements, ntkElementId, newElementId, scEle
 
 exports.getTableElements = getTableElements;
 /**
- * @description creates a list of tableContents for "oppslagstavle"
+ * @description creates a list of tableContents for "section-page"
  * @param {Object} content old cms2xp_section
  * @return {Array<Object>}
  */

@@ -74,8 +74,8 @@ function wipeOnChange (path) {
         w(getPath(path, 'main-article'));
         w(getPath(path, 'main-article-linked-list'));
         w(getPath(path, 'main-article-related-content'));
-        w(getPath(path, 'oppslagstavle'));
-        w(getPath(path, 'tavleliste'));
+        w(getPath(path, 'section-page'));
+        w(getPath(path, 'page-list'));
         w(getPath(path, 'tavleliste-relatert-innhold'));
         w(getPath(path, 'transport'));
         w(getPath(path, 'office-information'));

@@ -145,7 +145,7 @@ const tavleListePage = [
         type: 'part',
         path: '/main/2/first/0',
         part: {
-            descriptor: 'no.nav.navno:tavleliste',
+            descriptor: 'no.nav.navno:page-list',
             config: {
                 'no-nav-navno': {
 
@@ -421,7 +421,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/3/first/0',
         part: {
-            descriptor: 'no.nav.navno:oppslagstavle',
+            descriptor: 'no.nav.navno:section-page',
             config: {
                 'no-nav-navno': {
 
@@ -710,7 +710,7 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:tavleliste',
+                supports: 'no.nav.navno:page-list',
             },
         },
         components: tavleListePage,
@@ -723,7 +723,7 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:oppslagstavle',
+                supports: 'no.nav.navno:section-page',
             },
         },
         components: hovedSeksjonPage,

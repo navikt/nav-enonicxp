@@ -25,8 +25,8 @@ exports.handle = function (socket) {
     });
     socket.on('push', () => {
         libs.tools.runInContext(socket, (socket) => {
-            convertFromRepoToContent(socket, 'tavleliste');
-            convertFromRepoToContent(socket, 'oppslagstavle');
+            convertFromRepoToContent(socket, 'page-list');
+            convertFromRepoToContent(socket, 'section-page');
             socket.emit('ptmStatus', 'Starts publishing');
             const res = libs.content.publish({
                 keys: ['/www.nav.no'],

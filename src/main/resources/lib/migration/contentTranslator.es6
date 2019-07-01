@@ -25,7 +25,7 @@ exports.translateContent = translateContent;
 function translateContent (content) {
     log.info('TRANSLATE :: ' + content._path + ' :: ' + content.type);
     let newContent = content;
-    // oppslagstavle
+    // section-page
     if (
         content.type === app.name + ':cms2xp_section' &&
         (content.page.template === libs.tools.getTemplate('person-seksjonsforside-niva-1') ||
@@ -194,7 +194,7 @@ function translateSectionTypeToContentList (content, contentParam) {
         return null;
     }
 
-    // update type on section from cms2xp section to innholdsliste, and remove all non-existing elements in the section contents list
+    // update type on section from cms2xp section to content-list, and remove all non-existing elements in the section contents list
     repo.modify({
         key: section._id,
         editor: translateSectionToContentList,
@@ -223,7 +223,7 @@ function translateSectionToContentList (section) {
     section.data = {
         sectionContents: sectionContents,
     };
-    section.type = app.name + ':innholdsliste';
+    section.type = app.name + ':content-list';
     return section;
 }
 
@@ -256,17 +256,17 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
             sidebeskrivelseRef = sidebeskrivelseChildren[0]._id;
         }
 
-        // create new tavleliste
+        // create new page-list
         let tavleliste = libs.content.create({
             name: cms2xpSection._name,
             displayName: cms2xpSection.displayName,
             parentPath: getTmpParentPath(cms2xpSection),
-            contentType: 'no.nav.navno:tavleliste',
+            contentType: 'no.nav.navno:page-list',
             data: cms2xpSection.data,
             x: getXData(cms2xpSection),
         });
 
-        // map references from sidebeskrivelse to the new tavleliste
+        // map references from sidebeskrivelse to the new page-list
         if (sidebeskrivelseRef) {
             oldToNewRefMap[sidebeskrivelseRef] = tavleliste._id;
         }
@@ -278,7 +278,7 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
 }
 
 /**
- * @description creates a new oppslagstavle based on the old cms2xp_section
+ * @description creates a new section-page based on the old cms2xp_section
  * @param {object} cms2xpSection
  * @returns {object} new content
  */
@@ -287,7 +287,7 @@ function translateCms2xpSectionToOppslagstavle (cms2xpSection) {
     let oppslagstavle = libs.content.create({
         name: cms2xpSection._name,
         displayName: cms2xpSection.displayName,
-        contentType: app.name + ':oppslagstavle',
+        contentType: app.name + 'section-page',
         parentPath: getTmpParentPath(cms2xpSection),
         data: translateTables(cms2xpSection),
         x: getXData(cms2xpSection),
@@ -626,7 +626,7 @@ function updateTimeAndOrder (oldContent, newContent) {
             c._childOrder = oldContent.childOrder;
 
             // order news and pressreleases by publish.first
-            if (c.type === app.name + ':innholdsliste' || c.type === app.name + ':tavleliste') {
+            if (c.type === app.name + ':content-list' || c.type === app.name + ':page-list') {
                 const validNames = ['nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
                 if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
                     c._childOrder = 'publish.first DESC';
