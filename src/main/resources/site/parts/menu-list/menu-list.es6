@@ -16,9 +16,7 @@ function handleGet (req) {
             });
         }
         const selectNames = libs.lang.parseBundle(content.language).related_content.select;
-        const menuListItems = content.data.menuListItems || {
-
-        };
+        const menuListItems = content.data.menuListItems || {};
         const keys = [
             'selfservice',
             'form-and-application',
@@ -53,12 +51,8 @@ function handleGet (req) {
                                     id: element._id,
                                     download: true,
                                 });
-                            } else if (element.type === 'no.nav.navno:Ekstern_lenke') {
-                                let url = element.data.url;
-                                if (url.indexOf('http') !== 0) {
-                                    url = 'https://' + url;
-                                }
-                                link = url;
+                            } else if (element.type === 'no.nav.navno:external-link') {
+                                link = element.data.url;
                             } else {
                                 link = libs.portal.pageUrl({
                                     id: contentId,
