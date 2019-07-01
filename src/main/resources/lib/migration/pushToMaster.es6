@@ -1,100 +1,60 @@
-var contentLib = require('/lib/xp/content');
-var context = require('/lib/xp/context');
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    tools: require('/lib/migration/tools'),
+};
 
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('permissionsNav', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                setPermissions('/www.nav.no', socket);
-            }
-        );
+
+    socket.on('permissionsNav', () => {
+        libs.tools.runInContext(socket, (socket) => {
+            setPermissions('/www.nav.no', socket);
+        });
     });
-    socket.on('permissionsRedirects', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                setPermissions('/redirects', socket);
-            }
-        );
+    socket.on('permissionsRedirects', () => {
+        libs.tools.runInContext(socket, (socket) => {
+            setPermissions('/redirects', socket);
+        });
     });
-    socket.on('permissionsContent', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                setPermissions('/content', socket);
-            }
-        );
+    socket.on('permissionsContent', () => {
+        libs.tools.runInContext(socket, (socket) => {
+            setPermissions('/content', socket);
+        });
     });
-    socket.on('push', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                convertFromRepoToContent(socket, 'tavleliste');
-                convertFromRepoToContent(socket, 'oppslagstavle');
-                socket.emit('ptmStatus', 'Starts publishing');
-                var res = contentLib.publish({
-                    keys: ['/www.nav.no'],
-                    sourceBranch: 'draft',
-                    targetBranch: 'master',
-                    includeDependencies: true,
-                });
-                if (res) {
-                    socket.emit(
-                        'ptmStatus',
-                        'Success! Deleted: ' + res.deletedContents.length + ', Failed: ' + res.failedContents.length + ', Pushed: ' + res.pushedContents.length
-                    );
-                } else { socket.emit('ptmStatus', 'Failed'); }
-            }
-        );
+    socket.on('push', () => {
+        libs.tools.runInContext(socket, (socket) => {
+            convertFromRepoToContent(socket, 'tavleliste');
+            convertFromRepoToContent(socket, 'oppslagstavle');
+            socket.emit('ptmStatus', 'Starts publishing');
+            const res = libs.content.publish({
+                keys: ['/www.nav.no'],
+                sourceBranch: 'draft',
+                targetBranch: 'master',
+                includeDependencies: true,
+            });
+            if (res) {
+                socket.emit(
+                    'ptmStatus',
+                    'Success! Deleted: ' + res.deletedContents.length + ', Failed: ' + res.failedContents.length + ', Pushed: ' + res.pushedContents.length
+                );
+            } else { socket.emit('ptmStatus', 'Failed'); }
+        });
     });
 };
 
 function setPermissions (key, socket) {
-    var p = contentLib.getPermissions({
+    const p = libs.content.getPermissions({
         key: key,
     });
-    var permissions = p.permissions;
-    var everyone = {
+    let permissions = p.permissions;
+    const everyone = {
         allow: ['READ'],
         deny: [],
         principal: 'role:system.everyone',
     };
-    permissions = permissions.reduce(function (list, item) {
+    permissions = permissions.reduce((list, item) => {
         if (item.principal !== 'role:system.everyone') {
             list.push(item);
         }
@@ -102,7 +62,7 @@ function setPermissions (key, socket) {
     }, []);
     permissions.push(everyone);
     socket.emit('ptmStatus', 'Setting Everyone:READ permission on ' + key + ', this might take a while');
-    var ok = contentLib.setPermissions({
+    const ok = libs.content.setPermissions({
         key: key,
         inheritPermissions: false,
         overwriteChildPermissions: true,
@@ -117,17 +77,17 @@ function setPermissions (key, socket) {
 }
 
 function convertFromRepoToContent (socket, type) {
-    contentLib
+    libs.content
         .query({
             start: 0,
             count: 1000,
             contentTypes: [toContentType(type)],
         })
-        .hits.forEach(function (value) {
+        .hits.forEach((value) => {
             socket.emit('ptmStatus', 'Modifying ' + value.displayName + ' (' + value._id + ')');
-            contentLib.modify({
+            libs.content.modify({
                 key: value._id,
-                editor: function (c) {
+                editor: (c) => {
                     /* {
                     "ntkSelector": "true",
                     "tableSelector": "true",

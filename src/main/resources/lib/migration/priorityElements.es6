@@ -1,72 +1,50 @@
-var content = require('/lib/xp/content');
-var context = require('/lib/xp/context');
-var http = require('/lib/http-client');
-var tools = require('/lib/migration/tools');
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    http: require('/lib/http-client'),
+    tools: require('/lib/migration/tools'),
+};
 
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('convert-priority', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                convertPriority(socket);
-            }
-        );
-    });
 
-    socket.on('create-facets', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                createFacets(socket);
-            }
-        );
+    socket.on('convert-priority', () => {
+        libs.tools.runInContext(socket, convertPriority);
+    });
+    socket.on('create-facets', () => {
+        libs.tools.runInContext(socket, createFacets);
     });
 };
 
 function hasSearchApp () {
-    var req = http.request({
+    const req = libs.http.request({
         url: 'http://localhost:2609/osgi.bundle',
         contentType: 'application/json',
     });
     // log.info(JSON.stringify(JSON.parse(req.body), null, 4));
-    var hasSearch =
+    const hasSearch =
         req.status === 200 &&
-        JSON.parse(req.body).bundles.reduce(function (t, el) {
+        JSON.parse(req.body).bundles.reduce((t, el) => {
             return t || el.name === 'navno.nav.no.search';
         }, false);
     return hasSearch;
 }
 
 function convertPriority (socket) {
-    var hasSearch = hasSearchApp();
-    if (!hasSearch) { return socket.emit('convert-priority-message', 'Please install nav search app first'); }
-    var priorities = content.get({
+    const hasSearch = hasSearchApp();
+    if (!hasSearch) {
+        return socket.emit('convert-priority-message', 'Please install nav search app first');
+    }
+    const priorities = libs.content.get({
         key: '/content/sok/nav-no/prioritert/generelle',
     });
 
-    var xpPri = content.get({
+    const xpPri = libs.content.get({
         key: '/www.nav.no/prioriterte-elementer',
     });
     if (!xpPri) {
-        content.create({
+        libs.content.create({
             displayName: 'prioriterte-elementer',
             parentPath: '/www.nav.no/',
             contentType: 'base:folder',
@@ -75,12 +53,12 @@ function convertPriority (socket) {
             },
         });
     }
-    var xpPriExternal = content.get({
+    const xpPriExternal = libs.content.get({
         key: '/www.nav.no/prioriterte-elementer-eksternt',
     });
 
     if (!xpPriExternal) {
-        content.create({
+        libs.content.create({
             displayName: 'prioriterte-elementer-eksternt',
             parentPath: '/www.nav.no/',
             contentType: 'base:folder',
@@ -94,11 +72,13 @@ function convertPriority (socket) {
 }
 
 function createFacets (socket) {
-    var hasSearch = hasSearchApp();
-    if (!hasSearch) { return socket.emit('create-facets-message', 'Please install nav search app first'); }
+    const hasSearch = hasSearchApp();
+    if (!hasSearch) {
+        return socket.emit('create-facets-message', 'Please install nav search app first');
+    }
     socket.emit('create-facets-max', 2);
 
-    content.create({
+    libs.content.create({
         displayName: 'fasetter',
         parentPath: '/www.nav.no/',
         contentType: 'navno.nav.no.search:search-config2',
@@ -303,7 +283,7 @@ function createFacets (socket) {
     });
     socket.emit('create-facets-value', 1);
 
-    content.create({
+    libs.content.create({
         displayName: 'søk',
         parentPath: '/www.nav.no/',
         contentType: 'no.nav.navno:searchresult',
@@ -316,10 +296,10 @@ function createFacets (socket) {
 
 function createData (socket, forslag) {
     socket.emit('convert-priority-max', forslag.length);
-    forslag.forEach(function (el, index) {
-        var info = tools.getIdFromUrl(el.lenke);
+    forslag.forEach((el, index) => {
+        const info = libs.tools.getIdFromUrl(el.lenke);
         if (info.external === false && info.invalid === false) {
-            content.create({
+            libs.content.create({
                 displayName: el.tittel,
                 parentPath: '/www.nav.no/prioriterte-elementer/',
                 contentType: 'navno.nav.no.search:search-priority',
@@ -329,9 +309,9 @@ function createData (socket, forslag) {
                 },
             });
         } else {
-            var split = el.lenke.split('.');
-            var applicationName = [split[0], split[1], split[2] ? split[2].split('/')[0] : ''].join('.');
-            content.create({
+            const split = el.lenke.split('.');
+            const applicationName = [split[0], split[1], split[2] ? split[2].split('/')[0] : ''].join('.');
+            libs.content.create({
                 displayName: el.tittel,
                 parentPath: '/www.nav.no/prioriterte-elementer-eksternt/',
                 contentType: 'navno.nav.no.search:search-api2',

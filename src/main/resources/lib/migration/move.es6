@@ -1,61 +1,26 @@
-var content = require('/lib/xp/content');
-var context = require('/lib/xp/context');
+const libs = {
+    content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
+    tools: require('/lib/migration/tools'),
+};
 exports.handle = function (socket) {
-    var elements = createElements();
+    const elements = createElements();
     socket.emit('newTask', elements);
-    socket.on('move', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                moveNavNo(socket);
-            }
-        );
+
+    socket.on('move', () => {
+        libs.tools.runInContext(socket, moveNavNo);
     });
-    socket.on('createHelpers', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                createHelpers(socket);
-            }
-        );
+    socket.on('createHelpers', () => {
+        libs.tools.runInContext(socket, createHelpers);
     });
-    socket.on('moveKortUrl', function () {
-        context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'draft',
-                user: {
-                    login: 'pad',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
-            },
-            function () {
-                moveKU(socket);
-            }
-        );
+    socket.on('moveKortUrl', () => {
+        libs.tools.runInContext(socket, moveKU);
     });
 };
 
 function createHelpers (socket) {
     if (
-        content.create({
+        libs.content.create({
             displayName: 'tmp',
             contentType: 'base:folder',
             parentPath: '/www.nav.no/',
@@ -64,7 +29,7 @@ function createHelpers (socket) {
 
             },
         }) &&
-        content.create({
+        libs.content.create({
             displayName: 'not-found',
             contentType: 'base:folder',
             parentPath: '/www.nav.no/',
@@ -73,18 +38,22 @@ function createHelpers (socket) {
 
             },
         })
-    ) { socket.emit('helpersCreated', 'Hjelpemapper lagd'); } else { socket.emit('helpersCreated', 'Feilet, husk å flytte først'); }
+    ) {
+        socket.emit('helpersCreated', 'Hjelpemapper lagd');
+    } else {
+        socket.emit('helpersCreated', 'Feilet, husk å flytte først');
+    }
 }
 
 function moveNavNo (socket) {
-    var site = content.getSite({
+    const site = libs.content.getSite({
         key: '/sites/www.nav.no',
     });
     if (!site) {
         socket.emit('flyttupdate', 'Finner ikke www.nav.no, mulig den allerede er flyttet');
     } else {
         if (
-            content.move({
+            libs.content.move({
                 source: site._path,
                 target: '/',
             })
@@ -95,10 +64,10 @@ function moveNavNo (socket) {
 }
 
 function moveKU (socket) {
-    if (!content.get({
+    if (!libs.content.get({
         key: '/redirects',
     })) {
-        content.create({
+        libs.content.create({
             parentPath: '/',
             displayName: 'redirects',
             contentType: 'base:folder',
@@ -107,23 +76,25 @@ function moveKU (socket) {
             },
         });
     }
-    var elements = content
+    const elements = libs.content
         .query({
             start: 0,
             count: 10000,
             contentTypes: ['base:shortcut', app.name + ':url'],
             query: '_parentPath = "/content/www.nav.no"',
         })
-        .hits.reduce(function (t, el) {
-            if (!el.hasChildren) { t.push(el); }
+        .hits.reduce((t, el) => {
+            if (!el.hasChildren) {
+                t.push(el);
+            }
             return t;
         }, []);
 
     socket.emit('kumax', elements.length);
 
-    elements.forEach(function (el, index) {
+    elements.forEach((el, index) => {
         socket.emit('kuvalue', index + 1);
-        content.move({
+        libs.content.move({
             source: el._path,
             target: '/redirects/',
         });
