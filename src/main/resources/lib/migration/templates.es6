@@ -157,7 +157,7 @@ const tavleListePage = [
         type: 'part',
         path: '/main/2/second/0',
         part: {
-            descriptor: 'no.nav.navno:tavleliste-relatert-innhold',
+            descriptor: 'no.nav.navno:menu-list',
             config: {
                 'no-nav-navno': {
 
@@ -257,7 +257,7 @@ const mainArticlePage = [
         type: 'part',
         path: '/main/2/second/1',
         part: {
-            descriptor: 'no.nav.navno:main-article-related-content',
+            descriptor: 'no.nav.navno:menu-list',
             config: {
                 'no-nav-navno': {
 

@@ -5,10 +5,10 @@ const libs = {
     cache: require('/lib/cacheControll'),
     lang: require('/lib/i18nUtil'),
 };
-const view = resolve('main-article-related-content.html');
+const view = resolve('menu-list.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'main-article-related-content', req.branch, () => {
+    return libs.cache.getPaths(req.path, 'menu-list', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
             content = libs.content.get({
