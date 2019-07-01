@@ -16,7 +16,8 @@ function handleGet (req) {
             });
         }
         const selectNames = libs.lang.parseBundle(content.language).related_content.select;
-        const menuListItems = content.data.menuListItems || {};
+        const menuListItems = content.data.menuListItems || {
+        };
         const keys = [
             'selfservice',
             'form-and-application',
@@ -29,7 +30,7 @@ function handleGet (req) {
             'membership',
             'rules-and-regulations',
         ];
-        const linkList = keys
+        const menuLists = keys
             .map(el => {
                 if (!menuListItems[el]) {
                     return undefined;
@@ -67,22 +68,23 @@ function handleGet (req) {
                 };
             })
             .filter(el => {
-                if (el && el.links && el.links.length > 0) {
-                    return true;
-                }
-                return false;
+                return el && el.links && el.links.length > 0;
             });
 
-        const hasMenuLists = linkList.length > 0;
-        const params = {
-            relatedContentList: linkList,
-            hasMenuLists,
-        };
-
-        return {
-            contentType: 'text/html',
-            body: libs.thymeleaf.render(view, params),
-        };
+        if (menuLists.length > 0) {
+            const model = {
+                menuLists,
+            }
+            return {
+                contentType: 'text/html',
+                body: libs.thymeleaf.render(view, model),
+            };
+        } else {
+            return {
+                contentType: 'text/html',
+                body: null,
+            };
+        }
     });
 }
 
