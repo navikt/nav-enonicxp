@@ -1,7 +1,7 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    navUtils: require('../nav-utils'),
+    navUtils: require('/lib/nav-utils'),
 };
 
 const globals = {
