@@ -5,10 +5,10 @@ const libs = {
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
-const view = resolve('oppslagstavle.html');
+const view = resolve('section-page.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'oppslagstavle', req.branch, () => {
+    return libs.cache.getPaths(req.path, 'section-page', req.branch, () => {
         const content = libs.portal.getContent();
         const lang = libs.lang.parseBundle(content.language).oppslagstavle;
         const table = getTableElements(content, 'tableContents').slice(0, content.data.nrTableEntries);

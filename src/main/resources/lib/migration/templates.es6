@@ -145,7 +145,7 @@ const tavleListePage = [
         type: 'part',
         path: '/main/2/first/0',
         part: {
-            descriptor: 'no.nav.navno:tavleliste',
+            descriptor: 'no.nav.navno:page-list',
             config: {
                 'no-nav-navno': {
 
@@ -157,7 +157,7 @@ const tavleListePage = [
         type: 'part',
         path: '/main/2/second/0',
         part: {
-            descriptor: 'no.nav.navno:tavleliste-relatert-innhold',
+            descriptor: 'no.nav.navno:menu-list',
             config: {
                 'no-nav-navno': {
 
@@ -257,7 +257,7 @@ const mainArticlePage = [
         type: 'part',
         path: '/main/2/second/1',
         part: {
-            descriptor: 'no.nav.navno:main-article-related-content',
+            descriptor: 'no.nav.navno:menu-list',
             config: {
                 'no-nav-navno': {
 
@@ -321,7 +321,7 @@ const transportPage = [
         type: 'layout',
         path: '/main/2',
         layout: {
-            descriptor: 'no.nav.navno:1-col',
+            descriptor: 'no.nav.navno:main-1-col',
             config: {
                 'no-nav-navno': {
 
@@ -421,7 +421,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/3/first/0',
         part: {
-            descriptor: 'no.nav.navno:oppslagstavle',
+            descriptor: 'no.nav.navno:section-page',
             config: {
                 'no-nav-navno': {
 
@@ -710,7 +710,7 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:tavleliste',
+                supports: 'no.nav.navno:page-list',
             },
         },
         components: tavleListePage,
@@ -723,7 +723,7 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:oppslagstavle',
+                supports: 'no.nav.navno:section-page',
             },
         },
         components: hovedSeksjonPage,

@@ -161,7 +161,7 @@ function fiksTavlelistene (socket) {
     const alle = libs.content.query({
         start: 0,
         count: 100000,
-        contentTypes: [app.name + ':tavleliste'],
+        contentTypes: [app.name + ':page-list'],
     }).hits;
     socket.emit('fiks-tavlelistene-max', alle.length);
     alle.forEach((value, index) => {

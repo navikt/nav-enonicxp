@@ -1,6 +1,8 @@
 <main id="maincontent" class="container">
   <div class="container page-head">
-    <h1 data-th-if="${title}" data-th-text="${title}"></h1>
+    <h1 data-th-if="${title}">
+      [[${title}]]
+    </h1>
   </div>
   <div class="maincontent container">
     <div class="row">
@@ -13,7 +15,9 @@
   </div>
   <div class="placeholder hide" style="height: 44px;">
     <div class="top-link-wrapper">
-      <a href="#page-top" id="top-scroll-link" data-th-text="${toTop}">Til toppen</a>
+      <a href="#page-top" id="top-scroll-link">
+        [[${toTop}]]
+      </a>
     </div>
   </div>
 </main>

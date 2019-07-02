@@ -5,10 +5,10 @@ const libs = {
     cache: require('/lib/cacheControll'),
     lang: require('/lib/i18nUtil'),
 };
-const view = resolve('main-article-related-content.html');
+const view = resolve('menu-list.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'main-article-related-content', req.branch, () => {
+    return libs.cache.getPaths(req.path, 'menu-list', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
             content = libs.content.get({
@@ -17,7 +17,6 @@ function handleGet (req) {
         }
         const selectNames = libs.lang.parseBundle(content.language).related_content.select;
         const menuListItems = content.data.menuListItems || {
-
         };
         const keys = [
             'selfservice',
@@ -31,7 +30,7 @@ function handleGet (req) {
             'membership',
             'rules-and-regulations',
         ];
-        const linkList = keys
+        const menuLists = keys
             .map(el => {
                 if (!menuListItems[el]) {
                     return undefined;
@@ -53,12 +52,12 @@ function handleGet (req) {
                                     id: element._id,
                                     download: true,
                                 });
-                            } else if (element.type === 'no.nav.navno:Ekstern_lenke') {
-                                let url = element.data.url;
-                                if (url.indexOf('http') !== 0) {
-                                    url = 'https://' + url;
-                                }
-                                link = url;
+                            } else if (element.type === 'no.nav.navno:internal-link') {
+                                link = libs.portal.pageUrl({
+                                    id: element.data.target,
+                                });
+                            } else if (element.type === 'no.nav.navno:external-link') {
+                                link = element.data.url;
                             } else {
                                 link = libs.portal.pageUrl({
                                     id: contentId,
@@ -73,22 +72,23 @@ function handleGet (req) {
                 };
             })
             .filter(el => {
-                if (el && el.links && el.links.length > 0) {
-                    return true;
-                }
-                return false;
+                return el && el.links && el.links.length > 0;
             });
 
-        const hasMenuLists = linkList.length > 0;
-        const params = {
-            relatedContentList: linkList,
-            hasMenuLists,
-        };
-
-        return {
-            contentType: 'text/html',
-            body: libs.thymeleaf.render(view, params),
-        };
+        if (menuLists.length > 0) {
+            const model = {
+                menuLists,
+            }
+            return {
+                contentType: 'text/html',
+                body: libs.thymeleaf.render(view, model),
+            };
+        } else {
+            return {
+                contentType: 'text/html',
+                body: null,
+            };
+        }
     });
 }
 

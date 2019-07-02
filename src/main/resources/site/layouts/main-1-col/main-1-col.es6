@@ -1,28 +1,24 @@
-var portal = require('/lib/xp/portal');
-var thymeleaf = require('/lib/thymeleaf');
-var lang = require('/lib/i18nUtil');
-var view = resolve('./main-1-col.html');
+const libs = {
+    portal: require('/lib/xp/portal'),
+    thymeleaf: require('/lib/thymeleaf'),
+    lang: require('/lib/i18nUtil'),
+};
+const view = resolve('./main-1-col.html');
 
 exports.get = function (req) {
-    // Find the current component.
-    var content = portal.getContent();
-    var component = portal.getComponent();
-    var language = content.language || 'no';
-    var toTop = lang.parseBundle(language).pagenav.toTheTop;
+    const content = libs.portal.getContent();
+    const component = libs.portal.getComponent();
+    const language = libs.content.language || 'no';
+    const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
 
-    // Define the model
-    var model = {
+    const model = {
         title: content.displayName,
         firstRegion: component.regions['first'],
-        toTop: toTop,
+        toTop,
     };
 
-    // Render a thymeleaf template
-    var body = thymeleaf.render(view, model);
-
-    // Return the result
     return {
-        body: body,
+        body: libs.thymeleaf.render(view, model),
         contentType: 'text/html',
     };
 };

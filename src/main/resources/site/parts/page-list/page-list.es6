@@ -5,10 +5,10 @@ const libs = {
     utils: require('/lib/nav-utils'),
     cache: require('/lib/cacheControll'),
 };
-const view = resolve('tavleliste.html');
+const view = resolve('page-list.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'tavleliste', req.branch, () => {
+    return libs.cache.getPaths(req.path, 'page-list', req.branch, () => {
         const content = libs.portal.getContent();
         let ids = content.data.sectionContents;
         ids = ids ? (!Array.isArray(ids) ? [ids] : ids) : [];
