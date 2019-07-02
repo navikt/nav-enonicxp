@@ -52,6 +52,10 @@ function handleGet (req) {
                                     id: element._id,
                                     download: true,
                                 });
+                            } else if (element.type === 'no.nav.navno:internal-link') {
+                                link = libs.portal.pageUrl({
+                                    id: element.data.target,
+                                });
                             } else if (element.type === 'no.nav.navno:external-link') {
                                 link = element.data.url;
                             } else {
