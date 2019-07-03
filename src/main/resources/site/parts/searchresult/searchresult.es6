@@ -1,5 +1,5 @@
 const libs = {
-    hymeleaf: require('/lib/thymeleaf'),
+    thymeleaf: require('/lib/thymeleaf'),
     http: require('/lib/http-client'),
     portal: require('/lib/xp/portal'),
 };
@@ -10,16 +10,20 @@ function get (req) {
         service: 'search', application: 'navno.nav.no.search', type: 'absolute',
     });
     log.info(url);
+
     if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {
         url = url.replace('http', 'https');
     }
     log.info(url);
+
     const response = libs.http.request({
         url,
         params: req.params,
         method: 'GET',
     });
+
     let model;
+
     try {
         model = JSON.parse(response.body);
     } catch (e) {
