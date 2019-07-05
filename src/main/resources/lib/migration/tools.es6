@@ -317,9 +317,7 @@ exports.insertContentTypeMetaTag = insertContentTypeMetaTag;
 function insertContentTypeMetaTag (content) {
     // content = insertMetaTag(content, 'contentType', content.type.replace(app.name + ':', ''));
     // add content type to main-articles
-    if (content.type === app.name + ':Kort_om') {
-        content.data.contentType = 'fact';
-    } else if (content.type === app.name + ':nav.nyhet') {
+    if (content.type === app.name + ':nav.nyhet') {
         content.data.contentType = 'news';
     } else if (content.type === app.name + ':pressemelding') {
         content.data.contentType = 'pressRelease';

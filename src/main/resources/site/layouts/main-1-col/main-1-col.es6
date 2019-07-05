@@ -8,7 +8,7 @@ const view = resolve('./main-1-col.html');
 exports.get = function (req) {
     const content = libs.portal.getContent();
     const component = libs.portal.getComponent();
-    const language = libs.content.language || 'no';
+    const language = content.language || 'no';
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
 
     const model = {

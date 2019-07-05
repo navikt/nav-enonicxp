@@ -5,6 +5,7 @@
   <x-data name="cmsStatus"/>
   <x-data name="menu-item"/>
   <x-data name="fasetter"/>
+  <x-data name="oldContentType"/>
   <config>
 
   </config>

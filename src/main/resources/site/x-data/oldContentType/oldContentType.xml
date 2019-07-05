@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+    <display-name>Old Content Type</display-name>
+    <form>
+        <input type="TextLine" name="type">
+            <label>Type</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</x-data>

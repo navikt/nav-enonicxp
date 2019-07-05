@@ -13,12 +13,6 @@ exports.handle = function (socket) {
     socket.on('main', () => {
         libs.tools.runInContext(socket, updateMainOppslagstavle);
     });
-    socket.on('artikkel_brukerportal', () => {
-        libs.tools.runInContext(socket, translateMissingArtikkelBrukerportal);
-    });
-    socket.on('kort_om', () => {
-        libs.tools.runInContext(socket, translateMissingKortOm);
-    });
     socket.on('cms2xp_page', () => {
         libs.tools.runInContext(socket, updateCms2xpPage);
     });
@@ -29,60 +23,6 @@ exports.handle = function (socket) {
         libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
 };
-
-/**
- * @description Translate artikkel brukerportal that was missed by main translate
- * @param socket
- */
-function translateMissingArtikkelBrukerportal (socket) {
-    let r = [];
-    let start = 0;
-    let count = 100;
-    while (count === 100) {
-        const h = libs.content.query({
-            start: start,
-            count: count,
-            contentTypes: [app.name + ':Artikkel_Brukerportal'],
-        }).hits;
-        r = r.concat(h);
-        count = h.length;
-        start += count;
-    }
-    socket.emit('artikkel_brukerportalmax', r.length);
-
-    r.forEach((article, index) => {
-        const newArticle = libs.contentTranslator.translateArtikkelBrukerportalToMainArticle(article, '/www.nav.no/tmp');
-        libs.contentTranslator.commonTranslate(article, newArticle);
-        socket.emit('artikkel_brukerportalval', index + 1);
-    });
-}
-
-/**
- * @description Translate kort om that was missed by main translate
- * @param socket
- */
-function translateMissingKortOm (socket) {
-    let r = [];
-    let start = 0;
-    let count = 100;
-    while (count === 100) {
-        const h = libs.content.query({
-            start: start,
-            count: count,
-            contentTypes: [app.name + ':Kort_om'],
-        }).hits;
-        r = r.concat(h);
-        count = h.length;
-        start += count;
-    }
-    socket.emit('kort_ommax', r.length);
-
-    r.forEach((kortOm, index) => {
-        const newArticle = libs.contentTranslator.translateKortOmToMainArticle(kortOm, '/www.nav.no/tmp');
-        libs.contentTranslator.commonTranslate(kortOm, newArticle);
-        socket.emit('kort_omval', index + 1);
-    });
-}
 
 function updateCms2xpPage (socket) {
     // find all cms2xp_pages
@@ -290,68 +230,6 @@ function createElements () {
                             tagClass: ['button', 'is-info'],
                             id: 'mainbutton',
                             action: 'main',
-                            text: 'Translate',
-                        },
-                        {
-                            tag: 'li',
-                            tagClass: ['navbar-divider'],
-                        },
-                    ],
-                },
-                {
-                    tag: 'div',
-                    tagClass: 'row',
-                    elements: [
-                        {
-                            tag: 'span',
-                            text: 'Artikkel_Brukerportal',
-                        },
-                        {
-                            tag: 'progress',
-                            tagClass: ['progress', 'is-info'],
-                            id: 'artikkel_brukerportal',
-                            progress: {
-                                value: 'artikkel_brukerportalval',
-                                max: 'artikkel_brukerportalmax',
-                                valId: 'artikkel_brukerportalvalue',
-                            },
-                        },
-                        {
-                            tag: 'button',
-                            tagClass: ['button', 'is-info'],
-                            id: 'artikkel_brukerportalbutton',
-                            action: 'artikkel_brukerportal',
-                            text: 'Translate',
-                        },
-                        {
-                            tag: 'li',
-                            tagClass: ['navbar-divider'],
-                        },
-                    ],
-                },
-                {
-                    tag: 'div',
-                    tagClass: 'row',
-                    elements: [
-                        {
-                            tag: 'span',
-                            text: 'Kort_om',
-                        },
-                        {
-                            tag: 'progress',
-                            tagClass: ['progress', 'is-info'],
-                            id: 'kort_om',
-                            progress: {
-                                value: 'kort_omval',
-                                max: 'kort_ommax',
-                                valId: 'kort_omvalue',
-                            },
-                        },
-                        {
-                            tag: 'button',
-                            tagClass: ['button', 'is-info'],
-                            id: 'kort_ombutton',
-                            action: 'kort_om',
                             text: 'Translate',
                         },
                         {
