@@ -203,7 +203,7 @@ function removeEnhetsinformasjon (socket) {
     const hits = libs.content.query({
         start: 0,
         count: 1000,
-        query: `type = ${app.name}:Enhetsinformasjon`,
+        query: `type = "${app.name}:Enhetsinformasjon"`,
     }).hits;
 
     socket.emit('remove-enhetsinformasjon-max', hits.length);

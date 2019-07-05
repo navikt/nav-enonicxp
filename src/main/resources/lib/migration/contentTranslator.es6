@@ -135,6 +135,8 @@ function translateContent (content) {
             target: getTmpParentPath(content),
         });
 
+        // TODO set old sort order
+
         log.info('MOVE FOLDER TO OLD');
         libs.content.move({
             source: folder._id,
@@ -287,7 +289,7 @@ function translateCms2xpSectionToOppslagstavle (cms2xpSection) {
     let oppslagstavle = libs.content.create({
         name: cms2xpSection._name,
         displayName: cms2xpSection.displayName,
-        contentType: app.name + 'section-page',
+        contentType: app.name + ':section-page',
         parentPath: getTmpParentPath(cms2xpSection),
         data: translateTables(cms2xpSection),
         x: getXData(cms2xpSection),
@@ -295,9 +297,9 @@ function translateCms2xpSectionToOppslagstavle (cms2xpSection) {
 
     oppslagstavle = updateTimeAndOrder(cms2xpSection, oppslagstavle);
 
-    // if it's not a main section, make all the tablecontents children of the new content
+    // if it's not a main section, make all the tablecontents children of the old cms2xpSection, this will then be translated later
     if (cms2xpSection.page.template === libs.tools.getTemplate('person-seksjonsside-niva-2')) {
-        moveFromContentSiteToContent(oppslagstavle.data.tableContents, oppslagstavle);
+        moveFromContentSiteToContent(oppslagstavle.data.tableContents, cms2xpSection);
     }
 
     return oppslagstavle;
@@ -323,12 +325,38 @@ function translateCms2xpSectionToLinkList (cms2xpSection) {
     });
 
     // move all links out from /content site
-    oldLinkList.data.linklist.forEach((link) => {
-        libs.content.move({
-            source: link,
-            target: cms2xpSection._path + '/',
-        });
-    });
+    // TODO this doesn't work untill the links are translated, so this has to be done after the translate
+    // oldLinkList.data.linklist.forEach((linkId) => {
+    //     let isMoved = false;
+    //     let counter = 0;
+    //     while (!isMoved) {
+    //         try {
+    //             isMoved = true;
+    //             // only append counter if it has failed once
+    //             let append = '';
+    //             if (counter > 0) {
+    //                 append = '_' + counter;
+    //             }
+    //             // check that the link exists, and to get the name
+    //             const link = libs.content.get({
+    //                 key: linkId,
+    //             });
+    //             // move the link, this might fail, and we'll get into the catch and try again with an increased counter
+    //             if (link) {
+    //                 log.info('MOVE LINK :: ' + linkId + ' :: ' + cms2xpSection._path + '/' + link._name + append);
+    //                 libs.content.move({
+    //                     source: linkId,
+    //                     target: cms2xpSection._path + '/' + link._name + append,
+    //                 });
+    //             }
+    //         } catch (e) {
+    //             isMoved = false;
+    //             counter += 1;
+    //             log.info('ERROR MOVING LINK');
+    //             log.info(e);
+    //         }
+    //     }
+    // });
 
     linkList = updateTimeAndOrder(cms2xpSection, linkList);
 
@@ -411,18 +439,23 @@ function translateKortOmToMainArticle (kortOm, tmpParentPath) {
     data.hasTableOfContents = 'h3';
 
     // create new main article based on the old article
-    let mainArticle = libs.content.create({
+    const newKortOm = {
         name: kortOm._name,
         displayName: kortOm.displayName,
         contentType: app.name + ':main-article',
         parentPath: tmpParentPath,
         data: data,
         x: getXData(kortOm),
-    });
+    };
+    try {
+        let mainArticle = libs.content.create(newKortOm);
+        mainArticle = updateTimeAndOrder(kortOm, mainArticle);
 
-    mainArticle = updateTimeAndOrder(kortOm, mainArticle);
-
-    return mainArticle;
+        return mainArticle;
+    } catch (e) {
+        log.info(e);
+        log.info(JSON.stringify(newKortOm, null, 4));
+    }
 }
 
 /**
@@ -686,6 +719,16 @@ function updateTimeAndOrder (oldContent, newContent) {
 function getXData (content) {
     const x = content.x;
 
+    if (!x['no-nav-navno']) {
+        x['no-nav-navno'] = {
+
+        };
+    }
+
+    x['no-nav-navno'].oldContentType = {
+        type: content.type,
+    };
+
     // remove content home, moveContentHome should have been run already, so this is unnecessary to keep and it clutters up the _references
     if (libs.tools.verifyPaths(content, ['x', 'no-nav-navno', 'cmsContent', 'contentHome'])) {
         delete x['no-nav-navno'].cmsContent.contentHome;
@@ -753,6 +796,7 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             if (parameters) {
                 data.parameters = parameters;
             }
+            data.contentType = 'lastingContent';
 
             // create new
             let newPage = libs.content.create({
@@ -794,15 +838,18 @@ function translateNavRapportHandbok (rapportHandbok) {
         let chapter = libs.content.get({
             key: oldToNewRefMap[chapterId] ? oldToNewRefMap[chapterId] : chapterId,
         });
-        libs.content.create({
-            parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
-            contentType: app.name + ':main-article-chapter',
-            displayName: chapter.displayName,
-            name: chapter._name + '_kap',
-            data: {
-                article: chapter._id,
-            },
-        });
+        if (chapter) {
+            const name = chapter._name.replace(/\?/g, '');
+            libs.content.create({
+                parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
+                contentType: app.name + ':main-article-chapter',
+                displayName: chapter.displayName,
+                name: name + '_kap',
+                data: {
+                    article: chapter._id,
+                },
+            });
+        }
     });
 
     mainArticle = updateTimeAndOrder(rapportHandbok, mainArticle);
@@ -882,11 +929,12 @@ function translateRapportHandbok (rapportHandbok) {
                 contentType: 'lastingContent',
             },
         });
+        const name = rapport.subtitle.replace(/\?/g, '');
         libs.content.create({
             parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
             contentType: app.name + ':main-article-chapter',
             displayName: rapport.subtitle,
-            name: rapport.subtitle + '_kap',
+            name: name + '_kap',
             data: {
                 article: rapportArticle._id,
             },
