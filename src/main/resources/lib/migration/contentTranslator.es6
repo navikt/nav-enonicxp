@@ -101,6 +101,11 @@ function translateContent (content) {
         newContent = translateRapportHandbok(content);
     }
 
+    // cms2xp_sections without templates, aka news, nice to know, and shortcuts
+    if (content.type === app.name + ':cms2xp_section' && (!content.page || (content.page && !content.page.template))) {
+        newContent = translateCms2xpSectionToContentList(content);
+    }
+
     if (content === newContent) {
         log.info('NOT TRANSLATED');
         const folder = libs.content.create({
@@ -186,54 +191,65 @@ function updateRefs () {
     }
 }
 
-function translateSectionTypeToContentList (content, contentParam) {
-    var CmsSectionKey = libs.navUtils.getContentParam(content, contentParam);
-    if (!CmsSectionKey) {
-        return null;
-    }
-    var section = libs.navUtils.getContentByMenuKey(CmsSectionKey);
-    if (!section) {
-        return null;
-    }
-
-    // update type on section from cms2xp section to content-list, and remove all non-existing elements in the section contents list
-    repo.modify({
-        key: section._id,
-        editor: translateSectionToContentList,
-    });
-
-    return section._id;
-}
-
-function translateSectionToContentList (section) {
-    var sectionContents = [];
-    if (section.data.sectionContents) {
+function translateCms2xpSectionToContentList (cms2xpSection) {
+    let sectionContents = [];
+    if (cms2xpSection.data.sectionContents) {
+        // map old ids to new, in case they are already converted
+        const oldSectionContents = cms2xpSection.data.sectionContents.map(id => {
+            if (oldToNewRefMap[id]) {
+                return oldToNewRefMap[id];
+            } else {
+                return id;
+            }
+        });
+        // look them up to see if they exist, weeds out old non-existing ids
         sectionContents = libs.content
             .query({
                 start: 0,
                 count: 1000,
                 filters: {
                     ids: {
-                        values: section.data.sectionContents,
+                        values: oldSectionContents,
                     },
                 },
             })
-            .hits.map(function (el) {
-                return el._id;
-            });
+            .hits.map(el => el._id);
     }
-    section.data = {
-        sectionContents: sectionContents,
-    };
-    section.type = app.name + ':content-list';
-    return section;
+
+    // create new content-list
+    let contentList = libs.content.create({
+        name: cms2xpSection._name,
+        displayName: cms2xpSection.displayName,
+        parentPath: getTmpParentPath(cms2xpSection),
+        contentType: app.name + ':content-list',
+        data: {
+            sectionContents: sectionContents,
+        },
+        x: getXData(cms2xpSection),
+    });
+
+    contentList = updateTimeAndOrder(cms2xpSection, contentList);
+    return contentList;
+}
+
+function getContentListByType (content, contentParam) {
+    const cmsSectionKey = libs.navUtils.getContentParam(content, contentParam);
+    if (!cmsSectionKey) {
+        return null;
+    }
+    const section = libs.navUtils.getContentByMenuKey(cmsSectionKey);
+    if (!section) {
+        return null;
+    }
+
+    return section._id;
 }
 
 function translateTables (content) {
     var tableElements = libs.tools.getTableElements(content) || [];
-    var ntkElementId = translateSectionTypeToContentList(content, 'nicetoknow');
-    var newElementId = translateSectionTypeToContentList(content, 'news');
-    var scElementId = translateSectionTypeToContentList(content, 'shortcuts');
+    var ntkElementId = getContentListByType(content, 'nicetoknow');
+    var newElementId = getContentListByType(content, 'news');
+    var scElementId = getContentListByType(content, 'shortcuts');
 
     return libs.tools.createNewTableContent(tableElements, ntkElementId, newElementId, scElementId, content);
 }
