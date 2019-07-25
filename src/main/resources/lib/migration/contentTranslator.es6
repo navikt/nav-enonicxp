@@ -108,7 +108,7 @@ function translateContent (content) {
 
     if (content === newContent) {
         log.info('NOT TRANSLATED');
-        const folder = libs.content.create({
+        let folder = libs.content.create({
             displayName: content.displayName,
             name: content._name,
             contentType: 'base:folder',
@@ -118,6 +118,9 @@ function translateContent (content) {
 
             },
         });
+
+        // mainly to keep old child order
+        folder = updateTimeAndOrder(content, folder);
 
         log.info('GET CHILDREN');
         const children = libs.content.getChildren({
@@ -132,6 +135,9 @@ function translateContent (content) {
                 source: child._id,
                 target: folder._path + '/',
             });
+
+            // revert to old manualOrderValue because moving an item resets it
+            updateTimeAndOrder(child, child);
         });
 
         log.info('MOVE CONTENT TO NEW');
@@ -139,14 +145,18 @@ function translateContent (content) {
             source: content._id,
             target: getTmpParentPath(content),
         });
-
-        // TODO set old sort order
+        // revert to old manualOrderValue because moving an item resets it
+        updateTimeAndOrder(content, content);
 
         log.info('MOVE FOLDER TO OLD');
         libs.content.move({
             source: folder._id,
             target: content._path,
         });
+        // revert to old manualOrderValue because moving an item resets it
+        updateTimeAndOrder(folder, folder);
+
+        // NOTE some of these updateTimeAndOrder functions might be overkill, but better safe than sorry
     } else {
         oldToNewRefMap[content._id] = newContent._id;
     }
@@ -195,25 +205,28 @@ function translateCms2xpSectionToContentList (cms2xpSection) {
     let sectionContents = [];
     if (cms2xpSection.data.sectionContents) {
         // map old ids to new, in case they are already converted
-        const oldSectionContents = cms2xpSection.data.sectionContents.map(id => {
+        const idList = cms2xpSection.data.sectionContents ? Array.isArray(cms2xpSection.data.sectionContents) ? cms2xpSection.data.sectionContents : [cms2xpSection.data.sectionContents] : [];
+        const oldSectionContents = idList.map(id => {
             if (oldToNewRefMap[id]) {
                 return oldToNewRefMap[id];
             } else {
                 return id;
             }
         });
-        // look them up to see if they exist, weeds out old non-existing ids
-        sectionContents = libs.content
-            .query({
-                start: 0,
-                count: 1000,
-                filters: {
-                    ids: {
-                        values: oldSectionContents,
+            // look them up to see if they exist, weeds out old non-existing ids
+        if (oldSectionContents.length > 0) {
+            sectionContents = libs.content
+                .query({
+                    start: 0,
+                    count: 1000,
+                    filters: {
+                        ids: {
+                            values: oldSectionContents,
+                        },
                     },
-                },
-            })
-            .hits.map(el => el._id);
+                })
+                .hits.map(el => el._id);
+        }
     }
 
     // create new content-list
@@ -223,7 +236,7 @@ function translateCms2xpSectionToContentList (cms2xpSection) {
         parentPath: getTmpParentPath(cms2xpSection),
         contentType: app.name + ':content-list',
         data: {
-            sectionContents: sectionContents,
+            sectionContents,
         },
         x: getXData(cms2xpSection),
     });
