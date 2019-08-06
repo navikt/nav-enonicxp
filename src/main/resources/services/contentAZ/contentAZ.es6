@@ -10,10 +10,7 @@ function handleGet (req) {
     let list = [];
     if (letter) {
         const langauge = req.path.indexOf('/en/') !== -1 ? 'en' : 'no';
-        let footerAZList = '/www.nav.no/no/innhold-a-aa';
-        if (langauge === 'en') {
-            footerAZList = '/www.nav.no/en/content-a-z';
-        }
+        const footerAZList = (langauge === 'en' ? '/www.nav.no/en/content-a-z' : '/www.nav.no/no/innhold-a-aa');
         list = libs.content
             .getChildren({
                 key: footerAZList,

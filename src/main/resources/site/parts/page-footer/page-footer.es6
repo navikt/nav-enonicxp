@@ -12,9 +12,7 @@ function handleGet (req) {
 
     return libs.cache.getDecorator('footer-' + language, undefined, req.branch, () => {
         const languageBundles = libs.lang.parseBundle(language).pagenav;
-        const contentAZPage = libs.portal.serviceUrl({
-            service: 'contentAZ',
-        });
+        const contentAZUrl = libs.portal.serviceUrl({service: 'contentAZ'});
         const accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (language === 'no' || language === 'se' ? 'æøå' : '');
         const urls = {
             contactUs: libs.portal.pageUrl({
@@ -32,10 +30,10 @@ function handleGet (req) {
         };
         const dato = new Date();
         var model = {
-            contentAZPage: contentAZPage,
+            contentAZUrl,
             accessibleLetters: accessibleLetters.split(''),
             lang: languageBundles,
-            urls: urls,
+            urls,
             year: dato.getUTCFullYear().toString(),
         };
 

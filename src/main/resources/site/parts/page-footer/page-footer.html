@@ -1,5 +1,5 @@
 <footer class="sitefooter">
-    <div data-th-if="${contentAZPage}" class="footernavsection-wrapper">
+    <div data-th-if="${contentAZUrl}" class="footernavsection-wrapper">
         <div class="footernavsection">
             <button class="letter-scroll-left">
                 <span class="visuallyhidden" data-th-utext="${lang.scrollStart}"></span>
@@ -13,9 +13,9 @@
                     <li class="letter" data-th-each="accessibleLetter: ${accessibleLetters}">
                         <a
                             data-ga="Footer: A til AA"
-                            data-th-href="${portal.pageUrl({'_path=' + contentAZPage, 'letter='+accessibleLetter})}"
-                            data-th-text="${accessibleLetter}"
+                            data-th-href="${contentAZUrl+'?letter='+accessibleLetter}"
                         >
+                            [[${accessibleLetter}]]
                         </a>
                         <div class="panel-wrapper footer-container">
                             <div class="accessible-megafooter-panel"></div>
