@@ -106,7 +106,8 @@ function menuItemToMenuContent (path, element, levels) {
             displayName: menuItem.menuName && menuItem.menuName.length ? menuItem.menuName : element.displayName,
             branch: 'draft',
             data: {
-                itemContent: element._id,
+                target: element._id,
+                showInAZList: !(libs.navUtils.getParameterValue(element, 'exclude-from-footer-a-aa') === 'true'),
             },
         });
         log.info('Opprettet ' + menuContent._path);

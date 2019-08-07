@@ -2,10 +2,15 @@
     <display-name>Menyelement</display-name>
     <super-type>base:structured</super-type>
     <form>
-        <input name="itemContent" type="ContentSelector">
+        <input name="target" type="ContentSelector">
             <label>Velg innhold</label>
             <allowPath>${site}/*</allowPath>
             <occurrences maximum="0" minimum="0"/>
+        </input>
+        <input name="showInAZList" type="CheckBox">
+            <label>Vise i A-Å liste</label>
+            <help-text>Dette menypunktet skal vises i A-Å listen i footer</help-text>
+            <default>checked</default>
         </input>
     </form>
 </content-type>
