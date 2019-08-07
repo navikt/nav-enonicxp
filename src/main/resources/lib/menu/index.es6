@@ -149,7 +149,7 @@ function menuToJson (content, levels) {
     return {
         displayName: content.displayName,
         path: libs.portal.pageUrl({
-            id: content.data.itemContent,
+            id: content.data.target,
         }),
         id: content._id,
         inPath,
