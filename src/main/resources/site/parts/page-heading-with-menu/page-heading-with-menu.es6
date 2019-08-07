@@ -22,7 +22,7 @@ function handleGet (req) {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
 
-    return libs.cache.getDecorator('header' + language, undefined, req.branch, () => {
+    return libs.cache.getDecorator('header-' + language, undefined, req.branch, () => {
         const langBundles = libs.lang.parseBundle(language).pagenav;
         const assets = {
             img: {

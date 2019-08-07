@@ -1,37 +1,38 @@
-var cache = require('/lib/cache');
-var event = require('/lib/xp/event');
-var standardCache = {
-    size: 1000,
-    expire: 3600 * 24, /* One day */
+const libs = {
+    cache: require('/lib/cache'),
+    event: require('/lib/xp/event'),
+    node: require('/lib/xp/node'),
 };
-var etag = Date.now().toString(16);
-var nodeLib = require('/lib/xp/node');
-var repo = nodeLib.connect({
+const oneDay = 3600 * 24;
+let etag = Date.now().toString(16);
+const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
     branch: 'master',
     principals: ['role:system.admin'],
 });
-var caches = {
-    decorator: cache.newCache(standardCache),
-    paths: cache.newCache(standardCache),
+const caches = {
+    decorator: libs.cache.newCache({ size: 50, expire: oneDay }),
+    azList: libs.cache.newCache({ size: 100, expire: oneDay }),
+    paths: libs.cache.newCache({ size: 5000, expire: oneDay }),
 };
 module.exports = {
     wipeDecorator: wipe('decorator'),
     wipePaths: wipe('paths'),
     getDecorator: getSome('decorator'),
+    getAZList: getSome( 'azList'),
     getPaths: getSome('paths'),
-    activateEventListener: activateEventListener,
-    wipeAll: wipeAll,
+    activateEventListener,
+    wipeAll,
     stripPath: getPath,
     etag: getEtag,
 };
 
 function getPath (path, type) {
     if (!path) { return; }
-    var arr = path.split('/www.nav.no/');
+    const arr = path.split('/www.nav.no/');
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
-    var key = arr[arr.length - 1];
+    let key = arr[arr.length - 1];
     if (key[0] === '/') {
         key = key.replace('/', '');
     }
@@ -51,26 +52,26 @@ function setEtag () {
 function wipeAll () {
     setEtag();
     wipe('decorator')();
+    wipe('azList')();
     wipe('paths')();
 }
 
 function wipe (name) {
-    return function (key) {
+    return key => {
         if (!key) {
-            log.info('Cache remove complete cache ' + name);
+            log.info('Remove complete cache [' + name + ']');
             caches[name].clear();
         } else {
-            log.info('Cache remove key ' + key);
+            log.info('Cache [' + name + '] remove key: ' + key);
             caches[name].remove(key);
         }
     };
 }
 
 function wipeOnChange (path) {
-    var w = wipe('paths');
+    const w = wipe('paths');
     if (path) {
-        log.info('WIPE: ' + getPath(path) + ' ~ ' + path);
-        w(getPath(path, 'megamenu-item'));
+        log.info('WIPE: ' + getPath(path));
         w(getPath(path, 'main-article'));
         w(getPath(path, 'main-article-linked-list'));
         w(getPath(path, 'menu-list'));
@@ -85,19 +86,28 @@ function wipeOnChange (path) {
         if (path.indexOf('/publiseringskalender/') !== -1) {
             w('publiseringskalender');
         }
+        if (path.indexOf('/megamenu/') !== -1) {
+            wipe('decorator')();
+        }
+        if (path.indexOf('/megamenu/') !== -1 ||
+            path.indexOf('/en/content-a-z/') !== -1 ||
+            path.indexOf('/no/innhold-a-aa/') !== -1
+        ) {
+            wipe('azList')();
+        }
     }
 }
 
 function getSome (name) {
-    return function (key, type, branch, f, params) {
+    return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft') {
             return caches[name].get(getPath(key, type), function () {
-                log.info('Store cache key: ' + getPath(key, type) + ' ~ ' + key);
+                log.info('Store cache [' + name + '] key: ' + getPath(key, type));
                 return f(params);
             });
         } else {
-            log.info('Not from cache ' + getPath(key, type) + ' ~ ' + key);
+            log.info('Not from cache [' + name + '] key: ' + getPath(key, type));
             return f(params);
         }
     };
@@ -105,10 +115,10 @@ function getSome (name) {
 
 function activateEventListener () {
     wipeAll();
-    event.listener({
+    libs.event.listener({
         type: 'node.*',
         localOnly: false,
-        callback: function (event) {
+        callback: event => {
             event.data.nodes.forEach(function (node) {
                 if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
                     wipeOnChange(node.path);
@@ -117,7 +127,10 @@ function activateEventListener () {
                         count: 100,
                         branch: 'master',
                         query: "_references LIKE '" + node.id + "'",
-                    }).hits.forEach(function (el) { wipeOnChange(el._path); });
+                    }).hits
+                        .forEach(el => {
+                            wipeOnChange(el._path);
+                        });
                 }
             });
         },
