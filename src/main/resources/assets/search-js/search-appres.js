@@ -1,67 +1,121 @@
-(function() {
-    function init() {
+(function () {
+    function init () {
         $('#searchbar').submit(submitForm);
         $('#fasettform').submit(submitForm);
-        $('#sort').submit(submitForm);
-        $('input[name=s]').on('change', submitForm);
-        $('.svart').on('change', submitForm4);
-        $('input[name=f]').on('change', submitForm2);
-        $('.wic').on('change', submitForm4);
-        $('input.defaultFasett').on('change', submitForm2);
+        $('#sort input[name="s"]').on('change', changeSort);
+        $('.svart').on('change', changeDate);
+        $('input[name=f]').on('change', changeFasett);
+        $('.wic').on('change', changeUnderfasett);
+        $('input.defaultFasett').on('change', changeDefaultFasett);
 
-        var flere = $('#flere');
-        if (flere) {
-            flere.on('click', submitForm3);
+        var $flere = $('#flere');
+        if ($flere) {
+            $flere.on('click', getMore);
         }
     }
     init();
-    function clearAllListeners() {
-        $('#searchbar').off('submit', submitForm);
-        $('#fasettform').off('submit', submitForm);
-        $('#sort').off('submit', submitForm);
-        $('input[name=s]').off('change', submitForm);
-        $('.svart').off('change', submitForm4);
-        $('input[name=f]').off('change', submitForm2);
-        $('.wic').off('change', submitForm4);
-        $('input.defaultFasett').off('change', submitForm2);
+    function setC (n) {
+        var $c = $('input[name=c]');
+        $c.val(n);
     }
-    function setC(n) {
-        $('input[name=c]').val(n);
-    }
-    function update(e) {
-        var th = $(this);
+    function update (e) {
         e.preventDefault();
+
+        var $th = $('#fasettform');
+        window.history.pushState(null, document.title, window.location.origin + window.location.pathname + '?' + $th.serialize());
+
+        var count = Number($('input[name=c]').val());
+        var $resultList = $('.sokeresultatliste');
         $.ajax({
-            type: th.attr('method'),
-            url: th.attr('action'),
-            data: th.serialize(),
-            success: function(data) {
-                window.history.pushState(null, window.title, location.origin + location.pathname + '?' + th.serialize());
-                $('#sres').html(data);
-                clearAllListeners();
-                init();
+            type: $th.attr('method'),
+            url: $th.attr('action'),
+            data: $th.serialize() + '&start=' + (count - 1),
+            success: function (data) {
+                // append all hits to result list
+                for (var i = 0; i < data.hits.length; i += 1) {
+                    var hit = data.hits[i];
+                    var hitTemplate = '<li class="' + hit.className + '">' + '<a href="' + hit.href + '">' + '<h2>' + hit.displayName + '</h2>';
+                    if (!hit.officeInformation) {
+                        // normal
+                        hitTemplate += '<p class="resultattekst">' + hit.highlight + '</p>';
+                    } else {
+                        // officeInformation/enhetsinformasjon
+                        hitTemplate += '<table>' + '<tbody>' + '<tr>';
+                        hitTemplate += '<td>' + 'TELEFON:' + '</td>' + '<td>' + hit.officeInformation.phone + '</td>';
+                        hitTemplate += '</tr>' + '<tr>' + '<td>' + 'PUBLIKUMSMOTTAK:' + '</td>' + '<td>' + '<ul>';
+                        for (var j = 0; j < hit.officeInformation.audienceReceptions.length; j += 1) {
+                            hitTemplate += '<li class="listeinnisoketreff">' + '<span>' + hit.officeInformation.audienceReceptions[j] + '</span>' + '</li>';
+                        }
+                        hitTemplate += '</ul>' + '</td>' + '</tr>' + '</tbody>' + '</table>';
+                    }
+                    if (hit.priority) {
+                        hitTemplate += '<p data-th-if="$' + hit.priority + '">Innhold anbefalt av NAV</p>';
+                    }
+                    hitTemplate += '</a>' + '</li>';
+                    $resultList.append($(hitTemplate));
+                }
+
+                // show/hide load more button
+                if (data.isMore) {
+                    $('#flere').removeClass('hidden');
+                } else {
+                    $('#flere').addClass('hidden');
+                }
             },
-            error: function(error) {
+            error: function (error) {
                 console.log(error);
-            }
+            },
         });
     }
-    function submitForm() {
+    function submitForm () {
         $(this.form).submit();
     }
-    function submitForm2() {
+    function getMore (e) {
+        var $c = $('input[name=c]');
+        var v = Number($c.val());
+        setC(v + 1);
+        update(e);
+    }
+    function changeFasett (e) {
         setC(1);
+        $('.sokeresultatliste').empty();
+        $('.utvidbar.erValgt').removeClass('erValgt');
+        var $parent = $(this).parent();
+        $parent.addClass('erValgt');
+        $parent.find('div input.defaultFasett').prop('checked', true);
         $('.wic').prop('checked', false);
-        $(this.form).submit();
+        update(e);
     }
-    function submitForm3() {
-        var i = $('input[name=c]');
-        var v = Number(i.val());
-        i.val(v + 1);
-        $('#fasettform').submit();
-    }
-    function submitForm4() {
+    function changeDefaultFasett (e) {
         setC(1);
-        $(this.form).submit();
+        $('.sokeresultatliste').empty();
+        $('.wic').prop('checked', false);
+        update(e);
+    }
+    function changeUnderfasett (e) {
+        setC(1);
+        $('.sokeresultatliste').empty();
+        if ($('.utvidbar.erValgt div input:checked').length === 0) {
+            $('.utvidbar.erValgt')
+                .find('input.defaultFasett')
+                .prop('checked', true);
+        } else {
+            $('.utvidbar.erValgt')
+                .find('input.defaultFasett')
+                .prop('checked', false);
+        }
+        update(e);
+    }
+    function changeDate (e) {
+        setC(1);
+        $('.sokeresultatliste').empty();
+        update(e);
+    }
+    function changeSort (e) {
+        setC(1);
+        $('.sokeresultatliste').empty();
+        var $sort = $('#fasettform [name="s"]');
+        $sort.val($(this).val());
+        update(e);
     }
 })();
