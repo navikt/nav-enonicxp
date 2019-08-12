@@ -10,9 +10,9 @@
 <body itemscope="" itemtype="http://schema.org/Webpage" class="device-class-desktop" data-portal-component-type="page">
 <div class="page-head">
     <h1>[[${heading}]]</h1>
-    <p class="preface" data-th-if="${ingress && ingress != ''}">
+    <p data-th-if="${ingress && ingress != ''}"class="preface center">
         <br data-th-if="${#strings.contains(ingress,'\n')}"/>
-        [[${content.data.ingress}]]
+        [[${ingress}]]
         <br>
     </p>
     <h3 id="infomelding" class="usynlig center">Chatten er stengt</h3>

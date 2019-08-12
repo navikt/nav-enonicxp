@@ -20,12 +20,14 @@ function handleGet (req) {
         '<script src="https://chat.puzzel.com/Content/Client/js/jquery-intelecomchat.latest.min.js"></script>',
     ];
     const scripts = [
-        '<script src="' + libs.portal.assetUrl({ path: 'js/chat-puzzel.js' }) + '"></script>',
+        '<script id="chatProps" ' +
+        'customerKey="' + content.data.customerKey + '" queueKey="' + content.data.queueKey + '" timeId="' + content.data.timeId +
+        '" src="' + libs.portal.assetUrl({ path: 'js/chat-puzzel.js' }) + '"></script>',
     ];
     const model = {
         title: content.displayName + ' - www.nav.no',
         heading: content.displayName,
-        ingress: content.ingress,
+        ingress: content.data.ingress,
     };
     return {
         contentType: 'text/html',

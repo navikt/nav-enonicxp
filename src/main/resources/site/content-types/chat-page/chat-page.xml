@@ -15,10 +15,6 @@
             <label>queueKey</label>
             <occurrences minimum="1" maximum="1"/>
         </input>
-        <input type ="TextLine" name="overskrift">
-            <label>Overskrift</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
         <input type ="TextLine" name="timeId">
             <label>timeId</label>
             <occurrences minimum="1" maximum="1"/>

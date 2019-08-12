@@ -1,3 +1,8 @@
+var chatProps = document.getElementById('chatProps');
+var customerKey = chatProps.getAttribute('customerKey');
+var queueKey = chatProps.getAttribute('queueKey');
+var timeId = chatProps.getAttribute('timeId');
+
 $(function setup () {
     var interval = setInterval(function () {
         if (document.querySelectorAll('.intelecomsubmit.icon.intelecomchaticon-right').length !== 0) {
@@ -11,9 +16,9 @@ $(function setup () {
 $(document).ready(function Chat () {
     $('#chat').intelecomChat({
         /* Se dokumentasjon fra Puzzel for en oversikt over tilgjengelige parametre. */
-        customerKey: '41155',
-        queueKey: 'q_Chat_Familieytelser',
-        timeId: '20173_time10',
+        customerKey: customerKey,
+        queueKey: queueKey,
+        timeId: timeId,
         startTextFromBottom: true,
         onContactCenterClosed: function () {
             document.getElementById('infomelding').classList.remove('usynlig');
