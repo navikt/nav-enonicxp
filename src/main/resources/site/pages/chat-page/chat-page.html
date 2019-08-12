@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="no" class="no-js">
+<head>
+    <meta charset="utf-8" />
+    <title>[[${title}]]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+
+<body itemscope="" itemtype="http://schema.org/Webpage" class="device-class-desktop" data-portal-component-type="page">
+<div class="page-head">
+    <h1>[[${heading}]]</h1>
+    <p class="preface" data-th-if="${ingress && ingress != ''}">
+        <br data-th-if="${#strings.contains(ingress,'\n')}"/>
+        [[${content.data.ingress}]]
+        <br>
+    </p>
+    <h3 id="infomelding" class="usynlig center">Chatten er stengt</h3>
+</div>
+<div id="motherDiv">
+    <div id="chat" class="intelecomchat"></div>
+</div>
+</body>
+</html>
