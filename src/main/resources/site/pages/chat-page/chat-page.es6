@@ -1,6 +1,7 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
+    lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
 const etag = libs.cache.etag;
@@ -8,6 +9,8 @@ const view = resolve('chat-page.html');
 
 function handleGet (req) {
     const content = libs.portal.getContent();
+    const language = content.language || 'no';
+    const langBundles = libs.lang.parseBundle(language).pagenav;
     const assets = [
         '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({ path: 'img/navno/logo.png' }) + '" />',
         '<link rel="shortcut icon" type="image/x-icon" href="' + libs.portal.assetUrl({ path: 'img/navno/favicon.ico' }) + '" />',
@@ -28,6 +31,9 @@ function handleGet (req) {
         title: content.displayName + ' - www.nav.no',
         heading: content.displayName,
         ingress: content.data.ingress,
+        iconUrl: libs.portal.assetUrl({ path: 'img/navno/logo.svg' }),
+        homeUrl: libs.portal.pageUrl({ path: '/www.nav.no/' }),
+        langBundles,
     };
     return {
         contentType: 'text/html',

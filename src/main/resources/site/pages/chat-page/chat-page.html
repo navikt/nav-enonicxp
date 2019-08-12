@@ -8,6 +8,20 @@
 </head>
 
 <body itemscope="" itemtype="http://schema.org/Webpage" class="device-class-desktop" data-portal-component-type="page">
+<header class="siteheader" role="banner">
+    <div class="sitelogo sitelogo-large">
+        <div class="container">
+            <a data-th-href="${homeUrl}" data-th-title="${langBundles.home}" data-ga="Header/Logo">
+                <img data-th-src="${iconUrl}" data-th-alt="${langBundles.logo}">
+            </a>
+        </div>
+    </div>
+    <div class="sitelogo sitelogo-small">
+        <a data-th-href="${homeUrl}" data-th-title="${langBundles.home}">
+            <img data-th-src="${iconUrl}" data-th-alt="${langBundles.logo}">
+        </a>
+    </div>
+</header>
 <div class="page-head">
     <h1>[[${heading}]]</h1>
     <p data-th-if="${ingress && ingress != ''}"class="preface center">
