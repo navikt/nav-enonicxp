@@ -443,11 +443,11 @@ const hovedSeksjonPage = [
     },
 ];
 
-const ekstraStorTabell = {
+const largeTable = {
     type: 'page',
     path: '/',
     page: {
-        descriptor: 'no.nav.navno:ekstraStorTabell',
+        descriptor: 'no.nav.navno:page-large-table',
         customized: true,
         config: {
             'no-nav-navno': {
@@ -749,10 +749,10 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:Ekstra_stor_tabell',
+                supports: 'no.nav.navno:large-table',
             },
         },
-        components: ekstraStorTabell,
+        components: largeTable,
     },
     {
         content: {
@@ -762,10 +762,10 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:Ekstra_stor_tabell',
+                supports: 'no.nav.navno:large-table',
             },
         },
-        components: ekstraStorTabell,
+        components: largeTable,
     },
     {
         content: {

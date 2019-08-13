@@ -1,0 +1,14 @@
+<content-type>
+    <display-name>Ekstra stor tabell</display-name>
+    <description>Side for å lime inn store tabeller som html</description>
+    <super-type>base:structured</super-type>
+    <form>
+        <input name="text" type="HtmlArea">
+            <label>Tabell</label>
+            <occurrences maximum="1" minimum="1"/>
+            <config>
+                <include>Undo | Redo</include>
+            </config>
+        </input>
+    </form>
+</content-type>
