@@ -73,10 +73,15 @@
     </div>
     <div class="sitelogo sitelogo-large">
         <div class="container">
-            <a data-th-href="${frontPageUrl}" data-th-title="${langBundles.home}" data-ga="Header/Logo">
+            <a data-th-href="${urls.homeUrl}" data-th-title="${langBundles.home}" data-ga="Header/Logo">
                 <img data-th-src="${assets.img.logo}" data-th-alt="${langBundles.logo}" />
             </a>
         </div>
+    </div>
+    <div class="sitelogo sitelogo-small">
+        <a data-th-href="${urls.homeUrl}" data-th-title="${langBundles.home}">
+            <img data-th-src="${assets.img.logo}" data-th-alt="${langBundles.logo}">
+        </a>
     </div>
     <div data-portal-region="region-north">
         <div data-th-if="${region-north}" data-th-remove="tag">
@@ -177,7 +182,7 @@
                         data-th-aria-label="${langBundles.notifications.title}"
                         data-th-title="${langBundles.notifications.title}"
                         data-th-attr="
-                                data-base-url=${urls.baseurl},
+                                data-base-url=${urls.baseUrl},
                                 data-tekst-varselurl-lenketekst=${langBundles.notifications.goto},
                                 data-tekst-ingenvarsler=${langBundles.notifications.noMsg},
                                 data-tekst-error=${langBundles.notifications.error},
@@ -201,9 +206,4 @@
     </div>
 
     <div id="varsler-display" class="varsler-display" aria-expanded="false"></div>
-    <div class="sitelogo sitelogo-small">
-        <a data-th-href="${frontPageUrl}" data-th-title="${langBundles.home}">
-            <img data-th-src="${urls.logo}" data-th-alt="${langBundles.logo}" />
-        </a>
-    </div>
 </header>

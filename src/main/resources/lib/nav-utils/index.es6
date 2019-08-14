@@ -2,7 +2,7 @@ var libs = {
     content: require('/lib/xp/content'),
     i18n: require('/lib/xp/i18n'),
     portal: require('/lib/xp/portal'),
-    // moment: require('/lib/moment'),
+    moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
     // util: require('/lib/enonic/util')
 };
 
@@ -110,24 +110,28 @@ exports.getContentByCmsKey = function (contentKey) {
 exports.dateTimePublished = function (content, language) {
     if (!content) { return ''; }
     var navPublished = libs.i18n.localize({
-        key: 'main-article.published', locale: language,
+        key: 'main_article.published', locale: language,
     });
     var published = '';
     var lastModified = '';
     var navUpdated = libs.i18n.localize({
-        key: 'main-article.lastChanged', locale: language,
+        key: 'main_article.lastChanged', locale: language,
     });
     var p = content.publish.from ? content.publish.from : content.createdTime;
     if (language !== 'no' && language !== 'en') {
-        published = p; // libs.moment(p).locale('no').format('L');
+        published = libs.moment(p).locale('no').format('L');
+        // published = p;
     } else {
-        published = p; // libs.moment(p).locale(language).format('L');
+        published = libs.moment(p).locale(language).format('L');
+        // published = p;
     }
 
     if (language !== 'nn' && language !== 'se') {
-        lastModified = content.modifiedTime; // libs.moment(content.modifiedTime).locale('no').format('L');
+        lastModified = libs.moment(content.modifiedTime).locale('no').format('L');
+        // lastModified = content.modifiedTime;
     } else {
-        lastModified = content.modifiedTime; // libs.moment(content.modifiedTime).locale(language).format('L');
+        lastModified = libs.moment(content.modifiedTime).locale(language).format('L');
+        // lastModified = content.modifiedTime;
     }
     return navPublished + ' ' + published + (published !== lastModified ? ' | ' + navUpdated + ' ' + lastModified : '');
 };

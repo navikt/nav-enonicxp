@@ -61,7 +61,7 @@ dependencies {
     include "com.enonic.lib:lib-cache:1.1.0"
     
     include "no.item.wsUtil:wsUtil:1.1.1"
-    include 'no.iskald.lib:moment:1.0.0'
+    webjar "org.webjars:momentjs:2.14.1"
 }
 
 repositories {
