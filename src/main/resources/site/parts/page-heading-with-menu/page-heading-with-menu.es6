@@ -2,21 +2,11 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    i18n: require('/lib/xp/i18n'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
 };
 const view = resolve('page-heading-with-menu.html');
-// TODO: URL-er skal være konfigurerbare
-const serviceurl = 'https://tjenester.nav.no';
-const urls = {
-    baseurl: serviceurl,
-    login: serviceurl + '/oversikt',
-    logout: serviceurl + '/esso/logout',
-    stillinger: serviceurl + '/stillinger/',
-    sok: serviceurl + '/nav-sok',
-};
 
 function handleGet (req) {
     const content = libs.portal.getContent();
@@ -34,26 +24,45 @@ function handleGet (req) {
                 }),
             },
         };
+        // TODO: URL-er skal være konfigurerbare
+        const serviceUrl = 'https://tjenester.nav.no';
+        const siteUrl = '/www.nav.no/';
+        const urls = {
+            homeUrl: libs.portal.pageUrl({
+                path: siteUrl,
+            }),
+            baseUrl: serviceUrl,
+            login: serviceUrl + '/oversikt',
+            logout: serviceUrl + '/esso/logout',
+            stillinger: serviceUrl + '/stillinger/',
+            sok: serviceUrl + '/nav-sok',
+        };
         const menu = libs.menu.getMegaMenu(libs.content.get({
-            key: '/www.nav.no/megamenu/' + language,
+            key: siteUrl + 'megamenu/' + language,
         }), 4);
 
         // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
         const langSelectors = [
             {
-                href: libs.portal.pageUrl({ path: '/www.nav.no/no' }),
+                href: libs.portal.pageUrl({
+                    path: siteUrl + 'no',
+                }),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
                 active: (language === 'no' ? 'active' : ''),
             },
             {
-                href: libs.portal.pageUrl({ path: '/www.nav.no/en' }),
+                href: libs.portal.pageUrl({
+                    path: siteUrl + 'en',
+                }),
                 title: 'English (Globalt språkvalg)',
                 text: 'English',
                 active: (language === 'en' ? 'active' : ''),
             },
             {
-                href: libs.portal.pageUrl({ path: '/www.nav.no/se' }),
+                href: libs.portal.pageUrl({
+                    path: siteUrl + 'se',
+                }),
                 title: 'Sámegiella (Globalt Språkvalg)',
                 text: 'Sámegiella',
                 active: (language === 'se' ? 'active' : ''),
