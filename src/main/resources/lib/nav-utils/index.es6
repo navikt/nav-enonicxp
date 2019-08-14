@@ -140,7 +140,7 @@ exports.getLanguageVersions = function (content) {
     var lang = {
         no: 'Bokmål',
         en: 'English',
-        se: 'Sámegiella',
+        se_NO: 'Sámegiella',
         nn_NO: 'Nynorsk',
     };
     var lRefs = content.data.languages;

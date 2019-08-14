@@ -725,6 +725,8 @@ function updateTimeAndOrder (oldContent, newContent) {
                 c.language = 'en';
             } else if (c._path.indexOf('/www.nav.no/se/') !== -1) {
                 c.language = 'se_NO';
+            } else if (c._path.indexOf('/nynorsk/') !== -1) {
+                c.language = 'nn_NO';
             }
 
             // set language to norwegian if it's missing
