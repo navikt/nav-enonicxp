@@ -502,19 +502,21 @@ function getTableElements (content) {
     if (typeof content.data.sectionContents === 'string') {
         content.data.sectionContents = [content.data.sectionContents];
     }
+    return content.data.sectionContents || [];
 
-    return content.data.sectionContents
-        ? libs.content
-            .query({
-                filters: {
-                    ids: {
-                        values: content.data.sectionContents,
-                    },
-                },
-            })
-            .hits.map(mapIds)
-            .reduce(reduceNullElements, [])
-        : [];
+    // NOTE not really necessary, just removes ids of deleted content, which might mess up the order
+    // return content.data.sectionContents
+    //     ? libs.content
+    //         .query({
+    //             filters: {
+    //                 ids: {
+    //                     values: content.data.sectionContents,
+    //                 },
+    //             },
+    //         })
+    //         .hits.map(mapIds)
+    //         .reduce(reduceNullElements, [])
+    //     : [];
 }
 
 exports.moveNewContent = moveNewContent;
