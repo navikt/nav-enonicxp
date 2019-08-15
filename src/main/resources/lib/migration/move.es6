@@ -16,6 +16,9 @@ exports.handle = function (socket) {
     socket.on('moveKortUrl', () => {
         libs.tools.runInContext(socket, moveKU);
     });
+    socket.on('moveResources', () => {
+        libs.tools.runInContext(socket, moveResources);
+    });
 };
 
 function createHelpers (socket) {
@@ -57,16 +60,20 @@ function moveNavNo (socket) {
                 source: site._path,
                 target: '/',
             })
-        ) { socket.emit('flyttupdate', 'www.nav.no flyttet'); } else {
+        ) {
+            socket.emit('flyttupdate', 'www.nav.no flyttet');
+        } else {
             socket.emit('flyttupdate', 'Feilet');
         }
     }
 }
 
 function moveKU (socket) {
-    if (!libs.content.get({
-        key: '/redirects',
-    })) {
+    if (
+        !libs.content.get({
+            key: '/redirects',
+        })
+    ) {
         libs.content.create({
             parentPath: '/',
             displayName: 'redirects',
@@ -99,6 +106,26 @@ function moveKU (socket) {
             target: '/redirects/',
         });
     });
+}
+
+function moveResources (socket) {
+    const content = libs.content.get({
+        key: '/content/nav.no-ressurser',
+    });
+    if (!content) {
+        socket.emit('resourcesUpdate', 'Finner ikke /content/nav.no-ressurser, mulig den allerede er flyttet');
+    } else {
+        if (
+            libs.content.move({
+                source: content._path,
+                target: '/www.nav.no/',
+            })
+        ) {
+            socket.emit('resourcesUpdate', '/content/nav.no-ressurser flyttet');
+        } else {
+            socket.emit('resourcesUpdate', 'Feilet');
+        }
+    }
 }
 
 function createElements () {
@@ -165,6 +192,27 @@ function createElements () {
                             tagClass: ['isPrimary', 'button'],
                             action: 'moveKortUrl',
                             text: 'Flytt kort url',
+                        },
+                    ],
+                },
+
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Flytt nav.no-ressurser',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'moveResources',
+                            text: 'Flytt',
+                        },
+                        {
+                            tag: 'p',
+                            update: 'resourcesUpdate',
                         },
                     ],
                 },
