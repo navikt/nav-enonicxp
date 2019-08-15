@@ -106,6 +106,10 @@ function translateContent (content) {
         newContent = translateCms2xpSectionToContentList(content);
     }
 
+    if (content.type === app.name + ':Ekstra_stor_tabell') {
+        newContent = translateEkstraStorTabellToLargeTable(content);
+    }
+
     if (content === newContent) {
         log.info('NOT TRANSLATED');
         let folder = libs.content.create({
@@ -976,4 +980,22 @@ function translateRapportHandbok (rapportHandbok) {
     mainArticle = updateTimeAndOrder(rapportHandbok, mainArticle);
 
     return mainArticle;
+}
+
+function translateEkstraStorTabellToLargeTable (ekstraStorTabell) {
+    // create new large table based on old ekstra_stor_tabell
+    let largeTable = libs.content.create({
+        name: ekstraStorTabell._name,
+        displayName: ekstraStorTabell.displayName,
+        contentType: app.name + ':large-table',
+        parentPath: getTmpParentPath(ekstraStorTabell),
+        data: {
+            text: ekstraStorTabell.article.text,
+        },
+        x: getXData(ekstraStorTabell),
+    });
+
+    largeTable = updateTimeAndOrder(ekstraStorTabell, largeTable);
+
+    return largeTable;
 }
