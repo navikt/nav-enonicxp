@@ -990,7 +990,7 @@ function translateEkstraStorTabellToLargeTable (ekstraStorTabell) {
         contentType: app.name + ':large-table',
         parentPath: getTmpParentPath(ekstraStorTabell),
         data: {
-            text: ekstraStorTabell.article.text,
+            text: ekstraStorTabell.data.article.text,
         },
         x: getXData(ekstraStorTabell),
     });
