@@ -15,8 +15,7 @@
     }
     init();
     function setC (n) {
-        var $c = $('input[name=c]');
-        $c.val(n);
+        $('input[name=c]').val(n);
     }
     function update (e) {
         e.preventDefault();
@@ -114,8 +113,7 @@
     function changeSort (e) {
         setC(1);
         $('.sokeresultatliste').empty();
-        var $sort = $('#fasettform [name="s"]');
-        $sort.val($(this).val());
+        $('#fasettform [name="s"]').val($(this).val());
         update(e);
     }
 })();
