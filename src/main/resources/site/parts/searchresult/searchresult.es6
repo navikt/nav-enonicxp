@@ -7,7 +7,9 @@ const view = resolve('./searchresult.html');
 
 function get (req) {
     let url = libs.portal.serviceUrl({
-        service: 'search', application: 'navno.nav.no.search', type: 'absolute',
+        service: 'search',
+        application: 'navno.nav.no.search',
+        type: 'absolute',
     });
     log.info(url);
 
@@ -30,6 +32,8 @@ function get (req) {
         log.info(e);
         log.info(response.body);
     }
+
+    model.searchApi = url;
     model.form = libs.portal.pageUrl({
         id: libs.portal.getContent()._id,
     });

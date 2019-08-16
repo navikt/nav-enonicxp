@@ -524,6 +524,14 @@ input[type=radio]:focus + label {
     background: url(../img/navno/gfx/icons/minus_graa.svg) 4px 5px no-repeat;
 }
 
+.fasettListe li.utvidbar>div {
+    display: none;
+}
+
+.fasettListe li.utvidbar.erValgt>div {
+    display: initial;
+}
+
 .fasettListe li.utvidbar label {
     font-family: Modus, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1rem;
@@ -1155,8 +1163,8 @@ input[type=checkbox]:checked + label {
     font-weight: bold;
 }
 
-.defaultFasett * input[type=checkbox]:checked + label {
-    background: url(../img/navno/gfx/icons/hake.svg) 0 0 no-repeat;
+.defaultFasett input[type=checkbox]:checked + label {
+    background: url(../img/navno/gfx/forms/hake_blaa.svg) 0 0 no-repeat;
 }
 
 input[type=checkbox]:disabled + label {
