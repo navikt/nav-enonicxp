@@ -3,6 +3,7 @@ const libs = {
     contentTranslator: require('/lib/migration/contentTranslator'),
     tools: require('/lib/migration/tools'),
     navUtils: require('/lib/nav-utils'),
+    officeInformation: require('/lib/officeInformation'),
 };
 
 const translateContentAZ = require('./translateContentAZ');
@@ -10,6 +11,9 @@ const translateLinks = require('./translateLinks');
 
 exports.handle = function (socket) {
     socket.emit('newTask', createElements());
+    socket.on('importOfficeInformation', () => {
+        libs.tools.runInContext(socket, importOfficeInformation);
+    });
     socket.on('main', () => {
         libs.tools.runInContext(socket, updateMainOppslagstavle);
     });
@@ -23,6 +27,10 @@ exports.handle = function (socket) {
         libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
 };
+
+function importOfficeInformation (socket) {
+    libs.officeInformation.submitCheckTask();
+}
 
 function updateCms2xpPage (socket) {
     // find all cms2xp_pages
@@ -207,6 +215,27 @@ function createElements () {
         head: 'Translate',
         body: {
             elements: [
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Office Information',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'office-information-button',
+                            action: 'importOfficeInformation',
+                            text: 'Import',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
                 {
                     tag: 'div',
                     tagClass: 'row',
