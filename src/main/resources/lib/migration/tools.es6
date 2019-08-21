@@ -130,19 +130,14 @@ exports.changeNewsSchemas = changeNewsSchemas;
  */
 function changeNewsSchemas (content) {
     content.data.menuListItems = content.data.menuListItems || [];
-    let ns = content.data.newsschemas;
-    if (!Array.isArray(ns)) {
-        ns = [ns];
+    let newschemas = content.data.newschemas;
+    if (!Array.isArray(newschemas)) {
+        newschemas = [newschemas];
     }
     content.data.menuListItems = addMenuListItem(
         content.data.menuListItems,
         'form-and-application',
-        ns.reduce((t, el) => {
-            if (el) {
-                t.push(el);
-            }
-            return t;
-        }, [])
+        newschemas.map(ns => ns.newschema),
     );
     delete content.data.newschemas;
     if (content.data.forms) {

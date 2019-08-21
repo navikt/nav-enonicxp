@@ -893,7 +893,11 @@ function translateNavRapportHandbok (rapportHandbok) {
 }
 
 function translateNavRapportHandbokKap (rapportHandbokKap) {
-    libs.tools.compose([libs.tools.changeNewsSchemas, libs.tools.changeInformation, libs.tools.changeSocial])(rapportHandbokKap);
+    libs.tools.compose([
+        libs.tools.changeNewsSchemas,
+        libs.tools.changeInformation,
+        libs.tools.changeSocial]
+    )(rapportHandbokKap);
 
     let mainArticle = libs.content.create({
         parentPath: getTmpParentPath(rapportHandbokKap),
