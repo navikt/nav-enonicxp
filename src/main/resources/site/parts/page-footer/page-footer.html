@@ -27,7 +27,7 @@
     </div>
     <div class="container about-site">
         <a data-th-href="${frontPageUrl}" data-ga="Footer/Link til NAV" class="decorated">NAV</a>
-        <ul class="nav">
+        <ul class="nav" id="insert-vergic-container">
             <li data-th-if="${urls.contactUs}"><a data-ga="Footer" data-th-href="${urls.contactUs}" data-th-utext="${lang.contactUs}"></a></li>
             <li data-th-if="${urls.accessibility}"><a data-ga="Footer" data-th-href="${urls.accessibility}" data-th-utext="${lang.accessibility}"></a></li>
             <li data-th-if="${urls.privacy}"><a data-ga="Footer" data-th-href="${urls.privacy}" data-th-utext="${lang.privacy}"></a></li>
