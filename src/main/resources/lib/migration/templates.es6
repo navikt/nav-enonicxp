@@ -710,6 +710,7 @@ const templates = [
             data: {
                 supports: [
                     'no.nav.navno:main-article',
+                    'no.nav.navno:main-article-chapter',
                     'no.nav.navno:melding',
                 ],
             },
