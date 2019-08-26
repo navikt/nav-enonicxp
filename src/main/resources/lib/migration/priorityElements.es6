@@ -365,7 +365,7 @@ function createFormContent (form, count) {
         }
     } catch (e) {
         log.info(e);
-        createFormContent(form, count + 1);
+        return createFormContent(form, count + 1);
     }
 }
 

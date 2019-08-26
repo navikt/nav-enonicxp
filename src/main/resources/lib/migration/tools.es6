@@ -137,7 +137,9 @@ function changeNewsSchemas (content) {
     content.data.menuListItems = addMenuListItem(
         content.data.menuListItems,
         'form-and-application',
-        newschemas.map(ns => ns.newschema),
+        newschemas.map(ns => {
+            return ns && ns.newschema ? ns.newschema : null;
+        }).reduce(reduceNullElements, []),
     );
     delete content.data.newschemas;
     if (content.data.forms) {

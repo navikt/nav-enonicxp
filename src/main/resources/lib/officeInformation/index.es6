@@ -95,12 +95,12 @@ function checkForRefresh () {
             refreshOfficeInformation(officeInformationList);
 
             log.info('PUBLISH OFFICE INFORMATION');
-            libs.content.publish({
-                keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer'],
-                sourceBranch: 'draft',
-                targetBranch: 'master',
-                includeDependencies: true,
-            });
+            // libs.content.publish({
+            //     keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer'],
+            //     sourceBranch: 'draft',
+            //     targetBranch: 'master',
+            //     includeDependencies: true,
+            // });
         } catch (e) {
             log.info('FAILED TO GET OFFICE INFORMATION FROM NORG2');
             log.info(e);
