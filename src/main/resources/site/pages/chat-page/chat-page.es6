@@ -17,7 +17,8 @@ function handleGet (req) {
         '<link rel="stylesheet" href="https://chat.puzzel.com/Content/Client/css/intelecom-light.css" />',
         '<link rel="stylesheet" href="' + libs.portal.assetUrl({ path: 'styles/navno.css' }) + '" />',
         '<link rel="stylesheet" href="' + libs.portal.assetUrl({ path: 'styles/chat-puzzel.css' }) + '" />',
-        '<script id="google-tag-manager-props" src="' + libs.portal.assetUrl({ path: 'js/google-tag-manager.js' }) + '"></script>',
+        '<script id="navno-props" src="' + libs.portal.assetUrl({ path: 'js/navno-page.js' }) +
+        '" authServiceUrl="https://www.nav.no/innloggingslinje-api/auth"></script>',
         '<script src="https://chat.puzzel.com/Content/Client/js/jquery-latest.min.js"></script>',
         '<script src="https://chat.puzzel.com/Content/Client/js/jquery-intelecomchat.libs.latest.min.js"></script>',
         '<script src="https://chat.puzzel.com/Content/Client/js/jquery-intelecomchat.latest.min.js"></script>',

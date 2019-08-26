@@ -32,10 +32,9 @@ function handleGet (req) {
                 path: siteUrl,
             }),
             baseUrl: serviceUrl,
-            login: serviceUrl + '/oversikt',
-            logout: serviceUrl + '/esso/logout',
-            stillinger: serviceUrl + '/stillinger/',
-            sok: serviceUrl + '/nav-sok',
+            login: serviceUrl + '/dittnav/oversikt',
+            logout: 'https://loginservice.nav.no/slo',
+            sok: '/sok',
         };
         const menu = libs.menu.getMegaMenu(libs.content.get({
             key: siteUrl + 'megamenu/' + language,
