@@ -61,6 +61,19 @@ function updateCms2xpPage (socket) {
             const articleKey = cms2xpPage.x['no-nav-navno'].cmsMenu.content;
             const newPage = libs.contentTranslator.translateCms2xpPageToMainArticle(cms2xpPage);
 
+            // move all children from article to cms2xpPage
+            const children = libs.content.getChildren({
+                key: articleKey,
+                start: 0,
+                count: 100,
+            }).hits;
+            children.forEach(child => {
+                libs.content.move({
+                    source: child._id,
+                    target: newPage._path + '/',
+                });
+            });
+
             // save which cms2xp pages have taken over the content in the original content article
             if (!articles[articleKey]) {
                 articles[articleKey] = [];
