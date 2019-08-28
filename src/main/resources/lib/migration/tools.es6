@@ -4,6 +4,7 @@ const libs = {
     value: require('/lib/xp/value'),
     navUtils: require('/lib/nav-utils'),
     node: require('/lib/xp/node'),
+    repo: require('/lib/xp/repo'),
 };
 const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
@@ -868,4 +869,26 @@ function getTemplate (templateName) {
         });
     }
     return r.hits[0]._id;
+}
+
+exports.getNavRepo = getNavRepo;
+function getNavRepo () {
+    const hasNavRepo = libs.repo.get('no.nav.navno');
+    if (!hasNavRepo) {
+        log.info('Create no.nav.navno repo');
+        libs.repo.create({
+            id: 'no.nav.navno',
+        });
+    }
+
+    const navRepo = libs.node.connect({
+        repoId: 'no.nav.navno',
+        branch: 'master',
+        user: {
+            login: 'su',
+        },
+        pricipals: ['role:system.admin'],
+    });
+
+    return navRepo;
 }

@@ -4,6 +4,7 @@ const libs = {
     tools: require('/lib/migration/tools'),
     navUtils: require('/lib/nav-utils'),
     officeInformation: require('/lib/officeInformation'),
+    io: require('/lib/xp/io'),
 };
 
 const translateContentAZ = require('./translateContentAZ');
@@ -11,6 +12,9 @@ const translateLinks = require('./translateLinks');
 
 exports.handle = function (socket) {
     socket.emit('newTask', createElements());
+    socket.on('importLinks', () => {
+        libs.tools.runInContext(socket, importLinks);
+    });
     socket.on('importOfficeInformation', () => {
         libs.tools.runInContext(socket, importOfficeInformation);
     });
@@ -27,6 +31,48 @@ exports.handle = function (socket) {
         libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
 };
+
+function importLinks (socket) {
+    const linkFile = libs.io.getResource('/lib/migration/translate/links.csv');
+    if (linkFile.exists()) {
+        const stream = linkFile.getStream();
+        const lines = libs.io.readLines(stream);
+        socket.emit('import-links-max', lines.length);
+
+        const links = [];
+
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                const split = line.split(';');
+                const url = split[0];
+                const newPath = split[4];
+                if (url && newPath) {
+                    links.push({
+                        url,
+                        newPath,
+                    });
+                }
+            }
+            socket.emit('import-links-value', index + 1);
+        });
+
+        const navRepo = libs.tools.getNavRepo();
+        const linksContent = navRepo.get('/links');
+        if (linksContent) {
+            navRepo.delete('/links');
+        }
+        navRepo.create({
+            _name: 'links',
+            parentPath: '/',
+            refresh: true,
+            data: {
+                links,
+            },
+        });
+    } else {
+        log.info('links.csv not found');
+    }
+}
 
 function importOfficeInformation (socket) {
     libs.officeInformation.submitCheckTask();
@@ -228,6 +274,37 @@ function createElements () {
         head: 'Translate',
         body: {
             elements: [
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Import Links',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'import-links',
+                            progress: {
+                                value: 'import-links-value',
+                                max: 'import-links-max',
+                                valId: 'import-links-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'import-links-button',
+                            action: 'importLinks',
+                            text: 'Import',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
                 {
                     tag: 'div',
                     tagClass: 'row',
