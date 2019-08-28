@@ -713,6 +713,25 @@ function getIdFromUrl (url) {
     };
     url = url.toLowerCase();
     if (url.indexOf('https://') !== -1 || url.indexOf('http://') !== -1) {
+        // check link import
+        const navRepo = getNavRepo();
+        const links = navRepo.get('/links');
+        if (links) {
+            let match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
+            if (match) {
+                const ref = libs.content.get({
+                    key: match.newPath,
+                });
+                if (ref) {
+                    ret.external = false;
+                    ret.refId = ref._id;
+                    ret.pathTo = ref._path;
+                    return ret;
+                }
+            }
+        }
+
+        // try to find path based on url
         url = url.replace(':443', '');
         if (url.indexOf('https://www.nav.no/') === 0 || url.indexOf('http://www.nav.no/') === 0) {
             ret.external = false;
