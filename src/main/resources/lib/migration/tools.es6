@@ -712,6 +712,9 @@ function getIdFromUrl (url) {
         pathTo: null,
     };
     url = url.toLowerCase();
+    if (url.indexOf('/') === 0) {
+        url = 'http://www.nav.no' + url;
+    }
     if (url.indexOf('https://') !== -1 || url.indexOf('http://') !== -1) {
         // check link import
         const navRepo = getNavRepo();
