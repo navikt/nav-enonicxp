@@ -6,9 +6,10 @@
                     <div class="settings">
                         <ul class="nav">
                             <li class="dropdown">
-                                <button type="button" class="link-btn dropdown-toggle" data-toggle="dropdown">
-                                    [[${langBundles.language}]]
-                                </button>
+                                <button
+                                    type="button" class="link-btn dropdown-toggle" data-toggle="dropdown"
+                                    data-th-utext="${langBundles.language}"
+                                ></button>
                                 <ul class="dropdown-menu hidden" aria-expanded="false">
                                     <li data-th-each="languageSelector : ${langSelectors}" data-th-class="${languageSelector.active}">
                                         <a data-th-href="${languageSelector.href}" data-th-title="${languageSelector.title}">

@@ -29,9 +29,9 @@ function handleGet (req) {
             homeUrl: libs.portal.pageUrl({
                 path: siteUrl,
             }),
-            baseUrl: app.config.baseUrl,
-            login: app.config.loginUrl,
-            logout: app.config.logoutUrl,
+            baseUrl: app.config.baseUrl || 'https://tjenester.nav.no',
+            login: app.config.loginUrl || 'https://tjenester.nav.no/dittnav/oversikt',
+            logout: app.config.logoutUrl || 'https://loginservice.nav.no/slo',
             sok: '/sok',
         };
         const menu = libs.menu.getMegaMenu(libs.content.get({
