@@ -12,10 +12,6 @@ const repo = libs.node.connect({
     principals: ['role:system.admin'],
 });
 
-const oldToNewRefMap = {
-    // id map of all translated content
-};
-
 exports.translateContent = translateContent;
 /**
  * @description takes in an old content type and translates it into a new content type. Will translate other content that references the content as well
@@ -162,7 +158,7 @@ function translateContent (content) {
 
         // NOTE some of these updateTimeAndOrder functions might be overkill, but better safe than sorry
     } else {
-        oldToNewRefMap[content._id] = newContent._id;
+        libs.tools.updateModifyToRef(content._id, newContent._id);
     }
 
     return newContent;
@@ -189,48 +185,10 @@ function getTmpParentPath (content) {
     return contentPathArr.slice(0, -1).join('/') + '/';
 }
 
-exports.updateRefs = updateRefs;
-function updateRefs () {
-    for (let oldId in oldToNewRefMap) {
-        let newId = oldToNewRefMap[oldId];
-        // find and update refs from old to new
-        let references = libs.tools.getRefs({
-            _id: oldId,
-        });
-        references.forEach(ref => {
-            libs.tools.modify(ref, newId, oldId);
-        });
-        // clear ref key from map
-        delete oldToNewRefMap[oldId];
-    }
-}
-
 function translateCms2xpSectionToContentList (cms2xpSection) {
     let sectionContents = [];
     if (cms2xpSection.data.sectionContents) {
-        // map old ids to new, in case they are already converted
-        const idList = cms2xpSection.data.sectionContents ? Array.isArray(cms2xpSection.data.sectionContents) ? cms2xpSection.data.sectionContents : [cms2xpSection.data.sectionContents] : [];
-        const oldSectionContents = idList.map(id => {
-            if (oldToNewRefMap[id]) {
-                return oldToNewRefMap[id];
-            } else {
-                return id;
-            }
-        });
-            // look them up to see if they exist, weeds out old non-existing ids
-        if (oldSectionContents.length > 0) {
-            sectionContents = libs.content
-                .query({
-                    start: 0,
-                    count: 1000,
-                    filters: {
-                        ids: {
-                            values: oldSectionContents,
-                        },
-                    },
-                })
-                .hits.map(el => el._id);
-        }
+        sectionContents = cms2xpSection.data.sectionContents ? Array.isArray(cms2xpSection.data.sectionContents) ? cms2xpSection.data.sectionContents : [cms2xpSection.data.sectionContents] : [];
     }
 
     // create new content-list
@@ -303,7 +261,7 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
 
         // map references from sidebeskrivelse to the new page-list
         if (sidebeskrivelseRef) {
-            oldToNewRefMap[sidebeskrivelseRef] = tavleliste._id;
+            libs.tools.updateModifyToRef(sidebeskrivelseRef, tavleliste._id);
         }
 
         tavleliste = updateTimeAndOrder(cms2xpSection, tavleliste);
@@ -871,11 +829,11 @@ function translateNavRapportHandbok (rapportHandbok) {
     // create main-article-chapter elements as children of the main-article
     rapportHandbok.data.chapters.forEach(chapterId => {
         let chapter = libs.content.get({
-            key: oldToNewRefMap[chapterId] ? oldToNewRefMap[chapterId] : chapterId,
+            key: libs.tools.getModifyToFromRef(chapterId, libs.tools.getNavRepo()),
         });
         if (chapter) {
             const name = chapter._name.replace(/\?/g, '');
-            libs.content.create({
+            const mainArticleChapter = libs.content.create({
                 parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
                 contentType: app.name + ':main-article-chapter',
                 displayName: chapter.displayName,
@@ -884,6 +842,7 @@ function translateNavRapportHandbok (rapportHandbok) {
                     article: chapter._id,
                 },
             });
+            libs.tools.addRef(chapterId, mainArticleChapter);
         }
     });
 

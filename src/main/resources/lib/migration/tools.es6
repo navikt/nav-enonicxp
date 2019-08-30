@@ -914,3 +914,84 @@ function getNavRepo () {
 
     return navRepo;
 }
+
+exports.updateModifyToRef = updateModifyToRef;
+function updateModifyToRef (oldRef, newRef) {
+    getNavRepo.modify({
+        key: `/references/${oldRef}`,
+        editor: c => {
+            c.data.modifyTo = newRef;
+            return c;
+        },
+    });
+}
+
+exports.saveRefs = saveRefs;
+function saveRefs (content, navRepo) {
+    const references = libs.content.query({
+        query: `_references LIKE "${content._id}"`,
+        start: 0,
+        count: 10000,
+    }).hits.map(r => r._id);
+
+    navRepo.create({
+        _name: `${content._id}`,
+        _parentPath: '/references',
+        data: {
+            references,
+            modifyTo: content._id,
+        },
+    });
+}
+
+exports.addRef = addRef;
+function addRef (addTo, id) {
+    const navRepo = getNavRepo();
+    navRepo.modify(`/references/${addTo}`, c => {
+        const references = c.data.references ? Array.isArray(c.data.references) ? c.data.references : [c.data.references] : [];
+        references.push(id);
+        c.data.references = references;
+        return c;
+    });
+}
+
+exports.getModifyToFromRef = getModifyToFromRef;
+function getModifyToFromRef (oldId, navRepo) {
+    const refContent = navRepo.get(`/references/${oldId}`);
+    if (refContent && refContent.data.modifyTo !== oldId) {
+        const newId = refContent.data.modifyTo;
+        return getModifyToFromRef(newId, navRepo);
+    }
+    return oldId;
+}
+
+exports.updateRefsAfterMigration = updateRefsAfterMigration;
+function updateRefsAfterMigration () {
+    const navRepo = getNavRepo();
+    let start = 0;
+    const count = 100;
+    let length = count;
+    while (count === length) {
+        const childIdList = navRepo.findChildren({
+            parentKey: '/references',
+            start,
+            count,
+        }).hits.map(c => c.id);
+        start += count;
+        length = childIdList.length;
+
+        childIdList.forEach(childId => {
+            const child = navRepo.get(childId);
+            const oldId = child._name;
+            const newId = getModifyToFromRef(oldId, navRepo);
+            if (oldId !== newId) {
+                const references = child.data.references.map(ref => getModifyToFromRef(ref, navRepo));
+                references.forEach(refId => {
+                    modify(libs.content.get({
+                        key: refId,
+                    }), newId, oldId);
+                });
+            }
+        });
+    }
+}

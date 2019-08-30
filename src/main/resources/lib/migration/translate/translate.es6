@@ -18,6 +18,9 @@ exports.handle = function (socket) {
     socket.on('importOfficeInformation', () => {
         libs.tools.runInContext(socket, importOfficeInformation);
     });
+    socket.on('saveRefs', () => {
+        libs.tools.runInContext(socket, saveRefs);
+    });
     socket.on('main', () => {
         libs.tools.runInContext(socket, updateMainOppslagstavle);
     });
@@ -31,6 +34,51 @@ exports.handle = function (socket) {
         libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
 };
+
+let refMax = 0;
+let refCount = 0;
+function saveRefs (socket) {
+    refMax = 0;
+    refCount = 0;
+    const navRepo = libs.tools.getNavRepo();
+
+    const referencesContent = navRepo.get('/references');
+    if (referencesContent) {
+        navRepo.delete('/references');
+    }
+
+    navRepo.create({
+        _name: 'references',
+        parentPath: '/',
+        refresh: true,
+        data: {
+        },
+    });
+
+    saveRefsToChildrenOf(libs.content.get({
+        key: '/redirects',
+    }), navRepo, socket);
+    saveRefsToChildrenOf(libs.content.get({
+        key: '/content',
+    }), navRepo, socket);
+    saveRefsToChildrenOf(libs.content.get({
+        key: '/www.nav.no',
+    }), navRepo, socket);
+}
+
+function saveRefsToChildrenOf (parent, navRepo, socket) {
+    const children = libs.navUtils.getAllChildren(parent);
+
+    refMax += children.length;
+    socket.emit('save-refs-max', refMax);
+
+    children.forEach(child => {
+        libs.tools.saveRefs(child, navRepo);
+
+        socket.emit('save-refs-value', ++refCount);
+        saveRefsToChildrenOf(child, navRepo, socket);
+    });
+}
 
 function importLinks (socket) {
     const linkFile = libs.io.getResource('/lib/migration/translate/links.csv');
@@ -107,7 +155,7 @@ function updateCms2xpPage (socket) {
             const articleKey = cms2xpPage.x['no-nav-navno'].cmsMenu.content;
             const newPage = libs.contentTranslator.translateCms2xpPageToMainArticle(cms2xpPage);
 
-            // move all children from article to cms2xpPage
+            // move all children from article to new page based on the old cms2xpPage
             const children = libs.content.getChildren({
                 key: articleKey,
                 start: 0,
@@ -190,8 +238,7 @@ function updateMainOppslagstavle (socket) {
     translateChildrenOf(socket, '/content');
     deleteOldAndMoveNew('/content', '/www.nav.no/tmp/content');
 
-    // update all references from old to new
-    libs.contentTranslator.updateRefs();
+    libs.tools.updateRefsAfterMigration();
 }
 
 function deleteOldAndMoveNew (contentKey, newContentKey) {
@@ -319,6 +366,37 @@ function createElements () {
                             id: 'office-information-button',
                             action: 'importOfficeInformation',
                             text: 'Import',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Save refs',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'save-refs',
+                            progress: {
+                                value: 'save-refs-value',
+                                max: 'save-refs-max',
+                                valId: 'save-refs-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'save-refs-button',
+                            action: 'saveRefs',
+                            text: 'Save',
                         },
                         {
                             tag: 'li',
