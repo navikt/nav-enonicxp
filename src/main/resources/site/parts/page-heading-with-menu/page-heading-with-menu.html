@@ -47,14 +47,13 @@
                                 <p>
                                     [[${langBundles.user.statusTrue}]]
                                 </p>
-                                <p>
-                                    [[${langBundles.user.reminder}]]
+                                <p data-th-utext="${langBundles.user.reminder}">
                                 </p>
                                 <span class="arrow"></span>
                             </div>
                         </div>
                         <div id="auth-btns">
-                            <a id="login" class="hidden knapp mini btn-auth btn-login" data-th-href="${urls.login}">
+                            <a id="login" class="knapp mini btn-auth btn-login" data-th-href="${urls.login}">
                                 [[${langBundles.user.logIn}]]
                             </a>
                             <a
@@ -67,7 +66,7 @@
                             </a>
                         </div>
                         <div class="login-tooltip hidden">
-                            <p>[[${langBundles.logInNAV}]]</p>
+                            <p>[[${langBundles.user.logInNAV}]]</p>
                             <span class="arrow"></span>
                         </div>
                     </div>
