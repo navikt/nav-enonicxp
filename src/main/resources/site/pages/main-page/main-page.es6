@@ -53,7 +53,8 @@ function handleGet (req) {
         '<script id="navno-props" src="' + libs.portal.assetUrl({
             path: 'js/navno-page.js',
         }) + '" seksjonssider="' + seksjonsSider +
-        '" authServiceUrl="https://www.nav.no/innloggingslinje-api/auth"></script>', // TODO: URL miljøavhenging
+        '" authServiceUrl="' + (app.config.authServiceUrl ? app.config.authServiceUrl : 'https://www.nav.no/innloggingslinje-api/auth') +
+        '"></script>',
         '<script async src="' + libs.portal.assetUrl({
             path: 'js/navno.js',
         }) + '"></script>', // TODO: Lage ny navno.min.js og bruke den
