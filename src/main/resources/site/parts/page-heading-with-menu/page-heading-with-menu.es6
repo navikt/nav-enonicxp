@@ -25,6 +25,7 @@ function handleGet (req) {
             },
         };
         const siteUrl = '/www.nav.no/';
+        log.info(JSON.stringify(app.config));
         const urls = {
             homeUrl: libs.portal.pageUrl({
                 path: siteUrl,
