@@ -842,7 +842,7 @@ function translateNavRapportHandbok (rapportHandbok) {
                     article: chapter._id,
                 },
             });
-            libs.tools.addRef(chapterId, mainArticleChapter);
+            libs.tools.addRef(chapterId, mainArticleChapter._id);
         }
     });
 

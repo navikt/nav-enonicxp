@@ -917,7 +917,7 @@ function getNavRepo () {
 
 exports.updateModifyToRef = updateModifyToRef;
 function updateModifyToRef (oldRef, newRef) {
-    getNavRepo.modify({
+    getNavRepo().modify({
         key: `/references/${oldRef}`,
         editor: c => {
             c.data.modifyTo = newRef;
@@ -947,11 +947,14 @@ function saveRefs (content, navRepo) {
 exports.addRef = addRef;
 function addRef (addTo, id) {
     const navRepo = getNavRepo();
-    navRepo.modify(`/references/${addTo}`, c => {
-        const references = c.data.references ? Array.isArray(c.data.references) ? c.data.references : [c.data.references] : [];
-        references.push(id);
-        c.data.references = references;
-        return c;
+    navRepo.modify({
+        key: `/references/${addTo}`,
+        editor: c => {
+            const references = c.data.references ? Array.isArray(c.data.references) ? c.data.references : [c.data.references] : [];
+            references.push(id);
+            c.data.references = references;
+            return c;
+        },
     });
 }
 
@@ -985,11 +988,19 @@ function updateRefsAfterMigration () {
             const oldId = child._name;
             const newId = getModifyToFromRef(oldId, navRepo);
             if (oldId !== newId) {
-                const references = child.data.references.map(ref => getModifyToFromRef(ref, navRepo));
+                const refs = child.data.references ? Array.isArray(child.data.references) ? child.data.references : [child.data.references] : [];
+                const references = refs.map(ref => getModifyToFromRef(ref, navRepo));
                 references.forEach(refId => {
-                    modify(libs.content.get({
+                    let refTomodify = libs.content.get({
                         key: refId,
-                    }), newId, oldId);
+                    });
+                    if (refTomodify) {
+                        modify(
+                            refTomodify,
+                            newId,
+                            oldId
+                        );
+                    }
                 });
             }
         });
