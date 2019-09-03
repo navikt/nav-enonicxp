@@ -425,28 +425,22 @@ function translateKortOmToMainArticle (kortOm, tmpParentPath) {
         libs.tools.changeTilbakemelding,
     ])(kortOm);
 
-    // add table of contents to all kort_om main-articles
-    const data = kortOm.data;
-    data.hasTableOfContents = 'h3';
-
     // create new main article based on the old article
     const newKortOm = {
         name: kortOm._name,
         displayName: kortOm.displayName,
         contentType: app.name + ':main-article',
         parentPath: tmpParentPath,
-        data: data,
+        data: kortOm.data,
         x: getXData(kortOm),
     };
-    try {
-        let mainArticle = libs.content.create(newKortOm);
-        mainArticle = updateTimeAndOrder(kortOm, mainArticle);
 
-        return mainArticle;
-    } catch (e) {
-        log.info(e);
-        log.info(JSON.stringify(newKortOm, null, 4));
-    }
+    // add table of contents to all kort_om main-articles
+    newKortOm.data.hasTableOfContents = 'h3';
+    let mainArticle = libs.content.create(newKortOm);
+    mainArticle = updateTimeAndOrder(kortOm, mainArticle);
+
+    return mainArticle;
 }
 
 /**

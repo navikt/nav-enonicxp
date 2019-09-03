@@ -74,7 +74,7 @@
                         <time datetime="2018-01-03 09:21">03/01/2018</time> EN
                         Can't find on Sami. These are the only three selectable languages on the site.
                     */-->
-                    <time datetime="X" data-th-attr="datetime=${content.modifiedTime}" data-th-text="${content.modifiedTime}">X</time>
+                    <time data-th-attr="datetime=${content.published}">[[${content.published}]]</time>
                     <!--/*
                     <xsl:choose>
                         <xsl:when test="@contenttype = 'Ekstern_lenke'">

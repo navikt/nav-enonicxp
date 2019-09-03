@@ -118,29 +118,24 @@ exports.dateTimePublished = function (content, language) {
         key: 'main_article.lastChanged', locale: language,
     });
     var p = content.publish.from ? content.publish.from : content.createdTime;
-    if (language !== 'no' && language !== 'en') {
-        published = libs.moment(p).locale('no').format('L');
-        // published = p;
-    } else {
-        published = libs.moment(p).locale(language).format('L');
-        // published = p;
-    }
-
-    if (language !== 'nn' && language !== 'se') {
-        lastModified = libs.moment(content.modifiedTime).locale('no').format('L');
-        // lastModified = content.modifiedTime;
-    } else {
-        lastModified = libs.moment(content.modifiedTime).locale(language).format('L');
-        // lastModified = content.modifiedTime;
-    }
+    published = formatDate(p, language);
+    lastModified = formatDate(content.modifiedTime, language);
     return navPublished + ' ' + published + (published !== lastModified ? ' | ' + navUpdated + ' ' + lastModified : '');
+};
+
+exports.formatDate = formatDate;
+function formatDate (date, language) {
+    // use nb(DD.MM.YYYY) for everything except for english content(MM/DD/YYYY)
+    return libs.moment(date).locale(language === 'en' ? 'en' : 'nb').format('L');
 };
 
 exports.getLanguageVersions = function (content) {
     var lang = {
         no: 'Bokmål',
         en: 'English',
+        se: 'Sámegiella',
         se_NO: 'Sámegiella',
+        nn: 'Nynorsk',
         nn_NO: 'Nynorsk',
     };
     var lRefs = content.data.languages;

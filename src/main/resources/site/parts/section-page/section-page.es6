@@ -4,6 +4,7 @@ const libs = {
     content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/cacheControll'),
+    navUtils: require('/lib/nav-utils'),
 };
 const view = resolve('section-page.html');
 
@@ -72,6 +73,7 @@ function mapElements (elementId) {
     const el = libs.content.get({
         key: elementId,
     });
+    const content = libs.portal.getContent();
     return el
         ? {
             isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
@@ -79,7 +81,7 @@ function mapElements (elementId) {
             icon: 'icon-' + (el.data.icon || 'document'),
             ingress: el.data.ingress || el.data.description || el.data.list_description,
             src: getSrc(el),
-            published: el.publish && el.publish.first ? el.publish.first : el.createdTime,
+            published: el.publish && el.publish.first ? libs.navUtils.formatDate(el.publish.first, content.language) : libs.navUtils.formatDate(el.createdTime, content.language),
         }
         : null;
 }
