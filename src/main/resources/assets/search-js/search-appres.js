@@ -54,6 +54,9 @@
                     $resultList.append($(hitTemplate));
                 }
 
+                // update hit count
+                $('#hit-count').text(data.total);
+
                 // show/hide load more button
                 if (data.isMore) {
                     $('#flere').removeClass('hidden');
