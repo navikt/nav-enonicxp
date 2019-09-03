@@ -24,17 +24,14 @@ function handleGet (req) {
                 }),
             },
         };
-        // TODO: URL-er skal være konfigurerbare
-        const serviceUrl = 'https://tjenester.nav.no';
         const siteUrl = '/www.nav.no/';
         const urls = {
             homeUrl: libs.portal.pageUrl({
                 path: siteUrl,
             }),
-            baseUrl: serviceUrl,
-            login: serviceUrl + '/oversikt',
-            logout: serviceUrl + '/esso/logout',
-            stillinger: serviceUrl + '/stillinger/',
+            baseUrl: app.config.baseUrl || 'https://tjenester.nav.no',
+            login: app.config.loginUrl || 'https://tjenester.nav.no/dittnav/oversikt',
+            logout: app.config.logoutUrl || 'https://loginservice.nav.no/slo',
             sok: '/sok',
         };
         const menu = libs.menu.getMegaMenu(libs.content.get({
