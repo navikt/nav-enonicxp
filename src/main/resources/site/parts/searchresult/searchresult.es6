@@ -17,7 +17,6 @@ function get (req) {
         url = url.replace('http', 'https');
     }
     log.info(url);
-    log.info(JSON.stringify(req.params));
 
     const response = libs.http.request({
         url,
@@ -38,7 +37,6 @@ function get (req) {
     model.form = libs.portal.pageUrl({
         id: libs.portal.getContent()._id,
     });
-    model.hasWord = !!model.word;
 
     return {
         body: libs.thymeleaf.render(view, model),

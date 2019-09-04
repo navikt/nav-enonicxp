@@ -17,22 +17,12 @@
         <div class="sokeresultatContainer">
             <h1 data-th-text="${fasett}"></h1>
             <div class="clearfix">
-                <div data-th-if="${hasWord}">
+                <div>
                     <div aria-atomic="true" aria-live="polite" class="pull-left">
                         <p class="treffInfo" id="id19c">
                             <span data-th-text="${total}" id="hit-count"></span>
                             treff for:
                             <span class="sokeord" data-th-text="${word}"></span>
-                        </p>
-                    </div>
-                    <a class="soketips" href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Brukerstotte+nav+no/Soketips">
-                        Søketips
-                    </a>
-                </div>
-                <div data-th-remove="tag" data-th-unless="${hasWord}">
-                    <div aria-atomic="true" aria-live="polite" class="pull-left">
-                        <p class="treffInfo">
-                            Søket er tomt
                         </p>
                     </div>
                     <a class="soketips" href="https://www.nav.no/no/NAV+og+samfunn/Kontakt+NAV/Brukerstotte+nav+no/Soketips">
@@ -53,7 +43,7 @@
                     <input type="hidden" name="ord" data-th-value="${word}" />
                 </form>
             </div>
-            <ul class="sokeresultatliste" data-th-if="${hasWord}">
+            <ul class="sokeresultatliste">
                 <li data-th-class="${hit.className}" data-th-each="hit : ${hits}">
                     <a data-th-href="${hit.href}">
                         <h2 data-th-text="${hit.displayName}"></h2>
@@ -89,7 +79,7 @@
             </a>
         </div>
     </section>
-    <section class="col-md-4 col-4" data-th-if="${hasWord}" id="id38">
+    <section class="col-md-4 col-4" id="id38">
         <form data-th-action="${searchApi}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
                 <ul class="fasettListe" id="id33">
