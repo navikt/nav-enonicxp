@@ -40,7 +40,7 @@
                         <label for="ida0-1">Dato</label>
                         &nbsp;&nbsp;&nbsp;&nbsp;
                     </div>
-                    <input type="hidden" name="ord" data-th-value="${word}" />
+                    <input type="hidden" maxlength="200" name="ord" data-th-value="${word}" />
                 </form>
             </div>
             <ul class="sokeresultatliste">
@@ -154,7 +154,7 @@
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
                     </li>
                 </ul>
-                <input data-th-value="${word}" name="ord" type="hidden" />
+                <input data-th-value="${word}" maxlength="200" name="ord" type="hidden" />
                 <input data-th-value="${c}" name="c" type="hidden" />
                 <input type="hidden" name="s" data-th-value="${s}" />
             </div>

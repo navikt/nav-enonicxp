@@ -18,6 +18,10 @@ function get (req) {
     }
     log.info(url);
 
+    if (req.params.ord && req.params.ord.length > 200) {
+        req.params.ord = req.params.ord.substring(0, 200);
+    }
+
     const response = libs.http.request({
         url,
         params: req.params,
