@@ -11,7 +11,6 @@ function get (req) {
         application: 'navno.nav.no.search',
         type: 'absolute',
     });
-    log.info(url);
 
     if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {
         url = url.replace('http', 'https');
@@ -20,6 +19,10 @@ function get (req) {
 
     if (req.params.ord && req.params.ord.length > 200) {
         req.params.ord = req.params.ord.substring(0, 200);
+    }
+
+    if (req.params.ord) {
+        req.params.ord = encodeURI(req.params.ord);
     }
 
     const response = libs.http.request({
