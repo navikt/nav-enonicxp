@@ -1091,11 +1091,10 @@ button.toggle-search.m-open span {
     }
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link .tilbaketilforsidelink {
-        bottom: 5px;
+        position: initial;
         color: #fff;
         font-size: 1rem;
         border: none;
-        margin-left: 0px
     }
 
     .accessible-megamenu-panel .tilbaketilgruppe .home-link:before {
@@ -2449,8 +2448,8 @@ body > img[src*="nav.tns-cs.net"] {
 .tilbaketilgruppe .tilbaketittel {
     color: #000;
     position: absolute;
-    bottom: 23px;
-    margin-left: 8px
+    bottom: 14px;
+    left: 54px
 }
 
 .tilbaketilgruppe .home-link {
@@ -2461,14 +2460,15 @@ body > img[src*="nav.tns-cs.net"] {
 
 .tilbaketilgruppe .home-link .tilbaketilforsidelink {
     position: absolute;
-    margin-left: 8px
+    top: 2px;
+    left: 54px
 }
 
 .tilbaketilgruppe .home-link:before {
     display: inline-block;
     content: "";
     width: 46px;
-    height: 60px;
+    height: 50px;
     background: transparent url('../img/navno/gfx/mainmenu/hjem_sort.png') no-repeat 66% 20%;
     background-size: 55%
 }
@@ -2477,7 +2477,7 @@ body > img[src*="nav.tns-cs.net"] {
     display: inline-block;
     content: "";
     width: 46px;
-    height: 60px;
+    height: 50px;
     background: transparent url('../../img/navno/globalmenuDittNav/person_graa.png') no-repeat 0 0;
     background-size: 90%
 }
@@ -2500,7 +2500,7 @@ body > img[src*="nav.tns-cs.net"] {
     display: inline-block;
     content: "";
     width: 46px;
-    height: 60px;
+    height: 50px;
     background: transparent url('../img/navno/gfx/mainmenu/hjem_blaa.png') no-repeat 66% 20%;
     background-size: 55%
 }
