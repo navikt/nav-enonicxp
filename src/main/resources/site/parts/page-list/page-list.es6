@@ -18,7 +18,7 @@ exports.get = function (req) {
                     key: value,
                 });
             })
-            .filter(el => !!el)
+            .filter(el => !!el && el._id !== content._id)
             .concat(libs.content.getChildren({
                 key: content._id, start: 0, count: 100,
             }).hits)

@@ -57,18 +57,40 @@
                 <li data-th-class="${hit.className}" data-th-each="hit : ${hits}">
                     <a data-th-href="${hit.href}">
                         <h2 data-th-text="${hit.displayName}"></h2>
-                        <p class="resultattekst" data-th-utext="${hit.highlight}"></p>
+                        <p class="resultattekst" data-th-if="${!hit.officeInformation}" data-th-utext="${hit.highlight}"></p>
+                        <table data-th-if="${hit.officeInformation}">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        TELEFON:
+                                    </td>
+                                    <td>[[${hit.officeInformation.phone}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        PUBLIKUMSMOTTAK:
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li class="listeinnisoketreff" data-th-each="audienceReception : ${hit.officeInformation.audienceReceptions}">
+                                                <span>[[${audienceReception}]]</span>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                         <p data-th-if="${hit.priority}">Innhold anbefalt av NAV</p>
                     </a>
                 </li>
             </ul>
-            <a class="flereResultater null" data-th-if="${isMore}" href="javascript:;" id="flere" role="button">
+            <a class="flereResultater" data-th-classappend="${!isMore} ? hidden : ''" href="javascript:;" id="flere" role="button">
                 Vis flere
             </a>
         </div>
     </section>
     <section class="col-md-4 col-4" data-th-if="${word}" id="id38">
-        <form data-th-action="${form}" id="fasettform" method="GET">
+        <form data-th-action="${searchApi}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
                 <ul class="fasettListe" id="id33">
                     <li class="utvidbar" data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}">
@@ -85,7 +107,7 @@
 
                         <label data-th-for="${agg.key}" data-th-text="${agg.key}"></label>
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
-                        <div data-th-if="${agg.checked}">
+                        <div data-th-if="${agg.docCount > 0}">
                             <ul class="underFasettListe clearfix">
                                 <li class="defaultFasett" data-th-classappend="${agg.defaultClassName}">
                                     <input class="defaultFasett" data-th-checked="${agg.default}" data-th-id="${agg.key + 'all'}" type="checkbox" />

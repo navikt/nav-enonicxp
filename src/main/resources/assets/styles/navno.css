@@ -7426,12 +7426,12 @@ ul.regular {
     margin-bottom: 0
 }
 
-.sokeresultatContainer .sokeresultatliste li ul {
-    list-style-type: disc
-}
+/* .sokeresultatContainer .sokeresultatliste li ul { */
+    /* list-style-type: disc */
+/* } */
 
 .sokeresultatContainer .sokeresultatliste li ul li {
-    float: left;
+    /* float: left; */
     padding: 0 28px 0 0;
     border: none
 }

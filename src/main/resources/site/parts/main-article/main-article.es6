@@ -25,7 +25,9 @@ exports.get = function (req) {
 
         // Innholdsfortegnelse
         let toc = [];
-        if (data.hasTableOfContents && data.hasTableOfContents !== 'none') {
+        // TODO Remove the Kort_om hardcode after migrations has set h3 correctly on all old Kort_om articles
+        if ((data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
+            (content.x && content.x['no-nav-navno'] && content.x['no-nav-navno'].oldContentType && content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')) {
             let count = 0;
             let ch = 1;
             let ind = data.text.indexOf('<h3>');
