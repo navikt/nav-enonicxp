@@ -7409,7 +7409,9 @@ ul.regular {
 
 .sokeresultatContainer .sokeresultatliste li a {
     display: block;
-    text-decoration: none
+    text-decoration: none;
+    overflow-wrap: break-word;
+    word-break: break-word
 }
 
 .sokeresultatContainer .sokeresultatliste li a:hover {
