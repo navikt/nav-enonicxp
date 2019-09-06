@@ -47,6 +47,7 @@
                 <li data-th-class="${hit.className}" data-th-each="hit : ${hits}">
                     <a data-th-href="${hit.href}">
                         <h2 data-th-text="${hit.displayName}"></h2>
+                        <p>[[${hit.displayPath}]]</p>
                         <p class="resultattekst" data-th-if="${!hit.officeInformation}" data-th-utext="${hit.highlight}"></p>
                         <table data-th-if="${hit.officeInformation}">
                             <tbody>
