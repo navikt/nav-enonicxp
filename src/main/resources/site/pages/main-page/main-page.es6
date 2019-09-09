@@ -41,21 +41,23 @@ function handleGet (req) {
         '<link rel="stylesheet" href="' + libs.portal.assetUrl({
             path: 'styles/navno.css',
         }) + '" />',
+        '<style>.async-hide{opacity:0!important}</style><script src="' + libs.portal.assetUrl({
+            path: '/js/optimize.js',
+        }) + '"></script>',
         '<script src="' + libs.portal.assetUrl({
             path: 'libs/modernizr.2.7.1.min.js',
         }) + '"></script>',
         '<script src="' + libs.portal.assetUrl({
             path: 'js/innloggingslinjen.min.js',
         }) + '"></script>',
-        '<script id="navno-page-js" src="' + libs.portal.assetUrl({
+        '<script id="navno-props" src="' + libs.portal.assetUrl({
             path: 'js/navno-page.js',
-        }) + '" seksjonssider="' + seksjonsSider + '"></script>',
-        '<script id="google-tag-manager-props" src="' + libs.portal.assetUrl({
-            path: 'js/google-tag-manager.js',
-        }) + '"></script>',
+        }) + '" seksjonssider="' + seksjonsSider +
+        '" authServiceUrl="' + (app.config.authServiceUrl ? app.config.authServiceUrl : 'https://www.nav.no/innloggingslinje-api/auth') +
+        '"></script>',
         '<script async src="' + libs.portal.assetUrl({
             path: 'js/navno.js',
-        }) + '"></script>', // TODO: Husk å sette tilbake til navno.min.js
+        }) + '"></script>', // TODO: Lage ny navno.min.js og bruke den
     ];
     const body = libs.thymeleaf.render(view, model);
     return {
