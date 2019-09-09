@@ -284,7 +284,7 @@ function createFacets (socket) {
     socket.emit('create-facets-value', 1);
 
     libs.content.create({
-        displayName: 'søk',
+        displayName: 'Søk',
         parentPath: '/www.nav.no/',
         contentType: 'no.nav.navno:searchresult',
         data: {

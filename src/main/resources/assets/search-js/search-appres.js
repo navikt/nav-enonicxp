@@ -33,7 +33,7 @@
                 // append all hits to result list
                 for (var i = 0; i < data.hits.length; i += 1) {
                     var hit = data.hits[i];
-                    var hitTemplate = '<li class="' + hit.className + '">' + '<a href="' + hit.href + '">' + '<h2>' + hit.displayName + '</h2>';
+                    var hitTemplate = '<li class="' + hit.className + '">' + '<a href="' + hit.href + '">' + '<h2>' + hit.displayName + '</h2><p>' + hit.displayPath + '</p>';
                     if (!hit.officeInformation) {
                         // normal
                         hitTemplate += '<p class="resultattekst">' + hit.highlight + '</p>';
@@ -53,6 +53,9 @@
                     hitTemplate += '</a>' + '</li>';
                     $resultList.append($(hitTemplate));
                 }
+
+                // update hit count
+                $('#hit-count').text(data.total);
 
                 // show/hide load more button
                 if (data.isMore) {
