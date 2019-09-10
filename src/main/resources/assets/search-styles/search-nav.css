@@ -136,6 +136,7 @@ input[type=radio]:focus + label {
 
 .sokeresultatContainer .sokeord {
     font-weight: bold;
+    word-break: break-word;
 }
 
 .sokeresultatContainer .sorteringListe {
@@ -233,6 +234,7 @@ input[type=radio]:focus + label {
 }
 
 .sokeresultatContainer .sokeresultatliste li a p.resultattekst {
+    word-break: break-word;
     margin-top: 11px;
     font-size: 1rem;
 }

@@ -24,9 +24,12 @@ exports.handleLinks = function (socket) {
 function replaceUrlsInContent (elem, socket) {
     const urls = libs.tools.getUrlsInContent(elem);
     if (urls.length >= 1) {
+        log.info(urls.length + ' URLS FOUND ON ' + elem._path);
         urls.forEach(url => {
+            log.info('URL FOUND :: ' + url);
             const result = libs.tools.getIdFromUrl(url);
             if (result.external === false && result.invalid === false) {
+                log.info('REPLACE URL ON ' + elem._path);
                 libs.tools.modify(elem, `content://${result.refId}`, url);
             }
         });

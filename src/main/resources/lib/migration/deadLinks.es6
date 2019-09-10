@@ -15,7 +15,6 @@ let socket;
 const elements = createNewElements();
 exports.handle = function (s) {
     socket = s;
-    const tArr = [];
 
     elements.action = [{
         id: 'lenke',
@@ -33,80 +32,120 @@ exports.handle = function (s) {
         libs.task.submit({
             description: 'Lager lenkeråterapport',
             task: () => {
-                libs.tools.runInContext(socket, () => {
-                    deadLinks(false, [], '');
-                    const fnd = repo.query({
-                        query: '_name LIKE "linkshit"',
-                    }).hits[0];
-                    if (fnd) { repo.delete(fnd._id); }
-                    repo.create({
-                        _name: 'linkshit',
-                        data: {
-                            shit: tArr,
-                        },
-                    });
-                });
+                libs.tools.runInContext(socket, handleDeadLinks);
             },
         });
     });
 
-    let val = 0;
-    let childC = 0;
+    socket.on('findOldFormLinks', () => {
+        libs.tools.runInContext(socket, findOldFormLinks);
+    });
+};
 
-    function deadLinks (el, arr, route) {
-        if (!el) {
-            el = libs.content.get({
-                key: '/www.nav.no',
-            });
+let val = 0;
+let childC = 0;
+let tArr = [];
+function handleDeadLinks (socket) {
+    // reset counters
+    val = 0;
+    childC = 0;
+    tArr = [];
 
-            if (!el) { return log.info('Failed'); }
-            route = 'www.nav.no';
-        } else { route = route + '->' + el.displayName; }
-        socket.emit('dlStatusTree', 'Working in ' + route);
-        if (el.hasChildren) {
-            const childs = libs.content.getChildren({
-                key: el._id,
-                count: 10000,
-                start: 0,
-            }).hits;
-            childC += childs.length;
-            socket.emit('dl-childCount', childC);
-            childs.forEach((child) => {
-                socket.emit('d-Value', ++val);
-                arr = deadLinks(child, arr, route);
-            });
-        }
-        runDeep(el.data);
-        return arr;
+    deadLinks(false, [], '', socket);
 
-        function runDeep (something) {
-            if (typeof something === 'string') {
-                let reg;
-                // eslint-disable-next-line no-useless-escape
-                const rx = /href=\"(.*?)\".*/g;
-                // eslint-disable-next-line no-cond-assign
-                while (reg = rx.exec(something)) {
-                    const address = reg.pop();
-                    socket.emit('dlStatus', 'Visiting: ' + address);
-                    if (!visit(address)) {
-                        tArr.push({
-                            el: el._id,
-                            route: route,
-                            address: address,
-                        });
-                    }
-                }
-            } else if (Array.isArray(something)) {
-                something.forEach(runDeep);
-            } else if (typeof something === 'object') {
-                for (let key in something) {
-                    if (something.hasOwnProperty(key)) { runDeep(something[key]); }
+    const fnd = repo.query({
+        query: '_name LIKE "linkshit"',
+    }).hits[0];
+    if (fnd) {
+        repo.delete(fnd._id);
+    }
+    repo.create({
+        _name: 'linkshit',
+        data: {
+            shit: tArr,
+        },
+    });
+}
+
+function deadLinks (el, arr, route, socket) {
+    if (!el) {
+        el = libs.content.get({
+            key: '/www.nav.no',
+        });
+
+        if (!el) { return log.info('Failed'); }
+        route = 'www.nav.no';
+    } else { route = route + '->' + el.displayName; }
+    socket.emit('dlStatusTree', 'Working in ' + route);
+    if (el.hasChildren) {
+        const childs = libs.content.getChildren({
+            key: el._id,
+            count: 10000,
+            start: 0,
+        }).hits;
+        childC += childs.length;
+        socket.emit('dl-childCount', childC);
+        childs.forEach((child) => {
+            socket.emit('d-Value', ++val);
+            arr = deadLinks(child, arr, route);
+        });
+    }
+    runDeep(el.data, socket);
+    return arr;
+
+    function runDeep (something, socket) {
+        if (typeof something === 'string') {
+            let reg;
+            // eslint-disable-next-line no-useless-escape
+            const rx = /href=\"(.*?)\".*/g;
+            // eslint-disable-next-line no-cond-assign
+            while (reg = rx.exec(something)) {
+                const address = reg.pop();
+                socket.emit('dlStatus', 'Visiting: ' + address);
+                if (!visit(address)) {
+                    tArr.push({
+                        el: el._id,
+                        route: route,
+                        address: address,
+                    });
                 }
             }
-            // else log.info(something);
+        } else if (Array.isArray(something)) {
+            something.forEach(runDeep);
+        } else if (typeof something === 'object') {
+            for (let key in something) {
+                if (something.hasOwnProperty(key)) { runDeep(something[key]); }
+            }
         }
+        // else log.info(something);
     }
-};
+}
+
+function findOldFormLinks (socket) {
+    let csv = 'Url;Skjema Id;Skjema Navn;Språk;Type\r\n';
+    const contentWithForms = libs.content.query({
+        start: 0,
+        count: 10000,
+        query: 'data.menuListItems.form-and-application.link LIKE "*"',
+    }).hits;
+
+    socket.emit('find-old-form-links-max', contentWithForms.length);
+    contentWithForms.forEach((c, index) => {
+        let formLinks = c.data.menuListItems['form-and-application'].link;
+        formLinks = formLinks ? Array.isArray(formLinks) ? formLinks : [formLinks] : [];
+        formLinks.forEach(link => {
+            const linkContent = libs.content.get({
+                key: link,
+            });
+            if (linkContent && linkContent.data && linkContent.data.number) {
+                csv += `https://${c._path.replace('/www.nav.no', 'www-x4.nav.no')};${linkContent.data.number};${linkContent.displayName};${c.language};${linkContent.type}\r\n`;
+            }
+        });
+        socket.emit('find-old-form-links-value', index + 1);
+    });
+
+    socket.emit('console.log', csv);
+}
 
 function createNewElements () {
     return {
@@ -145,9 +184,43 @@ function createNewElements () {
                             action: 'lenke',
                             text: 'Start',
                         },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
                     ],
                 },
-
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Find old form links',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'find-old-form-links',
+                            progress: {
+                                value: 'find-old-form-links-value',
+                                max: 'find-old-form-links-max',
+                                valId: 'find-old-form-links-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'find-old-form-links-button',
+                            action: 'findOldFormLinks',
+                            text: 'Find',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
             ],
         },
     };

@@ -4,6 +4,7 @@ const libs = {
     value: require('/lib/xp/value'),
     navUtils: require('/lib/nav-utils'),
     node: require('/lib/xp/node'),
+    repo: require('/lib/xp/repo'),
 };
 const repo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
@@ -130,19 +131,16 @@ exports.changeNewsSchemas = changeNewsSchemas;
  */
 function changeNewsSchemas (content) {
     content.data.menuListItems = content.data.menuListItems || [];
-    let ns = content.data.newsschemas;
-    if (!Array.isArray(ns)) {
-        ns = [ns];
+    let newschemas = content.data.newschemas;
+    if (!Array.isArray(newschemas)) {
+        newschemas = [newschemas];
     }
     content.data.menuListItems = addMenuListItem(
         content.data.menuListItems,
         'form-and-application',
-        ns.reduce((t, el) => {
-            if (el) {
-                t.push(el);
-            }
-            return t;
-        }, [])
+        newschemas.map(ns => {
+            return ns && ns.newschema ? ns.newschema : null;
+        }).reduce(reduceNullElements, []),
     );
     delete content.data.newschemas;
     if (content.data.forms) {
@@ -502,19 +500,21 @@ function getTableElements (content) {
     if (typeof content.data.sectionContents === 'string') {
         content.data.sectionContents = [content.data.sectionContents];
     }
+    return content.data.sectionContents || [];
 
-    return content.data.sectionContents
-        ? libs.content
-            .query({
-                filters: {
-                    ids: {
-                        values: content.data.sectionContents,
-                    },
-                },
-            })
-            .hits.map(mapIds)
-            .reduce(reduceNullElements, [])
-        : [];
+    // NOTE not really necessary, just removes ids of deleted content, which might mess up the order
+    // return content.data.sectionContents
+    //     ? libs.content
+    //         .query({
+    //             filters: {
+    //                 ids: {
+    //                     values: content.data.sectionContents,
+    //                 },
+    //             },
+    //         })
+    //         .hits.map(mapIds)
+    //         .reduce(reduceNullElements, [])
+    //     : [];
 }
 
 exports.moveNewContent = moveNewContent;
@@ -712,7 +712,29 @@ function getIdFromUrl (url) {
         pathTo: null,
     };
     url = url.toLowerCase();
+    if (url.indexOf('/') === 0) {
+        url = 'http://www.nav.no' + url;
+    }
     if (url.indexOf('https://') !== -1 || url.indexOf('http://') !== -1) {
+        // check link import
+        const navRepo = getNavRepo();
+        const links = navRepo.get('/links');
+        if (links) {
+            let match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
+            if (match) {
+                const ref = libs.content.get({
+                    key: match.newPath,
+                });
+                if (ref) {
+                    ret.external = false;
+                    ret.refId = ref._id;
+                    ret.pathTo = ref._path;
+                    return ret;
+                }
+            }
+        }
+
+        // try to find path based on url
         url = url.replace(':443', '');
         if (url.indexOf('https://www.nav.no/') === 0 || url.indexOf('http://www.nav.no/') === 0) {
             ret.external = false;
@@ -869,4 +891,118 @@ function getTemplate (templateName) {
         });
     }
     return r.hits[0]._id;
+}
+
+exports.getNavRepo = getNavRepo;
+function getNavRepo () {
+    const hasNavRepo = libs.repo.get('no.nav.navno');
+    if (!hasNavRepo) {
+        log.info('Create no.nav.navno repo');
+        libs.repo.create({
+            id: 'no.nav.navno',
+        });
+    }
+
+    const navRepo = libs.node.connect({
+        repoId: 'no.nav.navno',
+        branch: 'master',
+        user: {
+            login: 'su',
+        },
+        pricipals: ['role:system.admin'],
+    });
+
+    return navRepo;
+}
+
+exports.updateModifyToRef = updateModifyToRef;
+function updateModifyToRef (oldRef, newRef) {
+    getNavRepo().modify({
+        key: `/references/${oldRef}`,
+        editor: c => {
+            c.data.modifyTo = newRef;
+            return c;
+        },
+    });
+}
+
+exports.saveRefs = saveRefs;
+function saveRefs (content, navRepo) {
+    const references = libs.content.query({
+        query: `_references LIKE "${content._id}"`,
+        start: 0,
+        count: 10000,
+    }).hits.map(r => r._id);
+
+    navRepo.create({
+        _name: `${content._id}`,
+        _parentPath: '/references',
+        data: {
+            references,
+            modifyTo: content._id,
+        },
+    });
+}
+
+exports.addRef = addRef;
+function addRef (addTo, id) {
+    const navRepo = getNavRepo();
+    navRepo.modify({
+        key: `/references/${addTo}`,
+        editor: c => {
+            const references = c.data.references ? Array.isArray(c.data.references) ? c.data.references : [c.data.references] : [];
+            references.push(id);
+            c.data.references = references;
+            return c;
+        },
+    });
+}
+
+exports.getModifyToFromRef = getModifyToFromRef;
+function getModifyToFromRef (oldId, navRepo) {
+    const refContent = navRepo.get(`/references/${oldId}`);
+    if (refContent && refContent.data.modifyTo !== oldId) {
+        const newId = refContent.data.modifyTo;
+        return getModifyToFromRef(newId, navRepo);
+    }
+    return oldId;
+}
+
+exports.updateRefsAfterMigration = updateRefsAfterMigration;
+function updateRefsAfterMigration () {
+    const navRepo = getNavRepo();
+    let start = 0;
+    const count = 100;
+    let length = count;
+    while (count === length) {
+        const childIdList = navRepo.findChildren({
+            parentKey: '/references',
+            start,
+            count,
+        }).hits.map(c => c.id);
+        start += count;
+        length = childIdList.length;
+
+        childIdList.forEach(childId => {
+            const child = navRepo.get(childId);
+            const oldId = child._name;
+            const newId = getModifyToFromRef(oldId, navRepo);
+            if (oldId !== newId) {
+                const refs = child.data.references ? Array.isArray(child.data.references) ? child.data.references : [child.data.references] : [];
+                const references = refs.map(ref => getModifyToFromRef(ref, navRepo));
+                references.forEach(refId => {
+                    let refTomodify = libs.content.get({
+                        key: refId,
+                    });
+                    if (refTomodify) {
+                        modify(
+                            refTomodify,
+                            newId,
+                            oldId
+                        );
+                    }
+                });
+            }
+        });
+    }
 }
