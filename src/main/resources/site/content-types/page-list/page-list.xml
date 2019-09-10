@@ -19,6 +19,7 @@
             <label>Ingress</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
+        <mixin name="meta-description"/>
         <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på artiklene i artikkellisten</label>
             <default>unchecked</default>
