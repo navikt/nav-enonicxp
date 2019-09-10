@@ -2,6 +2,12 @@
     <display-name>Oppslagstavle</display-name>
     <super-type>base:unstructured</super-type>
     <form>
+        <field-set name="beskrivelse">
+            <label>Beskrivelse</label>
+            <items>
+            <mixin name="meta-description"/>
+            </items>
+        </field-set>
         <field-set name="table">
             <label>Tavleoppføringer</label>
             <help-text>Tavleoppføringer hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>

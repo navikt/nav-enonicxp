@@ -30,6 +30,7 @@ function handleGet (req) {
         title: content.displayName + ' - www.nav.no',
         mainRegion: mainRegion,
         footerRegion: footer,
+        description: content.data.metaDescription
     };
     const assets = [
         '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
