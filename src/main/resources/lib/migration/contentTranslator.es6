@@ -645,7 +645,7 @@ function updateTimeAndOrder (oldContent, newContent) {
 
             // order news and pressreleases by publish.first
             if (c.type === app.name + ':content-list' || c.type === app.name + ':page-list') {
-                const validNames = ['nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
+                const validNames = ['news', 'nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
                 if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
                     c._childOrder = 'publish.first DESC';
                 }
