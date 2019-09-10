@@ -11,9 +11,6 @@ exports.get = function (req) {
         pageContributions: {
             headEnd: [
                 '<link rel="stylesheet" href="' + libs.portal.assetUrl({
-                    path: 'search-styles/search.css',
-                }) + '" />',
-                '<link rel="stylesheet" href="' + libs.portal.assetUrl({
                     path: 'search-styles/search-nav.css',
                 }) + '" />',
             ],
