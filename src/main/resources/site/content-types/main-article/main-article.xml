@@ -68,9 +68,6 @@
                                     <custom-text>contentdata/links</custom-text>
                                     <occurrences maximum="0" minimum="1"/>
                                     <config>
-                                        <allow-content-type>no.nav.navno:Skjemavedlegg</allow-content-type>
-                                        <allow-content-type>no.nav.navno:Skjema_for_veileder</allow-content-type>
-                                        <allow-content-type>no.nav.navno:Skjema</allow-content-type>
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>

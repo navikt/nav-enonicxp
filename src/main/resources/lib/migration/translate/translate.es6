@@ -3,6 +3,8 @@ const libs = {
     contentTranslator: require('/lib/migration/contentTranslator'),
     tools: require('/lib/migration/tools'),
     navUtils: require('/lib/nav-utils'),
+    officeInformation: require('/lib/officeInformation'),
+    io: require('/lib/xp/io'),
 };
 
 const translateContentAZ = require('./translateContentAZ');
@@ -10,6 +12,15 @@ const translateLinks = require('./translateLinks');
 
 exports.handle = function (socket) {
     socket.emit('newTask', createElements());
+    socket.on('importLinks', () => {
+        libs.tools.runInContext(socket, importLinks);
+    });
+    socket.on('importOfficeInformation', () => {
+        libs.tools.runInContext(socket, importOfficeInformation);
+    });
+    socket.on('saveRefs', () => {
+        libs.tools.runInContext(socket, saveRefs);
+    });
     socket.on('main', () => {
         libs.tools.runInContext(socket, updateMainOppslagstavle);
     });
@@ -23,6 +34,97 @@ exports.handle = function (socket) {
         libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
 };
+
+let refMax = 0;
+let refCount = 0;
+function saveRefs (socket) {
+    refMax = 0;
+    refCount = 0;
+    const navRepo = libs.tools.getNavRepo();
+
+    const referencesContent = navRepo.get('/references');
+    if (referencesContent) {
+        navRepo.delete('/references');
+    }
+
+    navRepo.create({
+        _name: 'references',
+        parentPath: '/',
+        refresh: true,
+        data: {
+        },
+    });
+
+    saveRefsToChildrenOf(libs.content.get({
+        key: '/redirects',
+    }), navRepo, socket);
+    saveRefsToChildrenOf(libs.content.get({
+        key: '/content',
+    }), navRepo, socket);
+    saveRefsToChildrenOf(libs.content.get({
+        key: '/www.nav.no',
+    }), navRepo, socket);
+}
+
+function saveRefsToChildrenOf (parent, navRepo, socket) {
+    const children = libs.navUtils.getAllChildren(parent);
+
+    refMax += children.length;
+    socket.emit('save-refs-max', refMax);
+
+    children.forEach(child => {
+        libs.tools.saveRefs(child, navRepo);
+
+        socket.emit('save-refs-value', ++refCount);
+        saveRefsToChildrenOf(child, navRepo, socket);
+    });
+}
+
+function importLinks (socket) {
+    const linkFile = libs.io.getResource('/lib/migration/translate/links.csv');
+    if (linkFile.exists()) {
+        const stream = linkFile.getStream();
+        const lines = libs.io.readLines(stream);
+        socket.emit('import-links-max', lines.length);
+
+        const links = [];
+
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                const split = line.split(';');
+                const url = split[0];
+                const newPath = split[4];
+                if (url && newPath) {
+                    links.push({
+                        url,
+                        newPath,
+                    });
+                }
+            }
+            socket.emit('import-links-value', index + 1);
+        });
+
+        const navRepo = libs.tools.getNavRepo();
+        const linksContent = navRepo.get('/links');
+        if (linksContent) {
+            navRepo.delete('/links');
+        }
+        navRepo.create({
+            _name: 'links',
+            parentPath: '/',
+            refresh: true,
+            data: {
+                links,
+            },
+        });
+    } else {
+        log.info('links.csv not found');
+    }
+}
+
+function importOfficeInformation (socket) {
+    libs.officeInformation.submitCheckTask();
+}
 
 function updateCms2xpPage (socket) {
     // find all cms2xp_pages
@@ -52,6 +154,19 @@ function updateCms2xpPage (socket) {
             log.info('TRANSLATE :: ' + cms2xpPage._path + ' :: ' + cms2xpPage.type);
             const articleKey = cms2xpPage.x['no-nav-navno'].cmsMenu.content;
             const newPage = libs.contentTranslator.translateCms2xpPageToMainArticle(cms2xpPage);
+
+            // move all children from article to new page based on the old cms2xpPage
+            const children = libs.content.getChildren({
+                key: articleKey,
+                start: 0,
+                count: 100,
+            }).hits;
+            children.forEach(child => {
+                libs.content.move({
+                    source: child._id,
+                    target: newPage._path + '/',
+                });
+            });
 
             // save which cms2xp pages have taken over the content in the original content article
             if (!articles[articleKey]) {
@@ -123,8 +238,7 @@ function updateMainOppslagstavle (socket) {
     translateChildrenOf(socket, '/content');
     deleteOldAndMoveNew('/content', '/www.nav.no/tmp/content');
 
-    // update all references from old to new
-    libs.contentTranslator.updateRefs();
+    libs.tools.updateRefsAfterMigration();
 }
 
 function deleteOldAndMoveNew (contentKey, newContentKey) {
@@ -207,6 +321,89 @@ function createElements () {
         head: 'Translate',
         body: {
             elements: [
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Import Links',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'import-links',
+                            progress: {
+                                value: 'import-links-value',
+                                max: 'import-links-max',
+                                valId: 'import-links-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'import-links-button',
+                            action: 'importLinks',
+                            text: 'Import',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Office Information',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'office-information-button',
+                            action: 'importOfficeInformation',
+                            text: 'Import',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Save refs',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'save-refs',
+                            progress: {
+                                value: 'save-refs-value',
+                                max: 'save-refs-max',
+                                valId: 'save-refs-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'save-refs-button',
+                            action: 'saveRefs',
+                            text: 'Save',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
                 {
                     tag: 'div',
                     tagClass: 'row',

@@ -12,10 +12,6 @@ const repo = libs.node.connect({
     principals: ['role:system.admin'],
 });
 
-const oldToNewRefMap = {
-    // id map of all translated content
-};
-
 exports.translateContent = translateContent;
 /**
  * @description takes in an old content type and translates it into a new content type. Will translate other content that references the content as well
@@ -101,9 +97,18 @@ function translateContent (content) {
         newContent = translateRapportHandbok(content);
     }
 
+    // cms2xp_sections without templates, aka news, nice to know, and shortcuts
+    if (content.type === app.name + ':cms2xp_section' && (!content.page || (content.page && !content.page.template))) {
+        newContent = translateCms2xpSectionToContentList(content);
+    }
+
+    if (content.type === app.name + ':Ekstra_stor_tabell') {
+        newContent = translateEkstraStorTabellToLargeTable(content);
+    }
+
     if (content === newContent) {
         log.info('NOT TRANSLATED');
-        const folder = libs.content.create({
+        let folder = libs.content.create({
             displayName: content.displayName,
             name: content._name,
             contentType: 'base:folder',
@@ -113,6 +118,9 @@ function translateContent (content) {
 
             },
         });
+
+        // mainly to keep old child order
+        folder = updateTimeAndOrder(content, folder);
 
         log.info('GET CHILDREN');
         const children = libs.content.getChildren({
@@ -127,6 +135,9 @@ function translateContent (content) {
                 source: child._id,
                 target: folder._path + '/',
             });
+
+            // revert to old manualOrderValue because moving an item resets it
+            updateTimeAndOrder(child, child);
         });
 
         log.info('MOVE CONTENT TO NEW');
@@ -134,16 +145,20 @@ function translateContent (content) {
             source: content._id,
             target: getTmpParentPath(content),
         });
-
-        // TODO set old sort order
+        // revert to old manualOrderValue because moving an item resets it
+        updateTimeAndOrder(content, content);
 
         log.info('MOVE FOLDER TO OLD');
         libs.content.move({
             source: folder._id,
             target: content._path,
         });
+        // revert to old manualOrderValue because moving an item resets it
+        updateTimeAndOrder(folder, folder);
+
+        // NOTE some of these updateTimeAndOrder functions might be overkill, but better safe than sorry
     } else {
-        oldToNewRefMap[content._id] = newContent._id;
+        libs.tools.updateModifyToRef(content._id, newContent._id);
     }
 
     return newContent;
@@ -170,70 +185,46 @@ function getTmpParentPath (content) {
     return contentPathArr.slice(0, -1).join('/') + '/';
 }
 
-exports.updateRefs = updateRefs;
-function updateRefs () {
-    for (let oldId in oldToNewRefMap) {
-        let newId = oldToNewRefMap[oldId];
-        // find and update refs from old to new
-        let references = libs.tools.getRefs({
-            _id: oldId,
-        });
-        references.forEach(ref => {
-            libs.tools.modify(ref, newId, oldId);
-        });
-        // clear ref key from map
-        delete oldToNewRefMap[oldId];
+function translateCms2xpSectionToContentList (cms2xpSection) {
+    let sectionContents = [];
+    if (cms2xpSection.data.sectionContents) {
+        sectionContents = cms2xpSection.data.sectionContents ? Array.isArray(cms2xpSection.data.sectionContents) ? cms2xpSection.data.sectionContents : [cms2xpSection.data.sectionContents] : [];
     }
+
+    // create new content-list
+    let contentList = libs.content.create({
+        name: cms2xpSection._name,
+        displayName: cms2xpSection.displayName,
+        parentPath: getTmpParentPath(cms2xpSection),
+        contentType: app.name + ':content-list',
+        data: {
+            sectionContents,
+        },
+        x: getXData(cms2xpSection),
+    });
+
+    contentList = updateTimeAndOrder(cms2xpSection, contentList);
+    return contentList;
 }
 
-function translateSectionTypeToContentList (content, contentParam) {
-    var CmsSectionKey = libs.navUtils.getContentParam(content, contentParam);
-    if (!CmsSectionKey) {
+function getContentListByType (content, contentParam) {
+    const cmsSectionKey = libs.navUtils.getContentParam(content, contentParam);
+    if (!cmsSectionKey) {
         return null;
     }
-    var section = libs.navUtils.getContentByMenuKey(CmsSectionKey);
+    const section = libs.navUtils.getContentByMenuKey(cmsSectionKey);
     if (!section) {
         return null;
     }
 
-    // update type on section from cms2xp section to content-list, and remove all non-existing elements in the section contents list
-    repo.modify({
-        key: section._id,
-        editor: translateSectionToContentList,
-    });
-
     return section._id;
-}
-
-function translateSectionToContentList (section) {
-    var sectionContents = [];
-    if (section.data.sectionContents) {
-        sectionContents = libs.content
-            .query({
-                start: 0,
-                count: 1000,
-                filters: {
-                    ids: {
-                        values: section.data.sectionContents,
-                    },
-                },
-            })
-            .hits.map(function (el) {
-                return el._id;
-            });
-    }
-    section.data = {
-        sectionContents: sectionContents,
-    };
-    section.type = app.name + ':content-list';
-    return section;
 }
 
 function translateTables (content) {
     var tableElements = libs.tools.getTableElements(content) || [];
-    var ntkElementId = translateSectionTypeToContentList(content, 'nicetoknow');
-    var newElementId = translateSectionTypeToContentList(content, 'news');
-    var scElementId = translateSectionTypeToContentList(content, 'shortcuts');
+    var ntkElementId = getContentListByType(content, 'nicetoknow');
+    var newElementId = getContentListByType(content, 'news');
+    var scElementId = getContentListByType(content, 'shortcuts');
 
     return libs.tools.createNewTableContent(tableElements, ntkElementId, newElementId, scElementId, content);
 }
@@ -270,7 +261,7 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
 
         // map references from sidebeskrivelse to the new page-list
         if (sidebeskrivelseRef) {
-            oldToNewRefMap[sidebeskrivelseRef] = tavleliste._id;
+            libs.tools.updateModifyToRef(sidebeskrivelseRef, tavleliste._id);
         }
 
         tavleliste = updateTimeAndOrder(cms2xpSection, tavleliste);
@@ -689,7 +680,9 @@ function updateTimeAndOrder (oldContent, newContent) {
             if (c._path.indexOf('/www.nav.no/en/') !== -1) {
                 c.language = 'en';
             } else if (c._path.indexOf('/www.nav.no/se/') !== -1) {
-                c.language = 'se_NO';
+                c.language = 'se';
+            } else if (c._path.indexOf('/nynorsk/') !== -1) {
+                c.language = 'nn';
             }
 
             // set language to norwegian if it's missing
@@ -830,11 +823,11 @@ function translateNavRapportHandbok (rapportHandbok) {
     // create main-article-chapter elements as children of the main-article
     rapportHandbok.data.chapters.forEach(chapterId => {
         let chapter = libs.content.get({
-            key: oldToNewRefMap[chapterId] ? oldToNewRefMap[chapterId] : chapterId,
+            key: libs.tools.getModifyToFromRef(chapterId, libs.tools.getNavRepo()),
         });
         if (chapter) {
             const name = chapter._name.replace(/\?/g, '');
-            libs.content.create({
+            const mainArticleChapter = libs.content.create({
                 parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
                 contentType: app.name + ':main-article-chapter',
                 displayName: chapter.displayName,
@@ -843,6 +836,7 @@ function translateNavRapportHandbok (rapportHandbok) {
                     article: chapter._id,
                 },
             });
+            libs.tools.addRef(chapterId, mainArticleChapter._id);
         }
     });
 
@@ -852,7 +846,11 @@ function translateNavRapportHandbok (rapportHandbok) {
 }
 
 function translateNavRapportHandbokKap (rapportHandbokKap) {
-    libs.tools.compose([libs.tools.changeNewsSchemas, libs.tools.changeInformation, libs.tools.changeSocial])(rapportHandbokKap);
+    libs.tools.compose([
+        libs.tools.changeNewsSchemas,
+        libs.tools.changeInformation,
+        libs.tools.changeSocial]
+    )(rapportHandbokKap);
 
     let mainArticle = libs.content.create({
         parentPath: getTmpParentPath(rapportHandbokKap),
@@ -939,4 +937,22 @@ function translateRapportHandbok (rapportHandbok) {
     mainArticle = updateTimeAndOrder(rapportHandbok, mainArticle);
 
     return mainArticle;
+}
+
+function translateEkstraStorTabellToLargeTable (ekstraStorTabell) {
+    // create new large table based on old ekstra_stor_tabell
+    let largeTable = libs.content.create({
+        name: ekstraStorTabell._name,
+        displayName: ekstraStorTabell.displayName,
+        contentType: app.name + ':large-table',
+        parentPath: getTmpParentPath(ekstraStorTabell),
+        data: {
+            text: ekstraStorTabell.data.article.text,
+        },
+        x: getXData(ekstraStorTabell),
+    });
+
+    largeTable = updateTimeAndOrder(ekstraStorTabell, largeTable);
+
+    return largeTable;
 }

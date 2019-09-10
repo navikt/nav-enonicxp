@@ -5,7 +5,7 @@ function parseToJSON (html) {
 
     var current = trimm.match(/<([/0-9a-zA-Z\s\\"=]*)>/g); // Maps the tags into groups
 
-    current = unmap(current, trimm); // Unmaps and parses into raw Ekstra_stor_tabell JSON
+    current = unmap(current, trimm); // Unmaps and parses into raw large-table JSON
 
     current = reParse(current.o); // Alters the raw JSON into correct JSON properties
     return current;

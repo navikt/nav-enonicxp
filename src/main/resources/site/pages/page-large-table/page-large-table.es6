@@ -5,14 +5,14 @@ const libs = {
     cache: require('/lib/cacheControll'),
 };
 const etag = libs.cache.etag;
-const view = resolve('ekstraStorTabell.html');
+const view = resolve('page-large-table.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'ekstraStorTabell', req.branch, () => {
+    return libs.cache.getPaths(req.path, 'page-large-table', req.branch, () => {
         const content = libs.portal.getContent();
         let parsed;
-        if (content.data.article && content.data.article.text) {
-            parsed = libs.parsers.map(libs.parsers.parse(content.data.article.text), true);
+        if (content.data.text) {
+            parsed = libs.parsers.map(libs.parsers.parse(content.data.text), true);
         }
         const assets = [
             '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
@@ -22,30 +22,28 @@ exports.get = function (req) {
                 path: 'img/navno/favicon.ico',
             }) + '" />',
             '<link rel="stylesheet" href="' + libs.portal.assetUrl({
-                path: 'styles/ekstraStorTabell/main.css',
+                path: 'styles/largeTable/main.css',
             }) + '" />',
             '<link rel="stylesheet" href="' + libs.portal.assetUrl({
-                path: 'styles/ekstraStorTabell/content.css',
+                path: 'styles/largeTable/content.css',
             }) + '" />',
             '<link rel="stylesheet" media="print" href="' + libs.portal.assetUrl({
-                path: 'styles/ekstraStorTabell/print.css',
+                path: 'styles/largeTable/print.css',
             }) + '" />',
         ];
         const model = {
             title: content.displayName + ' - www.nav.no',
             content: parsed,
-            referer: req.headers.Referer,
             icons: {
                 nav: libs.portal.assetUrl({
                     path: 'img/navno/logo.svg',
                 }),
             },
         };
-        const body = libs.thymeleaf.render(view, model);
 
         return {
             contentType: 'text/html',
-            body,
+            body: libs.thymeleaf.render(view, model),
             headers: {
                 'Cache-Control': 'must-revalidate',
                 'ETag': etag(),
