@@ -33,6 +33,9 @@ exports.handle = function (socket) {
     socket.on('fixLinks', () => {
         libs.tools.runInContext(socket, translateLinks.handleLinks);
     });
+    socket.on('createChapters', () => {
+        libs.tools.runInContext(socket, createChapters);
+    });
 };
 
 let refMax = 0;
@@ -315,6 +318,33 @@ function translateChildrenOf (socket, contentKey) {
     });
 }
 
+function createChapters (socket) {
+    const mainArticles = libs.content.query({
+        start: 0,
+        count: 100000,
+        query: `type = "${app.name}:main-article"`,
+    }).hits;
+
+    socket.emit('create-chapters-max', mainArticles.length);
+    mainArticles.forEach((mainArticle, index) => {
+        const children = libs.navUtils.getAllChildren(mainArticle).reverse();
+        children.forEach((child) => {
+            if (child.type === `${app.name}:main-article`) {
+                libs.content.create({
+                    parentPath: mainArticle._name,
+                    contentType: app.name + ':main-article-chapter',
+                    displayName: child.displayName,
+                    name: child._name + '_kap',
+                    data: {
+                        article: child._id,
+                    },
+                });
+            }
+        });
+        socket.emit('create-chapters-value', index + 1);
+    });
+}
+
 function createElements () {
     return {
         isNew: true,
@@ -523,6 +553,36 @@ function createElements () {
                             tagClass: ['is-info', 'button'],
                             action: 'fixLinks',
                             text: 'Translate',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Create chapters',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'create-chapters',
+                            progress: {
+                                value: 'create-chapters-value',
+                                max: 'create-chapters-max',
+                                valId: 'create-chapters-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'createChapters',
+                            text: 'Create',
                         },
                         {
                             tag: 'li',
