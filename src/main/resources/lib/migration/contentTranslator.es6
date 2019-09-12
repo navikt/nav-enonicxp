@@ -784,7 +784,9 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             const parameters = cms2xpPage.data.parameters;
             // take all data from article and add params
             let data = article.data;
+            let displayName = cms2xpPage.displayName;
             if (article.type === app.name + ':nav.sidebeskrivelse') {
+                displayName = article.displayName;
                 data = {
                     ingress: article.data.description,
                     text: ' ',
@@ -799,7 +801,7 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             // create new
             let newPage = libs.content.create({
                 name: cms2xpPage._name,
-                displayName: cms2xpPage.displayName,
+                displayName: displayName,
                 contentType: app.name + ':main-article',
                 parentPath: '/www.nav.no/tmp',
                 data,
