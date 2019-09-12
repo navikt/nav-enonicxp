@@ -183,43 +183,7 @@ function updateCms2xpPage (socket) {
     // delete all articles used by cms2xp_pages and update refs
     for (let articleId in articles) {
         const cms2xpPages = articles[articleId];
-        // find all references to the article
-        const refs = libs.tools.getRefs(articleId);
-        // update with closest cms2xp_page if there are more than one
-        refs.forEach((ref) => {
-            // split ref and cms2xp_page paths on / and update ref to point to the cms2xp_page with the most matching path parts
-            let cms2xpPage;
-            let pathMatches = 0;
-            const refPaths = ref._path.split('/');
-            cms2xpPages.forEach((c) => {
-                const cms2xpPaths = c._path.split('/');
-                let currentCms2xpPagePathMatches = 0;
-                // count matching path parts
-                for (let i = 0; i < cms2xpPaths.length; i += 1) {
-                    if (cms2xpPaths[i] !== refPaths[i]) {
-                        break;
-                    }
-                    currentCms2xpPagePathMatches = i + 1;
-                }
-                // update cms2xp_page if its a better match then the preceeding cms2xp_pages
-                if (currentCms2xpPagePathMatches > pathMatches) {
-                    pathMatches = currentCms2xpPagePathMatches;
-                    cms2xpPage = c;
-                }
-            });
-            // use the first if there are no matches
-            if (!cms2xpPage) {
-                cms2xpPage = cms2xpPages[0];
-            }
-            // update refs from article id to cms2xp_page id in ref
-            libs.tools.modify(
-                libs.content.get({
-                    key: ref._id,
-                }),
-                cms2xpPage._id,
-                articleId
-            );
-        });
+        libs.tools.updateModifyToRef(articleId, cms2xpPages[0]._id);
 
         // delete article
         libs.content.delete({
