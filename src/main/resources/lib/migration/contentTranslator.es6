@@ -834,7 +834,7 @@ function translateNavRapportHandbok (rapportHandbok) {
     });
 
     // create main-article-chapter elements as children of the main-article
-    rapportHandbok.data.chapters.forEach(chapterId => {
+    rapportHandbok.data.chapters.reverse().forEach(chapterId => {
         let chapter = libs.content.get({
             key: libs.tools.getModifyToFromRef(chapterId, libs.tools.getNavRepo()),
         });
@@ -923,7 +923,7 @@ function translateRapportHandbok (rapportHandbok) {
             ? [rapportHandbok.data.rapports.rapport]
             : [];
 
-    rapports.forEach(function (rapport) {
+    rapports.reverse().forEach(function (rapport) {
         let rapportArticle = libs.content.create({
             parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
             contentType: app.name + ':main-article',
