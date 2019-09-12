@@ -230,8 +230,8 @@ body {
 .container {
     margin-right: auto;
     margin-left: auto;
-    padding-left: 1.5625em;
-    padding-right: 1.5625em;
+    padding-left: 1em;
+    padding-right: 1em;
     max-width: 63em
 }
 
@@ -1415,12 +1415,13 @@ button.toggle-search.m-open span {
 
     .sitesearch .inputwrapper .input-sitesearch {
         padding-left: 3px;
-        font-style: italic;
+        font-size: 1em;
         margin: 1px
     }
 
     .sitesearch .btn-sitesearch {
-        background: transparent url('../img/navno/gfx/mainmenu/sok_liten_graa.png') no-repeat 50% 50%
+        background: transparent url('../img/navno/gfx/mainmenu/sok_liten_morkeblaa.png') no-repeat 50% 50%;
+        font-size: 1em
     }
 }
 
@@ -2106,8 +2107,8 @@ button.toggle-search.m-open span {
 }
 
 .maincontent {
-    padding-bottom: 60px;
-    padding-top: 30px
+    padding-bottom: 3em;
+    padding-top: 1.5em
 }
 
 @media (max-width: 38.6875em) {
@@ -2139,7 +2140,7 @@ button.toggle-search.m-open span {
 
 @media (min-width: 60em) {
     .maincontent {
-        padding-top: 60px
+        padding-top: 2em
     }
 }
 
@@ -3917,20 +3918,9 @@ a.knapp {
     margin: 0
 }
 
-@media (min-width: 38.75em) and (max-width: 47.99em) {
-    .page-head {
-        padding-left: 60px
-    }
-
-    .page-head > h1 {
-        margin-left: -35px
-    }
-}
-
 .breadcrumbs {
-    padding-top: 10px;
+    padding-top: 2em;
     text-align: left;
-    margin-bottom: -5px;
     line-height: 1.2
 }
 
@@ -3941,7 +3931,7 @@ a.knapp {
 }
 
 .breadcrumbs a {
-    color: #0ca9e1;
+    color: #0067c5;
     text-decoration: none;
     padding-bottom: 1px
 }
@@ -3963,9 +3953,9 @@ a.knapp {
 }
 
 .crumb {
-    margin-right: 25px;
+    margin-right: 1em;
     position: relative;
-    font-size: .7em;
+    font-size: .9em;
     color: #3e3832
 }
 
@@ -3989,8 +3979,7 @@ a.knapp {
 }
 
 .crumb-current {
-    border-bottom: 1px solid #0ca9e1;
-    color: #0ca9e1
+    color: #3e3832
 }
 
 .list-clean {
@@ -5044,7 +5033,7 @@ a.knapp {
 }
 
 .full-article, .article-list, .events-list {
-    padding: 40px 25px;
+    padding: 2em 1.5em;
     background: #fff
 }
 
@@ -8484,7 +8473,7 @@ ul.regular {
 }
 
 div.placeholder {
-    margin-bottom: 60px;
+    margin-bottom: 3em;
     margin-top: -23px
 }
 
