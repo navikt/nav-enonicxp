@@ -166,23 +166,27 @@ function translateContent (content) {
 
 function getTmpParentPath (content) {
     const contentPathArr = content._path.split('/');
-    const site = contentPathArr[1];
-    const hasFolder = libs.content.get({
-        key: `/www.nav.no/tmp/${site}`,
-    });
-    if (!hasFolder) {
-        libs.content.create({
-            displayName: `${site}`,
-            contentType: 'base:folder',
-            parentPath: '/www.nav.no/tmp/',
-            branch: 'draft',
-            data: {
-
-            },
+    // loop over everything except first and last
+    let parentPath = '/www.nav.no/tmp';
+    for (let i = 1; i < contentPathArr.length - 1; i += 1) {
+        let folderPath = `${parentPath}/${contentPathArr[i]}`;
+        const hasFolder = libs.content.get({
+            key: folderPath,
         });
+        if (!hasFolder) {
+            libs.content.create({
+                displayName: contentPathArr[i],
+                contentType: 'base:folder',
+                parentPath: `${parentPath}/`,
+                branch: 'draft',
+                data: {
+
+                },
+            });
+        }
+        parentPath = folderPath;
     }
-    contentPathArr[1] = `/www.nav.no/tmp/${site}`;
-    return contentPathArr.slice(0, -1).join('/') + '/';
+    return parentPath + '/';
 }
 
 function translateCms2xpSectionToContentList (cms2xpSection) {
