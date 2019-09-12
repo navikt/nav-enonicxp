@@ -226,6 +226,10 @@ function translateTables (content) {
     var newElementId = getContentListByType(content, 'news');
     var scElementId = getContentListByType(content, 'shortcuts');
 
+    libs.tools.addRef(ntkElementId, content._id);
+    libs.tools.addRef(newElementId, content._id);
+    libs.tools.addRef(scElementId, content._id);
+
     return libs.tools.createNewTableContent(tableElements, ntkElementId, newElementId, scElementId, content);
 }
 
