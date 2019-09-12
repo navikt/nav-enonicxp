@@ -540,7 +540,7 @@ function createLink (oldLink, description) {
         });
     } else {
         // use internal link where we were able to find an id
-        return libs.content.create({
+        const internalLink = libs.content.create({
             name: oldLink._name,
             displayName: oldLink.displayName,
             contentType: app.name + ':internal-link',
@@ -551,6 +551,8 @@ function createLink (oldLink, description) {
             },
             x: getXData(oldLink),
         });
+        libs.tools.addRef(urlInfo.refId, internalLink._id);
+        return internalLink;
     }
 }
 
@@ -604,11 +606,12 @@ exports.commonTranslate = commonTranslate;
  */
 function commonTranslate (oldContent, newContent) {
     try {
+        // TODO should not be necessary anymore, remove if migration is ok
         // update references from old to new
-        const refs = libs.tools.getRefs(oldContent);
-        refs.forEach(ref => {
-            libs.tools.modify(ref, newContent._id, oldContent._id);
-        });
+        // const refs = libs.tools.getRefs(oldContent);
+        // refs.forEach(ref => {
+        //     libs.tools.modify(ref, newContent._id, oldContent._id);
+        // });
 
         // move all children from old to new and delete old
         log.info('MOVE CHILDREN AND DELETE OLD');

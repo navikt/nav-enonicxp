@@ -947,8 +947,20 @@ function saveRefs (content, navRepo) {
 exports.addRef = addRef;
 function addRef (addTo, id) {
     const navRepo = getNavRepo();
+    let key = `/references/${addTo}`;
+    const ref = navRepo.get(`/references/${addTo}`);
+    if (!ref) {
+        const hits = navRepo.query({
+            start: 0,
+            count: 10,
+            query: `data.modifyTo = "${addTo}"`,
+        }).hits;
+        if (hits.length > 0) {
+            key = hits[0]._path;
+        }
+    }
     navRepo.modify({
-        key: `/references/${addTo}`,
+        key: key,
         editor: c => {
             const references = c.data.references ? Array.isArray(c.data.references) ? c.data.references : [c.data.references] : [];
             references.push(id);
