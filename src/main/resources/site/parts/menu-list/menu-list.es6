@@ -19,6 +19,7 @@ function handleGet (req) {
         const menuListItems = content.data.menuListItems || {
         };
         const keys = [
+            'shortcuts',
             'selfservice',
             'form-and-application',
             'process-times',
@@ -78,7 +79,7 @@ function handleGet (req) {
         if (menuLists.length > 0) {
             const model = {
                 menuLists,
-            }
+            };
             return {
                 contentType: 'text/html',
                 body: libs.thymeleaf.render(view, model),

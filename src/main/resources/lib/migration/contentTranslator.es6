@@ -250,11 +250,24 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
         let sidebeskrivelseRef;
         const sidebeskrivelseChildren = children.filter(c => c.type === app.name + ':nav.sidebeskrivelse');
         if (sidebeskrivelseChildren.length === 1) {
-            cms2xpSection.data.ingress = sidebeskrivelseChildren[0].data.description;
+            const sidebeskrivelse = sidebeskrivelseChildren[0];
+            cms2xpSection.data.ingress = sidebeskrivelse.data.description;
+
+            // add shortcuts from sidebeskrivelse if it exists
+            if (sidebeskrivelse.data.shortcuts) {
+                cms2xpSection.data.menuListItems = {
+                    _selected: 'shortcuts',
+                    shortcuts: {
+                        link: sidebeskrivelse.data.shortcuts,
+                    },
+                };
+            }
+
+            // delete old sidebeskrivelse
             libs.content.delete({
-                key: sidebeskrivelseChildren[0]._id,
+                key: sidebeskrivelse._id,
             });
-            sidebeskrivelseRef = sidebeskrivelseChildren[0]._id;
+            sidebeskrivelseRef = sidebeskrivelse._id;
         }
 
         // create new page-list
