@@ -655,11 +655,17 @@ function updateTimeAndOrder (oldContent, newContent) {
             c._childOrder = oldContent.childOrder;
 
             // order news and pressreleases by publish.first
+            const lowerCaseName = c._name.toLowerCase();
             if (c.type === app.name + ':content-list' || c.type === app.name + ':page-list') {
                 const validNames = ['news', 'nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
-                if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
+                if (validNames.indexOf(lowerCaseName) >= 0) {
                     c._childOrder = 'publish.first DESC';
                 }
+            }
+
+            // order a selection of page-lists by published date
+            if (c.type === app.name + ':page-list' && (lowerCaseName === 'pressemeldinger' || lowerCaseName === 'pressemelding')) {
+                c.data.orderSectionContentsByPublished = true;
             }
 
             // keep manual order if any
