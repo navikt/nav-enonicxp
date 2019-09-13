@@ -3961,7 +3961,7 @@ a.knapp {
     border: 2px solid #3e3832;
     border-radius: 50% 50% 50% 50%;
     content: " ";
-    left: -14px;
+    left: -12px;
     top: 5px;
     float: left;
     position: absolute;
@@ -9060,7 +9060,7 @@ div.placeholder .top-link-wrapper.sticky-top-link a:hover, div.placeholder .top-
     }
 
     .page-head .breadcrumbs .crumb {
-        margin-right: 4%
+        margin-right: 16px
     }
 
     .page-head .breadcrumbs a.crumb, .page-head .breadcrumbs a.crumb span {
