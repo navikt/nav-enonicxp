@@ -998,7 +998,7 @@ button.toggle-search.m-open span {
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
-        width: 14%;
+        width: 13%;
         display: inline-block;
         margin: 0;
         padding: .9375em;
@@ -1190,7 +1190,7 @@ button.toggle-search.m-open span {
     }
 
     .sitesearch .btn-sitesearch {
-        width: 20%
+        width: 18%
     }
 }
 
