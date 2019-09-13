@@ -230,9 +230,9 @@ body {
 .container {
     margin-right: auto;
     margin-left: auto;
-    padding-left: 1em;
-    padding-right: 1em;
-    max-width: 63em
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 63rem
 }
 
 .container:before, .container:after {
@@ -2107,8 +2107,8 @@ button.toggle-search.m-open span {
 }
 
 .maincontent {
-    padding-bottom: 3em;
-    padding-top: 1.5em
+    padding-bottom: 3rem;
+    padding-top: 2rem
 }
 
 @media (max-width: 38.6875em) {
@@ -2135,12 +2135,6 @@ button.toggle-search.m-open span {
 @media (min-width: 38.75em) and (max-width: 48em) {
     .contentpage .maincontent {
         padding: 30px 60px 60px 60px
-    }
-}
-
-@media (min-width: 60em) {
-    .maincontent {
-        padding-top: 2em
     }
 }
 
@@ -3953,9 +3947,9 @@ a.knapp {
 }
 
 .crumb {
-    margin-right: 1em;
+    margin-right: 1rem;
     position: relative;
-    font-size: .9em;
+    font-size: .9rem;
     color: #3e3832
 }
 
@@ -4608,8 +4602,8 @@ a.knapp {
 }
 
 .toolbar {
-    font-size: .75rem;
-    margin-bottom: 20px
+    font-size: .875rem;
+    margin-bottom: 2rem
 }
 
 .tts-panel {
@@ -4934,7 +4928,6 @@ a.knapp {
     vertical-align: top;
     margin-top: -3px;
     cursor: pointer;
-    z-index: 1
 }
 
 @media (max-width: 47.99em) {
@@ -5033,7 +5026,7 @@ a.knapp {
 }
 
 .full-article, .article-list, .events-list {
-    padding: 2em 1.5em;
+    padding: 2rem 1.5rem;
     background: #fff
 }
 
@@ -5047,7 +5040,7 @@ a.knapp {
     display: block;
     text-transform: uppercase;
     font-family: Modus, Arial, Helvetica, sans-serif;
-    font-size: .7rem
+    font-size: .875rem
 }
 
 .full-article h1, .article-list h1, .events-list h1, .full-article .h1, .article-list .h1, .events-list .h1 {
@@ -5062,7 +5055,7 @@ a.knapp {
 }
 
 .factsheet.tblc .preface {
-    margin-bottom: 30px
+    margin-bottom: 2rem
 }
 
 .factsheet.tblc .article-head {
@@ -5077,7 +5070,7 @@ a.knapp {
 }
 
 .handbook .preface-secondary {
-    margin-bottom: 30px;
+    margin-bottom: 1.5rem;
     font-size: .875rem;
     font-weight: bold
 }
