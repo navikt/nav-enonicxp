@@ -4435,6 +4435,7 @@ a.knapp {
 @media (min-width: 38.75em) {
     .hero-block, .hero-link {
         padding-top: 1.875rem;
+        padding-bottom: 1rem;
         margin-bottom: 1.875rem;
         width: 100%
     }
@@ -4466,8 +4467,8 @@ a.knapp {
 
 @media (min-width: 38.75em) and (max-width: 48.0625em) {
     .hero-blocks.multiple .hero-block {
-        padding-left: 1em;
-        padding-right: 1em
+        padding-left: 1rem;
+        padding-right: 1rem
     }
 
     .flexbox .hero-blocks .col-sm-12 {
@@ -4479,12 +4480,12 @@ a.knapp {
     }
 
     .flexbox .hero-links .hero-link {
-        padding-left: 1em;
-        padding-right: 1em
+        padding-left: 1rem;
+        padding-right: 1rem
     }
 
     .flexbox .hero-links .hero-link p {
-        font-size: .75rem
+        font-size: 1rem
     }
 }
 
