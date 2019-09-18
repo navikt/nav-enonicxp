@@ -73,17 +73,22 @@ function mapElements (elementId) {
     const el = libs.content.get({
         key: elementId,
     });
+    if (!el) {
+        return null;
+    }
     const content = libs.portal.getContent();
-    return el
-        ? {
-            isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
-            heading: el.displayName || el.data.title,
-            icon: 'icon-' + (el.data.icon || 'document'),
-            ingress: el.data.ingress || el.data.description || el.data.list_description,
-            src: getSrc(el),
-            published: el.publish && el.publish.first ? libs.navUtils.formatDate(el.publish.first, content.language) : libs.navUtils.formatDate(el.createdTime, content.language),
-        }
-        : null;
+    let ingress = el.data.ingress || el.data.description || el.data.list_description;
+    if (ingress && ingress.length > 140) {
+        ingress = ingress.substring(0, 140) + '...';
+    }
+    return {
+        isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
+        heading: el.displayName || el.data.title,
+        icon: 'icon-' + (el.data.icon || 'document'),
+        src: getSrc(el),
+        published: el.publish && el.publish.first ? libs.navUtils.formatDate(el.publish.first, content.language) : libs.navUtils.formatDate(el.createdTime, content.language),
+        ingress,
+    };
 }
 
 function getSrc (el) {
