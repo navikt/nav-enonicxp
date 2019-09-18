@@ -208,9 +208,8 @@ function doIf (eva, f, nf, e) {
         } else {
             return function (el) {
                 return nf(el);
-            }
-            ;
-        };
+            };
+        }
     } else {
         if (typeof eva === 'function') {
             return doIf(eva(e), f, nf, e);
@@ -281,7 +280,7 @@ function unmap (array, string) {
 }
 
 function trimmed (string) {
-    return string.trim().replace(/\r\n\s+/g, '');
+    return string.trim().replace(/ style=".+?"/g, ''); // NB! Må fjerne alle style-attributter, ellers knekker parsing
 }
 
 exports.parse = parseToJSON;
@@ -293,7 +292,9 @@ function m (o, skipFirst) { // Builds the JSON to html again
     if (!skipFirst) {
         s = '<' + o.tag;
         for (var k in o.attribute) {
-            if (o.attribute.hasOwnProperty(k)) { s += ' ' + k + '="' + o.attribute[k].join(' ') + '"'; };
+            if (o.attribute.hasOwnProperty(k)) {
+                s += ' ' + k + '="' + o.attribute[k].join(' ') + '"';
+            }
         }
         s += '>' + o.content;
     }
@@ -301,6 +302,8 @@ function m (o, skipFirst) { // Builds the JSON to html again
     o.children.forEach(function (v) {
         s += m(v, false);
     });
-    if (!skipFirst) { s += '</' + o.tag + '>'; }
+    if (!skipFirst) {
+        s += '</' + o.tag + '>';
+    }
     return s;
 }
