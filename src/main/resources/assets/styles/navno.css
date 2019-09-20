@@ -6148,8 +6148,7 @@ a.knapp {
 .din-situasjon-wrapper {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
-    margin-top: 1rem
+    justify-content: space-around
 }
 
 .din-situasjon-wrapper .ingress {
