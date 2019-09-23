@@ -9,6 +9,7 @@ const view = resolve('main-page.html');
 function handleGet (req) {
     const content = libs.portal.getContent();
 
+    log.info(JSON.stringify(req,null,4));
     // Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
     // TODO: Denne må bli smartere
     const path = content._path.split('/');
@@ -28,9 +29,16 @@ function handleGet (req) {
     const footer = content.page.regions.footer;
     const model = {
         title: content.displayName + ' - www.nav.no',
+        description: content.data.metaDescription,
+        url: req.url,
+        siteName: 'NAV',
+        domain: 'nav.no',
+        imageUrl: libs.portal.assetUrl({
+            path: 'img/navno/social-share-fallback.png',
+        }),
+        twitterCard: 'summary_large_image',
         mainRegion: mainRegion,
         footerRegion: footer,
-        description: content.data.metaDescription
     };
     const assets = [
         '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
