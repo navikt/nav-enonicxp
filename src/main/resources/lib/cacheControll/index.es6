@@ -1,15 +1,11 @@
 const libs = {
     cache: require('/lib/cache'),
     event: require('/lib/xp/event'),
-    node: require('/lib/xp/node'),
+    context: require('/lib/xp/context'),
+    content: require('/lib/xp/content'),
 };
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
-const repo = libs.node.connect({
-    repoId: 'com.enonic.cms.default',
-    branch: 'master',
-    principals: ['role:system.admin'],
-});
 const caches = {
     decorator: libs.cache.newCache({
         size: 50, expire: oneDay,
@@ -124,21 +120,50 @@ function activateEventListener () {
     libs.event.listener({
         type: 'node.*',
         localOnly: false,
-        callback: event => {
-            event.data.nodes.forEach(function (node) {
-                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-                    wipeOnChange(node.path);
-                    repo.query({
-                        start: 0,
-                        count: 100,
-                        branch: 'master',
-                        query: "_references LIKE '" + node.id + "'",
-                    }).hits
-                        .forEach(el => {
-                            wipeOnChange(el._path);
-                        });
-                }
-            });
-        },
+        callback: nodeListenerCallback,
     });
+}
+
+function nodeListenerCallback (event) {
+    event.data.nodes.forEach(function (node) {
+        if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            wipeOnChange(node.path);
+            libs.context.run(
+                {
+                    repository: 'com.enonic.cms.default',
+                    branch: 'master',
+                    user: {
+                        login: 'su',
+                        userStore: 'system',
+                    },
+                    principals: ['role:system.admin'],
+                },
+                () => {
+                    clearReferences(node.id, 0);
+                }
+            );
+        }
+    });
+}
+
+function clearReferences (id, depth) {
+    if (depth > 10) {
+        log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
+        return;
+    }
+    libs.content.query({
+        start: 0,
+        count: 1000,
+        query: "_references LIKE '" + id + "'",
+    }).hits
+        .forEach(el => {
+            wipeOnChange(el._path);
+
+            const deepTypes = [
+                app.name + ':content-list',
+            ];
+            if (deepTypes.indexOf(el.type) !== -1) {
+                clearReferences(el._id, depth + 1);
+            }
+        });
 }
