@@ -74,6 +74,7 @@ function wipeOnChange (path) {
     const w = wipe('paths');
     if (path) {
         log.info('WIPE: ' + getPath(path));
+        w(getPath(path, 'main-page'));
         w(getPath(path, 'main-article'));
         w(getPath(path, 'main-article-linked-list'));
         w(getPath(path, 'menu-list'));
@@ -81,7 +82,7 @@ function wipeOnChange (path) {
         w(getPath(path, 'page-list'));
         w(getPath(path, 'transport'));
         w(getPath(path, 'office-information'));
-        w(getPath(path, 'ekstraStorTabell'));
+        w(getPath(path, 'page-large-table'));
         if (path.indexOf('/driftsmeldinger/') !== -1) {
             w('driftsmelding-heading');
         }
