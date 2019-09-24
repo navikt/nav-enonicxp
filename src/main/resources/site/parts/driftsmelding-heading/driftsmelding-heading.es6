@@ -35,7 +35,9 @@ function handleGet (req) {
                     // Henter ut visningsnavnet og urlen til meldingen, lenketeksten er fast
                     const model = {
                         heading: message.hits[0].displayName,
-                        linkurl: libs.portal.pageUrl({ path: message.hits[0]._path }),
+                        linkurl: libs.portal.pageUrl({
+                            path: message.hits[0]._path,
+                        }),
                         linktext: libs.lang.parseBundle(language).message.linktext,
                     };
 

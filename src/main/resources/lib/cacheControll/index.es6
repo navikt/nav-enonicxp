@@ -1,25 +1,27 @@
 const libs = {
     cache: require('/lib/cache'),
     event: require('/lib/xp/event'),
-    node: require('/lib/xp/node'),
+    context: require('/lib/xp/context'),
+    content: require('/lib/xp/content'),
 };
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
-const repo = libs.node.connect({
-    repoId: 'com.enonic.cms.default',
-    branch: 'master',
-    principals: ['role:system.admin'],
-});
 const caches = {
-    decorator: libs.cache.newCache({ size: 50, expire: oneDay }),
-    azList: libs.cache.newCache({ size: 100, expire: oneDay }),
-    paths: libs.cache.newCache({ size: 5000, expire: oneDay }),
+    decorator: libs.cache.newCache({
+        size: 50, expire: oneDay,
+    }),
+    azList: libs.cache.newCache({
+        size: 100, expire: oneDay,
+    }),
+    paths: libs.cache.newCache({
+        size: 5000, expire: oneDay,
+    }),
 };
 module.exports = {
     wipeDecorator: wipe('decorator'),
     wipePaths: wipe('paths'),
     getDecorator: getSome('decorator'),
-    getAZList: getSome( 'azList'),
+    getAZList: getSome('azList'),
     getPaths: getSome('paths'),
     activateEventListener,
     wipeAll,
@@ -98,16 +100,16 @@ function wipeOnChange (path) {
     }
 }
 
-function getSome (name) {
+function getSome (cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft') {
-            return caches[name].get(getPath(key, type), function () {
-                log.info('Store cache [' + name + '] key: ' + getPath(key, type));
+            return caches[cacheStoreName].get(getPath(key, type), function () {
+                log.info('Store cache [' + cacheStoreName + '] key: ' + getPath(key, type));
                 return f(params);
             });
         } else {
-            log.info('Not from cache [' + name + '] key: ' + getPath(key, type));
+            log.info('Not from cache [' + cacheStoreName + '] key: ' + getPath(key, type));
             return f(params);
         }
     };
@@ -118,21 +120,50 @@ function activateEventListener () {
     libs.event.listener({
         type: 'node.*',
         localOnly: false,
-        callback: event => {
-            event.data.nodes.forEach(function (node) {
-                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-                    wipeOnChange(node.path);
-                    repo.query({
-                        start: 0,
-                        count: 100,
-                        branch: 'master',
-                        query: "_references LIKE '" + node.id + "'",
-                    }).hits
-                        .forEach(el => {
-                            wipeOnChange(el._path);
-                        });
-                }
-            });
-        },
+        callback: nodeListenerCallback,
     });
+}
+
+function nodeListenerCallback (event) {
+    event.data.nodes.forEach(function (node) {
+        if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            wipeOnChange(node.path);
+            libs.context.run(
+                {
+                    repository: 'com.enonic.cms.default',
+                    branch: 'master',
+                    user: {
+                        login: 'su',
+                        userStore: 'system',
+                    },
+                    principals: ['role:system.admin'],
+                },
+                () => {
+                    clearReferences(node.id, 0);
+                }
+            );
+        }
+    });
+}
+
+function clearReferences (id, depth) {
+    if (depth > 10) {
+        log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
+        return;
+    }
+    libs.content.query({
+        start: 0,
+        count: 1000,
+        query: "_references LIKE '" + id + "'",
+    }).hits
+        .forEach(el => {
+            wipeOnChange(el._path);
+
+            const deepTypes = [
+                app.name + ':content-list',
+            ];
+            if (deepTypes.indexOf(el.type) !== -1) {
+                clearReferences(el._id, depth + 1);
+            }
+        });
 }
