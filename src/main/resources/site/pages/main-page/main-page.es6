@@ -8,22 +8,6 @@ const view = resolve('main-page.html');
 
 function handleGet (req) {
     const content = libs.portal.getContent();
-
-    log.info(JSON.stringify(req,null,4));
-    // Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
-    // TODO: Denne må bli smartere
-    const path = content._path.split('/');
-    const level3 = (path[3] ? path[3] : '').toLowerCase();
-
-    let seksjonsSider = '';
-    switch (level3) {
-    case 'person':
-    case 'bedrift':
-    case 'nav-og-samfunn':
-        seksjonsSider = level3;
-        break;
-    default:
-    }
     let url = req.url;
     if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {
         url = url.replace('http', 'https');
@@ -53,34 +37,6 @@ function handleGet (req) {
         '<meta name="twitter:description" content="' + description + '" />',
         '<meta name="twitter:image:src" content="' + imageUrl + '" />'
     ];
-    const assets = [
-        '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
-            path: 'img/navno/logo.png',
-        }) + '" />',
-        '<link rel="shortcut icon" type="image/x-icon" href="' + libs.portal.assetUrl({
-            path: 'img/navno/favicon.ico',
-        }) + '" />',
-        '<link rel="stylesheet" href="' + libs.portal.assetUrl({
-            path: 'styles/navno.css',
-        }) + '" />',
-        '<style>.async-hide{opacity:0!important}</style><script src="' + libs.portal.assetUrl({
-            path: '/js/optimize.js',
-        }) + '"></script>',
-        '<script src="' + libs.portal.assetUrl({
-            path: 'libs/modernizr.2.7.1.min.js',
-        }) + '"></script>',
-        '<script src="' + libs.portal.assetUrl({
-            path: 'js/innloggingslinjen.min.js',
-        }) + '"></script>',
-        '<script id="navno-props" src="' + libs.portal.assetUrl({
-            path: 'js/navno-page.js',
-        }) + '" seksjonssider="' + seksjonsSider +
-        '" authServiceUrl="' + (app.config.authServiceUrl ? app.config.authServiceUrl : 'https://www.nav.no/innloggingslinje-api/auth') +
-        '"></script>',
-        '<script async src="' + libs.portal.assetUrl({
-            path: 'js/navno.js',
-        }) + '"></script>', // TODO: Lage ny navno.min.js og bruke den
-    ];
     const body = libs.thymeleaf.render(view, model);
     return {
         contentType: 'text/html',
@@ -91,7 +47,6 @@ function handleGet (req) {
         },
         pageContributions: {
             headBegin: metaData,
-            headEnd: assets,
         },
     };
 }

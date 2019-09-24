@@ -14,15 +14,55 @@ function handleGet (req) {
 
     return libs.cache.getDecorator('header-' + language, undefined, req.branch, () => {
         const langBundles = libs.lang.parseBundle(language).pagenav;
-        const assets = {
-            img: {
-                logo: libs.portal.assetUrl({
-                    path: 'img/navno/logo.svg',
-                }),
-                idporten: libs.portal.assetUrl({
-                    path: 'img/navno/gfx/icons/idporten_ikon.png',
-                }),
-            },
+        // Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
+        // TODO: Denne må bli smartere
+        const path = content._path.split('/');
+        const level3 = (path[3] ? path[3] : '').toLowerCase();
+        let seksjonsSider = '';
+        switch (level3) {
+        case 'person':
+        case 'bedrift':
+        case 'nav-og-samfunn':
+            seksjonsSider = level3;
+            break;
+        default:
+        }
+
+        const assets = [
+            '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
+                path: 'img/navno/logo.png',
+            }) + '" />',
+            '<link rel="shortcut icon" type="image/x-icon" href="' + libs.portal.assetUrl({
+                path: 'img/navno/favicon.ico',
+            }) + '" />',
+            '<link rel="stylesheet" href="' + libs.portal.assetUrl({
+                path: 'styles/navno.css',
+            }) + '" />',
+            '<style>.async-hide{opacity:0!important}</style><script src="' + libs.portal.assetUrl({
+                path: '/js/optimize.js',
+            }) + '"></script>',
+            '<script src="' + libs.portal.assetUrl({
+                path: 'libs/modernizr.2.7.1.min.js',
+            }) + '"></script>',
+            '<script src="' + libs.portal.assetUrl({
+                path: 'js/innloggingslinjen.min.js',
+            }) + '"></script>',
+            '<script id="navno-props" src="' + libs.portal.assetUrl({
+                path: 'js/navno-page.js',
+            }) + '" seksjonssider="' + seksjonsSider +
+            '" authServiceUrl="' + (app.config.authServiceUrl ? app.config.authServiceUrl : 'https://www.nav.no/innloggingslinje-api/auth') +
+            '"></script>',
+            '<script async src="' + libs.portal.assetUrl({
+                path: 'js/navno.js',
+            }) + '"></script>', // TODO: Lage ny navno.min.js og bruke den
+        ];
+        const img = {
+            logo: libs.portal.assetUrl({
+                path: 'img/navno/logo.svg',
+            }),
+            idporten: libs.portal.assetUrl({
+                path: 'img/navno/gfx/icons/idporten_ikon.png',
+            }),
         };
         const siteUrl = '/www.nav.no/';
         const urls = {
@@ -66,7 +106,7 @@ function handleGet (req) {
             },
         ];
         const model = {
-            assets,
+            img,
             urls,
             langBundles,
             langSelectors,
@@ -77,6 +117,9 @@ function handleGet (req) {
         return {
             contentType: 'text/html',
             body: libs.thymeleaf.render(view, model),
+            pageContributions: {
+                headEnd: assets,
+            },
         };
     });
 }
