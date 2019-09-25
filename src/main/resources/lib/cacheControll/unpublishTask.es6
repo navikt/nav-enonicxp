@@ -38,17 +38,23 @@ function setupTask () {
 
             expiredContent.forEach((c) => {
                 const content = masterRepo.get(c.id);
-                masterRepo.delete(content._path);
-                log.info(`UNPUBLISHED :: ${content._path}`);
-                draftRepo.modify({
-                    key: content._path,
-                    editor: draftContent => {
-                        delete draftContent.publish.to;
-                        delete draftContent.publish.from;
-                        return draftContent;
-                    },
-                });
+                try {
+                    masterRepo.delete(content._path);
+                    draftRepo.modify({
+                        key: content._path,
+                        editor: draftContent => {
+                            delete draftContent.publish.to;
+                            delete draftContent.publish.from;
+                            return draftContent;
+                        },
+                    });
+                    log.info(`UNPUBLISHED :: ${content._path}`);
+                } catch (e) {
+                    log.info('ERROR');
+                    log.info(e);
+                }
             });
+            log.info(`UNPUBLISHED (${start + count}) EXPIRED CONTENT`);
 
             // 1 minute between each check
             libs.task.sleep(60000);
