@@ -39,7 +39,7 @@ exports.get = function (req) {
             shortcuts,
             col,
         };
-
+        log.info(JSON.stringify(model,null,4));
         return {
             body: libs.thymeleaf.render(view, model),
         };
