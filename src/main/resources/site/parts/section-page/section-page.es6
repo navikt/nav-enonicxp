@@ -14,19 +14,26 @@ exports.get = function (req) {
         const lang = libs.lang.parseBundle(content.language).oppslagstavle;
         const table = getTableElements(content, 'tableContents').slice(0, content.data.nrTableEntries);
         let col = 'col-md-';
+        const ntkList = getContentLists(content, 'ntkContents');
         const niceToKnow = {
             sectionName: lang.niceToKnow,
-            data: getContentLists(content, 'ntkContents').slice(0, content.data.nrNTK),
+            data: ( ntkList
+                ? ntkList.slice(0, content.data.nrNTK)
+                : ntkList),
         };
+        const newsList = getContentLists(content, 'newsContents');
         const news = {
             sectionName: lang.news,
-            data: getContentLists(content, 'newsContents')
-                .reduce(orderByPublished, [])
-                .slice(0, content.data.nrNews),
+            data: (newsList
+                ? newsList.reduce(orderByPublished, []).slice(0, content.data.nrNews)
+                : newsList),
         };
+        const scList = getContentLists(content, 'scContents');
         const shortcuts = {
             sectionName: lang.shortcuts,
-            data: getContentLists(content, 'scContents').slice(0, content.data.nrSC),
+            data: (scList
+                ? scList.slice(0, content.data.nrSC)
+                : scList),
         };
         let antCol = !!niceToKnow.data + !!news.data + !!shortcuts.data;
         if (antCol === 0) { antCol = 1; }
@@ -60,7 +67,7 @@ function getContentLists (content, contentType) {
             }
         }
     }
-    return [];
+    return null;
 }
 
 function getTableElements (content, contentType) {
@@ -82,11 +89,15 @@ function mapElements (elementId) {
         ingress = ingress.substring(0, 140) + '...';
     }
     return {
-        isHtml: el.data.ingress ? el.data.ingress.startsWith('<') : false,
+        isHtml: (el.data.ingress ? el.data.ingress.startsWith('<') : false),
         heading: el.displayName || el.data.title,
         icon: 'icon-' + (el.data.icon || 'document'),
         src: getSrc(el),
-        published: el.publish && el.publish.first ? libs.navUtils.formatDate(el.publish.first, content.language) : libs.navUtils.formatDate(el.createdTime, content.language),
+        published: el.publish &&
+            (el.publish.first
+                ? libs.navUtils.formatDate(el.publish.first, content.language)
+                : libs.navUtils.formatDate(el.createdTime, content.language)
+            ),
         ingress,
     };
 }
