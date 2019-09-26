@@ -46,13 +46,13 @@ exports.get = function (req) {
             shortcuts,
             col,
         };
-        log.info(JSON.stringify(model,null,4));
         return {
             body: libs.thymeleaf.render(view, model),
         };
     });
 };
 
+// Returnerer null hvis listen er tom
 function getContentLists (content, contentType) {
     if (content.data[contentType]) {
         const section = libs.content.get({
@@ -70,10 +70,11 @@ function getContentLists (content, contentType) {
     return null;
 }
 
+// Returnerer en tom array hvis listen er tom
 function getTableElements (content, contentType) {
-    return (content.data[contentType] ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]]) : []).map(
-        mapElements
-    );
+    return (content.data[contentType]
+        ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]])
+        : []).map(mapElements);
 }
 
 function mapElements (elementId) {
@@ -118,7 +119,7 @@ function getSrc (el) {
 }
 
 function orderByPublished (list, element) {
-    for (var i = 0; i < list.length; i += 1) {
+    for (let i = 0; i < list.length; i += 1) {
         if (element && new Date(list[i].published) < new Date(element.published)) {
             list.splice(i, 0, element);
             return list;
