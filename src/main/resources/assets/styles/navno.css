@@ -5778,7 +5778,8 @@ a.knapp {
 .related-content.accordion {
     border: none;
 }
-.accordion .accordion-item .h4 {
+.accordion .accordion-item .h3 {
+    font-size: 1.0675rem;
     margin: 0;
     padding: 0
 }
@@ -5801,7 +5802,7 @@ a.knapp {
 
 .accordion-panel ul {
     margin: 0;
-    padding: 15px 30px;
+    padding: 1rem;
     list-style: none
 }
 
@@ -5821,14 +5822,12 @@ a.knapp {
 .accordion-toggle {
     color: #3E3832;
     background: transparent;
-    border: 0;
     border-radius: 0.25rem;
-    text-align: left;
     width: 100%;
-    display: block;
-    padding: 1rem 1rem 1rem 1rem;
+    padding: 1rem;
     margin-bottom: 0;
     text-decoration: none;
+    text-align: left;
     display: flex;
     align-items: center;
     justify-content: space-between;
