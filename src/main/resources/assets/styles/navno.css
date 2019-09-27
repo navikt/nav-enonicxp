@@ -571,10 +571,6 @@ cite {
     font-style: normal
 }
 
-a {
-    color: #0067c5
-}
-
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-family: Modus, Arial, Helvetica, sans-serif;
     color: inherit;
@@ -5776,34 +5772,16 @@ a.knapp {
 }
 
 .related-content section {
-    border-bottom: 1px solid #d1d1d1;
-    background-color: #fff
+    margin-bottom: 5px;
 }
 
-.related-content section:last-child {
-    border: none
+.related-content.accordion {
+    border: none;
 }
-
-.accordion .accordion-item {
-    background-color: #f5f5f4
-}
-
 .accordion .accordion-item .h4 {
     margin: 0;
     padding: 0
 }
-
-.accordion .accordion-item.expanded {
-    background-color: #fff
-}
-
-.accordion .accordion-item.expanded .accordion-toggle:after {
-    border-bottom: 6px solid #0ca9e1;
-    border-top: none;
-    border-right: 6px solid transparent;
-    border-left: 6px solid transparent
-}
-
 .accordion .accordion-item.expanded .accordion-panel {
     visibility: visible
 }
@@ -5835,32 +5813,70 @@ a.knapp {
     margin-bottom: 1px
 }
 
+.accordion-item {
+    border: 1px solid #d1d1d1;
+    border-radius: 0.25rem;
+    background-color: #FFF;
+}
 .accordion-toggle {
-    color: #3e3832;
-    padding: 12px 30px 12px 30px;
+    color: #3E3832;
+    background: transparent;
+    border: 0;
+    border-radius: 0.25rem;
+    text-align: left;
+    width: 100%;
     display: block;
+    padding: 1rem 1rem 1rem 1rem;
+    margin-bottom: 0;
     text-decoration: none;
-    border-bottom: 1px solid #d1d1d1;
-    margin-bottom: -1px;
-    position: relative
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
-
 .accordion-toggle:hover, .accordion-toggle:focus {
-    text-decoration: none;
-    background-color: #fff
+    color: #0067C5;
+    background-color: initial;
+    box-shadow: 0 0 0 3px #254b6d;
+    outline: none;
+    text-decoration: underline;
 }
-
-.accordion-toggle:after {
-    content: " ";
+.accordion-toggle .accordion-indicator {
     display: inline-block;
-    border-top: 6px solid #0ca9e1;
-    border-right: 6px solid transparent;
-    border-left: 6px solid transparent;
-    position: absolute;
-    right: 15px;
-    top: 42%
+    flex-shrink: 0;
+    height: 2px;
+    line-height: 2px;
+    width: 20px;
+    position: relative;
+    text-align: center;
+    transition: 200ms transform;
+    vertical-align: middle;
 }
-
+.accordion-toggle .accordion-indicator:before {
+    transform: translateX(2px) rotate(45deg);
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50%;
+    background: currentColor;
+}
+.accordion-toggle .accordion-indicator:after {
+    transform: translateX(-2px) rotate(-45deg);
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 50%;
+    background: currentColor;
+}
+.accordion-item.expanded.js-animated .accordion-toggle .accordion-indicator:before {
+    transform: translateX(2px) rotate(-45deg);
+}
+.accordion-item.expanded.js-animated .accordion-toggle .accordion-indicator:after {
+    transform: translateX(-2px) rotate(45deg);
+}
 .no-js .related-content.accordion .accordion-panel {
     visibility: visible;
     padding: 15px 30px;

@@ -1,12 +1,11 @@
 <aside role="complementary" class="related-content accordion" id="related-content-accordion">
     <section class="accordion-item" data-th-each="content : ${menuLists}">
-        <header>
-            <h1 class="h4">
-                <a href="#accordion-information" class="accordion-toggle">
-                    [[${content.name}]]
-                </a>
-            </h1>
-        </header>
+        <h2 class="h4">
+            <a href="#accordion-information" class="accordion-toggle">
+                [[${content.name}]]
+                <span class="accordion-indicator"></span>
+            </a>
+        </h2>
         <div id="accordion-information" class="accordion-panel">
             <ul>
                 <li data-th-each="link : ${content.links}">
