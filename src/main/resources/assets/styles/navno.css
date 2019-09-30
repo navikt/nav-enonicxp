@@ -4866,7 +4866,6 @@ a.knapp {
 
 .content-languages > span {
     text-decoration: none;
-    color: #3e3832;
     cursor: pointer
 }
 
@@ -4904,7 +4903,7 @@ a.knapp {
 }
 
 .content-languages ul li .active-lang:after {
-    border: 2px solid #0ca9e1;
+    border: 3px solid #0ca9e1;
     border-radius: 50% 50% 50% 50%;
     content: " ";
     left: 17%;
@@ -4937,20 +4936,52 @@ a.knapp {
     background-repeat: no-repeat;
     background-position: 1% center
 }
-
-.content-languages:hover span, .content-languages:focus span, .content-languages:active span {
-    color: #0ca9e1
+.content-languages:focus, .content-print:focus {
+    outline: none;
+    color: white;
+    text-decoration: none;
+    background-color: #254b6d;
+    box-shadow: 0 0 0 2px #254b6d;
+}
+.content-languages:hover span, .content-languages:active span, .content-print:hover span, .content-print:active span {
+    color: #0067c5;
+    text-decoration: underline;
 }
 
 .content-languages:hover span:after, .content-languages:focus span:after, .content-languages:active span:after {
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
-    border-top: 4px solid #0ca9e1;
+    border-top: 4px solid #FFF;
     content: "";
     display: inline-block;
     height: 0;
     width: 0;
     vertical-align: top
+}
+.content-languages:hover span:after {
+    border-color: #0067c5;
+}
+
+.content-print {
+    vertical-align: top;
+    position: relative;
+    margin-left: 4%;
+    display: inline-block;
+    padding-left: 21px;
+    background: transparent url('../img/navno/gfx/tts/print.png') no-repeat left center;
+    cursor: pointer
+}
+
+@media (max-width: 47.99em) {
+    .content-print {
+        display: none
+    }
+}
+
+.content-print:hover, .content-print:focus, .content-print:active {
+    background-image: url('../img/navno/gfx/tts/print_hover.png');
+    background-repeat: no-repeat;
+    background-position: left center;
 }
 
 .full-article, .article-list, .events-list {
@@ -5149,35 +5180,6 @@ a.knapp {
     color: #fff;
     font-weight: bold;
     font-size: .75rem
-}
-
-.content-print {
-    vertical-align: top;
-    position: relative;
-    margin-left: 4%;
-    display: inline-block;
-    padding-left: 21px;
-    background: transparent url('../img/navno/gfx/tts/print.png') no-repeat left center;
-    cursor: pointer
-}
-
-@media (max-width: 47.99em) {
-    .content-print {
-        display: none
-    }
-}
-
-.content-print span {
-    text-decoration: none;
-    color: #3e3832
-}
-
-.content-print:hover, .content-print:focus, .content-print:active {
-    background: transparent url('../img/navno/gfx/tts/print_hover.png') no-repeat left center
-}
-
-.content-print:hover span, .content-print:active span, .content-print:focus span {
-    color: #0ca9e1
 }
 
 #print-all {
