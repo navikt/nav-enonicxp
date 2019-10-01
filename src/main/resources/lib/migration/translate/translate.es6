@@ -36,6 +36,9 @@ exports.handle = function (socket) {
     socket.on('createChapters', () => {
         libs.tools.runInContext(socket, createChapters);
     });
+    socket.on('setTableOfContents', () => {
+        libs.tools.runInContext(socket, setTableOfContents);
+    });
 };
 
 let refMax = 0;
@@ -294,18 +297,44 @@ function createChapters (socket) {
         const children = libs.navUtils.getAllChildren(mainArticle).reverse();
         children.forEach((child) => {
             if (child.type === `${app.name}:main-article`) {
-                libs.content.create({
-                    parentPath: mainArticle._name,
-                    contentType: app.name + ':main-article-chapter',
-                    displayName: child.displayName,
-                    name: child._name + '_kap',
-                    data: {
-                        article: child._id,
-                    },
+                let exists = libs.content.get({
+                    key: child._path + '_kap',
                 });
+                if (!exists) {
+                    libs.content.create({
+                        parentPath: mainArticle._path,
+                        contentType: app.name + ':main-article-chapter',
+                        displayName: child.displayName,
+                        name: child._name + '_kap',
+                        data: {
+                            article: child._id,
+                        },
+                    });
+                }
             }
         });
         socket.emit('create-chapters-value', index + 1);
+    });
+}
+
+function setTableOfContents (socket) {
+    const kortOmArticles = libs.content.query({
+        start: 0,
+        count: 1000,
+        query: `x.no-nav-navno.oldContentType.type = "${app.name}:kort_om"`,
+    }).hits;
+
+    socket.emit('set-table-of-contents-max', kortOmArticles.length);
+
+    kortOmArticles.forEach((article, index) => {
+        libs.content.modify({
+            key: article._id,
+            editor: (a) => {
+                a.data.hasTableOfContents = 'h3';
+                return a;
+            },
+        });
+        socket.emit('set-table-of-contents-value', index + 1);
     });
 }
 
@@ -547,6 +576,36 @@ function createElements () {
                             tagClass: ['is-info', 'button'],
                             action: 'createChapters',
                             text: 'Create',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Add table of contents to kortOm',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'set-table-of-contents',
+                            progress: {
+                                value: 'set-table-of-contents-value',
+                                max: 'set-table-of-contents-max',
+                                valId: 'set-table-of-contents-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['is-info', 'button'],
+                            action: 'setTableOfContents',
+                            text: 'Add',
                         },
                         {
                             tag: 'li',

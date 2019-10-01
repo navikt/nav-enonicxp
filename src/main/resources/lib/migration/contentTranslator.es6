@@ -225,14 +225,20 @@ function getContentListByType (content, contentParam) {
 }
 
 function translateTables (content) {
-    var tableElements = libs.tools.getTableElements(content) || [];
-    var ntkElementId = getContentListByType(content, 'nicetoknow');
-    var newElementId = getContentListByType(content, 'news');
-    var scElementId = getContentListByType(content, 'shortcuts');
+    const tableElements = libs.tools.getTableElements(content) || [];
+    const ntkElementId = getContentListByType(content, 'nicetoknow');
+    const newElementId = getContentListByType(content, 'news');
+    const scElementId = getContentListByType(content, 'shortcuts');
 
-    libs.tools.addRef(ntkElementId, content._id);
-    libs.tools.addRef(newElementId, content._id);
-    libs.tools.addRef(scElementId, content._id);
+    if (ntkElementId) {
+        libs.tools.addRef(ntkElementId, content._id);
+    }
+    if (newElementId) {
+        libs.tools.addRef(newElementId, content._id);
+    }
+    if (scElementId) {
+        libs.tools.addRef(scElementId, content._id);
+    }
 
     return libs.tools.createNewTableContent(tableElements, ntkElementId, newElementId, scElementId, content);
 }
