@@ -917,8 +917,26 @@ function getNavRepo () {
 
 exports.updateModifyToRef = updateModifyToRef;
 function updateModifyToRef (oldRef, newRef) {
-    getNavRepo().modify({
-        key: `/references/${oldRef}`,
+    const navRepo = getNavRepo();
+    let key = `/references/${oldRef}`;
+    const ref = navRepo.get(key);
+    if (!ref) {
+        const hits = navRepo.query({
+            start: 0,
+            count: 10,
+            query: `data.modifyTo = "${oldRef}"`,
+        }).hits;
+        if (hits.length > 0) {
+            key = hits[0].id;
+        } else {
+            // stop if it doesn't exist at all
+            log.info(`NO REF WITH KEY ${oldRef}`);
+            return;
+        }
+    }
+
+    navRepo.modify({
+        key,
         editor: c => {
             c.data.modifyTo = newRef;
             return c;
@@ -948,7 +966,7 @@ exports.addRef = addRef;
 function addRef (addTo, id) {
     const navRepo = getNavRepo();
     let key = `/references/${addTo}`;
-    const ref = navRepo.get(`/references/${addTo}`);
+    const ref = navRepo.get(key);
     if (!ref) {
         const hits = navRepo.query({
             start: 0,
@@ -956,11 +974,15 @@ function addRef (addTo, id) {
             query: `data.modifyTo = "${addTo}"`,
         }).hits;
         if (hits.length > 0) {
-            key = hits[0]._path;
+            key = hits[0].id;
+        } else {
+            // stop if it doesn't exist at all
+            log.info(`NO REF WITH KEY ${addTo}`);
+            return;
         }
     }
     navRepo.modify({
-        key: key,
+        key,
         editor: c => {
             const references = c.data.references ? Array.isArray(c.data.references) ? c.data.references : [c.data.references] : [];
             references.push(id);
