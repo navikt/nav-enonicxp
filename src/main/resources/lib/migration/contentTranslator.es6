@@ -166,23 +166,27 @@ function translateContent (content) {
 
 function getTmpParentPath (content) {
     const contentPathArr = content._path.split('/');
-    const site = contentPathArr[1];
-    const hasFolder = libs.content.get({
-        key: `/www.nav.no/tmp/${site}`,
-    });
-    if (!hasFolder) {
-        libs.content.create({
-            displayName: `${site}`,
-            contentType: 'base:folder',
-            parentPath: '/www.nav.no/tmp/',
-            branch: 'draft',
-            data: {
-
-            },
+    // loop over everything except first and last
+    let parentPath = '/www.nav.no/tmp';
+    for (let i = 1; i < contentPathArr.length - 1; i += 1) {
+        let folderPath = `${parentPath}/${contentPathArr[i]}`;
+        const hasFolder = libs.content.get({
+            key: folderPath,
         });
+        if (!hasFolder) {
+            libs.content.create({
+                displayName: contentPathArr[i],
+                contentType: 'base:folder',
+                parentPath: `${parentPath}/`,
+                branch: 'draft',
+                data: {
+
+                },
+            });
+        }
+        parentPath = folderPath;
     }
-    contentPathArr[1] = `/www.nav.no/tmp/${site}`;
-    return contentPathArr.slice(0, -1).join('/') + '/';
+    return parentPath + '/';
 }
 
 function translateCms2xpSectionToContentList (cms2xpSection) {
@@ -226,6 +230,10 @@ function translateTables (content) {
     var newElementId = getContentListByType(content, 'news');
     var scElementId = getContentListByType(content, 'shortcuts');
 
+    libs.tools.addRef(ntkElementId, content._id);
+    libs.tools.addRef(newElementId, content._id);
+    libs.tools.addRef(scElementId, content._id);
+
     return libs.tools.createNewTableContent(tableElements, ntkElementId, newElementId, scElementId, content);
 }
 
@@ -242,11 +250,24 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
         let sidebeskrivelseRef;
         const sidebeskrivelseChildren = children.filter(c => c.type === app.name + ':nav.sidebeskrivelse');
         if (sidebeskrivelseChildren.length === 1) {
-            cms2xpSection.data.ingress = sidebeskrivelseChildren[0].data.description;
+            const sidebeskrivelse = sidebeskrivelseChildren[0];
+            cms2xpSection.data.ingress = sidebeskrivelse.data.description;
+
+            // add shortcuts from sidebeskrivelse if it exists
+            if (sidebeskrivelse.data.shortcuts) {
+                cms2xpSection.data.menuListItems = {
+                    _selected: 'shortcuts',
+                    shortcuts: {
+                        link: sidebeskrivelse.data.shortcuts,
+                    },
+                };
+            }
+
+            // delete old sidebeskrivelse
             libs.content.delete({
-                key: sidebeskrivelseChildren[0]._id,
+                key: sidebeskrivelse._id,
             });
-            sidebeskrivelseRef = sidebeskrivelseChildren[0]._id;
+            sidebeskrivelseRef = sidebeskrivelse._id;
         }
 
         // create new page-list
@@ -532,7 +553,7 @@ function createLink (oldLink, description) {
         });
     } else {
         // use internal link where we were able to find an id
-        return libs.content.create({
+        const internalLink = libs.content.create({
             name: oldLink._name,
             displayName: oldLink.displayName,
             contentType: app.name + ':internal-link',
@@ -543,6 +564,8 @@ function createLink (oldLink, description) {
             },
             x: getXData(oldLink),
         });
+        libs.tools.addRef(urlInfo.refId, internalLink._id);
+        return internalLink;
     }
 }
 
@@ -596,11 +619,12 @@ exports.commonTranslate = commonTranslate;
  */
 function commonTranslate (oldContent, newContent) {
     try {
+        // TODO should not be necessary anymore, remove if migration is ok
         // update references from old to new
-        const refs = libs.tools.getRefs(oldContent);
-        refs.forEach(ref => {
-            libs.tools.modify(ref, newContent._id, oldContent._id);
-        });
+        // const refs = libs.tools.getRefs(oldContent);
+        // refs.forEach(ref => {
+        //     libs.tools.modify(ref, newContent._id, oldContent._id);
+        // });
 
         // move all children from old to new and delete old
         log.info('MOVE CHILDREN AND DELETE OLD');
@@ -644,11 +668,17 @@ function updateTimeAndOrder (oldContent, newContent) {
             c._childOrder = oldContent.childOrder;
 
             // order news and pressreleases by publish.first
+            const lowerCaseName = c._name.toLowerCase();
             if (c.type === app.name + ':content-list' || c.type === app.name + ':page-list') {
-                const validNames = ['nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
-                if (validNames.indexOf(c._name.toLowerCase()) >= 0) {
+                const validNames = ['news', 'nyheter', 'nyheiter', 'pressemeldinger', 'pressemelding'];
+                if (validNames.indexOf(lowerCaseName) >= 0) {
                     c._childOrder = 'publish.first DESC';
                 }
+            }
+
+            // order a selection of page-lists by published date
+            if (c.type === app.name + ':page-list' && (lowerCaseName === 'pressemeldinger' || lowerCaseName === 'pressemelding')) {
+                c.data.orderSectionContentsByPublished = true;
             }
 
             // keep manual order if any
@@ -773,7 +803,9 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             const parameters = cms2xpPage.data.parameters;
             // take all data from article and add params
             let data = article.data;
+            let displayName = cms2xpPage.displayName;
             if (article.type === app.name + ':nav.sidebeskrivelse') {
+                displayName = article.displayName;
                 data = {
                     ingress: article.data.description,
                     text: ' ',
@@ -788,7 +820,7 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             // create new
             let newPage = libs.content.create({
                 name: cms2xpPage._name,
-                displayName: cms2xpPage.displayName,
+                displayName: displayName,
                 contentType: app.name + ':main-article',
                 parentPath: '/www.nav.no/tmp',
                 data,
@@ -821,7 +853,7 @@ function translateNavRapportHandbok (rapportHandbok) {
     });
 
     // create main-article-chapter elements as children of the main-article
-    rapportHandbok.data.chapters.forEach(chapterId => {
+    rapportHandbok.data.chapters.reverse().forEach(chapterId => {
         let chapter = libs.content.get({
             key: libs.tools.getModifyToFromRef(chapterId, libs.tools.getNavRepo()),
         });
@@ -910,7 +942,7 @@ function translateRapportHandbok (rapportHandbok) {
             ? [rapportHandbok.data.rapports.rapport]
             : [];
 
-    rapports.forEach(function (rapport) {
+    rapports.reverse().forEach(function (rapport) {
         let rapportArticle = libs.content.create({
             parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
             contentType: app.name + ':main-article',

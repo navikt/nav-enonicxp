@@ -26,7 +26,7 @@
         </input>
         <input type="CheckBox" name="orderSectionContentsByPublished">
             <label>Sorter artikkellisten etter publiseringsdato</label>
-            <default>checked</default>
+            <default>unchecked</default>
         </input>
         <input name="sectionContents" type="ContentSelector">
             <label>Contents</label>
@@ -57,13 +57,13 @@
             <expanded>false</expanded>
             <occurrences minimum="0" maximum="1"/>
             <options minimum="0" maximum="11">
-                <option name="related-information">
+                <option name="shortcuts">
                     <label>Snarveier</label>
                     <help-text ></help-text>
                     <items>
                         <input name="link" type="ContentSelector">
                             <label>Snarveier</label>
-                            <custom-text>contentdata/laws</custom-text>
+                            <custom-text>contentdata/links</custom-text>
                             <occurrences maximum="0" minimum="1"/>
                         </input>
                     </items>
