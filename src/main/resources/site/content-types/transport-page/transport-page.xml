@@ -1,27 +1,23 @@
 <content-type>
-    <display-name>Transport side</display-name>
+    <display-name>Transportside</display-name>
     <super-type>
         base:structured
     </super-type>
     <form>
-    <input name="title" type="TextLine">
-        <label>Tittel</label>
-        <occurrences minimum="1" maximum="1"/>
-    </input>
     <input name="ingress" type="TextLine">
         <label>Kort beskrivelse</label>
-        <occurrences minimum="1" maximum="1"/>
+        <occurrences minimum="0" maximum="1"/>
     </input>
     <item-set name="items">
         <label>Klikkbar lenkepanel</label>
         <items>
             <input name="title" type="TextLine">
                 <label>Paneltittel</label>
-                <occurrences minimum="1" maximum="1"/>
+                <occurrences minimum="0" maximum="1"/>
             </input>
             <input name="ingress" type="TextLine">
                 <label>Panelbeskrivelse</label>
-                <occurrences maximum="1" minimum="1"/>
+                <occurrences  minimum="0" maximum="1"/>
             </input>
             <input name="spanning" type="Checkbox">
                 <label>Heldekkende panel</label>
@@ -42,9 +38,6 @@
             <input name="logo" type="ImageSelector">
                 <label>Velg logo</label>
                 <occurrences minimum="0" maximum="1"/>
-                <config>
-                    <allowPath>*/bilder-felles-nav.no-og-navet/logo/transport</allowPath>
-                </config>
             </input>
         </items>
         <occurrences maximum="0" minimum="1"/>
