@@ -10,7 +10,6 @@ exports.get = function (req) {
         const content = libs.portal.getContent();
         const items = content.data.items ? Array.isArray(content.data.items) ? content.data.items : [content.data.items]: [];
         const model = {
-            title: content.data.title,
             ingress: content.data.ingress,
             items: items.map(value => {
                 return {
