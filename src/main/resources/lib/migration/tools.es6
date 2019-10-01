@@ -740,6 +740,7 @@ function getIdFromUrl (url) {
             ret.external = false;
             url = decodeURIComponent(url);
             url = url.replace(/\+/g, '-');
+            url = url.replace(/ /g, '-');
             url = url.replace(/,/g, '');
             url = url.replace(/å/g, 'a');
             url = url.replace(/ø/g, 'o');
