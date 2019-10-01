@@ -12,28 +12,31 @@ exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'section-page', req.branch, () => {
         const content = libs.portal.getContent();
         const lang = libs.lang.parseBundle(content.language).oppslagstavle;
-        const table = getTableElements(content, 'tableContents').slice(0, content.data.nrTableEntries);
         let col = 'col-md-';
+        const tableList = getTableElements(content, 'tableContents');
+        const table = (tableList && tableList.length > 0
+            ? tableList.slice(0, content.data.nrTableEntries)
+            : null);
         const ntkList = getContentLists(content, 'ntkContents');
         const niceToKnow = {
             sectionName: lang.niceToKnow,
-            data: ( ntkList
+            data: (ntkList && ntkList.length > 0
                 ? ntkList.slice(0, content.data.nrNTK)
-                : ntkList),
+                : null),
         };
         const newsList = getContentLists(content, 'newsContents');
         const news = {
             sectionName: lang.news,
-            data: (newsList
+            data: (newsList && newsList.length > 0
                 ? newsList.reduce(orderByPublished, []).slice(0, content.data.nrNews)
-                : newsList),
+                : null),
         };
         const scList = getContentLists(content, 'scContents');
         const shortcuts = {
             sectionName: lang.shortcuts,
-            data: (scList
+            data: (scList && scList.length > 0
                 ? scList.slice(0, content.data.nrSC)
-                : scList),
+                : null),
         };
         let antCol = !!niceToKnow.data + !!news.data + !!shortcuts.data;
         if (antCol === 0) { antCol = 1; }
@@ -52,7 +55,6 @@ exports.get = function (req) {
     });
 };
 
-// Returnerer null hvis listen er tom
 function getContentLists (content, contentType) {
     if (content.data[contentType]) {
         const section = libs.content.get({
@@ -61,20 +63,19 @@ function getContentLists (content, contentType) {
 
         if (section && section.data.sectionContents) {
             if (Array.isArray(section.data.sectionContents)) {
-                return section.data.sectionContents.map(mapElements);
+                return section.data.sectionContents.map(mapElements).filter(el => !!el);
             } else {
-                return [section.data.sectionContents].map(mapElements);
+                return [section.data.sectionContents].map(mapElements).filter(el => !!el);
             }
         }
     }
-    return null;
+    return [];
 }
 
-// Returnerer en tom array hvis listen er tom
 function getTableElements (content, contentType) {
     return (content.data[contentType]
         ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]])
-        : []).map(mapElements);
+        : []).map(mapElements).filter(el => !!el);
 }
 
 function mapElements (elementId) {
