@@ -6802,6 +6802,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     div.placeholder .top-link-wrapper.sticky-top-link .btn:active {
         background-color: #005B82;
     }
+    div.placeholder .top-link-wrapper.sticky-top-link .btn:focus {
+        box-shadow: 0 0 0 3px #254b6d;
+    }
 }
 
 .hidden, .hide {
