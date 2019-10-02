@@ -262,6 +262,8 @@ function updateCms2xpPage (socket) {
             key: articleId,
         });
     }
+
+    libs.tools.updateRefsAfterMigration();
 }
 
 function updateMainOppslagstavle (socket) {
@@ -276,8 +278,6 @@ function updateMainOppslagstavle (socket) {
     // translate content site
     translateChildrenOf(socket, '/content');
     deleteOldAndMoveNew('/content', '/www.nav.no/tmp/content');
-
-    libs.tools.updateRefsAfterMigration();
 }
 
 function deleteOldAndMoveNew (contentKey, newContentKey) {
