@@ -95,7 +95,7 @@
                     */-->
                     <a href="#" data-th-href="${content.src}" data-th-text="${content.heading}"></a>
                 </li>
-                <li><a href="#">Flere nyheter</a></li>
+                <li data-th-if="${moreNewsUrl}"><a data-th-href="${moreNewsUrl}">Flere nyheter</a></li>
                 <!-- Produce context aware search link -->
                 <!--/*<xsl:call-template name="context-news-search"/>*/--><!--/* The XSLT-code behind this call spans almost 200 lines! It determines link href and text based on where on the site this part is rendered. */-->
             </ul>
