@@ -89,6 +89,7 @@ function saveRefsToChildrenOf (parent, navRepo, socket) {
 function importLinks (socket) {
     const links = [];
 
+    // link map for broken links
     const linkFile = libs.io.getResource('/lib/migration/translate/links.csv');
     if (linkFile.exists()) {
         const stream = linkFile.getStream();
@@ -113,6 +114,7 @@ function importLinks (socket) {
         log.info('links.csv not found');
     }
 
+    // link map for invalid relative links in external links
     const externalLinksFile = libs.io.getResource('/lib/migration/translate/external-links.csv');
     if (externalLinksFile.exists()) {
         const stream = externalLinksFile.getStream();
@@ -125,10 +127,6 @@ function importLinks (socket) {
                 const url = `http://www.nav.no${split[0]}`;
                 const newPath = split[3];
                 if (url && newPath) {
-                    log.info(JSON.stringify({
-                        url,
-                        newPath,
-                    }, null, 4));
                     links.push({
                         url,
                         newPath,
@@ -155,6 +153,47 @@ function importLinks (socket) {
                 links,
             },
         });
+    }
+
+    // map for "flere nyheter" link in section-page
+    const sectionPageNewsLinksFile = libs.io.getResource('/lib/migration/translate/section-page-news-links.csv');
+    if (sectionPageNewsLinksFile.exists()) {
+        const sectionPageLinks = [];
+
+        const stream = sectionPageNewsLinksFile.getStream();
+        const lines = libs.io.readLines(stream);
+        socket.emit('import-links-max', lines.length);
+
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                const split = line.split(';');
+                const sectionPagePath = split[1];
+                const url = split[2];
+                if (url) {
+                    sectionPageLinks.push({
+                        url: url.replace('https://www-x4.nav.no', ''),
+                        sectionPagePath,
+                    });
+                }
+            }
+            socket.emit('import-links-value', index + 1);
+        });
+
+        const navRepo = libs.tools.getNavRepo();
+        const sectionPageContent = navRepo.get('/sectionPageNewsLinks');
+        if (sectionPageContent) {
+            navRepo.delete('/sectionPageNewsLinks');
+        }
+        navRepo.create({
+            _name: 'sectionPageNewsLinks',
+            parentPath: '/',
+            refresh: true,
+            data: {
+                sectionPageLinks,
+            },
+        });
+    } else {
+        log.info('section-page-news-links.csv not found');
     }
 }
 
