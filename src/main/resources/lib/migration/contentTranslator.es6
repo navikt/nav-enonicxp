@@ -106,6 +106,10 @@ function translateContent (content) {
         newContent = translateEkstraStorTabellToLargeTable(content);
     }
 
+    if (content.type === 'base:folder') {
+        newContent = translateFolderToFolder(content);
+    }
+
     if (content === newContent) {
         log.info('NOT TRANSLATED');
         let folder = libs.content.create({
@@ -806,7 +810,7 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
         let article;
         try {
             article = libs.content.get({
-                key: cms2xpPage.x['no-nav-navno'].cmsMenu.content,
+                key: libs.tools.getModifyToFromRef(cms2xpPage.x['no-nav-navno'].cmsMenu.content, libs.tools.getNavRepo()),
             });
         } catch (e) {
             log.info('Could not find cms2xpPage content' + cms2xpPage.x['no-nav-navno'].cmsMenu.content);
@@ -1006,4 +1010,19 @@ function translateEkstraStorTabellToLargeTable (ekstraStorTabell) {
     largeTable = updateTimeAndOrder(ekstraStorTabell, largeTable);
 
     return largeTable;
+}
+
+function translateFolderToFolder (oldFolder) {
+    let newFolder = libs.content.create({
+        name: oldFolder._name,
+        displayName: oldFolder.displayName,
+        contentType: 'base:folder',
+        parentPath: getTmpParentPath(oldFolder),
+        data: {
+
+        },
+    });
+
+    newFolder = updateTimeAndOrder(oldFolder, newFolder);
+    return newFolder;
 }

@@ -227,7 +227,7 @@ function updateCms2xpPage (socket) {
     r.forEach((cms2xpPage, index) => {
         if (libs.tools.verifyPaths(cms2xpPage, ['x', 'no-nav-navno', 'cmsMenu', 'content'])) {
             log.info('TRANSLATE :: ' + cms2xpPage._path + ' :: ' + cms2xpPage.type);
-            const articleKey = cms2xpPage.x['no-nav-navno'].cmsMenu.content;
+            const articleKey = libs.tools.getModifyToFromRef(cms2xpPage.x['no-nav-navno'].cmsMenu.content, libs.tools.getNavRepo());
             const newPage = libs.contentTranslator.translateCms2xpPageToMainArticle(cms2xpPage);
 
             // move all children from article to new page based on the old cms2xpPage
