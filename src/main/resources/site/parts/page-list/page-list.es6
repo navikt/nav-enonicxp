@@ -2,6 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
+    lang: require('/lib/i18nUtil'),
     utils: require('/lib/nav-utils'),
     cache: require('/lib/cacheControll'),
 };
@@ -10,6 +11,7 @@ const view = resolve('page-list.html');
 exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'page-list', req.branch, () => {
         const content = libs.portal.getContent();
+        const langBundle = libs.lang.parseBundle(content.language).page_list;
 
         let ids = content.data.sectionContents;
         ids = ids ? (!Array.isArray(ids) ? [ids] : ids) : [];
@@ -50,6 +52,8 @@ exports.get = function (req) {
             items = items.sort((a, b) => b.published - a.published);
         }
 
+        const languages = libs.utils.getLanguageVersions(content);
+
         const model = {
             published: libs.utils.dateTimePublished(content, content.language || 'no'),
             from: content.publish.from,
@@ -59,7 +63,8 @@ exports.get = function (req) {
             hideDate: !!content.data.hide_date,
             hideSectionContentsDate: !!content.data.hideSectionContentsDate,
             hasLanguageVersions: languages.length > 0,
-            languages: libs.utils.getLanguageVersions(content),
+            languages,
+            langBundle,
         };
 
         return {
