@@ -304,13 +304,19 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
  * @returns {object} new content
  */
 function translateCms2xpSectionToOppslagstavle (cms2xpSection) {
+    const data = translateTables(cms2xpSection);
+    const moreNewsUrl = libs.tools.getMoreNewsUrl(cms2xpSection);
+    if (moreNewsUrl) {
+        data.moreNewsUrl = moreNewsUrl;
+    }
+
     // create new
     let oppslagstavle = libs.content.create({
         name: cms2xpSection._name,
         displayName: cms2xpSection.displayName,
         contentType: app.name + ':section-page',
         parentPath: getTmpParentPath(cms2xpSection),
-        data: translateTables(cms2xpSection),
+        data,
         x: getXData(cms2xpSection),
     });
 

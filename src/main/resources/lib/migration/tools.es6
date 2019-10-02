@@ -844,6 +844,23 @@ function getUrlsInContent (elem) {
     return urls;
 }
 
+exports.getMoreNewsUrl = getMoreNewsUrl;
+/**
+ * @description get the "more news" link for a section page
+ * @param sectionPage the cms2XpPage/section-page to find a link for
+ */
+function getMoreNewsUrl (sectionPage) {
+    const navRepo = getNavRepo();
+    const sectionPageNewsLinks = navRepo.get('/sectionPageNewsLinks');
+    if (sectionPageNewsLinks) {
+        let match = sectionPageNewsLinks.data.sectionPageNewsLinks.filter(l => l.sectionPagePath === sectionPage._path)[0];
+        if (match) {
+            return match.url;
+        }
+    }
+    return null;
+}
+
 exports.runInContext = runInContext;
 /**
  * @description run a function in admin context on the draft branch
