@@ -87,13 +87,13 @@ function saveRefsToChildrenOf (parent, navRepo, socket) {
 }
 
 function importLinks (socket) {
+    const links = [];
+
     const linkFile = libs.io.getResource('/lib/migration/translate/links.csv');
     if (linkFile.exists()) {
         const stream = linkFile.getStream();
         const lines = libs.io.readLines(stream);
         socket.emit('import-links-max', lines.length);
-
-        const links = [];
 
         lines.forEach((line, index) => {
             if (index > 0) {
@@ -109,7 +109,39 @@ function importLinks (socket) {
             }
             socket.emit('import-links-value', index + 1);
         });
+    } else {
+        log.info('links.csv not found');
+    }
 
+    const externalLinksFile = libs.io.getResource('/lib/migration/translate/external-links.csv');
+    if (externalLinksFile.exists()) {
+        const stream = externalLinksFile.getStream();
+        const lines = libs.io.readLines(stream);
+        socket.emit('import-links-max', lines.length);
+
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                const split = line.split(';');
+                const url = `http://www.nav.no${split[0]}`;
+                const newPath = split[3];
+                if (url && newPath) {
+                    log.info(JSON.stringify({
+                        url,
+                        newPath,
+                    }, null, 4));
+                    links.push({
+                        url,
+                        newPath,
+                    });
+                }
+            }
+            socket.emit('import-links-value', index + 1);
+        });
+    } else {
+        log.info('external-links.csv not found');
+    }
+
+    if (links.length > 0) {
         const navRepo = libs.tools.getNavRepo();
         const linksContent = navRepo.get('/links');
         if (linksContent) {
@@ -123,8 +155,6 @@ function importLinks (socket) {
                 links,
             },
         });
-    } else {
-        log.info('links.csv not found');
     }
 }
 

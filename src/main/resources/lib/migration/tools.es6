@@ -710,6 +710,7 @@ function getIdFromUrl (url) {
         invalid: false,
         refId: null,
         pathTo: null,
+        replaceUrl: null,
     };
     url = url.toLowerCase();
     if (url.indexOf('/') === 0) {
@@ -722,14 +723,21 @@ function getIdFromUrl (url) {
         if (links) {
             let match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
             if (match) {
-                const ref = libs.content.get({
-                    key: match.newPath,
-                });
-                if (ref) {
-                    ret.external = false;
-                    ret.refId = ref._id;
-                    ret.pathTo = ref._path;
+                // check if the new path is an internal path or a replacement for an external url
+                if (match.newPath.indexOf('http') === 0) {
+                    ret.external = true;
+                    ret.replaceUrl = match.newPath;
                     return ret;
+                } else {
+                    const ref = libs.content.get({
+                        key: match.newPath,
+                    });
+                    if (ref) {
+                        ret.external = false;
+                        ret.refId = ref._id;
+                        ret.pathTo = ref._path;
+                        return ret;
+                    }
                 }
             }
         }

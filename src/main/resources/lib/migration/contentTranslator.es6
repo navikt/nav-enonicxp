@@ -547,6 +547,12 @@ function createLink (oldLink, description) {
     var urlInfo = libs.tools.getIdFromUrl(oldLink.data.url);
     // if it's an external link or an invalid internal link we're going to use external link
     if (urlInfo.external || urlInfo.invalid) {
+        // use original url, unless we get a replacement url
+        let url = oldLink.data.link;
+        if (urlInfo.replaceUrl) {
+            url = urlInfo.replaceUrl;
+        }
+
         return libs.content.create({
             name: oldLink._name,
             displayName: oldLink.displayName,
@@ -554,7 +560,7 @@ function createLink (oldLink, description) {
             parentPath: getTmpParentPath(oldLink),
             data: {
                 description: description,
-                url: oldLink.data.url,
+                url,
             },
             x: getXData(oldLink),
         });
