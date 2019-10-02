@@ -28,7 +28,7 @@ exports.get = function (req) {
         const news = {
             sectionName: lang.news,
             data: (newsList && newsList.length > 0
-                ? newsList.reduce(orderByPublished, []).slice(0, content.data.nrNews)
+                ? newsList.sort((a,b) => b.publDate - a.publDate).slice(0, content.data.nrNews)
                 : null),
         };
         const scList = getContentLists(content, 'scContents');
@@ -95,6 +95,7 @@ function mapElements (elementId) {
         heading: el.displayName || el.data.title,
         icon: 'icon-' + (el.data.icon || 'document'),
         src: getSrc(el),
+        publDate: new Date(el.publish && (el.publish.first ? el.publish.first : el.createdTime)),
         published: el.publish &&
             (el.publish.first
                 ? libs.navUtils.formatDate(el.publish.first, content.language)
@@ -117,17 +118,4 @@ function getSrc (el) {
             id: el._id,
         });
     }
-}
-
-function orderByPublished (list, element) {
-    for (let i = 0; i < list.length; i += 1) {
-        if (element && new Date(list[i].published) < new Date(element.published)) {
-            list.splice(i, 0, element);
-            return list;
-        }
-    }
-    if (element) {
-        list.push(element);
-    }
-    return list;
 }
