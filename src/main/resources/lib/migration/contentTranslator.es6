@@ -258,6 +258,7 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
         if (sidebeskrivelseChildren.length === 1) {
             const sidebeskrivelse = sidebeskrivelseChildren[0];
             cms2xpSection.data.ingress = sidebeskrivelse.data.description;
+            cms2xpSection.displayName = sidebeskrivelse.displayName;
 
             // add shortcuts from sidebeskrivelse if it exists
             if (sidebeskrivelse.data.shortcuts) {
