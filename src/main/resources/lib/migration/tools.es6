@@ -853,7 +853,7 @@ function getMoreNewsUrl (sectionPage) {
     const navRepo = getNavRepo();
     const sectionPageNewsLinks = navRepo.get('/sectionPageNewsLinks');
     if (sectionPageNewsLinks) {
-        let match = sectionPageNewsLinks.data.sectionPageNewsLinks.filter(l => l.sectionPagePath === sectionPage._path)[0];
+        let match = sectionPageNewsLinks.data.sectionPageLinks.filter(l => l.sectionPagePath === sectionPage._path)[0];
         if (match) {
             return match.url;
         }
