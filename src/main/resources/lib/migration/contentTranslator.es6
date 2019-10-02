@@ -554,7 +554,7 @@ function createLink (oldLink, description) {
     // if it's an external link or an invalid internal link we're going to use external link
     if (urlInfo.external || urlInfo.invalid) {
         // use original url, unless we get a replacement url
-        let url = oldLink.data.link;
+        let url = oldLink.data.url;
         if (urlInfo.replaceUrl) {
             url = urlInfo.replaceUrl;
         }
