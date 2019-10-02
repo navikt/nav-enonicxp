@@ -29,13 +29,25 @@ const menuToJson = (content, levels) => {
         subMenus = getMegaMenu(content, levels);
     }
 
+    let path = libs.portal.pageUrl({
+        id: content.data.target,
+    });
+
+    if (content.data.target) {
+        const target = libs.content.get({
+            key: content.data.target
+        });
+
+        if (target && target.type === `${app.name}:external-link`) {
+            path = target.data.url;
+        }
+    }
+
     return {
         displayName: content.displayName,
-        path: libs.portal.pageUrl({
-            id: content.data.itemContent,
-        }),
+        path,
         id: content._id,
         hasChildren: subMenus.length > 0,
         children: subMenus,
     };
-}
+};
