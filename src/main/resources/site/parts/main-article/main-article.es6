@@ -35,7 +35,10 @@ exports.get = function (req) {
             while (ind !== -1 && count < 100) {
                 const h2End = ind + 4;
                 const ssEnd = data.text.indexOf('</h3>', ind);
-                const ss = data.text.slice(h2End, ssEnd);
+                const ss = data.text
+                    .slice(h2End, ssEnd)
+                    .replace(/<([^>]+)>/ig, '') // Strip html
+                    .replace(/&nbsp;/ig, ' '); // Replace &nbsp;
                 count++;
                 toc.push(ss);
                 data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
