@@ -54,13 +54,16 @@ exports.handle404 = function (req) {
     if (element) {
         let redirect;
         if (element.type === app.name + ':external-link') {
-            redirect = libs.portal.pageUrl(
-                validateUrl(element.data.url.toLowerCase())
-                    .andOr(stripProtocol)
-                    .andOr(appendRoot)
-                    .andOr(xpInfuse)
-                    .endValidation
-            );
+            log.info(element.data.url);
+            redirect = element.data.url;
+            // NOTE why?
+            // redirect = libs.portal.pageUrl(
+            //     validateUrl(element.data.url.toLowerCase())
+            //         .andOr(stripProtocol)
+            //         .andOr(appendRoot)
+            //         .andOr(xpInfuse)
+            //         .endValidation
+            // );
         } else {
             redirect = libs.portal.pageUrl({
                 id: element.data.target,
