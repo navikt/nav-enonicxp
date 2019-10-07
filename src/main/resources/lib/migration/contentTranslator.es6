@@ -1021,6 +1021,7 @@ function translateFolderToFolder (oldFolder) {
         data: {
 
         },
+        x: getXData(oldFolder),
     });
 
     newFolder = updateTimeAndOrder(oldFolder, newFolder);
