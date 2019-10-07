@@ -2,6 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
+    lang: require('/lib/i18nUtil'),
     utils: require('/lib/nav-utils'),
     cache: require('/lib/cacheControll'),
 };
@@ -10,21 +11,25 @@ const view = resolve('page-list.html');
 exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'page-list', req.branch, () => {
         const content = libs.portal.getContent();
+        const langBundle = libs.lang.parseBundle(content.language).page_list;
 
         let ids = content.data.sectionContents;
         ids = ids ? (!Array.isArray(ids) ? [ids] : ids) : [];
-
         let items = ids
-            .map(function (value) { // map section content ids to content
+            .map(value => {
+                // map section content ids to content
                 return libs.content.get({
                     key: value,
                 });
             })
             .filter(el => !!el && el._id !== content._id) // remove itself from list
             .concat(libs.content.getChildren({ // add children as well
-                key: content._id, start: 0, count: 100,
+                key: content._id,
+                start: 0,
+                count: 100,
             }).hits)
-            .map(function (el) { // map to model better suited for thymeleaf view
+            .map(el => {
+                // map to model better suited for thymeleaf view
                 return {
                     src: libs.portal.pageUrl({
                         id: el._id,
@@ -32,7 +37,7 @@ exports.get = function (req) {
                     heading: el.displayName,
                     ingress: el.data.ingress || el.data.description,
                     publishedText: libs.utils.dateTimePublished(el, el.language || 'no'),
-                    published: el.publish && el.publish.first ? el.publish.first : el.createdTime,
+                    published: new Date(el.publish && el.publish.first ? el.publish.first : el.createdTime),
                 };
             })
             .reduce((t, el) => { // remove duplicates
@@ -44,7 +49,7 @@ exports.get = function (req) {
 
         // order by published
         if (content.data.orderSectionContentsByPublished) {
-            items = items.reduce(orderByPublished, []);
+            items = items.sort((a, b) => b.published - a.published);
         }
 
         const languages = libs.utils.getLanguageVersions(content);
@@ -59,6 +64,7 @@ exports.get = function (req) {
             hideSectionContentsDate: !!content.data.hideSectionContentsDate,
             hasLanguageVersions: languages.length > 0,
             languages,
+            langBundle,
         };
 
         return {
@@ -66,14 +72,3 @@ exports.get = function (req) {
         };
     });
 };
-
-function orderByPublished (list, element) {
-    for (let i = 0; i < list.length; i += 1) {
-        if (new Date(list[i].published) < new Date(element.published)) {
-            list.splice(i, 0, element);
-            return list;
-        }
-    }
-    list.push(element);
-    return list;
-}

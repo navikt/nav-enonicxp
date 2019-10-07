@@ -2,8 +2,8 @@
     <display-name>Meta description</display-name>
     <form>
         <input name="metaDescription" type="TextLine">
-            <label>Beskrive siden, innhold og formål for resultat i søkemotorer.</label>
-            <help-text>Meta description brukes av søkemotorer til å beskrive en side i søkeresultater.</help-text>
+            <label>Beskrive sidens innhold og formål for deling i sosiale medier og resultat i søkemotorer</label>
+            <help-text>Meta description brukes av sosiale medier ved deling av lenker og av søkemotorer til å beskrive en side i søkeresultater.</help-text>
         </input>
     </form>
 </mixin>

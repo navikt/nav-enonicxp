@@ -14,7 +14,6 @@
                     <help-text>Ingressen bør være maks. 240 tegn.</help-text>
                     <occurrences maximum="1" minimum="1"/>
                 </input>
-                <mixin name="meta-description"/>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst</label>
                     <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
@@ -251,7 +250,7 @@
             </items>
         </field-set>
         <field-set name="socialSharing">
-            <label>Del på sosiale medier</label>
+            <label>Sosiale medier og søkemotorer</label>
             <items>
                 <input name="social" type="ComboBox">
                     <label>Del på sosiale medier</label>
@@ -263,6 +262,7 @@
                     </config>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
+                <mixin name="meta-description"/>
             </items>
         </field-set>
         <field-set name="Angi andre språkversjoner">
