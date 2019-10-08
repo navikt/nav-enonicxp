@@ -39,6 +39,7 @@ function handleGet (req) {
                 const links = forceArr(menuListItems[el].link);
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
+                    expanded: el === 'shortcuts',
                     links: links
                         .map(contentId => {
                             const element = libs.content.get({
@@ -77,6 +78,7 @@ function handleGet (req) {
             });
 
         if (menuLists.length > 0) {
+            log.info(JSON.stringify(menuLists, null, 4));
             const model = {
                 menuLists,
             };
