@@ -5585,6 +5585,7 @@ $.fn.navnoAccordion = function () {
 $(document).ready(function () {
     $('#related-content-accordion').navnoAccordion(),
     $('.valgForSkjemasok').navnoAccordion();
+    $('#related-content-accordion>[data-expand="true"] .accordion-toggle').click();
 }),
 window.matchMedia || (window.matchMedia = (function () {
     'use strict';
