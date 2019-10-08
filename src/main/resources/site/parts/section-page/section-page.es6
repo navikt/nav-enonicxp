@@ -46,6 +46,7 @@ exports.get = function (req) {
             table,
             niceToKnow,
             news,
+            moreNewsUrl: content.data.moreNewsUrl,
             shortcuts,
             col,
         };

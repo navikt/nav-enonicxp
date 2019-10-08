@@ -37,6 +37,9 @@
                         <treeMode>true</treeMode>
                     </config>
                 </input>
+                <input type="TextLine" name="moreNewsUrl">
+                    <label>Url til flere nyheter</label>
+                </input>
             </items>
         </field-set>
         <field-set name="ntk">

@@ -710,6 +710,7 @@ function getIdFromUrl (url) {
         invalid: false,
         refId: null,
         pathTo: null,
+        replaceUrl: null,
     };
     url = url.toLowerCase();
     if (url.indexOf('/') === 0) {
@@ -722,14 +723,21 @@ function getIdFromUrl (url) {
         if (links) {
             let match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
             if (match) {
-                const ref = libs.content.get({
-                    key: match.newPath,
-                });
-                if (ref) {
-                    ret.external = false;
-                    ret.refId = ref._id;
-                    ret.pathTo = ref._path;
+                // check if the new path is an internal path or a replacement for an external url
+                if (match.newPath.indexOf('http') === 0) {
+                    ret.external = true;
+                    ret.replaceUrl = match.newPath;
                     return ret;
+                } else {
+                    const ref = libs.content.get({
+                        key: match.newPath,
+                    });
+                    if (ref) {
+                        ret.external = false;
+                        ret.refId = ref._id;
+                        ret.pathTo = ref._path;
+                        return ret;
+                    }
                 }
             }
         }
@@ -740,6 +748,7 @@ function getIdFromUrl (url) {
             ret.external = false;
             url = decodeURIComponent(url);
             url = url.replace(/\+/g, '-');
+            url = url.replace(/ /g, '-');
             url = url.replace(/,/g, '');
             url = url.replace(/å/g, 'a');
             url = url.replace(/ø/g, 'o');
@@ -833,6 +842,23 @@ function getUrlsInContent (elem) {
         }
     }
     return urls;
+}
+
+exports.getMoreNewsUrl = getMoreNewsUrl;
+/**
+ * @description get the "more news" link for a section page
+ * @param sectionPage the cms2XpPage/section-page to find a link for
+ */
+function getMoreNewsUrl (sectionPage) {
+    const navRepo = getNavRepo();
+    const sectionPageNewsLinks = navRepo.get('/sectionPageNewsLinks');
+    if (sectionPageNewsLinks) {
+        let match = sectionPageNewsLinks.data.sectionPageLinks.filter(l => l.sectionPagePath === sectionPage._path)[0];
+        if (match) {
+            return match.url;
+        }
+    }
+    return null;
 }
 
 exports.runInContext = runInContext;

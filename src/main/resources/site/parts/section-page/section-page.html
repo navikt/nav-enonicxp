@@ -40,8 +40,8 @@
                     [[${content.heading}]]
                 </a>
             </li>
-            <li>
-                <a href="#">Flere nyheter</a>
+            <li data-th-if="${moreNewsUrl}">
+                <a data-th-href="${moreNewsUrl}">Flere nyheter</a>
             </li>
         </ul>
     </div>

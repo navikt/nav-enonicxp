@@ -106,6 +106,10 @@ function translateContent (content) {
         newContent = translateEkstraStorTabellToLargeTable(content);
     }
 
+    if (content.type === 'base:folder') {
+        newContent = translateFolderToFolder(content);
+    }
+
     if (content === newContent) {
         log.info('NOT TRANSLATED');
         let folder = libs.content.create({
@@ -258,6 +262,7 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
         if (sidebeskrivelseChildren.length === 1) {
             const sidebeskrivelse = sidebeskrivelseChildren[0];
             cms2xpSection.data.ingress = sidebeskrivelse.data.description;
+            cms2xpSection.displayName = sidebeskrivelse.displayName;
 
             // add shortcuts from sidebeskrivelse if it exists
             if (sidebeskrivelse.data.shortcuts) {
@@ -303,13 +308,19 @@ function translateCms2xpSectionToTavleliste (cms2xpSection) {
  * @returns {object} new content
  */
 function translateCms2xpSectionToOppslagstavle (cms2xpSection) {
+    const data = translateTables(cms2xpSection);
+    const moreNewsUrl = libs.tools.getMoreNewsUrl(cms2xpSection);
+    if (moreNewsUrl) {
+        data.moreNewsUrl = moreNewsUrl;
+    }
+
     // create new
     let oppslagstavle = libs.content.create({
         name: cms2xpSection._name,
         displayName: cms2xpSection.displayName,
         contentType: app.name + ':section-page',
         parentPath: getTmpParentPath(cms2xpSection),
-        data: translateTables(cms2xpSection),
+        data,
         x: getXData(cms2xpSection),
     });
 
@@ -546,6 +557,12 @@ function createLink (oldLink, description) {
     var urlInfo = libs.tools.getIdFromUrl(oldLink.data.url);
     // if it's an external link or an invalid internal link we're going to use external link
     if (urlInfo.external || urlInfo.invalid) {
+        // use original url, unless we get a replacement url
+        let url = oldLink.data.url;
+        if (urlInfo.replaceUrl) {
+            url = urlInfo.replaceUrl;
+        }
+
         return libs.content.create({
             name: oldLink._name,
             displayName: oldLink.displayName,
@@ -553,7 +570,7 @@ function createLink (oldLink, description) {
             parentPath: getTmpParentPath(oldLink),
             data: {
                 description: description,
-                url: oldLink.data.url,
+                url,
             },
             x: getXData(oldLink),
         });
@@ -793,7 +810,7 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
         let article;
         try {
             article = libs.content.get({
-                key: cms2xpPage.x['no-nav-navno'].cmsMenu.content,
+                key: libs.tools.getModifyToFromRef(cms2xpPage.x['no-nav-navno'].cmsMenu.content, libs.tools.getNavRepo()),
             });
         } catch (e) {
             log.info('Could not find cms2xpPage content' + cms2xpPage.x['no-nav-navno'].cmsMenu.content);
@@ -993,4 +1010,20 @@ function translateEkstraStorTabellToLargeTable (ekstraStorTabell) {
     largeTable = updateTimeAndOrder(ekstraStorTabell, largeTable);
 
     return largeTable;
+}
+
+function translateFolderToFolder (oldFolder) {
+    let newFolder = libs.content.create({
+        name: oldFolder._name,
+        displayName: oldFolder.displayName,
+        contentType: 'base:folder',
+        parentPath: getTmpParentPath(oldFolder),
+        data: {
+
+        },
+        x: getXData(oldFolder),
+    });
+
+    newFolder = updateTimeAndOrder(oldFolder, newFolder);
+    return newFolder;
 }

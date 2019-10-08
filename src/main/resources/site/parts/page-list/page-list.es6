@@ -35,7 +35,7 @@ exports.get = function (req) {
                         id: el._id,
                     }),
                     heading: el.displayName,
-                    ingress: el.data.ingress,
+                    ingress: el.data.ingress || el.data.description,
                     publishedText: libs.utils.dateTimePublished(el, el.language || 'no'),
                     published: new Date(el.publish && el.publish.first ? el.publish.first : el.createdTime),
                 };
