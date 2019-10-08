@@ -15,6 +15,9 @@ function handleGet (req) {
         const contentAZUrl = libs.portal.serviceUrl({service: 'contentAZ'});
         const accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (language === 'no' || language === 'se' ? 'æøå' : '');
         const urls = {
+            frontPage: libs.portal.pageUrl({
+                path: '/www.nav.no/',
+            }),
             contactUs: libs.portal.pageUrl({
                 path: '/www.nav.no/footer-contactus-' + language,
             }),
