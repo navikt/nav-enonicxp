@@ -27,6 +27,8 @@ module.exports = {
     wipeAll,
     stripPath: getPath,
     etag: getEtag,
+    wipeOnChange,
+    clearReferences,
 };
 
 function getPath (path, type) {
