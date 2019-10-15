@@ -98,12 +98,16 @@ function mapElements (elementId) {
     if (ingress && ingress.length > 140) {
         ingress = ingress.substring(0, 140) + '...';
     }
+    let publishedDate = el.publish && el.publish.first ? el.publish.first : el.createdTime;
+    if (publishedDate.indexOf('.') !== -1) {
+        publishedDate = publishedDate.split('.')[0] + 'Z';
+    }
     return {
         isHtml: (el.data.ingress ? el.data.ingress.startsWith('<') : false),
         heading: el.displayName || el.data.title,
         icon: 'icon-' + (el.data.icon || 'document'),
         src: getSrc(el),
-        publDate: new Date(el.publish && (el.publish.first ? el.publish.first : el.createdTime)),
+        publDate: new Date(publishedDate),
         published: el.publish &&
             (el.publish.first
                 ? libs.navUtils.formatDate(el.publish.first, content.language)
