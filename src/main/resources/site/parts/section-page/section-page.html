@@ -41,7 +41,7 @@
                 </a>
             </li>
             <li data-th-if="${moreNewsUrl}">
-                <a data-th-href="${moreNewsUrl}">Flere nyheter</a>
+                <a data-th-href="${moreNewsUrl}" data-th-text="${localSectionPage ? 'Flere lokalsaker' : 'Flere nyheter'}"></a>
             </li>
         </ul>
     </div>
