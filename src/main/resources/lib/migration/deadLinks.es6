@@ -6,11 +6,6 @@ const libs = {
     task: require('/lib/xp/task'),
     tools: require('/lib/migration/tools'),
 };
-const repo = libs.node.connect({
-    repoId: 'com.enonic.cms.default',
-    branch: 'draft',
-    principals: ['role:system.admin'],
-});
 let socket;
 const elements = createNewElements();
 exports.handle = function (s) {
@@ -40,6 +35,10 @@ exports.handle = function (s) {
     socket.on('findOldFormLinks', () => {
         libs.tools.runInContext(socket, findOldFormLinks);
     });
+
+    socket.on('dumpDeadlinks', () => {
+        libs.tools.runInContext(socket, dumpDeadlinks);
+    });
 };
 
 let val = 0;
@@ -53,16 +52,16 @@ function handleDeadLinks (socket) {
 
     deadLinks(false, [], '', socket);
 
-    const fnd = repo.query({
-        query: '_name LIKE "linkshit"',
-    }).hits[0];
+    const navRepo = libs.tools.getNavRepo();
+    const fnd = navRepo.get('/deadlinks');
     if (fnd) {
-        repo.delete(fnd._id);
+        navRepo.delete(fnd._id);
     }
-    repo.create({
-        _name: 'linkshit',
+    navRepo.create({
+        _name: 'deadlinks',
+        parentPath: '/',
         data: {
-            shit: tArr,
+            links: tArr,
         },
     });
 }
@@ -73,9 +72,13 @@ function deadLinks (el, arr, route, socket) {
             key: '/www.nav.no',
         });
 
-        if (!el) { return log.info('Failed'); }
+        if (!el) {
+            return log.info('Failed');
+        }
         route = 'www.nav.no';
-    } else { route = route + '->' + el.displayName; }
+    } else {
+        route = route + '->' + el.displayName;
+    }
     socket.emit('dlStatusTree', 'Working in ' + route);
     if (el.hasChildren) {
         const childs = libs.content.getChildren({
@@ -87,7 +90,7 @@ function deadLinks (el, arr, route, socket) {
         socket.emit('dl-childCount', childC);
         childs.forEach((child) => {
             socket.emit('d-Value', ++val);
-            arr = deadLinks(child, arr, route);
+            arr = deadLinks(child, arr, route, socket);
         });
     }
     runDeep(el.data, socket);
@@ -111,14 +114,26 @@ function deadLinks (el, arr, route, socket) {
                 }
             }
         } else if (Array.isArray(something)) {
-            something.forEach(runDeep);
+            something.forEach((s) => runDeep(s, socket));
         } else if (typeof something === 'object') {
             for (let key in something) {
-                if (something.hasOwnProperty(key)) { runDeep(something[key]); }
+                if (something.hasOwnProperty(key)) {
+                    runDeep(something[key], socket);
+                }
             }
         }
         // else log.info(something);
     }
+}
+
+function dumpDeadlinks () {
+    const navRepo = libs.tools.getNavRepo();
+    const deadlinks = navRepo.get('/deadlinks').data.links;
+    let csv = 'Id\tPath\tUrl\r\n';
+    deadlinks.forEach((l) => {
+        csv += `${l.el}\t${l.route}\t${l.address}\r\n`;
+    });
+    socket.emit('console.log', csv);
 }
 
 function findOldFormLinks (socket) {
@@ -183,6 +198,37 @@ function createNewElements () {
                             tagClass: [ 'button', 'is-primary' ],
                             action: 'lenke',
                             text: 'Start',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Dump deadlinks csv',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'dump-deadlinks',
+                            progress: {
+                                value: 'dump-deadlinks-value',
+                                max: 'dump-deadlinks-max',
+                                valId: 'dump-deadlinks-val-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'dump-deadlinks-button',
+                            action: 'dumpDeadlinks',
+                            text: 'dump',
                         },
                         {
                             tag: 'li',
