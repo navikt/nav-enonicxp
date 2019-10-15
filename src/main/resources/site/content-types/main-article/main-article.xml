@@ -54,7 +54,7 @@
                                     <custom-text>contentdata/links</custom-text>
                                     <occurrences maximum="0" minimum="1"/>
                                     <config>
-                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                        <allow-content-type>no.nav.navno:external-link</allow-content-type>
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>
@@ -95,14 +95,6 @@
                                     <custom-text>contentdata/links</custom-text>
                                     <occurrences maximum="0" minimum="0"/>
                                     <config>
-                                        <allow-content-type>media:document</allow-content-type>
-                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                                        <allow-content-type>no.nav.navno:tavleliste</allow-content-type>
-                                        <allow-content-type>no.nav.navno:Enhetsinformasjon</allow-content-type>
-                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                                        <allow-content-type>no.nav.navno:Oppslagstavle</allow-content-type>
-                                        <allow-content-type>no.nav.navno:shortcut</allow-content-type>
-                                        <allow-content-type>no.nav.navno:Ekstra_stor_tabell</allow-content-type>
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>
@@ -116,8 +108,6 @@
                                     <custom-text>contentdata/links</custom-text>
                                     <occurrences maximum="0" minimum="1"/>
                                     <config>
-                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
-                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>
@@ -187,7 +177,7 @@
                                     <custom-text>contentdata/links</custom-text>
                                     <occurrences maximum="0" minimum="1"/>
                                     <config>
-                                        <allow-content-type>no.nav.navno:Ekstern_lenke</allow-content-type>
+                                        <allow-content-type>no.nav.navno:external-link</allow-content-type>
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>
