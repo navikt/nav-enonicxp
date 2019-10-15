@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Kapittel</display-name>
+    <description>Brukes ifm. artikkel med høyremeny</description>
     <super-type>base:unstructured</super-type>
     <form>
         <input name="article" type="ContentSelector">

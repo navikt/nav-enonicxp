@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Transportside</display-name>
+    <description>Eksempel "Hva er din situasjon" på nav.no</description>
     <super-type>
         base:structured
     </super-type>

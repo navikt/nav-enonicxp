@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Oppslagstavle</display-name>
+    <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
     <super-type>base:unstructured</super-type>
     <form>
         <field-set name="beskrivelse">

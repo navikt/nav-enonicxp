@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Artikkel</display-name>
+    <description>Brukes til artikler/nyheter/pressemeldinger</description>
     <super-type>base:unstructured</super-type>
     <form>
         <field-set name="article">

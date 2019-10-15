@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Innholdsliste</display-name>
+    <description>Visning av Nyheter/Nyttig å vite/Snarveier</description>
     <super-type>base:unstructured</super-type>
     <form>
         <field-set name="innholdsliste">

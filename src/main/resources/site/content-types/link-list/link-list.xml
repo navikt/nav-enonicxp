@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Lenkeliste</display-name>
+    <description>Skal ikke brukes</description>
     <super-type>base:unstructured</super-type>
     <form>
         <input name="description" type="TextArea">

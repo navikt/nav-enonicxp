@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Intern Lenke</display-name>
+    <description>Lenker til innhold i Enonic XP</description>
     <super-type>base:unstructured</super-type>
     <form>
         <input name="description" type="TextArea">
