@@ -56,14 +56,6 @@ exports.handle404 = function (req) {
         if (element.type === app.name + ':external-link') {
             log.info(element.data.url);
             redirect = element.data.url;
-            // NOTE why?
-            // redirect = libs.portal.pageUrl(
-            //     validateUrl(element.data.url.toLowerCase())
-            //         .andOr(stripProtocol)
-            //         .andOr(appendRoot)
-            //         .andOr(xpInfuse)
-            //         .endValidation
-            // );
         } else {
             redirect = libs.portal.pageUrl({
                 id: element.data.target,
@@ -80,8 +72,9 @@ exports.handle404 = function (req) {
     // TODO: create 404 page
     log.info(JSON.stringify(req, null, 4));
     return {
-        body: 'Missing',
-        contentType: 'text/plain',
+        redirect: libs.portal.pageUrl({
+            path: '/www.nav.no/404',
+        }),
     };
 };
 
