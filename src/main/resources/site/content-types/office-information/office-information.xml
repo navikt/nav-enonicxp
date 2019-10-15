@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Enhetsinformasjon</display-name>
+    <description>Kontorinformasjon</description>
     <super-type>base:unstructured</super-type>
     <form>
         <item-set name="enhet">

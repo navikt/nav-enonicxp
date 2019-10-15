@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Artikkelliste</display-name>
-    <description/>
+    <description>Overskriften blir lenke og ingress vises under</description>
     <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Generisk side</display-name>
-    <description>Tom side for spesielle formål</description>
+    <description>Brukes i forbindelse med publiseringskalender</description>
     <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

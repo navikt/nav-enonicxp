@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Section</display-name>
+    <description>Gammel nav.no innholdstype som skal utgå</description>
     <description/>
     <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>

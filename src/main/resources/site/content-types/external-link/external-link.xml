@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Ekstern Lenke</display-name>
+    <description>Lenker ut av nav.no</description>
     <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

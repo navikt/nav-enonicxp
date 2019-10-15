@@ -1,5 +1,6 @@
 <content-type>
     <display-name>Melding</display-name>
+    <description>Driftsmelding</description>
     <super-type>base:unstructured</super-type>
     <form>
         <field-set name="melding">
