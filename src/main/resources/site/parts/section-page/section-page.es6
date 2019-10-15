@@ -28,7 +28,7 @@ exports.get = function (req) {
         const news = {
             sectionName: lang.news,
             data: (newsList && newsList.length > 0
-                ? newsList.sort((a,b) => b.publDate - a.publDate).slice(0, content.data.nrNews)
+                ? newsList.sort((a, b) => b.publDate - a.publDate).slice(0, content.data.nrNews)
                 : null),
         };
         const scList = getContentLists(content, 'scContents');
@@ -42,6 +42,12 @@ exports.get = function (req) {
         if (antCol === 0) { antCol = 1; }
         col += 12 / antCol;
 
+        let localSectionPage = false;
+        const pathParts = content._path.split('/');
+        if (pathParts[pathParts.length - 2] === 'lokalt') {
+            localSectionPage = true;
+        }
+
         const model = {
             table,
             niceToKnow,
@@ -49,6 +55,7 @@ exports.get = function (req) {
             moreNewsUrl: content.data.moreNewsUrl,
             shortcuts,
             col,
+            localSectionPage,
         };
         return {
             body: libs.thymeleaf.render(view, model),
@@ -91,12 +98,16 @@ function mapElements (elementId) {
     if (ingress && ingress.length > 140) {
         ingress = ingress.substring(0, 140) + '...';
     }
+    let publishedDate = el.publish && el.publish.first ? el.publish.first : el.createdTime;
+    if (publishedDate.indexOf('.') !== -1) {
+        publishedDate = publishedDate.split('.')[0] + 'Z';
+    }
     return {
         isHtml: (el.data.ingress ? el.data.ingress.startsWith('<') : false),
         heading: el.displayName || el.data.title,
         icon: 'icon-' + (el.data.icon || 'document'),
         src: getSrc(el),
-        publDate: new Date(el.publish && (el.publish.first ? el.publish.first : el.createdTime)),
+        publDate: new Date(publishedDate),
         published: el.publish &&
             (el.publish.first
                 ? libs.navUtils.formatDate(el.publish.first, content.language)
