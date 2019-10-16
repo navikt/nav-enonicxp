@@ -3,6 +3,7 @@ const libs = {
     context: require('/lib/xp/context'),
     http: require('/lib/http-client'),
     tools: require('/lib/migration/tools'),
+    io: require('/lib/xp/io'),
 };
 
 exports.handle = function (socket) {
@@ -17,6 +18,9 @@ exports.handle = function (socket) {
     });
     socket.on('import-form', () => {
         libs.tools.runInContext(socket, importForms);
+    });
+    socket.on('import-form2', () => {
+        libs.tools.runInContext(socket, importFormsFromCsv);
     });
 };
 
@@ -385,7 +389,8 @@ function importForms (socket) {
         });
     }
 
-    formImport.forEach(form => {
+    socket.emit('import-form-max', formImport.length);
+    formImport.forEach((form, index) => {
         let newFormId = createFormContent(form, 0);
 
         let formNumber = form.displayName.split(' - ');
@@ -406,7 +411,82 @@ function importForms (socket) {
                 });
             });
         }
+        socket.emit('import-form-value', index + 1);
     });
+}
+
+function importFormsFromCsv (socket) {
+    // csv file containing new form urls
+    const formsFile = libs.io.getResource('/lib/migration/forms.csv');
+    if (formsFile.exists()) {
+        const stream = formsFile.getStream();
+        const lines = libs.io.readLines(stream);
+        socket.emit('import-form2-max', lines.length);
+
+        const forms = {
+            // forms map
+        };
+
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                const split = line.split(';');
+                const usedInPath = split[0];
+                const formId = split[1];
+                const url = split[5];
+                const language = split[3] || 'no';
+                // create the new external-link to the form if it's not already made
+                if (!forms[formId]) {
+                    // find the old form and get the display name from the first form in that
+                    const oldForm = libs.content.query({
+                        start: 0,
+                        count: 1,
+                        query: `data.number = "${formId}"`,
+                    }).hits[0];
+                    let displayName;
+                    const entries = oldForm.data.forms.form;
+                    const entry = Array.isArray(entries) ? entries[0] : entries;
+                    if (entry) {
+                        displayName = entry.name + ' - ' + formId;
+                    }
+                    // find references to the old form
+                    const usedIn = libs.content.query({
+                        start: 0,
+                        count: 1000,
+                        query: `_references = "${oldForm._id}"`,
+                    }).hits;
+                    // cache away the id to the new and old form, as well as the references
+                    forms[formId] = {
+                        newForm: createFormContent({
+                            displayName,
+                            url,
+                            language,
+                        }, 0),
+                        oldForm: oldForm._id,
+                        usedIn: usedIn.map(u => u._path),
+                    };
+                }
+                // add the reference from the csv as well
+                if (forms[formId].usedIn.indexOf(usedInPath) === -1) {
+                    forms[formId].usedIn.push(usedInPath);
+                }
+            }
+
+            socket.emit('import-form2-value', index + 1);
+        });
+        // loop over all forms and update references
+        for (let formId in forms) {
+            forms[formId].usedIn.forEach((path) => {
+                const c = libs.content.get({
+                    key: path,
+                });
+                if (c) {
+                    libs.tools.modify(c, forms[formId].newForm, forms[formId].oldForm);
+                }
+            });
+        }
+    } else {
+        log.info('forms.csv not found');
+    }
 }
 
 function createElements () {
@@ -497,11 +577,33 @@ function createElements () {
                             tag: 'button',
                             tagClass: ['button', 'is-info'],
                             action: 'import-form',
-                            text: 'Opprett',
+                            text: 'Importer',
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Importer skjema 2',
                         },
                         {
-                            tag: 'p',
-                            update: 'import-form-message',
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'import-form2',
+                            progress: {
+                                value: 'import-form2-value',
+                                max: 'import-form2-max',
+                                valId: 'import-form2-val',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'import-form2',
+                            text: 'Importer',
                         },
                     ],
                 },
