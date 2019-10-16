@@ -1,6 +1,7 @@
 
 const libs = {
     content: require('/lib/xp/content'),
+    context: require('/lib/xp/context'),
     portal: require('/lib/xp/portal'),
 };
 
@@ -51,19 +52,11 @@ exports.handle404 = function (req) {
     }
 
     // if we found a matching redirect, send the user there
+    let redirect;
     if (element) {
-        let redirect;
         if (element.type === app.name + ':external-link') {
             log.info(element.data.url);
             redirect = element.data.url;
-            // NOTE why?
-            // redirect = libs.portal.pageUrl(
-            //     validateUrl(element.data.url.toLowerCase())
-            //         .andOr(stripProtocol)
-            //         .andOr(appendRoot)
-            //         .andOr(xpInfuse)
-            //         .endValidation
-            // );
         } else {
             redirect = libs.portal.pageUrl({
                 id: element.data.target,
@@ -77,13 +70,65 @@ exports.handle404 = function (req) {
     }
 
     // log error and send the user to a 404 page
-    // TODO: create 404 page
     log.info(JSON.stringify(req, null, 4));
+    if (!libs.content.get({
+        key: '/www.nav.no/404',
+    })) {
+        // Try to create 404 page if not found
+        redirect = create404page();
+    } else {
+        redirect = libs.portal.pageUrl({
+            path: '/www.nav.no/404',
+        });
+    }
+    if (redirect) {
+        return {
+            redirect,
+        };
+    }
     return {
         body: 'Missing',
         contentType: 'text/plain',
     };
 };
+
+function create404page () {
+    return libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        () => {
+            const page = libs.content.create({
+                name: '404',
+                parentPath: '/www.nav.no',
+                displayName: 'Siden finnes ikke',
+                contentType: app.name + ':generic-page',
+                data: {
+                    ingress: 'Beklager, denne siden finnes ikke.',
+                },
+            });
+            const res = libs.content.publish({
+                keys: ['/www.nav.no/404'],
+                sourceBranch: 'draft',
+                targetBranch: 'master',
+                includeDependencies: false,
+            });
+            if (res) {
+                return libs.portal.pageUrl({
+                    path: page,
+                });
+            } else {
+                return null;
+            }
+        }
+    );
+}
 
 function stripProtocol (url) {
     return url.replace(/http[s]?:\/\/www\.nav\.no/, '');
