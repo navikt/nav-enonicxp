@@ -76,7 +76,7 @@ function removeCacheOnPrepublishedContent (prepublishedContent) {
                     key: el.id,
                 });
                 libs.cacheControll.wipeOnChange(content._path);
-                libs.cacheControll.clearReferences(content._id, 0);
+                libs.cacheControll.clearReferences(content._id, content._path, 0);
             });
         }
     );

@@ -8,13 +8,16 @@ const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 const caches = {
     decorator: libs.cache.newCache({
-        size: 50, expire: oneDay,
+        size: 50,
+        expire: oneDay,
     }),
     azList: libs.cache.newCache({
-        size: 100, expire: oneDay,
+        size: 100,
+        expire: oneDay,
     }),
     paths: libs.cache.newCache({
-        size: 5000, expire: oneDay,
+        size: 5000,
+        expire: oneDay,
     }),
 };
 module.exports = {
@@ -32,7 +35,9 @@ module.exports = {
 };
 
 function getPath (path, type) {
-    if (!path) { return; }
+    if (!path) {
+        return;
+    }
     const arr = path.split('/www.nav.no/');
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
@@ -94,10 +99,7 @@ function wipeOnChange (path) {
         if (path.indexOf('/megamenu/') !== -1) {
             wipe('decorator')();
         }
-        if (path.indexOf('/megamenu/') !== -1 ||
-            path.indexOf('/en/content-a-z/') !== -1 ||
-            path.indexOf('/no/innhold-a-aa/') !== -1
-        ) {
+        if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
             wipe('azList')();
         }
     }
@@ -142,31 +144,50 @@ function nodeListenerCallback (event) {
                     principals: ['role:system.admin'],
                 },
                 () => {
-                    clearReferences(node.id, 0);
+                    clearReferences(node.id, node.path, 0);
                 }
             );
         }
     });
 }
 
-function clearReferences (id, depth) {
+function clearReferences (id, path, depth) {
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
         return;
     }
-    libs.content.query({
+    const references = libs.content.query({
         start: 0,
         count: 1000,
-        query: "_references LIKE '" + id + "'",
-    }).hits
-        .forEach(el => {
-            wipeOnChange(el._path);
+        query: `_references LIKE "${id}"`,
+    }).hits;
 
-            const deepTypes = [
-                app.name + ':content-list',
-            ];
-            if (deepTypes.indexOf(el.type) !== -1) {
-                clearReferences(el._id, depth + 1);
-            }
-        });
+    // fix path before getting parent
+    if (path.indexOf('/content/') === 0) {
+        path = path.replace('/content', '');
+    }
+
+    // get parent
+    const parent = libs.content.get({
+        key: path.split('/').slice(0, -1).join('/'),
+    });
+
+    // remove parents cache if its of a type that autogenerates content based on children and not reference
+    const parentTypesToClear = [
+        `${app.name}:page-list`,
+        `${app.name}:main-article`,
+    ];
+    if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
+        log.info('REMOVE PARENT CACHE');
+        references.push(parent);
+    }
+
+    references.forEach(el => {
+        wipeOnChange(el._path);
+
+        const deepTypes = [`${app.name}:content-list`];
+        if (deepTypes.indexOf(el.type) !== -1) {
+            clearReferences(el._id, depth + 1);
+        }
+    });
 }
