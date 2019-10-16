@@ -230,6 +230,9 @@ function updateCms2xpPage (socket) {
             const articleKey = libs.tools.getModifyToFromRef(cms2xpPage.x['no-nav-navno'].cmsMenu.content, libs.tools.getNavRepo());
             const newPage = libs.contentTranslator.translateCms2xpPageToMainArticle(cms2xpPage);
 
+            // update ref from old cms2xp_page to new article
+            libs.tools.updateModifyToRef(cms2xpPage._id, newPage._id);
+
             // move all children from article to new page based on the old cms2xpPage
             const children = libs.content.getChildren({
                 key: articleKey,
