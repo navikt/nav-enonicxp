@@ -28,6 +28,7 @@ exports.get = function (req) {
                 start: 0,
                 count: 100,
             }).hits)
+            .filter(el => el.type !== `${app.name}:content-list`)
             .map(el => {
                 // map to model better suited for thymeleaf view
                 return {
@@ -38,6 +39,7 @@ exports.get = function (req) {
                     ingress: el.data.ingress || el.data.description,
                     publishedText: libs.utils.dateTimePublished(el, el.language || 'no'),
                     published: new Date(el.publish && el.publish.first ? el.publish.first : el.createdTime),
+                    type: el.type,
                 };
             })
             .reduce((t, el) => { // remove duplicates
