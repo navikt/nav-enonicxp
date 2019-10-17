@@ -375,7 +375,7 @@ function createChapters (socket) {
                 if (!exists) {
                     libs.content.create({
                         parentPath: mainArticle._path,
-                        contentType: app.name + ':main-article-chapter',
+                        contentType: `${app.name}:main-article-chapter`,
                         displayName: child.displayName,
                         name: child._name + '_kap',
                         data: {
