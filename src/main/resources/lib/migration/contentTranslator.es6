@@ -826,9 +826,8 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             const parameters = cms2xpPage.data.parameters;
             // take all data from article and add params
             let data = article.data;
-            let displayName = cms2xpPage.displayName;
+            let displayName = article.displayName;
             if (article.type === app.name + ':nav.sidebeskrivelse') {
-                displayName = article.displayName;
                 data = {
                     ingress: article.data.description,
                     text: ' ',
