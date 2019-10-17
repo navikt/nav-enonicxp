@@ -30,6 +30,8 @@
             url: $th.attr('action'),
             data: $th.serialize() + '&start=' + (count - 1),
             success: function (data) {
+                // update heading
+                $('#search-result-heading').text(data.fasett);
                 // append all hits to result list
                 for (var i = 0; i < data.hits.length; i += 1) {
                     var hit = data.hits[i];
