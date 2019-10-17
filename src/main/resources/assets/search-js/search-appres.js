@@ -7,6 +7,7 @@
         $('input[name=f]').on('change', changeFasett);
         $('.wic').on('change', changeUnderfasett);
         $('input.defaultFasett').on('change', changeDefaultFasett);
+        $('div.minimertFiltreringspanel>ul.fasettListe>li').click(changeFasettMobile);
 
         var $flere = $('#flere');
         if ($flere) {
@@ -14,7 +15,7 @@
         }
     }
     init();
-    function setC (n) {
+    function setC (n) { // count
         $('input[name=c]').val(n);
     }
     function update (e) {
@@ -84,11 +85,20 @@
         setC(1);
         $('.sokeresultatliste').empty();
         $('.utvidbar.erValgt').removeClass('erValgt');
+        $('ul.fasettListe>li.erValgt').removeClass('erValgt');
         var $parent = $(this).parent();
         $parent.addClass('erValgt');
         $parent.find('div input.defaultFasett').prop('checked', true);
+        $('ul.fasettListe>li[data-facet="' + $(this).val() + '"]').addClass('erValgt');
         $('.wic').prop('checked', false);
         update(e);
+    }
+    function changeFasettMobile (e) {
+        var $facet = $('input[name="f"][value="' + $(this).data('facet') + '"]').eq(0);
+        if (!$facet.is(':checked')) {
+            $facet.prop('checked', true);
+            $facet.trigger('change');
+        }
     }
     function changeDefaultFasett (e) {
         setC(1);
