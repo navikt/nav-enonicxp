@@ -826,9 +826,8 @@ function translateCms2xpPageToMainArticle (cms2xpPage) {
             const parameters = cms2xpPage.data.parameters;
             // take all data from article and add params
             let data = article.data;
-            let displayName = cms2xpPage.displayName;
+            let displayName = article.displayName;
             if (article.type === app.name + ':nav.sidebeskrivelse') {
-                displayName = article.displayName;
                 data = {
                     ingress: article.data.description,
                     text: ' ',
@@ -976,12 +975,11 @@ function translateRapportHandbok (rapportHandbok) {
                 contentType: 'lastingContent',
             },
         });
-        const name = rapport.subtitle.replace(/\?/g, '');
         libs.content.create({
             parentPath: getTmpParentPath(rapportHandbok) + mainArticle._name + '/',
             contentType: app.name + ':main-article-chapter',
             displayName: rapport.subtitle,
-            name: name + '_kap',
+            name: rapportArticle._name + '_kap',
             data: {
                 article: rapportArticle._id,
             },
