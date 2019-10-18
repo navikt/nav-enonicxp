@@ -78,7 +78,7 @@ function handleMegaMenu (socket) {
         key: '/www.nav.no/',
     });
     getSubMenus('/www.nav.no/megamenu', siteContent, 4);
-    // orderMenuItems();
+    orderMenuItems();
 }
 
 function getSubMenus (path, parentContent, levels) {
