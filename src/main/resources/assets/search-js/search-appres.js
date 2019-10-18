@@ -60,6 +60,15 @@
                 // update hit count
                 $('#hit-count').text(data.total);
 
+                // update date periods
+                var totalInDateCount = 0;
+                for (var k = 0; k < data.aggregations.Tidsperiode.buckets.length; k += 1) {
+                    var datePeriod = data.aggregations.Tidsperiode.buckets[k];
+                    totalInDateCount += datePeriod.docCount;
+                    $('input[name="daterange"][value="' + k + '"]').parent().find('span').text(datePeriod.docCount);
+                }
+                $('input[name="daterange"][value="-1"]').parent().find('span').text(totalInDateCount);
+
                 // show/hide load more button
                 if (data.isMore) {
                     $('#flere').removeClass('hidden');
