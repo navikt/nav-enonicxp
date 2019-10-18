@@ -25,6 +25,10 @@ function get (req) {
         req.params.ord = encodeURI(req.params.ord);
     }
 
+    if (Array.isArray(req.params.uf)) {
+        req.params.uf = JSON.stringify(req.params.uf);
+    }
+
     const response = libs.http.request({
         url,
         params: req.params,
