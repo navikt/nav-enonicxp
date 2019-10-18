@@ -15,11 +15,20 @@
 <div class="row">
     <section class="col-md-8 col-8">
         <div class="sokeresultatContainer">
-            <h1 data-th-text="${fasett}"></h1>
+            <div class="minimertFiltreringspanel">
+                <ul class="fasettListe">
+                    <li data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}" data-th-data-facet="${aggStat.index}">
+                        <div class="fasettLinkHode">
+                            <h2 data-th-text="${agg.key}"></h2>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <h1 id="search-result-heading" data-th-text="${fasett}"></h1>
             <div class="clearfix">
                 <div>
                     <div aria-atomic="true" aria-live="polite" class="pull-left">
-                        <p class="treffInfo" id="id19c">
+                        <p class="treffInfo">
                             <span data-th-text="${total}" id="hit-count"></span>
                             treff for:
                             <span class="sokeord" data-th-text="${word}"></span>
@@ -32,11 +41,11 @@
             </div>
             <div>
                 <form data-th-action="${form}" id="sort" method="get">
-                    <div class="alternativerForSortering" id="ida0">
-                        <input data-th-checked="${isSortDate}" id="ida0-0" name="s" type="radio" value="0" />
+                    <div class="alternativerForSortering">
+                        <input data-th-checked="${isSortDate}" name="s" type="radio" value="0" />
                         <label for="ida0-0">Beste treff</label>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input data-th-checked="${!isSortDate}" id="ida0-1" name="s" type="radio" value="1" />
+                        <input data-th-checked="${!isSortDate}" name="s" type="radio" value="1" />
                         <label for="ida0-1">Dato</label>
                         &nbsp;&nbsp;&nbsp;&nbsp;
                     </div>
@@ -80,14 +89,12 @@
             </a>
         </div>
     </section>
-    <section class="col-md-4 col-4" id="id38">
+    <section class="col-md-4 col-4">
         <form data-th-action="${searchApi}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
-                <ul class="fasettListe" id="id33">
+                <ul class="fasettListe">
                     <li class="utvidbar" data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}">
-                        <!--div style="width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden"><input type="hidden" name="ord" data-th-value="${word}" id="id12_hf_1"></div-->
                         <input
-                            class="wicket-id33"
                             data-th-checked="${agg.checked}"
                             data-th-disabled="${agg.docCount} == 0"
                             data-th-id="${agg.key}"
@@ -128,10 +135,10 @@
             <div class="fasettGruppeElement radiobuttons">
                 <h2>Tidsperiode</h2>
 
-                <ul class="fasettListe" id="id34">
+                <ul class="fasettListe">
                     <li>
                         <input
-                            class="wicket-id33 svart"
+                            class="svart"
                             data-th-checked="${aggregations.Tidsperiode.checked}"
                             id="tpfirst"
                             name="daterange"
@@ -143,7 +150,7 @@
                     </li>
                     <li data-th-each="agg : ${aggregations.Tidsperiode.buckets}">
                         <input
-                            class="wicket-id33 svart"
+                            class="svart"
                             data-th-checked="${agg.checked}"
                             data-th-disabled="${agg.docCount} == 0"
                             data-th-id="${'f' + aggStat.index}"

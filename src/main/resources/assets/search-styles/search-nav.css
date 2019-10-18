@@ -401,7 +401,7 @@ input[type=radio]:focus + label {
 
 .minimertFiltreringspanel li {
     background-color: #333;
-    width: 50%;
+    width: 49%;
     border-right: 1px solid #ddd;
     display: inline-block;
     font-size: 1.3em;
@@ -903,6 +903,18 @@ input[type=radio]:focus + label {
 @media (min-width: 769px) {
     .minimertFiltreringspanel {
         display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        display: none;
+    }
+    .search-bar {
+        display: block;
+    }
+    #sok {
+        max-width: 100%;
     }
 }
 
