@@ -99,9 +99,8 @@ function mapElements (elementId) {
         ingress = ingress.substring(0, 140) + '...';
     }
     let publishedDate = el.publish && el.publish.first ? el.publish.first : el.createdTime;
-    if (publishedDate.indexOf('.') !== -1) {
-        publishedDate = publishedDate.split('.')[0] + 'Z';
-    }
+    publishedDate = libs.navUtils.fixDateFormat(publishedDate);
+
     return {
         isHtml: (el.data.ingress ? el.data.ingress.startsWith('<') : false),
         heading: el.displayName || el.data.title,
