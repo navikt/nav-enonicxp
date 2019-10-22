@@ -135,7 +135,7 @@ function create404page () {
 exports.handleError = function (err) {
     return {
         contentType: 'text/html',
-        body: `<html><body><h1>Error code "${err.status}"</h1><p>"${err.message}"</p></body></html>`,
+        body: `<html><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,
     };
 };
 
