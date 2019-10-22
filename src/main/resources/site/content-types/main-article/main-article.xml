@@ -101,8 +101,15 @@
                                         <allow-content-type>${app}:external-link</allow-content-type>
                                         <allow-content-type>${app}:internal-link</allow-content-type>
                                         <allow-content-type>${app}:section-page</allow-content-type>
-                                        <allow-content-type>media:*</allow-content-type>
                                         <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                                <input name="files" type="MediaSelector">
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <label>Legg ved filer</label>
+                                    <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
+                                    <config>
+                                        <allowContentType>media:document</allowContentType>
                                     </config>
                                 </input>
                             </items>
