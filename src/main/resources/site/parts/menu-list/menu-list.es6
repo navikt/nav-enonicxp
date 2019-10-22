@@ -36,7 +36,7 @@ function handleGet (req) {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
-                const links = forceArr(menuListItems[el].link);
+                const links = forceArr(menuListItems[el].link).concat(forceArr(menuListItems[el].files));
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     expanded: el === 'shortcuts',

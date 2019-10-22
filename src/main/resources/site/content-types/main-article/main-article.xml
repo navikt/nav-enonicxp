@@ -105,6 +105,14 @@
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>
+                                <input name="files" type="MediaSelector">
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <label>Legg ved filer</label>
+                                    <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
+                                    <config>
+                                        <allowContentType>media:document</allowContentType>
+                                    </config>
+                                </input>
                             </items>
                         </option>
                         <option name="international">
