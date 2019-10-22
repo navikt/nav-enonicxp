@@ -110,6 +110,7 @@
                                     <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
                                     <config>
                                         <allowContentType>media:document</allowContentType>
+                                        <showStatus>true</showStatus>
                                     </config>
                                 </input>
                             </items>
