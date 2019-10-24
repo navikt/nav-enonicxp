@@ -13,7 +13,7 @@
                 <input name="ingress" type="TextArea">
                     <label>Ingress</label>
                     <help-text>Ingressen bør være maks. 240 tegn.</help-text>
-                    <occurrences maximum="1" minimum="1"/>
+                    <occurrences minimum="0" maximum="1"/>
                 </input>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst</label>
