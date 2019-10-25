@@ -100,16 +100,17 @@ function deadLinks (el, arr, route, socket) {
         if (typeof something === 'string') {
             let reg;
             // eslint-disable-next-line no-useless-escape
-            const rx = /href=\"(.*?)\".*/g;
+            const rx = /href="([^"]+)"?[^>]*([^<]+)<\/a>/g;
             // eslint-disable-next-line no-cond-assign
-            while (reg = rx.exec(something)) {
-                const address = reg.pop();
+            while ((reg = rx.exec(something)) !== null) {
+                const address = reg[1];
+                const linktext = reg[2].substring(1);
                 socket.emit('dlStatus', 'Visiting: ' + address);
                 if (!visit(address)) {
                     tArr.push({
-                        el: el._id,
-                        route: route,
+                        path: el._path,
                         address: address,
+                        linktext: linktext
                     });
                 }
             }
@@ -129,11 +130,16 @@ function deadLinks (el, arr, route, socket) {
 function dumpDeadlinks () {
     const navRepo = libs.tools.getNavRepo();
     const deadlinks = navRepo.get('/deadlinks').data.links;
-    let csv = 'Id\tPath\tUrl\r\n';
+    let csv = 'Path,Feilende url,Lenketekst\r\n';
     deadlinks.forEach((l) => {
-        csv += `${l.el}\t${l.route}\t${l.address}\r\n`;
+        csv += `${l.path.substring(1)},${l.address},${l.linktext}\r\n`;
     });
-    socket.emit('console.log', csv);
+    const file = {
+        content: csv,
+        type: 'text/csv',
+        name: 'deadLinks.csv'
+    }
+    socket.emit('downloadFile', file)
 }
 
 function findOldFormLinks (socket) {
@@ -294,7 +300,10 @@ function visit (address) {
         } catch (e) {
             return false;
         }
-    } else if (address.startsWith('mailto') || address.startsWith('media')) { return true; } else {
+    } else if (address.startsWith('mailto') || address.startsWith('media')) {
+        return true;
+    }
+    else {
         log.info(address);
         return false;
     }

@@ -53,6 +53,16 @@
         io.on('console.log', function(data) {
             console.log(data);
         })
+        io.on('downloadFile', function(file) {
+            var blob = new Blob([file.content], {type: file.type});
+            var mouseevent = document.createEvent('MouseEvents');
+            mouseevent.initEvent("click", true, false);
+            var link = document.createElement('a');
+            link.download = file.name
+            link.href = window.URL.createObjectURL(blob);
+            link.dataset.downloadurl = [file.type, file.name, link.href].join(':');
+            link.dispatchEvent(mouseevent);
+        })
     }
 
     function newCreateElements(elements) {
