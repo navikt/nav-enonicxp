@@ -14,6 +14,7 @@ function handleGet (req) {
         const model = {
             heading: content.displayName,
             ingress: content.data.ingress,
+            text: content.data.text,
             langBundle,
         };
         return {

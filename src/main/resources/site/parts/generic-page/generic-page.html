@@ -1,4 +1,4 @@
-<article id="pagecontent">
+<article id="pagecontent" class="full-article">
     <header>
         <h1>[[${heading}]]</h1>
         <div class="toolbar">
@@ -12,6 +12,6 @@
         </p>
     </header>
     <div class="article-body">
-        <div data-th-utext="${content.data.text}"></div>
+        <div data-th-if="${text && text != ''}" data-th-utext="${text}"></div>
     </div>
 </article>
