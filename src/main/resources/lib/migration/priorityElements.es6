@@ -437,23 +437,28 @@ function importFormsFromCsv (socket) {
                 // create the new external-link to the form if it's not already made
                 if (!forms[formId]) {
                     // find the old form and get the display name from the first form in that
-                    const oldForm = libs.content.query({
+                    const formsWithFormId = libs.content.query({
                         start: 0,
-                        count: 1,
+                        count: 100,
                         query: `data.number = "${formId}"`,
-                    }).hits[0];
+                    }).hits;
+                    const oldForm = formsWithFormId[0];
                     let displayName;
                     const entries = oldForm.data.forms.form;
                     const entry = Array.isArray(entries) ? entries[0] : entries;
                     if (entry) {
                         displayName = entry.name + ' - ' + formId;
                     }
-                    // find references to the old form
-                    const usedIn = libs.content.query({
-                        start: 0,
-                        count: 1000,
-                        query: `_references = "${oldForm._id}"`,
-                    }).hits;
+                    // find references to the old forms
+                    let usedIn = [];
+                    formsWithFormId.forEach((form) => {
+                        const hits = libs.content.query({
+                            start: 0,
+                            count: 1000,
+                            query: `_references = "${form._id}"`,
+                        }).hits;
+                        usedIn = usedIn.concat(hits);
+                    });
                     // cache away the id to the new and old form, as well as the references
                     forms[formId] = {
                         newForm: createFormContent({
@@ -461,7 +466,7 @@ function importFormsFromCsv (socket) {
                             url,
                             language,
                         }, 0),
-                        oldForm: oldForm._id,
+                        oldForms: formsWithFormId.map(f => f._id),
                         usedIn: usedIn.map(u => u._path),
                     };
                 }
@@ -475,12 +480,15 @@ function importFormsFromCsv (socket) {
         });
         // loop over all forms and update references
         for (let formId in forms) {
-            forms[formId].usedIn.forEach((path) => {
+            const form = forms[formId];
+            form.usedIn.forEach((path) => {
                 const c = libs.content.get({
                     key: path,
                 });
                 if (c) {
-                    libs.tools.modify(c, forms[formId].newForm, forms[formId].oldForm);
+                    form.oldForms.forEach((oldFormId) => {
+                        libs.tools.modify(c, form.newForm, oldFormId);
+                    });
                 }
             });
         }
