@@ -1,0 +1,17 @@
+<article id="pagecontent" class="full-article">
+    <header>
+        <h1>[[${heading}]]</h1>
+        <div class="toolbar">
+            <div class="content-print leftmost-in-toolbar" id="print-page" role="button" tabindex="0">
+                <span>[[${langBundle.printpage}]]</span>
+            </div>
+        </div>
+        <p class="preface" data-th-if="${ingress && ingress != ''}">
+            [[${ingress}]]
+            <br><br>
+        </p>
+    </header>
+    <div class="article-body">
+        <div data-th-if="${text && text != ''}" data-th-utext="${text}"></div>
+    </div>
+</article>
