@@ -623,6 +623,82 @@ const publishingCalendarPage = [
     },
 ];
 
+const genericPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/0',
+        part: {
+            descriptor: 'no.nav.navno:generic-page',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+];
+
 const officeInformationPage = [
     {
         type: 'page',
@@ -816,10 +892,23 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:generic-page',
+                supports: 'no.nav.navno:publishing-calendar',
             },
         },
         components: publishingCalendarPage,
+    },
+    {
+        content: {
+            displayName: 'Generisk side',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:generic-page',
+            },
+        },
+        components: genericPage,
     },
     {
         content: {

@@ -5,6 +5,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
 };
 
+// Handle 404
 exports.handle404 = function (req) {
     // get path relative to www.nav.no site
     let path = '/www.nav.no' + (req.request.rawPath.split('/www.nav.no')[1]);
@@ -129,6 +130,14 @@ function create404page () {
         }
     );
 }
+
+// Handle all other errors - to avoid default error page with stack trace
+exports.handleError = function (err) {
+    return {
+        contentType: 'text/html',
+        body: `<html><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,
+    };
+};
 
 function stripProtocol (url) {
     return url.replace(/http[s]?:\/\/www\.nav\.no/, '');

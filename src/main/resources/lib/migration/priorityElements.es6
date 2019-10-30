@@ -22,6 +22,9 @@ exports.handle = function (socket) {
     socket.on('import-form2', () => {
         libs.tools.runInContext(socket, importFormsFromCsv);
     });
+    socket.on('create-synonyms', () => {
+        libs.tools.runInContext(socket, createSynonyms);
+    });
 };
 
 function hasSearchApp () {
@@ -497,6 +500,43 @@ function importFormsFromCsv (socket) {
     }
 }
 
+function createSynonyms () {
+    const oldSynonyms = libs.content.get({
+        key: '/content/sok/nav/synonymer/generelle',
+    });
+
+    if (libs.content.get({
+        key: '/www.nav.no/synonymer',
+    })) {
+        libs.content.delete({
+            key: '/www.nav.no/synonymer',
+        });
+    }
+
+    const synonyms = oldSynonyms.data.synonymerliste.map((oldSynonymString) => {
+        let synonym = [];
+        let oldSynonyms = oldSynonymString.synonymord.split(', ');
+        oldSynonyms.forEach((s) => {
+            if (s.split(',').length > 1) {
+                synonym = synonym.concat(s.split(','));
+            } else {
+                synonym.push(s);
+            }
+        });
+        return {
+            synonym,
+        };
+    });
+    libs.content.create({
+        parentPath: '/www.nav.no/',
+        displayName: 'Synonymer',
+        contentType: 'navno.nav.no.search:synonyms',
+        data: {
+            synonyms,
+        },
+    });
+}
+
 function createElements () {
     return {
         isNew: true,
@@ -612,6 +652,22 @@ function createElements () {
                             tagClass: ['button', 'is-info'],
                             action: 'import-form2',
                             text: 'Importer',
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Opprett synonymer',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            action: 'create-synonyms',
+                            text: 'Opprett',
                         },
                     ],
                 },
