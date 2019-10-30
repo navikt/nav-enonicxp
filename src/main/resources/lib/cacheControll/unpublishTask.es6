@@ -19,38 +19,48 @@ const draftRepo = libs.node.connect({
 
 let prevTestDate = new Date();
 
+const TIME_BETWEEN_CHECKS = 60000;
 exports.setupTask = setupTask;
 function setupTask () {
     libs.task.submit({
         description: 'clean out expired content from cache',
         task: () => {
-            const testDate = new Date();
+            const now = Date.now();
+            const testDate = new Date(now);
+
             // remove cache for prepublished content
-            const prepublishedContent = getPrepublishedContent(testDate);
+            const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
             removeCacheOnPrepublishedContent(prepublishedContent);
+
             // unpublish expired content
-            log.info('UNPUBLISH EXPIRED CONTENT');
             const expiredContent = getExpiredContent(testDate);
             removeExpiredContentFromMaster(expiredContent);
             // save last test date for next run
             prevTestDate = testDate;
-            // 1 minute between each check
-            libs.task.sleep(60000);
+
+            // 1 minute between each check or for next prepublished
+            const prepublishOnNext = getPrepublishedContent(testDate, new Date(now + (TIME_BETWEEN_CHECKS)));
+            if (prepublishOnNext.length > 0) {
+                let sleepFor = getSleepFor(prepublishOnNext, now);
+                libs.task.sleep(sleepFor);
+            } else {
+                libs.task.sleep(TIME_BETWEEN_CHECKS);
+            }
+
             setupTask();
         },
     });
 }
 
-function getPrepublishedContent (testDate) {
+function getPrepublishedContent (fromDate, toDate) {
     let prepublishedContent = [];
     let start = 0;
     let count = 1000;
     while (count === 1000) {
-        log.info(`publish.from < instant("${testDate.toISOString()}") AND publish.from > instant("${prevTestDate.toISOString()}")`);
         const hits = masterRepo.query({
             start,
             count,
-            query: `publish.from < instant("${testDate.toISOString()}") AND publish.from > instant("${prevTestDate.toISOString()}")`,
+            query: `publish.from < instant("${toDate.toISOString()}") AND publish.from > instant("${fromDate.toISOString()}")`,
         }).hits;
         count = hits.length;
         start += count;
@@ -80,7 +90,9 @@ function removeCacheOnPrepublishedContent (prepublishedContent) {
             });
         }
     );
-    log.info(`PREPUBLISHED (${prepublishedContent.length}) CACHE CLEARED`);
+    if (prepublishedContent.length > 0) {
+        log.info(`PREPUBLISHED (${prepublishedContent.length}) CACHE CLEARED`);
+    }
 }
 
 function getExpiredContent (testDate) {
@@ -119,5 +131,21 @@ function removeExpiredContentFromMaster (expiredContent) {
             log.info(e);
         }
     });
-    log.info(`UNPUBLISHED (${expiredContent.length}) EXPIRED CONTENT`);
+    if (expiredContent.length > 0) {
+        log.info(`UNPUBLISHED (${expiredContent.length}) EXPIRED CONTENT`);
+    }
+}
+
+function getSleepFor (prepublishOnNext, now) {
+    let sleepFor = TIME_BETWEEN_CHECKS;
+    prepublishOnNext.forEach((c) => {
+        let content = masterRepo.get(c.id);
+        const publishOn = new Date(content.publish.from);
+        if (publishOn - now < sleepFor) {
+            sleepFor = publishOn - now;
+        }
+    });
+    sleepFor += 10;
+    log.info(`WILL PUBLISH ON NEXT (${sleepFor}MS)`);
+    return sleepFor;
 }
