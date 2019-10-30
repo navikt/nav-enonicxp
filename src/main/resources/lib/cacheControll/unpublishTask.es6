@@ -33,7 +33,6 @@ function setupTask () {
             removeCacheOnPrepublishedContent(prepublishedContent);
 
             // unpublish expired content
-            log.info('UNPUBLISH EXPIRED CONTENT');
             const expiredContent = getExpiredContent(testDate);
             removeExpiredContentFromMaster(expiredContent);
             // save last test date for next run
@@ -58,7 +57,6 @@ function getPrepublishedContent (fromDate, toDate) {
     let start = 0;
     let count = 1000;
     while (count === 1000) {
-        log.info(`publish.from < instant("${toDate.toISOString()}") AND publish.from > instant("${fromDate.toISOString()}")`);
         const hits = masterRepo.query({
             start,
             count,
@@ -92,7 +90,9 @@ function removeCacheOnPrepublishedContent (prepublishedContent) {
             });
         }
     );
-    log.info(`PREPUBLISHED (${prepublishedContent.length}) CACHE CLEARED`);
+    if (prepublishedContent.length > 0) {
+        log.info(`PREPUBLISHED (${prepublishedContent.length}) CACHE CLEARED`);
+    }
 }
 
 function getExpiredContent (testDate) {
@@ -131,7 +131,9 @@ function removeExpiredContentFromMaster (expiredContent) {
             log.info(e);
         }
     });
-    log.info(`UNPUBLISHED (${expiredContent.length}) EXPIRED CONTENT`);
+    if (expiredContent.length > 0) {
+        log.info(`UNPUBLISHED (${expiredContent.length}) EXPIRED CONTENT`);
+    }
 }
 
 function getSleepFor (prepublishOnNext, now) {
