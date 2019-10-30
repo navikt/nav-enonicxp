@@ -58,6 +58,9 @@
                         <h2 data-th-text="${hit.displayName}"></h2>
                         <p>[[${hit.displayPath}]]</p>
                         <p class="resultattekst" data-th-if="${!hit.officeInformation}" data-th-utext="${hit.highlight}"></p>
+                        <p data-th-if="${hit.publishedString}" class="published-time">
+                            <span>[[${hit.publishedString}]]</span>
+                        </p>
                         <table data-th-if="${hit.officeInformation}">
                             <tbody>
                                 <tr>
@@ -137,14 +140,7 @@
 
                 <ul class="fasettListe">
                     <li>
-                        <input
-                            class="svart"
-                            data-th-checked="${aggregations.Tidsperiode.checked}"
-                            id="tpfirst"
-                            name="daterange"
-                            type="radio"
-                            value="-1"
-                        />
+                        <input class="svart" data-th-checked="${aggregations.Tidsperiode.checked}" id="tpfirst" name="daterange" type="radio" value="-1" />
                         <label for="tpfirst">Alle datoer</label>
                         <span class="antallTreff" data-th-text="${aggregations.Tidsperiode.docCount} "></span>
                     </li>

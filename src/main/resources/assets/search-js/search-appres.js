@@ -40,6 +40,9 @@
                     if (!hit.officeInformation) {
                         // normal
                         hitTemplate += '<p class="resultattekst">' + hit.highlight + '</p>';
+                        if (hit.publishedString) {
+                            hitTemplate += '<p class="published-time">' + '<span>' + hit.publishedString + '</span>' + '</p>';
+                        }
                     } else {
                         // officeInformation/enhetsinformasjon
                         hitTemplate += '<table>' + '<tbody>' + '<tr>';
