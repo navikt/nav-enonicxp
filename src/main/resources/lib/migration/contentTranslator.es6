@@ -738,6 +738,10 @@ function updateTimeAndOrder (oldContent, newContent) {
                 c.language = 'nn';
             }
 
+            if (oldContent.language) {
+                c.language = oldContent.language;
+            }
+
             // set language to norwegian if it's missing
             if (!c.language) {
                 c.language = 'no';
