@@ -97,7 +97,7 @@ function createFacets (socket) {
                 {
                     name: 'Sentralt Innhold',
                     rulekey: 'type',
-                    rulevalue: '*" AND type NOT LIKE "media:*" AND _parentpath NOT LIKE "*lokalt*',
+                    rulevalue: '*" AND type NOT LIKE "media:*" AND _parentpath NOT LIKE "*lokalt*" AND _parentpath NOT LIKE "*statistikk*',
                     underfasetter: [
                         {
                             name: 'Informasjon',
@@ -106,24 +106,24 @@ function createFacets (socket) {
                             className: 'informasjon',
                         },
                         {
-                            name: 'Tjenester',
+                            name: 'Kontor',
                             rulekey: 'type',
-                            rulevalue: '*:search-api*',
-                            className: 'tjenester',
+                            rulevalue: '*:office-information',
+                            className: 'kontor',
+                        },
+                        {
+                            name: 'Skjema',
+                            rulekey: '_parentpath',
+                            rulevalue: '*/www.nav.no/skjemaer*',
+                            className: 'skjema',
                         },
                     ],
                 },
                 {
                     name: 'Nyheter',
                     rulekey: '_parentpath',
-                    rulevalue: '*nyheter" AND parentpath NOT LIKE "*lokalt*',
+                    rulevalue: '*nyheter" AND _parentpath NOT LIKE "*lokalt*',
                     underfasetter: [
-                        {
-                            name: 'Bedrift',
-                            rulekey: '_parentpath',
-                            rulevalue: '*bedrift*nyheter*',
-                            className: 'nyheter',
-                        },
                         {
                             name: 'Arbeid',
                             rulekey: '_parentpath',
@@ -131,10 +131,16 @@ function createFacets (socket) {
                             className: 'nyheter',
                         },
                         {
-                            name: 'Nav og samfunn',
+                            name: 'Bedrift',
                             rulekey: '_parentpath',
-                            rulevalue: '*nav-og-samfunn*nyheter*',
+                            rulevalue: '*bedrift*nyheter*',
                             className: 'nyheter',
+                        },
+                        {
+                            name: 'Statistikk',
+                            rulekey: '_parentpath',
+                            rulevalue: '*statistikk*',
+                            className: 'statistikk',
                         },
                         {
                             name: 'Familie',
@@ -149,23 +155,46 @@ function createFacets (socket) {
                             className: 'nyheter',
                         },
                         {
+                            name: 'Internasjonalt',
+                            rulekey: '_parentpath',
+                            rulevalue: '*internasjonalt/*',
+                            className: 'nyheter',
+                        },
+                        {
+                            name: 'Nav og samfunn',
+                            rulekey: '_parentpath',
+                            rulevalue: '*nav-og-samfunn*nyheter*',
+                            className: 'nyheter',
+                        },
+                        {
                             name: 'Pensjon',
                             rulekey: '_parentpath',
                             rulevalue: '*person/pensjon*',
                             className: 'nyheter',
                         },
                         {
-                            name: 'Statistikk',
+                            name: 'Sosiale tjenester',
                             rulekey: '_parentpath',
-                            rulevalue: '*statistikk*',
-                            className: 'statistikk',
+                            rulevalue: '*sosiale-tjenester/*',
+                            className: 'nyheter',
+                        },
+                        {
+                            name: 'English',
+                            rulekey: 'language',
+                            rulevalue: 'en" AND _parentpath LIKE "*/en/*',
+                            className: 'nyheter',
                         },
                     ],
                 },
                 {
                     name: 'Filer',
                     rulekey: 'type',
-                    rulevalue: 'media:document',
+                    rulevalue: 'media:*',
+                },
+                {
+                    name: 'Statistikk',
+                    rulekey: '_parentpath',
+                    rulevalue: '*statistikk*" AND _parentpath NOT LIKE "*lokalt*" AND _parentpath NOT LIKE "*nyhet*" AND type NOT LIKE "media:*',
                 },
                 {
                     name: 'Lokalt innhold',
@@ -173,93 +202,9 @@ function createFacets (socket) {
                     rulevalue: '*lokalt*',
                     underfasetter: [
                         {
-                            name: 'Akershus',
+                            name: 'Agder',
                             rulekey: '_parentpath',
-                            rulevalue: '*lokalt/akershus*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Trøndelag',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/nord-trondelag" OR _parentpath LIKE "*lokalt/sor-trondelag*" OR _parentpath LIKE "*lokalt/trondelag*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Oppland',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/oppland*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Hedmark',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/hedmark*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Rogaland',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/rogaland*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Hordaland',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/hordaland*',
-                            className: 'tjenester',
-                        },
-                        {
-                            name: 'Nordland',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/nordland*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Troms',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/troms*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Finnmark',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/finnmark*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Buskerud',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/buskerud*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Møre og Romsdal',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/more-og-romsdal*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Nordmøre',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/nord-more*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Telemark',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/telemark*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Sogn og Fjordane',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/sogn-og-fjordane*',
-                            className: 'lokalt',
-                        },
-                        {
-                            name: 'Vest Agder',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/vest-agder*',
+                            rulevalue: '*lokalt/agder*',
                             className: 'lokalt',
                         },
                         {
@@ -269,9 +214,105 @@ function createFacets (socket) {
                             className: 'lokalt',
                         },
                         {
-                            name: 'Østfold',
+                            name: 'Buskerud',
                             rulekey: '_parentpath',
-                            rulevalue: '*lokalt/ostfold*',
+                            rulevalue: '*lokalt/buskerud*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Finnmark',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/finnmark*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Hedmark',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/hedmark*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Hordaland',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/hordaland*',
+                            className: 'tjenester',
+                        },
+                        {
+                            name: 'Innlandet',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/innlandet*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Møre og Romsdal',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/more-og-romsdal*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Nordland',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/nordland*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Oppland',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/oppland*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Oslo',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/oslo*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Oslo og Akershus',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/oslo-og-akershus*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Rogaland',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/rogaland*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Sogn og Fjordane',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/sogn-og-fjordane*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Telemark',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/telemark*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Troms',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/troms*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Troms og Finnmark',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/troms-og-finnmark*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Trøndelag',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/nord-trondelag" OR _parentpath LIKE "*lokalt/sor-trondelag*" OR _parentpath LIKE "*lokalt/trondelag*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Vest-Agder',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/vest-agder*',
                             className: 'lokalt',
                         },
                         {
@@ -281,9 +322,33 @@ function createFacets (socket) {
                             className: 'lokalt',
                         },
                         {
-                            name: 'Oslo',
+                            name: 'Vestfold og Telemark',
                             rulekey: '_parentpath',
-                            rulevalue: '*lokalt/oslo*',
+                            rulevalue: '*lokalt/vestfold-og-telemark*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Vestland',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/vestland*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Vest-Viken',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/vest-viken*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Østfold',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/ostfold*',
+                            className: 'lokalt',
+                        },
+                        {
+                            name: 'Øst-Viken',
+                            rulekey: '_parentpath',
+                            rulevalue: '*lokalt/ost-viken*',
                             className: 'lokalt',
                         },
                     ],
@@ -316,6 +381,7 @@ function createData (socket, forslag) {
                 data: {
                     content: info.refId,
                     keywords: el.keywords.split(' '),
+                    className: el.dokumenttype.toLowerCase(),
                 },
             });
         } else {
@@ -330,6 +396,7 @@ function createData (socket, forslag) {
                     keywords: el.keywords.split(' '),
                     url: el.lenke,
                     ingress: el.ingress,
+                    className: el.dokumenttype.toLowerCase(),
                 },
             });
         }
@@ -350,6 +417,7 @@ function createFormContent (form, count) {
                     keywords: form.keywords,
                     url: form.url,
                     ingress: form.description,
+                    className: 'skjema',
                 },
                 language: form.language === 'nb' ? 'no' : form.language,
             });
@@ -454,7 +522,7 @@ function importFormsFromCsv (socket) {
                     }
                     // find references to the old forms
                     let usedIn = [];
-                    formsWithFormId.forEach((form) => {
+                    formsWithFormId.forEach(form => {
                         const hits = libs.content.query({
                             start: 0,
                             count: 1000,
@@ -464,11 +532,14 @@ function importFormsFromCsv (socket) {
                     });
                     // cache away the id to the new and old form, as well as the references
                     forms[formId] = {
-                        newForm: createFormContent({
-                            displayName,
-                            url,
-                            language,
-                        }, 0),
+                        newForm: createFormContent(
+                            {
+                                displayName,
+                                url,
+                                language,
+                            },
+                            0
+                        ),
                         oldForms: formsWithFormId.map(f => f._id),
                         usedIn: usedIn.map(u => u._path),
                     };
@@ -484,12 +555,12 @@ function importFormsFromCsv (socket) {
         // loop over all forms and update references
         for (let formId in forms) {
             const form = forms[formId];
-            form.usedIn.forEach((path) => {
+            form.usedIn.forEach(path => {
                 const c = libs.content.get({
                     key: path,
                 });
                 if (c) {
-                    form.oldForms.forEach((oldFormId) => {
+                    form.oldForms.forEach(oldFormId => {
                         libs.tools.modify(c, form.newForm, oldFormId);
                     });
                 }
@@ -505,18 +576,20 @@ function createSynonyms () {
         key: '/content/sok/nav/synonymer/generelle',
     });
 
-    if (libs.content.get({
-        key: '/www.nav.no/synonymer',
-    })) {
+    if (
+        libs.content.get({
+            key: '/www.nav.no/synonymer',
+        })
+    ) {
         libs.content.delete({
             key: '/www.nav.no/synonymer',
         });
     }
 
-    const synonyms = oldSynonyms.data.synonymerliste.map((oldSynonymString) => {
+    const synonyms = oldSynonyms.data.synonymerliste.map(oldSynonymString => {
         let synonym = [];
         let oldSynonyms = oldSynonymString.synonymord.split(', ');
-        oldSynonyms.forEach((s) => {
+        oldSynonyms.forEach(s => {
             if (s.split(',').length > 1) {
                 synonym = synonym.concat(s.split(','));
             } else {
