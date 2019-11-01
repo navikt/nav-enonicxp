@@ -187,7 +187,7 @@ function clearReferences (id, path, depth) {
 
         const deepTypes = [`${app.name}:content-list`];
         if (deepTypes.indexOf(el.type) !== -1) {
-            clearReferences(el._id, depth + 1);
+            clearReferences(el._id, el._path, depth + 1);
         }
     });
 }
