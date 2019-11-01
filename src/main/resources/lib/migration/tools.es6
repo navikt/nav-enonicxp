@@ -317,7 +317,7 @@ function insertContentTypeMetaTag (content) {
     // add content type to main-articles
     if (content.type === app.name + ':nav.nyhet') {
         content.data.contentType = 'news';
-    } else if (content.type === app.name + ':pressemelding') {
+    } else if (content.type === app.name + ':nav.pressemelding') {
         content.data.contentType = 'pressRelease';
     } else {
         content.data.contentType = 'lastingContent';
