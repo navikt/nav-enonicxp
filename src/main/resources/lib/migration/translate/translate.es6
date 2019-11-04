@@ -399,13 +399,7 @@ function setTableOfContents (socket) {
     socket.emit('set-table-of-contents-max', kortOmArticles.length);
 
     kortOmArticles.forEach((article, index) => {
-        libs.content.modify({
-            key: article._id,
-            editor: (a) => {
-                a.data.hasTableOfContents = 'h3';
-                return a;
-            },
-        });
+        libs.tools.setTableOfContents(article, 'h3');
         socket.emit('set-table-of-contents-value', index + 1);
     });
 }
