@@ -143,8 +143,8 @@ exports.dateTimePublished = function (content, language) {
 
 exports.formatDate = formatDate;
 function formatDate (date, language) {
-    // use nb(DD.MM.YYYY) for everything except for english content(MM/DD/YYYY)
-    return libs.moment(date).locale(language === 'en' ? 'en' : 'nb').format('L');
+    // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
+    return libs.moment(date).locale(language === 'en' ? 'en-gb' : 'nb').format('L');
 };
 
 exports.getLanguageVersions = function (content) {
