@@ -268,12 +268,6 @@ function createFacets (socket) {
                             className: 'lokalt',
                         },
                         {
-                            name: 'Oslo og Akershus',
-                            rulekey: '_parentpath',
-                            rulevalue: '*lokalt/oslo-og-akershus*',
-                            className: 'lokalt',
-                        },
-                        {
                             name: 'Rogaland',
                             rulekey: '_parentpath',
                             rulevalue: '*lokalt/rogaland*',
