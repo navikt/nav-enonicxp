@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Generisk side</display-name>
-    <description>Brukes i forbindelse med publiseringskalender</description>
+    <description>Side kun med ingress og brødtekst</description>
     <super-type>base:unstructured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -9,6 +9,14 @@
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
             <occurrences minimum="0" maximum="1"/>
+        </input>
+        <input type="HtmlArea" name="text">
+            <label>Brødtekst</label>
+            <help-text>Brukes ved behov</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <include>Undo | Redo</include>
+            </config>
         </input>
     </form>
 </content-type>
