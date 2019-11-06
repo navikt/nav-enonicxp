@@ -1066,3 +1066,14 @@ function updateRefsAfterMigration () {
         });
     }
 }
+
+exports.setTableOfContents = setTableOfContents;
+function setTableOfContents (article, toc) {
+    repo.modify({
+        key: article._id,
+        editor: (a) => {
+            a.data.hasTableOfContents = toc;
+            return a;
+        },
+    });
+}
