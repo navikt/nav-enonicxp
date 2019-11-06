@@ -8,7 +8,7 @@ const libs = {
 };
 let socket;
 const elements = createNewElements();
-exports.handle = function (s) {
+exports.handle = (s) => {
     socket = s;
 
     elements.action = [{
@@ -281,10 +281,12 @@ function createNewElements () {
 function visit (address) {
     let ret;
     if (address.indexOf(';') !== -1) { address = address.split(';')[0]; }
-    if (address.startsWith('content://')) {
+    if (address.startsWith('content://') || address.startsWith('media')) {
         try {
+            let contentKey = address.replace('content://', '')
+            contentKey = contentKey.replace('media://', '')
             ret = libs.content.get({
-                key: address.replace('content://', ''),
+                key: contentKey,
             });
             return !!ret;
         } catch (e) {
@@ -295,12 +297,14 @@ function visit (address) {
             ret = libs.http.request({
                 url: address,
                 method: 'HEAD',
+                connectionTimeout: 2000,
+                readTimeout: 7000
             });
             return ret.status === 200 || (ret.status >= 300 && ret.status < 400);
         } catch (e) {
             return false;
         }
-    } else if (address.startsWith('mailto') || address.startsWith('media')) {
+    } else if (address.startsWith('mailto')) {
         return true;
     }
     else {
