@@ -78,7 +78,6 @@ function handleGet (req) {
             });
 
         if (menuLists.length > 0) {
-            log.info(JSON.stringify(menuLists, null, 4));
             const model = {
                 menuLists,
             };
