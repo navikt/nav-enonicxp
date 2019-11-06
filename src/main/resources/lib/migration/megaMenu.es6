@@ -159,16 +159,33 @@ function orderMenuItems () {
     const menuItems = libs.content.query({
         start: 0,
         count: 500,
-        query: 'type = "no.nav.navno:megamenu-item"',
+        query: 'type = "no.nav.navno:megamenu-item" AND _parentpath LIKE "*/megamenu"',
     }).hits;
 
     menuItems.forEach((menuItem) => {
-        repo.modify({
-            key: menuItem._id,
-            editor: (m) => {
-                m._childOrder = '_manualordervalue DESC, modifiedtime ASC';
-                return m;
-            },
-        });
+        setOrderOnMenuItem(menuItem);
     });
+}
+
+function setOrderOnMenuItem (menuItem) {
+    repo.setChildOrder({
+        key: menuItem._id,
+        childOrder: 'modifiedtime ASC',
+    });
+    repo.setChildOrder({
+        key: menuItem._id,
+        childOrder: '_manualordervalue DESC, modifiedtime ASC',
+    });
+
+    if (menuItem.hasChildren) {
+        const childMenuItems = libs.content.query({
+            start: 0,
+            count: 500,
+            query: `type = "no.nav.navno:megamenu-item" AND _parentpath LIKE "*${menuItem._path}"`,
+            sort: 'modifiedtime ASC',
+        }).hits;
+        childMenuItems.forEach((c) => {
+            setOrderOnMenuItem(c);
+        });
+    }
 }
