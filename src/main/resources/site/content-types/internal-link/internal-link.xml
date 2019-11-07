@@ -10,6 +10,9 @@
         <input name="target" type="ContentSelector">
             <label>Link</label>
             <occurrences maximum="1" minimum="0"/>
+            <config>
+                <allowPath>/www.nav.no/*</allowPath>
+            </config>
         </input>
     </form>
 </content-type>
