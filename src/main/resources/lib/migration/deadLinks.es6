@@ -29,7 +29,7 @@ exports.handle = (s) => {
         libs.task.submit({
             description: 'Lager lenkeråterapport',
             task: () => {
-                libs.tools.runInContext(socket, handleDeadLinks);
+                libs.tools.runInMasterContext(socket, handleDeadLinks);
             },
         });
     });
