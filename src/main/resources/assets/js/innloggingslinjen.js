@@ -10,6 +10,7 @@ var Innloggingslinje = (function () {
     function init() {
         try {
             NAVStatusAJAX.open('GET', navno.authServiceUrl + '?randomness=' + Math.random() * 10, false);
+			NAVStatusAJAX.withCredentials = true;
             NAVStatusAJAX.send(null);
 
             if (NAVStatusAJAX.readyState == 4 && NAVStatusAJAX.status == 200) {

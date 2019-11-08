@@ -26,4 +26,6 @@ navno.authServiceUrl = navnoProps.getAttribute('authServiceUrl');
 })(window, document, 'script', 'dataLayer', 'GTM-PM9RP3');
 
 Modernizr.addTest('flexbox', Modernizr.testAllProps('flex'));
-Innloggingslinje.init();
+window.addEventListener('DOMContentLoaded', function(){
+    Innloggingslinje.init();
+});
