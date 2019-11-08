@@ -110,14 +110,14 @@
                 </button>
                 <ul class="accessible-megamenu" id="accessible-megamenu">
                     <li
-                        class="topnavitem has-children"
-                        data-th-classappend="${menuItem.inPath or menuItem.isActive}? 'selected-topnavitem'"
+                        class="topnavitem"
+                        data-th-classappend="${(menuItem.inPath || menuItem.isActive ? 'selected-topnavitem' : '') + (subMenus ? 'has-children' : 'selected-topnavitem')}"
                         data-th-each="menuItem: ${menu}"
                     >
                         <a role="button" data-ga="Meny" data-th-href="${menuItem.path}">
                             [[${menuItem.displayName}]]
                         </a>
-                        <div class="panel-wrapper">
+                        <div data-th-if="${subMenus}" class="panel-wrapper">
                             <div class="accessible-megamenu-panel">
                                 <div class="tilbaketilgruppe typo-normal">
                                     <a class="home-link" data-th-href="${menuItem.path}" data-ga="Meny/Person">

@@ -77,6 +77,7 @@ function handleGet (req) {
         const menu = libs.menu.getMegaMenu(libs.content.get({
             key: siteUrl + 'megamenu/' + language,
         }), 4);
+        const subMenus = (language !== 'se');
 
         // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
         const langSelectors = [
@@ -111,6 +112,7 @@ function handleGet (req) {
             langBundles,
             langSelectors,
             menu,
+            subMenus,
             regionNorth: content.page.regions['region-north'],
         };
 
