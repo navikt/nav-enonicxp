@@ -155,6 +155,7 @@ exports.getLanguageVersions = function (content) {
         se_NO: 'Sámegiella',
         nn: 'Nynorsk',
         nn_NO: 'Nynorsk',
+        pl: 'Polski',
     };
     var lRefs = content.data.languages;
     var ret = [
