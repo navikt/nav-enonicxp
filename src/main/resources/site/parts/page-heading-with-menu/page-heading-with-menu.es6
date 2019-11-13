@@ -74,10 +74,16 @@ function handleGet (req) {
             logout: app.config.logoutUrl || 'https://loginservice.nav.no/slo',
             sok: '/sok',
         };
+        let menuLanguage = language;
+        if (language === 'pl') {
+            menuLanguage = 'en';
+        } else if (language !== 'en' && language !== 'se') {
+            menuLanguage = 'no';
+        }
         const menu = libs.menu.getMegaMenu(libs.content.get({
-            key: siteUrl + 'megamenu/' + language,
+            key: siteUrl + 'megamenu/' + menuLanguage,
         }), 4);
-        const subMenus = (language !== 'se');
+        const subMenus = (menuLanguage !== 'se');
 
         // Må ha tre separate kall på pageUrl for å sikre korrekt url (caches)
         const langSelectors = [
@@ -87,7 +93,7 @@ function handleGet (req) {
                 }),
                 title: 'Norsk (Globalt språkvalg)',
                 text: 'Norsk',
-                active: (language === 'no' ? 'active' : ''),
+                active: (menuLanguage === 'no' ? 'active' : ''),
             },
             {
                 href: libs.portal.pageUrl({
@@ -95,7 +101,7 @@ function handleGet (req) {
                 }),
                 title: 'English (Globalt språkvalg)',
                 text: 'English',
-                active: (language === 'en' ? 'active' : ''),
+                active: (menuLanguage === 'en' ? 'active' : ''),
             },
             {
                 href: libs.portal.pageUrl({
@@ -103,7 +109,7 @@ function handleGet (req) {
                 }),
                 title: 'Sámegiella (Globalt Språkvalg)',
                 text: 'Sámegiella',
-                active: (language === 'se' ? 'active' : ''),
+                active: (menuLanguage === 'se' ? 'active' : ''),
             },
         ];
         const model = {
