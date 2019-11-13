@@ -29,6 +29,7 @@ function handleGet (req) {
         }
 
         const assets = [
+            '<link rel="alternate" type="application/rss+xml" title="Nyheter fra nav.no" href="/no/rss">',
             '<link rel="apple-touch-icon" href="' + libs.portal.assetUrl({
                 path: 'img/navno/logo.png',
             }) + '" />',
