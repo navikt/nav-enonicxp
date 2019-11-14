@@ -5,10 +5,12 @@ const libs = {
     node: require('/lib/xp/node'),
     task: require('/lib/xp/task'),
     tools: require('/lib/migration/tools'),
+    navUtils: require('/lib/nav-utils'),
 };
+
 let socket;
 const elements = createNewElements();
-exports.handle = function (s) {
+exports.handle = (s) => {
     socket = s;
 
     elements.action = [{
@@ -27,7 +29,7 @@ exports.handle = function (s) {
         libs.task.submit({
             description: 'Lager lenkeråterapport',
             task: () => {
-                libs.tools.runInContext(socket, handleDeadLinks);
+                libs.tools.runInMasterContext(socket, handleDeadLinks);
             },
         });
     });
@@ -41,99 +43,107 @@ exports.handle = function (s) {
     });
 };
 
-let val = 0;
-let childC = 0;
-let tArr = [];
+let deadLinksCurrentIndex = 0;
+let deadLinksMaxCount = 0;
 function handleDeadLinks (socket) {
     // reset counters
-    val = 0;
-    childC = 0;
-    tArr = [];
+    deadLinksCurrentIndex = 0;
+    deadLinksMaxCount = 2;
 
-    deadLinks(false, [], '', socket);
+    const deadLinksFound = [];
+    deadLinks(libs.content.get({
+        key: '/www.nav.no',
+    }), deadLinksFound, socket);
+    deadLinks(libs.content.get({
+        key: '/redirects',
+    }), deadLinksFound, socket);
 
     const navRepo = libs.tools.getNavRepo();
-    const fnd = navRepo.get('/deadlinks');
-    if (fnd) {
-        navRepo.delete(fnd._id);
+    const deadLinksNode = navRepo.get('/deadlinks');
+    if (deadLinksNode) {
+        navRepo.delete(deadLinksNode._id);
     }
     navRepo.create({
         _name: 'deadlinks',
         parentPath: '/',
         data: {
-            links: tArr,
+            links: deadLinksFound,
         },
     });
 }
 
-function deadLinks (el, arr, route, socket) {
-    if (!el) {
-        el = libs.content.get({
-            key: '/www.nav.no',
-        });
+function deadLinks (el, deadLinksFound, socket) {
+    socket.emit('dlStatusTree', 'Working in ' + el._path);
 
-        if (!el) {
-            return log.info('Failed');
-        }
-        route = 'www.nav.no';
-    } else {
-        route = route + '->' + el.displayName;
-    }
-    socket.emit('dlStatusTree', 'Working in ' + route);
-    if (el.hasChildren) {
-        const childs = libs.content.getChildren({
-            key: el._id,
-            count: 10000,
-            start: 0,
-        }).hits;
-        childC += childs.length;
-        socket.emit('dl-childCount', childC);
-        childs.forEach((child) => {
-            socket.emit('d-Value', ++val);
-            arr = deadLinks(child, arr, route, socket);
-        });
-    }
-    runDeep(el.data, socket);
-    return arr;
+    runDeep(el.data, deadLinksFound, socket);
+    deadLinksCurrentIndex += 1;
+    socket.emit('d-Value', deadLinksCurrentIndex);
 
-    function runDeep (something, socket) {
+    // find all children and check for dead links on those
+    const children = libs.navUtils.getAllChildren(el);
+    deadLinksMaxCount += children.length;
+    socket.emit('dl-childCount', deadLinksMaxCount);
+    children.forEach((child) => {
+        deadLinks(child, deadLinksFound, socket);
+    });
+
+    function runDeep (something, deadLinksFound, socket) {
         if (typeof something === 'string') {
-            let reg;
-            // eslint-disable-next-line no-useless-escape
-            const rx = /href=\"(.*?)\".*/g;
-            // eslint-disable-next-line no-cond-assign
-            while (reg = rx.exec(something)) {
-                const address = reg.pop();
-                socket.emit('dlStatus', 'Visiting: ' + address);
-                if (!visit(address)) {
-                    tArr.push({
-                        el: el._id,
-                        route: route,
-                        address: address,
+            const guidRegex = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/g;
+            if (guidRegex.exec(something)) {
+                const exists = !!libs.content.get({
+                    key: something,
+                });
+                if (!exists) {
+                    deadLinksFound.push({
+                        path: el._path,
+                        address: something,
+                        linktext: 'isRef',
                     });
+                }
+            } else {
+                let reg;
+                // eslint-disable-next-line no-useless-escape
+                const rx = /href="([^"]+)"?[^>]*([^<]+)<\/a>/g;
+                // eslint-disable-next-line no-cond-assign
+                while ((reg = rx.exec(something)) !== null) {
+                    const address = reg[1];
+                    const linktext = reg[2].substring(1);
+                    socket.emit('dlStatus', 'Visiting: ' + address);
+                    if (!visit(address)) {
+                        deadLinksFound.push({
+                            path: el._path,
+                            address: address,
+                            linktext: linktext,
+                        });
+                    }
                 }
             }
         } else if (Array.isArray(something)) {
-            something.forEach((s) => runDeep(s, socket));
+            something.forEach((s) => runDeep(s, deadLinksFound, socket));
         } else if (typeof something === 'object') {
             for (let key in something) {
                 if (something.hasOwnProperty(key)) {
-                    runDeep(something[key], socket);
+                    runDeep(something[key], deadLinksFound, socket);
                 }
             }
         }
-        // else log.info(something);
     }
 }
 
 function dumpDeadlinks () {
     const navRepo = libs.tools.getNavRepo();
     const deadlinks = navRepo.get('/deadlinks').data.links;
-    let csv = 'Id\tPath\tUrl\r\n';
+    let csv = 'Path,Feilende url,Lenketekst\r\n';
     deadlinks.forEach((l) => {
-        csv += `${l.el}\t${l.route}\t${l.address}\r\n`;
+        csv += `${l.path.substring(1)},${l.address},${l.linktext}\r\n`;
     });
-    socket.emit('console.log', csv);
+    const file = {
+        content: csv,
+        type: 'text/csv',
+        name: 'deadLinks.csv',
+    };
+    socket.emit('downloadFile', file);
 }
 
 function findOldFormLinks (socket) {
@@ -273,12 +283,18 @@ function createNewElements () {
 }
 
 function visit (address) {
+    address = address.trim();
     let ret;
-    if (address.indexOf(';') !== -1) { address = address.split(';')[0]; }
-    if (address.startsWith('content://')) {
+    if (address.indexOf(';') !== -1) {
+        address = address.split(';')[0];
+    }
+    if (address.startsWith('content://') || address.startsWith('media')) {
         try {
+            let contentKey = address.replace('content://', '');
+            contentKey = contentKey.replace('media://download/', '');
+            contentKey = contentKey.replace('media://', '');
             ret = libs.content.get({
-                key: address.replace('content://', ''),
+                key: contentKey,
             });
             return !!ret;
         } catch (e) {
@@ -289,12 +305,16 @@ function visit (address) {
             ret = libs.http.request({
                 url: address,
                 method: 'HEAD',
+                connectionTimeout: 2000,
+                readTimeout: 7000,
             });
             return ret.status === 200 || (ret.status >= 300 && ret.status < 400);
         } catch (e) {
             return false;
         }
-    } else if (address.startsWith('mailto') || address.startsWith('media')) { return true; } else {
+    } else if (address.startsWith('mailto')) {
+        return true;
+    } else {
         log.info(address);
         return false;
     }

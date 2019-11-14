@@ -884,6 +884,29 @@ function runInContext (socket, func) {
     );
 }
 
+exports.runInMasterContext = runInMasterContext;
+/**
+ * @description run a function in admin context on the draft branch
+ * @param socket socket to pass into func as a param
+ * @param func the function to run
+ */
+function runInMasterContext (socket, func) {
+    libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        function () {
+            func(socket);
+        }
+    );
+}
+
 exports.removeImageSize = removeImageSize;
 /**
  * @description removes imagesize from data on content
