@@ -17,27 +17,35 @@ exports.get = function (req) {
         const table = (tableList && tableList.length > 0
             ? tableList.slice(0, content.data.nrTableEntries)
             : null);
-        const ntkList = getContentLists(content, 'ntkContents');
+
+        // nice to know
+        const ntkList = getContentLists(content, 'ntkContents', content.data.nrNTK, false);
         const niceToKnow = {
             sectionName: lang.niceToKnow,
             data: (ntkList && ntkList.length > 0
                 ? ntkList.slice(0, content.data.nrNTK)
                 : null),
         };
-        const newsList = getContentLists(content, 'newsContents');
+
+        // news
+        const newsList = getContentLists(content, 'newsContents', content.data.nrNews, true);
         const news = {
             sectionName: lang.news,
             data: (newsList && newsList.length > 0
-                ? newsList.sort((a, b) => b.publDate - a.publDate).slice(0, content.data.nrNews)
+                ? newsList.sort((a, b) => b.publDate - a.publDate)
+                    .slice(0, content.data.nrNews)
                 : null),
         };
-        const scList = getContentLists(content, 'scContents');
+
+        // shortcuts
+        const scList = getContentLists(content, 'scContents', content.data.nrSC, false);
         const shortcuts = {
             sectionName: lang.shortcuts,
             data: (scList && scList.length > 0
                 ? scList.slice(0, content.data.nrSC)
                 : null),
         };
+
         let antCol = !!niceToKnow.data + !!news.data + !!shortcuts.data;
         if (antCol === 0) { antCol = 1; }
         col += 12 / antCol;
@@ -63,36 +71,53 @@ exports.get = function (req) {
     });
 };
 
-function getContentLists (content, contentType) {
+function getContentLists (content, contentType, max, doSort) {
     if (content.data[contentType]) {
         const section = libs.content.get({
             key: content.data[contentType],
         });
-
-        if (section && section.data.sectionContents) {
-            if (Array.isArray(section.data.sectionContents)) {
-                return section.data.sectionContents.map(mapElements).filter(el => !!el);
-            } else {
-                return [section.data.sectionContents].map(mapElements).filter(el => !!el);
+        if (section) {
+            let sort;
+            if (doSort) {
+                sort = 'publish.first DESC, createdTime DESC';
             }
+            let sectionContents = section.data.sectionContents;
+            sectionContents = sectionContents ? Array.isArray(sectionContents) ? sectionContents : [sectionContents] : [];
+            if (sectionContents.length > 0) {
+                sectionContents = libs.content.query({
+                    start: 0,
+                    count: max,
+                    filters: {
+                        ids: {
+                            values: sectionContents,
+                        },
+                    },
+                    sort,
+                }).hits;
+            }
+
+            return sectionContents.map(mapElements).filter(el => !!el);
         }
     }
     return [];
 }
 
 function getTableElements (content, contentType) {
-    return (content.data[contentType]
-        ? (Array.isArray(content.data[contentType]) ? content.data[contentType] : [content.data[contentType]])
-        : []).map(mapElements).filter(el => !!el);
+    let tableElements = content.data[contentType];
+    tableElements = tableElements ? Array.isArray(tableElements) ? tableElements : [tableElements] : [];
+    tableElements = libs.content.query({
+        start: 0,
+        count: tableElements.length,
+        filters: {
+            ids: {
+                values: tableElements,
+            },
+        },
+    }).hits;
+    return tableElements.map(mapElements).filter(el => !!el);
 }
 
-function mapElements (elementId) {
-    const el = libs.content.get({
-        key: elementId,
-    });
-    if (!el) {
-        return null;
-    }
+function mapElements (el) {
     const content = libs.portal.getContent();
     let ingress = el.data.ingress || el.data.description || el.data.list_description;
     if (ingress && ingress.length > 140) {
@@ -105,8 +130,8 @@ function mapElements (elementId) {
         isHtml: (el.data.ingress ? el.data.ingress.startsWith('<') : false),
         heading: el.displayName || el.data.title,
         icon: 'icon-' + (el.data.icon || 'document'),
-        src: getSrc(el),
         publDate: new Date(publishedDate),
+        src: getSrc(el),
         published: el.publish &&
             (el.publish.first
                 ? libs.navUtils.formatDate(el.publish.first, content.language)

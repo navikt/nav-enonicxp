@@ -108,7 +108,7 @@ function wipeOnChange (path) {
 function getSome (cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
-        if (branch !== 'draft') {
+        if (branch !== 'draft' || cacheStoreName === 'decorator') {
             return caches[cacheStoreName].get(getPath(key, type), function () {
                 log.info('Store cache [' + cacheStoreName + '] key: ' + getPath(key, type));
                 return f(params);
@@ -147,6 +147,8 @@ function nodeListenerCallback (event) {
                     clearReferences(node.id, node.path, 0);
                 }
             );
+        } else if (node.path.indexOf('/megamenu/') !== -1) {
+            wipe('decorator')();
         }
     });
 }

@@ -10,9 +10,11 @@ function handleGet (req) {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
 
-    return libs.cache.getDecorator('footer-' + language, undefined, req.branch, () => {
+    return libs.cache.getDecorator(`footer-${language}-${req.branch}`, undefined, req.branch, () => {
         const languageBundles = libs.lang.parseBundle(language).pagenav;
-        const contentAZUrl = libs.portal.serviceUrl({service: 'contentAZ'});
+        const contentAZUrl = libs.portal.serviceUrl({
+            service: 'contentAZ',
+        });
         const accessibleLetters = 'abcdefghijklmnopqrstuvwxyz' + (language === 'no' || language === 'se' ? 'æøå' : '');
         const urls = {
             frontPage: libs.portal.pageUrl({

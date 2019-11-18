@@ -12,7 +12,7 @@ function handleGet (req) {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
 
-    return libs.cache.getDecorator('header-' + language, undefined, req.branch, () => {
+    return libs.cache.getDecorator(`header-${language}-${req.branch}`, undefined, req.branch, () => {
         const langBundles = libs.lang.parseBundle(language).pagenav;
         // Finn eventuell seksjonsside jeg tilhører (path: /site/språk/seksjonsside/...)
         // TODO: Denne må bli smartere
