@@ -507,13 +507,21 @@ function importFormsFromCsv (socket) {
                         count: 100,
                         query: `data.number = "${formId}"`,
                     }).hits;
-                    const oldForm = formsWithFormId[0];
+
+                    // use the display name from one of the old forms if it exists, or fall back to using just the formId
                     let displayName;
-                    const entries = oldForm.data.forms.form;
-                    const entry = Array.isArray(entries) ? entries[0] : entries;
-                    if (entry) {
-                        displayName = entry.name + ' - ' + formId;
+                    if (formsWithFormId.length > 0) {
+                        const oldForm = formsWithFormId[0];
+                        const entries = oldForm.data.forms.form;
+                        const entry = Array.isArray(entries) ? entries[0] : entries;
+                        if (entry) {
+                            displayName = entry.name + ' - ' + formId;
+                        }
                     }
+                    if (!displayName) {
+                        displayName = formId;
+                    }
+
                     // find references to the old forms
                     let usedIn = [];
                     formsWithFormId.forEach(form => {
@@ -524,6 +532,7 @@ function importFormsFromCsv (socket) {
                         }).hits;
                         usedIn = usedIn.concat(hits);
                     });
+
                     // cache away the id to the new and old form, as well as the references
                     forms[formId] = {
                         newForm: createFormContent(
