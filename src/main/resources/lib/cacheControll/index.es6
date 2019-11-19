@@ -19,6 +19,10 @@ const caches = {
         size: 5000,
         expire: oneDay,
     }),
+    redirects: libs.cache.newCache({
+        size: 50,
+        expire: oneDay,
+    }),
 };
 module.exports = {
     wipeDecorator: wipe('decorator'),
@@ -26,6 +30,7 @@ module.exports = {
     getDecorator: getSome('decorator'),
     getAZList: getSome('azList'),
     getPaths: getSome('paths'),
+    getRedirects: getSome('redirects'),
     activateEventListener,
     wipeAll,
     stripPath: getPath,
@@ -101,6 +106,9 @@ function wipeOnChange (path) {
         }
         if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
             wipe('azList')();
+        }
+        if (path.indexOf('/content/redirects/') !== -1) {
+            wipe('redirects')();
         }
     }
 }

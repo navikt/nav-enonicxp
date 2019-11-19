@@ -3,6 +3,7 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     portal: require('/lib/xp/portal'),
+    cache: require('/lib/cacheControll'),
 };
 
 // Handle 404
@@ -35,11 +36,13 @@ exports.handle404 = function (req) {
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
     const contentName = path.split('/').pop().toLowerCase();
     if (!element) {
-        const redirects = libs.content.getChildren({
-            key: '/redirects',
-            start: 0,
-            count: 10000,
-        }).hits;
+        const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, function () {
+            return libs.content.getChildren({
+                key: '/redirects',
+                start: 0,
+                count: 10000,
+            }).hits;
+        });
 
         for (let i = 0; i < redirects.length; i += 1) {
             const el = redirects[i];
