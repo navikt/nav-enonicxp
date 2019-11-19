@@ -827,7 +827,7 @@ const templates = [
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:transport',
+                supports: 'no.nav.navno:transport-page',
             },
         },
         components: transportPage,
