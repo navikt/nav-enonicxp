@@ -81,40 +81,54 @@ function getContentLists (content, contentType, max, doSort) {
             if (doSort) {
                 sort = 'publish.first DESC, createdTime DESC';
             }
-            let sectionContents = section.data.sectionContents;
-            sectionContents = sectionContents ? Array.isArray(sectionContents) ? sectionContents : [sectionContents] : [];
-            if (sectionContents.length > 0) {
+            let sectionContentIds = section.data.sectionContents;
+            sectionContentIds = sectionContentIds ? Array.isArray(sectionContentIds) ? sectionContentIds : [sectionContentIds] : [];
+            let sectionContents = [];
+            if (sectionContentIds.length > 0) {
                 sectionContents = libs.content.query({
                     start: 0,
                     count: max,
                     filters: {
                         ids: {
-                            values: sectionContents,
+                            values: sectionContentIds,
                         },
                     },
                     sort,
                 }).hits;
+
+                if (!doSort) {
+                    // make sure the table elements are in the correct order
+                    sectionContents = sectionContentIds.map((id) => {
+                        return sectionContents.filter(el => el._id === id)[0];
+                    }).filter(el => !!el);
+                }
             }
 
-            return sectionContents.map(mapElements).filter(el => !!el);
+            return sectionContents.map(mapElements);
         }
     }
     return [];
 }
 
 function getTableElements (content, contentType) {
-    let tableElements = content.data[contentType];
-    tableElements = tableElements ? Array.isArray(tableElements) ? tableElements : [tableElements] : [];
-    tableElements = libs.content.query({
+    let tableElementIds = content.data[contentType];
+    tableElementIds = tableElementIds ? Array.isArray(tableElementIds) ? tableElementIds : [tableElementIds] : [];
+    let tableElements = libs.content.query({
         start: 0,
-        count: tableElements.length,
+        count: tableElementIds.length,
         filters: {
             ids: {
-                values: tableElements,
+                values: tableElementIds,
             },
         },
     }).hits;
-    return tableElements.map(mapElements).filter(el => !!el);
+
+    // make sure the table elements are in the correct order
+    tableElements = tableElementIds.map((id) => {
+        return tableElements.filter(el => el._id === id)[0];
+    }).filter(el => !!el);
+
+    return tableElements.map(mapElements);
 }
 
 function mapElements (el) {
