@@ -3,7 +3,7 @@
         <div class="din-situasjon-wrapper">
             <p class="ingress typo-infotekst" data-th-text="${ingress}"></p>
             <a data-th-href="${item.url}" data-th-each="item : ${items}" class="lenkeboks" data-th-classappend="${item.className}">
-                <div class="icon">
+                <div class="icon" data-th-if="${item.logo}">
                     <img data-th-src="${item.logo}" src="" class="icon-size" />
                 </div>
                 <div class="tekst">
