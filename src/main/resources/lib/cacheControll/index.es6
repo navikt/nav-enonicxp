@@ -135,6 +135,16 @@ function activateEventListener () {
         localOnly: false,
         callback: nodeListenerCallback,
     });
+    libs.event.listener({
+        type: 'custom.prepublish',
+        localOnly: false,
+        callback: (e) => {
+            e.data.prepublished.forEach((el) => {
+                wipeOnChange(el._path);
+                clearReferences(el._id, el._path, 0);
+            });
+        },
+    });
 }
 
 function nodeListenerCallback (event) {

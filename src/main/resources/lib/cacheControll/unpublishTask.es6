@@ -5,6 +5,7 @@ const libs = {
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
     cacheControll: require('/lib/cacheControll'),
+    event: require('/lib/xp/event'),
 };
 const masterRepo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
@@ -16,6 +17,14 @@ const draftRepo = libs.node.connect({
     branch: 'draft',
     principals: ['role:system.admin'],
 });
+const navRepo = libs.node.connect({
+    repoId: 'no.nav.navno',
+    branch: 'master',
+    user: {
+        login: 'su',
+    },
+    pricipals: ['role:system.admin'],
+});
 
 let prevTestDate = new Date();
 
@@ -25,27 +34,43 @@ function setupTask () {
     libs.task.submit({
         description: 'clean out expired content from cache',
         task: () => {
-            const now = Date.now();
-            const testDate = new Date(now);
-
-            // remove cache for prepublished content
-            const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
-            removeCacheOnPrepublishedContent(prepublishedContent);
-
-            // unpublish expired content
-            const expiredContent = getExpiredContent(testDate);
-            removeExpiredContentFromMaster(expiredContent);
-            // save last test date for next run
-            prevTestDate = testDate;
-
-            // 1 minute between each check or for next prepublished
-            const prepublishOnNext = getPrepublishedContent(testDate, new Date(now + (TIME_BETWEEN_CHECKS)));
-            if (prepublishOnNext.length > 0) {
-                let sleepFor = getSleepFor(prepublishOnNext, now);
-                libs.task.sleep(sleepFor);
-            } else {
+            // stop if another node is running this task
+            let state = getState();
+            if (state.isRunning) {
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
+                setupTask();
+                return;
             }
+            setIsRunning(true);
+
+            let sleepFor = TIME_BETWEEN_CHECKS;
+
+            // add a try/catch in case something goes boom
+            try {
+                const now = Date.now();
+                const testDate = new Date(now);
+
+                // remove cache for prepublished content
+                const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
+                removeCacheOnPrepublishedContent(prepublishedContent);
+
+                // unpublish expired content
+                const expiredContent = getExpiredContent(testDate);
+                removeExpiredContentFromMaster(expiredContent);
+                // save last test date for next run
+                prevTestDate = testDate;
+
+                // 1 minute between each check or for next prepublished
+                const prepublishOnNext = getPrepublishedContent(testDate, new Date(now + (TIME_BETWEEN_CHECKS)));
+                if (prepublishOnNext.length > 0) {
+                    sleepFor = getSleepFor(prepublishOnNext, now);
+                }
+            } catch (e) {
+                log.error(e);
+            }
+
+            setIsRunning(false);
+            libs.task.sleep(sleepFor);
 
             setupTask();
         },
@@ -81,13 +106,20 @@ function removeCacheOnPrepublishedContent (prepublishedContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            prepublishedContent.forEach((el) => {
-                const content = libs.content.get({
+            prepublishedContent = prepublishedContent.map((el) => {
+                return libs.content.get({
                     key: el.id,
                 });
-                libs.cacheControll.wipeOnChange(content._path);
-                libs.cacheControll.clearReferences(content._id, content._path, 0);
-            });
+            }).filter(s => !!s);
+            if (prepublishedContent.length > 0) {
+                libs.event.send({
+                    type: 'prepublish',
+                    distributed: true,
+                    data: {
+                        prepublished: prepublishedContent,
+                    },
+                });
+            }
         }
     );
     if (prepublishedContent.length > 0) {
@@ -127,8 +159,7 @@ function removeExpiredContentFromMaster (expiredContent) {
             });
             log.info(`UNPUBLISHED :: ${content._path}`);
         } catch (e) {
-            log.info('ERROR');
-            log.info(e);
+            log.error(e);
         }
     });
     if (expiredContent.length > 0) {
@@ -148,4 +179,33 @@ function getSleepFor (prepublishOnNext, now) {
     sleepFor += 10;
     log.info(`WILL PUBLISH ON NEXT (${sleepFor}MS)`);
     return sleepFor;
+}
+
+function getState () {
+    let unpublishContent = navRepo.get('/unpublish');
+    if (!unpublishContent) {
+        unpublishContent = navRepo.create({
+            _name: 'unpublish',
+            parentPath: '/',
+            refresh: true,
+            data: {
+                isRunning: false,
+                lastRun: null,
+            },
+        });
+    }
+    return unpublishContent.data;
+}
+
+function setIsRunning (isRunning) {
+    navRepo.modify({
+        key: '/unpublish',
+        editor: el => {
+            if (isRunning === false) {
+                el.data.lastRun = new Date().toISOString();
+            }
+            el.data.isRunning = isRunning;
+            return el;
+        },
+    });
 }
