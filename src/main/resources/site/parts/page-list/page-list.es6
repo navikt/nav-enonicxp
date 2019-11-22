@@ -28,7 +28,7 @@ exports.get = function (req) {
                 start: 0,
                 count: 100,
             }).hits)
-            .filter(el => el.type !== `${app.name}:content-list`)
+            .filter(el => el.type !== `${app.name}:content-list` && el.type !== `base:folder`)
             .map(el => {
                 // map to model better suited for thymeleaf view
                 return {
