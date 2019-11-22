@@ -8,7 +8,7 @@ const view = resolve('transport.html');
 exports.get = function (req) {
     return libs.cache.getPaths(req.path, 'transport', req.branch, () => {
         const content = libs.portal.getContent();
-        const items = content.data.items ? Array.isArray(content.data.items) ? content.data.items : [content.data.items]: [];
+        const items = content.data.items ? Array.isArray(content.data.items) ? content.data.items : [content.data.items] : [];
         const model = {
             ingress: content.data.ingress,
             items: items.map(value => {
@@ -16,9 +16,9 @@ exports.get = function (req) {
                     title: value.title,
                     ingress: value.ingress,
                     url: getUrl(value.url),
-                    logo: libs.portal.attachmentUrl({
+                    logo: value.logo ? libs.portal.attachmentUrl({
                         id: value.logo,
-                    }),
+                    }) : null,
                     className: value.spanning ? 'heldekkende' : '',
                 };
             }),
