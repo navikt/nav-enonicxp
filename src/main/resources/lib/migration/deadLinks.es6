@@ -41,6 +41,10 @@ exports.handle = (s) => {
     socket.on('dumpDeadlinks', () => {
         libs.tools.runInContext(socket, dumpDeadlinks);
     });
+
+    socket.on('findDuplicateChapters', () => {
+        libs.tools.runInContext(socket, findDuplicateChapters);
+    });
 };
 
 let deadLinksCurrentIndex = 0;
@@ -172,6 +176,83 @@ function findOldFormLinks (socket) {
     socket.emit('console.log', csv);
 }
 
+function findDuplicateChapters (socket) {
+    const chapters = libs.content.query({
+        start: 0,
+        count: 10000,
+        query: `type = "${app.name}:main-article-chapter"`,
+    }).hits;
+    const chapterArticles = chapters.reduce((list, chapter) => {
+        const hasArticle = list.filter(a => a._id === chapter.data.article).length > 0;
+        if (!hasArticle) {
+            list.push(libs.content.get({
+                key: chapter.data.article,
+            }));
+        }
+        return list;
+    }, []);
+    socket.emit('find-duplicate-chapters-max', chapterArticles.length);
+    const allDuplicates = [];
+    let count = 0;
+    for (let i = 0; i < chapterArticles.length - 1; i += 1) {
+        const duplicates = [];
+        for (let k = i + 1; k < chapterArticles.length; k += 1) {
+            const article1 = chapterArticles[i];
+            const article2 = chapterArticles[k];
+            if (article1._id !== article2._id && article1.displayName === article2.displayName && article1.ingress === article2.ingress && article1.text === article2.text) {
+                if (duplicates.length === 0) {
+                    duplicates.push(article1);
+                }
+                duplicates.push(article2);
+            }
+        }
+        if (duplicates.length > 0) {
+            duplicates.forEach(d => {
+                chapterArticles.splice(chapterArticles.indexOf(d), 1);
+                count += 1;
+            });
+            allDuplicates.push(duplicates);
+        } else {
+            count += 1;
+        }
+        socket.emit('find-duplicate-chapters-value', count);
+    }
+
+    let csv = 'DisplayName;Path;UsedBy\r\n';
+    allDuplicates.forEach(duplicates => {
+        duplicates.forEach((article, index) => {
+            if (index === 0) {
+                csv += article.displayName + ';';
+            } else {
+                csv += ';';
+            }
+
+            csv += article._path + ';';
+            const usedBy = libs.content.query({
+                start: 0,
+                count: 100,
+                query: `_references = "${article._id}"`,
+            }).hits;
+            usedBy.forEach((u, usedByIndex) => {
+                if (usedByIndex > 0) {
+                    csv += '\r\n;;';
+                }
+                csv += u._path;
+            });
+
+            csv += '\r\n';
+        });
+    });
+
+    const file = {
+        content: csv,
+        type: 'text/csv',
+        name: 'duplicateChapters.csv',
+    };
+    socket.emit('downloadFile', file);
+    log.info(JSON.stringify(allDuplicates.map(d => d.map(a => a._path))));
+}
+
 function createNewElements () {
     return {
         isNew: true,
@@ -269,6 +350,37 @@ function createNewElements () {
                             tagClass: ['button', 'is-info'],
                             id: 'find-old-form-links-button',
                             action: 'findOldFormLinks',
+                            text: 'Find',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: 'row',
+                    elements: [
+                        {
+                            tag: 'span',
+                            text: 'Find duplicate chapters',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'find-duplicate-chapters',
+                            progress: {
+                                value: 'find-duplicate-chapters-value',
+                                max: 'find-duplicate-chapters-max',
+                                valId: 'find-duplicate-chapters-id',
+                            },
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-info'],
+                            id: 'find-duplicate-chapters-button',
+                            action: 'findDuplicateChapters',
                             text: 'Find',
                         },
                         {
