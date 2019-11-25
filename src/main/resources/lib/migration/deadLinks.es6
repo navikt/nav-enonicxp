@@ -93,6 +93,7 @@ function deadLinks (el, deadLinksFound, socket) {
 
     function runDeep (something, deadLinksFound, socket) {
         if (typeof something === 'string') {
+            // eslint-disable-next-line no-useless-escape
             const guidRegex = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/g;
             if (guidRegex.exec(something)) {
                 const exists = !!libs.content.get({
@@ -250,7 +251,6 @@ function findDuplicateChapters (socket) {
         name: 'duplicateChapters.csv',
     };
     socket.emit('downloadFile', file);
-    log.info(JSON.stringify(allDuplicates.map(d => d.map(a => a._path))));
 }
 
 function createNewElements () {
