@@ -699,6 +699,82 @@ const genericPage = [
     },
 ];
 
+const errorPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
+        layout: {
+            descriptor: 'no.nav.navno:main-1-col',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/0',
+        part: {
+            descriptor: 'no.nav.navno:404',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {
+
+                },
+            },
+        },
+    },
+];
+
 const officeInformationPage = [
     {
         type: 'page',
@@ -909,6 +985,19 @@ const templates = [
             },
         },
         components: genericPage,
+    },
+    {
+        content: {
+            displayName: '404',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:404',
+            },
+        },
+        components: errorPage,
     },
     {
         content: {
