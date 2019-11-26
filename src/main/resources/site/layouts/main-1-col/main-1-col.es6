@@ -11,9 +11,16 @@ exports.get = function (req) {
     const language = content.language || 'no';
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
 
+    let title = content.displayName;
+
+    // skip title for 404, because it has its own h1
+    if (content.type === `${app.name}:404`) {
+        title = null;
+    }
+
     const model = {
-        title: content.displayName,
         firstRegion: component.regions['first'],
+        title,
         toTop,
     };
 
