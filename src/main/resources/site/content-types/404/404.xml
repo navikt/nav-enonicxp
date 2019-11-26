@@ -6,7 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>false</allow-child-content>
     <form>
-        <input type="HtmlArea" name="errorMessage">
+        <input type="TextArea" name="errorMessage">
             <label>Feilmelding</label>
             <occurrences minimum="1" maximum="1"/>
             <config>
