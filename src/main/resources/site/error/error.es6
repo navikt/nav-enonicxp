@@ -111,10 +111,10 @@ function create404page () {
             const page = libs.content.create({
                 name: '404',
                 parentPath: '/www.nav.no',
-                displayName: 'Siden finnes ikke',
-                contentType: app.name + ':generic-page',
+                displayName: 'Oops, noe gikk galt',
+                contentType: app.name + ':404',
                 data: {
-                    ingress: 'Beklager, denne siden finnes ikke.',
+                    'errorMessage': 'Siden eller tjenesten finnes ikke eller er for tiden<br/>utilgjengelig. Vi beklager dette. Prøv igjen senere.',
                 },
             });
             const res = libs.content.publish({
