@@ -29,6 +29,7 @@ const navRepo = libs.node.connect({
 let prevTestDate = new Date();
 
 const TIME_BETWEEN_CHECKS = 60000;
+const PADDING = 10000;
 exports.setupTask = setupTask;
 function setupTask () {
     libs.task.submit({
@@ -36,7 +37,7 @@ function setupTask () {
         task: () => {
             // stop if another node is running this task
             let state = getState();
-            if (state.isRunning) {
+            if (state.isRunning && (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS + PADDING > Date.now())) {
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 setupTask();
                 return;
@@ -145,23 +146,31 @@ function getExpiredContent (testDate) {
 }
 
 function removeExpiredContentFromMaster (expiredContent) {
-    expiredContent.forEach((c) => {
-        const content = masterRepo.get(c.id);
-        try {
-            masterRepo.delete(content._path);
-            draftRepo.modify({
-                key: content._path,
-                editor: draftContent => {
-                    delete draftContent.publish.to;
-                    delete draftContent.publish.from;
-                    return draftContent;
-                },
+    libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        () => {
+            expiredContent.forEach((c) => {
+                try {
+                    const content = masterRepo.get(c.id);
+                    if (content) {
+                        libs.content.unpublish({
+                            keys: [c.id],
+                        });
+                    }
+                    log.info(`UNPUBLISHED :: ${content._path}`);
+                } catch (e) {
+                    log.error(e);
+                }
             });
-            log.info(`UNPUBLISHED :: ${content._path}`);
-        } catch (e) {
-            log.error(e);
-        }
-    });
+        });
     if (expiredContent.length > 0) {
         log.info(`UNPUBLISHED (${expiredContent.length}) EXPIRED CONTENT`);
     }
