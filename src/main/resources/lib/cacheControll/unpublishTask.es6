@@ -164,8 +164,8 @@ function removeExpiredContentFromMaster (expiredContent) {
                         libs.content.unpublish({
                             keys: [c.id],
                         });
+                        log.info(`UNPUBLISHED :: ${content._path}`);
                     }
-                    log.info(`UNPUBLISHED :: ${content._path}`);
                 } catch (e) {
                     log.error(e);
                 }
