@@ -4,6 +4,7 @@ const libs = {
     context: require('/lib/xp/context'),
     portal: require('/lib/xp/portal'),
     cache: require('/lib/cacheControll'),
+    tools: require('/lib/migration/tools'),
 };
 
 // Handle 404
@@ -34,50 +35,74 @@ exports.handle404 = function (req) {
     }
 
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
-    const contentName = path.split('/').pop().toLowerCase();
-    if (!element) {
-        const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, function () {
-            return libs.content.getChildren({
-                key: '/redirects',
-                start: 0,
-                count: 10000,
-            }).hits;
-        });
+    let isRedirect = path.split('/').length === 3;
+    if (isRedirect) {
+        const contentName = path.split('/').pop().toLowerCase();
+        if (!element) {
+            const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, function () {
+                return libs.content.getChildren({
+                    key: '/redirects',
+                    start: 0,
+                    count: 10000,
+                }).hits;
+            });
 
-        for (let i = 0; i < redirects.length; i += 1) {
-            const el = redirects[i];
-            if (el.displayName.toLowerCase() === contentName) {
-                if (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link') {
-                    element = el;
-                    break;
+            for (let i = 0; i < redirects.length; i += 1) {
+                const el = redirects[i];
+                if (el.displayName.toLowerCase() === contentName) {
+                    if (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link') {
+                        element = el;
+                        break;
+                    }
                 }
             }
         }
-    }
 
-    // if we found a matching redirect, send the user there
-    let redirect;
-    if (element) {
-        if (element.type === app.name + ':external-link') {
-            log.info(element.data.url);
-            redirect = element.data.url;
-        } else {
-            redirect = libs.portal.pageUrl({
-                id: element.data.target,
-            });
+        // if we found a matching redirect, send the user there
+        let redirect;
+        if (element) {
+            if (element.type === app.name + ':external-link') {
+                log.info(element.data.url);
+                redirect = element.data.url;
+            } else {
+                redirect = libs.portal.pageUrl({
+                    id: element.data.target,
+                });
+            }
+            if (redirect) {
+                return {
+                    redirect,
+                };
+            }
         }
-        if (redirect) {
-            return {
-                redirect,
-            };
+    } else {
+        // try to convert from old url style to new
+        const info = libs.tools.getIdFromUrl(
+            path.toLowerCase()
+                .replace('/www.nav.no/', 'http://www.nav.no/')
+                .replace(/ - /g, '-')
+                .replace(/ /g, '-')
+                .replace(/ø/g, 'o')
+        );
+        if (info.invalid === false && info.refId) {
+            const redirect = libs.portal.pageUrl({
+                id: info.refId,
+            });
+            if (redirect) {
+                return {
+                    redirect,
+                };
+            }
         }
     }
 
     // log error and send the user to a 404 page
     log.info(JSON.stringify(req, null, 4));
-    if (!libs.content.get({
+    const has404 = libs.content.get({
         key: '/www.nav.no/404',
-    })) {
+    });
+    let redirect;
+    if (!has404) {
         // Try to create 404 page if not found
         redirect = create404page();
     } else {
