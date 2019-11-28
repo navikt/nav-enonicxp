@@ -77,13 +77,15 @@ function getContentLists (content, contentType, max, doSort) {
             key: content.data[contentType],
         });
         if (section) {
-            let sort;
-            if (doSort) {
-                sort = 'publish.first DESC, createdTime DESC';
-            }
             let sectionContentIds = section.data.sectionContents;
             sectionContentIds = sectionContentIds ? Array.isArray(sectionContentIds) ? sectionContentIds : [sectionContentIds] : [];
             let sectionContents = [];
+            let sort;
+            if (doSort) {
+                sort = 'publish.first DESC, createdTime DESC';
+            } else {
+                sectionContentIds = sectionContentIds.slice(0, max);
+            }
             if (sectionContentIds.length > 0) {
                 sectionContents = libs.content.query({
                     start: 0,
