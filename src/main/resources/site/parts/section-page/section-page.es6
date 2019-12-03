@@ -158,16 +158,19 @@ function mapElements (el) {
 }
 
 function getSrc (el) {
-    if (el.data.url) {
-        if (el.data.url.indexOf('https://') !== -1 || el.data.url.indexOf('http://') !== -1) {
+    if (el) {
+        log.info(JSON.stringify(el, null, 4));
+        if (el.type === `${app.name}:internal-link`) {
+            return getSrc(libs.content.get({
+                key: el.data.target,
+            }));
+        }
+        if (el.type === `${app.name}:external-link`) {
             return el.data.url;
         }
-        return libs.portal.pageUrl({
-            path: el.data.url,
-        });
-    } else {
         return libs.portal.pageUrl({
             id: el._id,
         });
     }
+    return '/';
 }

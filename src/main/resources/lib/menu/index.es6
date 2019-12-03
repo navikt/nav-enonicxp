@@ -170,7 +170,7 @@ function getTargetPath (targetId) {
     if (target) {
         if (target.type === `${app.name}:external-link`) {
             return target.data.url;
-        } else if (target.type === `${app.name}:external-link`) {
+        } else if (target.type === `${app.name}:internal-link`) {
             return getTargetPath(target.data.target);
         }
         return libs.portal.pageUrl({
