@@ -96,7 +96,7 @@ function checkForRefresh () {
 
             log.info('PUBLISH OFFICE INFORMATION');
             libs.content.publish({
-                keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer'],
+                keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer'],
                 sourceBranch: 'draft',
                 targetBranch: 'master',
                 includeDependencies: true,
@@ -127,7 +127,7 @@ function setIsRefreshing (navRepo, isRefreshing, lastRefresh) {
 function refreshOfficeInformation (officeInformationList) {
     // find all existing offices
     const officeFolder = libs.content.get({
-        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss/kontorer',
+        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer',
     });
 
     const existingOffices = libs.content.getChildren({
