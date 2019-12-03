@@ -22,7 +22,9 @@ exports.getBreadcrumbMenu = function (params) {
     const content = libs.portal.getContent();
     const site = libs.portal.getSite();
     let breadcrumbItems = []; // Stores each menu item
-    let breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf
+    let breadcrumbMenu = {
+
+    }; // Stores the final JSON sent to Thymeleaf
 
     // Safely take care of all incoming settings and set defaults, for use in current scope only
     const settings = {
@@ -57,7 +59,9 @@ exports.getBreadcrumbMenu = function (params) {
                     key: arrVars.join('/') + '/' + lastVar,
                 }); // Make sure item exists
                 if (curItem) {
-                    let item = {};
+                    let item = {
+
+                    };
                     const curItemUrl = libs.portal.pageUrl({
                         path: curItem._path,
                         type: settings.urlType,
@@ -148,9 +152,7 @@ function menuToJson (content, levels) {
 
     return {
         displayName: content.displayName,
-        path: libs.portal.pageUrl({
-            id: content.data.target,
-        }),
+        path: getTargetPath(content.data.target),
         id: content._id,
         inPath,
         isActive,
@@ -159,7 +161,24 @@ function menuToJson (content, levels) {
         showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true',
     };
 }
-/** * ***/
+
+function getTargetPath (targetId) {
+    const target = libs.content.get({
+        key: targetId,
+    });
+
+    if (target) {
+        if (target.type === `${app.name}:external-link`) {
+            return target.data.url;
+        } else if (target.type === `${app.name}:external-link`) {
+            return getTargetPath(target.data.target);
+        }
+        return libs.portal.pageUrl({
+            id: target._id,
+        });
+    }
+    return '/';
+}
 
 /**
  * Get menu tree
