@@ -1,5 +1,0 @@
-<content-type>
-    <display-name>Alle Enheter</display-name>
-    <description>Mappe</description>
-    <super-type>base:folder</super-type>
-</content-type>
