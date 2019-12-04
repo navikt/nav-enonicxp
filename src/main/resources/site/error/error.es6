@@ -33,7 +33,7 @@ exports.handle404 = function (req) {
     // if its an internal- or external-link, redirect the user
     if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
         element = content;
-    } else if (req.message === 'No template found for content') {
+    } else if (content) {
         // if the content has no template, and is not an intenral link or external link, send the user to 404, this should stop endless redirect loops
         contentExistsButHasNoTemplate = true;
     }
