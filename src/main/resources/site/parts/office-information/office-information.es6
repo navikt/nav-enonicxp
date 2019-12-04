@@ -15,16 +15,21 @@ function handleGet (req) {
         };
 
         const kontaktInformasjon = content.data.kontaktinformasjon || {
+            besoeksadresse: undefined,
             postaddresse: undefined,
             faksnummer: undefined,
             telefonnummer: undefined,
             telefonnummerKommentar: undefined,
             publikumsmottak: undefined,
+            epost: undefined,
         };
         const postadresse = kontaktInformasjon.postadresse;
         const postAdr = formatAddress(postadresse, false);
         let publikumsmottak = kontaktInformasjon.publikumsmottak;
         publikumsmottak = publikumsmottak ? Array.isArray(publikumsmottak) ? publikumsmottak : [publikumsmottak] : [];
+        const type = content.data.enhet.type;
+        const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
+        const epost = parseEmail(kontaktInformasjon.epost);
 
         const enhet = {
             navn: `${content.data.enhet.navn} - kontorinformasjon`,
@@ -37,6 +42,9 @@ function handleGet (req) {
             telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
             telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
             pms: publikumsmottak.map(formatAudienceReception),
+            isHmsOrAls: type === 'HMS' || type === 'ALS',
+            besoeksadresse,
+            epost,
         };
 
         const body = libs.thymeleaf.render(view, {
@@ -121,9 +129,32 @@ function formatAddress (address, withZip) {
 function parsePhoneNumber (number, mod) {
     mod = mod || 2;
     return number
-        ? number.split('').reduce((t, e, i) => {
+        ? number.replace(/ /g, '').split('').reduce((t, e, i) => {
             t += e + (i % mod === 1 ? ' ' : '');
             return t;
         }, '')
         : null;
+}
+
+function parseEmail (emailString) {
+    if (!emailString) {
+        return;
+    }
+    let email;
+    let internal = false;
+    let betweenBracketsPattern = /\[(.*?)\]/g;
+    let match;
+
+    while ((match = betweenBracketsPattern.exec(emailString)) !== null) {
+        let matchedRes = match[1];
+        if (matchedRes.indexOf('@') !== -1) {
+            email = matchedRes;
+        } else if (matchedRes === 'true') {
+            internal = true;
+        }
+    }
+    if (internal) {
+        return;
+    }
+    return email;
 }

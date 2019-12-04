@@ -9,6 +9,14 @@
         </div>
     </header>
     <div class="article-body">
+        <div data-th-if="${enhet.isHmsOrAls}" itemprop="location" itemscope="" itemtype="http://schema.org/PostalAddress">
+            <h3>Besøksadresse</h3>
+            <p class="p-street-address" itemprop="streetAddress">[[${enhet.besoeksadresse}]]</p>
+        </div>
+        <div data-th-if="${enhet.isHmsOrAls && enhet.epost}" itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint">
+            <h3 itemprop="contactType">Epost</h3>
+            <p class="u-email" itemprop="email">[[${enhet.epost}]]</p>
+        </div>
         <div itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint">
             <h3 itemprop="contactType">Telefon</h3>
             <p class="p-tel" itemprop="telephone">[[${enhet.telefon}]]</p>
@@ -34,29 +42,33 @@
             <h3 itemprop="contactType">Telefaks</h3>
             <p class="p-tel-fax" itemprop="faxNumber">[[${enhet.faks}]]</p>
         </div>
-        <h3>Organisasjonsnummer</h3>
-        <p>[[${enhet.orgNr}]]</p>
+        <div data-th-remove="tag" data-th-if="${enhet.orgNr}">
+            <h3>Organisasjonsnummer</h3>
+            <p>[[${enhet.orgNr}]]</p>
+        </div>
         <h3>Kontornummer</h3>
         <p>[[${enhet.kontornr}]]</p>
-        <h1>Publikumsmottak</h1>
-        <div itemscope="" itemtype="http://schema.org/LocalBusiness" data-th-each="pm : ${enhet.pms}">
-            <h2 itemprop="name">[[${pm.stedbeskrivelse}]]</h2>
-            <p></p>
-            <p class="p-street-address" itemprop="address" itemtype="http://schema.org/PostalAddress">[[${pm.besokkom}]]</p>
-            <h5>Åpningstider</h5>
-            <div data-th-each="day : ${pm.apning}" data-th-remove="tag">
-                <meta data-th-if="${!day.stengt}" itemprop="openingHours" data-th-content="${day.meta}" />
+        <div data-th-if="${!enhet.isHmsOrAls}" data-th-remove="tag">
+            <h1>Publikumsmottak</h1>
+            <div itemscope="" itemtype="http://schema.org/LocalBusiness" data-th-each="pm : ${enhet.pms}">
+                <h2 itemprop="name">[[${pm.stedbeskrivelse}]]</h2>
+                <p></p>
+                <p class="p-street-address" itemprop="address" itemtype="http://schema.org/PostalAddress">[[${pm.besokkom}]]</p>
+                <h5>Åpningstider</h5>
+                <div data-th-each="day : ${pm.apning}" data-th-remove="tag">
+                    <meta data-th-if="${!day.stengt}" itemprop="openingHours" data-th-content="${day.meta}" />
+                </div>
+                <table style="margin-bottom: 25px; border: none; width: auto;">
+                    <tbody>
+                        <tr data-th-each="dag : ${pm.apning}">
+                            <td>[[${dag.dag}]]</td>
+                            <td data-th-if="${!dag.stengt}">[[${dag.a}]]</td>
+                            <td data-th-if="${dag.stengt}">[[${lang.closed}]]</td>
+                            <td>[[${dag.kommentar}]]</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <table style="margin-bottom: 25px; border: none; width: auto;">
-                <tbody>
-                    <tr data-th-each="dag : ${pm.apning}">
-                        <td>[[${dag.dag}]]</td>
-                        <td data-th-if="${!dag.stengt}">[[${dag.a}]]</td>
-                        <td data-th-if="${dag.stengt}">[[${lang.closed}]]</td>
-                        <td>[[${dag.kommentar}]]</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </article>
