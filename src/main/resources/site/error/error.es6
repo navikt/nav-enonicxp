@@ -82,7 +82,8 @@ exports.handle404 = function (req) {
                 .replace('/www.nav.no/', 'http://www.nav.no/')
                 .replace(/ - /g, '-')
                 .replace(/ /g, '-')
-                .replace(/ø/g, 'o')
+                .replace(/ø/g, 'o'),
+            true,
         );
         if (info.invalid === false && info.refId) {
             const redirect = libs.portal.pageUrl({
