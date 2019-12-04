@@ -159,7 +159,6 @@ function mapElements (el) {
 
 function getSrc (el) {
     if (el) {
-        log.info(JSON.stringify(el, null, 4));
         if (el.type === `${app.name}:internal-link`) {
             return getSrc(libs.content.get({
                 key: el.data.target,
