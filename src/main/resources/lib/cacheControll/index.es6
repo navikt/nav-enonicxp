@@ -6,6 +6,7 @@ const libs = {
 };
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
+let hasSetupListeners = false;
 const caches = {
     decorator: libs.cache.newCache({
         size: 50,
@@ -130,21 +131,26 @@ function getSome (cacheStoreName) {
 
 function activateEventListener () {
     wipeAll();
-    libs.event.listener({
-        type: 'node.*',
-        localOnly: false,
-        callback: nodeListenerCallback,
-    });
-    libs.event.listener({
-        type: 'custom.prepublish',
-        localOnly: false,
-        callback: (e) => {
-            e.data.prepublished.forEach((el) => {
-                wipeOnChange(el._path);
-                clearReferences(el._id, el._path, 0);
-            });
-        },
-    });
+    if (!hasSetupListeners) {
+        libs.event.listener({
+            type: 'node.*',
+            localOnly: false,
+            callback: nodeListenerCallback,
+        });
+        libs.event.listener({
+            type: 'custom.prepublish',
+            localOnly: false,
+            callback: (e) => {
+                e.data.prepublished.forEach((el) => {
+                    wipeOnChange(el._path);
+                    clearReferences(el._id, el._path, 0);
+                });
+            },
+        });
+        hasSetupListeners = true;
+    } else {
+        log.info('Cache node listeners already running');
+    }
 }
 
 function nodeListenerCallback (event) {

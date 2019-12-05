@@ -144,6 +144,16 @@
                             </div>
                         </div>
                     </li>
+                    <li class="topnavitem mobile-only">
+                        <div id="auth-btns-mobil" class="login-container">
+                            <a id="login-mobil" class="hidden knapp liten btn-auth btn-login" data-th-href="${urls.login}">
+                                [[${langBundles.user.logIn}]]
+                            </a>
+                            <a id="logout-mobil" class="hidden knapp liten hoved btn-auth btn-logout" data-th-href="${urls.logout}">
+                                [[${langBundles.user.logOut}]]
+                            </a>
+                        </div>
+                    </li>
                 </ul>
                 <button
                     type="button"

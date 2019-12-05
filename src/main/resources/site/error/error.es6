@@ -29,16 +29,20 @@ exports.handle404 = function (req) {
         key: path,
     });
 
+    let contentExistsButHasNoTemplate = false;
     // if its an internal- or external-link, redirect the user
     if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
         element = content;
+    } else if (content) {
+        // if the content has no template, and is not an intenral link or external link, send the user to 404, this should stop endless redirect loops
+        contentExistsButHasNoTemplate = true;
     }
 
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
-    let isRedirect = path.split('/').length === 3;
-    if (isRedirect) {
-        const contentName = path.split('/').pop().toLowerCase();
-        if (!element) {
+    if (!element) {
+        let isRedirect = path.split('/').length === 3;
+        if (isRedirect) {
+            const contentName = path.split('/').pop().toLowerCase();
             const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, function () {
                 return libs.content.getChildren({
                     key: '/redirects',
@@ -56,43 +60,44 @@ exports.handle404 = function (req) {
                     }
                 }
             }
-        }
-
-        // if we found a matching redirect, send the user there
-        let redirect;
-        if (element) {
-            if (element.type === app.name + ':external-link') {
-                log.info(element.data.url);
-                redirect = element.data.url;
-            } else {
-                redirect = libs.portal.pageUrl({
-                    id: element.data.target,
+        } else if (!contentExistsButHasNoTemplate) {
+            // try to convert from old url style to new
+            const info = libs.tools.getIdFromUrl(
+                path.toLowerCase()
+                    .replace('/www.nav.no/', 'http://www.nav.no/')
+                    .replace(/ - /g, '-')
+                    .replace(/ /g, '-')
+                    .replace(/ø/g, 'o'),
+                true
+            );
+            if (info.invalid === false && info.refId) {
+                const redirect = libs.portal.pageUrl({
+                    id: info.refId,
                 });
-            }
-            if (redirect) {
-                return {
-                    redirect,
-                };
+                if (redirect) {
+                    return {
+                        redirect,
+                    };
+                }
             }
         }
-    } else {
-        // try to convert from old url style to new
-        const info = libs.tools.getIdFromUrl(
-            path.toLowerCase()
-                .replace('/www.nav.no/', 'http://www.nav.no/')
-                .replace(/ - /g, '-')
-                .replace(/ /g, '-')
-                .replace(/ø/g, 'o')
-        );
-        if (info.invalid === false && info.refId) {
-            const redirect = libs.portal.pageUrl({
-                id: info.refId,
+    }
+
+    // if we found a matching redirect, send the user there
+    if (element) {
+        let redirect;
+        if (element.type === app.name + ':external-link') {
+            log.info(element.data.url);
+            redirect = element.data.url;
+        } else {
+            redirect = libs.portal.pageUrl({
+                id: element.data.target,
             });
-            if (redirect) {
-                return {
-                    redirect,
-                };
-            }
+        }
+        if (redirect) {
+            return {
+                redirect,
+            };
         }
     }
 

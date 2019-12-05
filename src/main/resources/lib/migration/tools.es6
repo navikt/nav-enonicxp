@@ -704,7 +704,7 @@ exports.getIdFromUrl = getIdFromUrl;
  * @param url
  * @returns {{external: boolean, invalid: boolean, refId: string|null, pathTo: string|null}}
  */
-function getIdFromUrl (url) {
+function getIdFromUrl (url, skipNavRepo = false) {
     const ret = {
         external: true,
         invalid: false,
@@ -718,25 +718,27 @@ function getIdFromUrl (url) {
     }
     if (url.indexOf('https://') !== -1 || url.indexOf('http://') !== -1) {
         // check link import
-        const navRepo = getNavRepo();
-        const links = navRepo.get('/links');
-        if (links) {
-            let match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
-            if (match) {
-                // check if the new path is an internal path or a replacement for an external url
-                if (match.newPath.indexOf('http') === 0) {
-                    ret.external = true;
-                    ret.replaceUrl = match.newPath;
-                    return ret;
-                } else {
-                    const ref = libs.content.get({
-                        key: match.newPath,
-                    });
-                    if (ref) {
-                        ret.external = false;
-                        ret.refId = ref._id;
-                        ret.pathTo = ref._path;
+        if (!skipNavRepo) {
+            const navRepo = getNavRepo();
+            const links = navRepo.get('/links');
+            if (links) {
+                let match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
+                if (match) {
+                    // check if the new path is an internal path or a replacement for an external url
+                    if (match.newPath.indexOf('http') === 0) {
+                        ret.external = true;
+                        ret.replaceUrl = match.newPath;
                         return ret;
+                    } else {
+                        const ref = libs.content.get({
+                            key: match.newPath,
+                        });
+                        if (ref) {
+                            ret.external = false;
+                            ret.refId = ref._id;
+                            ret.pathTo = ref._path;
+                            return ret;
+                        }
                     }
                 }
             }
