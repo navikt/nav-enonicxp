@@ -136,10 +136,13 @@ function setIsRefreshing (navRepo, isRefreshing, failed) {
         key: '/officeInformation',
         editor: o => {
             if (isRefreshing === false) {
-                o.data.lastRefresh = Date.now();
-                o.data.lastRefreshFormated = new Date();
+                o.data.failedLastRefresh = failed;
+                // only update last refresh when its finished refresing and did not fail
+                if (failed === false) {
+                    o.data.lastRefresh = Date.now();
+                    o.data.lastRefreshFormated = new Date();
+                }
             }
-            o.data.failedLastRefresh = failed;
             o.data.isRefreshing = isRefreshing;
             return o;
         },
