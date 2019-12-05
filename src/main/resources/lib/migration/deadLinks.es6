@@ -8,6 +8,7 @@ const libs = {
     navUtils: require('/lib/nav-utils'),
     cache: require('/lib/cacheControll'),
     unpublish: require('/lib/cacheControll/unpublishTask'),
+    officeInformation: require('/lib/officeInformation'),
 };
 
 let socket;
@@ -40,6 +41,7 @@ exports.handle = (s) => {
         libs.tools.runInContext(socket, () => {
             libs.cache.activateEventListener();
             libs.unpublish.start();
+            libs.officeInformation.startCronJob();
         });
     });
 

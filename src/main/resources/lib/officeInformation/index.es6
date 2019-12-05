@@ -10,6 +10,9 @@ const libs = {
 };
 
 exports.startCronJob = function () {
+    libs.cron.unschedule({
+        name: 'office_info_norg2_daily',
+    });
     libs.cron.schedule({
         name: 'office_info_norg2_daily',
         cron: '10 4 * * *',
