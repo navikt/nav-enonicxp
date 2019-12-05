@@ -6,6 +6,8 @@ const libs = {
     task: require('/lib/xp/task'),
     tools: require('/lib/migration/tools'),
     navUtils: require('/lib/nav-utils'),
+    cache: require('/lib/cacheControll'),
+    unpublish: require('/lib/cacheControll/unpublishTask'),
 };
 
 let socket;
@@ -34,17 +36,24 @@ exports.handle = (s) => {
         });
     });
 
-    socket.on('findOldFormLinks', () => {
-        libs.tools.runInContext(socket, findOldFormLinks);
+    socket.on('clearAndStartCache', () => {
+        libs.tools.runInContext(socket, () => {
+            libs.cache.activateEventListener();
+            libs.unpublish.start();
+        });
     });
+
+    // socket.on('findOldFormLinks', () => {
+    //     libs.tools.runInContext(socket, findOldFormLinks);
+    // });
 
     socket.on('dumpDeadlinks', () => {
         libs.tools.runInContext(socket, dumpDeadlinks);
     });
 
-    socket.on('findDuplicateChapters', () => {
-        libs.tools.runInContext(socket, findDuplicateChapters);
-    });
+    // socket.on('findDuplicateChapters', () => {
+    //     libs.tools.runInContext(socket, findDuplicateChapters);
+    // });
 };
 
 let deadLinksCurrentIndex = 0;
@@ -333,24 +342,17 @@ function createNewElements () {
                     elements: [
                         {
                             tag: 'span',
-                            text: 'Find old form links',
+                            text: 'Clear and start cache',
                         },
                         {
-                            tag: 'progress',
-                            tagClass: ['progress', 'is-info'],
-                            id: 'find-old-form-links',
-                            progress: {
-                                value: 'find-old-form-links-value',
-                                max: 'find-old-form-links-max',
-                                valId: 'find-old-form-links-val-id',
-                            },
+                            tag: 'br',
                         },
                         {
                             tag: 'button',
                             tagClass: ['button', 'is-info'],
-                            id: 'find-old-form-links-button',
-                            action: 'findOldFormLinks',
-                            text: 'Find',
+                            id: 'clear-and-start-cache',
+                            action: 'clearAndStartCache',
+                            text: 'Clear',
                         },
                         {
                             tag: 'li',
@@ -358,37 +360,68 @@ function createNewElements () {
                         },
                     ],
                 },
-                {
-                    tag: 'div',
-                    tagClass: 'row',
-                    elements: [
-                        {
-                            tag: 'span',
-                            text: 'Find duplicate chapters',
-                        },
-                        {
-                            tag: 'progress',
-                            tagClass: ['progress', 'is-info'],
-                            id: 'find-duplicate-chapters',
-                            progress: {
-                                value: 'find-duplicate-chapters-value',
-                                max: 'find-duplicate-chapters-max',
-                                valId: 'find-duplicate-chapters-id',
-                            },
-                        },
-                        {
-                            tag: 'button',
-                            tagClass: ['button', 'is-info'],
-                            id: 'find-duplicate-chapters-button',
-                            action: 'findDuplicateChapters',
-                            text: 'Find',
-                        },
-                        {
-                            tag: 'li',
-                            tagClass: ['navbar-divider'],
-                        },
-                    ],
-                },
+                // {
+                //     tag: 'div',
+                //     tagClass: 'row',
+                //     elements: [
+                //         {
+                //             tag: 'span',
+                //             text: 'Find old form links',
+                //         },
+                //         {
+                //             tag: 'progress',
+                //             tagClass: ['progress', 'is-info'],
+                //             id: 'find-old-form-links',
+                //             progress: {
+                //                 value: 'find-old-form-links-value',
+                //                 max: 'find-old-form-links-max',
+                //                 valId: 'find-old-form-links-val-id',
+                //             },
+                //         },
+                //         {
+                //             tag: 'button',
+                //             tagClass: ['button', 'is-info'],
+                //             id: 'find-old-form-links-button',
+                //             action: 'findOldFormLinks',
+                //             text: 'Find',
+                //         },
+                //         {
+                //             tag: 'li',
+                //             tagClass: ['navbar-divider'],
+                //         },
+                //     ],
+                // },
+                // {
+                //     tag: 'div',
+                //     tagClass: 'row',
+                //     elements: [
+                //         {
+                //             tag: 'span',
+                //             text: 'Find duplicate chapters',
+                //         },
+                //         {
+                //             tag: 'progress',
+                //             tagClass: ['progress', 'is-info'],
+                //             id: 'find-duplicate-chapters',
+                //             progress: {
+                //                 value: 'find-duplicate-chapters-value',
+                //                 max: 'find-duplicate-chapters-max',
+                //                 valId: 'find-duplicate-chapters-id',
+                //             },
+                //         },
+                //         {
+                //             tag: 'button',
+                //             tagClass: ['button', 'is-info'],
+                //             id: 'find-duplicate-chapters-button',
+                //             action: 'findDuplicateChapters',
+                //             text: 'Find',
+                //         },
+                //         {
+                //             tag: 'li',
+                //             tagClass: ['navbar-divider'],
+                //         },
+                //     ],
+                // },
             ],
         },
     };

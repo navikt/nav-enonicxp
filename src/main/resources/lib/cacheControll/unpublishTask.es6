@@ -30,6 +30,17 @@ let prevTestDate = new Date();
 
 const TIME_BETWEEN_CHECKS = 60000;
 const PADDING = 10000;
+
+let taskHasStarted = false;
+exports.start = function () {
+    if (!taskHasStarted) {
+        taskHasStarted = true;
+        setupTask();
+    } else {
+        log.info('unpublish task already running');
+    }
+};
+
 exports.setupTask = setupTask;
 function setupTask () {
     libs.task.submit({

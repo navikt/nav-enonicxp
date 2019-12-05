@@ -1,5 +1,7 @@
+log.info('Started running main');
 const cache = require('/lib/cacheControll');
 const unpublish = require('/lib/cacheControll/unpublishTask');
 
 cache.activateEventListener();
-unpublish.setupTask();
+unpublish.start();
+log.info('Finished running main');
