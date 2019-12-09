@@ -103,6 +103,7 @@ exports.handle404 = function (req) {
 
     // log error and send the user to a 404 page
     log.info(JSON.stringify(req, null, 4));
+    /* Fjerner dette for å sikre 404 statuskode. TODO: Finnes en bedre løsning?
     const has404 = libs.content.get({
         key: '/www.nav.no/404',
     });
@@ -116,13 +117,23 @@ exports.handle404 = function (req) {
         });
     }
     if (redirect) {
+        log.info(JSON.stringify(redirect, null, 4));
         return {
             redirect,
+            status: 404,
         };
-    }
+    } */
     return {
-        body: 'Missing',
-        contentType: 'text/plain',
+        body:
+            '<html lang="no">\n' +
+            '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n' +
+            '<body>\n' +
+            '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n' +
+            '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n' +
+            '<p>Feilkode 404</p>\n' +
+            '</body>\n' +
+            '</html>',
+        contentType: 'text/html',
     };
 };
 
