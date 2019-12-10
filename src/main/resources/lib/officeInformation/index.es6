@@ -5,29 +5,60 @@ const libs = {
     httpClient: require('/lib/http-client'),
     task: require('/lib/xp/task'),
     tools: require('/lib/migration/tools'),
+    cron: require('/lib/cron'),
+    cluster: require('/lib/xp/cluster'),
 };
 
-const HOUR = 60 * 60 * 1000; // MINUTES * SECONDS * MS
-const DAY = 24 * HOUR;
-let lastCheckOnNode = null;
-
-exports.submitCheckTask = function () {
-    // ignore this if the config is missing
-    if (!app.config || !app.config.norg2 || !app.config.norg2ApiKey || !app.config.norg2ConsumerId) {
-        return;
-    }
-    // only create task once an hour
-    if (!lastCheckOnNode || lastCheckOnNode + HOUR < Date.now()) {
-        lastCheckOnNode = Date.now();
-        libs.task.submit({
-            description: 'Check norg for office information',
-            task: () => {
-                libs.tools.runInContext(undefined, () => {
-                    checkForRefresh();
-                });
+exports.startCronJob = function () {
+    libs.cron.unschedule({
+        name: 'office_info_norg2_daily',
+    });
+    libs.cron.schedule({
+        name: 'office_info_norg2_daily',
+        cron: '10 4 * * *',
+        context: {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
             },
-        });
-    }
+            principals: ['role:system.admin'],
+        },
+        callback: () => {
+            // stop if the config is missing, or the node is not a master
+            if (libs.cluster.isMaster() && app.config && app.config.norg2 && app.config.norg2ApiKey && app.config.norg2ConsumerId) {
+                checkForRefresh();
+            }
+        },
+    });
+};
+
+function startBackupJob () {
+    // stop cron job first, just in case it has been failing for more than a day
+    libs.cron.unschedule({
+        name: 'office_info_norg2_hourly',
+    });
+    libs.cron.schedule({
+        name: 'office_info_norg2_hourly',
+        cron: '15 * * * *',
+        times: 1,
+        context: {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        callback: () => {
+            // stop if the config is missing, or the node is not a master
+            if (libs.cluster.isMaster() && app.config && app.config.norg2 && app.config.norg2ApiKey && app.config.norg2ConsumerId) {
+                checkForRefresh();
+            }
+        },
+    });
 };
 
 function checkForRefresh () {
@@ -57,66 +88,63 @@ function checkForRefresh () {
             refresh: true,
             data: {
                 lastRefresh: null,
+                lastRefreshFormated: new Date().toISOString(),
                 isRefreshing: false,
+                failedLastRefresh: false,
             },
         });
     }
 
-    // we need to refresh the office information from norg2 if it has never run, or it's more than a day since last time
-    let needRefresh = false;
-    const lastRefresh = parseInt(officeInformation.data.lastRefresh);
-    if (isNaN(lastRefresh)) {
-        needRefresh = true;
-    } else if (lastRefresh + DAY < Date.now()) {
-        needRefresh = true;
+    // set isRefreshing true so only cluster node runs this
+    setIsRefreshing(navRepo, true);
+
+    let failedToRefresh = false;
+    // get data from norg2
+    try {
+        const response = libs.httpClient.request({
+            url: app.config.norg2,
+            method: 'GET',
+            headers: {
+                'x-nav-apiKey': app.config.norg2ApiKey,
+                consumerId: app.config.norg2ConsumerId,
+            },
+        });
+
+        const officeInformationList = JSON.parse(response.body);
+        refreshOfficeInformation(officeInformationList);
+
+        log.info('PUBLISH OFFICE INFORMATION');
+        libs.content.publish({
+            keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer'],
+            sourceBranch: 'draft',
+            targetBranch: 'master',
+            includeDependencies: true,
+        });
+    } catch (e) {
+        log.info('FAILED TO GET OFFICE INFORMATION FROM NORG2');
+        log.info(e);
+        failedToRefresh = true;
     }
 
-    // stop refresh if it's already refreshing
-    if (officeInformation.data.isRefreshing === true) {
-        needRefresh = false;
-    }
+    // set isRefreshing to false since we're done refresing office information
+    setIsRefreshing(navRepo, false, failedToRefresh);
 
-    if (needRefresh) {
-        // set isRefreshing true so only cluster node runs this
-        setIsRefreshing(navRepo, true);
-
-        // get data from norg2
-        try {
-            const response = libs.httpClient.request({
-                url: app.config.norg2,
-                method: 'GET',
-                headers: {
-                    'x-nav-apiKey': app.config.norg2ApiKey,
-                    consumerId: app.config.norg2ConsumerId,
-                },
-            });
-
-            const officeInformationList = JSON.parse(response.body);
-            refreshOfficeInformation(officeInformationList);
-
-            log.info('PUBLISH OFFICE INFORMATION');
-            libs.content.publish({
-                keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer'],
-                sourceBranch: 'draft',
-                targetBranch: 'master',
-                includeDependencies: true,
-            });
-        } catch (e) {
-            log.info('FAILED TO GET OFFICE INFORMATION FROM NORG2');
-            log.info(e);
-        }
-
-        // set isRefreshing to false since we're done refresing office information
-        setIsRefreshing(navRepo, false, Date.now());
+    if (failedToRefresh) {
+        startBackupJob();
     }
 };
 
-function setIsRefreshing (navRepo, isRefreshing, lastRefresh) {
+function setIsRefreshing (navRepo, isRefreshing, failed) {
     navRepo.modify({
         key: '/officeInformation',
         editor: o => {
-            if (lastRefresh) {
-                o.data.lastRefresh = lastRefresh;
+            if (isRefreshing === false) {
+                o.data.failedLastRefresh = failed;
+                // only update last refresh when its finished refresing and did not fail
+                if (failed === false) {
+                    o.data.lastRefresh = Date.now();
+                    o.data.lastRefreshFormated = new Date();
+                }
             }
             o.data.isRefreshing = isRefreshing;
             return o;
@@ -174,13 +202,13 @@ function refreshOfficeInformation (officeInformationList) {
 
     // delete old offices
     existingOffices.forEach((existingOffice) => {
-        log.info('DELETE :: ' + existingOffice._id);
         let enhetId;
         if (existingOffice && existingOffice.data && existingOffice.data.enhet && existingOffice.data.enhet.enhetId) {
             enhetId = existingOffice.data.enhet.enhetId;
-            log.info('ENHET :: ' + enhetId);
         }
         if (!officesInNorg[enhetId]) {
+            log.info('DELETE :: ' + existingOffice._id + ' ' + existingOffice.displayName);
+            log.info('ENHET :: ' + enhetId);
             libs.content.delete({
                 key: existingOffice._id,
             });

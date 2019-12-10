@@ -42,7 +42,7 @@ function handleGet (req) {
             telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
             telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
             pms: publikumsmottak.map(formatAudienceReception),
-            isHmsOrAls: type === 'HMS' || type === 'ALS',
+            isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
         };
