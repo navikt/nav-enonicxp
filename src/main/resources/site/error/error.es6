@@ -64,10 +64,13 @@ exports.handle404 = function (req) {
             // try to convert from old url style to new
             const info = libs.tools.getIdFromUrl(
                 path.toLowerCase()
-                    .replace('/www.nav.no/', 'http://www.nav.no/')
+                    .replace('/www.nav.no/', 'https://www.nav.no/')
                     .replace(/ - /g, '-')
+                    .replace(/ + /g, '-')
                     .replace(/ /g, '-')
-                    .replace(/ø/g, 'o'),
+                    .replace(/ø/g, 'o')
+                    .replace(/æ/g, 'ae')
+                    .replace(/å/g, 'a'),
                 true
             );
             if (info.invalid === false && info.refId) {
