@@ -66,7 +66,7 @@ exports.handle404 = function (req) {
                 path.toLowerCase()
                     .replace('/www.nav.no/', 'https://www.nav.no/')
                     .replace(/ - /g, '-')
-                    .replace(/ + /g, '-')
+                    .replace(/\+/g, '-')
                     .replace(/ /g, '-')
                     .replace(/ø/g, 'o')
                     .replace(/æ/g, 'ae')
