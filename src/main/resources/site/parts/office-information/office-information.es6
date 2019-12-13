@@ -41,7 +41,7 @@ function handleGet (req) {
             faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
             telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
             telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
-            pms: publikumsmottak.map(formatAudienceReception),
+            pms: publikumsmottak.map(val => formatAudienceReception(val, content.language)),
             isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
@@ -70,18 +70,32 @@ function handleGet (req) {
 
 exports.get = handleGet;
 
-function formatAudienceReception (audienceReception) {
-    let aapningstider = audienceReception.aapningstider;
-    aapningstider = aapningstider ? Array.isArray(aapningstider) ? aapningstider : [aapningstider] : [];
+function formatAudienceReception (audienceReception, language = 'no') {
+    let aapningstider = libs.navUtils.forceArray(audienceReception.aapningstider);
+
+    // filter regular and exceptions for opening hour then introduce formatting for display
+    aapningstider = aapningstider.reduce((acc, elem) => {
+        if (elem.dato) {
+            elem.dato = libs.navUtils.formatDate(elem.dato, language);
+            if (elem.fra && elem.til) {
+                elem.a = elem.fra + ' - ' + elem.til;
+            }
+            acc.exceptions.push(elem);
+        } else {
+            let displayVal = formatMetaOpeningHours(elem);
+            displayVal.a = displayVal.fra + ' - ' + displayVal.til;
+            acc.regular.push(displayVal);
+        }
+        return acc;
+    }, {
+        regular: [], exceptions: [],
+    });
+
     return {
         besokkom: formatAddress(audienceReception.besoeksadresse, true),
         stedbeskrivelse: audienceReception.stedsbeskrivelse || audienceReception.besoeksadresse.poststed,
-        apning: aapningstider
-            .map(el => {
-                el.a = el.fra + ' - ' + el.til;
-                return el;
-            })
-            .map(formatMetaOpeningHours)
+        unntakAapning: aapningstider.exceptions,
+        apning: aapningstider.regular
             .sort(sortOpeningHours),
     };
 }
