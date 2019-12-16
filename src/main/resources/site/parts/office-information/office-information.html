@@ -60,8 +60,8 @@
                         <li data-th-each="event: ${pm.unntakAapning} "itemprop="specialOpeningHoursSpecification" itemscope itemtype="http://schema.org/OpeningHoursSpecification">
                             <time itemprop="validFrom" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time> 
                             <time itemprop="validThrough" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time>
-                            <time data-th-if="${!event.stengt}" itemprop="opens" datetime="09:00:00">[[${event.fra}]]</time>
-                            <time data-th-if="${!event.stengt}" itemprop="closes" datetime="11:00:00">[[${event.til}]]</time>
+                            <time data-th-if="${!event.stengt}" itemprop="opens" data-th-datetime="${event.fra}">[[${event.fra}]]</time>
+                            <time data-th-if="${!event.stengt}" itemprop="closes" data-th-datetime="${event.til}">[[${event.til}]]</time>
                         </li>
                     </ul>
                     <table>
