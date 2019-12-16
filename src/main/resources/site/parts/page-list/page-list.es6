@@ -31,6 +31,7 @@ exports.get = function (req) {
             .filter(el => el.type !== `${app.name}:content-list` && el.type !== `base:folder`)
             .map(el => {
                 // map to model better suited for thymeleaf view
+                const published = (el.publish && el.publish.first ? el.publish.first : el.createdTime);
                 return {
                     src: libs.portal.pageUrl({
                         id: el._id,
@@ -38,7 +39,7 @@ exports.get = function (req) {
                     heading: el.displayName,
                     ingress: el.data.ingress || el.data.description,
                     publishedText: libs.utils.dateTimePublished(el, el.language || 'no'),
-                    published: new Date(el.publish && el.publish.first ? el.publish.first : el.createdTime),
+                    published: new Date(published.replace(/\.\d+/, '')), // remove milliseconds to get valid date
                     type: el.type,
                 };
             })
