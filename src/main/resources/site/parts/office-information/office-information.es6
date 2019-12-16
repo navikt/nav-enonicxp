@@ -76,6 +76,7 @@ function formatAudienceReception (audienceReception, language = 'no') {
     // filter regular and exceptions for opening hour then introduce formatting for display
     aapningstider = aapningstider.reduce((acc, elem) => {
         if (elem.dato) {
+            elem.isoDate = elem.dato;
             elem.dato = libs.navUtils.formatDate(elem.dato, language);
             if (elem.fra && elem.til) {
                 elem.a = elem.fra + ' - ' + elem.til;

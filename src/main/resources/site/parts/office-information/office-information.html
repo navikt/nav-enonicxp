@@ -56,7 +56,15 @@
                 <p class="p-street-address" itemprop="address" itemtype="http://schema.org/PostalAddress">[[${pm.besokkom}]]</p>
                 <div data-th-if="${pm.unntakAapning}"> 
                     <h5>Spesielle åpningstider</h5>
-                    <table >
+                    <ul style="display: none;">
+                        <li data-th-each="event: ${pm.unntakAapning} "itemprop="specialOpeningHoursSpecification" itemscope itemtype="http://schema.org/OpeningHoursSpecification">
+                            <time itemprop="validFrom" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time> 
+                            <time itemprop="validThrough" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time>
+                            <time data-th-if="${!event.stengt}" itemprop="opens" datetime="09:00:00">[[${event.fra}]]</time>
+                            <time data-th-if="${!event.stengt}" itemprop="closes" datetime="11:00:00">[[${event.til}]]</time>
+                        </li>
+                    </ul>
+                    <table>
                         <tbody>
                             <tr data-th-each="exception : ${pm.unntakAapning}">
                                 <td>[[${exception.dato}]]</td>
