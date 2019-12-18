@@ -37,6 +37,15 @@ exports.sortContents = function (contents, sortedIds) {
 };
 
 /**
+ * Make sure the content is an array.
+ * @param {*} content Whatever is passed in
+ * @returns {Object[]} Array containing the content or just content
+ */
+exports.forceArray = function (content) {
+    return content ? Array.isArray(content) ? content : [content] : [];
+};
+
+/**
  * Get the value of a section or page parameter.
  * @param {Object} content Content object.
  * @param {string} paramName Parameter name.
