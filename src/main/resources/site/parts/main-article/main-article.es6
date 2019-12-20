@@ -9,93 +9,100 @@ const libs = {
 const view = resolve('main-article.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'main-article', req.branch, () => {
-        let content = libs.portal.getContent();
-        if (content.type === app.name + ':main-article-chapter') {
-            content = libs.content.get({
-                key: content.data.article,
-            });
-        }
-        const langBundle = libs.lang.parseBundle(content.language).main_article;
-        const languages = libs.utils.getLanguageVersions(content);
-        const data = content.data;
-        const hasFact = !!data.fact;
+    // Midlertidig fix: Kaller render-function direkte for driftsmeldinger TODO: Sette tilbake når cache fungerer
+    if (req.path.indexOf('/driftsmeldinger/') !== -1) {
+        return renderPage();
+    } else {
+        return libs.cache.getPaths(req.path, 'main-article', req.branch, renderPage);
+    }
+}
 
-        // Innholdsfortegnelse
-        let toc = [];
-        // TODO Remove the Kort_om hardcode after migrations has set h3 correctly on all old Kort_om articles
-        if ((data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
-            (content.x && content.x['no-nav-navno'] && content.x['no-nav-navno'].oldContentType && content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')) {
-            let count = 0;
-            let ch = 1;
-            let ind = data.text.indexOf('<h3>');
-
-            while (ind !== -1 && count < 100) {
-                const h2End = ind + 4;
-                const ssEnd = data.text.indexOf('</h3>', ind);
-                const ss = data.text
-                    .slice(h2End, ssEnd)
-                    .replace(/<([^>]+)>/ig, '') // Strip html
-                    .replace(/&nbsp;/ig, ' '); // Replace &nbsp;
-                count++;
-                toc.push(ss);
-                data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
-                ind = data.text.indexOf('<h3>');
-            }
-        }
-
-        // Sosiale medier
-        let socials = data.social ? (Array.isArray(data.social) ? data.social : [data.social]) : false;
-        socials = socials
-            ? socials.map(el => {
-                let tmpText = 'Del på ';
-                if (el === 'linkedin') {
-                    tmpText += 'LinkedIn';
-                } else if (el === 'facebook') {
-                    tmpText += 'Facebook';
-                } else {
-                    tmpText += 'Twitter';
-                }
-                return {
-                    type: el,
-                    text: tmpText,
-                    href: getSocialRef(el, content, req),
-                };
-            })
-            : false;
-
-        // Prosessering av HTML-felter (håndtere url-er inne i html-en)
-        data.text = libs.portal.processHtml({
-            value: data.text,
+function renderPage () {
+    let content = libs.portal.getContent();
+    if (content.type === app.name + ':main-article-chapter') {
+        content = libs.content.get({
+            key: content.data.article,
         });
-        if (hasFact) {
-            data.fact = libs.portal.processHtml({
-                value: data.fact,
-            });
-        }
-        if (data.image) {
-            data.imageUrl = libs.portal.imageUrl({
-                id: data.image,
-                scale: 'block(1024,768)',
-            });
-        }
+    }
+    const langBundle = libs.lang.parseBundle(content.language).main_article;
+    const languages = libs.utils.getLanguageVersions(content);
+    const data = content.data;
+    const hasFact = !!data.fact;
 
-        // Definer modell og kall rendring (view)
-        const model = {
-            published: libs.utils.dateTimePublished(content, content.language || 'no'),
-            hasTableOfContents: toc.length > 0,
-            toc,
-            content,
-            hasFact,
-            hasLanguageVersions: languages.length > 0,
-            languages,
-            socials,
-            langBundle,
-        };
-        return {
-            body: libs.thymeleaf.render(view, model),
-        };
+    // Innholdsfortegnelse
+    let toc = [];
+    // TODO Remove the Kort_om hardcode after migrations has set h3 correctly on all old Kort_om articles
+    if ((data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
+        (content.x && content.x['no-nav-navno'] && content.x['no-nav-navno'].oldContentType && content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')) {
+        let count = 0;
+        let ch = 1;
+        let ind = data.text.indexOf('<h3>');
+
+        while (ind !== -1 && count < 100) {
+            const h2End = ind + 4;
+            const ssEnd = data.text.indexOf('</h3>', ind);
+            const ss = data.text
+                .slice(h2End, ssEnd)
+                .replace(/<([^>]+)>/ig, '') // Strip html
+                .replace(/&nbsp;/ig, ' '); // Replace &nbsp;
+            count++;
+            toc.push(ss);
+            data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
+            ind = data.text.indexOf('<h3>');
+        }
+    }
+
+    // Sosiale medier
+    let socials = data.social ? (Array.isArray(data.social) ? data.social : [data.social]) : false;
+    socials = socials
+        ? socials.map(el => {
+            let tmpText = 'Del på ';
+            if (el === 'linkedin') {
+                tmpText += 'LinkedIn';
+            } else if (el === 'facebook') {
+                tmpText += 'Facebook';
+            } else {
+                tmpText += 'Twitter';
+            }
+            return {
+                type: el,
+                text: tmpText,
+                href: getSocialRef(el, content, req),
+            };
+        })
+        : false;
+
+    // Prosessering av HTML-felter (håndtere url-er inne i html-en)
+    data.text = libs.portal.processHtml({
+        value: data.text,
     });
+    if (hasFact) {
+        data.fact = libs.portal.processHtml({
+            value: data.fact,
+        });
+    }
+    if (data.image) {
+        data.imageUrl = libs.portal.imageUrl({
+            id: data.image,
+            scale: 'block(1024,768)',
+        });
+    }
+
+    // Definer modell og kall rendring (view)
+    const model = {
+        published: libs.utils.dateTimePublished(content, content.language || 'no'),
+        hasTableOfContents: toc.length > 0,
+        toc,
+        content,
+        hasFact,
+        hasLanguageVersions: languages.length > 0,
+        languages,
+        socials,
+        langBundle,
+    };
+    return {
+        body: libs.thymeleaf.render(view, model),
+    };
 };
 
 function getSocialRef (el, content, req) {
