@@ -1,0 +1,19 @@
+{
+  "enhetId": 100000060,
+  "navn": "NAV Ullern",
+  "enhetNr": "0335",
+  "antallRessurser": 140,
+  "status": "Aktiv",
+  "orgNivaa": "EN",
+  "type": "LOKAL",
+  "organisasjonsnummer": "992515422",
+  "underEtableringDato": "1970-01-01",
+  "aktiveringsdato": "1970-01-01",
+  "underAvviklingDato": null,
+  "nedleggelsesdato": null,
+  "oppgavebehandler": true,
+  "versjon": 44,
+  "sosialeTjenester": "Åpningstider i julen:\n24. desember kl. 09.00-11.30\n27. desember og 30. desember: kl. 09.00-13.30\n31. desember kl. 09.00-11.30\n\nTil saksbehandler, ingen vakttelefon. \nVed purring på manglende utbetaling: Send Gosys-oppgave til kontorbenk att. Maria Breistrand\n\nSosialfaglige tjenester: Gjeldsrådgivning, frivillig/tvungen forvaltning, rustjenesten med booppfølging, boligkontor (bolig for vanskeligstilte, bostøtte, startlån, kommunal bostøtte, kommunalt boligtilskudd), flykningetjenesten\n\nSender post digitalt\n\nDigital søknad på nav.no/sosialhjelp. Dokumentasjon av vilkår kan ettersendes digitalt. Papir søknadsskjema på kommunens nettside og i V/P\n- Trenger ikke kontakt i forkant for å søke ordinær sosialhjelp og nødhjelp (mat/bolig)\n\nOslo kommune har en døgnåpen vakttjeneste i Storgata 40, de behandler søknad om akutt nødhjelp når NAV-kontoret er stengt.\n\nSaksbehandlingstider: \nØkonomisk sosialhjelp: 3 uker \nStartlån: 4 mnd\n\nUtbetalinger:\nFast utbetalingsdager: Mandag, onsdag, fredag\nSiste tidspunkt for kjøring: 1400\nUtbetaling når utbetaling havner på helg/helligdag: siste/første virkedag før/etter\nUtbetalingsmåter for nødhjelp: kronekort (kontonr. starter på 1315)\nKvalifiseringsstønad: 28 i mnd",
+  "kanalstrategi": "Åpningstider i julen:\n24. desember kl. 09.00-11.30\n27. desember og 30. desember: kl. 09.00-13.30\n31. desember kl. 09.00-11.30\n\nInnført kanalstrategi. Ingen får levert dokumentasjon (noen unntak, se informasjon under sosiale henvendelser), får opplysninger om saken sin eller utbetalinger. \nBrukere bes om å benytte nav.no eller ringe til NAV/veileder for å avtale tidspunkt for en samtale.\n\nTjenester som krever oppmøte (se «oppmøte i NAV-kontoret» under rutiner A-Å, tjenestepakke generell del) blir betjent i åpningstiden. \n\n6 PCer tilgjengelig i V/P som bruker kan benytte til selvbetjening.\n\nArbeid og Ytelser (4403) registrerer Del A for Nav kontorene i Oslo. Spørsmål skal til NAV kontoret.",
+  "orgNrTilKommunaltNavKontor": "971022051"
+}
