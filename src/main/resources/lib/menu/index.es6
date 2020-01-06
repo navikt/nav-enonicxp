@@ -151,32 +151,31 @@ function menuToJson (content, levels) {
     }
 
     return {
-        displayName: (content.displayName ? content.displayName : 'Tomt menyvalg'),
+        displayName: content.displayName,
         path: getTargetPath(content.data.target),
         id: content._id,
         inPath,
         isActive,
         hasChildren: subMenus.length > 0,
         children: subMenus,
+        showLoginInfo: libs.navUtils.getParameterValue(content, 'showLoginInfo') === 'true',
     };
 }
 
 function getTargetPath (targetId) {
-    if (targetId) {
-        const target = libs.content.get({
-            key: targetId,
-        });
+    const target = libs.content.get({
+        key: targetId,
+    });
 
-        if (target) {
-            if (target.type === `${app.name}:external-link`) {
-                return target.data.url;
-            } else if (target.type === `${app.name}:internal-link`) {
-                return getTargetPath(target.data.target);
-            }
-            return libs.portal.pageUrl({
-                id: target._id,
-            });
+    if (target) {
+        if (target.type === `${app.name}:external-link`) {
+            return target.data.url;
+        } else if (target.type === `${app.name}:internal-link`) {
+            return getTargetPath(target.data.target);
         }
+        return libs.portal.pageUrl({
+            id: target._id,
+        });
     }
     return '/';
 }
