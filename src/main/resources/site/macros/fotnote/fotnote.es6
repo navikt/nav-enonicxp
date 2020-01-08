@@ -1,7 +1,6 @@
 exports.macro = function (context) {
-    let text = context.params.fotnote;
-
-    let body = '<sup>' + text + '</sup>';
+    const text = context.params.fotnote;
+    const body = '<sup>' + text + '</sup>';
 
     return {
         body: body,
