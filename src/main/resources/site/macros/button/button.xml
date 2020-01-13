@@ -1,6 +1,6 @@
 <macro>
-    <display-name i18n="a-macro.display-name">Sett inn knapp</display-name>
-    <description i18n="a-macro.description">Sett inn knapp i brødteksten</description>
+    <display-name>Sett inn knapp</display-name>
+    <description>Sett inn knapp i brødteksten</description>
     <form>
         <input name="url" type="TextLine">
             <label>Url</label>

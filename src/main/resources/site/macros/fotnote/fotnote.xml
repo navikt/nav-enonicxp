@@ -1,0 +1,9 @@
+<macro>
+    <display-name> Sett inn fotnote</display-name>
+    <description>Sett inn fotnote i brødteksten</description>
+    <form>
+        <input name="fotnote" type="TextLine">
+            <label>Teksten i fotnoten</label>
+        </input>
+    </form>
+</macro>

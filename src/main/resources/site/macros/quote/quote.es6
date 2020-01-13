@@ -1,7 +1,6 @@
 exports.macro = function (context) {
-    var text = context.params.quote;
-
-    var body = '<blockquote><p>' + text + '</p></blockquote>';
+    const text = context.params.quote;
+    const body = '<blockquote><p>' + text + '</p></blockquote>';
 
     return {
         body: body,
