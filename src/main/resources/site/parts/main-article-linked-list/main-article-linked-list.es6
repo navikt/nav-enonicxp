@@ -9,7 +9,7 @@ const libs = {
 const view = resolve('main-article-linked-list.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'main-article-linked-list', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
         const content = libs.portal.getContent();
         const list = createList(content);
         const model = {

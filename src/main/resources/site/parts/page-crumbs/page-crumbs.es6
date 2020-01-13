@@ -9,7 +9,7 @@ const libs = {
 const view = resolve('page-crumbs.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'breadCrumbs', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'breadCrumbs', req.branch, () => {
         const content = libs.portal.getContent();
         const langBundles = libs.lang.parseBundle(content.language).pagenav.breadcrumbs;
         let breadcrumbs = libs.menu.getBreadcrumbMenu({

@@ -8,7 +8,7 @@ const libs = {
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];
 const view = resolve('office-information.html');
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'office-information', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'office-information', req.branch, () => {
         const content = libs.portal.getContent();
         const lang = {
             closed: 'stengt',

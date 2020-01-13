@@ -3,6 +3,7 @@ const libs = {
     event: require('/lib/xp/event'),
     context: require('/lib/xp/context'),
     content: require('/lib/xp/content'),
+    common: require('/lib/xp/common'),
 };
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
@@ -48,11 +49,17 @@ function getPath (path, type) {
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
     let key = arr[arr.length - 1];
+
+
     if (key[0] === '/') {
         key = key.replace('/', '');
     }
     /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
     /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
+
+    // need to sanitize the paths, since some contain norwegian chars
+    key = libs.common.sanitize(key);
+
     return (type ? type + '::' : '') + key;
 }
 
@@ -133,7 +140,7 @@ function activateEventListener () {
     wipeAll();
     if (!hasSetupListeners) {
         libs.event.listener({
-            type: 'node.*',
+            type: 'node.pushed',
             localOnly: false,
             callback: nodeListenerCallback,
         });
