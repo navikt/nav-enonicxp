@@ -9,7 +9,6 @@ const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
 const myHash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
 log.info(`Creating new cache: ${myHash}`);
 
 const caches = {
@@ -30,6 +29,7 @@ const caches = {
         expire: oneDay,
     }),
 };
+
 module.exports = {
     wipeDecorator: wipe('decorator'),
     wipePaths: wipe('paths'),
@@ -85,24 +85,12 @@ function wipeAll () {
 function wipe (name) {
     return key => {
         if (!key) {
-            log.info(`(${myHash}) Remove complete cache ${name}`);
+            log.info(`Remove [ ALL ] in [ ${name} ] on [ ${myHash} ]`);
             caches[name].clear();
         } else {
-            const numberOfItemsInCache = caches[name].getSize();
-            const hasCacheForKey = caches[name].get(key, function () {return false;}) ? 'Found' : 'Not found';
-
+            log.info(`Remove [ ${key} ] in [ ${name} ] on [ ${myHash} ]`);
+            // if cache key was not found, it creates so making sure its not persisted.
             caches[name].remove(key);
-
-            const numberOfItemsAfterRemove = caches[name].getSize(); 
-            const logString = `(${myHash}) Cache ${name} remove key ${key} : Count: ${numberOfItemsInCache}/${numberOfItemsAfterRemove}`;
-            log.info(logString);
-
-            if (numberOfItemsAfterRemove < numberOfItemsInCache) {
-                const logString1 = `(${myHash}) Cache entry: before ${hasCacheForKey}, after: ${caches[name].get(key, function() {return false;}) ? 'Found' : 'Not found'}`;
-                log.info(logString1);
-                // if cache key was not found, it creates so making sure its not persisted.
-                caches[name].remove(key);
-            }
         }
     }
 }
@@ -110,7 +98,6 @@ function wipe (name) {
 function wipeOnChange (path) {
     const w = wipe('paths');
     if (path) {
-        log.info('WIPE: ' + getPath(path));
         w(getPath(path, 'main-page'));
         w(getPath(path, 'main-article'));
         w(getPath(path, 'main-article-linked-list'));
@@ -141,18 +128,14 @@ function wipeOnChange (path) {
 function getSome (cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
-        const context = libs.context.get();
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            const cacheSize = caches[cacheStoreName].getSize(); 
-            let callbacklogger = `(${myHash}) Fetch cache ${cacheStoreName} key: ${getPath(key, type)}, size: ${cacheSize}`;
-            const content = caches[cacheStoreName].get(getPath(key, type), function () {
-                callbacklogger = `(${myHash}) Store cache ${cacheStoreName} key: ${getPath(key, type)}, size: ${cacheSize}`;
+            return caches[cacheStoreName].get(getPath(key, type), function () {
+                log.info(`Store [ ${getPath(key, type)} ] in [ ${cacheStoreName} ] on [ ${myHash} ]`);
                 return f(params);
             });
-            log.info(callbacklogger);
-            return content;
+        } else {
+            return f(params);
         }
-        return f(params);
     };
 }
 
@@ -182,7 +165,6 @@ function activateEventListener () {
 
 function nodeListenerCallback (event) {
     event.data.nodes.forEach(function (node) {
-        log.info(JSON.stringify(event, null, 4));
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
             libs.context.run(
