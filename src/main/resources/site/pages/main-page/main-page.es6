@@ -7,7 +7,7 @@ const etag = libs.cache.etag;
 const view = resolve('main-page.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'main-page', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const content = libs.portal.getContent();
         let url = req.url;
         if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {

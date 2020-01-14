@@ -6,7 +6,7 @@ const libs = {
 const view = resolve('transport.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'transport', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'transport', req.branch, () => {
         const content = libs.portal.getContent();
         const items = content.data.items ? Array.isArray(content.data.items) ? content.data.items : [content.data.items] : [];
         const model = {

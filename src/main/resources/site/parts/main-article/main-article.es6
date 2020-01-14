@@ -14,7 +14,7 @@ exports.get = function (req) {
     if (req.path.indexOf('/driftsmeldinger/') !== -1) {
         return render();
     } else {
-        return libs.cache.getPaths(req.path, 'main-article', req.branch, render);
+        return libs.cache.getPaths(req.rawPath, 'main-article', req.branch, render);
     }
 };
 
