@@ -85,43 +85,45 @@ function wipeAll () {
 function wipe (name) {
     return key => {
         if (!key) {
-            log.info(`Remove [ ALL ] in [ ${name} ] on [ ${myHash} ]`);
             caches[name].clear();
+            log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         } else {
-            log.info(`Remove [ ${key} ] in [ ${name} ] on [ ${myHash} ]`);
             // if cache key was not found, it creates so making sure its not persisted.
             caches[name].remove(key);
+            log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
     }
 }
 
 function wipeOnChange (path) {
+    if (!path) {
+        return false;
+    }
+
     const w = wipe('paths');
-    if (path) {
-        w(getPath(path, 'main-page'));
-        w(getPath(path, 'main-article'));
-        w(getPath(path, 'main-article-linked-list'));
-        w(getPath(path, 'menu-list'));
-        w(getPath(path, 'section-page'));
-        w(getPath(path, 'page-list'));
-        w(getPath(path, 'transport'));
-        w(getPath(path, 'office-information'));
-        w(getPath(path, 'page-large-table'));
-        if (path.indexOf('/driftsmeldinger/') !== -1) {
-            w('driftsmelding-heading');
-        }
-        if (path.indexOf('/publiseringskalender/') !== -1) {
-            w('publiseringskalender');
-        }
-        if (path.indexOf('/megamenu/') !== -1) {
-            wipe('decorator')();
-        }
-        if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
-            wipe('azList')();
-        }
-        if (path.indexOf('/content/redirects/') !== -1) {
-            wipe('redirects')();
-        }
+    w(getPath(path, 'main-page'));
+    w(getPath(path, 'main-article'));
+    w(getPath(path, 'main-article-linked-list'));
+    w(getPath(path, 'menu-list'));
+    w(getPath(path, 'section-page'));
+    w(getPath(path, 'page-list'));
+    w(getPath(path, 'transport'));
+    w(getPath(path, 'office-information'));
+    w(getPath(path, 'page-large-table'));
+    if (path.indexOf('/driftsmeldinger/') !== -1) {
+        w('driftsmelding-heading');
+    }
+    if (path.indexOf('/publiseringskalender/') !== -1) {
+        w('publiseringskalender');
+    }
+    if (path.indexOf('/megamenu/') !== -1) {
+        wipe('decorator')();
+    }
+    if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
+        wipe('azList')();
+    }
+    if (path.indexOf('/content/redirects/') !== -1) {
+        wipe('redirects')();
     }
 }
 
@@ -130,7 +132,7 @@ function getSome (cacheStoreName) {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
             return caches[cacheStoreName].get(getPath(key, type), function () {
-                log.info(`Store [ ${getPath(key, type)} ] in [ ${cacheStoreName} ] on [ ${myHash} ]`);
+                log.info(`Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[cacheStoreName].getSize()})] on [${myHash}]`);
                 return f(params);
             });
         } else {
