@@ -88,7 +88,6 @@ function wipe (name) {
             caches[name].clear();
             log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         } else {
-            // if cache key was not found, it creates so making sure its not persisted.
             caches[name].remove(key);
             log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
