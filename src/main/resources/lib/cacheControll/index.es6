@@ -3,10 +3,14 @@ const libs = {
     event: require('/lib/xp/event'),
     context: require('/lib/xp/context'),
     content: require('/lib/xp/content'),
+    common: require('/lib/xp/common'),
 };
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
+const myHash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+log.info(`Creating new cache: ${myHash}`);
+
 const caches = {
     decorator: libs.cache.newCache({
         size: 50,
@@ -25,6 +29,7 @@ const caches = {
         expire: oneDay,
     }),
 };
+
 module.exports = {
     wipeDecorator: wipe('decorator'),
     wipePaths: wipe('paths'),
@@ -48,11 +53,17 @@ function getPath (path, type) {
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
     let key = arr[arr.length - 1];
+
+
     if (key[0] === '/') {
         key = key.replace('/', '');
     }
     /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
     /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
+
+    // need to sanitize the paths, since some contain norwegian chars
+    key = libs.common.sanitize(key);
+
     return (type ? type + '::' : '') + key;
 }
 
@@ -74,43 +85,44 @@ function wipeAll () {
 function wipe (name) {
     return key => {
         if (!key) {
-            log.info('Remove complete cache [' + name + ']');
             caches[name].clear();
+            log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         } else {
-            log.info('Cache [' + name + '] remove key: ' + key);
             caches[name].remove(key);
+            log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
-    };
+    }
 }
 
 function wipeOnChange (path) {
+    if (!path) {
+        return false;
+    }
+
     const w = wipe('paths');
-    if (path) {
-        log.info('WIPE: ' + getPath(path));
-        w(getPath(path, 'main-page'));
-        w(getPath(path, 'main-article'));
-        w(getPath(path, 'main-article-linked-list'));
-        w(getPath(path, 'menu-list'));
-        w(getPath(path, 'section-page'));
-        w(getPath(path, 'page-list'));
-        w(getPath(path, 'transport'));
-        w(getPath(path, 'office-information'));
-        w(getPath(path, 'page-large-table'));
-        if (path.indexOf('/driftsmeldinger/') !== -1) {
-            w('driftsmelding-heading');
-        }
-        if (path.indexOf('/publiseringskalender/') !== -1) {
-            w('publiseringskalender');
-        }
-        if (path.indexOf('/megamenu/') !== -1) {
-            wipe('decorator')();
-        }
-        if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
-            wipe('azList')();
-        }
-        if (path.indexOf('/content/redirects/') !== -1) {
-            wipe('redirects')();
-        }
+    w(getPath(path, 'main-page'));
+    w(getPath(path, 'main-article'));
+    w(getPath(path, 'main-article-linked-list'));
+    w(getPath(path, 'menu-list'));
+    w(getPath(path, 'section-page'));
+    w(getPath(path, 'page-list'));
+    w(getPath(path, 'transport'));
+    w(getPath(path, 'office-information'));
+    w(getPath(path, 'page-large-table'));
+    if (path.indexOf('/driftsmeldinger/') !== -1) {
+        w('driftsmelding-heading');
+    }
+    if (path.indexOf('/publiseringskalender/') !== -1) {
+        w('publiseringskalender');
+    }
+    if (path.indexOf('/megamenu/') !== -1) {
+        wipe('decorator')();
+    }
+    if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
+        wipe('azList')();
+    }
+    if (path.indexOf('/content/redirects/') !== -1) {
+        wipe('redirects')();
     }
 }
 
@@ -119,11 +131,10 @@ function getSome (cacheStoreName) {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
             return caches[cacheStoreName].get(getPath(key, type), function () {
-                log.info('Store cache [' + cacheStoreName + '] key: ' + getPath(key, type));
+                log.info(`Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[cacheStoreName].getSize()})] on [${myHash}]`);
                 return f(params);
             });
         } else {
-            log.info('Not from cache [' + cacheStoreName + '] key: ' + getPath(key, type));
             return f(params);
         }
     };
@@ -133,7 +144,7 @@ function activateEventListener () {
     wipeAll();
     if (!hasSetupListeners) {
         libs.event.listener({
-            type: 'node.*',
+            type: 'node.pushed',
             localOnly: false,
             callback: nodeListenerCallback,
         });

@@ -9,7 +9,7 @@ const libs = {
 const view = resolve('page-list.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'page-list', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'page-list', req.branch, () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).page_list;
 

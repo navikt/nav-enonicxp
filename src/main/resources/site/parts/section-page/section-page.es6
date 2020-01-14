@@ -9,7 +9,7 @@ const libs = {
 const view = resolve('section-page.html');
 
 exports.get = function (req) {
-    return libs.cache.getPaths(req.path, 'section-page', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'section-page', req.branch, () => {
         const content = libs.portal.getContent();
         const lang = libs.lang.parseBundle(content.language).oppslagstavle;
         let col = 'col-md-';

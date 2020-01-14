@@ -8,7 +8,7 @@ const libs = {
 const view = resolve('menu-list.html');
 
 function handleGet (req) {
-    return libs.cache.getPaths(req.path, 'menu-list', req.branch, () => {
+    return libs.cache.getPaths(req.rawPath, 'menu-list', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
             content = libs.content.get({
