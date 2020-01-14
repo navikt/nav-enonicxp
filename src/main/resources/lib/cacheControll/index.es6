@@ -8,6 +8,10 @@ const libs = {
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
+const myHash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+log.info(`Creating new cache: ${myHash}`);
+
 const caches = {
     decorator: libs.cache.newCache({
         size: 50,
@@ -81,13 +85,26 @@ function wipeAll () {
 function wipe (name) {
     return key => {
         if (!key) {
-            log.info('Remove complete cache [' + name + ']');
+            log.info(`(${myHash}) Remove complete cache ${name}`);
             caches[name].clear();
         } else {
-            log.info('Cache [' + name + '] remove key: ' + key);
+            const numberOfItemsInCache = caches[name].getSize();
+            const hasCacheForKey = caches[name].get(key, function () {return false;}) ? 'Found' : 'Not found';
+
             caches[name].remove(key);
+
+            const numberOfItemsAfterRemove = caches[name].getSize(); 
+            const logString = `(${myHash}) Cache ${name} remove key ${key} : Count: ${numberOfItemsInCache}/${numberOfItemsAfterRemove}`;
+            log.info(logString);
+
+            if (numberOfItemsAfterRemove < numberOfItemsInCache) {
+                const logString1 = `(${myHash}) Cache entry: before ${hasCacheForKey}, after: ${caches[name].get(key, function() {return false;}) ? 'Found' : 'Not found'}`;
+                log.info(logString1);
+                // if cache key was not found, it creates so making sure its not persisted.
+                caches[name].remove(key);
+            }
         }
-    };
+    }
 }
 
 function wipeOnChange (path) {
@@ -124,15 +141,18 @@ function wipeOnChange (path) {
 function getSome (cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
+        const context = libs.context.get();
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            return caches[cacheStoreName].get(getPath(key, type), function () {
-                log.info('Store cache [' + cacheStoreName + '] key: ' + getPath(key, type));
+            const cacheSize = caches[cacheStoreName].getSize(); 
+            let callbacklogger = `(${myHash}) Fetch cache ${cacheStoreName} key: ${getPath(key, type)}, size: ${cacheSize}`;
+            const content = caches[cacheStoreName].get(getPath(key, type), function () {
+                callbacklogger = `(${myHash}) Store cache ${cacheStoreName} key: ${getPath(key, type)}, size: ${cacheSize}`;
                 return f(params);
             });
-        } else {
-            log.info('Not from cache [' + cacheStoreName + '] key: ' + getPath(key, type));
-            return f(params);
+            log.info(callbacklogger);
+            return content;
         }
+        return f(params);
     };
 }
 
@@ -162,6 +182,7 @@ function activateEventListener () {
 
 function nodeListenerCallback (event) {
     event.data.nodes.forEach(function (node) {
+        log.info(JSON.stringify(event, null, 4));
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
             libs.context.run(
