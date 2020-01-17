@@ -1,7 +1,7 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const etag = libs.cache.etag;
 const view = resolve('main-page.html');

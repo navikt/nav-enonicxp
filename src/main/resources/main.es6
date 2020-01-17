@@ -1,9 +1,9 @@
 log.info('Started running main');
-const cache = require('/lib/cacheControll');
-const unpublish = require('/lib/cacheControll/unpublishTask');
+const cache = require('/lib/siteCache');
+const unpublish = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
-const taskLib = require('/lib/xp/task');
 const eventLib = require('/lib/xp/event');
+
 let isRunning = true;
 let taskIds = [];
 
