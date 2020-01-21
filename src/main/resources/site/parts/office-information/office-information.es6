@@ -30,6 +30,7 @@ function handleGet (req) {
         const type = content.data.enhet.type;
         const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
         const epost = parseEmail(kontaktInformasjon.epost);
+        const specialInfo = parseSpecialInfo(content.data.kontaktinformasjon.spesielleOpplysninger);
 
         const enhet = {
             navn: `${content.data.enhet.navn} - kontorinformasjon`,
@@ -45,6 +46,7 @@ function handleGet (req) {
             isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
+            spesielleOpplysninger: specialInfo, 
         };
 
         const body = libs.thymeleaf.render(view, {
@@ -150,6 +152,40 @@ function parsePhoneNumber (number, mod) {
         }, '')
         : null;
 }
+function specialInfoParseLink (infoContent) {
+    const pattern = /\{((.*?):(.*?))\}/g;
+    let result = [];
+
+    let match = pattern.exec(infoContent);
+    while (match !== null) {
+        result.push({
+            match: match[0],
+            text: match[2],
+            url: match[3],
+            start: match.index,
+            end: pattern.lastIndex,
+        });
+        match = pattern.exec(infoContent);
+    }
+    return result;
+}
+
+function parseSpecialInfo (infoContent) {
+    let parsedString = infoContent;
+    if (! parsedString) {
+        return '';
+    }
+    // replace \n with <br />
+    parsedString = parsedString.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    // replace urls
+    const urls = specialInfoParseLink(parsedString);
+    urls.forEach((url) => {
+        parsedString = parsedString.replace(url.match, `<a href='${url.url}'>${url.text}</a>`);
+    });
+
+    return parsedString;
+}
+
 
 function parseEmail (emailString) {
     if (!emailString) {

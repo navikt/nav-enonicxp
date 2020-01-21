@@ -30,6 +30,12 @@
                 velge rett skjema og rett adresse det skal sendes til.
             </p>
         </div>
+        <div class="p-note" data-th-if="${enhet.spesielleOpplysninger}">
+            <h3>Spesiell informasjon</h3>
+            <p>
+                [( ${enhet.spesielleOpplysninger} )]
+            </p>
+        </div>
         <div itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress">
             <h3>Postadresse</h3>
             <p>
