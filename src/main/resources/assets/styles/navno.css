@@ -2984,9 +2984,6 @@ body > img[src*="nav.tns-cs.net"] {
 }
 
 .sitefooter .about-site ul {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 0
 }
 
@@ -3038,6 +3035,15 @@ body > img[src*="nav.tns-cs.net"] {
 .sitefooter .about-site .decorated:after {
     border-color: #857B71;
     margin-top: 15px
+}
+
+@media (min-width: 47.99em) {
+    .sitefooter .about-site ul{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 }
 
 @media (max-width: 47.99em) {
