@@ -18,7 +18,7 @@ function handleGet (req) {
         const imageUrl = libs.portal.assetUrl({
             path: 'img/navno/social-share-fallback.png',
         });
-        const metaData = [
+        const header = [
             '<meta charset="utf-8" />',
             '<title>' + title + '</title>',
             '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
@@ -33,12 +33,23 @@ function handleGet (req) {
             '<meta name="twitter:domain" content="nav.no" />',
             '<meta name="twitter:title" content="' + title + '" />',
             '<meta name="twitter:description" content="' + description + '" />',
-            '<meta name="twitter:image:src" content="' + imageUrl + '" />'
+            '<meta name="twitter:image:src" content="' + imageUrl + '" />',
+            '<link href=https://www-q1.nav.no/dekoratoren/css/client.css rel="stylesheet" />',
+            '<link rel="stylesheet" href="' + libs.portal.assetUrl({
+                path: 'styles/navno.css',
+            }) + '" />',
+            '<script src=https://www-q1.nav.no/dekoratoren/client.js></script>',
+            '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
+            '<script src="' + libs.portal.assetUrl({
+                path: 'js/navno.js',
+            }) + '"></script>',
+        ];
+        const decoratorEnv = [
+            '<div id="decorator-env" data-src="https://www-q1.nav.no/dekoratoren/env.json"></div>',
         ];
         const regions = content.page.regions;
         const model = {
             mainRegion: regions.main,
-            footerRegion: regions.footer,
         };
         return {
             contentType: 'text/html',
@@ -48,7 +59,8 @@ function handleGet (req) {
                 'ETag': etag(),
             },
             pageContributions: {
-                headBegin: metaData,
+                headBegin: header,
+                bodyEnd: decoratorEnv,
             },
         };
     });
