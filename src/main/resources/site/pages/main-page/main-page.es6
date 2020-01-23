@@ -6,6 +6,8 @@ const libs = {
 const etag = libs.cache.etag;
 const view = resolve('main-page.html');
 
+const decUrl = "http://localhost:8100/dekoratoren"
+
 function handleGet (req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const content = libs.portal.getContent();
@@ -34,18 +36,18 @@ function handleGet (req) {
             '<meta name="twitter:title" content="' + title + '" />',
             '<meta name="twitter:description" content="' + description + '" />',
             '<meta name="twitter:image:src" content="' + imageUrl + '" />',
-            '<link href=https://www-q1.nav.no/dekoratoren/css/client.css rel="stylesheet" />',
+            '<link href="' + decUrl + '/css/client.css" rel="stylesheet" />',
             '<link rel="stylesheet" href="' + libs.portal.assetUrl({
                 path: 'styles/navno.css',
             }) + '" />',
-            '<script src=https://www-q1.nav.no/dekoratoren/client.js></script>',
+            '<script src="' + decUrl + '/client.js"></script>',
             '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
             '<script src="' + libs.portal.assetUrl({
                 path: 'js/navno.js',
             }) + '"></script>',
         ];
         const decoratorEnv = [
-            '<div id="decorator-env" data-src="https://www-q1.nav.no/dekoratoren/env.json"></div>',
+            '<div id="decorator-env" data-src="' + decUrl + '/env.json"></div>',
         ];
         const regions = content.page.regions;
         const model = {

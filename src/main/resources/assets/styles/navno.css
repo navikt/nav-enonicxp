@@ -2927,7 +2927,7 @@ body > img[src*="nav.tns-cs.net"] {
     right: 12%
 }
 
-.pagewrapper .login-container .knapp {
+.navno .login-container .knapp {
     font-family: Modus, Arial, Helvetica, sans-serif;
     font-weight: bold;
     padding: 4px 15px;
@@ -2935,23 +2935,23 @@ body > img[src*="nav.tns-cs.net"] {
     white-space: nowrap
 }
 
-.pagewrapper .login-container .knapp.btn-logout {
+.navno .login-container .knapp.btn-logout {
     color: #333;
     background-color: #0CA9E0;
     border: none
 }
 
-.pagewrapper .login-container .knapp.btn-logout:hover, .login-container .knapp.btn-logout:focus {
+.navno .login-container .knapp.btn-logout:hover, .login-container .knapp.btn-logout:focus {
     color: #333;
     background-color: #d1d1d1
 }
 
-.pagewrapper .login-container .knapp.btn-login {
+.navno .login-container .knapp.btn-login {
     color: #333;
     border: none
 }
 
-.pagewrapper .login-container .knapp.btn-login:hover, .login-container .knapp.btn-login:focus {
+.navno .login-container .knapp.btn-login:hover, .login-container .knapp.btn-login:focus {
     color: #333;
     background-color: #0CA9E0
 }
@@ -3383,7 +3383,7 @@ a.knapp {
     cursor: pointer
 }
 
-.pagewrapper .knapp {
+.navno .knapp {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
     font-weight: 600;
@@ -3396,51 +3396,51 @@ a.knapp {
     white-space: nowrap
 }
 
-.pagewrapper .knapp:hover, .knapp:focus, .knapp:active, .knapp.aktiv, .knapp.disabled, .knapp[disabled] {
+.navno .knapp:hover, .knapp:focus, .knapp:active, .knapp.aktiv, .knapp.disabled, .knapp[disabled] {
     color: #3e3832;
     background: #b7b1a9;
     border-color: #a0988d;
     text-decoration: none
 }
 
-.pagewrapper .knapp:focus {
+.navno .knapp:focus {
     box-shadow: 0 0 0 2px #ffbd66
 }
 
-.pagewrapper .knapp.hoved {
+.navno .knapp.hoved {
     color: #fff;
     background: #0067c5;
     border: 1px solid #0046c5
 }
 
-.pagewrapper .knapp.hoved:hover, .knapp.hoved:focus, .knapp.hoved:active, .knapp.hoved.aktiv, .knapp.hoved.disabled, .knapp.hoved[disabled] {
+.navno .knapp.hoved:hover, .knapp.hoved:focus, .knapp.hoved:active, .knapp.hoved.aktiv, .knapp.hoved.disabled, .knapp.hoved[disabled] {
     color: #fff;
     background: #0046c5;
     border-color: #003492;
     text-decoration: none
 }
 
-.pagewrapper .knapp.fare {
+.navno .knapp.fare {
     color: #fff;
     background: #ee5f5b;
     border: 1px solid #bd362f
 }
 
-.pagewrapper .knapp.fare:hover, .knapp.fare:focus, .knapp.fare:active, .knapp.fare.aktiv, .knapp.fare.disabled, .knapp.fare[disabled] {
+.navno .knapp.fare:hover, .knapp.fare:focus, .knapp.fare:active, .knapp.fare.aktiv, .knapp.fare.disabled, .knapp.fare[disabled] {
     color: #fff;
     background: #bd362f;
     border-color: #942a25;
     text-decoration: none
 }
 
-.pagewrapper .knapp.inaktiv, .knapp[disabled=disabled] {
+.navno .knapp.inaktiv, .knapp[disabled=disabled] {
     color: #a3a3a3;
     background: #e3e3e3;
     border: 1px solid #d9d9d9;
     cursor: default
 }
 
-.pagewrapper .knapp.lenke {
+.navno .knapp.lenke {
     background: none;
     color: #0067c5;
     border: none;
@@ -3449,24 +3449,24 @@ a.knapp {
     padding: 0
 }
 
-.pagewrapper .knapp.lenke:hover, .knapp.lenke:focus {
+.navno .knapp.lenke:hover, .knapp.lenke:focus {
     border-color: transparent;
     background: none;
     color: #0067c5
 }
 
-.pagewrapper .knapp.liten {
+.navno .knapp.liten {
     padding: 5px 20px;
     font-size: .875rem;
     line-height: 1.4rem
 }
 
-.pagewrapper .knapp.mini {
+.navno .knapp.mini {
     padding: 3px 10px;
     font-size: .75rem
 }
 
-.pagewrapper .knapp.dropdown-toggle {
+.navno .knapp.dropdown-toggle {
     display: inline-block;
     cursor: pointer;
     padding-left: 10px;
@@ -3474,12 +3474,12 @@ a.knapp {
     background: #fff
 }
 
-.pagewrapper .knapp.dropdown-toggle:hover {
+.navno .knapp.dropdown-toggle:hover {
     background: #fff
 }
 
 @media (min-width: 38.75em) {
-    .pagewrapper .knapp {
+    .navno .knapp {
         padding: 8px 40px
     }
 }
@@ -3488,7 +3488,7 @@ a.knapp {
     text-decoration: none
 }
 
-.pagewrapper .btn, .btn-link {
+.navno .btn, .btn-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -3510,27 +3510,27 @@ a.knapp {
     border: 2px solid #0067C5;
     color: #0067C5;
 }
-.pagewrapper .btn:active, .btn-link:active {
+.navno .btn:active, .btn-link:active {
     background-color: #005B82;
     border-color: #005B82;
     color: #FFF;
 }
-.pagewrapper .btn:focus, .btn-link:focus {
+.navno .btn:focus, .btn-link:focus {
     color: inherit;
     background-color: inherit;
     outline: none;
     box-shadow: 0 0 0 3px #254b6d;
 }
-.pagewrapper .btn:hover, .btn-link:hover {
+.navno .btn:hover, .btn-link:hover {
     background-color: #0067C5;
     color: #FFF;
 }
-.pagewrapper .btn-small {
+.navno .btn-small {
     /*padding: 7px 20px;*/
     font-size: .875rem;
     line-height: 1.6
 }
-.pagewrapper .btn-primary {
+.navno .btn-primary {
     transform: translateY(-2px);
     box-shadow: 0 2px 0 #C6C2BF;
     color: #FFF;
@@ -3538,20 +3538,20 @@ a.knapp {
     background-color: #0067C5;
     position: relative;
 }
-.pagewrapper .btn-primary:active, .btn-primary:active:hover, .btn-primary:active:focus {
+.navno .btn-primary:active, .btn-primary:active:hover, .btn-primary:active:focus {
     box-shadow: none;
     border-color: #005B82;
     background-color: #005B82;
 }
-.pagewrapper .btn-primary:active {
+.navno .btn-primary:active {
     transform: translateY(0);
     box-shadow: none;
 }
-.pagewrapper .btn-primary:focus {
+.navno .btn-primary:focus {
     background-color: white;
     color: #0067C5;
 }
-.pagewrapper .btn-primary:hover {
+.navno .btn-primary:hover {
     color: #FFF;
     border-color: #0074df;
     background-color: #0074df;
