@@ -45,6 +45,7 @@ navno.updatedScrollToTopLink = function () {
     navno.buttonBottomOffset = navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height();
     navno.onScrollAndResize();
 };
+
 navno.scrollToTopHandler = function () {
     var $placeHolder = $('#maincontent .placeholder');
     if ($placeHolder.length === 0) {
@@ -52,9 +53,11 @@ navno.scrollToTopHandler = function () {
     }
     navno.topLinkButtonPlaceholder = $placeHolder;
     navno.topLinkStickyElement = $('#top-scroll-link').parent();
-    navno.requiredScrollDistanceForSticky = $('header.siteheader').height() + 500;
+    navno.requiredScrollDistanceForSticky = $('#decorator-header').height() + 500;
     var footerMenuTop = $('#decorator-footer').offset().top;
     if (($(window).height() * 2) + 200 < footerMenuTop) {
+
+        navno.topLinkButtonPlaceholder.removeClass('hide')
         navno.topLinkStickyElement.removeClass('hide-on-pageload');
 
         // Keep document height by preserving the height of where the sticky element resides, so that coordinates of elements doesn't get skewed when button is taken out by "position: fixed",
@@ -96,35 +99,8 @@ navno.scrollToTopHandler = function () {
             $(document).on('touchmove', navno.onScrollAndResize);
         }
     }
-    /* if (FastClick.attach(document.getElementById('top-scroll-link')),
-    2 * $(window).height() + 200 < footerTop && (navno.topLinkButtonPlaceholder.removeClass('hide'),
-        $placeHolder.css('height', navno.topLinkButtonPlaceholder.height()),
-        navno.buttonBottomOffset = navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height(),
-    $(document).scrollTop() > navno.requiredScrollDistanceForSticky && $(document).scrollTop() + $(window).height() < e && navno.topLinkStickyElement.addClass('sticky-top-link'),
-        $(document).on('scroll', navno.onScrollAndResize),
-    'ontouchstart' in document.documentElement || $(window).on('resize', function n () {
-        var e = $(window);
-        e.off('resize'),
-            navno.buttonBottomOffset = navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height(),
-            navno.onScrollAndResize(),
-            setTimeout(function () {
-                navno.buttonBottomOffset = navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height(),
-                    navno.onScrollAndResize(),
-                    e.on('resize', n);
-            }, 250);
-    }),
-    'ontouchstart' in document.documentElement)) {
-        var t = function (e) {
-            e.stopPropagation();
-            setTimeout(function () {
-                navno.buttonBottomOffset = navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height();
-                navno.onScrollAndResize();
-            }, 500);
-        };
-        $(window).on('resize', t);
-        $(document).on('touchmove', navno.onScrollAndResize);
-    } */
 };
+
 $(function () {
     $('#top-scroll-link').on('click', function (e) {
         e.preventDefault();
@@ -137,6 +113,7 @@ $(function () {
         t.attr('tabindex', '-1').focus();
     });
 });
+
 $(function () {
     $('nav.table-of-contents li a').click(function (e) {
         var t = $(this);
@@ -144,6 +121,7 @@ $(function () {
         navno.scrollToId(t);
     });
 });
+
 navno.scrollToId = function (e) {
     var t = e.attr('href');
     var n = t.substring(t.lastIndexOf('#'));
@@ -166,6 +144,7 @@ navno.scrollToId = function (e) {
         },
     });
 };
+
 navno.beforeContentPrint = function () {
     var e = $('#print-url').text();
     var t = !1;
@@ -199,6 +178,7 @@ navno.beforeContentPrint = function () {
         },
     });
 };
+
 navno.afterContentPrint = function () {
     if ($('#print-all').hasClass('selected')) {
         $('#print-all').removeClass('selected');
@@ -218,6 +198,7 @@ navno.afterContentPrint = function () {
         };
     } else { $('#print-page').hasClass('selected') && $('#print-page').removeClass('selected'); };
 };
+
 navno.getSelectedChapterIndex = function () {
     var e = $('.content-submenu');
     var t = e.find('a.selected');
@@ -228,6 +209,7 @@ navno.getSelectedChapterIndex = function () {
     }
     return n;
 };
+
 navno.initContentPrintHandler = function () {
     if ($('.toolbar').length > 0) {
         var e = $('#print-page');
@@ -250,6 +232,7 @@ navno.initContentPrintHandler = function () {
         }));
     }
 };
+
 $(function () {
     var e = !1;
     var t = function () {
@@ -269,6 +252,7 @@ $(function () {
         });
     }
 });
+
 navno.onClickEnterContentLanguage = function (e) {
     var t = function (t) {
         var n = $('.content-languages');
@@ -283,6 +267,7 @@ navno.onClickEnterContentLanguage = function (e) {
     };
     return t;
 };
+
 navno.contentLanguages = function () {
     var e = $('.content-languages');
     if (e.length > 0) {
@@ -296,6 +281,7 @@ navno.contentLanguages = function () {
         });
     }
 };
+
 $.fn.navnoAccordion = function () {
     var e; var t; var n = 0;
     return e = function (e) {
@@ -339,6 +325,7 @@ $.fn.navnoAccordion = function () {
         });
     });
 };
+
 $(document).ready(function () {
     $('#related-content-accordion').navnoAccordion();
     $('#related-content-accordion>[data-expand="true"] .accordion-toggle').click();
