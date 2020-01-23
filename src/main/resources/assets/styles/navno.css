@@ -2850,7 +2850,7 @@ body > img[src*="nav.tns-cs.net"] {
     text-align: right
 }
 
-.flexbox #auth-btns, .flexbox #login-details {
+#auth-btns, #login-details {
     display: -webkit-flex;
     -webkit-flex-direction: row-reverse;
     -webkit-align-items: center;
@@ -2927,7 +2927,7 @@ body > img[src*="nav.tns-cs.net"] {
     right: 12%
 }
 
-.login-container .knapp {
+.pagewrapper .login-container .knapp {
     font-family: Modus, Arial, Helvetica, sans-serif;
     font-weight: bold;
     padding: 4px 15px;
@@ -2935,23 +2935,23 @@ body > img[src*="nav.tns-cs.net"] {
     white-space: nowrap
 }
 
-.login-container .knapp.btn-logout {
+.pagewrapper .login-container .knapp.btn-logout {
     color: #333;
     background-color: #0CA9E0;
     border: none
 }
 
-.login-container .knapp.btn-logout:hover, .login-container .knapp.btn-logout:focus {
+.pagewrapper .login-container .knapp.btn-logout:hover, .login-container .knapp.btn-logout:focus {
     color: #333;
     background-color: #d1d1d1
 }
 
-.login-container .knapp.btn-login {
+.pagewrapper .login-container .knapp.btn-login {
     color: #333;
     border: none
 }
 
-.login-container .knapp.btn-login:hover, .login-container .knapp.btn-login:focus {
+.pagewrapper .login-container .knapp.btn-login:hover, .login-container .knapp.btn-login:focus {
     color: #333;
     background-color: #0CA9E0
 }
@@ -3383,7 +3383,7 @@ a.knapp {
     cursor: pointer
 }
 
-.knapp {
+.pagewrapper .knapp {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
     font-weight: 600;
@@ -3396,51 +3396,51 @@ a.knapp {
     white-space: nowrap
 }
 
-.knapp:hover, .knapp:focus, .knapp:active, .knapp.aktiv, .knapp.disabled, .knapp[disabled] {
+.pagewrapper .knapp:hover, .knapp:focus, .knapp:active, .knapp.aktiv, .knapp.disabled, .knapp[disabled] {
     color: #3e3832;
     background: #b7b1a9;
     border-color: #a0988d;
     text-decoration: none
 }
 
-.knapp:focus {
+.pagewrapper .knapp:focus {
     box-shadow: 0 0 0 2px #ffbd66
 }
 
-.knapp.hoved {
+.pagewrapper .knapp.hoved {
     color: #fff;
     background: #0067c5;
     border: 1px solid #0046c5
 }
 
-.knapp.hoved:hover, .knapp.hoved:focus, .knapp.hoved:active, .knapp.hoved.aktiv, .knapp.hoved.disabled, .knapp.hoved[disabled] {
+.pagewrapper .knapp.hoved:hover, .knapp.hoved:focus, .knapp.hoved:active, .knapp.hoved.aktiv, .knapp.hoved.disabled, .knapp.hoved[disabled] {
     color: #fff;
     background: #0046c5;
     border-color: #003492;
     text-decoration: none
 }
 
-.knapp.fare {
+.pagewrapper .knapp.fare {
     color: #fff;
     background: #ee5f5b;
     border: 1px solid #bd362f
 }
 
-.knapp.fare:hover, .knapp.fare:focus, .knapp.fare:active, .knapp.fare.aktiv, .knapp.fare.disabled, .knapp.fare[disabled] {
+.pagewrapper .knapp.fare:hover, .knapp.fare:focus, .knapp.fare:active, .knapp.fare.aktiv, .knapp.fare.disabled, .knapp.fare[disabled] {
     color: #fff;
     background: #bd362f;
     border-color: #942a25;
     text-decoration: none
 }
 
-.knapp.inaktiv, .knapp[disabled=disabled] {
+.pagewrapper .knapp.inaktiv, .knapp[disabled=disabled] {
     color: #a3a3a3;
     background: #e3e3e3;
     border: 1px solid #d9d9d9;
     cursor: default
 }
 
-.knapp.lenke {
+.pagewrapper .knapp.lenke {
     background: none;
     color: #0067c5;
     border: none;
@@ -3449,24 +3449,24 @@ a.knapp {
     padding: 0
 }
 
-.knapp.lenke:hover, .knapp.lenke:focus {
+.pagewrapper .knapp.lenke:hover, .knapp.lenke:focus {
     border-color: transparent;
     background: none;
     color: #0067c5
 }
 
-.knapp.liten {
+.pagewrapper .knapp.liten {
     padding: 5px 20px;
     font-size: .875rem;
     line-height: 1.4rem
 }
 
-.knapp.mini {
+.pagewrapper .knapp.mini {
     padding: 3px 10px;
     font-size: .75rem
 }
 
-.knapp.dropdown-toggle {
+.pagewrapper .knapp.dropdown-toggle {
     display: inline-block;
     cursor: pointer;
     padding-left: 10px;
@@ -3474,12 +3474,12 @@ a.knapp {
     background: #fff
 }
 
-.knapp.dropdown-toggle:hover {
+.pagewrapper .knapp.dropdown-toggle:hover {
     background: #fff
 }
 
 @media (min-width: 38.75em) {
-    .knapp {
+    .pagewrapper .knapp {
         padding: 8px 40px
     }
 }
@@ -3488,7 +3488,7 @@ a.knapp {
     text-decoration: none
 }
 
-.btn, .btn-link {
+.pagewrapper .btn, .btn-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -3510,27 +3510,27 @@ a.knapp {
     border: 2px solid #0067C5;
     color: #0067C5;
 }
-.btn:active, .btn-link:active {
+.pagewrapper .btn:active, .btn-link:active {
     background-color: #005B82;
     border-color: #005B82;
     color: #FFF;
 }
-.btn:focus, .btn-link:focus {
+.pagewrapper .btn:focus, .btn-link:focus {
     color: inherit;
     background-color: inherit;
     outline: none;
     box-shadow: 0 0 0 3px #254b6d;
 }
-.btn:hover, .btn-link:hover {
+.pagewrapper .btn:hover, .btn-link:hover {
     background-color: #0067C5;
     color: #FFF;
 }
-.btn-small {
+.pagewrapper .btn-small {
     /*padding: 7px 20px;*/
     font-size: .875rem;
     line-height: 1.6
 }
-.btn-primary {
+.pagewrapper .btn-primary {
     transform: translateY(-2px);
     box-shadow: 0 2px 0 #C6C2BF;
     color: #FFF;
@@ -3538,20 +3538,20 @@ a.knapp {
     background-color: #0067C5;
     position: relative;
 }
-.btn-primary:active, .btn-primary:active:hover, .btn-primary:active:focus {
+.pagewrapper .btn-primary:active, .btn-primary:active:hover, .btn-primary:active:focus {
     box-shadow: none;
     border-color: #005B82;
     background-color: #005B82;
 }
-.btn-primary:active {
+.pagewrapper .btn-primary:active {
     transform: translateY(0);
     box-shadow: none;
 }
-.btn-primary:focus {
+.pagewrapper .btn-primary:focus {
     background-color: white;
     color: #0067C5;
 }
-.btn-primary:hover {
+.pagewrapper .btn-primary:hover {
     color: #FFF;
     border-color: #0074df;
     background-color: #0074df;
@@ -3971,7 +3971,7 @@ a.knapp {
         width: 100%
     }
 
-    .flexbox .hero-blocks, .flexbox .hero-links {
+    .hero-blocks, .hero-links {
         display: -webkit-flex;
         display: -moz-flex;
         display: -ms-flexbox;
@@ -3983,7 +3983,7 @@ a.knapp {
         -webkit-justify-content: center
     }
 
-    .flexbox .hero-blocks .hero-block-wrapper, .flexbox .hero-links .hero-block-wrapper, .flexbox .hero-blocks .hero-link-wrapper, .flexbox .hero-links .hero-link-wrapper {
+    .hero-blocks .hero-block-wrapper, .hero-links .hero-block-wrapper, .hero-blocks .hero-link-wrapper, .hero-links .hero-link-wrapper {
         display: -webkit-flex;
         display: -moz-flex;
         display: -ms-flexbox;
@@ -3991,7 +3991,7 @@ a.knapp {
         height: auto
     }
 
-    .flexbox .hero-blocks .hero-block, .flexbox .hero-links .hero-block, .flexbox .hero-blocks .hero-link, .flexbox .hero-links .hero-link {
+    .hero-blocks .hero-block, .hero-links .hero-block, .hero-blocks .hero-link, .hero-links .hero-link {
         height: auto
     }
 }
@@ -4002,20 +4002,20 @@ a.knapp {
         padding-right: 1rem
     }
 
-    .flexbox .hero-blocks .col-sm-12 {
+    .hero-blocks .col-sm-12 {
         width: auto
     }
 
-    .flexbox .hero-blocks.multiple .col-md-4 {
+    .hero-blocks.multiple .col-md-4 {
         width: 33.3333%
     }
 
-    .flexbox .hero-links .hero-link {
+    .hero-links .hero-link {
         padding-left: 1rem;
         padding-right: 1rem
     }
 
-    .flexbox .hero-links .hero-link p {
+    .hero-links .hero-link p {
         font-size: 1rem
     }
 }
