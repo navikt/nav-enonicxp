@@ -5,8 +5,7 @@ const libs = {
 };
 const etag = libs.cache.etag;
 const view = resolve('main-page.html');
-
-const decUrl = "http://localhost:8100/dekoratoren"
+const decUrl = app.config.decoratorUrl;
 
 function handleGet (req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
