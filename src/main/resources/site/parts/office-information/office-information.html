@@ -54,7 +54,7 @@
         </div>
         <h3>Kontornummer</h3>
         <p>[[${enhet.kontornr}]]</p>
-        <div data-th-if="${!enhet.isHmsOrAls}" data-th-remove="tag">
+        <div data-th-if="${!enhet.isHmsOrAls && enhet.pms && enhet.pms.size > 0}" data-th-remove="tag">
             <h1>Publikumsmottak</h1>
             <div itemscope="" itemtype="http://schema.org/LocalBusiness" data-th-each="pm : ${enhet.pms}">
                 <h2 itemprop="name">[[${pm.stedbeskrivelse}]]</h2>
