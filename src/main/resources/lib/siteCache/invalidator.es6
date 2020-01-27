@@ -88,11 +88,6 @@ function setupTask (applicationIsRunning) {
     });
 }
 
-exports.task = () => {
-
-};
-
-
 function getPrepublishedContent (fromDate, toDate) {
     let prepublishedContent = [];
     let start = 0;
