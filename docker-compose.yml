@@ -23,7 +23,7 @@ services:
 
   mocks:
     container_name: mocks
-    image: "navikt/pb-nav-mocked:local"
+    image: "navikt/pb-nav-mocked:latest"
     ports:
       - "8095:8080"
     environment:
