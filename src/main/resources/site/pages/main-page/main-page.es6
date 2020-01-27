@@ -17,6 +17,7 @@ function handleGet (req) {
         const description = content.data.metaDescription || '';
         const imageUrl = libs.portal.assetUrl({
             path: 'img/navno/social-share-fallback.png',
+            type: 'absolute',
         });
         const metaData = [
             '<meta charset="utf-8" />',
@@ -28,12 +29,12 @@ function handleGet (req) {
             '<meta property="og:site_name" content="NAV" />',
             '<meta property="og:url" content="' + url + '" />',
             '<meta property="og:description" content="' + description + '" />',
-            '<meta property="og:image" content="https://nav.no' + imageUrl + '" />',
+            '<meta property="og:image" content="' + imageUrl + '" />',
             '<meta name="twitter:card" content="summary_large_image" />',
             '<meta name="twitter:domain" content="nav.no" />',
             '<meta name="twitter:title" content="' + title + '" />',
             '<meta name="twitter:description" content="' + description + '" />',
-            '<meta name="twitter:image:src" content="https://nav.no' + imageUrl + '" />'
+            '<meta name="twitter:image:src" content="' + imageUrl + '" />'
         ];
         const regions = content.page.regions;
         const model = {
