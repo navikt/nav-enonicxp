@@ -2,8 +2,12 @@
 
 ## Get started
 
-1 - Rename no.nav.navno.cfg.sample to no.nav.navno.cfg and move 
+1. Rename no.nav.navno.cfg.sample to no.nav.navno.cfg and move 
 the file to your XP config folder located at ~/.enonic/sandboxes/YOUR_SANDBOX/home/config
+2. Run the decorator and oidc-provider with 
+```
+docker-compose up -d
+```
 
 ## Build
 
