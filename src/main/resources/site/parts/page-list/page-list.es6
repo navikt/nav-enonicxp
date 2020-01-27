@@ -23,11 +23,6 @@ exports.get = function (req) {
                 });
             })
             .filter(el => !!el && el._id !== content._id) // remove itself from list
-            .concat(libs.content.getChildren({ // add children as well
-                key: content._id,
-                start: 0,
-                count: 100,
-            }).hits)
             .filter(el => el.type !== `${app.name}:content-list` && el.type !== `base:folder`)
             .map(el => {
                 // map to model better suited for thymeleaf view
@@ -43,7 +38,7 @@ exports.get = function (req) {
                     type: el.type,
                 };
             })
-            .reduce((t, el) => { // remove duplicates
+           .reduce((t, el) => { // remove duplicates
                 if (t.filter(ele => ele.src === el.src).length === 0) {
                     t.push(el);
                 }
