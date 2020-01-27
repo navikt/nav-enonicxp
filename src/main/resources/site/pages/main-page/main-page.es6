@@ -17,6 +17,7 @@ function handleGet (req) {
         const description = content.data.metaDescription || '';
         const imageUrl = libs.portal.assetUrl({
             path: 'img/navno/social-share-fallback.png',
+            type: 'absolute',
         });
         const metaData = [
             '<meta charset="utf-8" />',
