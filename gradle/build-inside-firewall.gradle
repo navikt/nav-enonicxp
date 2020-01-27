@@ -1,3 +1,14 @@
+// Deploy with proxy
+/*
+    ./gradlew deploy \
+    -Pbuild-inside-firewall \
+    -DproxySet=true \
+    -Dhttp.keepAlive=true \
+    -Dhttp.proxyHost=webproxy-utvikler.nav.no \
+    -Dhttp.proxyPort=8088 \
+    -Dhttp.nonProxyHosts="localhost|127.0.0.1|*.local|*.adeo.no|*.nav.no|*.aetat.no|*.devillo.no|*.oera.no"
+ */
+
 // Access protected repositories
 buildscript {
     repositories {
