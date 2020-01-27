@@ -1,3 +1,4 @@
+// Access public repositories
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
     compile "com.enonic.xp:portal-api:${xpVersion}"
@@ -32,7 +33,6 @@ node {
 }
 
 repositories {
-    /* Three repos for local development only */
     mavenLocal()
     jcenter()
     xp.enonicRepo()

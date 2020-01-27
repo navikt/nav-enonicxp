@@ -1,3 +1,4 @@
+// Access protected repositories
 buildscript {
     repositories {
     	maven {
@@ -16,10 +17,6 @@ buildscript {
     dependencies {
         classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
     }
-}
-
-node {
-    version = '10.15.3'
 }
 
 dependencies {
@@ -49,6 +46,10 @@ dependencies {
     include 'com.enonic.lib:lib-cron:1.0.0'
     include "no.item.wsUtil:wsUtil:1.1.1"
     webjar "org.webjars:momentjs:2.14.1"
+}
+
+node {
+    version = '10.15.3'
 }
 
 repositories {

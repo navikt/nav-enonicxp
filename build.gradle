@@ -16,19 +16,12 @@ app {
 }
 
 // Environments
-def currentProfile;
-if (project.hasProperty('release')) {
-    currentProfile = 'production';
-    apply from: rootProject.file('gradle/build-release.gradle');
-}
-
-else if (project.hasProperty('local')) {
-    currentProfile = 'local';
-    apply from: rootProject.file('gradle/build-local.gradle');
+if (project.hasProperty('build-inside-firewall')) {
+    apply from: rootProject.file('gradle/build-inside-firewall.gradle');
 }
 
 else {
-    throw new GradleException('Define environment (-Plocal | -Prelease)')
+    apply from: rootProject.file('gradle/build-outside-firewall.gradle');
 }
 
 // Tasks
