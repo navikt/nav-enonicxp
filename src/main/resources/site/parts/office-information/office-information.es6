@@ -22,6 +22,7 @@ function handleGet (req) {
             telefonnummerKommentar: undefined,
             publikumsmottak: undefined,
             epost: undefined,
+            spesielleOpplysninger: undefined,
         };
         const postadresse = kontaktInformasjon.postadresse;
         const postAdr = formatAddress(postadresse, false);
@@ -30,7 +31,7 @@ function handleGet (req) {
         const type = content.data.enhet.type;
         const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
         const epost = parseEmail(kontaktInformasjon.epost);
-        const specialInfo = parseSpecialInfo(content.data.kontaktinformasjon.spesielleOpplysninger);
+        const specialInfo = parseSpecialInfo(kontaktInformasjon.spesielleOpplysninger);
 
         const enhet = {
             navn: `${content.data.enhet.navn} - kontorinformasjon`,
