@@ -42,7 +42,7 @@ services:
     environment:
       URL_APP_BASE: "http://localhost:8100/dekoratoren"
       baseUrl: 'http://localhost:8100'
-      baseUrlEnonic: 'https://localhost:8080'
+      baseUrlEnonic: 'http://localhost:8080'
       innloggingslinjenUrl: 'http://localhost:8095/innloggingslinje-api/auth'
       loginUrl: 'http://localhost:5000'
       logoutUrl: 'http://localhost:5000/?logout'
