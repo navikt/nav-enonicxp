@@ -2,7 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
     lang: require('/lib/i18nUtil'),
 };
 const view = resolve('menu-list.html');

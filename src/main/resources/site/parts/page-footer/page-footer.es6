@@ -2,7 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('page-footer.html');
 

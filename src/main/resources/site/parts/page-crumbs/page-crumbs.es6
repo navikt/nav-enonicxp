@@ -4,7 +4,7 @@ const libs = {
     content: require('/lib/xp/content'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('page-crumbs.html');
 
