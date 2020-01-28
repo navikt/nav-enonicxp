@@ -6,7 +6,7 @@ const libs = {
 
 exports.get = handleGet;
 
-function handleGet () {
+function handleGet() {
     const menu = libs.menuUtils.getMegaMenu(libs.content.get({
         key: '/www.nav.no/dekorator-meny/',
     }), 5);

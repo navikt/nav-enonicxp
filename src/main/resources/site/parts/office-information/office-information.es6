@@ -7,7 +7,7 @@ const libs = {
 
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];
 const view = resolve('office-information.html');
-function handleGet (req) {
+function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'office-information', req.branch, () => {
         const content = libs.portal.getContent();
         const lang = {
@@ -47,7 +47,7 @@ function handleGet (req) {
             isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
-            spesielleOpplysninger: specialInfo, 
+            spesielleOpplysninger: specialInfo,
         };
 
         const body = libs.thymeleaf.render(view, {
@@ -73,7 +73,7 @@ function handleGet (req) {
 
 exports.get = handleGet;
 
-function formatAudienceReception (audienceReception, language = 'no') {
+function formatAudienceReception(audienceReception, language = 'no') {
     let aapningstider = libs.navUtils.forceArray(audienceReception.aapningstider);
 
     // filter regular and exceptions for opening hour then introduce formatting for display
@@ -86,7 +86,7 @@ function formatAudienceReception (audienceReception, language = 'no') {
             }
             acc.exceptions.push(elem);
         } else {
-            let displayVal = formatMetaOpeningHours(elem);
+            const displayVal = formatMetaOpeningHours(elem);
             displayVal.a = displayVal.fra + ' - ' + displayVal.til;
             acc.regular.push(displayVal);
         }
@@ -104,7 +104,7 @@ function formatAudienceReception (audienceReception, language = 'no') {
     };
 }
 
-function formatMetaOpeningHours (el) {
+function formatMetaOpeningHours(el) {
     let day;
     if (el.dag === 'Mandag') {
         day = 'Mo';
@@ -121,11 +121,11 @@ function formatMetaOpeningHours (el) {
     return el;
 }
 
-function sortOpeningHours (a, b) {
+function sortOpeningHours(a, b) {
     return dagArr.indexOf(a.dag) - dagArr.indexOf(b.dag);
 }
 
-function formatAddress (address, withZip) {
+function formatAddress(address, withZip) {
     if (!address) {
         return '';
     }
@@ -144,7 +144,7 @@ function formatAddress (address, withZip) {
     return formatedAddress;
 }
 
-function parsePhoneNumber (number, mod) {
+function parsePhoneNumber(number, mod) {
     mod = mod || 2;
     return number
         ? number.replace(/ /g, '').split('').reduce((t, e, i) => {
@@ -155,7 +155,7 @@ function parsePhoneNumber (number, mod) {
 }
 
 function isBalanced(str) {
-    return (str.match(/{/g) || []).length === (str.match(/}/g) || []).length; 
+    return (str.match(/{/g) || []).length === (str.match(/}/g) || []).length;
 }
 
 function isTextClean(str) {
@@ -163,9 +163,9 @@ function isTextClean(str) {
     return str.split('{').length < 2 && str.split('}').length < 2;
 }
 
-function specialInfoParseLink (infoContent) {
+function specialInfoParseLink(infoContent) {
     const pattern = /\{((.*?):(.*?))\}/g;
-    let result = [];
+    const result = [];
 
     let match = pattern.exec(infoContent);
     while (match !== null) {
@@ -185,9 +185,9 @@ function specialInfoParseLink (infoContent) {
     return result;
 }
 
-function parseSpecialInfo (infoContent) {
+function parseSpecialInfo(infoContent) {
     let parsedString = infoContent;
-    if (! parsedString) {
+    if (!parsedString) {
         return '';
     }
     // replace \n with <br />
@@ -202,17 +202,17 @@ function parseSpecialInfo (infoContent) {
 }
 
 
-function parseEmail (emailString) {
+function parseEmail(emailString) {
     if (!emailString) {
         return;
     }
     let email;
     let internal = false;
-    let betweenBracketsPattern = /\[(.*?)\]/g;
+    const betweenBracketsPattern = /\[(.*?)\]/g;
     let match;
 
     while ((match = betweenBracketsPattern.exec(emailString)) !== null) {
-        let matchedRes = match[1];
+        const matchedRes = match[1];
         if (matchedRes.indexOf('@') !== -1) {
             email = matchedRes;
         } else if (matchedRes === 'true') {

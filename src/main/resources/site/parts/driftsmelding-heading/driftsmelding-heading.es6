@@ -8,7 +8,7 @@ const libs = {
 };
 const view = resolve('driftsmelding-heading.html');
 
-function handleGet (req) {
+function handleGet(req) {
     // Må kjøre i context av master-branch, ellers vil preview i Content studio alltid vise en driftsmelding
     // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer
     // return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
@@ -46,13 +46,12 @@ function handleGet (req) {
                     contentType: 'text/html',
                     body: libs.thymeleaf.render(view, model),
                 };
-            } else {
-                // Ingen publiserte driftsmeldinger
-                return {
-                    contentType: 'text/html',
-                    body: null,
-                };
             }
+            // Ingen publiserte driftsmeldinger
+            return {
+                contentType: 'text/html',
+                body: null,
+            };
         }
     );
     // });

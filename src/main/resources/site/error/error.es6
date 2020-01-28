@@ -40,16 +40,14 @@ exports.handle404 = function (req) {
 
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
     if (!element) {
-        let isRedirect = path.split('/').length === 3;
+        const isRedirect = path.split('/').length === 3;
         if (isRedirect) {
             const contentName = path.split('/').pop().toLowerCase();
-            const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, function () {
-                return libs.content.getChildren({
-                    key: '/redirects',
-                    start: 0,
-                    count: 10000,
-                }).hits;
-            });
+            const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, () => libs.content.getChildren({
+                key: '/redirects',
+                start: 0,
+                count: 10000,
+            }).hits);
 
             for (let i = 0; i < redirects.length; i += 1) {
                 const el = redirects[i];
@@ -128,19 +126,19 @@ exports.handle404 = function (req) {
     } */
     return {
         body:
-            '<html lang="no">\n' +
-            '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n' +
-            '<body>\n' +
-            '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n' +
-            '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n' +
-            '<p>Feilkode 404</p>\n' +
-            '</body>\n' +
-            '</html>',
+            '<html lang="no">\n'
+            + '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n'
+            + '<body>\n'
+            + '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n'
+            + '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n'
+            + '<p>Feilkode 404</p>\n'
+            + '</body>\n'
+            + '</html>',
         contentType: 'text/html',
     };
 };
 
-function create404page () {
+function create404page() {
     return libs.context.run(
         {
             repository: 'com.enonic.cms.default',
@@ -158,7 +156,7 @@ function create404page () {
                 displayName: 'Oops, noe gikk galt',
                 contentType: app.name + ':404',
                 data: {
-                    'errorMessage': 'Siden eller tjenesten finnes ikke eller er for tiden<br/>utilgjengelig. Vi beklager dette. Prøv igjen senere.',
+                    errorMessage: 'Siden eller tjenesten finnes ikke eller er for tiden<br/>utilgjengelig. Vi beklager dette. Prøv igjen senere.',
                 },
             });
             const res = libs.content.publish({
@@ -171,9 +169,8 @@ function create404page () {
                 return libs.portal.pageUrl({
                     path: page,
                 });
-            } else {
-                return null;
             }
+            return null;
         }
     );
 }

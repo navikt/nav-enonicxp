@@ -11,17 +11,15 @@ exports.get = function (req) {
         const items = content.data.items ? Array.isArray(content.data.items) ? content.data.items : [content.data.items] : [];
         const model = {
             ingress: content.data.ingress,
-            items: items.map(value => {
-                return {
-                    title: value.title,
-                    ingress: value.ingress,
-                    url: getUrl(value.url),
-                    logo: value.logo ? libs.portal.attachmentUrl({
-                        id: value.logo,
-                    }) : null,
-                    className: value.spanning ? 'heldekkende' : '',
-                };
-            }),
+            items: items.map(value => ({
+                title: value.title,
+                ingress: value.ingress,
+                url: getUrl(value.url),
+                logo: value.logo ? libs.portal.attachmentUrl({
+                    id: value.logo,
+                }) : null,
+                className: value.spanning ? 'heldekkende' : '',
+            })),
         };
 
         return {
@@ -35,7 +33,7 @@ exports.get = function (req) {
     });
 };
 
-function getUrl (url) {
+function getUrl(url) {
     if (url.text) { return url.text; }
     return libs.portal.pageUrl({
         id: url.ref,

@@ -16,15 +16,14 @@ exports.get = function (req) {
         let ids = content.data.sectionContents;
         ids = ids ? (!Array.isArray(ids) ? [ids] : ids) : [];
         let items = ids
-            .map(value => {
+            .map(value =>
                 // map section content ids to content
-                return libs.content.get({
+                libs.content.get({
                     key: value,
-                });
-            })
+                }))
             .filter(el => !!el && el._id !== content._id) // remove itself from list
-            .filter(el => el.type !== `${app.name}:content-list` && el.type !== `base:folder`)
-            .map(el => {
+            .filter(el => el.type !== `${app.name}:content-list` && el.type !== 'base:folder')
+            .map((el) => {
                 // map to model better suited for thymeleaf view
                 const published = (el.publish && el.publish.first ? el.publish.first : el.createdTime);
                 return {
@@ -38,7 +37,7 @@ exports.get = function (req) {
                     type: el.type,
                 };
             })
-           .reduce((t, el) => { // remove duplicates
+            .reduce((t, el) => { // remove duplicates
                 if (t.filter(ele => ele.src === el.src).length === 0) {
                     t.push(el);
                 }

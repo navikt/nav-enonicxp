@@ -7,7 +7,7 @@ const libs = {
 };
 const view = resolve('generic-page.html');
 
-function handleGet (req) {
+function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'generic-page', req.branch, () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).main_article;

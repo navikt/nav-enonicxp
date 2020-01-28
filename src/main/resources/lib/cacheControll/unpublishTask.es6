@@ -42,12 +42,12 @@ exports.start = function () {
 };
 
 exports.setupTask = setupTask;
-function setupTask () {
+function setupTask() {
     libs.task.submit({
         description: 'clean out expired content from cache',
         task: () => {
             // stop if another node is running this task
-            let state = getState();
+            const state = getState();
             if (state.isRunning && (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS + PADDING > Date.now())) {
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 setupTask();
@@ -89,7 +89,7 @@ function setupTask () {
     });
 }
 
-function getPrepublishedContent (fromDate, toDate) {
+function getPrepublishedContent(fromDate, toDate) {
     let prepublishedContent = [];
     let start = 0;
     let count = 1000;
@@ -106,7 +106,7 @@ function getPrepublishedContent (fromDate, toDate) {
     return prepublishedContent;
 }
 
-function removeCacheOnPrepublishedContent (prepublishedContent) {
+function removeCacheOnPrepublishedContent(prepublishedContent) {
     libs.context.run(
         {
             repository: 'com.enonic.cms.default',
@@ -118,11 +118,9 @@ function removeCacheOnPrepublishedContent (prepublishedContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            prepublishedContent = prepublishedContent.map((el) => {
-                return libs.content.get({
-                    key: el.id,
-                });
-            }).filter(s => !!s);
+            prepublishedContent = prepublishedContent.map(el => libs.content.get({
+                key: el.id,
+            })).filter(s => !!s);
             if (prepublishedContent.length > 0) {
                 libs.event.send({
                     type: 'prepublish',
@@ -139,7 +137,7 @@ function removeCacheOnPrepublishedContent (prepublishedContent) {
     }
 }
 
-function getExpiredContent (testDate) {
+function getExpiredContent(testDate) {
     let expiredContent = [];
     let start = 0;
     let count = 1000;
@@ -156,7 +154,7 @@ function getExpiredContent (testDate) {
     return expiredContent;
 }
 
-function removeExpiredContentFromMaster (expiredContent) {
+function removeExpiredContentFromMaster(expiredContent) {
     libs.context.run(
         {
             repository: 'com.enonic.cms.default',
@@ -181,16 +179,17 @@ function removeExpiredContentFromMaster (expiredContent) {
                     log.error(e);
                 }
             });
-        });
+        }
+    );
     if (expiredContent.length > 0) {
         log.info(`UNPUBLISHED (${expiredContent.length}) EXPIRED CONTENT`);
     }
 }
 
-function getSleepFor (prepublishOnNext, now) {
+function getSleepFor(prepublishOnNext, now) {
     let sleepFor = TIME_BETWEEN_CHECKS;
     prepublishOnNext.forEach((c) => {
-        let content = masterRepo.get(c.id);
+        const content = masterRepo.get(c.id);
         const publishOn = new Date(content.publish.from);
         if (publishOn - now < sleepFor) {
             sleepFor = publishOn - now;
@@ -201,7 +200,7 @@ function getSleepFor (prepublishOnNext, now) {
     return sleepFor;
 }
 
-function getState () {
+function getState() {
     let unpublishContent = navRepo.get('/unpublish');
     if (!unpublishContent) {
         unpublishContent = navRepo.create({
@@ -217,10 +216,10 @@ function getState () {
     return unpublishContent.data;
 }
 
-function setIsRunning (isRunning) {
+function setIsRunning(isRunning) {
     navRepo.modify({
         key: '/unpublish',
-        editor: el => {
+        editor: (el) => {
             if (isRunning === false) {
                 el.data.lastRun = new Date().toISOString();
             }

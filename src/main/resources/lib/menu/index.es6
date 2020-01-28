@@ -21,8 +21,8 @@ const globals = {
 exports.getBreadcrumbMenu = function (params) {
     const content = libs.portal.getContent();
     const site = libs.portal.getSite();
-    let breadcrumbItems = []; // Stores each menu item
-    let breadcrumbMenu = {
+    const breadcrumbItems = []; // Stores each menu item
+    const breadcrumbMenu = {
 
     }; // Stores the final JSON sent to Thymeleaf
 
@@ -38,10 +38,10 @@ exports.getBreadcrumbMenu = function (params) {
     // We only allow 'server' or 'absolute' options for URL type.
     if (settings.urlType) {
         switch (settings.urlType) {
-        case 'absolute':
-            break; // Pass through
-        default:
-            settings.urlType = 'server';
+            case 'absolute':
+                break; // Pass through
+            default:
+                settings.urlType = 'server';
         }
     }
 
@@ -59,7 +59,7 @@ exports.getBreadcrumbMenu = function (params) {
                     key: arrVars.join('/') + '/' + lastVar,
                 }); // Make sure item exists
                 if (curItem) {
-                    let item = {
+                    const item = {
 
                     };
                     const curItemUrl = libs.portal.pageUrl({
@@ -106,13 +106,13 @@ exports.getBreadcrumbMenu = function (params) {
     return breadcrumbMenu;
 };
 
-/***
+/** *
  * Per Olav 02.2019: Endret menyhåndtering
  * Bygger menyen fra elementer i en mappe istedenfor å gå igjennom hele siten.
  * Beholdt rekursiviteten
- ***/
+ ** */
 exports.getMegaMenu = function (content, levels) {
-    let subMenus = [];
+    const subMenus = [];
     if (content) {
         levels--;
         return libs.content
@@ -125,11 +125,10 @@ exports.getMegaMenu = function (content, levels) {
                 t.push(menuToJson(el, levels));
                 return t;
             }, subMenus);
-    } else {
-        return [];
     }
+    return [];
 };
-function menuToJson (content, levels) {
+function menuToJson(content, levels) {
     let subMenus = [];
     let inPath = false;
     let isActive = false;
@@ -161,7 +160,7 @@ function menuToJson (content, levels) {
     };
 }
 
-function getTargetPath (targetId) {
+function getTargetPath(targetId) {
     if (targetId) {
         const target = libs.content.get({
             key: targetId,
@@ -170,7 +169,7 @@ function getTargetPath (targetId) {
         if (target) {
             if (target.type === `${app.name}:external-link`) {
                 return target.data.url;
-            } else if (target.type === `${app.name}:internal-link`) {
+            } if (target.type === `${app.name}:internal-link`) {
                 return getTargetPath(target.data.target);
             }
             return libs.portal.pageUrl({
@@ -199,7 +198,7 @@ exports.getMenuTree = function (levels) {
 };
 
 exports.getSubMenus = function (parentContent, levels) {
-    let subMenus = [];
+    const subMenus = [];
 
     if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
         subMenus.push(menuItemToJson(parentContent, 0));
@@ -210,7 +209,7 @@ exports.getSubMenus = function (parentContent, levels) {
             key: parentContent._id,
             count: 200,
         })
-        .hits.reduce(function (t, el) {
+        .hits.reduce((t, el) => {
             if (isMenuItem(el)) {
                 t.push(menuItemToJson(el, levels));
             }
@@ -223,7 +222,7 @@ exports.getSubMenus = function (parentContent, levels) {
  * @param {Content} content - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
  * @return {Boolean} true if the content is marked as menu item
  */
-function isMenuItem (content) {
+function isMenuItem(content) {
     const extraData = content.x;
     if (!extraData) {
         return false;
@@ -236,7 +235,7 @@ function isMenuItem (content) {
 
     };
 
-    return menuItemMetadata['menuItem'] && !excludeFromMainMenu(content);
+    return menuItemMetadata.menuItem && !excludeFromMainMenu(content);
 }
 
 /**
@@ -244,7 +243,7 @@ function isMenuItem (content) {
  * @param {Content} content - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
  * @return {Boolean} true if the content should be excluded from the menu
  */
-function excludeFromMainMenu (content) {
+function excludeFromMainMenu(content) {
     return libs.navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
 }
 
@@ -254,7 +253,7 @@ function excludeFromMainMenu (content) {
  * @param {Integer} levels - The number of submenus to retrieve
  * @return {Object} Menuitem JSON data
  */
-function menuItemToJson (content, levels) {
+function menuItemToJson(content, levels) {
     let subMenus = [];
     if (levels > 0) {
         subMenus = exports.getSubMenus(content, levels);
@@ -300,6 +299,6 @@ function menuItemToJson (content, levels) {
  * @param value
  * @returns {boolean}
  */
-function isInt (value) {
+function isInt(value) {
     return !isNaN(value) && parseInt(Number(value)) === value && !isNaN(parseInt(value, 10));
 }

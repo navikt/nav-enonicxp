@@ -45,7 +45,7 @@ module.exports = {
     clearReferences,
 };
 
-function getPath (path, type) {
+function getPath(path, type) {
     if (!path) {
         return;
     }
@@ -67,23 +67,23 @@ function getPath (path, type) {
     return (type ? type + '::' : '') + key;
 }
 
-function getEtag () {
+function getEtag() {
     return etag;
 }
 
-function setEtag () {
+function setEtag() {
     etag = Date.now().toString(16);
 }
 
-function wipeAll () {
+function wipeAll() {
     setEtag();
     wipe('decorator')();
     wipe('azList')();
     wipe('paths')();
 }
 
-function wipe (name) {
-    return key => {
+function wipe(name) {
+    return (key) => {
         if (!key) {
             caches[name].clear();
             log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
@@ -91,10 +91,10 @@ function wipe (name) {
             caches[name].remove(key);
             log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
-    }
+    };
 }
 
-function wipeOnChange (path) {
+function wipeOnChange(path) {
     if (!path) {
         return false;
     }
@@ -126,21 +126,20 @@ function wipeOnChange (path) {
     }
 }
 
-function getSome (cacheStoreName) {
+function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            return caches[cacheStoreName].get(getPath(key, type), function () {
+            return caches[cacheStoreName].get(getPath(key, type), () => {
                 log.info(`Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[cacheStoreName].getSize()})] on [${myHash}]`);
                 return f(params);
             });
-        } else {
-            return f(params);
         }
+        return f(params);
     };
 }
 
-function activateEventListener () {
+function activateEventListener() {
     wipeAll();
     if (!hasSetupListeners) {
         libs.event.listener({
@@ -164,8 +163,8 @@ function activateEventListener () {
     }
 }
 
-function nodeListenerCallback (event) {
-    event.data.nodes.forEach(function (node) {
+function nodeListenerCallback(event) {
+    event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
             libs.context.run(
@@ -188,7 +187,7 @@ function nodeListenerCallback (event) {
     });
 }
 
-function clearReferences (id, path, depth) {
+function clearReferences(id, path, depth) {
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
         return;
@@ -219,7 +218,7 @@ function clearReferences (id, path, depth) {
         references.push(parent);
     }
 
-    references.forEach(el => {
+    references.forEach((el) => {
         wipeOnChange(el._path);
 
         const deepTypes = [`${app.name}:content-list`];

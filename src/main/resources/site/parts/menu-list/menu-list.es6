@@ -7,7 +7,7 @@ const libs = {
 };
 const view = resolve('menu-list.html');
 
-function handleGet (req) {
+function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'menu-list', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
@@ -32,7 +32,7 @@ function handleGet (req) {
             'rules-and-regulations',
         ];
         const menuLists = keys
-            .map(el => {
+            .map((el) => {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
@@ -41,7 +41,7 @@ function handleGet (req) {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     expanded: el === 'shortcuts',
                     links: links
-                        .map(contentId => {
+                        .map((contentId) => {
                             const element = libs.content.get({
                                 key: contentId,
                             });
@@ -73,9 +73,7 @@ function handleGet (req) {
                         .filter(el => !!el),
                 };
             })
-            .filter(el => {
-                return el && el.links && el.links.length > 0;
-            });
+            .filter(el => el && el.links && el.links.length > 0);
 
         if (menuLists.length > 0) {
             const model = {
@@ -85,16 +83,15 @@ function handleGet (req) {
                 contentType: 'text/html',
                 body: libs.thymeleaf.render(view, model),
             };
-        } else {
-            return {
-                contentType: 'text/html',
-                body: null,
-            };
         }
+        return {
+            contentType: 'text/html',
+            body: null,
+        };
     });
 }
 
 exports.get = handleGet;
-function forceArr (element) {
+function forceArr(element) {
     return element !== undefined ? (Array.isArray(element) ? element : [element]) : [];
 }

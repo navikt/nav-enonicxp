@@ -71,7 +71,7 @@ exports.get = function (req) {
     });
 };
 
-function getContentLists (content, contentType, max, doSort) {
+function getContentLists(content, contentType, max, doSort) {
     if (content.data[contentType]) {
         const section = libs.content.get({
             key: content.data[contentType],
@@ -100,9 +100,7 @@ function getContentLists (content, contentType, max, doSort) {
 
                 if (!doSort) {
                     // make sure the table elements are in the correct order
-                    sectionContents = sectionContentIds.map((id) => {
-                        return sectionContents.filter(el => el._id === id)[0];
-                    }).filter(el => !!el);
+                    sectionContents = sectionContentIds.map(id => sectionContents.filter(el => el._id === id)[0]).filter(el => !!el);
                 }
             }
 
@@ -112,7 +110,7 @@ function getContentLists (content, contentType, max, doSort) {
     return [];
 }
 
-function getTableElements (content, contentType) {
+function getTableElements(content, contentType) {
     let tableElementIds = content.data[contentType];
     tableElementIds = tableElementIds ? Array.isArray(tableElementIds) ? tableElementIds : [tableElementIds] : [];
     let tableElements = libs.content.query({
@@ -126,14 +124,12 @@ function getTableElements (content, contentType) {
     }).hits;
 
     // make sure the table elements are in the correct order
-    tableElements = tableElementIds.map((id) => {
-        return tableElements.filter(el => el._id === id)[0];
-    }).filter(el => !!el);
+    tableElements = tableElementIds.map(id => tableElements.filter(el => el._id === id)[0]).filter(el => !!el);
 
     return tableElements.map(mapElements);
 }
 
-function mapElements (el) {
+function mapElements(el) {
     const content = libs.portal.getContent();
     let ingress = el.data.ingress || el.data.description || el.data.list_description;
     if (ingress && ingress.length > 140) {
@@ -148,8 +144,8 @@ function mapElements (el) {
         icon: 'icon-' + (el.data.icon || 'document'),
         publDate: new Date(publishedDate),
         src: getSrc(el),
-        published: el.publish &&
-            (el.publish.first
+        published: el.publish
+            && (el.publish.first
                 ? libs.navUtils.formatDate(el.publish.first, content.language)
                 : libs.navUtils.formatDate(el.createdTime, content.language)
             ),
@@ -157,7 +153,7 @@ function mapElements (el) {
     };
 }
 
-function getSrc (el) {
+function getSrc(el) {
     if (el) {
         if (el.type === `${app.name}:internal-link`) {
             return getSrc(libs.content.get({

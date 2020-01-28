@@ -23,15 +23,13 @@ exports.get = function (req) {
     });
 };
 
-function hasMainArticleChapterChildren (content) {
+function hasMainArticleChapterChildren(content) {
     const children = libs.navUtils.getAllChildren(content);
-    const hasChapters = children.filter((child) => {
-        return child.type === app.name + ':main-article-chapter';
-    }).length > 0;
+    const hasChapters = children.filter(child => child.type === app.name + ':main-article-chapter').length > 0;
     return hasChapters;
 }
 
-function createList (content) {
+function createList(content) {
     let root;
     if (content.type === app.name + ':main-article' && hasMainArticleChapterChildren(content)) {
         // set content to root if its a main-article with main-article-chapters as children
@@ -63,17 +61,13 @@ function createList (content) {
         active: root === content,
     }].concat(
         libs.navUtils.getAllChildren(root)
-            .filter((child) => {
-                return child.type === app.name + ':main-article-chapter';
-            })
-            .map((el) => {
-                return {
-                    heading: el.displayName,
-                    link: libs.portal.pageUrl({
-                        id: el._id,
-                    }),
-                    active: el._id === content._id,
-                };
-            })
+            .filter(child => child.type === app.name + ':main-article-chapter')
+            .map(el => ({
+                heading: el.displayName,
+                link: libs.portal.pageUrl({
+                    id: el._id,
+                }),
+                active: el._id === content._id,
+            }))
     );
 }

@@ -4,7 +4,7 @@ const libs = {
 };
 
 export const getMegaMenu = (content, levels) => {
-    let subMenus = [];
+    const subMenus = [];
     if (content) {
         levels--;
         return libs.content
@@ -17,9 +17,8 @@ export const getMegaMenu = (content, levels) => {
                 t.push(menuToJson(el, levels));
                 return t;
             }, subMenus);
-    } else {
-        return [];
     }
+    return [];
 };
 
 const menuToJson = (content, levels) => {

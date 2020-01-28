@@ -1,4 +1,4 @@
-var libs = {
+const libs = {
     content: require('/lib/xp/content'),
     i18n: require('/lib/xp/i18n'),
     portal: require('/lib/xp/portal'),
@@ -17,19 +17,18 @@ var libs = {
  * @returns {Object[]} sorted array of contents.
  */
 exports.sortContents = function (contents, sortedIds) {
-    var sorted = [];
+    const sorted = [];
     // if (sortedIds.isArray) {
     if (typeof sortedIds === 'string') { sortedIds = [sortedIds]; }
-    sortedIds.forEach(function (id) {
-        var found = false;
-        contents = contents.filter(function (content) {
+    sortedIds.forEach((id) => {
+        let found = false;
+        contents = contents.filter((content) => {
             if (!found && content._id === id) {
                 sorted.push(content);
                 found = true;
                 return false;
-            } else {
-                return true;
             }
+            return true;
         });
     });
 
@@ -53,13 +52,13 @@ exports.forceArray = function (content) {
  * @returns {string|null} parameter value, undefined or defaultValue if not found.
  */
 exports.getContentParam = function (content, paramName, defaultValue) {
-    var parameters = content.data && content.data.parameters;
+    const parameters = content.data && content.data.parameters;
     if (!parameters) {
         return defaultValue;
     }
-    var params = [].concat(parameters);
-    var param;
-    for (var i = 0, l = params.length; i < l; i++) {
+    const params = [].concat(parameters);
+    let param;
+    for (let i = 0, l = params.length; i < l; i++) {
         param = params[i];
         if (param.name === paramName) {
             return param.value;
@@ -72,13 +71,13 @@ exports.getContentParam = function (content, paramName, defaultValue) {
  * Used for menus to get specific parameter's values. Probably could be tweaked and merged with getContentParam ...
  */
 exports.getParameterValue = function (content, paramName) {
-    var parameters = content.data.parameters;
+    const parameters = content.data.parameters;
     if (!parameters) {
         return null;
     }
-    var params = [].concat(parameters);
-    var param;
-    for (var i = 0, l = params.length; i < l; i++) {
+    const params = [].concat(parameters);
+    let param;
+    for (let i = 0, l = params.length; i < l; i++) {
         param = params[i];
         if (param.name === paramName) {
             return param.value;
@@ -93,10 +92,10 @@ exports.getParameterValue = function (content, paramName) {
  * @returns {object|null} content object or null if not found.
  */
 exports.getContentByMenuKey = function (cmsMenuKey) {
-    var queryResult = libs.content.query({
+    const queryResult = libs.content.query({
         start: 0,
         count: 1,
-        query: 'x.' + app.name.replace(/\./g, '-') + ".cmsMenu.menuKey = '" + cmsMenuKey + "'",
+        query: 'x.' + app.name.replace(/\./g, '-') + '.cmsMenu.menuKey = \'' + cmsMenuKey + '\'',
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
@@ -107,11 +106,11 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
  * @returns {object|null} content object or null if not found.
  */
 exports.getContentByCmsKey = function (contentKey) {
-    log.info('getContentByMenuKey query: ' + 'x.' + app.name.replace(/\./g, '-') + ".cmsContent.contentKey = '" + contentKey + "'");
-    var queryResult = libs.content.query({
+    log.info('getContentByMenuKey query: ' + 'x.' + app.name.replace(/\./g, '-') + '.cmsContent.contentKey = \'' + contentKey + '\'');
+    const queryResult = libs.content.query({
         start: 0,
         count: 1,
-        query: 'x.' + app.name.replace(/\./g, '-') + ".cmsContent.contentKey = '" + contentKey + "'",
+        query: 'x.' + app.name.replace(/\./g, '-') + '.cmsContent.contentKey = \'' + contentKey + '\'',
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
@@ -122,7 +121,7 @@ exports.fixDateFormat = fixDateFormat;
  * @param {string} date Date
  * @returns {string} Correctly formated date
  */
-function fixDateFormat (date) {
+function fixDateFormat(date) {
     if (date.indexOf('.') !== -1) {
         date = date.split('.')[0] + 'Z';
     }
@@ -141,7 +140,7 @@ exports.dateTimePublished = function (content, language) {
     let modifiedString = '';
     const m = fixDateFormat(content.modifiedTime);
     if (new Date(m) > new Date(p)) {
-        let navUpdated = libs.i18n.localize({
+        const navUpdated = libs.i18n.localize({
             key: 'main_article.lastChanged', locale: language,
         });
         const lastModified = formatDate(content.modifiedTime, language);
@@ -151,13 +150,13 @@ exports.dateTimePublished = function (content, language) {
 };
 
 exports.formatDate = formatDate;
-function formatDate (date, language) {
+function formatDate(date, language) {
     // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
     return libs.moment(date).locale(language === 'en' ? 'en-gb' : 'nb').format('L');
-};
+}
 
 exports.getLanguageVersions = function (content) {
-    var lang = {
+    const lang = {
         no: 'Bokmål',
         en: 'English',
         se: 'Sámegiella',
@@ -166,8 +165,8 @@ exports.getLanguageVersions = function (content) {
         nn_NO: 'Nynorsk',
         pl: 'Polski',
     };
-    var lRefs = content.data.languages;
-    var ret = [
+    let lRefs = content.data.languages;
+    const ret = [
         {
             href: '#',
             tClass: 'active-lang',
@@ -175,9 +174,9 @@ exports.getLanguageVersions = function (content) {
             title: lang[content.language] + ' (Språkversjon)',
         },
     ];
-    if (!lRefs) { return []; } else if (!Array.isArray(lRefs)) { lRefs = [lRefs]; }
-    lRefs.forEach(function (ref) {
-        var el = libs.content.get({
+    if (!lRefs) { return []; } if (!Array.isArray(lRefs)) { lRefs = [lRefs]; }
+    lRefs.forEach((ref) => {
+        const el = libs.content.get({
             key: ref,
         });
         if (el) {

@@ -34,7 +34,7 @@ exports.startCronJob = function () {
     });
 };
 
-function startBackupJob () {
+function startBackupJob() {
     // stop cron job first, just in case it has been failing for more than a day
     libs.cron.unschedule({
         name: 'office_info_norg2_hourly',
@@ -59,9 +59,9 @@ function startBackupJob () {
             }
         },
     });
-};
+}
 
-function checkForRefresh () {
+function checkForRefresh() {
     const hasNavRepo = libs.repo.get('no.nav.navno');
     if (!hasNavRepo) {
         log.info('Create no.nav.navno repo');
@@ -132,12 +132,12 @@ function checkForRefresh () {
     if (failedToRefresh) {
         startBackupJob();
     }
-};
+}
 
-function setIsRefreshing (navRepo, isRefreshing, failed) {
+function setIsRefreshing(navRepo, isRefreshing, failed) {
     navRepo.modify({
         key: '/officeInformation',
-        editor: o => {
+        editor: (o) => {
             if (isRefreshing === false) {
                 o.data.failedLastRefresh = failed;
                 // only update last refresh when its finished refresing and did not fail
@@ -152,7 +152,7 @@ function setIsRefreshing (navRepo, isRefreshing, failed) {
     });
 }
 
-function refreshOfficeInformation (officeInformationList) {
+function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
     const officeFolder = libs.content.get({
         key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer',
@@ -168,11 +168,11 @@ function refreshOfficeInformation (officeInformationList) {
     };
 
     // update office information or create new
-    officeInformationList.forEach(officeInformation => {
+    officeInformationList.forEach((officeInformation) => {
         // ignore closed offices
         if (officeInformation.enhet.status !== 'Nedlagt') {
             // check if the office already exists
-            let existingOffice = existingOffices.filter(o => {
+            const existingOffice = existingOffices.filter((o) => {
                 if (o.data && o.data.enhet && o.data.enhet.enhetId) {
                     return o.data.enhet.enhetId === officeInformation.enhet.enhetId;
                 }
@@ -182,7 +182,7 @@ function refreshOfficeInformation (officeInformationList) {
                 log.info('UPDATE :: ' + officeInformation.enhet.enhetId);
                 libs.content.modify({
                     key: existingOffice._id,
-                    editor: o => {
+                    editor: (o) => {
                         o.data = officeInformation;
                         return o;
                     },
