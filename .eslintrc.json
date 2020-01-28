@@ -1,0 +1,43 @@
+{
+    "extends": ["airbnb"],
+    "rules": {
+        "indent": ["error", 4, {"SwitchCase": 1}],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+
+        "comma-dangle": ["error", "only-multiline"],
+        "no-cond-assign": ["error", "always"],
+        "no-unused-vars": ["error", { "vars": "all", "args": "none"}],
+        "prefer-template": "off",
+        "no-console": "off",
+        "global-require": "off",
+        "import/no-unresolved": "off",
+        "import/no-absolute-path": "off",
+        "no-underscore-dangle": "off",
+        "object-shorthand": "off",
+        "prefer-destructuring": "off",
+        "radix": ["error", "as-needed"],
+        "no-plusplus": "off",
+        "func-names": "off"
+    },
+    "globals": {
+        "require": true,
+        "log": true,
+        "exports": true,
+        "resolve": true,
+        "app": true,
+        "fetch": true,
+        "document": true,
+        "window": true,
+        "__": true
+    },
+    "overrides": [
+        {
+            "files": ["*.html", "*.ftl", "*.xml"],
+            "rules": {
+                "max-len": "off"
+            }
+        }
+    ]
+}

@@ -5,8 +5,11 @@
     "main": "createPhrases.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "babel src/main/resources --out-dir build/resources/main --ignore \"**/*.js\"",
-        "dev": "babel src/main/resources --out-dir build/resources/main --ignore \"**/*.js\" --watch"
+        "watch": "babel --watch=src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\"",
+        "build": "npm-run-all build:*",
+        "build:js": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\"",
+        "lint": "eslint --ext=js --ext=es6 ./src/main/resources",
+        "dev": "concurrently \"npm-run-all watch\""
     },
     "repository": {
         "type": "git",
@@ -25,10 +28,16 @@
         "core-js": "^3.3.3",
         "eslint": "^5.16.0",
         "eslint-config-standard": "^12.0.0",
+        "eslint-config-airbnb": "^17.1.0",
         "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-node": "^9.2.0",
         "eslint-plugin-promise": "^4.2.1",
         "eslint-plugin-standard": "^4.0.1",
+        "eslint-plugin-jsx-a11y": "^6.1.2",
+        "eslint-plugin-react": "^7.11.1",
+        "concurrently": "^4.1.0",
+        "npm-run-all": "^4.1.2",
+        "replace": "^0.3.0",
         "prompt": "^1.0.0",
         "serve": "^11.2.0"
     }
