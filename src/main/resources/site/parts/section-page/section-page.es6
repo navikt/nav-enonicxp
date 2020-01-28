@@ -12,7 +12,6 @@ exports.get = function (req) {
     return libs.cache.getPaths(req.rawPath, 'section-page', req.branch, () => {
         const content = libs.portal.getContent();
         const lang = libs.lang.parseBundle(content.language).oppslagstavle;
-        let col = 'col-md-';
         const tableList = getTableElements(content, 'tableContents');
         const table = (tableList && tableList.length > 0
             ? tableList.slice(0, content.data.nrTableEntries)
@@ -46,10 +45,6 @@ exports.get = function (req) {
                 : null),
         };
 
-        let antCol = !!niceToKnow.data + !!news.data + !!shortcuts.data;
-        if (antCol === 0) { antCol = 1; }
-        col += 12 / antCol;
-
         let localSectionPage = false;
         const pathParts = content._path.split('/');
         if (pathParts[pathParts.length - 2] === 'lokalt') {
@@ -62,7 +57,6 @@ exports.get = function (req) {
             news,
             moreNewsUrl: content.data.moreNewsUrl,
             shortcuts,
-            col,
             localSectionPage,
         };
         return {
