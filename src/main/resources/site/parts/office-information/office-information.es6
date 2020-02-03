@@ -2,7 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     navUtils: require('/lib/nav-utils'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];

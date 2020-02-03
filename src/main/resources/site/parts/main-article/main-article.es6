@@ -4,7 +4,7 @@ const libs = {
     content: require('/lib/xp/content'),
     utils: require('/lib/nav-utils'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('main-article.html');
 

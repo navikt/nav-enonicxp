@@ -4,7 +4,7 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('driftsmelding-heading.html');
 
