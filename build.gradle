@@ -7,9 +7,6 @@ buildscript {
                 url "https://central.maven.org/maven2/"
             }
             maven {
-                url "https://plugins.gradle.org/m2/"
-            }
-            maven {
                 url "http://maven.adeo.no/nexus/content/groups/public/"
             }
             maven {
