@@ -4,7 +4,7 @@ buildscript {
     if (project.hasProperty('build-inside-firewall')) {
         repositories {
             maven {
-                url "http://central.maven.org/maven2/"
+                url "https://central.maven.org/maven2/"
             }
             maven {
                 url "https://plugins.gradle.org/m2/"
