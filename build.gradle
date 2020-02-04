@@ -4,9 +4,6 @@ buildscript {
     if (project.hasProperty('build-inside-firewall')) {
         repositories {
             maven {
-                url "https://central.maven.org/maven2/"
-            }
-            maven {
                 url "http://maven.adeo.no/nexus/content/groups/public/"
             }
             maven {
