@@ -8,7 +8,9 @@ const libs = {
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
-const myHash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+const myHash = Math.random().toString(36).substring(2, 15)
+      + Math.random().toString(36).substring(2, 15);
+
 log.info(`Creating new cache: ${myHash}`);
 
 const caches = {
@@ -30,24 +32,9 @@ const caches = {
     }),
 };
 
-module.exports = {
-    wipeDecorator: wipe('decorator'),
-    wipePaths: wipe('paths'),
-    getDecorator: getSome('decorator'),
-    getAZList: getSome('azList'),
-    getPaths: getSome('paths'),
-    getRedirects: getSome('redirects'),
-    activateEventListener,
-    wipeAll,
-    stripPath: getPath,
-    etag: getEtag,
-    wipeOnChange,
-    clearReferences,
-};
-
-function getPath (path, type) {
+function getPath(path, type) {
     if (!path) {
-        return;
+        return false;
     }
     const arr = path.split('/www.nav.no/');
     // remove / from start of key. Because of how the vhost changes the url on the server,
@@ -58,7 +45,8 @@ function getPath (path, type) {
     if (key[0] === '/') {
         key = key.replace('/', '');
     }
-    /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
+    /* Siden path kan være så forskjellige for samme innhold så kapper vi path
+     * array til det som er relevant */
     /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
 
     // need to sanitize the paths, since some contain norwegian chars
@@ -67,23 +55,16 @@ function getPath (path, type) {
     return (type ? type + '::' : '') + key;
 }
 
-function getEtag () {
+function getEtag() {
     return etag;
 }
 
-function setEtag () {
+function setEtag() {
     etag = Date.now().toString(16);
 }
 
-function wipeAll () {
-    setEtag();
-    wipe('decorator')();
-    wipe('azList')();
-    wipe('paths')();
-}
-
-function wipe (name) {
-    return key => {
+function wipe(name) {
+    return (key) => {
         if (!key) {
             caches[name].clear();
             log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
@@ -91,10 +72,10 @@ function wipe (name) {
             caches[name].remove(key);
             log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
-    }
+    };
 }
 
-function wipeOnChange (path) {
+function wipeOnChange(path) {
     if (!path) {
         return false;
     }
@@ -124,23 +105,97 @@ function wipeOnChange (path) {
     if (path.indexOf('/content/redirects/') !== -1) {
         wipe('redirects')();
     }
+
+    return true;
 }
 
-function getSome (cacheStoreName) {
+function wipeAll() {
+    setEtag();
+    wipe('decorator')();
+    wipe('azList')();
+    wipe('paths')();
+}
+
+function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            return caches[cacheStoreName].get(getPath(key, type), function () {
+            return caches[cacheStoreName].get(getPath(key, type), () => {
                 log.info(`Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[cacheStoreName].getSize()})] on [${myHash}]`);
                 return f(params);
             });
-        } else {
-            return f(params);
         }
+        return f(params);
     };
 }
 
-function activateEventListener () {
+function clearReferences(id, path, depth) {
+    let newPath = path;
+    if (depth > 10) {
+        log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
+        return;
+    }
+    const references = libs.content.query({
+        start: 0,
+        count: 1000,
+        query: `_references LIKE "${id}"`,
+    }).hits;
+
+    // fix path before getting parent
+    if (path.indexOf('/content/') === 0) {
+        newPath = path.replace('/content', '');
+    }
+
+    // get parent
+    const parent = libs.content.get({
+        key: newPath.split('/').slice(0, -1).join('/'),
+    });
+
+    // remove parents cache if its of a type that autogenerates content based on
+    // children and not reference
+    const parentTypesToClear = [
+        `${app.name}:page-list`,
+        `${app.name}:main-article`,
+    ];
+    if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
+        log.info('REMOVE PARENT CACHE');
+        references.push(parent);
+    }
+
+    references.forEach((el) => {
+        wipeOnChange(el._path);
+
+        const deepTypes = [`${app.name}:content-list`];
+        if (deepTypes.indexOf(el.type) !== -1) {
+            clearReferences(el._id, el._path, depth + 1);
+        }
+    });
+}
+
+function nodeListenerCallback(event) {
+    event.data.nodes.forEach((node) => {
+        if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            wipeOnChange(node.path);
+            libs.context.run(
+                {
+                    repository: 'com.enonic.cms.default',
+                    branch: 'master',
+                    user: {
+                        login: 'su',
+                        userStore: 'system',
+                    },
+                    principals: ['role:system.admin'],
+                },
+                () => {
+                    clearReferences(node.id, node.path, 0);
+                }
+            );
+        } else if (node.path.indexOf('/megamenu/') !== -1) {
+            wipe('decorator')();
+        }
+    });
+}
+function activateEventListener() {
     wipeAll();
     if (!hasSetupListeners) {
         libs.event.listener({
@@ -164,67 +219,17 @@ function activateEventListener () {
     }
 }
 
-function nodeListenerCallback (event) {
-    event.data.nodes.forEach(function (node) {
-        if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            wipeOnChange(node.path);
-            libs.context.run(
-                {
-                    repository: 'com.enonic.cms.default',
-                    branch: 'master',
-                    user: {
-                        login: 'su',
-                        userStore: 'system',
-                    },
-                    principals: ['role:system.admin'],
-                },
-                () => {
-                    clearReferences(node.id, node.path, 0);
-                }
-            );
-        } else if (node.path.indexOf('/megamenu/') !== -1) {
-            wipe('decorator')();
-        }
-    });
-}
-
-function clearReferences (id, path, depth) {
-    if (depth > 10) {
-        log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
-        return;
-    }
-    const references = libs.content.query({
-        start: 0,
-        count: 1000,
-        query: `_references LIKE "${id}"`,
-    }).hits;
-
-    // fix path before getting parent
-    if (path.indexOf('/content/') === 0) {
-        path = path.replace('/content', '');
-    }
-
-    // get parent
-    const parent = libs.content.get({
-        key: path.split('/').slice(0, -1).join('/'),
-    });
-
-    // remove parents cache if its of a type that autogenerates content based on children and not reference
-    const parentTypesToClear = [
-        `${app.name}:page-list`,
-        `${app.name}:main-article`,
-    ];
-    if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
-        log.info('REMOVE PARENT CACHE');
-        references.push(parent);
-    }
-
-    references.forEach(el => {
-        wipeOnChange(el._path);
-
-        const deepTypes = [`${app.name}:content-list`];
-        if (deepTypes.indexOf(el.type) !== -1) {
-            clearReferences(el._id, el._path, depth + 1);
-        }
-    });
-}
+module.exports = {
+    wipeDecorator: wipe('decorator'),
+    wipePaths: wipe('paths'),
+    getDecorator: getSome('decorator'),
+    getAZList: getSome('azList'),
+    getPaths: getSome('paths'),
+    getRedirects: getSome('redirects'),
+    activateEventListener,
+    wipeAll,
+    stripPath: getPath,
+    etag: getEtag,
+    wipeOnChange,
+    clearReferences,
+};

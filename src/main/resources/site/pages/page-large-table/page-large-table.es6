@@ -46,7 +46,7 @@ exports.get = function (req) {
             body: libs.thymeleaf.render(view, model),
             headers: {
                 'Cache-Control': 'must-revalidate',
-                'ETag': etag(),
+                ETag: etag(),
             },
             pageContributions: {
                 headEnd: assets,
