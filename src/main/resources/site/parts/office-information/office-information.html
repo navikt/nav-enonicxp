@@ -30,6 +30,12 @@
                 velge rett skjema og rett adresse det skal sendes til.
             </p>
         </div>
+        <div class="p-note" data-th-if="${enhet.spesielleOpplysninger != ''}">
+            <h3>Opplysninger</h3>
+            <p>
+                [( ${enhet.spesielleOpplysninger} )]
+            </p>
+        </div>
         <div itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress">
             <h3>Postadresse</h3>
             <p>
@@ -48,7 +54,7 @@
         </div>
         <h3>Kontornummer</h3>
         <p>[[${enhet.kontornr}]]</p>
-        <div data-th-if="${!enhet.isHmsOrAls}" data-th-remove="tag">
+        <div data-th-if="${!enhet.isHmsOrAls && enhet.pms && enhet.pms.size > 0}" data-th-remove="tag">
             <h1>Publikumsmottak</h1>
             <div itemscope="" itemtype="http://schema.org/LocalBusiness" data-th-each="pm : ${enhet.pms}">
                 <h2 itemprop="name">[[${pm.stedbeskrivelse}]]</h2>

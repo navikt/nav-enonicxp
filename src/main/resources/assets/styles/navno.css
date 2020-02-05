@@ -3037,6 +3037,15 @@ body > img[src*="nav.tns-cs.net"] {
     margin-top: 15px
 }
 
+@media (min-width: 47.99em) {
+    .sitefooter .about-site ul{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+}
+
 @media (max-width: 47.99em) {
     .sitefooter .about-site ul li {
         display: block;

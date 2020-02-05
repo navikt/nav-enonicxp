@@ -22,6 +22,7 @@ function handleGet (req) {
             telefonnummerKommentar: undefined,
             publikumsmottak: undefined,
             epost: undefined,
+            spesielleOpplysninger: undefined,
         };
         const postadresse = kontaktInformasjon.postadresse;
         const postAdr = formatAddress(postadresse, false);
@@ -30,6 +31,7 @@ function handleGet (req) {
         const type = content.data.enhet.type;
         const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
         const epost = parseEmail(kontaktInformasjon.epost);
+        const specialInfo = parseSpecialInfo(kontaktInformasjon.spesielleOpplysninger);
 
         const enhet = {
             navn: `${content.data.enhet.navn} - kontorinformasjon`,
@@ -45,6 +47,7 @@ function handleGet (req) {
             isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
+            spesielleOpplysninger: specialInfo, 
         };
 
         const body = libs.thymeleaf.render(view, {
@@ -150,6 +153,54 @@ function parsePhoneNumber (number, mod) {
         }, '')
         : null;
 }
+
+function isBalanced(str) {
+    return (str.match(/{/g) || []).length === (str.match(/}/g) || []).length; 
+}
+
+function isTextClean(str) {
+    // checks for curlies in the string.
+    return str.split('{').length < 2 && str.split('}').length < 2;
+}
+
+function specialInfoParseLink (infoContent) {
+    const pattern = /\{((.*?):(.*?))\}/g;
+    let result = [];
+
+    let match = pattern.exec(infoContent);
+    while (match !== null) {
+        // Only correctly formatted urls should be turned into a-tags, so
+        // check if the match has balanced curlies and that description is 'OK'
+        if (isBalanced(match[0]) && isTextClean(match[2])) {
+            result.push({
+                match: match[0],
+                text: match[2],
+                url: match[3],
+                start: match.index,
+                end: pattern.lastIndex,
+            });
+        }
+        match = pattern.exec(infoContent);
+    }
+    return result;
+}
+
+function parseSpecialInfo (infoContent) {
+    let parsedString = infoContent;
+    if (! parsedString) {
+        return '';
+    }
+    // replace \n with <br />
+    parsedString = parsedString.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    // replace urls
+    const urls = specialInfoParseLink(parsedString);
+    urls.forEach((url) => {
+        parsedString = parsedString.replace(url.match, `<a href='${url.url}'>${url.text}</a>`);
+    });
+
+    return parsedString;
+}
+
 
 function parseEmail (emailString) {
     if (!emailString) {

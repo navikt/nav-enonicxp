@@ -1,40 +1,59 @@
-
+// Build dependencies
 buildscript {
-    repositories {
-    	maven {
-	        url "http://central.maven.org/maven2/"
-	    }
-    	maven {
-	        url "http://maven.adeo.no/nexus/content/groups/public/"
-	    }
-	maven {
-	        url "http://maven.adeo.no/nexus/content/repositories/m2internal/"
-	    }    
-        maven {
-            url "https://plugins.gradle.org/m2/"
+    // Internal dependencies
+    if (project.hasProperty('build-inside-firewall')) {
+        repositories {
+            maven {
+                url "http://maven.adeo.no/nexus/content/groups/public/"
+            }
+            maven {
+                url "http://maven.adeo.no/nexus/content/repositories/m2internal/"
+            }
+        }
+        dependencies {
+            classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
         }
     }
-    dependencies {
-        classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
-    }
 }
+
+// Build plugins
 plugins {
-    id 'com.enonic.xp.app' version '2.0.0' // A plugin developed by Enonic that adds some needed things to Gradle and makes app-building easier. It is required to use in any Enonic App.
+    id 'com.enonic.xp.app' version '2.0.0'
     id "com.moowork.node" version '1.3.1'
+}
+node {
+    version = '10.15.3'
 }
 apply plugin: "com.enonic.xp.app"
 
+// App config
 app {
     name = project.appName
     displayName = 'Nav.no - XP 2019'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
-	systemVersion = "${xpVersion}"
+    systemVersion = "${xpVersion}"
 }
 
-node {
-    // download = true
-    version = '10.15.3'
+// Project dependencies
+repositories {
+
+    // External dependencies
+    if (!project.hasProperty('build-inside-firewall')) {
+        mavenLocal()
+        jcenter()
+        xp.enonicRepo()
+    }
+
+    maven {
+        url "http://maven.adeo.no/nexus/content/groups/public"
+    }
+    maven {
+        url  "https://dl.bintray.com/ljl/maven"
+    }
+    maven {
+        url  "https://dl.bintray.com/pdrevland/wsUtil"
+    }
 }
 
 dependencies {
@@ -62,28 +81,11 @@ dependencies {
     include "com.enonic.lib:lib-http-client:2.0.0"
     include "com.enonic.lib:lib-cache:2.1.0"
     include 'com.enonic.lib:lib-cron:1.0.0'
-
     include "no.item.wsUtil:wsUtil:1.1.1"
     webjar "org.webjars:momentjs:2.14.1"
 }
 
-repositories {
-    /* Three repos for local development only */
-    // mavenLocal()
-    // jcenter()
-    // xp.enonicRepo()
-    /* */
-	maven {
-	    url "http://maven.adeo.no/nexus/content/groups/public"
-	}
-    maven {
-        url  "https://dl.bintray.com/ljl/maven"
-    }
-    maven {
-        url  "https://dl.bintray.com/pdrevland/wsUtil"
-    }
-}
-
+// Tasks
 task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
     if (project.hasProperty( 'watch' )) {
         args = ['run', 'dev']
@@ -95,12 +97,6 @@ task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
     outputs.dir "$buildDir/resources/main"
 }
 
-// task copyCoreJs( type: Copy ) {
-//     description = 'Copy core-js.'
-//     from "node_modules/core-js"
-//     into 'build/resources/main/lib/core-js'
-//     includeEmptyDirs = false
-// }
+
 
 jar.dependsOn += babelJs
-// jar.dependsOn += copyCoreJs
