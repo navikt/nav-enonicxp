@@ -51,7 +51,7 @@ function handleGet(req) {
                                 return undefined;
                             }
                             let link = '';
-                            if (element.type === 'media:document' || element.type === 'media:spreadsheet' || element.type === 'media:presentation' || element.type === 'media:archive')  {
+                            if (element.type === 'media:document' || element.type === 'media:spreadsheet' || element.type === 'media:presentation' || element.type === 'media:archive') {
                                 link = libs.portal.attachmentUrl({
                                     id: element._id,
                                     download: true,
