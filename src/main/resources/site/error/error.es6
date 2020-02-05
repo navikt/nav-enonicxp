@@ -3,7 +3,7 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     portal: require('/lib/xp/portal'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
     tools: require('/lib/migration/tools'),
 };
 

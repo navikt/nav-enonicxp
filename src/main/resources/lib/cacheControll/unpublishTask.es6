@@ -4,6 +4,7 @@ const libs = {
     task: require('/lib/xp/task'),
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
+    cacheControll: require('/lib/cacheControll'),
     event: require('/lib/xp/event'),
 };
 const masterRepo = libs.node.connect({
@@ -29,29 +30,27 @@ let prevTestDate = new Date();
 
 const TIME_BETWEEN_CHECKS = 60000;
 const PADDING = 10000;
-const TASK_DESCRIPTION = 'ClearScheduledPublished';
-exports.taskDescription = TASK_DESCRIPTION;
 
 let taskHasStarted = false;
-exports.start = function (appIsRunning) {
-    if (!taskHasStarted && appIsRunning) {
+exports.start = function () {
+    if (!taskHasStarted) {
         taskHasStarted = true;
-        const currentTaskId = setupTask(appIsRunning);
-        return currentTaskId;
+        setupTask();
     } else {
-        log.info('unpublish task already running or app has shut down');
+        log.info('unpublish task already running');
     }
 };
 
 exports.setupTask = setupTask;
-function setupTask (applicationIsRunning) {
-    return libs.task.submit({
-        description: TASK_DESCRIPTION,
+function setupTask () {
+    libs.task.submit({
+        description: 'clean out expired content from cache',
         task: () => {
             // stop if another node is running this task
             let state = getState();
-            if (!applicationIsRunning || (state.isRunning && (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS + PADDING > Date.now()))) {
+            if (state.isRunning && (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS + PADDING > Date.now())) {
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
+                setupTask();
                 return;
             }
             setIsRunning(true);
@@ -84,6 +83,8 @@ function setupTask (applicationIsRunning) {
 
             setIsRunning(false);
             libs.task.sleep(sleepFor);
+
+            setupTask();
         },
     });
 }

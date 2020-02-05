@@ -6,8 +6,8 @@ const libs = {
     task: require('/lib/xp/task'),
     tools: require('/lib/migration/tools'),
     navUtils: require('/lib/nav-utils'),
-    cache: require('/lib/siteCache'),
-    unpublish: require('/lib/siteCache/invalidator'),
+    cache: require('/lib/cacheControll'),
+    unpublish: require('/lib/cacheControll/unpublishTask'),
     officeInformation: require('/lib/officeInformation'),
 };
 
