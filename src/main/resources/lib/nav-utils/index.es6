@@ -3,12 +3,26 @@ const libs = {
     i18n: require('/lib/xp/i18n'),
     portal: require('/lib/xp/portal'),
     moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
-    // util: require('/lib/enonic/util')
 };
 
 // *********************************
-// A collection of functions useful for Nav as a CMS2XP-project, but might also (with some tuning) be handy for other migration projects.
+// A collection of functions useful for Nav as
+// a CMS2XP-project, but might also (with some tuning) be handy for other
+// migration projects.
 // *********************************
+
+/**
+ * Make sure the content is an array.
+ * @param {*} content Whatever is passed in
+ * @returns {Object[]} Array containing the content or just content
+ */
+function forceArray(content) {
+    if (content) {
+        return Array.isArray(content) ? content : [content];
+    }
+    return [];
+}
+exports.forceArray = forceArray;
 
 /**
  * Sort contents in the same order as the sorted array of ids.
@@ -18,13 +32,14 @@ const libs = {
  */
 exports.sortContents = function (contents, sortedIds) {
     const sorted = [];
-    // if (sortedIds.isArray) {
-    if (typeof sortedIds === 'string') { sortedIds = [sortedIds]; }
-    sortedIds.forEach((id) => {
+    const ids = forceArray(sortedIds);
+    let content = contents;
+
+    ids.forEach((id) => {
         let found = false;
-        contents = contents.filter((content) => {
-            if (!found && content._id === id) {
-                sorted.push(content);
+        content = content.filter((item) => {
+            if (!found && item._id === id) {
+                sorted.push(item);
                 found = true;
                 return false;
             }
@@ -33,15 +48,6 @@ exports.sortContents = function (contents, sortedIds) {
     });
 
     return sorted;
-};
-
-/**
- * Make sure the content is an array.
- * @param {*} content Whatever is passed in
- * @returns {Object[]} Array containing the content or just content
- */
-exports.forceArray = function (content) {
-    return content ? Array.isArray(content) ? content : [content] : [];
 };
 
 /**
@@ -68,7 +74,8 @@ exports.getContentParam = function (content, paramName, defaultValue) {
 };
 
 /**
- * Used for menus to get specific parameter's values. Probably could be tweaked and merged with getContentParam ...
+ * Used for menus to get specific parameter's values. Probably could be tweaked
+ * and merged with getContentParam ...
  */
 exports.getParameterValue = function (content, paramName) {
     const parameters = content.data.parameters;
@@ -106,7 +113,11 @@ exports.getContentByMenuKey = function (cmsMenuKey) {
  * @returns {object|null} content object or null if not found.
  */
 exports.getContentByCmsKey = function (contentKey) {
-    log.info('getContentByMenuKey query: ' + 'x.' + app.name.replace(/\./g, '-') + '.cmsContent.contentKey = \'' + contentKey + '\'');
+    log.info('getContentByMenuKey query: '
+             + 'x.'
+             + app.name.replace(/\./g, '-')
+             + '.cmsContent.contentKey = \''
+             + contentKey + '\'');
     const queryResult = libs.content.query({
         start: 0,
         count: 1,
@@ -115,41 +126,20 @@ exports.getContentByCmsKey = function (contentKey) {
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 };
 
-exports.fixDateFormat = fixDateFormat;
 /**
- * @description Date formats on content created in XP7 is not necessarily supported in the Date wrapper in XP7 (but it does work in browsers)
+ * @description Date formats on content created in XP7 is not necessarily
+ * supported in the Date wrapper in XP7 (but it does work in browsers)
  * @param {string} date Date
  * @returns {string} Correctly formated date
  */
 function fixDateFormat(date) {
     if (date.indexOf('.') !== -1) {
-        date = date.split('.')[0] + 'Z';
+        return date.split('.')[0] + 'Z';
     }
     return date;
 }
+exports.fixDateFormat = fixDateFormat;
 
-exports.dateTimePublished = function (content, language) {
-    if (!content) { return ''; }
-    const navPublished = libs.i18n.localize({
-        key: 'main_article.published', locale: language,
-    });
-    const p = fixDateFormat(content.publish.from ? content.publish.from : content.createdTime);
-    const published = formatDate(p, language);
-    const publishedString = `${navPublished} ${published}`;
-
-    let modifiedString = '';
-    const m = fixDateFormat(content.modifiedTime);
-    if (new Date(m) > new Date(p)) {
-        const navUpdated = libs.i18n.localize({
-            key: 'main_article.lastChanged', locale: language,
-        });
-        const lastModified = formatDate(content.modifiedTime, language);
-        modifiedString = ` | ${navUpdated} ${lastModified}`;
-    }
-    return publishedString + modifiedString;
-};
-
-exports.formatDate = formatDate;
 function formatDate(date, language) {
     // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
     return libs.moment(date).locale(language === 'en' ? 'en-gb' : 'nb').format('L');
@@ -192,6 +182,29 @@ exports.getLanguageVersions = function (content) {
     });
     return ret;
 };
+exports.formatDate = formatDate;
+
+exports.dateTimePublished = function (content, language) {
+    if (!content) { return ''; }
+    const navPublished = libs.i18n.localize({
+        key: 'main_article.published', locale: language,
+    });
+    const p = fixDateFormat(content.publish.from ? content.publish.from : content.createdTime);
+    const published = formatDate(p, language);
+    const publishedString = `${navPublished} ${published}`;
+
+    let modifiedString = '';
+    const m = fixDateFormat(content.modifiedTime);
+    if (new Date(m) > new Date(p)) {
+        const navUpdated = libs.i18n.localize({
+            key: 'main_article.lastChanged', locale: language,
+        });
+        const lastModified = formatDate(content.modifiedTime, language);
+        modifiedString = ` | ${navUpdated} ${lastModified}`;
+    }
+    return publishedString + modifiedString;
+};
+
 
 /**
  * @description get all children of content

@@ -8,21 +8,6 @@ const libs = {
 // Resolve the view
 const view = resolve('main-article-linked-list.html');
 
-exports.get = function (req) {
-    return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
-        const content = libs.portal.getContent();
-        const list = createList(content);
-        const model = {
-            hasList: list.length > 1,
-            list,
-        };
-
-        return {
-            body: libs.thymeleaf.render(view, model),
-        };
-    });
-};
-
 function hasMainArticleChapterChildren(content) {
     const children = libs.navUtils.getAllChildren(content);
     const hasChapters = children.filter(child => child.type === app.name + ':main-article-chapter').length > 0;
@@ -71,3 +56,17 @@ function createList(content) {
             }))
     );
 }
+exports.get = function (req) {
+    return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
+        const content = libs.portal.getContent();
+        const list = createList(content);
+        const model = {
+            hasList: list.length > 1,
+            list,
+        };
+
+        return {
+            body: libs.thymeleaf.render(view, model),
+        };
+    });
+};

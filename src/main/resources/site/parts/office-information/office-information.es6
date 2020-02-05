@@ -7,123 +7,6 @@ const libs = {
 
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];
 const view = resolve('office-information.html');
-function handleGet(req) {
-    return libs.cache.getPaths(req.rawPath, 'office-information', req.branch, () => {
-        const content = libs.portal.getContent();
-        const lang = {
-            closed: 'stengt',
-        };
-
-        const kontaktInformasjon = content.data.kontaktinformasjon || {
-            besoeksadresse: undefined,
-            postaddresse: undefined,
-            faksnummer: undefined,
-            telefonnummer: undefined,
-            telefonnummerKommentar: undefined,
-            publikumsmottak: undefined,
-            epost: undefined,
-            spesielleOpplysninger: undefined,
-        };
-        const postadresse = kontaktInformasjon.postadresse;
-        const postAdr = formatAddress(postadresse, false);
-        let publikumsmottak = kontaktInformasjon.publikumsmottak;
-        publikumsmottak = publikumsmottak ? Array.isArray(publikumsmottak) ? publikumsmottak : [publikumsmottak] : [];
-        const type = content.data.enhet.type;
-        const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
-        const epost = parseEmail(kontaktInformasjon.epost);
-        const specialInfo = parseSpecialInfo(kontaktInformasjon.spesielleOpplysninger);
-
-        const enhet = {
-            navn: `${content.data.enhet.navn} - kontorinformasjon`,
-            orgNr: content.data.enhet.organisasjonsnummer,
-            kontornr: content.data.enhet.enhetNr,
-            postaddresse: postAdr,
-            poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
-            postnummer: postadresse ? postadresse.postnummer : '',
-            faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
-            telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
-            telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
-            pms: publikumsmottak.map(val => formatAudienceReception(val, content.language)),
-            isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
-            besoeksadresse,
-            epost,
-            spesielleOpplysninger: specialInfo,
-        };
-
-        const body = libs.thymeleaf.render(view, {
-            content,
-            published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
-            enhet,
-            lang,
-        });
-
-        return {
-            contentType: 'text/html',
-            body: body,
-            pageContributions: {
-                headEnd: [
-                    `<link rel="stylesheet" href="${libs.portal.assetUrl({
-                        path: 'styles/enhetsinfo/enhetsinfo.css',
-                    })}" />`,
-                ],
-            },
-        };
-    });
-}
-
-exports.get = handleGet;
-
-function formatAudienceReception(audienceReception, language = 'no') {
-    let aapningstider = libs.navUtils.forceArray(audienceReception.aapningstider);
-
-    // filter regular and exceptions for opening hour then introduce formatting for display
-    aapningstider = aapningstider.reduce((acc, elem) => {
-        if (elem.dato) {
-            elem.isoDate = elem.dato;
-            elem.dato = libs.navUtils.formatDate(elem.dato, language);
-            if (elem.fra && elem.til) {
-                elem.a = elem.fra + ' - ' + elem.til;
-            }
-            acc.exceptions.push(elem);
-        } else {
-            const displayVal = formatMetaOpeningHours(elem);
-            displayVal.a = displayVal.fra + ' - ' + displayVal.til;
-            acc.regular.push(displayVal);
-        }
-        return acc;
-    }, {
-        regular: [], exceptions: [],
-    });
-
-    return {
-        besokkom: formatAddress(audienceReception.besoeksadresse, true),
-        stedbeskrivelse: audienceReception.stedsbeskrivelse || audienceReception.besoeksadresse.poststed,
-        unntakAapning: aapningstider.exceptions,
-        apning: aapningstider.regular
-            .sort(sortOpeningHours),
-    };
-}
-
-function formatMetaOpeningHours(el) {
-    let day;
-    if (el.dag === 'Mandag') {
-        day = 'Mo';
-    } else if (el.dag === 'Tirsdag') {
-        day = 'Tu';
-    } else if (el.dag === 'Onsdag') {
-        day = 'We';
-    } else if (el.dag === 'Torsdag') {
-        day = 'Th';
-    } else if (el.dag === 'Fredag') {
-        day = 'Fr';
-    }
-    el.meta = `${day} ${el.fra}-${el.til}`;
-    return el;
-}
-
-function sortOpeningHours(a, b) {
-    return dagArr.indexOf(a.dag) - dagArr.indexOf(b.dag);
-}
 
 function formatAddress(address, withZip) {
     if (!address) {
@@ -144,14 +27,70 @@ function formatAddress(address, withZip) {
     return formatedAddress;
 }
 
+function formatMetaOpeningHours(el) {
+    let day;
+    if (el.dag === 'Mandag') {
+        day = 'Mo';
+    } else if (el.dag === 'Tirsdag') {
+        day = 'Tu';
+    } else if (el.dag === 'Onsdag') {
+        day = 'We';
+    } else if (el.dag === 'Torsdag') {
+        day = 'Th';
+    } else if (el.dag === 'Fredag') {
+        day = 'Fr';
+    }
+    const meta = `${day} ${el.fra}-${el.til}`;
+    return { ...el, meta };
+}
+
+function sortOpeningHours(a, b) {
+    return dagArr.indexOf(a.dag) - dagArr.indexOf(b.dag);
+}
+
+function formatAudienceReception(audienceReception, language = 'no') {
+    let aapningstider = libs.navUtils.forceArray(audienceReception.aapningstider);
+
+    // filter regular and exceptions for opening hour then introduce formatting for display
+    aapningstider = aapningstider.reduce((acc, elem) => {
+        if (elem.dato) {
+            const isoDate = elem.dato;
+            const dato = libs.navUtils.formatDate(elem.dato, language);
+            let a = '';
+            if (elem.fra && elem.til) {
+                a = elem.fra + ' - ' + elem.til;
+            }
+            acc.exceptions.push({
+                ...elem, isoDate, dato, a
+            });
+        } else {
+            const displayVal = formatMetaOpeningHours(elem);
+            displayVal.a = displayVal.fra + ' - ' + displayVal.til;
+            acc.regular.push(displayVal);
+        }
+        return acc;
+    }, {
+        regular: [], exceptions: [],
+    });
+
+    return {
+        besokkom: formatAddress(audienceReception.besoeksadresse, true),
+        stedbeskrivelse: audienceReception.stedsbeskrivelse
+            || audienceReception.besoeksadresse.poststed,
+        unntakAapning: aapningstider.exceptions,
+        apning: aapningstider.regular
+            .sort(sortOpeningHours),
+    };
+}
 function parsePhoneNumber(number, mod) {
-    mod = mod || 2;
-    return number
-        ? number.replace(/ /g, '').split('').reduce((t, e, i) => {
-            t += e + (i % mod === 1 ? ' ' : '');
-            return t;
-        }, '')
-        : null;
+    const modular = mod || 2;
+    if (number) {
+        return number
+            .replace(/ /g, '')
+            .split('')
+            .reduce((t, e, i) => t + e + (i % modular === 1 ? ' ' : ''), '');
+    }
+    return null;
 }
 
 function isBalanced(str) {
@@ -204,12 +143,13 @@ function parseSpecialInfo(infoContent) {
 
 function parseEmail(emailString) {
     if (!emailString) {
-        return;
+        return '';
     }
+
     let email;
     let internal = false;
-    const betweenBracketsPattern = /\[(.*?)\]/g;
     let match;
+    const betweenBracketsPattern = /\[(.*?)\]/g;
 
     while ((match = betweenBracketsPattern.exec(emailString)) !== null) {
         const matchedRes = match[1];
@@ -220,7 +160,71 @@ function parseEmail(emailString) {
         }
     }
     if (internal) {
-        return;
+        return '';
     }
     return email;
 }
+function handleGet(req) {
+    return libs.cache.getPaths(req.rawPath, 'office-information', req.branch, () => {
+        const content = libs.portal.getContent();
+        const lang = {
+            closed: 'stengt',
+        };
+
+        const kontaktInformasjon = content.data.kontaktinformasjon || {
+            besoeksadresse: undefined,
+            postaddresse: undefined,
+            faksnummer: undefined,
+            telefonnummer: undefined,
+            telefonnummerKommentar: undefined,
+            publikumsmottak: undefined,
+            epost: undefined,
+            spesielleOpplysninger: undefined,
+        };
+        const postadresse = kontaktInformasjon.postadresse;
+        const postAdr = formatAddress(postadresse, false);
+        const publikumsmottak = libs.utils.forceArray(kontaktInformasjon.publikumsmottak);
+        const type = content.data.enhet.type;
+        const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
+        const epost = parseEmail(kontaktInformasjon.epost);
+        const specialInfo = parseSpecialInfo(kontaktInformasjon.spesielleOpplysninger);
+
+        const enhet = {
+            navn: `${content.data.enhet.navn} - kontorinformasjon`,
+            orgNr: content.data.enhet.organisasjonsnummer,
+            kontornr: content.data.enhet.enhetNr,
+            postaddresse: postAdr,
+            poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
+            postnummer: postadresse ? postadresse.postnummer : '',
+            faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
+            telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
+            telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
+            pms: publikumsmottak.map(val => formatAudienceReception(val, content.language)),
+            isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
+            besoeksadresse,
+            epost,
+            spesielleOpplysninger: specialInfo,
+        };
+
+        const body = libs.thymeleaf.render(view, {
+            content,
+            published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
+            enhet,
+            lang,
+        });
+
+        return {
+            contentType: 'text/html',
+            body: body,
+            pageContributions: {
+                headEnd: [
+                    `<link rel="stylesheet" href="${libs.portal.assetUrl({
+                        path: 'styles/enhetsinfo/enhetsinfo.css',
+                    })}" />`,
+                ],
+            },
+        };
+    });
+}
+
+exports.get = handleGet;

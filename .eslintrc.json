@@ -5,9 +5,8 @@
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
-
         "comma-dangle": ["error", "only-multiline"],
-        "no-cond-assign": ["error", "always"],
+        "no-cond-assign": ["error", "except-parens"],
         "no-unused-vars": ["error", { "vars": "all", "args": "none"}],
         "prefer-template": "off",
         "no-console": "off",

@@ -11,11 +11,16 @@ const globals = {
 /**
  * Returns the full breadcrumb menu path for the current content and site.
  * @param {Object} params - A JSON object containing the (optional) settings for the function.
- *   @param {Boolean} [params.linkActiveItem=false] - Wrap the active (current content) item with a link.
- *   @param {Boolean} [params.showHomepage=true] - Disable return of item for the site homepage.
- *   @param {String} [params.homepageTitle=null] - Customize (overwrite) the displayName of home/site link (if used). Common usage: "Home" or "Start".
- *   @param {String} [params.dividerHtml=null] - Any custom html you want appended to each item, except the last one. Common usage: '<span class="divider">/</span>'.
- *   @param {String} [params.urlType=null] - Control type of URL to be generated for menu items, default is 'server', only other option is 'absolute'.
+ * @param {Boolean} [params.linkActiveItem=false] - Wrap the active (current
+ * content) item with a link.
+ * @param {Boolean} [params.showHomepage=true] - Disable return of item for the site homepage.
+ * @param {String} [params.homepageTitle=null] - Customize (overwrite) the
+ * displayName of home/site link (if used). Common usage: "Home" or "Start".
+ * @param {String} [params.dividerHtml=null] - Any custom html you want appended
+ * to each item, except the last one. Common usage: '<span
+ * class="divider">/</span>'.
+ *   @param {String} [params.urlType=null] - Control type of URL to be generated
+ *   for menu items, default is 'server', only other option is 'absolute'.
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
 exports.getBreadcrumbMenu = function (params) {
@@ -45,8 +50,8 @@ exports.getBreadcrumbMenu = function (params) {
         }
     }
 
-    // Loop the entire path for current content based on the slashes. Generate one JSON item node for each item.
-    // If on frontpage, skip the path-loop
+    // Loop the entire path for current content based on the slashes. Generate
+    // one JSON item node for each item. If on frontpage, skip the path-loop
     if (content._path !== site._path) {
         const fullPath = content._path;
         const arrVars = fullPath.split('/');
@@ -91,8 +96,9 @@ exports.getBreadcrumbMenu = function (params) {
             path: site._path,
             type: settings.urlType,
         });
+        // Fallback to site displayName if no custom name given
         breadcrumbItems.push({
-            text: settings.homepageTitle || site.displayName, // Fallback to site displayName if no custom name given
+            text: settings.homepageTitle || site.displayName,
             url: homeUrl,
             active: content._path === site._path,
             type: site.type,
@@ -105,60 +111,6 @@ exports.getBreadcrumbMenu = function (params) {
 
     return breadcrumbMenu;
 };
-
-/** *
- * Per Olav 02.2019: Endret menyhåndtering
- * Bygger menyen fra elementer i en mappe istedenfor å gå igjennom hele siten.
- * Beholdt rekursiviteten
- ** */
-exports.getMegaMenu = function (content, levels) {
-    const subMenus = [];
-    if (content) {
-        levels--;
-        return libs.content
-            .getChildren({
-                key: content._id,
-                start: 0,
-                count: 100,
-            })
-            .hits.reduce((t, el) => {
-                t.push(menuToJson(el, levels));
-                return t;
-            }, subMenus);
-    }
-    return [];
-};
-function menuToJson(content, levels) {
-    let subMenus = [];
-    let inPath = false;
-    let isActive = false;
-    const currentContent = libs.portal.getContent();
-
-    if (levels > 0) {
-        subMenus = exports.getMegaMenu(content, levels);
-    }
-
-    // Is the menuitem we are processing in the currently viewed content's path?
-    if (content._path === currentContent._path.substring(0, content._path.length)) {
-        inPath = true;
-    }
-
-    // Is the currently viewed content the current menuitem we are processing?
-    if (content._path === currentContent._path) {
-        isActive = true;
-        inPath = false; // Reset this so an menuitem isn't both in a path and active (makes no sense)
-    }
-
-    return {
-        displayName: (content.displayName ? content.displayName : 'Tomt menyvalg'),
-        path: getTargetPath(content.data.target),
-        id: content._id,
-        inPath,
-        isActive,
-        hasChildren: subMenus.length > 0,
-        children: subMenus,
-    };
-}
 
 function getTargetPath(targetId) {
     if (targetId) {
@@ -180,6 +132,62 @@ function getTargetPath(targetId) {
     return '/';
 }
 
+function menuToJson(content, levels) {
+    let subMenus = [];
+    let inPath = false;
+    let isActive = false;
+    const currentContent = libs.portal.getContent();
+
+    if (levels > 0) {
+        subMenus = exports.getMegaMenu(content, levels);
+    }
+
+    // Is the menuitem we are processing in the currently viewed content's path?
+    if (content._path === currentContent._path.substring(0, content._path.length)) {
+        inPath = true;
+    }
+
+    // Is the currently viewed content the current menuitem we are processing?
+    if (content._path === currentContent._path) {
+        isActive = true;
+        inPath = false; // Reset this so an menuitem isn't both in a path and active
+    }
+
+    return {
+        displayName: (content.displayName ? content.displayName : 'Tomt menyvalg'),
+        path: getTargetPath(content.data.target),
+        id: content._id,
+        inPath,
+        isActive,
+        hasChildren: subMenus.length > 0,
+        children: subMenus,
+    };
+}
+/** *
+ * Per Olav 02.2019: Endret menyhåndtering
+ * Bygger menyen fra elementer i en mappe istedenfor å gå igjennom hele siten.
+ * Beholdt rekursiviteten
+ ** */
+exports.getMegaMenu = function (content, levels) {
+    const subMenus = [];
+    let currentLevel = levels;
+    if (content) {
+        currentLevel--;
+        return libs.content
+            .getChildren({
+                key: content._id,
+                start: 0,
+                count: 100,
+            })
+            .hits.reduce((t, el) => {
+                t.push(menuToJson(el, currentLevel));
+                return t;
+            }, subMenus);
+    }
+    return [];
+};
+
+
 /**
  * Get menu tree
  * @param {integer} levels - menu levels to get
@@ -188,38 +196,30 @@ function getTargetPath(targetId) {
 exports.getMenuTree = function (levels) {
     let menu = [];
     const site = libs.portal.getSite();
-    levels = isInt(levels) ? levels : 1;
+    const currentlevels = Number.isInteger(levels) ? levels : 1;
 
     if (site) {
-        menu = exports.getSubMenus(site, levels);
+        menu = exports.getSubMenus(site, currentlevels);
     }
 
     return menu;
 };
 
-exports.getSubMenus = function (parentContent, levels) {
-    const subMenus = [];
-
-    if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
-        subMenus.push(menuItemToJson(parentContent, 0));
-    }
-    levels--;
-    return libs.content
-        .getChildren({
-            key: parentContent._id,
-            count: 200,
-        })
-        .hits.reduce((t, el) => {
-            if (isMenuItem(el)) {
-                t.push(menuItemToJson(el, levels));
-            }
-            return t;
-        }, subMenus);
-};
+/**
+ * Checks if the content is excluded from the menu (From NAV cms page parameter
+ * 'exclude-from-mainmenu').
+ * @param {Content} content - content object obtained with 'portal.getContent',
+ * 'portal.getSite' or any 'content.*' commands
+ * @return {Boolean} true if the content should be excluded from the menu
+ */
+function excludeFromMainMenu(content) {
+    return libs.navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
+}
 
 /**
  * Checks if the content is a menu item.
- * @param {Content} content - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
+ * @param {Content} content - content object obtained with 'portal.getContent',
+ * 'portal.getSite' or any 'content.*' commands
  * @return {Boolean} true if the content is marked as menu item
  */
 function isMenuItem(content) {
@@ -239,17 +239,9 @@ function isMenuItem(content) {
 }
 
 /**
- * Checks if the content is excluded from the menu (From NAV cms page parameter 'exclude-from-mainmenu').
- * @param {Content} content - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
- * @return {Boolean} true if the content should be excluded from the menu
- */
-function excludeFromMainMenu(content) {
-    return libs.navUtils.getParameterValue(content, 'exclude-from-mainmenu') === 'true';
-}
-
-/**
  * Returns JSON data for a menuitem.
- * @param {Content} content - content object obtained with 'portal.getContent', 'portal.getSite' or any 'content.*' commands
+ * @param {Content} content - content object obtained with 'portal.getContent',
+ * 'portal.getSite' or any 'content.*' commands
  * @param {Integer} levels - The number of submenus to retrieve
  * @return {Object} Menuitem JSON data
  */
@@ -271,7 +263,7 @@ function menuItemToJson(content, levels) {
     // Is the currently viewed content the current menuitem we are processing?
     if (content._path === currentContent._path) {
         isActive = true;
-        inPath = false; // Reset this so an menuitem isn't both in a path and active (makes no sense)
+        inPath = false; // Reset this so an menuitem isn't both in a path and active
     }
 
     const menuItem = content.x[globals.appPath]['menu-item'];
@@ -294,11 +286,22 @@ function menuItemToJson(content, levels) {
     };
 }
 
-/**
- * Check if value is integer
- * @param value
- * @returns {boolean}
- */
-function isInt(value) {
-    return !isNaN(value) && parseInt(Number(value)) === value && !isNaN(parseInt(value, 10));
-}
+exports.getSubMenus = function (parentContent, levels) {
+    const subMenus = [];
+    let currentLevels = levels;
+    if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {
+        subMenus.push(menuItemToJson(parentContent, 0));
+    }
+    currentLevels--;
+    return libs.content
+        .getChildren({
+            key: parentContent._id,
+            count: 200,
+        })
+        .hits.reduce((t, el) => {
+            if (isMenuItem(el)) {
+                t.push(menuItemToJson(el, currentLevels));
+            }
+            return t;
+        }, subMenus);
+};

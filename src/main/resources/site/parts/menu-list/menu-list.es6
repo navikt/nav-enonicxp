@@ -1,9 +1,10 @@
 const libs = {
-    thymeleaf: require('/lib/thymeleaf'),
-    portal: require('/lib/xp/portal'),
-    content: require('/lib/xp/content'),
     cache: require('/lib/cacheControll'),
+    content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
+    navUtils: require('/lib/nav-utils'),
+    portal: require('/lib/xp/portal'),
+    thymeleaf: require('/lib/thymeleaf'),
 };
 const view = resolve('menu-list.html');
 
@@ -36,7 +37,8 @@ function handleGet(req) {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
-                const links = forceArr(menuListItems[el].link).concat(forceArr(menuListItems[el].files));
+                const links = libs.utils.forceArray(menuListItems[el].link)
+                    .concat(libs.utils.forceArray(menuListItems[el].files));
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     expanded: el === 'shortcuts',
@@ -70,7 +72,7 @@ function handleGet(req) {
                                 link,
                             };
                         })
-                        .filter(el => !!el),
+                        .filter(elem => !!elem),
                 };
             })
             .filter(el => el && el.links && el.links.length > 0);
@@ -92,6 +94,3 @@ function handleGet(req) {
 }
 
 exports.get = handleGet;
-function forceArr(element) {
-    return element !== undefined ? (Array.isArray(element) ? element : [element]) : [];
-}

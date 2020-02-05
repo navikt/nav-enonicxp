@@ -9,9 +9,11 @@ const libs = {
 const view = resolve('driftsmelding-heading.html');
 
 function handleGet(req) {
-    // Må kjøre i context av master-branch, ellers vil preview i Content studio alltid vise en driftsmelding
-    // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer
-    // return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
+    // Må kjøre i context av master-branch, ellers vil preview i Content studio
+    // alltid vise en driftsmelding
+    // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer return
+    // libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () =>
+    // {
     return libs.context.run(
         {
             repository: 'com.enonic.cms.default',
@@ -23,7 +25,8 @@ function handleGet(req) {
             principals: ['role:system.admin'],
         },
         () => {
-            // Henter ut eventuell publisert driftsmelding. Hvis flere er publisert, hentes sist publiserte
+            // Henter ut eventuell publisert driftsmelding. Hvis flere er
+            // publisert, hentes sist publiserte
             const message = libs.content.getChildren({
                 key: '/www.nav.no/no/driftsmeldinger',
                 start: 0,

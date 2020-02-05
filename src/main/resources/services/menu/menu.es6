@@ -4,8 +4,6 @@ const libs = {
     menuUtils: require('/lib/menu-utils'),
 };
 
-exports.get = handleGet;
-
 function handleGet() {
     const menu = libs.menuUtils.getMegaMenu(libs.content.get({
         key: '/www.nav.no/dekorator-meny/',
@@ -16,3 +14,5 @@ function handleGet() {
         contentType: 'application/json',
     };
 }
+
+exports.get = handleGet;

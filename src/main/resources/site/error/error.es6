@@ -34,7 +34,9 @@ exports.handle404 = function (req) {
     if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
         element = content;
     } else if (content) {
-        // if the content has no template, and is not an intenral link or external link, send the user to 404, this should stop endless redirect loops
+        // if the content has no template, and is not an intenral link or
+        // external link, send the user to 404, this should stop endless
+        // redirect loops
         contentExistsButHasNoTemplate = true;
     }
 
@@ -138,42 +140,44 @@ exports.handle404 = function (req) {
     };
 };
 
-function create404page() {
-    return libs.context.run(
-        {
-            repository: 'com.enonic.cms.default',
-            branch: 'draft',
-            user: {
-                login: 'su',
-                userStore: 'system',
-            },
-            principals: ['role:system.admin'],
-        },
-        () => {
-            const page = libs.content.create({
-                name: '404',
-                parentPath: '/www.nav.no',
-                displayName: 'Oops, noe gikk galt',
-                contentType: app.name + ':404',
-                data: {
-                    errorMessage: 'Siden eller tjenesten finnes ikke eller er for tiden<br/>utilgjengelig. Vi beklager dette. Prøv igjen senere.',
-                },
-            });
-            const res = libs.content.publish({
-                keys: ['/www.nav.no/404'],
-                sourceBranch: 'draft',
-                targetBranch: 'master',
-                includeDependencies: false,
-            });
-            if (res) {
-                return libs.portal.pageUrl({
-                    path: page,
-                });
-            }
-            return null;
-        }
-    );
-}
+// function create404page() {
+//     return libs.context.run(
+//         {
+//             repository: 'com.enonic.cms.default',
+//             branch: 'draft',
+//             user: {
+//                 login: 'su',
+//                 userStore: 'system',
+//             },
+//             principals: ['role:system.admin'],
+//         },
+//         () => {
+//             const page = libs.content.create({
+//                 name: '404',
+//                 parentPath: '/www.nav.no',
+//                 displayName: 'Oops, noe gikk galt',
+//                 contentType: app.name + ':404',
+//                 data: {
+//                     errorMessage: 'Siden eller tjenesten finnes ikke'
+//                       ++ 'eller er for tiden<br/>utilgjengelig. Vi beklager dette.'
+//                       ++ ' Prøv igjen senere.',
+//                 },
+//             });
+//             const res = libs.content.publish({
+//                 keys: ['/www.nav.no/404'],
+//                 sourceBranch: 'draft',
+//                 targetBranch: 'master',
+//                 includeDependencies: false,
+//             });
+//             if (res) {
+//                 return libs.portal.pageUrl({
+//                     path: page,
+//                 });
+//             }
+//             return null;
+//         }
+//     );
+// }
 
 // Handle all other errors - to avoid default error page with stack trace
 exports.handleError = function (err) {

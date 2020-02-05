@@ -7,7 +7,8 @@ const libs = {
 const view = resolve('contentAZ.html');
 
 /*
-  Innhold til Footer A-Å betår av lenker som er lagt inn i mappe for dette + siste nivå fra hovedmenyen
+  Innhold til Footer A-Å betår av lenker som er lagt inn i mappe for dette +
+  siste nivå fra hovedmenyen
  */
 function handleGet(req) {
     const letter = req.params.letter;
