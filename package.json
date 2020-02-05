@@ -10,7 +10,7 @@
         "lint:watch": "onchange \"src/main/resources/**/*.es6\" -- npm run lint --silent",
         "lint": "eslint --ext=js --ext=es6 ./src/main/resources",
         "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\"",
-        "dev": "concurrently \"npm-run-all lint:watch babel:watch\""
+        "dev": "npm-run-all -p lint:watch babel:watch"
     },
     "repository": {
         "type": "git",
@@ -36,7 +36,6 @@
         "eslint-plugin-standard": "^4.0.1",
         "eslint-plugin-jsx-a11y": "^6.1.2",
         "eslint-plugin-react": "^7.11.1",
-        "concurrently": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "replace": "^0.3.0",
         "prompt": "^1.0.0",
