@@ -12,7 +12,7 @@ const myHash = Math.random().toString(36).substring(2, 15)
       + Math.random().toString(36).substring(2, 15);
 
 log.info(`Creating new cache: ${myHash}`);
-
+const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
     decorator: libs.cache.newCache({
         size: 50,
@@ -173,6 +173,14 @@ function clearReferences(id, path, depth) {
 }
 
 function nodeListenerCallback(event) {
+    // Stop execution if not valid event type.
+    const shouldRun = cacheInvalidatorEvents.filter(
+        eventType => event.type === eventType
+    );
+    if (!shouldRun) {
+        return false;
+    }
+
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
@@ -194,12 +202,14 @@ function nodeListenerCallback(event) {
             wipe('decorator')();
         }
     });
+    return true;
 }
+
 function activateEventListener() {
     wipeAll();
     if (!hasSetupListeners) {
         libs.event.listener({
-            type: 'node.pushed',
+            type: 'node.*',
             localOnly: false,
             callback: nodeListenerCallback,
         });
