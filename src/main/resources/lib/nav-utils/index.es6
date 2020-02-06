@@ -4,7 +4,6 @@ const libs = {
     portal: require('/lib/xp/portal'),
     moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
 };
-
 // *********************************
 // A collection of functions useful for Nav as
 // a CMS2XP-project, but might also (with some tuning) be handy for other
@@ -22,7 +21,6 @@ function forceArray(content) {
     }
     return [];
 }
-exports.forceArray = forceArray;
 
 /**
  * Sort contents in the same order as the sorted array of ids.
@@ -30,9 +28,9 @@ exports.forceArray = forceArray;
  * @param {string[]} sortedIds Array of content ids.
  * @returns {Object[]} sorted array of contents.
  */
-exports.sortContents = function (contents, sortedIds) {
+function sortContents(contents, sortedIds) {
     const sorted = [];
-    const ids = forceArray(sortedIds);
+    const ids = exports.forceArray(sortedIds);
     let content = contents;
 
     ids.forEach((id) => {
@@ -46,9 +44,8 @@ exports.sortContents = function (contents, sortedIds) {
             return true;
         });
     });
-
     return sorted;
-};
+}
 
 /**
  * Get the value of a section or page parameter.
@@ -57,7 +54,7 @@ exports.sortContents = function (contents, sortedIds) {
  * @param {string} [defaultValue] Default value.
  * @returns {string|null} parameter value, undefined or defaultValue if not found.
  */
-exports.getContentParam = function (content, paramName, defaultValue) {
+function getContentParam(content, paramName, defaultValue) {
     const parameters = content.data && content.data.parameters;
     if (!parameters) {
         return defaultValue;
@@ -71,13 +68,13 @@ exports.getContentParam = function (content, paramName, defaultValue) {
         }
     }
     return defaultValue;
-};
+}
 
 /**
  * Used for menus to get specific parameter's values. Probably could be tweaked
  * and merged with getContentParam ...
  */
-exports.getParameterValue = function (content, paramName) {
+function getParameterValue(content, paramName) {
     const parameters = content.data.parameters;
     if (!parameters) {
         return null;
@@ -91,28 +88,28 @@ exports.getParameterValue = function (content, paramName) {
         }
     }
     return null;
-};
+}
 
 /**
  * Fetch a content by its cms menu key.
  * @param {string} cmsMenuKey Menu key.
  * @returns {object|null} content object or null if not found.
  */
-exports.getContentByMenuKey = function (cmsMenuKey) {
+function getContentByMenuKey(cmsMenuKey) {
     const queryResult = libs.content.query({
         start: 0,
         count: 1,
         query: 'x.' + app.name.replace(/\./g, '-') + '.cmsMenu.menuKey = \'' + cmsMenuKey + '\'',
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
-};
+}
 
 /**
  * Fetch a content by its cms content key.
  * @param {string} contentKey Content key.
  * @returns {object|null} content object or null if not found.
  */
-exports.getContentByCmsKey = function (contentKey) {
+function getContentByCmsKey(contentKey) {
     log.info('getContentByMenuKey query: '
              + 'x.'
              + app.name.replace(/\./g, '-')
@@ -124,7 +121,7 @@ exports.getContentByCmsKey = function (contentKey) {
         query: 'x.' + app.name.replace(/\./g, '-') + '.cmsContent.contentKey = \'' + contentKey + '\'',
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
-};
+}
 
 /**
  * @description Date formats on content created in XP7 is not necessarily
@@ -138,14 +135,13 @@ function fixDateFormat(date) {
     }
     return date;
 }
-exports.fixDateFormat = fixDateFormat;
 
 function formatDate(date, language) {
     // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
     return libs.moment(date).locale(language === 'en' ? 'en-gb' : 'nb').format('L');
 }
 
-exports.getLanguageVersions = function (content) {
+function getLanguageVersions(content) {
     const lang = {
         no: 'Bokmål',
         en: 'English',
@@ -181,10 +177,9 @@ exports.getLanguageVersions = function (content) {
         }
     });
     return ret;
-};
-exports.formatDate = formatDate;
+}
 
-exports.dateTimePublished = function (content, language) {
+function dateTimePublished(content, language) {
     if (!content) { return ''; }
     const navPublished = libs.i18n.localize({
         key: 'main_article.published', locale: language,
@@ -203,14 +198,14 @@ exports.dateTimePublished = function (content, language) {
         modifiedString = ` | ${navUpdated} ${lastModified}`;
     }
     return publishedString + modifiedString;
-};
+}
 
 
 /**
  * @description get all children of content
  * @param {object} content content to find all children of
  */
-exports.getAllChildren = function (content) {
+function getAllChildren(content) {
     let children = [];
     if (content.hasChildren) {
         let start = 0;
@@ -231,4 +226,18 @@ exports.getAllChildren = function (content) {
     }
 
     return children;
+}
+
+module.exports = {
+    dateTimePublished,
+    fixDateFormat,
+    forceArray,
+    formatDate,
+    getAllChildren,
+    getContentByCmsKey,
+    getContentByMenuKey,
+    getContentParam,
+    getLanguageVersions,
+    getParameterValue,
+    sortContents,
 };

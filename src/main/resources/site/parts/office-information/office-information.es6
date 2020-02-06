@@ -4,7 +4,6 @@ const libs = {
     navUtils: require('/lib/nav-utils'),
     cache: require('/lib/cacheControll'),
 };
-
 const dagArr = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag'];
 const view = resolve('office-information.html');
 
@@ -183,7 +182,7 @@ function handleGet(req) {
         };
         const postadresse = kontaktInformasjon.postadresse;
         const postAdr = formatAddress(postadresse, false);
-        const publikumsmottak = libs.utils.forceArray(kontaktInformasjon.publikumsmottak);
+        const publikumsmottak = libs.navUtils.forceArray(kontaktInformasjon.publikumsmottak);
         const type = content.data.enhet.type;
         const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
         const epost = parseEmail(kontaktInformasjon.epost);
