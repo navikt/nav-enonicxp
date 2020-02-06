@@ -29,7 +29,10 @@ enonic project deploy
 https://ci.adeo.no/job/navno-enonicxp/
 - **Q1:** Merge to develop
 - **P:** Merge to master and create a release at <br /> 
-https://github.com/navikt/nav-enonicxp/releases
+https://github.com/navikt/nav-enonicxp/releases <br />
+**Obs:** Release må være på formatet **vX.X.X**
+
+
 
 ## Environment
 
