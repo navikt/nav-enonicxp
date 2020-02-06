@@ -1,14 +1,37 @@
-# Nav main site - Enonic XP
+# NAV.no - Enonic XP
+NAVs content management system powered by Enonic XP, an open source project.
 
-## Building
+## How to get started
+
+1. Install Enonic by following the guide at https://developer.enonic.com/start
+2. Create a sandbox
+```
+enonic sandbox start
+```
+3. Launch admin console
+```
+open http://localhost:8080
+```
+4. Download the NAV.no - XP Application
+```
+git clone https://github.com/navikt/nav-enonicxp.git
+```
+
+## Development
 
 ```
-./gradlew deploy -t
-```
+enonic project deploy
+``` 
 
-## Development 
+## Deploy
 
-### Environment
+- **Q6:** Manual deploy at <br /> 
+https://ci.adeo.no/job/navno-enonicxp/
+- **Q1:** Merge to develop
+- **P:** Merge to master and create a release at <br /> 
+https://github.com/navikt/nav-enonicxp/releases
+
+## Environment
 
 #### Getting access to the site from root url
 
