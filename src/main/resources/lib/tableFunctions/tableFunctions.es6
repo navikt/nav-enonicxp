@@ -1,6 +1,9 @@
-
 // Takes the raw Ekstra_Stor_tabell content and parses it to correct JSON format
-function parseToJSON (html) {
+function parseToJSON(html) {
+    if (!html) {
+        // if no html provided fallback to empty object
+        return {};
+    }
     var trimm = trimmed(html); // Cuts all the whitespace characters
 
     var current = trimm.match(/<([/0-9a-zA-Z\s\\"=]*)>/g); // Maps the tags into groups
