@@ -74,37 +74,36 @@ function renderPage(req) {
         }
 
         socials = socials
-            ? socials.map((el) => {
-                let tmpText = 'Del på ';
-                if (el === 'linkedin') {
-                    tmpText += 'LinkedIn';
-                } else if (el === 'facebook') {
-                    tmpText += 'Facebook';
-                } else {
-                    tmpText += 'Twitter';
-                }
-                return {
-                    type: el,
-                    text: tmpText,
-                    href: getSocialRef(el, content, req),
-                };
-            })
+            ? socials.map(el => {
+                  let tmpText = 'Del på ';
+                  if (el === 'linkedin') {
+                      tmpText += 'LinkedIn';
+                  } else if (el === 'facebook') {
+                      tmpText += 'Facebook';
+                  } else {
+                      tmpText += 'Twitter';
+                  }
+                  return {
+                      type: el,
+                      text: tmpText,
+                      href: getSocialRef(el, content, req),
+                  };
+              })
             : false;
 
         // Prosessering av HTML-felter (håndtere url-er inne i html-en)
         data.text = libs.portal.processHtml({
             value: data.text,
         });
+
         if (hasFact) {
             data.fact = libs.portal.processHtml({
                 value: data.fact,
             });
         }
+
         if (data.image) {
-            data.imageUrl = libs.portal.imageUrl({
-                id: data.image,
-                scale: 'block(1024,768)',
-            });
+            data.imageUrl = libs.utils.getImageUrl(data.image, 'block(1024,768)');
         }
 
         // Definer modell og kall rendring (view)

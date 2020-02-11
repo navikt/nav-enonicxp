@@ -9,6 +9,39 @@ const libs = {
 // a CMS2XP-project, but might also (with some tuning) be handy for other
 // migration projects.
 // *********************************
+/**
+ * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
+ * @param {String} contentKey The id of the content
+ **/
+function getImageUrl(contentId, scale = '') {
+    const extension = getExtensionForImage(contentId);
+    return libs.portal.imageUrl({
+        id: contentId,
+        format: extension,
+        scale,
+    });
+}
+
+/**
+ * Get the extension from the mime/type
+ * Supported types, [Jpeg Png Gif Svg]
+ * @param {Object} imageInfo The imageInfo given from content.get
+ **/
+function getExtensionForImage(contentKey) {
+    const mimeTypes = {
+        'image/png': 'png',
+        'image/jpeg': 'jpg',
+        'image/gif': 'gif',
+        'image/svg+xml': 'svg',
+    };
+    const content = libs.content.get({ key: contentKey });
+    const imageInfo = content.x.media.imageInfo;
+
+    if (imageInfo) {
+        return mimeTypes[imageInfo.contentType] || '';
+    }
+    return '';
+}
 
 /**
  * Make sure the content is an array.
