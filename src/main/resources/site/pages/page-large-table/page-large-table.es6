@@ -2,7 +2,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     parsers: require('/lib/tableFunctions/tableFunctions'),
     thymeleaf: require('/lib/thymeleaf'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const etag = libs.cache.etag;
 const view = resolve('page-large-table.html');

@@ -3,7 +3,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const monthShortName = ['JAN', 'FEB', 'MAR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DES'];
 const view = resolve('publishing-calendar.html');

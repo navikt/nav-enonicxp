@@ -17,8 +17,7 @@ function handleGet(req) {
             });
         }
         const selectNames = libs.lang.parseBundle(content.language).related_content.select;
-        const menuListItems = content.data.menuListItems || {
-        };
+        const menuListItems = content.data.menuListItems || {};
         const keys = [
             'shortcuts',
             'selfservice',
@@ -33,17 +32,18 @@ function handleGet(req) {
             'rules-and-regulations',
         ];
         const menuLists = keys
-            .map((el) => {
+            .map(el => {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
-                const links = libs.navUtils.forceArray(menuListItems[el].link)
+                const links = libs.navUtils
+                    .forceArray(menuListItems[el].link)
                     .concat(libs.navUtils.forceArray(menuListItems[el].files));
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     expanded: el === 'shortcuts',
                     links: links
-                        .map((contentId) => {
+                        .map(contentId => {
                             const element = libs.content.get({
                                 key: contentId,
                             });
@@ -51,7 +51,12 @@ function handleGet(req) {
                                 return undefined;
                             }
                             let link = '';
-                            if (element.type === 'media:document' || element.type === 'media:spreadsheet' || element.type === 'media:presentation' || element.type === 'media:archive') {
+                            if (
+                                element.type === 'media:document' ||
+                                element.type === 'media:spreadsheet' ||
+                                element.type === 'media:presentation' ||
+                                element.type === 'media:archive'
+                            ) {
                                 link = libs.portal.attachmentUrl({
                                     id: element._id,
                                     download: true,

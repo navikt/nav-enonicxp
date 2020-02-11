@@ -4,7 +4,6 @@ const libs = {
     task: require('/lib/xp/task'),
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
-    cacheControll: require('/lib/cacheControll'),
     event: require('/lib/xp/event'),
 };
 const masterRepo = libs.node.connect({
@@ -25,10 +24,12 @@ let prevTestDate = new Date();
 
 const TIME_BETWEEN_CHECKS = 60000;
 const PADDING = 10000;
+const TASK_DESCRIPTION = 'ClearScheduledPublished';
+exports.taskDescription = TASK_DESCRIPTION;
 
 function getSleepFor(prepublishOnNext, now) {
     let sleepFor = TIME_BETWEEN_CHECKS;
-    prepublishOnNext.forEach((c) => {
+    prepublishOnNext.forEach(c => {
         const content = masterRepo.get(c.id);
         const publishOn = new Date(content.publish.from);
         if (publishOn - now < sleepFor) {
@@ -59,7 +60,7 @@ function getState() {
 function setIsRunning(isRunning) {
     navRepo.modify({
         key: '/unpublish',
-        editor: (el) => {
+        editor: el => {
             const data = { ...el.data };
             if (isRunning === false) {
                 data.lastRun = new Date().toISOString();
@@ -147,7 +148,7 @@ function removeExpiredContentFromMaster(expiredContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            expiredContent.forEach((c) => {
+            expiredContent.forEach(c => {
                 try {
                     const content = masterRepo.get(c.id);
                     if (content) {
@@ -173,9 +174,11 @@ function setupTask() {
         task: () => {
             // stop if another node is running this task
             const state = getState();
-            if (state.isRunning
-                && (state.lastRun
-                    && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS + PADDING > Date.now())) {
+            if (
+                state.isRunning &&
+                state.lastRun &&
+                    Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS + PADDING > Date.now()
+            ) {
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 setupTask();
                 return;
@@ -201,7 +204,8 @@ function setupTask() {
 
                 // 1 minute between each check or for next prepublished
                 const prepublishOnNext = getPrepublishedContent(
-                    testDate, new Date(now + (TIME_BETWEEN_CHECKS))
+                    testDate,
+                    new Date(now + TIME_BETWEEN_CHECKS)
                 );
                 if (prepublishOnNext.length > 0) {
                     sleepFor = getSleepFor(prepublishOnNext, now);
@@ -219,7 +223,7 @@ function setupTask() {
 }
 exports.setupTask = setupTask;
 let taskHasStarted = false;
-exports.start = function () {
+exports.start = function() {
     if (!taskHasStarted) {
         taskHasStarted = true;
         setupTask();
