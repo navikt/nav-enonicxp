@@ -9,6 +9,39 @@ const libs = {
 // a CMS2XP-project, but might also (with some tuning) be handy for other
 // migration projects.
 // *********************************
+/**
+ * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
+ * @param {String} contentKey The id of the content
+ **/
+function getImageUrl(contentId, scale = '') {
+    const extension = getExtensionForImage(contentId);
+    return libs.portal.imageUrl({
+        id: contentId,
+        format: extension,
+        scale,
+    });
+}
+
+/**
+ * Get the extension from the mime/type
+ * Supported types, [Jpeg Png Gif Svg]
+ * @param {Object} imageInfo The imageInfo given from content.get
+ **/
+function getExtensionForImage(contentKey) {
+    const mimeTypes = {
+        'image/png': 'png',
+        'image/jpeg': 'jpg',
+        'image/gif': 'gif',
+        'image/svg+xml': 'svg',
+    };
+    const content = libs.content.get({ key: contentKey });
+    const imageInfo = content.x.media.imageInfo;
+
+    if (imageInfo) {
+        return mimeTypes[imageInfo.contentType] || '';
+    }
+    return '';
+}
 
 /**
  * Make sure the content is an array.
@@ -33,9 +66,9 @@ function sortContents(contents, sortedIds) {
     const ids = exports.forceArray(sortedIds);
     let content = contents;
 
-    ids.forEach((id) => {
+    ids.forEach(id => {
         let found = false;
-        content = content.filter((item) => {
+        content = content.filter(item => {
             if (!found && item._id === id) {
                 sorted.push(item);
                 found = true;
@@ -99,7 +132,7 @@ function getContentByMenuKey(cmsMenuKey) {
     const queryResult = libs.content.query({
         start: 0,
         count: 1,
-        query: 'x.' + app.name.replace(/\./g, '-') + '.cmsMenu.menuKey = \'' + cmsMenuKey + '\'',
+        query: 'x.' + app.name.replace(/\./g, '-') + ".cmsMenu.menuKey = '" + cmsMenuKey + "'",
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 }
@@ -110,15 +143,19 @@ function getContentByMenuKey(cmsMenuKey) {
  * @returns {object|null} content object or null if not found.
  */
 function getContentByCmsKey(contentKey) {
-    log.info('getContentByMenuKey query: '
-             + 'x.'
-             + app.name.replace(/\./g, '-')
-             + '.cmsContent.contentKey = \''
-             + contentKey + '\'');
+    log.info(
+        'getContentByMenuKey query: ' +
+            'x.' +
+            app.name.replace(/\./g, '-') +
+            ".cmsContent.contentKey = '" +
+            contentKey +
+            "'"
+    );
     const queryResult = libs.content.query({
         start: 0,
         count: 1,
-        query: 'x.' + app.name.replace(/\./g, '-') + '.cmsContent.contentKey = \'' + contentKey + '\'',
+        query:
+            'x.' + app.name.replace(/\./g, '-') + ".cmsContent.contentKey = '" + contentKey + "'",
     });
     return queryResult.count > 0 ? queryResult.hits[0] : null;
 }
@@ -138,7 +175,10 @@ function fixDateFormat(date) {
 
 function formatDate(date, language) {
     // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
-    return libs.moment(date).locale(language === 'en' ? 'en-gb' : 'nb').format('L');
+    return libs
+        .moment(date)
+        .locale(language === 'en' ? 'en-gb' : 'nb')
+        .format('L');
 }
 
 function getLanguageVersions(content) {
@@ -160,8 +200,13 @@ function getLanguageVersions(content) {
             title: lang[content.language] + ' (Språkversjon)',
         },
     ];
-    if (!lRefs) { return []; } if (!Array.isArray(lRefs)) { lRefs = [lRefs]; }
-    lRefs.forEach((ref) => {
+    if (!lRefs) {
+        return [];
+    }
+    if (!Array.isArray(lRefs)) {
+        lRefs = [lRefs];
+    }
+    lRefs.forEach(ref => {
         const el = libs.content.get({
             key: ref,
         });
@@ -180,9 +225,12 @@ function getLanguageVersions(content) {
 }
 
 function dateTimePublished(content, language) {
-    if (!content) { return ''; }
+    if (!content) {
+        return '';
+    }
     const navPublished = libs.i18n.localize({
-        key: 'main_article.published', locale: language,
+        key: 'main_article.published',
+        locale: language,
     });
     const p = fixDateFormat(content.publish.from ? content.publish.from : content.createdTime);
     const published = formatDate(p, language);
@@ -192,14 +240,14 @@ function dateTimePublished(content, language) {
     const m = fixDateFormat(content.modifiedTime);
     if (new Date(m) > new Date(p)) {
         const navUpdated = libs.i18n.localize({
-            key: 'main_article.lastChanged', locale: language,
+            key: 'main_article.lastChanged',
+            locale: language,
         });
         const lastModified = formatDate(content.modifiedTime, language);
         modifiedString = ` | ${navUpdated} ${lastModified}`;
     }
     return publishedString + modifiedString;
 }
-
 
 /**
  * @description get all children of content
@@ -239,5 +287,7 @@ module.exports = {
     getContentParam,
     getLanguageVersions,
     getParameterValue,
+    getImageUrl,
+    getExtensionForImage,
     sortContents,
 };
