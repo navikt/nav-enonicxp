@@ -10,23 +10,10 @@ const libs = {
 // migration projects.
 // *********************************
 /**
- * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
- * @param {String} contentKey The id of the content
- **/
-function getImageUrl(contentId, scale = '') {
-    const extension = getExtensionForImage(contentId);
-    return libs.portal.imageUrl({
-        id: contentId,
-        format: extension,
-        scale,
-    });
-}
-
-/**
  * Get the extension from the mime/type
  * Supported types, [Jpeg Png Gif Svg]
  * @param {Object} imageInfo The imageInfo given from content.get
- **/
+ */
 function getExtensionForImage(contentKey) {
     const mimeTypes = {
         'image/png': 'png',
@@ -41,6 +28,19 @@ function getExtensionForImage(contentKey) {
         return mimeTypes[imageInfo.contentType] || '';
     }
     return '';
+}
+
+/**
+ * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
+ * @param {String} contentKey The id of the content
+ */
+function getImageUrl(contentId, scale = '') {
+    const extension = getExtensionForImage(contentId);
+    return libs.portal.imageUrl({
+        id: contentId,
+        format: extension,
+        scale,
+    });
 }
 
 /**
