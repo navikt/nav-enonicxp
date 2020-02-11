@@ -18,20 +18,25 @@ taskIds.push(currentTaskId);
 
 // keep the process of handling expired content in the cache alive.
 eventLib.listener({
-    type: 'task.finished',
+    type: 'task.*',
     localOnly: false,
-    callback: (event) => {
+    callback: event => {
+        // need to listen to all task events and filter on finished and failed for resurrection
+        if (!['task.finished', 'task.failed'].filter(eventType => event.type === eventType)) {
+            return false;
+        }
         if (event.data.description === unpublish.taskDescription) {
             // if the task which have finished is not in current state, ignore it.
             if (taskIds.indexOf(event.data.id) === -1) {
-                return;
+                return false;
             }
             // update state and spawn of a new task
             taskIds = taskIds.filter(task => task !== event.data.id);
             currentTaskId = unpublish.setupTask(isRunning);
             taskIds.push(currentTaskId);
         }
-    }
+        return true;
+    },
 });
 log.info('Finished running main');
 
