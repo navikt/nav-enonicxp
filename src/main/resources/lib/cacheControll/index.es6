@@ -8,8 +8,13 @@ const libs = {
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
-const myHash = Math.random().toString(36).substring(2, 15)
-      + Math.random().toString(36).substring(2, 15);
+const myHash =
+    Math.random()
+        .toString(36)
+        .substring(2, 15) +
+    Math.random()
+        .toString(36)
+        .substring(2, 15);
 
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
@@ -41,7 +46,6 @@ function getPath(path, type) {
     // we won't have www.nav.no in the path and the key ends up starting with a /
     let key = arr[arr.length - 1];
 
-
     if (key[0] === '/') {
         key = key.replace('/', '');
     }
@@ -64,7 +68,7 @@ function setEtag() {
 }
 
 function wipe(name) {
-    return (key) => {
+    return key => {
         if (!key) {
             caches[name].clear();
             log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
@@ -99,7 +103,11 @@ function wipeOnChange(path) {
     if (path.indexOf('/megamenu/') !== -1) {
         wipe('decorator')();
     }
-    if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
+    if (
+        path.indexOf('/megamenu/') !== -1 ||
+        path.indexOf('/en/content-a-z/') !== -1 ||
+        path.indexOf('/no/innhold-a-aa/') !== -1
+    ) {
         wipe('azList')();
     }
     if (path.indexOf('/content/redirects/') !== -1) {
@@ -121,7 +129,11 @@ function getSome(cacheStoreName) {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
             return caches[cacheStoreName].get(getPath(key, type), () => {
-                log.info(`Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[cacheStoreName].getSize()})] on [${myHash}]`);
+                log.info(
+                    `Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[
+                        cacheStoreName
+                    ].getSize()})] on [${myHash}]`
+                );
                 return f(params);
             });
         }
@@ -148,21 +160,21 @@ function clearReferences(id, path, depth) {
 
     // get parent
     const parent = libs.content.get({
-        key: newPath.split('/').slice(0, -1).join('/'),
+        key: newPath
+            .split('/')
+            .slice(0, -1)
+            .join('/'),
     });
 
     // remove parents cache if its of a type that autogenerates content based on
     // children and not reference
-    const parentTypesToClear = [
-        `${app.name}:page-list`,
-        `${app.name}:main-article`,
-    ];
+    const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         log.info('REMOVE PARENT CACHE');
         references.push(parent);
     }
 
-    references.forEach((el) => {
+    references.forEach(el => {
         wipeOnChange(el._path);
 
         const deepTypes = [`${app.name}:content-list`];
@@ -174,14 +186,12 @@ function clearReferences(id, path, depth) {
 
 function nodeListenerCallback(event) {
     // Stop execution if not valid event type.
-    const shouldRun = cacheInvalidatorEvents.filter(
-        eventType => event.type === eventType
-    );
+    const shouldRun = cacheInvalidatorEvents.filter(eventType => event.type === eventType);
     if (!shouldRun) {
         return false;
     }
 
-    event.data.nodes.forEach((node) => {
+    event.data.nodes.forEach(node => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
             libs.context.run(
@@ -216,8 +226,8 @@ function activateEventListener() {
         libs.event.listener({
             type: 'custom.prepublish',
             localOnly: false,
-            callback: (e) => {
-                e.data.prepublished.forEach((el) => {
+            callback: e => {
+                e.data.prepublished.forEach(el => {
                     wipeOnChange(el._path);
                     clearReferences(el._id, el._path, 0);
                 });
