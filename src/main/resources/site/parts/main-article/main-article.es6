@@ -14,16 +14,26 @@ function getSocialRef(el, content, req) {
     }
     switch (el) {
         case 'facebook':
-            return 'http://www.facebook.com/sharer/sharer.php?u=' + req.url + '&amp;title=' + content.displayName.replace(/ /g, '%20');
+            return (
+                'http://www.facebook.com/sharer/sharer.php?u=' +
+                req.url +
+                '&amp;title=' +
+                content.displayName.replace(/ /g, '%20')
+            );
         case 'twitter':
-            return 'http://twitter.com/intent/tweet?text=' + content.displayName.replace(/ /g, '%20') + ': ' + req.url;
+            return (
+                'http://twitter.com/intent/tweet?text=' +
+                content.displayName.replace(/ /g, '%20') +
+                ': ' +
+                req.url
+            );
         case 'linkedin':
             return (
-                'http://www.linkedin.com/shareArticle?mini=true&amp;url='
-                    + req.url
-                    + '&amp;title='
-                    + content.displayName.replace(/ /g, '%20')
-                    + '&amp;source=nav.no'
+                'http://www.linkedin.com/shareArticle?mini=true&amp;url=' +
+                req.url +
+                '&amp;title=' +
+                content.displayName.replace(/ /g, '%20') +
+                '&amp;source=nav.no'
             );
         default:
             return null;
@@ -47,8 +57,13 @@ function renderPage(req) {
         const toc = [];
         // TODO Remove the Kort_om hardcode after migrations has
         // set h3 correctly on all old Kort_om articles
-        if ((data.hasTableOfContents && data.hasTableOfContents !== 'none')
-            || (content.x && content.x['no-nav-navno'] && content.x['no-nav-navno'].oldContentType && content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')) {
+        if (
+            (data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
+            (content.x &&
+                content.x['no-nav-navno'] &&
+                content.x['no-nav-navno'].oldContentType &&
+                content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')
+        ) {
             let count = 0;
             let ch = 1;
             let ind = data.text.indexOf('<h3>');
@@ -58,11 +73,14 @@ function renderPage(req) {
                 const ssEnd = data.text.indexOf('</h3>', ind);
                 const ss = data.text
                     .slice(h2End, ssEnd)
-                    .replace(/<([^>]+)>/ig, '') // Strip html
-                    .replace(/&nbsp;/ig, ' '); // Replace &nbsp;
+                    .replace(/<([^>]+)>/gi, '') // Strip html
+                    .replace(/&nbsp;/gi, ' '); // Replace &nbsp;
                 count++;
                 toc.push(ss);
-                data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
+                data.text = data.text.replace(
+                    '<h3>',
+                    '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">'
+                );
                 ind = data.text.indexOf('<h3>');
             }
         }
@@ -124,7 +142,7 @@ function renderPage(req) {
     };
 }
 
-exports.get = function (req) {
+exports.get = function(req) {
     // Midlertidig fix: Kaller render-function direkte for driftsmeldinger
     // TODO: Sette tilbake når cache fungerer
 
