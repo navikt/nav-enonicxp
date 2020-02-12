@@ -22,7 +22,7 @@ eventLib.listener({
     localOnly: true,
     callback: event => {
         // need to listen to all task events and filter on finished and failed for resurrection
-        if (!['task.finished', 'task.failed'].filter(eventType => event.type === eventType)) {
+        if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
             return false;
         }
         if (event.data.description === unpublish.taskDescription) {
