@@ -4,7 +4,7 @@ const unpublish = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const eventLib = require('/lib/xp/event');
 
-let isRunning = true;
+let appIsRunning = true;
 let taskIds = [];
 
 // start pull from NORG
@@ -13,13 +13,13 @@ officeInformation.startCronJob();
 cache.activateEventListener();
 
 // start task for handling caching of expired and prepublished content
-let currentTaskId = unpublish.start(isRunning);
+let currentTaskId = unpublish.start(appIsRunning);
 taskIds.push(currentTaskId);
 
 // keep the process of handling expired content in the cache alive.
 eventLib.listener({
     type: 'task.*',
-    localOnly: false,
+    localOnly: true,
     callback: event => {
         // need to listen to all task events and filter on finished and failed for resurrection
         if (!['task.finished', 'task.failed'].filter(eventType => event.type === eventType)) {
@@ -32,7 +32,7 @@ eventLib.listener({
             }
             // update state and spawn of a new task
             taskIds = taskIds.filter(task => task !== event.data.id);
-            currentTaskId = unpublish.setupTask(isRunning);
+            currentTaskId = unpublish.setupTask(appIsRunning);
             taskIds.push(currentTaskId);
         }
         return true;
@@ -43,5 +43,5 @@ log.info('Finished running main');
 __.disposer(function() {
     // when the app is closed down, tasks might have survived and should not
     // spawn of new tasks. We keep this state to make sure of this.
-    isRunning = false;
+    appIsRunning = false;
 });
