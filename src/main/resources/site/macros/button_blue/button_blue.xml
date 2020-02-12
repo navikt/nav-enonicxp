@@ -1,0 +1,15 @@
+<macro>
+    <display-name>Sett inn blå knapp</display-name>
+    <description>Sett inn blå knapp i brødteksten</description>
+    <form>
+        <input name="url" type="TextLine">
+            <label>Url</label>
+        </input>
+        <input name="text" type="TextLine">
+            <label>Tekst</label>
+        </input>
+        <input name="content" type="ContentSelector">
+            <label>Innhold</label>
+        </input>
+    </form>
+</macro>
