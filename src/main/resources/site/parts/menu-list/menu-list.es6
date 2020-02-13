@@ -1,5 +1,5 @@
 const libs = {
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
     content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
     navUtils: require('/lib/nav-utils'),
