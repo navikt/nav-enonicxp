@@ -121,7 +121,7 @@ function renderPage(req) {
         }
 
         if (data.image) {
-            data.imageUrl = libs.utils.getImageUrl(data.image, 'block(1024,768)');
+            data.imageUrl = libs.utils.getImageUrl(data.image, 'max(768)');
         }
 
         // Definer modell og kall rendring (view)
