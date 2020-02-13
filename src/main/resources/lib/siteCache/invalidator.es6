@@ -183,22 +183,18 @@ function setupTask(applicationIsRunning) {
             // --
             // if not the task must sleep for TIME_BETWEEN_CHECKS
             if (!applicationIsRunning) {
-                log.info('SLEEPING: application is not running');
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 return;
             }
             if (state.isRunning) {
-                log.info('SLEEPING: other task is running');
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 return;
             }
             if (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS > Date.now()) {
-                log.info('SLEEPING: to soon since last check');
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 return;
             }
 
-            log.info('START: invalidating cache');
             // set flag to prevent others from invalidating the cache simultaneously
             setIsRunning(true);
 
@@ -231,7 +227,7 @@ function setupTask(applicationIsRunning) {
             }
             // release the lock
             setIsRunning(false);
-            log.info(`DONE: sleeping for ${sleepFor}`);
+
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
             // events are scheduled before that time
             libs.task.sleep(sleepFor);
