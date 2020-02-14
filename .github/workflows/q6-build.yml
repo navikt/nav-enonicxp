@@ -28,25 +28,6 @@ jobs:
         with:
           name: Application
           path: build/libs
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.vars.outputs.VERSION }}
-          release_name: Release ${{ steps.vars.outputs.VERSION }}
-          prerelease: true
-      - name: Upload release asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/libs/${{ steps.build.outputs.FILENAME }}
-          asset_name: Application.jar
-          asset_content_type: application/java-archive
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
         with:
