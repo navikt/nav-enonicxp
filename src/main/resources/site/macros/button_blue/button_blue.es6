@@ -6,7 +6,7 @@ exports.macro = function (context) {
         id: context.params.content,
     });
 
-    const body =`<p><button type="submit" class="knapp hoved" onclick="href='${href}'">${text}</button></p>`;
+    const body =`<p><a class="btn btn-link btn-primary" onclick="href='${href}'">${text}</a></p>`;
 
     return {
         body: body,
