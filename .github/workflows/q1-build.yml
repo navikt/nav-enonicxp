@@ -49,7 +49,9 @@ jobs:
           asset_content_type: application/java-archive
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
+        env:
+          GITHUB_RUN_ID: ${{ secrets.GITHUB_RUN_ID }}
         with:
           event-type: deploy-to-q1
           token: ${{ secrets.GITHUB_PAT }}
-          client-payload: '{"RUN_ID": "${{ secrets.GITHUB_RUN_ID }}"}'
+          client-payload: '{"RUN_ID": "${GITHUB_RUN_ID}"}'
