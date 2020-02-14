@@ -1,20 +1,22 @@
-name: Build to Q1
+name: Build to prod
 
 on:
   push:
-    branches:
-      - develop
+    tags:
+      - "v*"
+      - "!v*-*"
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Define variables
         id: vars
-        run:
-          # Fetch latest version vX.X.X and append current sha
-          echo ::set-output name=VERSION::$(git tag  | sed 's/.*\(v[0-9].[0-9].[0-9]\).*/\1/p' | sort -V | tail -1)-$(echo ${GITHUB_SHA::7})
+        run: |
+          echo ::set-output name=VERSION::${GITHUB_REF##*/}
+          echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
       - uses: actions/setup-java@v1
         with:
           java-version: 11
@@ -28,30 +30,28 @@ jobs:
         with:
           name: Application
           path: build/libs
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Fetch release
+        id: fetch_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.vars.outputs.VERSION }}
-          release_name: Release ${{ steps.vars.outputs.VERSION }}
-          prerelease: true
+          GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
+        run: |
+          echo ::set-output name=UPLOAD_URL::"$(curl \
+          -H "authorization: Bearer ${GITHUB_TOKEN}" \
+          -s https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${{ steps.vars.outputs.VERSION }} \
+          | jq -r '.upload_url')"
       - name: Upload release asset
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.fetch_release.outputs.upload_url }}
           asset_path: build/libs/${{ steps.build.outputs.FILENAME }}
           asset_name: Application.jar
           asset_content_type: application/java-archive
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
-        env:
-          GITHUB_RUN_ID: ${{ secrets.GITHUB_RUN_ID }}
         with:
-          event-type: deploy-to-q1
+          event-type: deploy-to-prod
           token: ${{ secrets.GITHUB_PAT }}
-          client-payload: '{"RUN_ID": "${GITHUB_RUN_ID}"}'
+          client-payload: '{"RUN_ID": "${{ steps.vars.outputs.RUN_ID }}"}'
