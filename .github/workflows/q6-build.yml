@@ -2,8 +2,8 @@ name: Build to Q6
 
 on:
   push:
-    branches:
-      - develop
+    tags:
+      - "v*-*"
 
 jobs:
   build:
