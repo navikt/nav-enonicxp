@@ -5,7 +5,7 @@ const libs = {
 };
 const view = resolve('./searchresult.html');
 
-function get (req) {
+function get(req) {
     let url = libs.portal.serviceUrl({
         service: 'search',
         application: 'navno.nav.no.search',
