@@ -1,6 +1,13 @@
 # NAV.no - Enonic XP
 NAVs content management system powered by Enonic XP, an open source project.
 
+![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20prod/badge.svg)
+![Deploy to prod](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20prod/badge.svg) |
+![Build to Q1](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q1/badge.svg)
+![Deploy to Q1](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q1/badge.svg) |
+![Build to Q6](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q6/badge.svg)
+![Deploy to Q1](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q1/badge.svg)
+
 ## How to get started
 
 1. Install Enonic by following the guide at https://developer.enonic.com/start
