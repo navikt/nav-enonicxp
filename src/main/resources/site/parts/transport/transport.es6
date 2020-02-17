@@ -1,19 +1,21 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
     navUtils: require('/lib/nav-utils'),
 };
 const view = resolve('transport.html');
 
 function getUrl(url) {
-    if (url.text) { return url.text; }
+    if (url.text) {
+        return url.text;
+    }
     return libs.portal.pageUrl({
         id: url.ref,
     });
 }
 
-exports.get = function (req) {
+exports.get = function(req) {
     return libs.cache.getPaths(req.rawPath, 'transport', req.branch, () => {
         const content = libs.portal.getContent();
         const items = libs.navUtils.forceArray(content.data.items);
@@ -23,9 +25,11 @@ exports.get = function (req) {
                 title: value.title,
                 ingress: value.ingress,
                 url: getUrl(value.url),
-                logo: value.logo ? libs.portal.attachmentUrl({
-                    id: value.logo,
-                }) : null,
+                logo: value.logo
+                    ? libs.portal.attachmentUrl({
+                          id: value.logo,
+                      })
+                    : null,
                 className: value.spanning ? 'heldekkende' : '',
             })),
         };
@@ -33,9 +37,13 @@ exports.get = function (req) {
         return {
             body: libs.thymeleaf.render(view, model),
             pageContributions: {
-                headEnd: ['<link rel="stylesheet" href="' + libs.portal.assetUrl({
-                    path: 'styles/navno.css',
-                }) + '"/>'],
+                headEnd: [
+                    '<link rel="stylesheet" href="' +
+                        libs.portal.assetUrl({
+                            path: 'styles/navno.css',
+                        }) +
+                        '"/>',
+                ],
             },
         };
     });

@@ -3,7 +3,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
     navUtils: require('/lib/nav-utils'),
 };
 const view = resolve('section-page.html');
