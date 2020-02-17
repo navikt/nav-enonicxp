@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -16,6 +15,7 @@ jobs:
         id: vars
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF##*/}
+          echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
       - uses: actions/setup-java@v1
         with:
           java-version: 11
@@ -53,4 +53,4 @@ jobs:
         with:
           event-type: deploy-to-prod
           token: ${{ secrets.GITHUB_PAT }}
-          client-payload: '{"RUN_ID": "${{ secrets.GITHUB_RUN_ID }}"}'
+          client-payload: '{"RUN_ID": "${{ steps.vars.outputs.RUN_ID }}"}'
