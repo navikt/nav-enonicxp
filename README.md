@@ -1,9 +1,9 @@
 # NAV.no - Enonic XP
 NAVs content management system powered by Enonic XP, an open source project.
 
-**Prod** ![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20prod/badge.svg)
+![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20prod/badge.svg)
 ![Deploy to prod](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20prod/badge.svg) <br>
-**Dev** ![Build to Q1](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q1/badge.svg)
+![Build to Q1](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q1/badge.svg)
 ![Deploy to Q1](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q1/badge.svg) |
 ![Build to Q6](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q6/badge.svg)
 ![Deploy to Q1](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q1/badge.svg)
