@@ -8,6 +8,8 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
+      - name: Cleanup
+        run: rm -rf $(ls navno-*.jar)
       - name: Download artifact
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
