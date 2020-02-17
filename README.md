@@ -1,6 +1,13 @@
 # NAV.no - Enonic XP
 NAVs content management system powered by Enonic XP, an open source project.
 
+![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20prod/badge.svg)
+![Deploy to prod](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20prod/badge.svg) <br>
+![Build to Q1](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q1/badge.svg)
+![Deploy to Q1](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q1/badge.svg) |
+![Build to Q6](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q6/badge.svg)
+![Deploy to Q6](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q6/badge.svg)
+
 ## How to get started
 
 1. Install Enonic by following the guide at https://developer.enonic.com/start
@@ -25,8 +32,8 @@ enonic project deploy
 
 ## Deploy
 
-- **Q6:** Manual deploy at <br /> 
-https://ci.adeo.no/job/navno-enonicxp/
+- **Q6:** Run **trigger-deploy-q6.sh** located in the .github folder <br>
+`.github/trigger-deploy-q6.sh`
 - **Q1:** Merge to develop
 - **P:**  Make a PR between master and develop __*__ and create a release at <br /> 
 https://github.com/navikt/nav-enonicxp/releases <br />
