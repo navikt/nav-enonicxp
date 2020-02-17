@@ -1,0 +1,26 @@
+name: Build and test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Define variables
+        id: vars
+        run: |
+          echo ::set-output name=VERSION::${GITHUB_REF##*/}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build application
+        id: build
+        run: |
+          version=${{ steps.vars.outputs.VERSION }}
+          gradle clean build deploy -Pversion=${version//v}
+          echo ::set-output name=FILENAME::navno-${version//v}.jar
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Application
+          path: build/libs
