@@ -23,7 +23,6 @@ jobs:
         run: |
           version=${{ steps.vars.outputs.VERSION }}
           gradle clean build deploy -Pversion=${version//v}
-          echo ::set-output name=FILENAME::navno-${version//v}.jar
       - uses: actions/upload-artifact@v1
         with:
           name: Application

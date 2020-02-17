@@ -45,7 +45,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/libs/${{ steps.build.outputs.FILENAME }}
-          asset_name: Application.jar
+          asset_name: ${{ steps.build.outputs.FILENAME }}
           asset_content_type: application/java-archive
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
