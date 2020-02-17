@@ -32,8 +32,8 @@ enonic project deploy
 
 ## Deploy
 
-- **Q6:** Manual deploy at <br /> 
-https://ci.adeo.no/job/navno-enonicxp/
+- **Q6:** Run **trigger-deploy-q6.sh** located in the .github folder <br>
+`.github/trigger.deploy-q6.sh`
 - **Q1:** Merge to develop
 - **P:**  Make a PR between master and develop __*__ and create a release at <br /> 
 https://github.com/navikt/nav-enonicxp/releases <br />
