@@ -9,9 +9,8 @@ NAVs content management system powered by Enonic XP, an open source project.
 ![Deploy to Q6](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q6/badge.svg)
 
 ## How to get started
-
 1. Install Enonic by following the guide at https://developer.enonic.com/start
-2. Create a sandbox
+2. Create a sandbox (preferably called **navno**)
 ```
 enonic sandbox start
 ```
@@ -23,8 +22,16 @@ open http://localhost:8080/admin
 ```
 git clone https://github.com/navikt/nav-enonicxp.git
 ```
+5. Copy **no.nav.navno.cfg.sample** to your sandbox
+```
+cp no.nav.navno.cfg.sample /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
+```
+6. Kjør dekoratøren med
+```
+docker-compose up -d
+```
 
-## Development
+## Developmentg
 
 ```
 enonic project deploy
