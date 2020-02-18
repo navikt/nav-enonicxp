@@ -1,0 +1,57 @@
+version: "3.7"
+services:
+  oidc-provider:
+    container_name: oidc-provider
+    image: "navikt/stub-oidc-provider:latest"
+    ports:
+      - "9000:9000"
+    environment:
+      PORT: "9000"
+      CALLBACK_URL: "http://localhost:5000/callback"
+      ISSUER: "https://localhost:9000"
+
+  oidc-provider-gui:
+    container_name: oidc-provider-gui
+    image: "navikt/pb-oidc-provider-gui:latest"
+    ports:
+      - "5000:5000"
+    environment:
+      REDIRECT_URL: "http://localhost:8080"
+      AUTO_REDIRECT_TO_FRONTEND: "true"
+    depends_on:
+      - oidc-provider
+
+  mocks:
+    container_name: mocks
+    image: "navikt/pb-nav-mocked:latest"
+    ports:
+      - "8095:8080"
+    environment:
+      CORS_ALLOWED_ORIGINS: "*"
+      OIDC_ISSUER: "https://localhost:9000"
+      OIDC_ACCEPTED_AUDIENCE: "stubOidcClient"
+      OIDC_JWKS_URI: "http://oidc-provider:9000/certs"
+    depends_on:
+      - oidc-provider
+
+  dekoratoren:
+    container_name: dekoratoren
+    image: "navikt/nav-dekoratoren:8e62afd1-7890-4416-81be-a3d423e6dc1b-master"
+    ports:
+      - "8100:8088"
+    environment:
+      URL_APP_BASE: "http://localhost:8100/dekoratoren"
+      baseUrl: 'http://localhost:8100'
+      baseUrlEnonic: 'http://localhost:8080'
+      innloggingslinjenUrl: 'http://localhost:8095/innloggingslinje-api/auth'
+      loginUrl: 'http://localhost:5000'
+      logoutUrl: 'http://localhost:5000/?logout'
+      menypunkter: 'http://localhost:8100/dekoratoren/api/get/menyvalg'
+      minsideArbeidsgiverUrl: 'https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/'
+      sokeresultat: 'http://localhost:8100/dekoratoren/api/get/sokeresultat'
+      varselinnboksUrl: 'https://www-q0.nav.no/person/varselinnboks'
+    depends_on:
+      - mocks
+
+volumes:
+  event-cache-data:

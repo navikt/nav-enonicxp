@@ -9,6 +9,7 @@ const libs = {
     cache: require('/lib/siteCache'),
     unpublish: require('/lib/siteCache/invalidator'),
     officeInformation: require('/lib/officeInformation'),
+    templates: require('/lib/migration/templates'),
 };
 
 let socket;
@@ -36,7 +37,14 @@ exports.handle = (s) => {
             },
         });
     });
-
+    socket.on('templates', () => {
+        libs.task.submit({
+            description: 'Lager templates',
+            task: () => {
+                libs.tools.runInMasterContext(socket, libs.templates.handle);
+            },
+        });
+    });
     socket.on('clearAndStartCache', () => {
         libs.tools.runInContext(socket, () => {
             libs.cache.activateEventListener();
@@ -267,9 +275,46 @@ function findDuplicateChapters (socket) {
 function createNewElements () {
     return {
         isNew: true,
-        head: 'Lenkeråte',
+        head: 'nav.no - Actions',
         body: {
             elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag templates på nytt',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'lprog',
+                            progress: {
+                                value: 'd-Value',
+                                max: 'dl-childCount',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: [ 'button', 'is-primary' ],
+                            action: 'templates',
+                            text: 'Templates',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
                 {
                     tag: 'div',
                     tagClass: ['row'],
