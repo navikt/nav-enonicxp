@@ -16,6 +16,11 @@ jobs:
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF##*/}
           echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
+      - name: Check if tag exists on master
+        run: |
+          if git branch -r --contains ${{ steps.vars.outputs.VERSION }} | grep master>/dev/null 2>&1
+          then echo "Tag ${{ steps.vars.outputs.VERSION }} verified on master";
+          else echo "Tag ${{ steps.vars.outputs.VERSION }} not found on master"; exit 1; fi
       - uses: actions/setup-java@v1
         with:
           java-version: 11
