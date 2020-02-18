@@ -31,7 +31,7 @@ cp no.nav.navno.cfg.sample /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
 docker-compose up -d
 ```
 
-## Developmentg
+## Development
 
 ```
 enonic project deploy
