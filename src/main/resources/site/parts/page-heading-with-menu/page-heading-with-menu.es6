@@ -4,11 +4,11 @@ const libs = {
     content: require('/lib/xp/content'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('page-heading-with-menu.html');
 
-function handleGet (req) {
+function handleGet(req) {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
 
@@ -20,12 +20,12 @@ function handleGet (req) {
         const level3 = (path[3] ? path[3] : '').toLowerCase();
         let seksjonsSider = '';
         switch (level3) {
-        case 'person':
-        case 'bedrift':
-        case 'nav-og-samfunn':
-            seksjonsSider = level3;
-            break;
-        default:
+            case 'person':
+            case 'bedrift':
+            case 'nav-og-samfunn':
+                seksjonsSider = level3;
+                break;
+            default:
         }
 
         const assets = [
@@ -50,9 +50,9 @@ function handleGet (req) {
             }) + '"></script>',
             '<script id="navno-props" src="' + libs.portal.assetUrl({
                 path: 'js/navno-page.js',
-            }) + '" seksjonssider="' + seksjonsSider +
-            '" authServiceUrl="' + (app.config.authServiceUrl ? app.config.authServiceUrl : 'https://www.nav.no/innloggingslinje-api/auth') +
-            '"></script>',
+            }) + '" seksjonssider="' + seksjonsSider
+            + '" authServiceUrl="' + (app.config.authServiceUrl ? app.config.authServiceUrl : 'https://www.nav.no/innloggingslinje-api/auth')
+            + '"></script>',
             '<script async src="' + libs.portal.assetUrl({
                 path: 'js/navno.js',
             }) + '"></script>', // TODO: Lage ny navno.min.js og bruke den

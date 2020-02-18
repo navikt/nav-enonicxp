@@ -1,7 +1,8 @@
-var t = require('../translation/translation');
-var handleSockets = require('/lib/migration/handleSockets');
-var ws = require('/lib/wsUtil');
-var emitter = new ws.SocketEmitter();
+const t = require('../translation/translation');
+const handleSockets = require('/lib/migration/handleSockets');
+const ws = require('/lib/wsUtil');
+
+const emitter = new ws.SocketEmitter();
 
 exports.get = function (req) {
     handleSockets.handleSockets(emitter);

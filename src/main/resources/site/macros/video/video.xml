@@ -1,0 +1,9 @@
+<macro>
+    <display-name>Sett inn video</display-name>
+    <description>Sett inn video i brødteksten</description>
+    <form>
+        <input name="video" type="TextLine">
+            <label>Video</label>
+        </input>
+    </form>
+</macro>

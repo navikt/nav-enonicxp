@@ -2,11 +2,11 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('page-footer.html');
 
-function handleGet (req) {
+function handleGet(req) {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
 
@@ -34,7 +34,7 @@ function handleGet (req) {
             }) : undefined,
         };
         const dato = new Date();
-        var model = {
+        const model = {
             contentAZUrl,
             accessibleLetters: accessibleLetters.split(''),
             lang: languageBundles,

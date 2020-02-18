@@ -4,21 +4,43 @@ const libs = {
     content: require('/lib/xp/content'),
     utils: require('/lib/nav-utils'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('main-article.html');
 
-exports.get = function (req) {
-    // Midlertidig fix: Kaller render-function direkte for driftsmeldinger TODO: Sette tilbake når cache fungerer
-    const render = renderPage(req);
-    if (req.path.indexOf('/driftsmeldinger/') !== -1) {
-        return render();
-    } else {
-        return libs.cache.getPaths(req.rawPath, 'main-article', req.branch, render);
+function getSocialRef(el, content, req) {
+    if (!req) {
+        return null;
     }
-};
+    switch (el) {
+        case 'facebook':
+            return (
+                'http://www.facebook.com/sharer/sharer.php?u=' +
+                req.url +
+                '&amp;title=' +
+                content.displayName.replace(/ /g, '%20')
+            );
+        case 'twitter':
+            return (
+                'http://twitter.com/intent/tweet?text=' +
+                content.displayName.replace(/ /g, '%20') +
+                ': ' +
+                req.url
+            );
+        case 'linkedin':
+            return (
+                'http://www.linkedin.com/shareArticle?mini=true&amp;url=' +
+                req.url +
+                '&amp;title=' +
+                content.displayName.replace(/ /g, '%20') +
+                '&amp;source=nav.no'
+            );
+        default:
+            return null;
+    }
+}
 
-function renderPage (req) {
+function renderPage(req) {
     return () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
@@ -32,10 +54,16 @@ function renderPage (req) {
         const hasFact = !!data.fact;
 
         // Innholdsfortegnelse
-        let toc = [];
-        // TODO Remove the Kort_om hardcode after migrations has set h3 correctly on all old Kort_om articles
-        if ((data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
-            (content.x && content.x['no-nav-navno'] && content.x['no-nav-navno'].oldContentType && content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')) {
+        const toc = [];
+        // TODO Remove the Kort_om hardcode after migrations has
+        // set h3 correctly on all old Kort_om articles
+        if (
+            (data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
+            (content.x &&
+                content.x['no-nav-navno'] &&
+                content.x['no-nav-navno'].oldContentType &&
+                content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')
+        ) {
             let count = 0;
             let ch = 1;
             let ind = data.text.indexOf('<h3>');
@@ -45,49 +73,55 @@ function renderPage (req) {
                 const ssEnd = data.text.indexOf('</h3>', ind);
                 const ss = data.text
                     .slice(h2End, ssEnd)
-                    .replace(/<([^>]+)>/ig, '') // Strip html
-                    .replace(/&nbsp;/ig, ' '); // Replace &nbsp;
+                    .replace(/<([^>]+)>/gi, '') // Strip html
+                    .replace(/&nbsp;/gi, ' '); // Replace &nbsp;
                 count++;
                 toc.push(ss);
-                data.text = data.text.replace('<h3>', '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">');
+                data.text = data.text.replace(
+                    '<h3>',
+                    '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">'
+                );
                 ind = data.text.indexOf('<h3>');
             }
         }
 
         // Sosiale medier
-        let socials = data.social ? (Array.isArray(data.social) ? data.social : [data.social]) : false;
+        let socials = false;
+        if (data.social) {
+            socials = Array.isArray(data.social) ? data.social : [data.social];
+        }
+
         socials = socials
             ? socials.map(el => {
-                let tmpText = 'Del på ';
-                if (el === 'linkedin') {
-                    tmpText += 'LinkedIn';
-                } else if (el === 'facebook') {
-                    tmpText += 'Facebook';
-                } else {
-                    tmpText += 'Twitter';
-                }
-                return {
-                    type: el,
-                    text: tmpText,
-                    href: getSocialRef(el, content, req),
-                };
-            })
+                  let tmpText = 'Del på ';
+                  if (el === 'linkedin') {
+                      tmpText += 'LinkedIn';
+                  } else if (el === 'facebook') {
+                      tmpText += 'Facebook';
+                  } else {
+                      tmpText += 'Twitter';
+                  }
+                  return {
+                      type: el,
+                      text: tmpText,
+                      href: getSocialRef(el, content, req),
+                  };
+              })
             : false;
 
         // Prosessering av HTML-felter (håndtere url-er inne i html-en)
         data.text = libs.portal.processHtml({
             value: data.text,
         });
+
         if (hasFact) {
             data.fact = libs.portal.processHtml({
                 value: data.fact,
             });
         }
+
         if (data.image) {
-            data.imageUrl = libs.portal.imageUrl({
-                id: data.image,
-                scale: 'block(1024,768)',
-            });
+            data.imageUrl = libs.utils.getImageUrl(data.image, 'max(768)');
         }
 
         // Definer modell og kall rendring (view)
@@ -108,21 +142,13 @@ function renderPage (req) {
     };
 }
 
-function getSocialRef (el, content, req) {
-    if (!req) {
-        return null;
+exports.get = function(req) {
+    // Midlertidig fix: Kaller render-function direkte for driftsmeldinger
+    // TODO: Sette tilbake når cache fungerer
+
+    const render = renderPage(req);
+    if (req.path.indexOf('/driftsmeldinger/') !== -1) {
+        return render();
     }
-    if (el === 'facebook') {
-        return 'http://www.facebook.com/sharer/sharer.php?u=' + req.url + '&amp;title=' + content.displayName.replace(/ /g, '%20');
-    } else if (el === 'twitter') {
-        return 'http://twitter.com/intent/tweet?text=' + content.displayName.replace(/ /g, '%20') + ': ' + req.url;
-    } else if (el === 'linkedin') {
-        return (
-            'http://www.linkedin.com/shareArticle?mini=true&amp;url=' +
-            req.url +
-            '&amp;title=' +
-            content.displayName.replace(/ /g, '%20') +
-            '&amp;source=nav.no'
-        );
-    }
-}
+    return libs.cache.getPaths(req.rawPath, 'main-article', req.branch, render);
+};
