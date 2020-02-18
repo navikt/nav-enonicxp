@@ -4,7 +4,7 @@ const libs = {
 };
 const view = resolve('./searchbar.html');
 
-function get(req) {
+function get (req) {
     const ord = req.params.ord || '';
     const model = {
         ord,

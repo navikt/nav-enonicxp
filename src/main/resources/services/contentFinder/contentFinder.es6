@@ -1,12 +1,12 @@
-function handleGet(req) {
-    const params = req.params;
+exports.get = handleGet;
+
+function handleGet (req) {
+    var params = req.params;
     log.info(JSON.stringify(params));
 
-    const body = null;
+    var body = null;
     return {
         contentType: 'application/json',
         body: body,
     };
 }
-
-exports.get = handleGet;

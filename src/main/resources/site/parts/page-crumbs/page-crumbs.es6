@@ -4,15 +4,15 @@ const libs = {
     content: require('/lib/xp/content'),
     menu: require('/lib/menu'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
 };
 const view = resolve('page-crumbs.html');
 
-function handleGet(req) {
+function handleGet (req) {
     return libs.cache.getPaths(req.rawPath, 'breadCrumbs', req.branch, () => {
         const content = libs.portal.getContent();
         const langBundles = libs.lang.parseBundle(content.language).pagenav.breadcrumbs;
-        const breadcrumbs = libs.menu.getBreadcrumbMenu({
+        let breadcrumbs = libs.menu.getBreadcrumbMenu({
             linkActiveItem: false,
             showHomepage: false,
         });
@@ -23,11 +23,11 @@ function handleGet(req) {
             breadcrumbs.items = breadcrumbs.items.slice(2);
             // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
             breadcrumbs.items = breadcrumbs.items.filter(el => (
-                el.type === app.name + ':main-article'
-                || el.type === app.name + ':section-page'
-                || el.type === app.name + ':page-list'
-                || el.type === app.name + ':transport-page'
-                || el.type === app.name + ':generic-page'
+                el.type === app.name + ':main-article' ||
+                el.type === app.name + ':section-page' ||
+                el.type === app.name + ':page-list' ||
+                el.type === app.name + ':transport-page' ||
+                el.type === app.name + ':generic-page'
             ));
             const model = {
                 langBundles,

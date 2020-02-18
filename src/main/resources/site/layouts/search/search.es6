@@ -10,8 +10,8 @@ exports.get = function (req) {
     const language = libs.portal.getContent().language || 'no';
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
     const model = {
-        searchbar: component.regions.searchbar,
-        result: component.regions.result,
+        searchbar: component.regions['searchbar'],
+        result: component.regions['result'],
         toTop,
     };
 

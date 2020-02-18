@@ -8,15 +8,9 @@ const libs = {
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
-const myHash =
-    Math.random()
-        .toString(36)
-        .substring(2, 15) +
-    Math.random()
-        .toString(36)
-        .substring(2, 15);
-
+const myHash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 log.info(`Creating new cache: ${myHash}`);
+
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
     decorator: libs.cache.newCache({
@@ -37,20 +31,35 @@ const caches = {
     }),
 };
 
-function getPath(path, type) {
+module.exports = {
+    wipeDecorator: wipe('decorator'),
+    wipePaths: wipe('paths'),
+    getDecorator: getSome('decorator'),
+    getAZList: getSome('azList'),
+    getPaths: getSome('paths'),
+    getRedirects: getSome('redirects'),
+    activateEventListener,
+    wipeAll,
+    stripPath: getPath,
+    etag: getEtag,
+    wipeOnChange,
+    clearReferences,
+};
+
+function getPath (path, type) {
     if (!path) {
-        return false;
+        return;
     }
     const arr = path.split('/www.nav.no/');
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
     let key = arr[arr.length - 1];
 
+
     if (key[0] === '/') {
         key = key.replace('/', '');
     }
-    /* Siden path kan være så forskjellige for samme innhold så kapper vi path
-     * array til det som er relevant */
+    /* Siden path kan være så forskjellige for samme innhold så kapper vi path array til det som er relevant */
     /* Funksjonen er idempotent slik at getPath(path) === getPath(getPath(path)) */
 
     // need to sanitize the paths, since some contain norwegian chars
@@ -59,15 +68,22 @@ function getPath(path, type) {
     return (type ? type + '::' : '') + key;
 }
 
-function getEtag() {
+function getEtag () {
     return etag;
 }
 
-function setEtag() {
+function setEtag () {
     etag = Date.now().toString(16);
 }
 
-function wipe(name) {
+function wipeAll () {
+    setEtag();
+    wipe('decorator')();
+    wipe('azList')();
+    wipe('paths')();
+}
+
+function wipe (name) {
     return key => {
         if (!key) {
             caches[name].clear();
@@ -76,10 +92,10 @@ function wipe(name) {
             caches[name].remove(key);
             log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
-    };
+    }
 }
 
-function wipeOnChange(path) {
+function wipeOnChange (path) {
     if (!path) {
         return false;
     }
@@ -103,95 +119,62 @@ function wipeOnChange(path) {
     if (path.indexOf('/megamenu/') !== -1) {
         wipe('decorator')();
     }
-    if (
-        path.indexOf('/megamenu/') !== -1 ||
-        path.indexOf('/en/content-a-z/') !== -1 ||
-        path.indexOf('/no/innhold-a-aa/') !== -1
-    ) {
+    if (path.indexOf('/megamenu/') !== -1 || path.indexOf('/en/content-a-z/') !== -1 || path.indexOf('/no/innhold-a-aa/') !== -1) {
         wipe('azList')();
     }
     if (path.indexOf('/content/redirects/') !== -1) {
         wipe('redirects')();
     }
-
-    return true;
 }
 
-function wipeAll() {
-    setEtag();
-    wipe('decorator')();
-    wipe('azList')();
-    wipe('paths')();
-}
-
-function getSome(cacheStoreName) {
+function getSome (cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            return caches[cacheStoreName].get(getPath(key, type), () => {
-                log.info(
-                    `Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[
-                        cacheStoreName
-                    ].getSize()})] on [${myHash}]`
-                );
+            return caches[cacheStoreName].get(getPath(key, type), function () {
+                log.info(`Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[cacheStoreName].getSize()})] on [${myHash}]`);
                 return f(params);
             });
+        } else {
+            return f(params);
         }
-        return f(params);
     };
 }
 
-function clearReferences(id, path, depth) {
-    let newPath = path;
-    if (depth > 10) {
-        log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
-        return;
+function activateEventListener () {
+    wipeAll();
+    if (!hasSetupListeners) {
+        libs.event.listener({
+            type: 'node.*',
+            localOnly: false,
+            callback: nodeListenerCallback,
+        });
+        libs.event.listener({
+            type: 'custom.prepublish',
+            localOnly: false,
+            callback: (e) => {
+                e.data.prepublished.forEach((el) => {
+                    wipeOnChange(el._path);
+                    clearReferences(el._id, el._path, 0);
+                });
+            },
+        });
+        hasSetupListeners = true;
+    } else {
+        log.info('Cache node listeners already running');
     }
-    const references = libs.content.query({
-        start: 0,
-        count: 1000,
-        query: `_references LIKE "${id}"`,
-    }).hits;
-
-    // fix path before getting parent
-    if (path.indexOf('/content/') === 0) {
-        newPath = path.replace('/content', '');
-    }
-
-    // get parent
-    const parent = libs.content.get({
-        key: newPath
-            .split('/')
-            .slice(0, -1)
-            .join('/'),
-    });
-
-    // remove parents cache if its of a type that autogenerates content based on
-    // children and not reference
-    const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
-    if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
-        log.info('REMOVE PARENT CACHE');
-        references.push(parent);
-    }
-
-    references.forEach(el => {
-        wipeOnChange(el._path);
-
-        const deepTypes = [`${app.name}:content-list`];
-        if (deepTypes.indexOf(el.type) !== -1) {
-            clearReferences(el._id, el._path, depth + 1);
-        }
-    });
 }
 
-function nodeListenerCallback(event) {
+function nodeListenerCallback (event) {
     // Stop execution if not valid event type.
-    const shouldRun = cacheInvalidatorEvents.filter(eventType => event.type === eventType);
+    const shouldRun = cacheInvalidatorEvents.filter(
+        eventType => event.type === eventType
+    );
     if (!shouldRun) {
         return false;
     }
 
-    event.data.nodes.forEach(node => {
+    event.data.nodes.forEach(function (node) {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
             libs.context.run(
@@ -215,41 +198,43 @@ function nodeListenerCallback(event) {
     return true;
 }
 
-function activateEventListener() {
-    wipeAll();
-    if (!hasSetupListeners) {
-        libs.event.listener({
-            type: 'node.*',
-            localOnly: false,
-            callback: nodeListenerCallback,
-        });
-        libs.event.listener({
-            type: 'custom.prepublish',
-            localOnly: false,
-            callback: e => {
-                e.data.prepublished.forEach(el => {
-                    wipeOnChange(el._path);
-                    clearReferences(el._id, el._path, 0);
-                });
-            },
-        });
-        hasSetupListeners = true;
-    } else {
-        log.info('Cache node listeners already running');
+function clearReferences (id, path, depth) {
+    if (depth > 10) {
+        log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
+        return;
     }
-}
+    const references = libs.content.query({
+        start: 0,
+        count: 1000,
+        query: `_references LIKE "${id}"`,
+    }).hits;
 
-module.exports = {
-    wipeDecorator: wipe('decorator'),
-    wipePaths: wipe('paths'),
-    getDecorator: getSome('decorator'),
-    getAZList: getSome('azList'),
-    getPaths: getSome('paths'),
-    getRedirects: getSome('redirects'),
-    activateEventListener,
-    wipeAll,
-    stripPath: getPath,
-    etag: getEtag,
-    wipeOnChange,
-    clearReferences,
-};
+    // fix path before getting parent
+    if (path.indexOf('/content/') === 0) {
+        path = path.replace('/content', '');
+    }
+
+    // get parent
+    const parent = libs.content.get({
+        key: path.split('/').slice(0, -1).join('/'),
+    });
+
+    // remove parents cache if its of a type that autogenerates content based on children and not reference
+    const parentTypesToClear = [
+        `${app.name}:page-list`,
+        `${app.name}:main-article`,
+    ];
+    if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
+        log.info('REMOVE PARENT CACHE');
+        references.push(parent);
+    }
+
+    references.forEach(el => {
+        wipeOnChange(el._path);
+
+        const deepTypes = [`${app.name}:content-list`];
+        if (deepTypes.indexOf(el.type) !== -1) {
+            clearReferences(el._id, el._path, depth + 1);
+        }
+    });
+}

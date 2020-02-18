@@ -2,19 +2,36 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
     navUtils: require('/lib/nav-utils'),
 };
 // Resolve the view
 const view = resolve('main-article-linked-list.html');
 
-function hasMainArticleChapterChildren(content) {
+exports.get = function (req) {
+    return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
+        const content = libs.portal.getContent();
+        const list = createList(content);
+        const model = {
+            hasList: list.length > 1,
+            list,
+        };
+
+        return {
+            body: libs.thymeleaf.render(view, model),
+        };
+    });
+};
+
+function hasMainArticleChapterChildren (content) {
     const children = libs.navUtils.getAllChildren(content);
-    const hasChapters = children.filter(child => child.type === app.name + ':main-article-chapter').length > 0;
+    const hasChapters = children.filter((child) => {
+        return child.type === app.name + ':main-article-chapter';
+    }).length > 0;
     return hasChapters;
 }
 
-function createList(content) {
+function createList (content) {
     let root;
     if (content.type === app.name + ':main-article' && hasMainArticleChapterChildren(content)) {
         // set content to root if its a main-article with main-article-chapters as children
@@ -46,27 +63,17 @@ function createList(content) {
         active: root === content,
     }].concat(
         libs.navUtils.getAllChildren(root)
-            .filter(child => child.type === app.name + ':main-article-chapter')
-            .map(el => ({
-                heading: el.displayName,
-                link: libs.portal.pageUrl({
-                    id: el._id,
-                }),
-                active: el._id === content._id,
-            }))
+            .filter((child) => {
+                return child.type === app.name + ':main-article-chapter';
+            })
+            .map((el) => {
+                return {
+                    heading: el.displayName,
+                    link: libs.portal.pageUrl({
+                        id: el._id,
+                    }),
+                    active: el._id === content._id,
+                };
+            })
     );
 }
-exports.get = function (req) {
-    return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
-        const content = libs.portal.getContent();
-        const list = createList(content);
-        const model = {
-            hasList: list.length > 1,
-            list,
-        };
-
-        return {
-            body: libs.thymeleaf.render(view, model),
-        };
-    });
-};

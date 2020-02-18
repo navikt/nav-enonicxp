@@ -6,7 +6,7 @@ exports.macro = function (context) {
         id: context.params.content,
     });
 
-    const body =`<p><a class="btn btn-link btn" href="${href}">${text}</a></p>`;
+    const body = '<p><a class="btn btn-link btn-small" href="' + href + '">' + text + '</a></p>';
 
     return {
         body: body,

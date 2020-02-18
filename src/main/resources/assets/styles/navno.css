@@ -4734,8 +4734,7 @@ a.knapp {
 }
 
 .article-body {
-    line-height: 1.25em;
-    overflow: auto;
+    line-height: 1.25em
 }
 
 .article-body > :last-child {

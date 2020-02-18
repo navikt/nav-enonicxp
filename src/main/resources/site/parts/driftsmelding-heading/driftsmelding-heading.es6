@@ -4,16 +4,14 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
 };
 const view = resolve('driftsmelding-heading.html');
 
-function handleGet(req) {
-    // Må kjøre i context av master-branch, ellers vil preview i Content studio
-    // alltid vise en driftsmelding
-    // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer return
-    // libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () =>
-    // {
+function handleGet (req) {
+    // Må kjøre i context av master-branch, ellers vil preview i Content studio alltid vise en driftsmelding
+    // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer
+    // return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
     return libs.context.run(
         {
             repository: 'com.enonic.cms.default',
@@ -25,8 +23,7 @@ function handleGet(req) {
             principals: ['role:system.admin'],
         },
         () => {
-            // Henter ut eventuell publisert driftsmelding. Hvis flere er
-            // publisert, hentes sist publiserte
+            // Henter ut eventuell publisert driftsmelding. Hvis flere er publisert, hentes sist publiserte
             const message = libs.content.getChildren({
                 key: '/www.nav.no/no/driftsmeldinger',
                 start: 0,
@@ -49,12 +46,13 @@ function handleGet(req) {
                     contentType: 'text/html',
                     body: libs.thymeleaf.render(view, model),
                 };
+            } else {
+                // Ingen publiserte driftsmeldinger
+                return {
+                    contentType: 'text/html',
+                    body: null,
+                };
             }
-            // Ingen publiserte driftsmeldinger
-            return {
-                contentType: 'text/html',
-                body: null,
-            };
         }
     );
     // });

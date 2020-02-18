@@ -3,12 +3,12 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
 };
 const monthShortName = ['JAN', 'FEB', 'MAR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DES'];
 const view = resolve('publishing-calendar.html');
 
-function handleGet(req) {
+function handleGet (req) {
     return libs.cache.getPaths('publiseringskalender', undefined, req.branch, () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).publishing_calendar;
@@ -17,7 +17,7 @@ function handleGet(req) {
             start: 0,
             count: 100,
         }).hits
-            .map((el) => {
+            .map(el => {
                 const publDate = new Date(el.data.date);
                 return {
                     displayName: el.displayName,

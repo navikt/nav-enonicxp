@@ -2,15 +2,14 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
 };
 const view = resolve('contentAZ.html');
 
 /*
-  Innhold til Footer A-Å betår av lenker som er lagt inn i mappe for dette +
-  siste nivå fra hovedmenyen
+  Innhold til Footer A-Å betår av lenker som er lagt inn i mappe for dette + siste nivå fra hovedmenyen
  */
-function handleGet(req) {
+function handleGet (req) {
     const letter = req.params.letter;
     const language = req.path.indexOf('/en/') !== -1 ? 'en' : 'no';
     return libs.cache.getAZList(language + '-' + letter, undefined, req.branch, () => {
@@ -23,8 +22,8 @@ function handleGet(req) {
                 count: 1000,
             }).hits
                 .filter(el => (
-                    (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link')
-                    && el.displayName.toLowerCase().startsWith(letter)
+                    (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link') &&
+                    el.displayName.toLowerCase().startsWith(letter)
                 ));
             const menuList = libs.content.query({
                 start: 0,
@@ -32,10 +31,10 @@ function handleGet(req) {
                 query: 'type = "no.nav.navno:megamenu-item"',
             }).hits
                 .filter(el => (
-                    !el.hasChildren
-                    && el._path.indexOf(language === 'en' ? '/en/' : '/no/') !== -1
-                    && el.data.showInAZList
-                    && el.displayName.toLowerCase().startsWith(letter)
+                    !el.hasChildren &&
+                    el._path.indexOf(language === 'en' ? '/en/' : '/no/') !== -1 &&
+                    el.data.showInAZList &&
+                    el.displayName.toLowerCase().startsWith(letter)
                 ));
             list = azList.concat(menuList)
                 .sort((a, b) => {
@@ -47,7 +46,7 @@ function handleGet(req) {
                     }
                     return 0;
                 })
-                .map((el) => {
+                .map(el => {
                     let url;
                     if (el.type === app.name + ':internal-link' || el.type === app.name + ':megamenu-item') {
                         url = libs.portal.pageUrl({

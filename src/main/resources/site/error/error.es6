@@ -3,7 +3,7 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     portal: require('/lib/xp/portal'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/cacheControll'),
     tools: require('/lib/migration/tools'),
 };
 
@@ -34,22 +34,22 @@ exports.handle404 = function (req) {
     if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
         element = content;
     } else if (content) {
-        // if the content has no template, and is not an intenral link or
-        // external link, send the user to 404, this should stop endless
-        // redirect loops
+        // if the content has no template, and is not an intenral link or external link, send the user to 404, this should stop endless redirect loops
         contentExistsButHasNoTemplate = true;
     }
 
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
     if (!element) {
-        const isRedirect = path.split('/').length === 3;
+        let isRedirect = path.split('/').length === 3;
         if (isRedirect) {
             const contentName = path.split('/').pop().toLowerCase();
-            const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, () => libs.content.getChildren({
-                key: '/redirects',
-                start: 0,
-                count: 10000,
-            }).hits);
+            const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, function () {
+                return libs.content.getChildren({
+                    key: '/redirects',
+                    start: 0,
+                    count: 10000,
+                }).hits;
+            });
 
             for (let i = 0; i < redirects.length; i += 1) {
                 const el = redirects[i];
@@ -128,56 +128,55 @@ exports.handle404 = function (req) {
     } */
     return {
         body:
-            '<html lang="no">\n'
-            + '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n'
-            + '<body>\n'
-            + '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n'
-            + '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n'
-            + '<p>Feilkode 404</p>\n'
-            + '</body>\n'
-            + '</html>',
+            '<html lang="no">\n' +
+            '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n' +
+            '<body>\n' +
+            '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n' +
+            '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n' +
+            '<p>Feilkode 404</p>\n' +
+            '</body>\n' +
+            '</html>',
         contentType: 'text/html',
     };
 };
 
-// function create404page() {
-//     return libs.context.run(
-//         {
-//             repository: 'com.enonic.cms.default',
-//             branch: 'draft',
-//             user: {
-//                 login: 'su',
-//                 userStore: 'system',
-//             },
-//             principals: ['role:system.admin'],
-//         },
-//         () => {
-//             const page = libs.content.create({
-//                 name: '404',
-//                 parentPath: '/www.nav.no',
-//                 displayName: 'Oops, noe gikk galt',
-//                 contentType: app.name + ':404',
-//                 data: {
-//                     errorMessage: 'Siden eller tjenesten finnes ikke'
-//                       ++ 'eller er for tiden<br/>utilgjengelig. Vi beklager dette.'
-//                       ++ ' Prøv igjen senere.',
-//                 },
-//             });
-//             const res = libs.content.publish({
-//                 keys: ['/www.nav.no/404'],
-//                 sourceBranch: 'draft',
-//                 targetBranch: 'master',
-//                 includeDependencies: false,
-//             });
-//             if (res) {
-//                 return libs.portal.pageUrl({
-//                     path: page,
-//                 });
-//             }
-//             return null;
-//         }
-//     );
-// }
+function create404page () {
+    return libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        () => {
+            const page = libs.content.create({
+                name: '404',
+                parentPath: '/www.nav.no',
+                displayName: 'Oops, noe gikk galt',
+                contentType: app.name + ':404',
+                data: {
+                    'errorMessage': 'Siden eller tjenesten finnes ikke eller er for tiden<br/>utilgjengelig. Vi beklager dette. Prøv igjen senere.',
+                },
+            });
+            const res = libs.content.publish({
+                keys: ['/www.nav.no/404'],
+                sourceBranch: 'draft',
+                targetBranch: 'master',
+                includeDependencies: false,
+            });
+            if (res) {
+                return libs.portal.pageUrl({
+                    path: page,
+                });
+            } else {
+                return null;
+            }
+        }
+    );
+}
 
 // Handle all other errors - to avoid default error page with stack trace
 exports.handleError = function (err) {

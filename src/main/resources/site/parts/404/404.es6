@@ -6,7 +6,7 @@ const libs = {
 };
 const view = resolve('404.html');
 
-function handleGet(req) {
+function handleGet (req) {
     const content = libs.portal.getContent();
     const model = {
         title: content.displayName,
