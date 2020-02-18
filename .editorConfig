@@ -1,0 +1,16 @@
+root = true
+
+[*]
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 100
+
+[*.{js,es6,jsx,vue}]
+indent_size = 4
+
+[*.java]
+indent_size = 4
+
+[Makefile]
+indent_style = tab

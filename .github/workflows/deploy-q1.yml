@@ -1,0 +1,38 @@
+name: Deploy to Q1
+
+on:
+  repository_dispatch:
+    types: deploy-to-q1
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Cleanup
+        run: rm -rf $(ls navno-*.jar)
+      - name: Download artifact
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
+          GITHUB_BUILD_RUN_ID: ${{ github.event.client_payload.RUN_ID }}
+        run: |
+          ARTIFACT_ID="$(curl \
+          -H "authorization: Bearer ${GITHUB_PAT}" \
+          -s https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_BUILD_RUN_ID}/artifacts \
+          | jq '.artifacts[0].id')"
+
+          echo Downloading artifact $ARTIFACT_ID
+          curl -L -o app.zip "https://${GITHUB_PAT}@api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/$ARTIFACT_ID/zip"
+          unzip -o app.zip
+      - name: Deploy application
+        env:
+          ENONIC_CLI_REMOTE_URL: ${{ secrets.Q1_ENONIC_CLI_REMOTE_URL }}
+          ENONIC_CLI_REMOTE_USER: ${{ secrets.Q1_ENONIC_CLI_REMOTE_USER }}
+          ENONIC_CLI_REMOTE_PASS: ${{ secrets.Q1_ENONIC_CLI_REMOTE_PASS }}
+        run: |
+          echo Deploying $(ls navno-*.jar)
+          curl \
+            -k ${ENONIC_CLI_REMOTE_URL} \
+            --user "${ENONIC_CLI_REMOTE_USER}:${ENONIC_CLI_REMOTE_PASS}" \
+            -F file=@$(ls navno-*.jar)

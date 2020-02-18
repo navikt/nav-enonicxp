@@ -51,7 +51,7 @@
         </header>
 
         <div class="article-body">
-            <div data-th-utext="${content.data.text}"></div>
+            <div data-th-utext="${content.data.text}" data-th-remove="tag"></div>
         </div>
 
         <div class="well article-facts" data-th-if="${hasFact}">

@@ -1,10 +1,10 @@
-var content = require('/lib/xp/content');
-var thymeleafLib = require('/lib/thymeleaf');
-var utils = require('/lib/nav-utils');
+const content = require('/lib/xp/content');
+const thymeleafLib = require('/lib/thymeleaf');
+const utils = require('/lib/nav-utils');
 
-var view = resolve('printArticle.html');
+const view = resolve('printArticle.html');
 
-function sendError (msg) {
+function sendError(msg) {
     return {
         status: 400,
         body: {
@@ -14,12 +14,12 @@ function sendError (msg) {
     };
 }
 
-function handlePrintArticle (req) {
+function handlePrintArticle(req) {
     if (!req.params.article) {
         return sendError('Missing param "article".');
     }
 
-    var article = content.get({
+    const article = content.get({
         key: req.params.article,
     });
 
@@ -27,7 +27,7 @@ function handlePrintArticle (req) {
         return sendError('No article with id: ' + req.params.article);
     }
 
-    var childArticles = [];
+    let childArticles = [];
     if (article.hasChildren) {
         childArticles = content.getChildren({
             key: article._id,
@@ -36,7 +36,7 @@ function handlePrintArticle (req) {
         }).hits;
     }
 
-    var renderData = {
+    const renderData = {
         displayName: article.displayName,
         ingress: article.data.ingress,
         text: article.data.text,
@@ -45,7 +45,7 @@ function handlePrintArticle (req) {
         childArticles: childArticles,
     };
 
-    var body = thymeleafLib.render(view, renderData);
+    const body = thymeleafLib.render(view, renderData);
     return {
         contentType: 'text/html',
         body: body,

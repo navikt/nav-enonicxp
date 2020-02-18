@@ -3,10 +3,40 @@ const libs = {
     content: require('/lib/xp/content'),
 };
 
-export const getMegaMenu = (content, levels) => {
-    let subMenus = [];
+const getMegaMenu = (content, levels) => {
+    const menuToJson = (menuContent, menuLevel) => {
+        let subMenus = [];
+
+        if (menuLevel > 0) {
+            subMenus = getMegaMenu(menuContent, menuLevel);
+        }
+
+        let path = libs.portal.pageUrl({
+            id: menuContent.data.target,
+        });
+
+        if (menuContent.data.target) {
+            const target = libs.menuContent.get({
+                key: menuContent.data.target
+            });
+
+            if (target && target.type === `${app.name}:external-link`) {
+                path = target.data.url;
+            }
+        }
+
+        return {
+            displayName: menuContent.displayName,
+            path,
+            id: menuContent._id,
+            hasChildren: subMenus.length > 0,
+            children: subMenus,
+        };
+    };
+
+    const subMenus = [];
     if (content) {
-        levels--;
+        const currentLevel = levels - 1;
         return libs.content
             .getChildren({
                 key: content._id,
@@ -14,40 +44,11 @@ export const getMegaMenu = (content, levels) => {
                 count: 100,
             })
             .hits.reduce((t, el) => {
-                t.push(menuToJson(el, levels));
+                t.push(menuToJson(el, currentLevel));
                 return t;
             }, subMenus);
-    } else {
-        return [];
     }
+    return [];
 };
 
-const menuToJson = (content, levels) => {
-    let subMenus = [];
-
-    if (levels > 0) {
-        subMenus = getMegaMenu(content, levels);
-    }
-
-    let path = libs.portal.pageUrl({
-        id: content.data.target,
-    });
-
-    if (content.data.target) {
-        const target = libs.content.get({
-            key: content.data.target
-        });
-
-        if (target && target.type === `${app.name}:external-link`) {
-            path = target.data.url;
-        }
-    }
-
-    return {
-        displayName: content.displayName,
-        path,
-        id: content._id,
-        hasChildren: subMenus.length > 0,
-        children: subMenus,
-    };
-};
+export { getMegaMenu as default };

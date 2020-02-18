@@ -19,7 +19,7 @@ exports.get = function (req) {
     }
 
     const model = {
-        firstRegion: component.regions['first'],
+        firstRegion: component.regions.first,
         title,
         toTop,
     };

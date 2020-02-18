@@ -3,11 +3,11 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     lang: require('/lib/i18nUtil'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const view = resolve('generic-page.html');
 
-function handleGet (req) {
+function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'generic-page', req.branch, () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).main_article;

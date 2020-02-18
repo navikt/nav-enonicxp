@@ -1,13 +1,14 @@
 const libs = {
-    thymeleaf: require('/lib/thymeleaf'),
-    portal: require('/lib/xp/portal'),
+    cache: require('/lib/siteCache'),
     content: require('/lib/xp/content'),
-    cache: require('/lib/cacheControll'),
     lang: require('/lib/i18nUtil'),
+    navUtils: require('/lib/nav-utils'),
+    portal: require('/lib/xp/portal'),
+    thymeleaf: require('/lib/thymeleaf'),
 };
 const view = resolve('menu-list.html');
 
-function handleGet (req) {
+function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'menu-list', req.branch, () => {
         let content = libs.portal.getContent();
         if (content.type === app.name + ':main-article-chapter') {
@@ -16,8 +17,7 @@ function handleGet (req) {
             });
         }
         const selectNames = libs.lang.parseBundle(content.language).related_content.select;
-        const menuListItems = content.data.menuListItems || {
-        };
+        const menuListItems = content.data.menuListItems || {};
         const keys = [
             'shortcuts',
             'selfservice',
@@ -36,7 +36,9 @@ function handleGet (req) {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
-                const links = forceArr(menuListItems[el].link).concat(forceArr(menuListItems[el].files));
+                const links = libs.navUtils
+                    .forceArray(menuListItems[el].link)
+                    .concat(libs.navUtils.forceArray(menuListItems[el].files));
                 return {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     expanded: el === 'shortcuts',
@@ -49,7 +51,12 @@ function handleGet (req) {
                                 return undefined;
                             }
                             let link = '';
-                            if (element.type === 'media:document' || element.type === 'media:spreadsheet') {
+                            if (
+                                element.type === 'media:document' ||
+                                element.type === 'media:spreadsheet' ||
+                                element.type === 'media:presentation' ||
+                                element.type === 'media:archive'
+                            ) {
                                 link = libs.portal.attachmentUrl({
                                     id: element._id,
                                     download: true,
@@ -70,12 +77,10 @@ function handleGet (req) {
                                 link,
                             };
                         })
-                        .filter(el => !!el),
+                        .filter(elem => !!elem),
                 };
             })
-            .filter(el => {
-                return el && el.links && el.links.length > 0;
-            });
+            .filter(el => el && el.links && el.links.length > 0);
 
         if (menuLists.length > 0) {
             const model = {
@@ -85,16 +90,12 @@ function handleGet (req) {
                 contentType: 'text/html',
                 body: libs.thymeleaf.render(view, model),
             };
-        } else {
-            return {
-                contentType: 'text/html',
-                body: null,
-            };
         }
+        return {
+            contentType: 'text/html',
+            body: null,
+        };
     });
 }
 
 exports.get = handleGet;
-function forceArr (element) {
-    return element !== undefined ? (Array.isArray(element) ? element : [element]) : [];
-}
