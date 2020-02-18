@@ -15,7 +15,7 @@
 </section>
 
 <section class="row inner-row linklists-container">
-    <div data-th-if="${niceToKnow.data}" class="col-sm-12" data-th-classappend="${col}" >
+    <div data-th-if="${niceToKnow.data}" class="col-sm-12 col-md-4" >
         <h2 class="h4 decorated">
             [[${niceToKnow.sectionName}]]
         </h2>
@@ -27,7 +27,7 @@
             </li>
         </ul>
     </div>
-    <div data-th-if="${news.data}" class="col-sm-12" data-th-classappend="${col}">
+    <div data-th-if="${news.data}" class="col-sm-12 col-md-4">
         <h2 class="h4 decorated">
             [[${news.sectionName}]]
         </h2>
@@ -45,7 +45,7 @@
             </li>
         </ul>
     </div>
-    <div data-th-if="${shortcuts.data}" class="col-sm-12" data-th-classappend="${col}">
+    <div data-th-if="${shortcuts.data}" class="col-sm-12 col-md-4">
         <h2 class="h4 decorated">
             [[${shortcuts.sectionName}]]
         </h2>

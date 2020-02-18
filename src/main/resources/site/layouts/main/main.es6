@@ -11,9 +11,9 @@ exports.get = function (req) {
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
 
     const model = {
-        firstRegion: component.regions['first'],
-        secondRegion: component.regions['second'],
-        lClass: component.regions['second']
+        firstRegion: component.regions.first,
+        secondRegion: component.regions.second,
+        lClass: component.regions.second
             ? {
                 first: 'col-sm-12 col-md-8', second: 'col-sm-12 col-md-4',
             }

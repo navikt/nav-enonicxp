@@ -1,12 +1,12 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
-    cache: require('/lib/cacheControll'),
+    cache: require('/lib/siteCache'),
 };
 const etag = libs.cache.etag;
 const view = resolve('main-page.html');
 
-function handleGet (req) {
+function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const content = libs.portal.getContent();
         let url = req.url;
@@ -46,7 +46,7 @@ function handleGet (req) {
             body: libs.thymeleaf.render(view, model),
             headers: {
                 'Cache-Control': 'must-revalidate',
-                'ETag': etag(),
+                ETag: etag(),
             },
             pageContributions: {
                 headBegin: metaData,

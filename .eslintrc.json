@@ -1,0 +1,40 @@
+{
+    "extends": ["airbnb", "prettier"],
+    "plugins": ["prettier"],
+    "rules": {
+        "prettier/prettier": ["warn"],
+        "comma-dangle": ["error", "only-multiline"],
+        "no-cond-assign": ["error", "except-parens"],
+        "no-unused-vars": ["error", { "vars": "all", "args": "none"}],
+        "prefer-template": "off",
+        "no-console": "off",
+        "global-require": "off",
+        "import/no-unresolved": "off",
+        "import/no-absolute-path": "off",
+        "no-underscore-dangle": "off",
+        "object-shorthand": "off",
+        "prefer-destructuring": "off",
+        "radix": ["error", "as-needed"],
+        "no-plusplus": "off",
+        "func-names": "off"
+    },
+    "globals": {
+        "require": true,
+        "log": true,
+        "exports": true,
+        "resolve": true,
+        "app": true,
+        "fetch": true,
+        "document": true,
+        "window": true,
+        "__": true
+    },
+    "overrides": [
+        {
+            "files": ["*.html", "*.ftl", "*.xml"],
+            "rules": {
+                "max-len": "off"
+            }
+        }
+    ]
+}
