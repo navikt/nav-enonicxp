@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Check develop -> master
         run: |
           if [ "${{ github.base_ref }}" == "master" ] && [ "${{ github.head_ref }}" != "develop" ]
