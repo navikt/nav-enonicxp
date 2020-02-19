@@ -37,7 +37,7 @@ jobs:
           path: build/libs
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1
+        uses: fleskesvor/create-release@1a72e235c178bf2ae6c51a8ae36febc24568c5fe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
