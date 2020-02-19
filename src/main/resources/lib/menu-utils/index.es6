@@ -17,7 +17,7 @@ const getMegaMenu = (content, levels) => {
 
         if (menuContent.data.target) {
             const target = libs.menuContent.get({
-                key: menuContent.data.target
+                key: menuContent.data.target,
             });
 
             if (target && target.type === `${app.name}:external-link`) {
@@ -51,4 +51,4 @@ const getMegaMenu = (content, levels) => {
     return [];
 };
 
-export { getMegaMenu as default };
+exports.getMegaMenu = getMegaMenu;
