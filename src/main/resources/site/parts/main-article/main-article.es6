@@ -15,21 +15,21 @@ function getSocialRef(el, content, req) {
     switch (el) {
         case 'facebook':
             return (
-                'http://www.facebook.com/sharer/sharer.php?u=' +
+                'https://www.facebook.com/sharer/sharer.php?u=' +
                 req.url +
                 '&amp;title=' +
                 content.displayName.replace(/ /g, '%20')
             );
         case 'twitter':
             return (
-                'http://twitter.com/intent/tweet?text=' +
+                'https://twitter.com/intent/tweet?text=' +
                 content.displayName.replace(/ /g, '%20') +
                 ': ' +
                 req.url
             );
         case 'linkedin':
             return (
-                'http://www.linkedin.com/shareArticle?mini=true&amp;url=' +
+                'https://www.linkedin.com/shareArticle?mini=true&amp;url=' +
                 req.url +
                 '&amp;title=' +
                 content.displayName.replace(/ /g, '%20') +
@@ -55,15 +55,7 @@ function renderPage(req) {
 
         // Innholdsfortegnelse
         const toc = [];
-        // TODO Remove the Kort_om hardcode after migrations has
-        // set h3 correctly on all old Kort_om articles
-        if (
-            (data.hasTableOfContents && data.hasTableOfContents !== 'none') ||
-            (content.x &&
-                content.x['no-nav-navno'] &&
-                content.x['no-nav-navno'].oldContentType &&
-                content.x['no-nav-navno'].oldContentType.type === app.name + ':Kort_om')
-        ) {
+        if (data.hasTableOfContents && data.hasTableOfContents !== 'none') {
             let count = 0;
             let ch = 1;
             let ind = data.text.indexOf('<h3>');
@@ -90,7 +82,6 @@ function renderPage(req) {
         if (data.social) {
             socials = Array.isArray(data.social) ? data.social : [data.social];
         }
-
         socials = socials
             ? socials.map(el => {
                   let tmpText = 'Del på ';
@@ -109,22 +100,20 @@ function renderPage(req) {
               })
             : false;
 
-        // Prosessering av HTML-felter (håndtere url-er inne i html-en)
+        // Prosessering av HTML-felter (håndtere url-er inne i html-en) og image-urls
         data.text = libs.portal.processHtml({
             value: data.text,
         });
-
         if (hasFact) {
             data.fact = libs.portal.processHtml({
                 value: data.fact,
             });
         }
-
         if (data.image) {
             data.imageUrl = libs.utils.getImageUrl(data.image, 'max(768)');
         }
 
-        // Definer modell og kall rendring (view)
+        // Definer model og kall rendring (view)
         const model = {
             published: libs.utils.dateTimePublished(content, content.language || 'no'),
             hasTableOfContents: toc.length > 0,
