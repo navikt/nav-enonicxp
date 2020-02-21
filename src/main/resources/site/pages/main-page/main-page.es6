@@ -22,7 +22,7 @@ function handleGet(req) {
             `<title>${title}</title>`,
             '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
             '<meta name="apple-mobile-web-app-capable" content="yes" />',
-            `<link rel="cannonical" href="${url}" />`,
+            `<link rel="canonical" href="${url}" />`,
             description ? `<meta name="description" content="${description}" />` : '',
             `<meta property="og:title" content="${title}" />`,
             '<meta property="og:site_name" content="NAV" />',
