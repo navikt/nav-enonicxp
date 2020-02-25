@@ -10,7 +10,7 @@ const view = resolve('main-page.html');
 function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const content = libs.portal.getContent();
-        const url = libs.utils.absoluteUrl(req);
+        const url = libs.utils.validateUrl(req);
         const title = content.displayName;
         const description = content.data.metaDescription || '';
         const imageUrl = libs.portal.assetUrl({

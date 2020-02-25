@@ -44,13 +44,13 @@ function getImageUrl(contentId, scale = '') {
 }
 
 /**
- * Return the absolute url (http/https)
+ * Return valid url for localhost (http)
  * @param {Object} req The request object
  */
-function absoluteUrl(req) {
-    let url = req.url;
+function validUrl(req) {
+    const url = req.url;
     if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {
-        url = url.replace('http', 'https');
+        return url.replace('http', 'https');
     }
     return url;
 }
@@ -300,7 +300,7 @@ module.exports = {
     getLanguageVersions,
     getParameterValue,
     getImageUrl,
-    absoluteUrl,
+    validateUrl: validUrl,
     getExtensionForImage,
     sortContents,
 };
