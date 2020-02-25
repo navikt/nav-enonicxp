@@ -16,7 +16,7 @@ const getMegaMenu = (content, levels) => {
         });
 
         if (menuContent.data.target) {
-            const target = libs.menuContent.get({
+            const target = libs.content.get({
                 key: menuContent.data.target,
             });
 
