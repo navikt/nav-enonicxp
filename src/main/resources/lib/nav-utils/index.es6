@@ -12,16 +12,16 @@ const libs = {
 /**
  * Get the extension from the mime/type
  * Supported types, [Jpeg Png Gif Svg]
- * @param {Object} imageInfo The imageInfo given from content.get
+ * @param {Object} contentId The id to the image content
  */
-function getExtensionForImage(contentKey) {
+function getExtensionForImage(contentId) {
     const mimeTypes = {
         'image/png': 'png',
         'image/jpeg': 'jpg',
         'image/gif': 'gif',
         'image/svg+xml': 'svg',
     };
-    const content = libs.content.get({ key: contentKey });
+    const content = libs.content.get({ key: contentId });
     const imageInfo = content.x && content.x.media ? content.x.media.imageInfo : false;
 
     if (imageInfo) {
@@ -32,7 +32,7 @@ function getExtensionForImage(contentKey) {
 
 /**
  * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
- * @param {String} contentKey The id of the content
+ * @param {String} contentId The id of the content
  */
 function getImageUrl(contentId, scale = '') {
     const extension = getExtensionForImage(contentId);
@@ -41,6 +41,18 @@ function getImageUrl(contentId, scale = '') {
         format: extension,
         scale,
     });
+}
+
+/**
+ * Return valid url for localhost (http)
+ * @param {Object} req The request object
+ */
+function validUrl(req) {
+    const url = req.url;
+    if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {
+        return url.replace('http', 'https');
+    }
+    return url;
 }
 
 /**
@@ -288,6 +300,7 @@ module.exports = {
     getLanguageVersions,
     getParameterValue,
     getImageUrl,
+    validateUrl: validUrl,
     getExtensionForImage,
     sortContents,
 };
