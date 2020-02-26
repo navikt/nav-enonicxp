@@ -7,7 +7,7 @@ const libs = {
 function handleGet() {
     const menu = libs.menuUtils.getMegaMenu(libs.content.get({
         key: '/www.nav.no/dekorator-meny/',
-    }), 5);
+    }), 10);
 
     return {
         body: menu,
