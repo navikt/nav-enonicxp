@@ -7,6 +7,8 @@ const eventLib = require('/lib/xp/event');
 let appIsRunning = true;
 let taskIds = [];
 
+// Test deploy
+
 // start pull from NORG
 officeInformation.startCronJob();
 // start cache invalidator
