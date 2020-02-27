@@ -46,8 +46,8 @@ services:
       API_ENONIC_SOK_URL: 'https://www.nav.no/_/service/navno.nav.no.search/search2/sok'
       API_INNLOGGINGSLINJE_URL: 'http://mocks:8080/innloggingslinje-api/auth'
       API_VARSELINNBOKS_URL: 'http://mocks:8080/person/varselinnboks'
-      SITE_MINSIDE_ARBEIDSGIVER_URL: 'https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver'
-      SITE_DITT_NAV_URL: 'https:/www.nav.no/person/dittnav'
+      MINSIDE_ARBEIDSGIVER_URL: 'https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/'
+      DITT_NAV_URL: 'https:/www.nav.no/person/dittnav/'
       LOGIN_URL: 'http://localhost:5000'
       LOGOUT_URL: 'http://localhost:5000/?logout'
     depends_on:
