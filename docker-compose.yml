@@ -36,7 +36,7 @@ services:
 
   dekoratoren:
     container_name: dekoratoren
-    image: "navikt/nav-dekoratoren:8e62afd1-7890-4416-81be-a3d423e6dc1b-master"
+    image: "navikt/nav-dekoratoren:latest"
     ports:
       - "8100:8088"
     environment:
