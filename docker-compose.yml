@@ -40,7 +40,7 @@ services:
     ports:
       - "8100:8088"
     environment:
-      BASE_URL: 'http://localhost:8100'
+      NAV_BASE_URL: 'http://localhost:8100'
       APP_BASE_URL: "http://localhost:8100/dekoratoren"
       API_ENONIC_MENY_URL: 'https://www.nav.no/_/service/no.nav.navno/menu'
       API_ENONIC_SOK_URL: 'https://www.nav.no/_/service/navno.nav.no.search/search2/sok'
