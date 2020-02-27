@@ -47,7 +47,7 @@ function handleGet(req) {
             }) + '"></script>',
         ];
         const decoratorEnv = [
-            '<div id="decorator-env" data-src="' + decUrl + '/env.json"></div>',
+            '<div id="decorator-env" data-src="' + decUrl + '/env"></div>',
         ];
         const regions = content.page.regions;
         const model = {
