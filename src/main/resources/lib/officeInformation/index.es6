@@ -31,7 +31,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
 function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
     const officeFolder = libs.content.get({
-        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer',
+        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer',
     });
 
     const existingOffices = libs.content.getChildren({
@@ -177,7 +177,7 @@ function checkForRefresh() {
 
         log.info('PUBLISH OFFICE INFORMATION');
         libs.content.publish({
-            keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer'],
+            keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
             sourceBranch: 'draft',
             targetBranch: 'master',
             includeDependencies: true,
@@ -203,7 +203,7 @@ exports.startCronJob = function () {
     });
     libs.cron.schedule({
         name: 'office_info_norg2_daily',
-        cron: '10 4 * * *',
+        cron: '00 16 * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
