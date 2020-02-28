@@ -16,7 +16,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
             const object = o;
             if (isRefreshing === false) {
                 object.data.failedLastRefresh = failed;
-                // only update last refresh when its finished refresing and did not fail
+                // only update last refresh when its finished refreshing and did not fail
                 if (failed === false) {
                     object.data.lastRefresh = Date.now();
                     object.data.lastRefreshFormated = new Date();
@@ -203,7 +203,7 @@ exports.startCronJob = function () {
     });
     libs.cron.schedule({
         name: 'office_info_norg2_daily',
-        cron: '45 09 * * *',
+        cron: '10 4 * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
