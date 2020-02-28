@@ -4889,6 +4889,7 @@ a.knapp {
 .related-content.accordion {
     border: none;
 }
+
 .accordion .accordion-item .h3 {
     font-size: 1.0675rem;
     margin: 0;
@@ -4919,6 +4920,11 @@ a.knapp {
 
 .accordion-panel ul li {
     margin-bottom: 20px
+}
+
+.accordion-panel ul li a {
+    overflow-wrap: break-word;
+    word-break: break-word
 }
 
 .accordion-panel ul li:last-child {
