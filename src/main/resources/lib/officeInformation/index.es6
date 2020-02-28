@@ -16,7 +16,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
             const object = o;
             if (isRefreshing === false) {
                 object.data.failedLastRefresh = failed;
-                // only update last refresh when its finished refresing and did not fail
+                // only update last refresh when its finished refreshing and did not fail
                 if (failed === false) {
                     object.data.lastRefresh = Date.now();
                     object.data.lastRefreshFormated = new Date();
@@ -31,7 +31,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
 function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
     const officeFolder = libs.content.get({
-        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer',
+        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer',
     });
 
     const existingOffices = libs.content.getChildren({
@@ -177,7 +177,7 @@ function checkForRefresh() {
 
         log.info('PUBLISH OFFICE INFORMATION');
         libs.content.publish({
-            keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontakt-oss_2/kontorer'],
+            keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
             sourceBranch: 'draft',
             targetBranch: 'master',
             includeDependencies: true,
