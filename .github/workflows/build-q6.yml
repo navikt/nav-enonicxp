@@ -22,7 +22,7 @@ jobs:
             --header "Authorization: Bearer ${{ secrets.GITHUB_PAT }}" \
             --header "Accept: application/vnd.github.v3.raw" \
             --location "https://api.github.com/repos/navikt/nav-enonicxp-iac/contents/url-lookup/q6.json"
-          echo "$(cat url-lookup-table.json)"
+          echo "$(cat url-lookup.json)"
           mkdir -p src/main/resources/assets/iac && cp url-lookup.json "$_"
       - uses: actions/setup-java@v1
         with:
