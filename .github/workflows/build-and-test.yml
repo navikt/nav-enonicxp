@@ -12,15 +12,6 @@ jobs:
         id: vars
         run: |
           echo ::set-output name=VERSION::$(git tag  | sed 's/.*\(v[0-9].[0-9].[0-9]\).*/\1/p' | sort -V | tail -1)-$(echo ${GITHUB_SHA::7})
-      - name: Fetch url lookup table from nav-enonicxp-iac
-        run: |
-          curl \
-            --output url-lookup.json \
-            --header "Authorization: Bearer ${{ secrets.GITHUB_PAT }}" \
-            --header "Accept: application/vnd.github.v3.raw" \
-            --location "https://api.github.com/repos/navikt/nav-enonicxp-iac/contents/url-lookup/q6.json"
-          echo "$(cat url-lookup.json)"
-          mkdir -p src/main/resources/assets/iac && cp url-lookup.json "$_"
       - uses: actions/setup-java@v1
         with:
           java-version: 11
