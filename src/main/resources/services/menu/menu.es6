@@ -7,7 +7,6 @@ const libs = {
     menuUtils: require('/lib/menu-utils'),
 };
 
-libs.cache.wipeAll();
 const handleGet = req =>
     libs.cache.getPaths(req.rawPath, 'decorator-menu', req.branch, () => {
         let urlLookupTable;
