@@ -19,6 +19,12 @@ const getUrlLookupTable = () => {
             url: url,
             followRedirects: true,
             contentType: 'application/json',
+            ...(env !== 'localhost' && {
+                proxy: {
+                    host: 'http://webproxy-utvikler.nav.no',
+                    port: 8088,
+                },
+            }),
         });
         return JSON.parse(req.body);
     } catch (error) {
