@@ -14,14 +14,14 @@ const env = app.config.env;
 const getUrlLookupTable = () => {
     try {
         log.info(`Fetching url-lookup-table from nav-enonicxp-iac`);
-        const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
+        const url = `http://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
         const req = libs.http.request({
             url: url,
             contentType: 'application/json',
             ...(env !== 'localhost' && {
                 proxy: {
-                    host: 'http://webproxy-internett.nav.no',
-                    port: 8088,
+                    host: 'webproxy-internett.nav.no',
+                    port: 8080,
                 },
             }),
         });
