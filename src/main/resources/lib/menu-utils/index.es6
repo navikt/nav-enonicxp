@@ -1,8 +1,27 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
+    io: require('/lib/xp/io'),
 };
 
+const getUrlLookupTable = () => {
+    // Q1, Q6
+    try {
+        const urlLookupFile = libs.io.getResource('/iac/url-lookup.json');
+        if (urlLookupFile.exists()) {
+            const urlLookupStream = urlLookupFile.getStream();
+            const urlLookupJson = libs.io.readText(urlLookupStream);
+            return JSON.parse(urlLookupJson);
+        }
+    } catch (error) {
+        log.error(`Unable to parse url-lookup.json: ${error}`);
+    }
+
+    // Prod
+    return undefined;
+};
+
+const urlLookupTable = getUrlLookupTable();
 const getMegaMenu = (content, levels) => {
     const menuToJson = (menuContent, menuLevel) => {
         let subMenus = [];
@@ -27,7 +46,7 @@ const getMegaMenu = (content, levels) => {
 
         return {
             displayName: menuContent.displayName,
-            path,
+            path: urlLookupTable ? urlLookupTable[path] : path,
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
             children: subMenus,
