@@ -21,7 +21,7 @@ const getUrlLookupTable = () => {
             contentType: 'application/json',
             ...(env !== 'localhost' && {
                 proxy: {
-                    host: 'webproxy-internett.nav.no',
+                    host: 'webproxy-utvikler.nav.no',
                     port: 8088,
                 },
             }),
