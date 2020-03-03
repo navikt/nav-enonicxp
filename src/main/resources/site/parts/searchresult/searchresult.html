@@ -149,12 +149,12 @@
                             class="svart"
                             data-th-checked="${agg.checked}"
                             data-th-disabled="${agg.docCount} == 0"
-                            data-th-id="${'f' + aggStat.index}"
-                            data-th-value="${aggStat.index}"
+                            data-th-id="${'f' + agg.index}"
+                            data-th-value="${agg.index}"
                             name="daterange"
                             type="radio"
                         />
-                        <label data-th-for="${'f' + aggStat.index}" data-th-text="${agg.key}"></label>
+                        <label data-th-for="${'f' + agg.index}" data-th-text="${agg.key}"></label>
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
                     </li>
                 </ul>
