@@ -1,33 +1,22 @@
+import { getUrlFromLookupTable } from './url-lookup-table';
+
 const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     io: require('/lib/xp/io'),
 };
 
-const getUrlLookupTable = () => {
-    // Q1, Q6
-    try {
-        const urlLookupFile = libs.io.getResource('/iac/url-lookup.json');
-        if (urlLookupFile.exists()) {
-            const urlLookupStream = urlLookupFile.getStream();
-            const urlLookupJson = libs.io.readText(urlLookupStream);
-            return JSON.parse(urlLookupJson);
-        }
-    } catch (error) {
-        log.error(`Unable to parse url-lookup.json: ${error}`);
-    }
-
-    // Prod
-    return undefined;
-};
-
-const urlLookupTable = getUrlLookupTable();
-const getMegaMenu = (content, levels) => {
+const env = app.config.env;
+const getMegaMenu = ({ content, levels, lookupTable }) => {
     const menuToJson = (menuContent, menuLevel) => {
         let subMenus = [];
 
         if (menuLevel > 0) {
-            subMenus = getMegaMenu(menuContent, menuLevel);
+            subMenus = getMegaMenu({
+                content: menuContent,
+                levels: menuLevel,
+                lookupTable,
+            });
         }
 
         let path = libs.portal.pageUrl({
@@ -46,7 +35,7 @@ const getMegaMenu = (content, levels) => {
 
         return {
             displayName: menuContent.displayName,
-            path: urlLookupTable ? urlLookupTable[path] : path,
+            path: env === 'p' ? path : getUrlFromLookupTable(lookupTable, path),
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
             children: subMenus,
