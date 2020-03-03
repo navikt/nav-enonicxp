@@ -17,6 +17,7 @@ const getUrlLookupTable = () => {
         const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
         const req = libs.http.request({
             url: url,
+            followRedirects: true,
             contentType: 'application/json',
             ...(env !== 'localhost' && {
                 proxy: {
