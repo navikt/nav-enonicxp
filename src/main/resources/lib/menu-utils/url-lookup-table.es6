@@ -14,7 +14,7 @@ const env = app.config.env;
 const getUrlLookupTable = () => {
     try {
         log.info(`Fetching url-lookup.json from nav-enonicxp-iac`);
-        const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup/${env}.json`;
+        const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
         const req = libs.http.request({ url, contentType: 'application/json' });
         return JSON.parse(req.body);
     } catch (error) {
