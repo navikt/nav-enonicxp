@@ -21,7 +21,7 @@ const getUrlLookupTable = () => {
             ...(env !== 'localhost' && {
                 proxy: {
                     host: 'webproxy-internett.nav.no',
-                    port: 8443,
+                    port: 8088,
                 },
             }),
         });
