@@ -36,14 +36,14 @@ function handleGet(req) {
             description ? `<meta name="twitter:description" content="${description}" />` : '',
             `<meta name="twitter:image:src" content="${imageUrl}" />`,
             `<link href="${decUrl}/css/client.css" rel="stylesheet" />`,
-            `<link href="${libs.portal.assetUrl({ path: 'styles/navno.css' })}" rel="stylesheet" />`,
+            `<link href="${libs.portal.assetUrl({
+                path: 'styles/navno.css',
+            })}" rel="stylesheet" />`,
             `<script src="${decUrl}/client.js"></script>`,
             '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
-        const decoratorEnv = [
-            '<div id="decorator-env" data-src="' + decUrl + '/env"></div>',
-        ];
+        const footer = [`<div id="decorator-env" data-src="${decUrl}/env"></div>`];
         const regions = content.page.regions;
         const model = {
             mainRegion: regions.main,
@@ -57,7 +57,7 @@ function handleGet(req) {
             },
             pageContributions: {
                 headBegin: header,
-                bodyEnd: decoratorEnv,
+                bodyEnd: footer,
             },
         };
     });
