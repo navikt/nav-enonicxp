@@ -15,7 +15,11 @@ const getUrlLookupTable = () => {
     try {
         log.info(`Fetching url-lookup.json from nav-enonicxp-iac`);
         const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
-        const req = libs.http.request({ url, contentType: 'application/json' });
+        const req = libs.http.request({
+            url: url,
+            contentType: 'application/json',
+            proxy: { host: 'webproxy-utvikler.nav.no', port: 8088 },
+        });
         return JSON.parse(req.body);
     } catch (error) {
         log.error(`Unable to fetch and parse url-lookup.json: ${error}`);
