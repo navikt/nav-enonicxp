@@ -18,7 +18,12 @@ const getUrlLookupTable = () => {
         const req = libs.http.request({
             url: url,
             contentType: 'application/json',
-            proxy: { host: 'webproxy-utvikler.nav.no', port: 8088 },
+            ...(env !== 'localhost' && {
+                proxy: {
+                    host: 'webproxy-internett.nav.no',
+                    port: 8088,
+                },
+            }),
         });
         return JSON.parse(req.body);
     } catch (error) {
