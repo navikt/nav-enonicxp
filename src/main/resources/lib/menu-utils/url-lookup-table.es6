@@ -1,16 +1,12 @@
+const env = app.config.env;
 const libs = {
     http: require('/lib/http-client'),
     io: require('/lib/xp/io'),
 };
 
 /*
-    URL lookup table for Q1 and Q6
-    {
-        "key": "value"
-    }
+    URL lookup table for Q1 and Q6 { key : value }
  */
-
-const env = app.config.env;
 
 const getUrlLookupTableFromFile = () => {
     try {
