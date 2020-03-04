@@ -376,7 +376,7 @@ const searchResult = [
         },
     },
     {
-        type: 'part',
+        type: 'layout',
         path: '/main/0',
         layout: {
             descriptor: 'no.nav.navno:search',
@@ -682,19 +682,6 @@ const templates = [
         content: {
             displayName: 'Page - Ekstra Stor Tabell',
             parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:large-table',
-            },
-        },
-        components: largeTable,
-    },
-    {
-        content: {
-            displayName: 'Page - Ekstra Stor Tabell',
-            parentPath: '/content/_templates/',
             requireValid: true,
             contentType: 'portal:page-template',
             branch: 'draft',
