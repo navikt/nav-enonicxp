@@ -15,7 +15,7 @@ const env = app.config.env;
 const getUrlLookupTableFromFile = () => {
     try {
         log.info(`Opening url-lookup-table from nav-enonicxp-iac`);
-        const urlLookupFile = libs.io.getResource('/iac/url-lookup-table.json');
+        const urlLookupFile = libs.io.getResource('/assets/iac/url-lookup-table.json');
         const urlLookupStream = urlLookupFile.getStream();
         const urlLookupJson = libs.io.readText(urlLookupStream);
         return JSON.parse(urlLookupJson);
