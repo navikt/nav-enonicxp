@@ -18,10 +18,10 @@ jobs:
       - name: Fetch url lookup table from nav-enonicxp-iac
         run: |
           curl \
-            --output url-lookup-table.json \
-            --header "Authorization: Bearer ${{ secrets.GITHUB_PAT }}" \
-            --header "Accept: application/vnd.github.v3.raw" \
-            --location "https://api.github.com/repos/navikt/nav-enonicxp-iac/contents/url-lookup-table/q1.json"
+            -o url-lookup-table.json \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_PAT }}" \
+            -H "Accept: application/vnd.github.v3.raw" \
+            -L "https://api.github.com/repos/navikt/nav-enonicxp-iac/contents/url-lookup-tables/q1.json"
           mkdir -p src/main/resources/assets/iac && cp url-lookup-table.json "$_"
           echo "$(cat url-lookup-table.json)"
       - uses: actions/setup-java@v1
