@@ -121,7 +121,7 @@ exports.handle404 = function(req) {
     }
 
     // log error and send the user to a 404 page
-    log.info(`404: not found on: ${req.url}`);
+    log.info(`404: not found on: ${req.request.url}`);
 
     /* Fjerner dette for å sikre 404 statuskode. TODO: Finnes en bedre løsning?
     const has404 = libs.content.get({
