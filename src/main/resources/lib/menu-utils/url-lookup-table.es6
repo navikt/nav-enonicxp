@@ -42,9 +42,16 @@ const getUrlLookupTableFromApi = () => {
     return {};
 };
 
-
 const getUrlFromLookupTable = (table, path) => {
-    return table[path] || path;
+    let match;
+    Object.keys(table).some(key => {
+        if (path.startsWith(key)) {
+            match = key;
+            return true;
+        }
+        return false;
+    })
+    return match ? path.replace(match, table[match]) : path;
 };
 
 exports.getUrlLookupTableFromFile = getUrlLookupTableFromFile;
