@@ -46,7 +46,7 @@ function refreshOfficeInformation(officeInformationList) {
     // update office information or create new
     officeInformationList.forEach((officeInformation) => {
         // ignore closed offices
-        if (officeInformation.enhet.status !== 'Nedlagt') {
+        if (officeInformation.enhet.status !== 'Nedlagt' && officeInformation.enhet.type !== 'LOKAL') {
             // check if the office already exists
             const existingOffice = existingOffices.filter((o) => {
                 if (o.data && o.data.enhet && o.data.enhet.enhetId) {
@@ -203,7 +203,7 @@ exports.startCronJob = function () {
     });
     libs.cron.schedule({
         name: 'office_info_norg2_daily',
-        cron: '10 4 * * *',
+        cron: '35 9 * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
