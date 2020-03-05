@@ -203,7 +203,7 @@ exports.startCronJob = function () {
     });
     libs.cron.schedule({
         name: 'office_info_norg2_daily',
-        cron: '40 14 * * *',
+        cron: '50 14 * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
