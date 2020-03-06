@@ -130,7 +130,6 @@
                     return 0;
                 });
 
-                console.log(timeIntervals);
                 for (var k = 0; k < timeIntervals.length; k += 1) {
                     var datePeriod = timeIntervals[k];
                     totalInDateCount += datePeriod.docCount;
