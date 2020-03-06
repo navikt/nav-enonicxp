@@ -95,7 +95,7 @@
     <section class="col-md-4 col-4">
         <form data-th-action="${searchApi}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
-                <ul class="fasettListe" data-th-if="${aggregations}">
+                <ul data-th-if="${aggregations}" class="fasettListe">
                     <li class="utvidbar" data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}">
                         <input
                             data-th-checked="${agg.checked}"
