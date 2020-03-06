@@ -5,6 +5,24 @@ const libs = {
 };
 const view = resolve('./searchresult.html');
 
+const sortTimePeriod = intervals => {
+    const order = ['Siste 7 dager', 'Siste 30 dager', 'Siste 12 måneder', 'Eldre enn 12 måneder'];
+
+    const orderedIntervals = intervals.buckets.map((interval, ix) => ({
+        ...interval,
+        index: parseInt(ix),
+    }));
+    return orderedIntervals.sort((a, b) => {
+        if (order.indexOf(a.key) > order.indexOf(b.key)) {
+            return 1;
+        }
+        if (order.indexOf(b.key) > order.indexOf(a.key)) {
+            return -1;
+        }
+        return 0;
+    });
+};
+
 function get(req) {
     let url = libs.portal.serviceUrl({
         service: 'search',
@@ -34,10 +52,13 @@ function get(req) {
         method: 'GET',
     });
 
-    let model;
+    let model = {};
 
     try {
         model = JSON.parse(response.body);
+
+        const sortedTimeIntervals = sortTimePeriod(model.aggregations.Tidsperiode);
+        model.aggregations.Tidsperiode.buckets = sortedTimeIntervals;
     } catch (e) {
         log.info(e);
         log.info(response.body);
