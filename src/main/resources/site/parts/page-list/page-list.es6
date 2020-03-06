@@ -19,7 +19,7 @@ function createModel() {
         .map(value => libs.content.get({ key: value }))
         .filter(el => !!el && el._id !== content._id) // remove itself from list
         .filter(el => el.type !== `${app.name}:content-list` && el.type !== 'base:folder')
-        .map((el) => {
+        .map(el => {
             // map to model better suited for thymeleaf view
             const published = el.publish && el.publish.first ? el.publish.first : el.createdTime;
             return {
@@ -33,7 +33,8 @@ function createModel() {
                 type: el.type,
             };
         })
-        .reduce((t, el) => { // remove duplicates
+        .reduce((t, el) => {
+            // remove duplicates
             if (t.filter(ele => ele.src === el.src).length === 0) {
                 t.push(el);
             }
@@ -64,6 +65,6 @@ function createModel() {
         body: libs.thymeleaf.render(view, model),
     };
 }
-exports.get = function (req) {
+exports.get = function(req) {
     return libs.cache.getPaths(req.rawPath, 'page-list', req.branch, createModel);
 };

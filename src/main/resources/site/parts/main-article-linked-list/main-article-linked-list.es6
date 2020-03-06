@@ -10,7 +10,8 @@ const view = resolve('main-article-linked-list.html');
 
 function hasMainArticleChapterChildren(content) {
     const children = libs.navUtils.getAllChildren(content);
-    const hasChapters = children.filter(child => child.type === app.name + ':main-article-chapter').length > 0;
+    const hasChapters =
+        children.filter(child => child.type === app.name + ':main-article-chapter').length > 0;
     return hasChapters;
 }
 
@@ -38,14 +39,17 @@ function createList(content) {
     }
 
     // return linked list
-    return [{
-        heading: root.displayName,
-        link: libs.portal.pageUrl({
-            id: root._id,
-        }),
-        active: root === content,
-    }].concat(
-        libs.navUtils.getAllChildren(root)
+    return [
+        {
+            heading: root.displayName,
+            link: libs.portal.pageUrl({
+                id: root._id,
+            }),
+            active: root === content,
+        },
+    ].concat(
+        libs.navUtils
+            .getAllChildren(root)
             .filter(child => child.type === app.name + ':main-article-chapter')
             .map(el => ({
                 heading: el.displayName,
@@ -56,7 +60,7 @@ function createList(content) {
             }))
     );
 }
-exports.get = function (req) {
+exports.get = function(req) {
     return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
         const content = libs.portal.getContent();
         const list = createList(content);

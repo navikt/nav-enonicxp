@@ -12,7 +12,7 @@ const libs = {
 function setIsRefreshing(navRepo, isRefreshing, failed) {
     navRepo.modify({
         key: '/officeInformation',
-        editor: (o) => {
+        editor: o => {
             const object = o;
             if (isRefreshing === false) {
                 object.data.failedLastRefresh = failed;
@@ -44,11 +44,11 @@ function refreshOfficeInformation(officeInformationList) {
     };
 
     // update office information or create new
-    officeInformationList.forEach((officeInformation) => {
+    officeInformationList.forEach(officeInformation => {
         // ignore closed offices
         if (officeInformation.enhet.status !== 'Nedlagt') {
             // check if the office already exists
-            const existingOffice = existingOffices.filter((o) => {
+            const existingOffice = existingOffices.filter(o => {
                 if (o.data && o.data.enhet && o.data.enhet.enhetId) {
                     return o.data.enhet.enhetId === officeInformation.enhet.enhetId;
                 }
@@ -74,12 +74,14 @@ function refreshOfficeInformation(officeInformationList) {
     });
 
     // delete old offices
-    existingOffices.forEach((existingOffice) => {
+    existingOffices.forEach(existingOffice => {
         let enhetId;
-        if (existingOffice
-            && existingOffice.data
-            && existingOffice.data.enhet
-            && existingOffice.data.enhet.enhetId) {
+        if (
+            existingOffice &&
+            existingOffice.data &&
+            existingOffice.data.enhet &&
+            existingOffice.data.enhet.enhetId
+        ) {
             enhetId = existingOffice.data.enhet.enhetId;
         }
         if (!officesInNorg[enhetId]) {
@@ -113,11 +115,13 @@ function checkForRefresh() {
             },
             callback: () => {
                 // stop if the config is missing, or the node is not a master
-                if (libs.cluster.isMaster()
-                    && app.config
-                    && app.config.norg2
-                    && app.config.norg2ApiKey
-                    && app.config.norg2ConsumerId) {
+                if (
+                    libs.cluster.isMaster() &&
+                    app.config &&
+                    app.config.norg2 &&
+                    app.config.norg2ApiKey &&
+                    app.config.norg2ConsumerId
+                ) {
                     checkForRefresh();
                 }
             },
@@ -196,8 +200,7 @@ function checkForRefresh() {
     }
 }
 
-
-exports.startCronJob = function () {
+exports.startCronJob = function() {
     libs.cron.unschedule({
         name: 'office_info_norg2_daily',
     });
@@ -215,11 +218,13 @@ exports.startCronJob = function () {
         },
         callback: () => {
             // stop if the config is missing, or the node is not a master
-            if (libs.cluster.isMaster()
-                && app.config
-                && app.config.norg2
-                && app.config.norg2ApiKey
-                && app.config.norg2ConsumerId) {
+            if (
+                libs.cluster.isMaster() &&
+                app.config &&
+                app.config.norg2 &&
+                app.config.norg2ApiKey &&
+                app.config.norg2ConsumerId
+            ) {
                 checkForRefresh();
             }
         },
