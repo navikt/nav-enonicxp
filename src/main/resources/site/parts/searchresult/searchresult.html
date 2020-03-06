@@ -16,7 +16,7 @@
     <section class="col-md-8 col-8">
         <div class="sokeresultatContainer">
             <div class="minimertFiltreringspanel">
-                <ul class="fasettListe">
+                <ul data-th-if="${aggregations}" class="fasettListe">
                     <li data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}" data-th-data-facet="${aggStat.index}">
                         <div class="fasettLinkHode">
                             <h2 data-th-text="${agg.key}"></h2>
@@ -95,7 +95,7 @@
     <section class="col-md-4 col-4">
         <form data-th-action="${searchApi}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
-                <ul class="fasettListe">
+                <ul class="fasettListe" data-th-if="${aggregations}">
                     <li class="utvidbar" data-th-classappend="${agg.className}" data-th-each="agg : ${aggregations.fasetter.buckets}">
                         <input
                             data-th-checked="${agg.checked}"
@@ -135,7 +135,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="fasettGruppeElement radiobuttons">
+            <div data-th-if="${aggregations}" class="fasettGruppeElement radiobuttons">
                 <h2>Tidsperiode</h2>
 
                 <ul class="fasettListe">
@@ -149,12 +149,12 @@
                             class="svart"
                             data-th-checked="${agg.checked}"
                             data-th-disabled="${agg.docCount} == 0"
-                            data-th-id="${'f' + agg.index}"
-                            data-th-value="${agg.index}"
+                            data-th-id="${'f' + #numbers.formatInteger(agg.index, 1)}"
+                            data-th-value="${#numbers.formatInteger(agg.index, 1)}"
                             name="daterange"
                             type="radio"
                         />
-                        <label data-th-for="${'f' + agg.index}" data-th-text="${agg.key}"></label>
+                        <label data-th-for="${'f' + #numbers.formatInteger(agg.index, 1)}" data-th-text="${agg.key}"></label>
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
                     </li>
                 </ul>
