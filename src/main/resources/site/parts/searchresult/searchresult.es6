@@ -52,10 +52,13 @@ function get(req) {
         method: 'GET',
     });
 
-    let model;
+    let model = {};
 
     try {
         model = JSON.parse(response.body);
+
+        const sortedTimeIntervals = sortTimePeriod(model.aggregations.Tidsperiode);
+        model.aggregations.Tidsperiode.buckets = sortedTimeIntervals;
     } catch (e) {
         log.info(e);
         log.info(response.body);
@@ -65,9 +68,6 @@ function get(req) {
     model.form = libs.portal.pageUrl({
         id: libs.portal.getContent()._id,
     });
-
-    const sortedTimeIntervals = sortTimePeriod(model.aggregations.Tidsperiode);
-    model.aggregations.Tidsperiode.buckets = sortedTimeIntervals;
 
     return {
         body: libs.thymeleaf.render(view, model),
