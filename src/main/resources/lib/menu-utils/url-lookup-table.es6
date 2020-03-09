@@ -8,52 +8,54 @@ const libs = {
     URL lookup table for Q1 and Q6 { key : value }
  */
 
-let urlLookupTable = {};
-const getUrlLookupTableFromFile = () => {
-    try {
-        log.info(`Opening url-lookup-table from nav-enonicxp-iac`);
-        const urlLookupFile = libs.io.getResource('/assets/iac/url-lookup-table.json');
-        const urlLookupStream = urlLookupFile.getStream();
-        const urlLookupJson = libs.io.readText(urlLookupStream);
-        urlLookupTable =  JSON.parse(urlLookupJson);
-    } catch (error) {
-        log.error(`Unable to open and parse url-lookup-table: ${error}`);
+class UrlLookupTable {
+    constructor() {
+        this.table = {}
     }
-};
 
-const getUrlLookupTableFromApi = () => {
-    try {
-        log.info(`Fetching url-lookup-table from nav-enonicxp-iac`);
-        const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
-        const req = libs.http.request({
-            url: url,
-            contentType: 'application/json',
-            ...(env !== 'localhost' && {
-                proxy: {
-                    host: 'webproxy-internett.nav.no',
-                    port: 8088,
-                },
-            }),
-        });
-        urlLookupTable = JSON.parse(req.body);
-    } catch (error) {
-        log.error(`Unable to fetch and parse url-lookup-table: ${error}`);
-    }
-};
-
-const getUrlFromLookupTable = (table, path) => {
-    let match;
-    Object.keys(table).some(key => {
-        if (path.startsWith(key)) {
-            match = key;
-            return true;
+    static getTableFromFile () {
+        try {
+            log.info(`Opening url-lookup-table from nav-enonicxp-iac`);
+            const urlLookupFile = libs.io.getResource('/assets/iac/url-lookup-table.json');
+            const urlLookupStream = urlLookupFile.getStream();
+            const urlLookupJson = libs.io.readText(urlLookupStream);
+            this.table = JSON.parse(urlLookupJson);
+        } catch (error) {
+            log.error(`Unable to open and parse url-lookup-table: ${error}`);
         }
-        return false;
-    })
-    return match ? path.replace(match, table[match]) : path;
-};
+    };
 
-exports.urlLookupTable = urlLookupTable;
-exports.getUrlLookupTableFromFile = getUrlLookupTableFromFile;
-exports.getUrlLookupTableFromApi = getUrlLookupTableFromApi;
-exports.getUrlFromLookupTable = getUrlFromLookupTable;
+    static getTableFromApi () {
+        try {
+            log.info(`Fetching url-lookup-table from nav-enonicxp-iac`);
+            const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
+            const req = libs.http.request({
+                url: url,
+                contentType: 'application/json',
+                ...(env !== 'localhost' && {
+                    proxy: {
+                        host: 'webproxy-internett.nav.no',
+                        port: 8088,
+                    },
+                }),
+            });
+            this.table = JSON.parse(req.body);
+        } catch (error) {
+            log.error(`Unable to fetch and parse url-lookup-table: ${error}`);
+        }
+    };
+
+    static getUrlFromTable (path) {
+        let match;
+        Object.keys(this.table).some(key => {
+            if (path.startsWith(key)) {
+                match = key;
+                return true;
+            }
+            return false;
+        })
+        return match ? path.replace(match, this.table[match]) : path;
+    };
+}
+
+exports.UrlLookupTable = UrlLookupTable;

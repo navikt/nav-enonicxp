@@ -1,4 +1,4 @@
-import { getUrlFromLookupTable } from './url-lookup-table';
+import { UrlLookupTable } from './url-lookup-table';
 
 const libs = {
     portal: require('/lib/xp/portal'),
@@ -6,15 +6,14 @@ const libs = {
     io: require('/lib/xp/io'),
 };
 
-const getMegaMenu = ({ content, levels, lookupTable }) => {
+const getMegaMenu = ({ content, levels }) => {
     const menuToJson = (menuContent, menuLevel) => {
         let subMenus = [];
 
         if (menuLevel > 0) {
             subMenus = getMegaMenu({
                 content: menuContent,
-                levels: menuLevel,
-                lookupTable,
+                levels: menuLevel
             });
         }
 
@@ -34,7 +33,7 @@ const getMegaMenu = ({ content, levels, lookupTable }) => {
 
         return {
             displayName: menuContent.displayName,
-            path: app.config.env === 'p' ? path : getUrlFromLookupTable(lookupTable, path),
+            path: app.config.env === 'p' ? path : UrlLookupTable.getUrlFromTable(path),
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
             children: subMenus,

@@ -1,5 +1,3 @@
-import { urlLookupTable } from '/lib/menu-utils/url-lookup-table';
-
 const libs = {
     content: require('/lib/xp/content'),
     portal: require('/lib/xp/portal'),
@@ -11,7 +9,6 @@ const handleGet = req =>
     libs.cache.getPaths(req.rawPath, 'decorator-menu', req.branch, () => {
         const menu = libs.menuUtils.getMegaMenu({
             content: libs.content.get({ key: '/www.nav.no/dekorator-meny/' }),
-            lookupTable: urlLookupTable,
             levels: 10,
         });
 

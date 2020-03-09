@@ -1,4 +1,4 @@
-import { getUrlLookupTableFromFile } from '/lib/menu-utils/url-lookup-table';
+import {  UrlLookupTable } from '/lib/menu-utils/url-lookup-table';
 
 log.info('Started running main');
 const cache = require('/lib/siteCache');
@@ -16,7 +16,7 @@ cache.activateEventListener();
 
 // init url lookup table
 if (app.config.env !== 'p') {
-    getUrlLookupTableFromFile();
+    UrlLookupTable.getTableFromFile();
 }
 
 // start task for handling caching of expired and prepublished content
