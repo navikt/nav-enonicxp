@@ -13,7 +13,6 @@ jobs:
       - name: Download artifact
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
           GITHUB_BUILD_RUN_ID: ${{ github.event.client_payload.RUN_ID }}
         run: |
@@ -23,7 +22,10 @@ jobs:
           | jq '.artifacts[0].id')"
 
           echo Downloading artifact $ARTIFACT_ID
-          curl -L -o app.zip "https://${GITHUB_PAT}@api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/$ARTIFACT_ID/zip"
+          curl -o app.zip \
+          --cacert /etc/pki/tls/cacert.pem \
+          -H "Authorization: Bearer ${GITHUB_PAT}" \
+          -L "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/$ARTIFACT_ID/zip"
           unzip -o app.zip
       - name: Deploy application
         env:

@@ -9,6 +9,12 @@
         <label>Kort beskrivelse</label>
         <occurrences minimum="0" maximum="1"/>
     </input>
+    <field-set name="beskrivelse">
+        <label>Beskrivelse for søk og sosiale medier</label>
+        <items>
+            <mixin name="meta-description"/>
+        </items>
+    </field-set>
     <item-set name="items">
         <label>Klikkbar lenkepanel</label>
         <items>
@@ -43,5 +49,6 @@
         </items>
         <occurrences maximum="0" minimum="1"/>
     </item-set>
+
     </form>
 </content-type>
