@@ -1,6 +1,7 @@
 const env = app.config.env;
 const libs = {
     http: require('/lib/http-client'),
+    portal: require('/lib/xp/portal'),
     io: require('/lib/xp/io'),
 };
 
@@ -10,10 +11,10 @@ const libs = {
 
 class UrlLookupTable {
     constructor() {
-        this.table = {}
+        this.table = {};
     }
 
-    static getTableFromFile () {
+    static getTableFromFile() {
         try {
             log.info(`Opening url-lookup-table from nav-enonicxp-iac`);
             const urlLookupFile = libs.io.getResource('/assets/iac/url-lookup-table.json');
@@ -23,9 +24,9 @@ class UrlLookupTable {
         } catch (error) {
             log.error(`Unable to open and parse url-lookup-table: ${error}`);
         }
-    };
+    }
 
-    static getTableFromApi () {
+    static getTableFromApi() {
         try {
             log.info(`Fetching url-lookup-table from nav-enonicxp-iac`);
             const url = `https://raw.githubusercontent.com/navikt/nav-enonicxp-iac/master/url-lookup-tables/${env}.json`;
@@ -43,9 +44,9 @@ class UrlLookupTable {
         } catch (error) {
             log.error(`Unable to fetch and parse url-lookup-table: ${error}`);
         }
-    };
+    }
 
-    static getUrlFromTable (path) {
+    static getUrlFromTable(path) {
         let match;
         Object.keys(this.table).some(key => {
             if (path.startsWith(key)) {
@@ -53,9 +54,19 @@ class UrlLookupTable {
                 return true;
             }
             return false;
-        })
+        });
         return match ? path.replace(match, this.table[match]) : path;
-    };
+    }
 }
 
+const getUrlOrPage = (url, pageId) => {
+    if (url) {
+        return env === 'p' ? url : UrlLookupTable.getUrlFromTable(url);
+    }
+    return libs.portal.pageUrl({
+        id: pageId,
+    });
+};
+
 exports.UrlLookupTable = UrlLookupTable;
+exports.getUrlOrPage = getUrlOrPage;
