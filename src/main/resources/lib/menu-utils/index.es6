@@ -6,7 +6,6 @@ const libs = {
     io: require('/lib/xp/io'),
 };
 
-const env = app.config.env;
 const getMegaMenu = ({ content, levels, lookupTable }) => {
     const menuToJson = (menuContent, menuLevel) => {
         let subMenus = [];
@@ -35,7 +34,7 @@ const getMegaMenu = ({ content, levels, lookupTable }) => {
 
         return {
             displayName: menuContent.displayName,
-            path: env === 'p' ? path : getUrlFromLookupTable(lookupTable, path),
+            path: app.config.env === 'p' ? path : getUrlFromLookupTable(lookupTable, path),
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
             children: subMenus,
