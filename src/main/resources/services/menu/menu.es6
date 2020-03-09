@@ -1,4 +1,4 @@
-import { getUrlLookupTableFromFile } from '/lib/menu-utils/url-lookup-table';
+import { urlLookupTable } from '/lib/menu-utils/url-lookup-table';
 
 const libs = {
     content: require('/lib/xp/content'),
@@ -9,11 +9,6 @@ const libs = {
 
 const handleGet = req =>
     libs.cache.getPaths(req.rawPath, 'decorator-menu', req.branch, () => {
-        let urlLookupTable;
-        if (app.config.env !== 'p') {
-            urlLookupTable = getUrlLookupTableFromFile();
-        }
-
         const menu = libs.menuUtils.getMegaMenu({
             content: libs.content.get({ key: '/www.nav.no/dekorator-meny/' }),
             lookupTable: urlLookupTable,

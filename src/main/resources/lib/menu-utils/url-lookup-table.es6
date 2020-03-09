@@ -8,17 +8,17 @@ const libs = {
     URL lookup table for Q1 and Q6 { key : value }
  */
 
+let urlLookupTable = {};
 const getUrlLookupTableFromFile = () => {
     try {
         log.info(`Opening url-lookup-table from nav-enonicxp-iac`);
         const urlLookupFile = libs.io.getResource('/assets/iac/url-lookup-table.json');
         const urlLookupStream = urlLookupFile.getStream();
         const urlLookupJson = libs.io.readText(urlLookupStream);
-        return JSON.parse(urlLookupJson);
+        urlLookupTable =  JSON.parse(urlLookupJson);
     } catch (error) {
         log.error(`Unable to open and parse url-lookup-table: ${error}`);
     }
-    return {};
 };
 
 const getUrlLookupTableFromApi = () => {
@@ -35,11 +35,10 @@ const getUrlLookupTableFromApi = () => {
                 },
             }),
         });
-        return JSON.parse(req.body);
+        urlLookupTable = JSON.parse(req.body);
     } catch (error) {
         log.error(`Unable to fetch and parse url-lookup-table: ${error}`);
     }
-    return {};
 };
 
 const getUrlFromLookupTable = (table, path) => {
@@ -54,7 +53,7 @@ const getUrlFromLookupTable = (table, path) => {
     return match ? path.replace(match, table[match]) : path;
 };
 
+exports.urlLookupTable = urlLookupTable;
 exports.getUrlLookupTableFromFile = getUrlLookupTableFromFile;
 exports.getUrlLookupTableFromApi = getUrlLookupTableFromApi;
 exports.getUrlFromLookupTable = getUrlFromLookupTable;
-

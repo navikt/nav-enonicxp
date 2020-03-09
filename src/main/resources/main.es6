@@ -1,3 +1,5 @@
+import { getUrlLookupTableFromFile } from '/lib/menu-utils/url-lookup-table';
+
 log.info('Started running main');
 const cache = require('/lib/siteCache');
 const unpublish = require('/lib/siteCache/invalidator');
@@ -11,6 +13,11 @@ let taskIds = [];
 officeInformation.startCronJob();
 // start cache invalidator
 cache.activateEventListener();
+
+// init url lookup table
+if (app.config.env !== 'p') {
+    getUrlLookupTableFromFile();
+}
 
 // start task for handling caching of expired and prepublished content
 let currentTaskId = unpublish.start(appIsRunning);
