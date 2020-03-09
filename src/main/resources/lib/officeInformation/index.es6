@@ -12,7 +12,7 @@ const libs = {
 function setIsRefreshing(navRepo, isRefreshing, failed) {
     navRepo.modify({
         key: '/officeInformation',
-        editor: (o) => {
+        editor: o => {
             const object = o;
             if (isRefreshing === false) {
                 object.data.failedLastRefresh = failed;
@@ -44,11 +44,27 @@ function refreshOfficeInformation(officeInformationList) {
     };
 
     // update office information or create new
-    officeInformationList.forEach((officeInformation) => {
-        // ignore closed offices
-        if (officeInformation.enhet.status !== 'Nedlagt') {
+    officeInformationList.forEach(officeInformation => {
+        // ignore closed offices and include only selected types
+        if (officeInformation.enhet.status !== 'Nedlagt' &&
+           (officeInformation.enhet.type === 'ALS' ||
+            officeInformation.enhet.type === 'ARK' ||
+            officeInformation.enhet.type === 'FPY' ||
+            officeInformation.enhet.type === 'FYLKE' ||
+            officeInformation.enhet.type === 'HMS' ||
+            officeInformation.enhet.type === 'INTRO' ||
+            officeInformation.enhet.type === 'KLAGE' ||
+            officeInformation.enhet.type === 'KONTAKT' ||
+            officeInformation.enhet.type === 'KONTROLL' ||
+            officeInformation.enhet.type === 'LOKAL' ||
+            officeInformation.enhet.type === 'OKONOMI' ||
+            officeInformation.enhet.type === 'TILTAK' ||
+            officeInformation.enhet.type === 'YTA' ||
+            officeInformation.enhet.type === 'OPPFUTLAND')
+        )
+        {
             // check if the office already exists
-            const existingOffice = existingOffices.filter((o) => {
+            const existingOffice = existingOffices.filter(o => {
                 if (o.data && o.data.enhet && o.data.enhet.enhetId) {
                     return o.data.enhet.enhetId === officeInformation.enhet.enhetId;
                 }
@@ -74,7 +90,7 @@ function refreshOfficeInformation(officeInformationList) {
     });
 
     // delete old offices
-    existingOffices.forEach((existingOffice) => {
+    existingOffices.forEach(existingOffice => {
         let enhetId;
         if (existingOffice
             && existingOffice.data
@@ -113,11 +129,11 @@ function checkForRefresh() {
             },
             callback: () => {
                 // stop if the config is missing, or the node is not a master
-                if (libs.cluster.isMaster()
-                    && app.config
-                    && app.config.norg2
-                    && app.config.norg2ApiKey
-                    && app.config.norg2ConsumerId) {
+                if (libs.cluster.isMaster() &&
+                    app.config &&
+                    app.config.norg2 &&
+                    app.config.norg2ApiKey &&
+                    app.config.norg2ConsumerId) {
                     checkForRefresh();
                 }
             },
@@ -196,8 +212,7 @@ function checkForRefresh() {
     }
 }
 
-
-exports.startCronJob = function () {
+exports.startCronJob = () => {
     libs.cron.unschedule({
         name: 'office_info_norg2_daily',
     });
@@ -215,11 +230,11 @@ exports.startCronJob = function () {
         },
         callback: () => {
             // stop if the config is missing, or the node is not a master
-            if (libs.cluster.isMaster()
-                && app.config
-                && app.config.norg2
-                && app.config.norg2ApiKey
-                && app.config.norg2ConsumerId) {
+            if (libs.cluster.isMaster() &&
+                app.config &&
+                app.config.norg2 &&
+                app.config.norg2ApiKey &&
+                app.config.norg2ConsumerId) {
                 checkForRefresh();
             }
         },
