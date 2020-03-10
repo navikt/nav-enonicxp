@@ -222,7 +222,7 @@ exports.startCronJob = () => {
     });
     libs.cron.schedule({
         name: 'office_info_norg2_daily',
-        cron: '10 4 * * *',
+        cron: '10 * * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
