@@ -45,8 +45,24 @@ function refreshOfficeInformation(officeInformationList) {
 
     // update office information or create new
     officeInformationList.forEach(officeInformation => {
-        // ignore closed offices
-        if (officeInformation.enhet.status !== 'Nedlagt') {
+        // ignore closed offices and include only selected types
+        if (
+            officeInformation.enhet.status !== 'Nedlagt' &&
+            (officeInformation.enhet.type === 'ALS' ||
+                officeInformation.enhet.type === 'ARK' ||
+                officeInformation.enhet.type === 'FPY' ||
+                officeInformation.enhet.type === 'FYLKE' ||
+                officeInformation.enhet.type === 'HMS' ||
+                officeInformation.enhet.type === 'INTRO' ||
+                officeInformation.enhet.type === 'KLAGE' ||
+                officeInformation.enhet.type === 'KONTAKT' ||
+                officeInformation.enhet.type === 'KONTROLL' ||
+                officeInformation.enhet.type === 'LOKAL' ||
+                officeInformation.enhet.type === 'OKONOMI' ||
+                officeInformation.enhet.type === 'TILTAK' ||
+                officeInformation.enhet.type === 'YTA' ||
+                officeInformation.enhet.type === 'OPPFUTLAND')
+        ) {
             // check if the office already exists
             const existingOffice = existingOffices.filter(o => {
                 if (o.data && o.data.enhet && o.data.enhet.enhetId) {
@@ -200,7 +216,7 @@ function checkForRefresh() {
     }
 }
 
-exports.startCronJob = function() {
+exports.startCronJob = () => {
     libs.cron.unschedule({
         name: 'office_info_norg2_daily',
     });
