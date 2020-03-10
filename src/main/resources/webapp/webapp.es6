@@ -4,7 +4,7 @@ const ws = require('/lib/wsUtil');
 
 const emitter = new ws.SocketEmitter();
 
-exports.get = function (req) {
+exports.get = function(req) {
     handleSockets.handleSockets(emitter);
 
     if (req.path.indexOf('socket') === -1) {

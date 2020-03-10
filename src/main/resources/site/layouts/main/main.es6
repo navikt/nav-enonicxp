@@ -5,7 +5,7 @@ const libs = {
 };
 const view = resolve('./main.html');
 
-exports.get = function (req) {
+exports.get = function(req) {
     const component = libs.portal.getComponent();
     const language = libs.portal.getContent().language || 'no';
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
@@ -15,11 +15,13 @@ exports.get = function (req) {
         secondRegion: component.regions.second,
         lClass: component.regions.second
             ? {
-                first: 'col-sm-12 col-md-8', second: 'col-sm-12 col-md-4',
-            }
+                  first: 'col-sm-12 col-md-8',
+                  second: 'col-sm-12 col-md-4',
+              }
             : {
-                first: 'col-sm-12', second: '',
-            },
+                  first: 'col-sm-12',
+                  second: '',
+              },
         toTop,
     };
 

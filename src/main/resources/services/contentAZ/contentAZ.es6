@@ -16,28 +16,35 @@ function handleGet(req) {
     return libs.cache.getAZList(language + '-' + letter, undefined, req.branch, () => {
         let list = [];
         if (letter) {
-            const footerAZList = (language === 'en' ? '/www.nav.no/en/content-a-z' : '/www.nav.no/no/innhold-a-aa');
-            const azList = libs.content.getChildren({
-                key: footerAZList,
-                start: 0,
-                count: 1000,
-            }).hits
-                .filter(el => (
-                    (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link')
-                    && el.displayName.toLowerCase().startsWith(letter)
-                ));
-            const menuList = libs.content.query({
-                start: 0,
-                count: 1000,
-                query: 'type = "no.nav.navno:megamenu-item"',
-            }).hits
-                .filter(el => (
-                    !el.hasChildren
-                    && el._path.indexOf(language === 'en' ? '/en/' : '/no/') !== -1
-                    && el.data.showInAZList
-                    && el.displayName.toLowerCase().startsWith(letter)
-                ));
-            list = azList.concat(menuList)
+            const footerAZList =
+                language === 'en' ? '/www.nav.no/en/content-a-z' : '/www.nav.no/no/innhold-a-aa';
+            const azList = libs.content
+                .getChildren({
+                    key: footerAZList,
+                    start: 0,
+                    count: 1000,
+                })
+                .hits.filter(
+                    el =>
+                        (el.type === app.name + ':internal-link' ||
+                            el.type === app.name + ':external-link') &&
+                        el.displayName.toLowerCase().startsWith(letter)
+                );
+            const menuList = libs.content
+                .query({
+                    start: 0,
+                    count: 1000,
+                    query: 'type = "no.nav.navno:megamenu-item"',
+                })
+                .hits.filter(
+                    el =>
+                        !el.hasChildren &&
+                        el._path.indexOf(language === 'en' ? '/en/' : '/no/') !== -1 &&
+                        el.data.showInAZList &&
+                        el.displayName.toLowerCase().startsWith(letter)
+                );
+            list = azList
+                .concat(menuList)
                 .sort((a, b) => {
                     if (a.displayName < b.displayName) {
                         return -1;
@@ -47,9 +54,12 @@ function handleGet(req) {
                     }
                     return 0;
                 })
-                .map((el) => {
+                .map(el => {
                     let url;
-                    if (el.type === app.name + ':internal-link' || el.type === app.name + ':megamenu-item') {
+                    if (
+                        el.type === app.name + ':internal-link' ||
+                        el.type === app.name + ':megamenu-item'
+                    ) {
                         url = libs.portal.pageUrl({
                             id: el.data.target,
                         });

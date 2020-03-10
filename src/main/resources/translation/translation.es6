@@ -1,7 +1,6 @@
-
 const mustache = require('/lib/mustache');
 
-exports.get = function (req) {
+exports.get = function(req) {
     const view = resolve('translation.html');
     const appBaseUrl = '/webapp/' + app.name;
     const params = {
