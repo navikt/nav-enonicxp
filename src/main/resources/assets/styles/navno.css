@@ -3569,15 +3569,31 @@ a.knapp {
  }
 
 .article-body table {
-    border: 1px solid #ddd;
-    border-color: #ddd;
     width: 100%;
     line-height: 1.15em
 }
 
 .article-body table tr:first-child th, .article-body table tr:first-child td {
-    background-color: #f1f1f1
+    color: #3E3832;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+    font-weight: 600;
+    line-height: 22px
 }
+
+.article-body table tr:nth-child(even)  {
+    color: #3E3832;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    font-weight: 400;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    line-height: 22px
+}
+
 
 .article-body table tr:first-child th strong, .article-body table tr:first-child td strong {
     font-size: 1.1em;
@@ -3586,7 +3602,6 @@ a.knapp {
 }
 
 .article-body table th, .article-body table td {
-    border-color: #ddd;
     padding-top: 0;
     padding: 10px;
     vertical-align: top;
