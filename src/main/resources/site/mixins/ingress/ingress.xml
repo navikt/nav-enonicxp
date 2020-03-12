@@ -1,0 +1,10 @@
+<mixin>
+    <display-name>Ingress</display-name>
+    <form>
+        <input type="TextArea" name="ingress">
+            <label>Ingress</label>
+            <help-text>Ingressen bør være maks. 240 tegn.</help-text>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</mixin>

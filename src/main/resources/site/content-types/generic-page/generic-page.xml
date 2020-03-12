@@ -6,10 +6,8 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input type="TextArea" name="ingress">
-            <label>Ingress</label>
-            <occurrences minimum="0" maximum="1"/>
-        </input>
+        <mixin name="ingress"/>
+        <mixin name="meta-description"/>
         <input type="HtmlArea" name="text">
             <label>Brødtekst</label>
             <help-text>Brukes ved behov</help-text>
