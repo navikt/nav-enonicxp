@@ -5,9 +5,12 @@ const libs = {
 };
 
 function handleGet() {
-    const menu = libs.menuUtils.getMegaMenu(libs.content.get({
-        key: '/www.nav.no/dekorator-meny/',
-    }), 10);
+    const menu = libs.menuUtils.getMegaMenu(
+        libs.content.get({
+            key: '/www.nav.no/dekorator-meny/',
+        }),
+        10
+    );
 
     return {
         body: menu,

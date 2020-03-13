@@ -1,5 +1,5 @@
 exports.macro = function() {
-    const body =' — ';
+    const body = ' — ';
     return {
         body: body,
     };

@@ -5,7 +5,7 @@ const libs = {
 };
 const view = resolve('./search.html');
 
-exports.get = function (req) {
+exports.get = function(req) {
     const component = libs.portal.getComponent();
     const language = libs.portal.getContent().language || 'no';
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
@@ -20,15 +20,19 @@ exports.get = function (req) {
         contentType: 'text/html',
         pageContributions: {
             headEnd: [
-                '<link rel="stylesheet" href="' + libs.portal.assetUrl({
-                    path: 'search-styles/search-nav.css',
-                }) + '" />',
+                '<link rel="stylesheet" href="' +
+                    libs.portal.assetUrl({
+                        path: 'search-styles/search-nav.css',
+                    }) +
+                    '" />',
             ],
             bodyEnd: [
                 '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>',
-                '<script src="' + libs.portal.assetUrl({
-                    path: 'search-js/search-appres.js',
-                }) + '"></script>',
+                '<script src="' +
+                    libs.portal.assetUrl({
+                        path: 'search-js/search-appres.js',
+                    }) +
+                    '"></script>',
             ],
         },
     };

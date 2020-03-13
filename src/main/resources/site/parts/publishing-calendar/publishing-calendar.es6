@@ -5,19 +5,33 @@ const libs = {
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/siteCache'),
 };
-const monthShortName = ['JAN', 'FEB', 'MAR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DES'];
+const monthShortName = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAI',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OKT',
+    'NOV',
+    'DES',
+];
 const view = resolve('publishing-calendar.html');
 
 function handleGet(req) {
     return libs.cache.getPaths('publiseringskalender', undefined, req.branch, () => {
         const content = libs.portal.getContent();
         const langBundle = libs.lang.parseBundle(content.language).publishing_calendar;
-        const items = libs.content.getChildren({
-            key: content._id,
-            start: 0,
-            count: 100,
-        }).hits
-            .map((el) => {
+        const items = libs.content
+            .getChildren({
+                key: content._id,
+                start: 0,
+                count: 100,
+            })
+            .hits.map(el => {
                 const publDate = new Date(el.data.date);
                 return {
                     displayName: el.displayName,

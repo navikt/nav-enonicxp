@@ -51,34 +51,40 @@ function formatAudienceReception(audienceReception, language = 'no') {
     let aapningstider = libs.navUtils.forceArray(audienceReception.aapningstider);
 
     // filter regular and exceptions for opening hour then introduce formatting for display
-    aapningstider = aapningstider.reduce((acc, elem) => {
-        if (elem.dato) {
-            const isoDate = elem.dato;
-            const dato = libs.navUtils.formatDate(elem.dato, language);
-            let a = '';
-            if (elem.fra && elem.til) {
-                a = elem.fra + ' - ' + elem.til;
+    aapningstider = aapningstider.reduce(
+        (acc, elem) => {
+            if (elem.dato) {
+                const isoDate = elem.dato;
+                const dato = libs.navUtils.formatDate(elem.dato, language);
+                let a = '';
+                if (elem.fra && elem.til) {
+                    a = elem.fra + ' - ' + elem.til;
+                }
+                acc.exceptions.push({
+                    ...elem,
+                    isoDate,
+                    dato,
+                    a,
+                });
+            } else {
+                const displayVal = formatMetaOpeningHours(elem);
+                displayVal.a = displayVal.fra + ' - ' + displayVal.til;
+                acc.regular.push(displayVal);
             }
-            acc.exceptions.push({
-                ...elem, isoDate, dato, a
-            });
-        } else {
-            const displayVal = formatMetaOpeningHours(elem);
-            displayVal.a = displayVal.fra + ' - ' + displayVal.til;
-            acc.regular.push(displayVal);
+            return acc;
+        },
+        {
+            regular: [],
+            exceptions: [],
         }
-        return acc;
-    }, {
-        regular: [], exceptions: [],
-    });
+    );
 
     return {
         besokkom: formatAddress(audienceReception.besoeksadresse, true),
-        stedbeskrivelse: audienceReception.stedsbeskrivelse
-            || audienceReception.besoeksadresse.poststed,
+        stedbeskrivelse:
+            audienceReception.stedsbeskrivelse || audienceReception.besoeksadresse.poststed,
         unntakAapning: aapningstider.exceptions,
-        apning: aapningstider.regular
-            .sort(sortOpeningHours),
+        apning: aapningstider.regular.sort(sortOpeningHours),
     };
 }
 function parsePhoneNumber(number, mod) {
@@ -132,13 +138,12 @@ function parseSpecialInfo(infoContent) {
     parsedString = parsedString.replace(/(?:\r\n|\r|\n)/g, '<br>');
     // replace urls
     const urls = specialInfoParseLink(parsedString);
-    urls.forEach((url) => {
+    urls.forEach(url => {
         parsedString = parsedString.replace(url.match, `<a href='${url.url}'>${url.text}</a>`);
     });
 
     return parsedString;
 }
-
 
 function parseEmail(emailString) {
     if (!emailString) {
