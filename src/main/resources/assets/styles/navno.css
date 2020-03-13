@@ -7624,16 +7624,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     min-width: 72px;
     min-height: 72px;
 }
-.kampanje-varsel__pulse {
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation-name: shockwave;
-    animation-direction: normal;
-    animation-duration: 2.5s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-out;
-}
 .kampanje-varsel__sirkel {
     position: absolute;
     z-index: 1;
@@ -7642,6 +7632,17 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     border-radius: 50%;
     background-color: #ffa733;
     animation-name: compression;
+    animation-direction: normal;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
+}
+.kampanje-varsel__pulse {
+    position: absolute;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation-name: shockwave;
     animation-direction: normal;
     animation-duration: 2.5s;
     animation-iteration-count: infinite;
@@ -7657,4 +7658,32 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .kampanje-varsel__dato-tid {
     color: #B7B1A9;
     margin-top: 0.75rem;
+}
+@keyframes compression {
+    0% {
+        transform: scale(1);
+    }
+    15% {
+        transform: scale(0.85);
+    }
+    20% {
+        transform: scale(1);
+    }
+}
+@keyframes shockwave {
+    0% {
+        background-color: #ffd399;
+        transform: scale(0.85);
+    }
+    15% {
+        transform: scale(0.85);
+    }
+    20% {
+        background-color: #ffd399;
+        transform: scale(1);
+    }
+    50% {
+        background-color: transparent;
+        transform: scale(3);
+    }
 }
