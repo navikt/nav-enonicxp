@@ -1,0 +1,17 @@
+<content-type>
+    <display-name>404</display-name>
+    <description>Error side for 404</description>
+    <super-type>base:unstructured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>false</allow-child-content>
+    <form>
+        <input type="TextArea" name="errorMessage">
+            <label>Feilmelding</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <include>Undo | Redo</include>
+            </config>
+        </input>
+    </form>
+</content-type>
