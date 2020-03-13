@@ -193,6 +193,14 @@ function formatDate(date, language) {
         .format('L');
 }
 
+function formatDateTime(date, language) {
+    // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
+    return libs
+        .moment(date)
+        .locale(language === 'en' ? 'en-gb' : 'nb')
+        .format('LLL');
+}
+
 function getLanguageVersions(content) {
     const lang = {
         no: 'Bokmål',
@@ -293,6 +301,7 @@ module.exports = {
     fixDateFormat,
     forceArray,
     formatDate,
+    formatDateTime,
     getAllChildren,
     getContentByCmsKey,
     getContentByMenuKey,
