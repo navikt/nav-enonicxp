@@ -166,12 +166,9 @@ exports.get = function(req) {
             const breakingNewsTarget = libs.content.get({
                 key: breakingNewsContent.data.target,
             });
-            breakingNews.title = breakingNewsContent.data.title
-                ? breakingNewsContent.data.title
-                : breakingNewsTarget.displayName;
-            breakingNews.ingress = breakingNewsContent.data.description
-                ? breakingNewsContent.data.description
-                : breakingNewsTarget.data.ingress;
+            breakingNews.title = breakingNewsContent.data.title || breakingNewsTarget.displayName;
+            breakingNews.ingress =
+                breakingNewsContent.data.description || breakingNewsTarget.data.ingress;
             breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
                 content.modifiedTime,
                 content.language
@@ -185,7 +182,7 @@ exports.get = function(req) {
             news,
             moreNewsUrl: content.data.moreNewsUrl,
             shortcuts,
-            breakingNews,
+            breakingNews: Object.keys(breakingNews).length > 0 ? breakingNews : false,
             localSectionPage,
         };
         return {
