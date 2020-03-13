@@ -7526,3 +7526,163 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     font-size: 1rem;
     font-weight: 400
 }
+
+.lenkepanel {
+    background-color: #FFF;
+    padding: 1rem 1rem 1rem 1rem;
+    border-radius: 4px;
+    position: relative;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: #3E3832;
+}
+.lenkepanel:hover,
+.lenkepanel--hover {
+    box-shadow: #B7B1A9 0 2px 1px 0;
+}
+.lenkepanel:focus,
+.lenkepanel--focus {
+    box-shadow: 0 0 0px 3px #254b6d;
+    outline: none;
+}
+.lenkepanel__indikator {
+    display: inline-block;
+    flex-shrink: 0;
+    height: 2px;
+    line-height: 2px;
+    width: 20px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    transform: rotate(-90deg);
+    left: 0;
+    transition: left 250ms;
+}
+.lenkepanel__indikator:before,
+.lenkepanel__indikator:after {
+    transition: 200ms transform;
+    border-radius: 10px;
+}
+.lenkepanel__indikator:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50%;
+    background: currentColor;
+}
+.lenkepanel__indikator:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 50%;
+    background: currentColor;
+}
+.lenkepanel__indikator:before {
+    transform: translateX(2px) rotate(45deg);
+}
+.lenkepanel__indikator:after {
+    transform: translateX(-2px) rotate(-45deg);
+}
+.lenkepanel:hover .lenkepanel__heading,
+.lenkepanel--hover .lenkepanel__heading {
+    text-decoration: underline;
+    color: #0067C5;
+}
+.lenkepanel:hover .lenkepanel__indikator,
+.lenkepanel--hover .lenkepanel__indikator {
+    left: 6px;
+}
+.lenkepanel--border {
+    /* border: 1px solid #C6C2BF; */
+    border: 1px solid #78706A;
+}
+.lenkepanel--border:hover,
+.lenkepanel--border.panel-interaktiv-mixin--hover {
+    border: 1px solid #0067C5;
+}
+.kampanje {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-color: black;
+}
+.kampanje-varsel__ikon-rad {
+    position: relative;
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    min-width: 72px;
+    min-height: 72px;
+}
+.kampanje-varsel__sirkel {
+    position: absolute;
+    z-index: 1;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ffa733;
+    animation-name: compression;
+    animation-direction: normal;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
+}
+.kampanje-varsel__pulse {
+    position: absolute;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation-name: shockwave;
+    animation-direction: normal;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
+}
+.kampanje-varsel__tekst-rad {
+    padding: 1.25rem 1rem;
+    text-align: left;
+}
+.kampanje-varsel__ingress {
+    margin-top: 0.75rem;
+}
+.kampanje-varsel__dato-tid {
+    margin-top: 0.75rem;
+}
+@keyframes compression {
+    0% {
+        transform: scale(1);
+    }
+    15% {
+        transform: scale(0.85);
+    }
+    20% {
+        transform: scale(1);
+    }
+}
+@keyframes shockwave {
+    0% {
+        background-color: #ffd399;
+        transform: scale(0.85);
+    }
+    15% {
+        transform: scale(0.85);
+    }
+    20% {
+        background-color: #ffd399;
+        transform: scale(1);
+    }
+    50% {
+        background-color: transparent;
+        transform: scale(3);
+    }
+}

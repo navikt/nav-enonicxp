@@ -10,7 +10,7 @@ const view = resolve('section-page.html');
 
 function getSrc(el) {
     if (el) {
-        if (el.type === `${app.name}:internal-link`) {
+        if (el.type === `${app.name}:internal-link` || el.type === `${app.name}:breaking-news`) {
             return getSrc(
                 libs.content.get({
                     key: el.data.target,
@@ -146,10 +146,34 @@ exports.get = function(req) {
             data: scList && scList.length > 0 ? scList.slice(0, content.data.nrSC) : null,
         };
 
+        // Sentralt eller lokalt innhold?
         let localSectionPage = false;
         const pathParts = content._path.split('/');
         if (pathParts[pathParts.length - 2] === 'lokalt') {
             localSectionPage = true;
+        }
+
+        // breaking_news
+        const breakingNews = {};
+        const breakingNewsContent =
+            !localSectionPage && content.data.breaking_news
+                ? libs.content.get({
+                      key: content.data.breaking_news,
+                  })
+                : null;
+        if (breakingNewsContent) {
+            // Sett tittel, ingress, og oppdateringstidspunkt
+            const breakingNewsTarget = libs.content.get({
+                key: breakingNewsContent.data.target,
+            });
+            breakingNews.title = breakingNewsContent.data.title || breakingNewsTarget.displayName;
+            breakingNews.ingress =
+                breakingNewsContent.data.description || breakingNewsTarget.data.ingress;
+            breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
+                content.modifiedTime,
+                content.language
+            )}`;
+            breakingNews.url = getSrc(breakingNewsContent);
         }
 
         const model = {
@@ -158,6 +182,7 @@ exports.get = function(req) {
             news,
             moreNewsUrl: content.data.moreNewsUrl,
             shortcuts,
+            breakingNews: Object.keys(breakingNews).length > 0 ? breakingNews : false,
             localSectionPage,
         };
         return {
