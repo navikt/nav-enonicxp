@@ -170,7 +170,7 @@ exports.get = function(req) {
             breakingNews.ingress =
                 breakingNewsContent.data.description || breakingNewsTarget.data.ingress;
             breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
-                content.modifiedTime,
+                breakingNewsTarget.modifiedTime,
                 content.language
             )}`;
             breakingNews.url = getSrc(breakingNewsContent);
