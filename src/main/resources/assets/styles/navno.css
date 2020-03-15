@@ -7638,7 +7638,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .kampanje-varsel__sirkel {
     position: absolute;
-    z-index: 1;
+    z-index: 0;
     width: 24px;
     height: 24px;
     border-radius: 50%;
