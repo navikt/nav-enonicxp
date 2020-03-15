@@ -3,7 +3,7 @@ name: Build to Q6
 on:
   push:
     tags:
-      - 'v*-*'
+      - "v*-*-*"
 
 jobs:
   build:

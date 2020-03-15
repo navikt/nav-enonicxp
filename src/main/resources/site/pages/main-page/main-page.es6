@@ -13,7 +13,13 @@ function handleGet(req) {
         const content = libs.portal.getContent();
         const url = libs.utils.validateUrl(req);
         const title = content.displayName;
-        const description = content.data.metaDescription || '';
+
+        let ingress = content.data.ingress;
+        if (!content.data.metaDescription && ingress && ingress.length > 140) {
+            ingress = ingress.substring(0, 140);
+            ingress = `${ingress.substring(0, ingress.lastIndexOf(' '))}...`;
+        }
+        const description = content.data.metaDescription || ingress || '';
         const imageUrl = libs.portal.assetUrl({
             path: 'img/navno/social-share-fallback.png',
             type: 'absolute',

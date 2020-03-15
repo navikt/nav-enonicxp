@@ -23,13 +23,11 @@ const globals = {
  *   for menu items, default is 'server', only other option is 'absolute'.
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
-exports.getBreadcrumbMenu = function (params) {
+exports.getBreadcrumbMenu = function(params) {
     const content = libs.portal.getContent();
     const site = libs.portal.getSite();
     const breadcrumbItems = []; // Stores each menu item
-    const breadcrumbMenu = {
-
-    }; // Stores the final JSON sent to Thymeleaf
+    const breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf
 
     // Safely take care of all incoming settings and set defaults, for use in current scope only
     const settings = {
@@ -64,9 +62,7 @@ exports.getBreadcrumbMenu = function (params) {
                     key: arrVars.join('/') + '/' + lastVar,
                 }); // Make sure item exists
                 if (curItem) {
-                    const item = {
-
-                    };
+                    const item = {};
                     const curItemUrl = libs.portal.pageUrl({
                         path: curItem._path,
                         type: settings.urlType,
@@ -121,7 +117,8 @@ function getTargetPath(targetId) {
         if (target) {
             if (target.type === `${app.name}:external-link`) {
                 return target.data.url;
-            } if (target.type === `${app.name}:internal-link`) {
+            }
+            if (target.type === `${app.name}:internal-link`) {
                 return getTargetPath(target.data.target);
             }
             return libs.portal.pageUrl({
@@ -154,7 +151,7 @@ function menuToJson(content, levels) {
     }
 
     return {
-        displayName: (content.displayName ? content.displayName : 'Tomt menyvalg'),
+        displayName: content.displayName ? content.displayName : 'Tomt menyvalg',
         path: getTargetPath(content.data.target),
         id: content._id,
         inPath,
@@ -168,7 +165,7 @@ function menuToJson(content, levels) {
  * Bygger menyen fra elementer i en mappe istedenfor å gå igjennom hele siten.
  * Beholdt rekursiviteten
  ** */
-exports.getMegaMenu = function (content, levels) {
+exports.getMegaMenu = function(content, levels) {
     const subMenus = [];
     let currentLevel = levels;
     if (content) {
@@ -187,13 +184,12 @@ exports.getMegaMenu = function (content, levels) {
     return [];
 };
 
-
 /**
  * Get menu tree
  * @param {integer} levels - menu levels to get
  * @returns {Array}
  */
-exports.getMenuTree = function (levels) {
+exports.getMenuTree = function(levels) {
     let menu = [];
     const site = libs.portal.getSite();
     const currentlevels = Number.isInteger(levels) ? levels : 1;
@@ -231,9 +227,7 @@ function isMenuItem(content) {
     if (!extraDataModule || !extraDataModule['menu-item']) {
         return false;
     }
-    const menuItemMetadata = extraDataModule['menu-item'] || {
-
-    };
+    const menuItemMetadata = extraDataModule['menu-item'] || {};
 
     return menuItemMetadata.menuItem && !excludeFromMainMenu(content);
 }
@@ -286,7 +280,7 @@ function menuItemToJson(content, levels) {
     };
 }
 
-exports.getSubMenus = function (parentContent, levels) {
+exports.getSubMenus = function(parentContent, levels) {
     const subMenus = [];
     let currentLevels = levels;
     if (parentContent.type === 'portal:site' && isMenuItem(parentContent)) {

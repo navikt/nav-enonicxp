@@ -1,4 +1,3 @@
-
 const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
@@ -8,9 +7,9 @@ const libs = {
 };
 
 // Handle 404
-exports.handle404 = function (req) {
+exports.handle404 = function(req) {
     // get path relative to www.nav.no site
-    let path = '/www.nav.no' + (req.request.rawPath.split('/www.nav.no')[1]);
+    let path = '/www.nav.no' + req.request.rawPath.split('/www.nav.no')[1];
     // remove trailing /
     if (path[path.length - 1] === '/') {
         path = path.substr(0, path.length - 1);
@@ -31,7 +30,11 @@ exports.handle404 = function (req) {
 
     let contentExistsButHasNoTemplate = false;
     // if its an internal- or external-link, redirect the user
-    if (content && (content.type === app.name + ':internal-link' || content.type === app.name + ':external-link')) {
+    if (
+        content &&
+        (content.type === app.name + ':internal-link' ||
+            content.type === app.name + ':external-link')
+    ) {
         element = content;
     } else if (content) {
         // if the content has no template, and is not an intenral link or
@@ -44,17 +47,29 @@ exports.handle404 = function (req) {
     if (!element) {
         const isRedirect = path.split('/').length === 3;
         if (isRedirect) {
-            const contentName = path.split('/').pop().toLowerCase();
-            const redirects = libs.cache.getRedirects('redirects', undefined, req.branch, () => libs.content.getChildren({
-                key: '/redirects',
-                start: 0,
-                count: 10000,
-            }).hits);
+            const contentName = path
+                .split('/')
+                .pop()
+                .toLowerCase();
+            const redirects = libs.cache.getRedirects(
+                'redirects',
+                undefined,
+                req.branch,
+                () =>
+                    libs.content.getChildren({
+                        key: '/redirects',
+                        start: 0,
+                        count: 10000,
+                    }).hits
+            );
 
             for (let i = 0; i < redirects.length; i += 1) {
                 const el = redirects[i];
                 if (el.displayName.toLowerCase() === contentName) {
-                    if (el.type === app.name + ':internal-link' || el.type === app.name + ':external-link') {
+                    if (
+                        el.type === app.name + ':internal-link' ||
+                        el.type === app.name + ':external-link'
+                    ) {
                         element = el;
                         break;
                     }
@@ -63,7 +78,8 @@ exports.handle404 = function (req) {
         } else if (!contentExistsButHasNoTemplate) {
             // try to convert from old url style to new
             const info = libs.tools.getIdFromUrl(
-                path.toLowerCase()
+                path
+                    .toLowerCase()
                     .replace('/www.nav.no/', 'https://www.nav.no/')
                     .replace(/ - /g, '-')
                     .replace(/\+/g, '-')
@@ -105,7 +121,8 @@ exports.handle404 = function (req) {
     }
 
     // log error and send the user to a 404 page
-    log.info(JSON.stringify(req, null, 4));
+    log.info(`404: not found on: ${req.request.url}`);
+
     /* Fjerner dette for å sikre 404 statuskode. TODO: Finnes en bedre løsning?
     const has404 = libs.content.get({
         key: '/www.nav.no/404',
@@ -128,14 +145,14 @@ exports.handle404 = function (req) {
     } */
     return {
         body:
-            '<html lang="no">\n'
-            + '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n'
-            + '<body>\n'
-            + '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n'
-            + '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n'
-            + '<p>Feilkode 404</p>\n'
-            + '</body>\n'
-            + '</html>',
+            '<html lang="no">\n' +
+            '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n' +
+            '<body>\n' +
+            '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n' +
+            '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n' +
+            '<p>Feilkode 404</p>\n' +
+            '</body>\n' +
+            '</html>',
         contentType: 'text/html',
     };
 };
@@ -180,7 +197,7 @@ exports.handle404 = function (req) {
 // }
 
 // Handle all other errors - to avoid default error page with stack trace
-exports.handleError = function (err) {
+exports.handleError = function(err) {
     return {
         contentType: 'text/html',
         body: `<html><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,

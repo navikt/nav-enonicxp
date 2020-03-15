@@ -2,6 +2,9 @@ name: Build to Q1
 
 on:
   push:
+    tags:
+      - "v*-*"
+      - "!v*-*-*"
     branches:
       - develop
 
