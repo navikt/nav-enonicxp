@@ -7610,9 +7610,15 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .kampanje {
     display: flex;
     flex-direction: row;
-    padding: 1rem;
-    margin: 1rem 0;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
     border-color: black;
+}
+@media (min-width: 38.75em) {
+    .kampanje {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
 }
 .kampanje-varsel__ikon-rad {
     position: relative;
@@ -7621,8 +7627,14 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     align-items: center;
     justify-content: center;
     padding: 0;
-    min-width: 72px;
-    min-height: 72px;
+    min-width: 50px;
+    min-height: 50px;
+}
+@media (min-width: 38.75em) {
+    .kampanje-varsel__ikon-rad {
+        min-width: 72px;
+        min-height: 60px;
+    }
 }
 .kampanje-varsel__sirkel {
     position: absolute;
@@ -7649,8 +7661,13 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     animation-timing-function: ease-out;
 }
 .kampanje-varsel__tekst-rad {
-    padding: 1.25rem 1rem;
+    padding: 0.75rem 0.5rem 0.5rem 0.5rem;
     text-align: left;
+}
+@media (min-width: 38.75em) {
+    .kampanje-varsel__tekst-rad {
+        padding: 1rem;
+    }
 }
 .kampanje-varsel__ingress {
     margin-top: 0.75rem;
