@@ -177,7 +177,7 @@ function clearReferences(id, path, depth) {
     references.forEach(el => {
         wipeOnChange(el._path);
 
-        const deepTypes = [`${app.name}:content-list`];
+        const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
         if (deepTypes.indexOf(el.type) !== -1) {
             clearReferences(el._id, el._path, depth + 1);
         }
