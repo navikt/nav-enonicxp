@@ -7661,6 +7661,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     animation-timing-function: ease-out;
 }
 .kampanje-varsel__tekst-rad {
+    flex-grow: 1;
     padding: 0.75rem 0.5rem 0.5rem 0.5rem;
     text-align: left;
 }
