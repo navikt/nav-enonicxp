@@ -1,0 +1,12 @@
+{
+  "https://www.nav.no": "https://localhost:8080",
+  "https://aktivitetsplan.nav.no": "https://aktivitetsplan.localhost:8080",
+  "https://arbeidsgiver.nav.no": "https://arbeidsgiver.localhost:8080",
+  "https://arbeidsplassen.nav.no": "https://arbeidsplassen.localhost:8080",
+  "https://arbeidssokerregistrering.nav.no": "https://arbeidssokerregistrering.localhost:8080",
+  "https://familie.nav.no": "https://familie.localhost:8080",
+  "https://foreldrepenger.nav.no": "https://foreldrepenger.localhost:8080",
+  "https://mininnboks.nav.no": "https://mininnboks.localhost:8080",
+  "https://tjenester.nav.no": "https://tjenester.localhost:8080",
+  "https://veiledearbeidssoker.nav.no": "https://veiledearbeidssoker.localhost:8080"
+}
