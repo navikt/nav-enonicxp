@@ -1,16 +1,26 @@
 <div class="row">
     <div class="col-md-12 col-sm-12">
         <div class="din-situasjon-wrapper">
-            <p class="ingress typo-infotekst" data-th-text="${ingress}"></p>
-            <a data-th-href="${item.url}" data-th-each="item : ${items}" class="lenkeboks" data-th-classappend="${item.className}">
+            <p class="ingress typo-infotekst">
+                [[${ingress}]]
+            </p>
+            <a data-th-href="${item.url}"
+               data-th-each="item : ${items}"
+               class="lenkepanel lenkepanel--border"
+               data-th-classappend="${item.className}"
+            >
                 <div class="icon" data-th-if="${item.logo}">
-                    <img data-th-src="${item.logo}" src="" class="icon-size" />
+                    <img data-th-src="${item.logo}" class="icon-size" />
                 </div>
                 <div class="tekst">
-                    <h2 class="typo-innholdstittel" data-th-text="${item.title}"></h2>
-                    <p class="typo-infotekst" data-th-text="${item.ingress}"></p>
+                    <h2 class="typo-systemtittel lenkepanel__heading">
+                        [[${item.title}]]
+                    </h2>
+                    <p class="typo-normal">
+                        [[${item.ingress}]]
+                    </p>
                 </div>
-                <div class="panelChevron"><span class="chevronboks chevron--hoyre"></span></div>
+                <span class="lenkepanel__indikator"></span>
             </a>
         </div>
     </div>
