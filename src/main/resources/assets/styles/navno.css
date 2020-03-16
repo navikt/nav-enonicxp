@@ -7569,10 +7569,12 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     }
 }
 
-.din-situasjon-wrapper {
+.transport {
     background-color: #fff;
     border-radius: 4px;
     padding: 1.5rem;
+}
+.din-situasjon-wrapper {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around
@@ -7610,7 +7612,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     }
 }
 .din-situasjon-wrapper .lenkepanel h2 {
-    margin-bottom: 1rem;
     word-wrap: break-word
 }
 .din-situasjon-wrapper .lenkepanel .icon {
@@ -7620,4 +7621,8 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     flex-grow: 1;
     text-align: left;
 }
+.din-situasjon-wrapper .lenkepanel .tekst p {
+    margin-top: 1rem;
+}
+
 

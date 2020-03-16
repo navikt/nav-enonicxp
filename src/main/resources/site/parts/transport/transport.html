@@ -1,30 +1,32 @@
 <div class="row">
     <div class="col-md-12 col-sm-12">
-        <div class="din-situasjon-wrapper">
-            <h1>
+        <div class="transport">
+            <h1 class="text-center">
                 [[${heading}]]
             </h1>
-            <p class="ingress typo-infotekst">
-                [[${ingress}]]
-            </p>
-            <a data-th-href="${item.url}"
-               data-th-each="item : ${items}"
-               class="lenkepanel lenkepanel--border"
-               data-th-classappend="${item.className}"
-            >
-                <div class="icon" data-th-if="${item.logo}">
-                    <img data-th-src="${item.logo}" class="icon-size" />
-                </div>
-                <div class="tekst">
-                    <h2 class="typo-systemtittel lenkepanel__heading">
-                        [[${item.title}]]
-                    </h2>
-                    <p class="typo-normal">
-                        [[${item.ingress}]]
-                    </p>
-                </div>
-                <span class="lenkepanel__indikator"></span>
-            </a>
+            <div class="din-situasjon-wrapper">
+                <p data-th-if="${ingress}" class="ingress typo-infotekst">
+                    [[${ingress}]]
+                </p>
+                <a data-th-href="${item.url}"
+                   data-th-each="item : ${items}"
+                   class="lenkepanel lenkepanel--border"
+                   data-th-classappend="${item.className}"
+                >
+                    <div class="icon" data-th-if="${item.logo}">
+                        <img data-th-src="${item.logo}" class="icon-size" />
+                    </div>
+                    <div class="tekst">
+                        <h2 class="typo-systemtittel lenkepanel__heading">
+                            [[${item.title}]]
+                        </h2>
+                        <p data-th-if="${item.ingress}" class="typo-normal">
+                            [[${item.ingress}]]
+                        </p>
+                    </div>
+                    <span class="lenkepanel__indikator"></span>
+                </a>
+            </div>
         </div>
     </div>
 </div>
