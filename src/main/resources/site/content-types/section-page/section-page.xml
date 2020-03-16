@@ -77,5 +77,22 @@
                 </input>
             </items>
         </field-set>
+        <field-set name="breaking_news">
+            <label>Kampanje - Skal bare brukes sentralt</label>
+            <items>
+                <input name="breaking_news" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <help-text>
+                        Velg innhold som skal vises som en kampanje øverst på siden
+                    </help-text>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <treeMode>true</treeMode>
+                        <allowContentType>breaking-news</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </content-type>
