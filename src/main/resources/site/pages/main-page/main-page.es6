@@ -45,6 +45,7 @@ function handleGet(req) {
         const model = {
             mainRegion: regions.main,
             footerRegion: regions.footer,
+            language: content.language || 'no',
         };
         return {
             contentType: 'text/html',
