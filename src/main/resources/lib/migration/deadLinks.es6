@@ -10,6 +10,7 @@ const libs = {
 };
 
 const visitedAdresses = {};
+
 function createNewElements() {
     return {
         isNew: true,
@@ -114,43 +115,84 @@ function createNewElements() {
 }
 
 function visit(addressParam) {
-    let ret;
+    const reasons = new Map([
+        [200, ['OK', true]],
+        [308, ['permanent flyttet', false]],
+        [301, ['permanent flyttet', false]],
+        [400, ['Serverfeil, siden ikke funnet eller tilsvarende', false]],
+        ['internal', ['Innholdselementet ikke funnet internt', false]],
+        ['internalError', ['Oppslag av inneholdselement feilet', false]],
+        ['externalError', ['Oppslag mot ekstern lenke feilet', false]],
+        ['success', ['OK', true]],
+        ['error', ['Ukjent feil', false]],
+    ]);
     let address = addressParam;
+    const requestTemplate = {
+        url: '',
+        method: 'HEAD',
+        connectionTimeout: 2000,
+        followRedirects: false,
+        readTimeout: 7000,
+        // proxy: {
+        //     host: 'webproxy-internett.nav.no',
+        //     port: 8088,
+        // },
+    };
+
     if (address.indexOf(';') !== -1) {
         address = address.split(';')[0];
     }
     if (address.startsWith('content://') || address.startsWith('media')) {
+        // internal links
         try {
             let contentKey = address.replace('content://', '');
             contentKey = contentKey.replace('media://download/', '');
             contentKey = contentKey.replace('media://', '');
-            ret = libs.content.get({
+            const result = libs.content.get({
                 key: contentKey,
             });
-            return !!ret;
+            return !result ? reasons.get('internal') : reasons.get('success');
         } catch (e) {
-            return false;
+            return reasons.get('internalError');
         }
     } else if (address.startsWith('http://') || address.startsWith('https://')) {
+        // external links
         try {
-            ret = libs.http.request({
-                url: address,
-                method: 'HEAD',
-                connectionTimeout: 2000,
-                readTimeout: 7000,
-            });
-            return ret.status === 200 || (ret.status >= 300 && ret.status < 400);
+            const result = libs.http.request({ ...requestTemplate, url: address });
+            const reason = reasons.get(result.status);
+            return reason || result.status > 400 ? result.get(400) : reason.get('error');
         } catch (e) {
-            return false;
+            log.info(`failed httpRequest for ${address}`);
+            log.info(JSON.stringify(e, null, 4));
+
+            return reasons.get('error');
+        }
+    } else if (address.startsWith('/')) {
+        // check relative urls
+        let result = libs.content.get({
+            key: address,
+        });
+        if (!result) {
+            // if not content check if it on a sub domain of nav.no
+            try {
+                address = 'https://www.nav.no' + address;
+                result = libs.http.request({ ...requestTemplate, url: address });
+
+                const reason = reasons.get(result.status);
+                return reason || result.status > 400 ? result.get(400) : reason.get('error');
+            } catch (e) {
+                log.info(`failed httpRequest for ${address}`);
+                log.info(JSON.stringify(e, null, 4));
+
+                return reasons.get('error');
+            }
         }
     } else if (address.startsWith('mailto')) {
-        return true;
+        // mail
+        return reasons.get('success');
     }
-
-    log.info(address);
-    return false;
+    return reasons.get('error');
 }
-
 let deadLinksCurrentIndex = 0;
 let deadLinksMaxCount = 0;
 
@@ -160,16 +202,17 @@ function runDeep(something, deadLinksFound, socket, el) {
         const guidRegex = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/g;
         // if the string is a contentId
         if (guidRegex.exec(something)) {
-            const exists = !!libs.content.get({
-                key: something,
-            });
-            if (!exists) {
-                deadLinksFound.push({
-                    path: el._path,
-                    address: something,
-                    linktext: 'isRef',
-                });
-            }
+            // TODO: rewrite this skipping better, maybe use returns
+            // const exists = !!libs.content.get({
+            //     key: something,
+            // });
+            // if (!exists) {
+            //     deadLinksFound.push({
+            //         path: el._path,
+            //         address: something,
+            //         linktext: 'isRef',
+            //     });
+            // }
         } else {
             let reg;
             // eslint-disable-next-line no-useless-escape
@@ -178,18 +221,21 @@ function runDeep(something, deadLinksFound, socket, el) {
             while ((reg = rx.exec(something)) !== null) {
                 const address = reg[1].trim().toLowerCase();
                 const linktext = reg[2].substring(1);
-
+                let reason = '';
+                let isAlive = false;
                 if (visitedAdresses[address] === undefined) {
                     socket.emit('dlStatus', 'Visiting: ' + address);
-                    const isAlive = visit(address);
+                    // with external links should also include status code
+                    [reason, isAlive] = visit(address);
                     visitedAdresses[address] = isAlive;
                 }
 
-                if (visitedAdresses[address]) {
+                if (!visitedAdresses[address]) {
                     deadLinksFound.push({
                         path: el._path,
                         address: address,
                         linktext: linktext,
+                        reason,
                     });
                 }
             }
@@ -241,6 +287,7 @@ function handleDeadLinks(socket) {
     if (deadLinksNode) {
         navRepo.delete(deadLinksNode._id);
     }
+
     navRepo.create({
         _name: 'deadlinks',
         parentPath: '/',
@@ -253,9 +300,9 @@ function handleDeadLinks(socket) {
 function dumpDeadlinks(socket) {
     const navRepo = libs.tools.getNavRepo();
     const deadlinks = navRepo.get('/deadlinks').data.links;
-    let csv = 'Path,Feilende url,Lenketekst\r\n';
+    let csv = 'Path,Feilende url,Lenketekst,Begrunnelse\r\n';
     deadlinks.forEach(l => {
-        csv += `${l.path.substring(1)},${l.address},${l.linktext}\r\n`;
+        csv += `${l.path.substring(1)},${l.address},${l.linktext},${l.reason}\r\n`;
     });
     const file = {
         content: csv,
