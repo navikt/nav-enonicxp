@@ -42,44 +42,6 @@ function createElements() {
     };
 }
 
-function createTemplates(socket) {
-    templates.forEach(function(value) {
-        let parent = libs.content.get({
-            key: value.content.parentPath,
-        });
-        if (!parent) {
-            parent = libs.content.create({
-                displayName: 'Templates',
-                parentPath: value.content.parentPath.replace('_templates/', ''),
-                name: '_templates',
-                contentType: 'portal:template-folder',
-                data: {},
-            });
-        }
-        const exists = libs.content.get({
-            key:
-                value.content.parentPath +
-                value.content.displayName
-                    .toLowerCase()
-                    .replace(/ - /g, '-')
-                    .replace(/ /g, '-')
-                    .replace(/ø/g, 'o'),
-        });
-        const elem = exists || libs.content.create(value.content);
-        repo.modify({
-            key: elem._id,
-            editor: c => {
-                c.components = value.components;
-                if (exists) {
-                    c.data = value.content.data;
-                }
-                return c;
-            },
-        });
-        socket.emit('templateUpdate', elem.displayName + ' created');
-    });
-}
-
 const tavleListePage = [
     {
         type: 'page',
@@ -918,6 +880,7 @@ function createTemplates(socket) {
         socket.emit('templateUpdate', elem.displayName + ' created');
     });
 }
+
 exports.handle = function(socket) {
     const elements = createElements();
     socket.emit('newTask', elements);
