@@ -3569,14 +3569,34 @@ a.knapp {
  }
 
 .article-body table {
-    border: 1px solid #ddd;
-    border-color: #ddd;
     width: 100%;
-    line-height: 1.15em
+    line-height: 1.15em;
 }
 
 .article-body table tr:first-child th, .article-body table tr:first-child td {
-    background-color: #f1f1f1
+    color: #3E3832;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+    font-weight: 600;
+    line-height: 1.375rem
+}
+
+.article-body table tr:nth-child(even)  {
+    color: #3E3832;
+    font-size: 1rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    font-weight: 400;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    line-height: 1.375rem
+}
+
+.article-body table tr:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.55);
 }
 
 .article-body table tr:first-child th strong, .article-body table tr:first-child td strong {
@@ -3586,8 +3606,6 @@ a.knapp {
 }
 
 .article-body table th, .article-body table td {
-    border-color: #ddd;
-    padding-top: 0;
     padding: 10px;
     vertical-align: top;
     font-size: .875rem
@@ -7638,7 +7656,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .kampanje-varsel__sirkel {
     position: absolute;
-    z-index: 1;
+    z-index: 0;
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -7661,6 +7679,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     animation-timing-function: ease-out;
 }
 .kampanje-varsel__tekst-rad {
+    flex-grow: 1;
     padding: 0.75rem 0.5rem 0.5rem 0.5rem;
     text-align: left;
 }
