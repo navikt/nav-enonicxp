@@ -7577,7 +7577,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .din-situasjon-wrapper {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around
 }
 .din-situasjon-wrapper .ingress {
     text-align: center;
@@ -7585,18 +7584,18 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     flex-basis: 100%
 }
 .din-situasjon-wrapper .lenkepanel {
-    margin: 0.5rem;
+    margin: 1rem 0 0 2%;
     padding: 1.5rem;
-    flex-basis: 48%;
+    flex-grow: 1;
+    width: calc(50% - 2rem);
 }
-@media (max-width: 38.75em) {
+@media (max-width: 48em) {
     .din-situasjon-wrapper .lenkepanel {
-        flex-basis: 98%
+        width: 100%
     }
 }
 .din-situasjon-wrapper .lenkepanel.heldekkende {
     flex-basis: 100%;
-    display: flex
 }
 .din-situasjon-wrapper .lenkepanel.heldekkende .icon-size {
     height: 100%;
@@ -7624,5 +7623,3 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .din-situasjon-wrapper .lenkepanel .tekst p {
     margin-top: 1rem;
 }
-
-
