@@ -138,10 +138,10 @@ function visit(addressParam) {
         connectionTimeout: 2000,
         followRedirects: false,
         readTimeout: 7000,
-        // proxy: {
-        //     host: 'webproxy-internett.nav.no',
-        //     port: 8088,
-        // },
+        proxy: {
+            host: 'webproxy-internett.nav.no',
+            port: 8088,
+        },
     };
 
     if (address.indexOf(';') !== -1) {
