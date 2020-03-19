@@ -117,15 +117,20 @@ function createNewElements() {
 function visit(addressParam) {
     const reasons = new Map([
         [200, ['OK', true]],
-        [308, ['permanent flyttet', false]],
-        [301, ['permanent flyttet', false]],
-        [400, ['Serverfeil, siden ikke funnet eller tilsvarende', false]],
+        [308, ['Permanent flyttet', false]],
+        [301, ['Permanent flyttet', false]],
+        [302, ['For tiden flyttet', true]],
+        [303, ['For tiden flyttet', true]],
+        [307, ['For tiden flyttet', true]],
+        [404, ['Serverfeil, siden ikke funnet', false]],
+        [400, ['Serverfeil', false]],
         ['internal', ['Innholdselementet ikke funnet internt', false]],
         ['internalError', ['Oppslag av inneholdselement feilet', false]],
         ['externalError', ['Oppslag mot ekstern lenke feilet', false]],
         ['success', ['OK', true]],
         ['error', ['Ukjent feil', false]],
     ]);
+
     let address = addressParam;
     const requestTemplate = {
         url: '',
@@ -142,6 +147,7 @@ function visit(addressParam) {
     if (address.indexOf(';') !== -1) {
         address = address.split(';')[0];
     }
+
     if (address.startsWith('content://') || address.startsWith('media')) {
         // internal links
         try {
@@ -159,12 +165,11 @@ function visit(addressParam) {
         // external links
         try {
             const result = libs.http.request({ ...requestTemplate, url: address });
+
             const reason = reasons.get(result.status);
-            return reason || result.status > 400 ? result.get(400) : reason.get('error');
+            return reason || (result.status > 400 ? reasons.get(400) : reasons.get('error'));
         } catch (e) {
             log.info(`failed httpRequest for ${address}`);
-            log.info(JSON.stringify(e, null, 4));
-
             return reasons.get('error');
         }
     } else if (address.startsWith('/')) {
@@ -177,9 +182,8 @@ function visit(addressParam) {
             try {
                 address = 'https://www.nav.no' + address;
                 result = libs.http.request({ ...requestTemplate, url: address });
-
                 const reason = reasons.get(result.status);
-                return reason || result.status > 400 ? result.get(400) : reason.get('error');
+                return reason || (result.status > 400 ? reasons.get(400) : reasons.get('error'));
             } catch (e) {
                 log.info(`failed httpRequest for ${address}`);
                 log.info(JSON.stringify(e, null, 4));
@@ -200,20 +204,8 @@ function runDeep(something, deadLinksFound, socket, el) {
     if (typeof something === 'string') {
         // eslint-disable-next-line no-useless-escape
         const guidRegex = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/g;
-        // if the string is a contentId
-        if (guidRegex.exec(something)) {
-            // TODO: rewrite this skipping better, maybe use returns
-            // const exists = !!libs.content.get({
-            //     key: something,
-            // });
-            // if (!exists) {
-            //     deadLinksFound.push({
-            //         path: el._path,
-            //         address: something,
-            //         linktext: 'isRef',
-            //     });
-            // }
-        } else {
+        // if the string isn't a contentId try to visit it.
+        if (!guidRegex.test(something)) {
             let reg;
             // eslint-disable-next-line no-useless-escape
             const rx = /href="([^"]+)"?[^>]*([^<]+)<\/a>/g;
@@ -221,16 +213,14 @@ function runDeep(something, deadLinksFound, socket, el) {
             while ((reg = rx.exec(something)) !== null) {
                 const address = reg[1].trim().toLowerCase();
                 const linktext = reg[2].substring(1);
-                let reason = '';
-                let isAlive = false;
+
                 if (visitedAdresses[address] === undefined) {
                     socket.emit('dlStatus', 'Visiting: ' + address);
-                    // with external links should also include status code
-                    [reason, isAlive] = visit(address);
-                    visitedAdresses[address] = isAlive;
+                    visitedAdresses[address] = visit(address);
                 }
 
-                if (!visitedAdresses[address]) {
+                const [reason, isAlive] = visitedAdresses[address];
+                if (!isAlive) {
                     deadLinksFound.push({
                         path: el._path,
                         address: address,
@@ -300,9 +290,9 @@ function handleDeadLinks(socket) {
 function dumpDeadlinks(socket) {
     const navRepo = libs.tools.getNavRepo();
     const deadlinks = navRepo.get('/deadlinks').data.links;
-    let csv = 'Path,Feilende url,Lenketekst,Begrunnelse\r\n';
+    let csv = 'Kilde\tFeilende url\tLenketekst\tBegrunnelse\r\n';
     deadlinks.forEach(l => {
-        csv += `${l.path.substring(1)},${l.address},${l.linktext},${l.reason}\r\n`;
+        csv += `${l.path.substring(1)}\t${l.address}\t"${l.linktext}"\t"${l.reason}"\r\n`;
     });
     const file = {
         content: csv,
