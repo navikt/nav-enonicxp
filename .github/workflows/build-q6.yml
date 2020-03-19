@@ -3,17 +3,20 @@ name: Build to Q6
 on:
   push:
     tags:
-      - "v*-*"
+      - "v*-*-*"
+    branches:
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Define variables
         id: vars
         run: |
-          echo ::set-output name=VERSION::${GITHUB_REF##*/}
+          echo ::set-output name=VERSION::$(git tag  | sed 's/.*\(v[0-9].[0-9].[0-9]\).*/\1/p' | sort -V | tail -1)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)
           echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
       - uses: actions/setup-java@v1
         with:

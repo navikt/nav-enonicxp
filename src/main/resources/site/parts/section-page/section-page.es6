@@ -177,6 +177,7 @@ exports.get = function(req) {
         }
 
         const model = {
+            heading: content.displayName,
             table,
             niceToKnow,
             news,
