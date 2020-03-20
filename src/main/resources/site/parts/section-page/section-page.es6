@@ -161,19 +161,24 @@ exports.get = function(req) {
                       key: content.data.breaking_news,
                   })
                 : null;
-        if (breakingNewsContent) {
+
+        if (breakingNewsContent && breakingNewsContent.data) {
             // Sett tittel, ingress, og oppdateringstidspunkt
             const breakingNewsTarget = libs.content.get({
                 key: breakingNewsContent.data.target,
             });
-            breakingNews.title = breakingNewsContent.data.title || breakingNewsTarget.displayName;
-            breakingNews.ingress =
-                breakingNewsContent.data.description || breakingNewsTarget.data.ingress;
-            breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
-                breakingNewsTarget.modifiedTime,
-                content.language
-            )}`;
-            breakingNews.url = getSrc(breakingNewsContent);
+            if (breakingNewsTarget) {
+                breakingNews.title =
+                    breakingNewsContent.data.title || breakingNewsTarget.displayName;
+                breakingNews.ingress =
+                    breakingNewsContent.data.description ||
+                    (breakingNewsTarget.data ? breakingNewsTarget.data.ingress : '');
+                breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
+                    breakingNewsTarget.modifiedTime,
+                    content.language
+                )}`;
+                breakingNews.url = getSrc(breakingNewsContent);
+            }
         }
 
         const model = {
