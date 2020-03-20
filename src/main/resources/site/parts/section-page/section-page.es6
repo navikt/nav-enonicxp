@@ -162,7 +162,7 @@ exports.get = function(req) {
                   })
                 : null;
 
-        if (breakingNewsContent) {
+        if (breakingNewsContent && breakingNewsContent.data) {
             // Sett tittel, ingress, og oppdateringstidspunkt
             const breakingNewsTarget = libs.content.get({
                 key: breakingNewsContent.data.target,
