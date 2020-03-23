@@ -3,12 +3,12 @@
     <form>
         <input name="canonicalUrl" type="TextLine">
             <label>
-                Canonical url - NB! Skal bare endres bare av hovedreaktør/administrator
+                Canonical url - NB! Skal bare legges inn av hovedreaktør/administrator
             </label>
             <help-text>
-                Legg inn url til nytt innhold som skal erstatte dette.
-                Brukes sammen med redirect til dette innholdet.
-                Innholdet bør avpubliseres etter 1-2 uker, og redirect fjernes.
+                Legg inn url til nytt innhold som skal erstatte denne siden.
+                Det skal også opprettes en redirect til dette innholdet.
+                Siden bør avpubliseres etter 1-2 uker.
             </help-text>
         </input>
     </form>
