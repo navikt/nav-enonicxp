@@ -1,0 +1,15 @@
+<mixin>
+    <display-name>Canonical url</display-name>
+    <form>
+        <input name="canonicalUrl" type="TextLine">
+            <label>
+                Canonical url - NB! Skal bare endres bare av hovedreaktør/administrator
+            </label>
+            <help-text>
+                Legg inn url til nytt innhold som skal erstatte dette.
+                Brukes sammen med redirect til dette innholdet.
+                Innholdet bør avpubliseres etter 1-2 uker, og redirect fjernes.
+            </help-text>
+        </input>
+    </form>
+</mixin>
