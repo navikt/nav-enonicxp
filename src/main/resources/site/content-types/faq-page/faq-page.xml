@@ -1,0 +1,275 @@
+<content-type>
+    <display-name>FAQ-side</display-name>
+    <description>Brukes til spørsmål og svar sider</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="article">
+            <label>FAQ-side</label>
+            <items>
+                <input name="originaltitle" type="TextLine">
+                    <label>Norsk tittel (hvis fremmedspråklig innhold)</label>
+                    <help-text>For fremmedspråklig innhold skal norsk tittel angis her. Norsk tittel vil da vises ved siden av fremmedspråklig tittel i Enonic. </help-text>
+                </input>
+                <mixin name="ingress"/>
+                <mixin name="meta-description"/>
+                <input type="HtmlArea" name="text">
+                    <label>Brødtekst</label>
+                    <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <include>Undo | Redo</include>
+                    </config>
+                </input>
+                <input type="RadioButton" name="hasTableOfContents">
+                    <label>Sett inn innholdsfortegnelse</label>
+                    <help-text>Innholdsfortegnelsen blir vist som lenker i toppen av en artikkel. Skal ikke brukes på nyheter og pressemeldinger.</help-text>
+                    <config>
+                        <option value="none">Nei</option>
+                        <option value="h3">Ja</option>
+                    </config>
+                    <default>none</default>
+                </input>
+                <option-set name="menuListItems">
+                    <label>Innhold i høyremenyen</label>
+                    <expanded>false</expanded>
+                    <occurrences minimum="0" maximum="1"/>
+                    <options minimum="0" maximum="10">
+                        <option name="selfservice">
+                            <label>Logg inn</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Logg inn</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:external-link</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="form-and-application">
+                            <label>Skjema og søknad</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Skjema og søknad</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="process-times">
+                            <label>Saksbehandlingstider</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="related-information">
+                            <label>Relatert informasjon</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Innhold</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="0"/>
+                                    <config>
+                                        <allow-content-type>${app}:main-article</allow-content-type>
+                                        <allow-content-type>${app}:main-article-chapter</allow-content-type>
+                                        <allow-content-type>${app}:external-link</allow-content-type>
+                                        <allow-content-type>${app}:internal-link</allow-content-type>
+                                        <allow-content-type>${app}:section-page</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                                <input name="files" type="MediaSelector">
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <label>Legg ved filer</label>
+                                    <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
+                                    <config>
+                                        <allow-content-type>${app}:media:*</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="international">
+                            <label>Internasjonalt</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Internasjonalt</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="report-changes">
+                            <label>Meld fra om endringer</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Meld fra om endringer</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="rates">
+                            <label>Satser</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Satser</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="appeal-rights">
+                            <label>Klagerettigheter</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Klagerettigheter</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="membership">
+                            <label>Medlemskap i folketrygden</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Medlemskap i folketrygden</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="rules-and-regulations">
+                            <label>Regelverk</label>
+                            <items>
+                                <input name="link" type="ContentSelector">
+                                    <label>Regelverk</label>
+                                    <custom-text>contentdata/links</custom-text>
+                                    <occurrences maximum="0" minimum="1"/>
+                                    <config>
+                                        <allow-content-type>no.nav.navno:external-link</allow-content-type>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
+            </items>
+        </field-set>
+        <item-set name="parameters">
+            <label>Menu item parameters</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Parameter name</label>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="value" type="TextLine">
+                    <label>Parameter value</label>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="override" type="CheckBox">
+                    <label>Override</label>
+                    <help-text>Can be overridden by the request</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="facts">
+            <label>Faktaboks</label>
+            <items>
+                <input name="fact" type="HtmlArea">
+                    <label>Faktaboksen vises under brødteksten</label>
+                    <help-text>Bruk maks 500 tegn.</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="media">
+            <label>Legg til bilder</label>
+            <items>
+                <input name="image" type="ImageSelector">
+                    <label>Bilde</label>
+                    <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <input name="imagesize" type="RadioButton">
+                    <label>Velg bildestørrelse</label>
+                    <help-text>Bredden på bildet skal ikke være mindre enn 580 piksler.</help-text>
+                    <config>
+                        <option value="100">100%</option>
+                        <option value="70">70%</option>
+                        <option value="40">40%</option>
+                    </config>
+                </input>
+                <input name="caption" type="TextLine">
+                    <label>Bildetekst</label>
+                    <help-text>Bildene skal ha en beskrivende tekst og skal gi merverdi til artikkelen!</help-text>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="socialSharing">
+            <label>Sosiale medier</label>
+            <items>
+                <input name="social" type="ComboBox">
+                    <label>Del på sosiale medier</label>
+                    <help-text>Velg hvor dette skal deles</help-text>
+                    <config>
+                        <option value="twitter">Twitter</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="linkedin">LinkedIn</option>
+                    </config>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Angi andre språkversjoner">
+            <label>Legg til andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Legg til andre språkversjoner</label>
+                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="canonical-url"/>
+    </form>
+</content-type>
