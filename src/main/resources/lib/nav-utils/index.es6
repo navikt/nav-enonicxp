@@ -296,6 +296,31 @@ function getAllChildren(content) {
     return children;
 }
 
+/* Creates a uppercase hex number with at least length digits from a given number
+
+   https://stackoverflow.com/questions/10937225/how-to-print-literal-unicode-string-in-javascript
+ */
+
+function fixedHex(number, length) {
+    let str = number.toString(16).toUpperCase();
+    while (str.length < length) str = '0' + str;
+    return str;
+}
+
+/* Creates a unicode literal based on the string */
+function unicodeLiteral(str) {
+    let i;
+    let result = '';
+    for (i = 0; i < str.length; ++i) {
+        /* You should probably replace this by an isASCII test */
+        if (str.charCodeAt(i) > 126 || str.charCodeAt(i) < 32)
+            result += '\\u' + fixedHex(str.charCodeAt(i), 4);
+        else result += str[i];
+    }
+
+    return result;
+}
+
 module.exports = {
     dateTimePublished,
     fixDateFormat,
@@ -312,4 +337,5 @@ module.exports = {
     validateUrl: validUrl,
     getExtensionForImage,
     sortContents,
+    unicodeLiteral,
 };
