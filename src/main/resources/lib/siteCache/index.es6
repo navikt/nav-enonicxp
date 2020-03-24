@@ -88,6 +88,7 @@ function wipeOnChange(path) {
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
+    w(getPath(path, 'faq-page'));
     w(getPath(path, 'menu-list'));
     w(getPath(path, 'section-page'));
     w(getPath(path, 'page-list'));
