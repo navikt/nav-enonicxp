@@ -296,7 +296,11 @@ function getAllChildren(content) {
     return children;
 }
 
-/* Creates a uppercase hex number with at least length digits from a given number */
+/* Creates a uppercase hex number with at least length digits from a given number
+
+   https://stackoverflow.com/questions/10937225/how-to-print-literal-unicode-string-in-javascript
+ */
+
 function fixedHex(number, length) {
     let str = number.toString(16).toUpperCase();
     while (str.length < length) str = '0' + str;
