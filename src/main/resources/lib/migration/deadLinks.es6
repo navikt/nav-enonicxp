@@ -297,7 +297,7 @@ function dumpDeadlinks(socket) {
     const file = {
         content: csv,
         type: 'text/csv',
-        name: 'deadLinks.csv',
+        name: 'deadLinks.txt',
     };
     socket.emit('downloadFile', file);
 }
