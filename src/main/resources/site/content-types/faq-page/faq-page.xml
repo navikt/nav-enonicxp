@@ -12,23 +12,21 @@
                 </input>
                 <mixin name="ingress"/>
                 <mixin name="meta-description"/>
-                <input type="HtmlArea" name="text">
-                    <label>Brødtekst</label>
-                    <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <include>Undo | Redo</include>
-                    </config>
-                </input>
-                <input type="RadioButton" name="hasTableOfContents">
-                    <label>Sett inn innholdsfortegnelse</label>
-                    <help-text>Innholdsfortegnelsen blir vist som lenker i toppen av en artikkel. Skal ikke brukes på nyheter og pressemeldinger.</help-text>
-                    <config>
-                        <option value="none">Nei</option>
-                        <option value="h3">Ja</option>
-                    </config>
-                    <default>none</default>
-                </input>
+                <item-set name="questionsAndAnswers">
+                    <label>Spørsmål og svar</label>
+                    <items>
+                        <input name="question" type="TextLine">
+                            <label>Spørsmål</label>
+                        </input>
+                        <input type="HtmlArea" name="answer">
+                          <label>Svar</label>
+                          <config>
+                            <allowHeadings>h4 h5 h6</allowHeadings>
+                          </config>
+                        </input>
+                    </items>
+                    <occurrences minimum="0" maximum="0"/>
+                </item-set>
                 <option-set name="menuListItems">
                     <label>Innhold i høyremenyen</label>
                     <expanded>false</expanded>

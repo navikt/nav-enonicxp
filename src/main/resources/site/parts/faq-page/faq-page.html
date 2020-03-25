@@ -33,26 +33,27 @@
                 [[${content.data.ingress}]]
                 <br>
             </p>
-            <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
+            <div data-th-if="${questionsAndAnswers}" data-th-remove="tag">
                 <nav class="table-of-contents" data-selected-id>
                     <h2 class="visuallyhidden" role="heading" aria-level="2">
                         [[${langBundle.tableOfContents}]]
                     </h2>
                     <ol>
-                        <li data-th-each="tocEntry : ${toc}">
-                            <a data-th-href="${tocEntry.key}" data-th-title="${tocEntry.text} + ' (' + ${langBundle.tableOfContents} + ')'">
-                                [[${tocEntry.text}]]
+                        <li data-th-each="qanda: ${overview}">
+                            <a data-th-href="${qanda.url}" data-th-title="${qanda.text} + ' (' + ${langBundle.tableOfContents} + ')'">
+                                [[${qanda.text}]]
                             </a>
                         </li>
                     </ol>
                 </nav>
             </div>
         </header>
-
-        <div class="article-body">
-            <div data-th-utext="${content.data.text}" data-th-remove="tag"></div>
+        <div class="article-body" th-data-if="${questionsAndAnswers" >
+            <div data-th-each="qanda: ${questionsAndAnswers}">
+                <h3 data-th-id="${qanda.elementId}" class="chapter-header" tabindex="-1">[[${qanda.question}]]</h3>
+                <p data-th-utext="${qanda.answer}"></p>
+            </div>
         </div>
-
         <div class="well article-facts" data-th-if="${hasFact}">
             <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
             <div data-th-utext="${content.data.fact}"></div>

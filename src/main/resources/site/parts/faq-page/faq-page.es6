@@ -50,32 +50,6 @@ function renderPage(req) {
         const data = content.data;
         const hasFact = !!data.fact;
 
-        // Innholdsfortegnelse
-        const toc = [];
-        if (data.hasTableOfContents && data.hasTableOfContents !== 'none') {
-            let count = 0;
-            let ind = data.text.indexOf('<h3>');
-
-            while (ind !== -1 && count < 100) {
-                const h2End = ind + 4;
-                const ssEnd = data.text.indexOf('</h3>', ind);
-                const ss = data.text
-                    .slice(h2End, ssEnd)
-                    .replace(/<([^>]+)>/gi, '') // Strip html
-                    .replace(/&nbsp;/gi, ' '); // Replace &nbsp;
-                count++;
-
-                const key = libs.common.sanitize(ss);
-                toc.push({ text: ss, key: `#${key}` });
-
-                data.text = data.text.replace(
-                    '<h3>',
-                    `<h3 id="${key}" tabindex="-1" class="chapter-header">`
-                );
-                ind = data.text.indexOf('<h3>');
-            }
-        }
-
         // Sosiale medier
         let socials = false;
         if (data.social) {
@@ -111,13 +85,20 @@ function renderPage(req) {
         if (data.image) {
             data.imageUrl = libs.utils.getImageUrl(data.image, 'max(768)');
         }
+        const questionsAndAnswers = libs.utils
+            .forceArray(content.data.questionsAndAnswers)
+            .map(item => ({ ...item, elementId: libs.common.sanitize(item.question) }));
+
+        const overview = questionsAndAnswers.map(qanda => {
+            return { url: `#${libs.common.sanitize(qanda.question)}`, text: qanda.question };
+        });
 
         // Definer model og kall rendring (view)
         const model = {
             published: libs.utils.dateTimePublished(content, content.language || 'no'),
-            hasTableOfContents: toc.length > 0,
-            toc,
             content,
+            overview,
+            questionsAndAnswers,
             hasFact,
             hasLanguageVersions: languages.length > 0,
             languages,
