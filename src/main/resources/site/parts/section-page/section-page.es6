@@ -167,16 +167,19 @@ exports.get = function(req) {
             const breakingNewsTarget = libs.content.get({
                 key: breakingNewsContent.data.target,
             });
+            const updated = breakingNewsContent.data.timestamp;
             if (breakingNewsTarget) {
                 breakingNews.title =
                     breakingNewsContent.data.title || breakingNewsTarget.displayName;
                 breakingNews.ingress =
                     breakingNewsContent.data.description ||
                     (breakingNewsTarget.data ? breakingNewsTarget.data.ingress : '');
-                breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
-                    breakingNewsTarget.modifiedTime,
-                    content.language
-                )}`;
+                if (updated) {
+                    breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
+                        updated,
+                        content.language
+                    )}`;
+                }
                 breakingNews.url = getSrc(breakingNewsContent);
             }
         }
