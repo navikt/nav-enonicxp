@@ -1,4 +1,3 @@
-// TODO create mixin for <option-set name="menuListItems">
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
