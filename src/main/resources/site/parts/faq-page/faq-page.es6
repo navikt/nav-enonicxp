@@ -103,12 +103,6 @@ function renderPage(req) {
 }
 
 exports.get = function(req) {
-    // Midlertidig fix: Kaller render-function direkte for driftsmeldinger
-    // TODO: Sette tilbake når cache fungerer
-
     const render = renderPage(req);
-    if (req.path.indexOf('/driftsmeldinger/') !== -1) {
-        return render();
-    }
     return libs.cache.getPaths(req.rawPath, 'faq-page', req.branch, render);
 };
