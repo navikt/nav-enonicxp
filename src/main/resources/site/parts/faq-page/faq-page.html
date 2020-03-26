@@ -48,12 +48,12 @@
                 </nav>
             </div>
         </header>
-        <div class="article-body" th-data-if="${questionsAndAnswers}" >
-            <div data-th-each="qanda: ${questionsAndAnswers}">
+        <div class="article-body" data-th-if="${questionsAndAnswers}" >
+            <div data-th-each="qanda: ${questionsAndAnswers}" data-th-remove="tag">
                 <h3 data-th-id="${qanda.elementId}" class="chapter-header" tabindex="-1">
                     [[${qanda.question}]]
                 </h3>
-                <p data-th-utext="${qanda.answer}"></p>
+                <div data-th-utext="${qanda.answer}" data-th-remove="tag"></div>
             </div>
         </div>
         <div class="share-social-media" data-th-if="${socials}">

@@ -4752,6 +4752,7 @@ a.knapp {
 }
 
 .article-body {
+    margin-top: 3rem;
     line-height: 1.25em;
     overflow: auto;
 }
