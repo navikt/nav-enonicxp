@@ -22,6 +22,7 @@
                           <label>Svar</label>
                           <config>
                             <allowHeadings>h4 h5 h6</allowHeadings>
+                            <include>Undo | Redo</include>
                           </config>
                         </input>
                     </items>
