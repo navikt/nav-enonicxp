@@ -173,10 +173,14 @@ exports.get = function(req) {
                 breakingNews.ingress =
                     breakingNewsContent.data.description ||
                     (breakingNewsTarget.data ? breakingNewsTarget.data.ingress : '');
-                breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
-                    breakingNewsTarget.modifiedTime,
-                    content.language
-                )}`;
+
+                const updated = breakingNewsContent.data.timestamp;
+                if (updated) {
+                    breakingNews.updated = `Oppdatert: ${libs.navUtils.formatDateTime(
+                        updated,
+                        content.language
+                    )}`;
+                }
                 breakingNews.url = getSrc(breakingNewsContent);
             }
         }

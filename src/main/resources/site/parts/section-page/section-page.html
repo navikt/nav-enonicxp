@@ -17,7 +17,8 @@
             <p class="typo-normal kampanje-varsel__ingress">
                 [[${breakingNews.ingress}]]
             </p>
-            <p class="typo-undertekst kampanje-varsel__dato-tid">
+            <p data-th-if="${breakingNews.updated}"
+               class="typo-undertekst kampanje-varsel__dato-tid">
                 [[${breakingNews.updated}]]
             </p>
         </div>
