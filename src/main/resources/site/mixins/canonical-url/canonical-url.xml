@@ -13,7 +13,7 @@
             <occurrences minimum="0" maximum="1"/>
             <config>
                 <regexp>
-                    ^(?:https:\/\/)[\w.-]+(?:\.nav\.no+)+[\w\-\._~:\/?#[\]@!\$\&amp;'\(\)\*\+,;=.]+$
+                    (?:https:\/\/)[\w.-]+(?:\.nav\.no\/)[\w\-\._~:\/?#\[\]@!\$\&amp;\'\(\)\*\+,;=.]*
                 </regexp>
             </config>
         </input>
