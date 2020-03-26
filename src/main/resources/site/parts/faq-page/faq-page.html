@@ -50,28 +50,12 @@
         </header>
         <div class="article-body" th-data-if="${questionsAndAnswers" >
             <div data-th-each="qanda: ${questionsAndAnswers}">
-                <h3 data-th-id="${qanda.elementId}" class="chapter-header" tabindex="-1">[[${qanda.question}]]</h3>
+                <h3 data-th-id="${qanda.elementId}" class="chapter-header" tabindex="-1">
+                    [[${qanda.question}]]
+                </h3>
                 <p data-th-utext="${qanda.answer}"></p>
             </div>
         </div>
-        <div class="well article-facts" data-th-if="${hasFact}">
-            <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
-            <div data-th-utext="${content.data.fact}"></div>
-        </div>
-
-        <div class="figure-container" data-th-if="${content.data.image}">
-            <figure data-th-classappend="|
-                ${content.data.imagesize == '100' ? 'figure-full' : ''}
-                ${content.data.imagesize == '70' ? 'figure-medium' : ''}
-                ${content.data.imagesize == '40' ? 'figure-small' : ''}|"
-            >
-                <img data-th-src="${content.data.imageUrl}"/>
-                <figcaption class="decorated" data-th-if="${content.data.caption}">
-                    [[${content.data.caption}]]
-                </figcaption>
-            </figure>
-        </div>
-
         <div class="share-social-media" data-th-if="${socials}">
             <ul class="share-social-media-pills">
                 <li data-th-each="social : ${socials}">

@@ -1,3 +1,4 @@
+// TODO create mixin for <option-set name="menuListItems">
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
@@ -48,7 +49,6 @@ function renderPage(req) {
         const langBundle = libs.lang.parseBundle(content.language).main_article;
         const languages = libs.utils.getLanguageVersions(content);
         const data = content.data;
-        const hasFact = !!data.fact;
 
         // Sosiale medier
         let socials = false;
@@ -73,21 +73,13 @@ function renderPage(req) {
               })
             : false;
 
-        // Prosessering av HTML-felter (håndtere url-er inne i html-en) og image-urls
-        data.text = libs.portal.processHtml({
-            value: data.text,
-        });
-        if (hasFact) {
-            data.fact = libs.portal.processHtml({
-                value: data.fact,
-            });
-        }
-        if (data.image) {
-            data.imageUrl = libs.utils.getImageUrl(data.image, 'max(768)');
-        }
         const questionsAndAnswers = libs.utils
             .forceArray(content.data.questionsAndAnswers)
-            .map(item => ({ ...item, elementId: libs.common.sanitize(item.question) }));
+            .map(item => ({
+                ...item,
+                elementId: libs.common.sanitize(item.question),
+                answer: libs.portal.processHtml({ value: item.answer }),
+            }));
 
         const overview = questionsAndAnswers.map(qanda => {
             return { url: `#${libs.common.sanitize(qanda.question)}`, text: qanda.question };
@@ -99,7 +91,6 @@ function renderPage(req) {
             content,
             overview,
             questionsAndAnswers,
-            hasFact,
             hasLanguageVersions: languages.length > 0,
             languages,
             socials,

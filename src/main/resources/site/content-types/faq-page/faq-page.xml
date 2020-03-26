@@ -206,39 +206,6 @@
                 </input>
             </items>
         </item-set>
-        <field-set name="facts">
-            <label>Faktaboks</label>
-            <items>
-                <input name="fact" type="HtmlArea">
-                    <label>Faktaboksen vises under brødteksten</label>
-                    <help-text>Bruk maks 500 tegn.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-            </items>
-        </field-set>
-        <field-set name="media">
-            <label>Legg til bilder</label>
-            <items>
-                <input name="image" type="ImageSelector">
-                    <label>Bilde</label>
-                    <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input name="imagesize" type="RadioButton">
-                    <label>Velg bildestørrelse</label>
-                    <help-text>Bredden på bildet skal ikke være mindre enn 580 piksler.</help-text>
-                    <config>
-                        <option value="100">100%</option>
-                        <option value="70">70%</option>
-                        <option value="40">40%</option>
-                    </config>
-                </input>
-                <input name="caption" type="TextLine">
-                    <label>Bildetekst</label>
-                    <help-text>Bildene skal ha en beskrivende tekst og skal gi merverdi til artikkelen!</help-text>
-                </input>
-            </items>
-        </field-set>
         <field-set name="socialSharing">
             <label>Sosiale medier</label>
             <items>
