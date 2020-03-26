@@ -1,0 +1,83 @@
+<content-type>
+    <display-name>FAQ-side</display-name>
+    <description>Brukes til spørsmål og svar sider</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="article">
+            <label>FAQ-side</label>
+            <items>
+                <input name="originaltitle" type="TextLine">
+                    <label>Norsk tittel (hvis fremmedspråklig innhold)</label>
+                    <help-text>For fremmedspråklig innhold skal norsk tittel angis her. Norsk tittel vil da vises ved siden av fremmedspråklig tittel i Enonic. </help-text>
+                </input>
+                <mixin name="ingress"/>
+                <mixin name="meta-description"/>
+                <item-set name="questionsAndAnswers">
+                    <label>Spørsmål og svar</label>
+                    <items>
+                        <input name="question" type="TextLine">
+                            <label>Spørsmål</label>
+                        </input>
+                        <input type="HtmlArea" name="answer">
+                          <label>Svar</label>
+                          <config>
+                            <allowHeadings>h4 h5 h6</allowHeadings>
+                          </config>
+                        </input>
+                    </items>
+                    <occurrences minimum="0" maximum="0"/>
+                </item-set>
+                <mixin name="menu-list-items"/>
+            </items>
+        </field-set>
+        <item-set name="parameters">
+            <label>Menu item parameters</label>
+            <occurrences maximum="0" minimum="0"/>
+            <items>
+                <input name="name" type="TextLine">
+                    <label>Parameter name</label>
+                    <occurrences maximum="1" minimum="1"/>
+                </input>
+                <input name="value" type="TextLine">
+                    <label>Parameter value</label>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="override" type="CheckBox">
+                    <label>Override</label>
+                    <help-text>Can be overridden by the request</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+            </items>
+        </item-set>
+        <field-set name="socialSharing">
+            <label>Sosiale medier</label>
+            <items>
+                <input name="social" type="ComboBox">
+                    <label>Del på sosiale medier</label>
+                    <help-text>Velg hvor dette skal deles</help-text>
+                    <config>
+                        <option value="twitter">Twitter</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="linkedin">LinkedIn</option>
+                    </config>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </field-set>
+        <field-set name="Angi andre språkversjoner">
+            <label>Legg til andre språkversjoner</label>
+            <items>
+                <input name="languages" type="ContentSelector">
+                    <label>Legg til andre språkversjoner</label>
+                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allow-content-type>no.nav.navno:main-article</allow-content-type>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="canonical-url"/>
+    </form>
+</content-type>

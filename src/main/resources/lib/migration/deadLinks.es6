@@ -9,24 +9,29 @@ const libs = {
     cache: require('/lib/siteCache'),
     unpublish: require('/lib/siteCache/invalidator'),
     officeInformation: require('/lib/officeInformation'),
+    templates: require('/lib/migration/templates'),
 };
 
 let socket;
 const elements = createNewElements();
-exports.handle = (s) => {
+exports.handle = s => {
     socket = s;
 
-    elements.action = [{
-        id: 'lenke',
-        emit: 'lenke',
-        action: 'hello',
-    }];
-    elements.progress = [{
-        id: 'lprog',
-        value: 'd-Value',
-        max: 'dl-childCount',
-        valId: 'lprogval',
-    }];
+    elements.action = [
+        {
+            id: 'lenke',
+            emit: 'lenke',
+            action: 'hello',
+        },
+    ];
+    elements.progress = [
+        {
+            id: 'lprog',
+            value: 'd-Value',
+            max: 'dl-childCount',
+            valId: 'lprogval',
+        },
+    ];
     socket.emit('newTask', elements);
     socket.on('lenke', () => {
         libs.task.submit({
@@ -36,7 +41,14 @@ exports.handle = (s) => {
             },
         });
     });
-
+    socket.on('templates', () => {
+        libs.task.submit({
+            description: 'Lager templates',
+            task: () => {
+                libs.tools.runInMasterContext(socket, libs.templates.handle);
+            },
+        });
+    });
     socket.on('clearAndStartCache', () => {
         libs.tools.runInContext(socket, () => {
             libs.cache.activateEventListener();
@@ -60,18 +72,26 @@ exports.handle = (s) => {
 
 let deadLinksCurrentIndex = 0;
 let deadLinksMaxCount = 0;
-function handleDeadLinks (socket) {
+function handleDeadLinks(socket) {
     // reset counters
     deadLinksCurrentIndex = 0;
     deadLinksMaxCount = 2;
 
     const deadLinksFound = [];
-    deadLinks(libs.content.get({
-        key: '/www.nav.no',
-    }), deadLinksFound, socket);
-    deadLinks(libs.content.get({
-        key: '/redirects',
-    }), deadLinksFound, socket);
+    deadLinks(
+        libs.content.get({
+            key: '/www.nav.no',
+        }),
+        deadLinksFound,
+        socket
+    );
+    deadLinks(
+        libs.content.get({
+            key: '/redirects',
+        }),
+        deadLinksFound,
+        socket
+    );
 
     const navRepo = libs.tools.getNavRepo();
     const deadLinksNode = navRepo.get('/deadlinks');
@@ -87,7 +107,7 @@ function handleDeadLinks (socket) {
     });
 }
 
-function deadLinks (el, deadLinksFound, socket) {
+function deadLinks(el, deadLinksFound, socket) {
     socket.emit('dlStatusTree', 'Working in ' + el._path);
 
     runDeep(el.data, deadLinksFound, socket);
@@ -98,11 +118,11 @@ function deadLinks (el, deadLinksFound, socket) {
     const children = libs.navUtils.getAllChildren(el);
     deadLinksMaxCount += children.length;
     socket.emit('dl-childCount', deadLinksMaxCount);
-    children.forEach((child) => {
+    children.forEach(child => {
         deadLinks(child, deadLinksFound, socket);
     });
 
-    function runDeep (something, deadLinksFound, socket) {
+    function runDeep(something, deadLinksFound, socket) {
         if (typeof something === 'string') {
             // eslint-disable-next-line no-useless-escape
             const guidRegex = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/g;
@@ -136,7 +156,7 @@ function deadLinks (el, deadLinksFound, socket) {
                 }
             }
         } else if (Array.isArray(something)) {
-            something.forEach((s) => runDeep(s, deadLinksFound, socket));
+            something.forEach(s => runDeep(s, deadLinksFound, socket));
         } else if (typeof something === 'object') {
             for (let key in something) {
                 if (something.hasOwnProperty(key)) {
@@ -147,11 +167,11 @@ function deadLinks (el, deadLinksFound, socket) {
     }
 }
 
-function dumpDeadlinks () {
+function dumpDeadlinks() {
     const navRepo = libs.tools.getNavRepo();
     const deadlinks = navRepo.get('/deadlinks').data.links;
     let csv = 'Path,Feilende url,Lenketekst\r\n';
-    deadlinks.forEach((l) => {
+    deadlinks.forEach(l => {
         csv += `${l.path.substring(1)},${l.address},${l.linktext}\r\n`;
     });
     const file = {
@@ -162,7 +182,7 @@ function dumpDeadlinks () {
     socket.emit('downloadFile', file);
 }
 
-function findOldFormLinks (socket) {
+function findOldFormLinks(socket) {
     let csv = 'Url;Skjema Id;Skjema Navn;Språk;Type\r\n';
     const contentWithForms = libs.content.query({
         start: 0,
@@ -173,13 +193,15 @@ function findOldFormLinks (socket) {
     socket.emit('find-old-form-links-max', contentWithForms.length);
     contentWithForms.forEach((c, index) => {
         let formLinks = c.data.menuListItems['form-and-application'].link;
-        formLinks = formLinks ? Array.isArray(formLinks) ? formLinks : [formLinks] : [];
+        formLinks = formLinks ? (Array.isArray(formLinks) ? formLinks : [formLinks]) : [];
         formLinks.forEach(link => {
             const linkContent = libs.content.get({
                 key: link,
             });
             if (linkContent && linkContent.data && linkContent.data.number) {
-                csv += `https://${c._path.replace('/www.nav.no', 'www-x4.nav.no')};${linkContent.data.number};${linkContent.displayName};${c.language};${linkContent.type}\r\n`;
+                csv += `https://${c._path.replace('/www.nav.no', 'www-x4.nav.no')};${
+                    linkContent.data.number
+                };${linkContent.displayName};${c.language};${linkContent.type}\r\n`;
             }
         });
         socket.emit('find-old-form-links-value', index + 1);
@@ -188,7 +210,7 @@ function findOldFormLinks (socket) {
     socket.emit('console.log', csv);
 }
 
-function findDuplicateChapters (socket) {
+function findDuplicateChapters(socket) {
     const chapters = libs.content.query({
         start: 0,
         count: 10000,
@@ -197,9 +219,11 @@ function findDuplicateChapters (socket) {
     const chapterArticles = chapters.reduce((list, chapter) => {
         const hasArticle = list.filter(a => a._id === chapter.data.article).length > 0;
         if (!hasArticle) {
-            list.push(libs.content.get({
-                key: chapter.data.article,
-            }));
+            list.push(
+                libs.content.get({
+                    key: chapter.data.article,
+                })
+            );
         }
         return list;
     }, []);
@@ -211,7 +235,12 @@ function findDuplicateChapters (socket) {
         for (let k = i + 1; k < chapterArticles.length; k += 1) {
             const article1 = chapterArticles[i];
             const article2 = chapterArticles[k];
-            if (article1._id !== article2._id && article1.displayName === article2.displayName && article1.ingress === article2.ingress && article1.text === article2.text) {
+            if (
+                article1._id !== article2._id &&
+                article1.displayName === article2.displayName &&
+                article1.ingress === article2.ingress &&
+                article1.text === article2.text
+            ) {
                 if (duplicates.length === 0) {
                     duplicates.push(article1);
                 }
@@ -264,12 +293,49 @@ function findDuplicateChapters (socket) {
     socket.emit('downloadFile', file);
 }
 
-function createNewElements () {
+function createNewElements() {
     return {
         isNew: true,
-        head: 'Lenkeråte',
+        head: 'nav.no Actions',
         body: {
             elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag templates på nytt',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'lprog',
+                            progress: {
+                                value: 'd-Value',
+                                max: 'dl-childCount',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'templates',
+                            text: 'Templates',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
                 {
                     tag: 'div',
                     tagClass: ['row'],
@@ -297,7 +363,7 @@ function createNewElements () {
                         },
                         {
                             tag: 'button',
-                            tagClass: [ 'button', 'is-primary' ],
+                            tagClass: ['button', 'is-primary'],
                             action: 'lenke',
                             text: 'Start',
                         },
@@ -429,7 +495,7 @@ function createNewElements () {
     };
 }
 
-function visit (address) {
+function visit(address) {
     address = address.trim();
     let ret;
     if (address.indexOf(';') !== -1) {
