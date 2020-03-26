@@ -301,6 +301,26 @@ const faqPage = [
     },
     {
         type: 'part',
+        path: '/main/2/second/0',
+        part: {
+            descriptor: 'no.nav.navno:main-article-linked-list',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/second/1',
+        part: {
+            descriptor: 'no.nav.navno:menu-list',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
         path: '/footer/0',
         part: {
             descriptor: 'no.nav.navno:page-footer',
