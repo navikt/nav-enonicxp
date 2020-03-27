@@ -1,24 +1,34 @@
 <content-type>
-    <display-name>Melding</display-name>
-    <description>Driftsmelding</description>
-    <super-type>base:unstructured</super-type>
-    <form>
-        <field-set name="melding">
-            <label>Melding</label>
-            <items>
-                <input type="HtmlArea" name="text">
-                    <label>Brødtekst</label>
-                    <help-text>Kort og konsis meldingstekst.</help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <input type="RadioButton" name="type">
-                    <label>Type</label>
-                    <config>
-                        <option value="prodstatus">Driftsmelding</option>
-                    </config>
-                    <default>prodstatus</default>
-                </input>
-            </items>
-        </field-set>
-    </form>
+  <display-name>Melding</display-name>
+  <description>Driftsmelding</description>
+  <super-type>base:unstructured</super-type>
+  <form>
+    <field-set name="melding">
+      <label>Melding</label>
+      <items>
+        <input name="exposureLevel" type="ComboBox">
+          <label>Hvor bredt skal melding ut?</label>
+          <occurrences minimum="1" maximum="1"/>
+          <config>
+            <option value="site">Internt i NAV.no</option>
+            <option value="global">I dekoratøren</option>
+          </config>
+          <default>site</default>
+        </input>
+
+        <input type="HtmlArea" name="text">
+          <label>Brødtekst</label>
+          <help-text>Kort og konsis meldingstekst.</help-text>
+          <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="RadioButton" name="type">
+          <label>Type</label>
+          <config>
+            <option value="prodstatus">Driftsmelding</option>
+          </config>
+          <default>prodstatus</default>
+        </input>
+      </items>
+    </field-set>
+  </form>
 </content-type>

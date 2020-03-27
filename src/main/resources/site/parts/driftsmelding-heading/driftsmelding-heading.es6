@@ -27,28 +27,31 @@ function handleGet(req) {
         () => {
             // Henter ut eventuell publisert driftsmelding. Hvis flere er
             // publisert, hentes sist publiserte
-            const message = libs.content.getChildren({
+            const messages = libs.content.getChildren({
                 key: '/www.nav.no/no/driftsmeldinger',
                 start: 0,
                 count: 1,
                 sort: 'publish.from DESC',
             });
-            if (message && message.hits.length > 0) {
-                const content = libs.portal.getContent();
-                const language = content.language || 'no';
-                // Henter ut visningsnavnet og urlen til meldingen, lenketeksten er fast
-                const model = {
-                    heading: message.hits[0].displayName,
-                    linkurl: libs.portal.pageUrl({
-                        path: message.hits[0]._path,
-                    }),
-                    linktext: libs.lang.parseBundle(language).message.linktext,
-                };
+            if (messages && messages.hits.length > 0) {
+                const message = messages.hits[0];
+                if (message.data.exposureLevel === 'site') {
+                    const content = libs.portal.getContent();
+                    const language = content.language || 'no';
+                    // Henter ut visningsnavnet og urlen til meldingen, lenketeksten er fast
+                    const model = {
+                        heading: message.displayName,
+                        linkurl: libs.portal.pageUrl({
+                            path: message._path,
+                        }),
+                        linktext: libs.lang.parseBundle(language).message.linktext,
+                    };
 
-                return {
-                    contentType: 'text/html',
-                    body: libs.thymeleaf.render(view, model),
-                };
+                    return {
+                        contentType: 'text/html',
+                        body: libs.thymeleaf.render(view, model),
+                    };
+                }
             }
             // Ingen publiserte driftsmeldinger
             return {
