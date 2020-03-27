@@ -3,6 +3,7 @@ const cache = require('/lib/siteCache');
 const unpublish = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const eventLib = require('/lib/xp/event');
+const textCleaner = require('/lib/textCleaner');
 
 let appIsRunning = true;
 let taskIds = [];
@@ -11,6 +12,8 @@ let taskIds = [];
 officeInformation.startCronJob();
 // start cache invalidator
 cache.activateEventListener();
+// start text cleaner
+textCleaner.activateEventListener();
 
 // start task for handling caching of expired and prepublished content
 let currentTaskId = unpublish.start(appIsRunning);

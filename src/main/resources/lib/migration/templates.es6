@@ -10,38 +10,6 @@ const repo = libs.node.connect({
     principals: ['role:system.admin'],
 });
 
-function createElements() {
-    return {
-        isNew: true,
-        head: 'Lag templates',
-        body: {
-            elements: [
-                {
-                    tag: 'div',
-                    tagClass: ['row'],
-                    elements: [
-                        {
-                            tag: 'p',
-                            text: 'Lag nye sidemaler',
-                        },
-                        {
-                            tag: 'button',
-                            text: 'Lag',
-                            action: 'do',
-                            id: 'testid',
-                            tagClass: ['button', 'is-info'],
-                        },
-                        {
-                            tag: 'div',
-                            update: 'templateUpdate',
-                        },
-                    ],
-                },
-            ],
-        },
-    };
-}
-
 const tavleListePage = [
     {
         type: 'page',
@@ -163,6 +131,90 @@ const mainArticlePage = [
         path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:main-article',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/second/0',
+        part: {
+            descriptor: 'no.nav.navno:main-article-linked-list',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/second/1',
+        part: {
+            descriptor: 'no.nav.navno:menu-list',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
+
+const faqPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/0',
+        part: {
+            descriptor: 'no.nav.navno:faq-page',
             config: {
                 'no-nav-navno': {},
             },
@@ -684,6 +736,19 @@ const officeInformationPage = [
 const templates = [
     {
         content: {
+            displayName: 'FAQ Side',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: ['no.nav.navno:faq-page'],
+            },
+        },
+        components: faqPage,
+    },
+    {
+        content: {
             displayName: 'Artikkel - Hovedartikkel',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
@@ -843,6 +908,39 @@ const templates = [
         components: officeInformationPage,
     },
 ];
+
+function createElements() {
+    return {
+        isNew: true,
+        head: 'Lag templates',
+        body: {
+            elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag nye sidemaler',
+                        },
+                        {
+                            tag: 'button',
+                            text: 'Lag',
+                            action: 'do',
+                            id: 'testid',
+                            tagClass: ['button', 'is-info'],
+                        },
+                        {
+                            tag: 'div',
+                            update: 'templateUpdate',
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+}
+
 function createTemplates(socket) {
     templates.forEach(function(value) {
         const parent = libs.content.get({

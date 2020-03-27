@@ -612,7 +612,7 @@ h6, .h6 {
     font-weight: 600
 }
 
-h1:first-child, h2:first-child, h3:first-child, .article-body h1:first-child, .article-body h2:first-child, .article-body h3:first-child {
+h1:first-child, h2:first-child, h3:first-child, .article-body h1:first-child, .article-body h2:first-child {
     margin-top: 0
 }
 

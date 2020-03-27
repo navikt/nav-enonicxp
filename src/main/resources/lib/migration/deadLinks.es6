@@ -7,16 +7,57 @@ const libs = {
     cache: require('/lib/siteCache'),
     unpublish: require('/lib/siteCache/invalidator'),
     officeInformation: require('/lib/officeInformation'),
+    templates: require('/lib/migration/templates'),
 };
 
 const visitedAdresses = {};
 
+let deadLinksCurrentIndex = 0;
+let deadLinksMaxCount = 0;
+
 function createNewElements() {
     return {
         isNew: true,
-        head: 'Lenkeråte',
+        head: 'nav.no Actions',
         body: {
             elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag templates på nytt',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'lprog',
+                            progress: {
+                                value: 'd-Value',
+                                max: 'dl-childCount',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'templates',
+                            text: 'Templates',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
                 {
                     tag: 'div',
                     tagClass: ['row'],
@@ -197,8 +238,6 @@ function visit(addressParam) {
     }
     return reasons.get('error');
 }
-let deadLinksCurrentIndex = 0;
-let deadLinksMaxCount = 0;
 
 function runDeep(something, deadLinksFound, socket, el) {
     if (typeof something === 'string') {
@@ -236,6 +275,7 @@ function runDeep(something, deadLinksFound, socket, el) {
         Object.keys(something).forEach(key => runDeep(something[key], deadLinksFound, socket, el));
     }
 }
+
 function deadLinks(el, deadLinksFound, socket) {
     socket.emit('dlStatusTree', 'Working in ' + el._path);
 
@@ -330,7 +370,14 @@ exports.handle = s => {
             },
         });
     });
-
+    socket.on('templates', () => {
+        libs.task.submit({
+            description: 'Lager templates',
+            task: () => {
+                libs.tools.runInMasterContext(socket, libs.templates.handle);
+            },
+        });
+    });
     socket.on('clearAndStartCache', () => {
         libs.tools.runInContext(socket, () => {
             libs.cache.activateEventListener();
