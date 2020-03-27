@@ -4,7 +4,6 @@ const libs = {
     content: require('/lib/xp/content'),
     httpClient: require('/lib/http-client'),
     task: require('/lib/xp/task'),
-    tools: require('/lib/migration/tools'),
     cron: require('/lib/cron'),
     cluster: require('/lib/xp/cluster'),
 };
