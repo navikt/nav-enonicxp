@@ -83,9 +83,7 @@ function wipeOnChange(path) {
         return false;
     }
 
-    log.info(`WIPE: [${path}]`);
     const w = wipe('paths');
-
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
@@ -102,6 +100,8 @@ function wipeOnChange(path) {
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');
     }
+    log.info(`WIPED: [${path}] (${caches.paths.getSize()})`);
+
     if (path.indexOf('/megamenu/') !== -1) {
         wipe('decorator')();
     }
@@ -131,14 +131,7 @@ function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            return caches[cacheStoreName].get(getPath(key, type), () => {
-                log.info(
-                    `Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[
-                        cacheStoreName
-                    ].getSize()})] on [${myHash}]`
-                );
-                return f(params);
-            });
+            return caches[cacheStoreName].get(getPath(key, type), () => f(params));
         }
         return f(params);
     };
