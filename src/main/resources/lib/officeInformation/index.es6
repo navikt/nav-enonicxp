@@ -42,6 +42,9 @@ function refreshOfficeInformation(officeInformationList) {
         // map over offices in norg2, so we can delete old offices
     };
 
+    let numNew = 0;
+    let numUpdated = 0;
+    let numDeleted = 0;
     // update office information or create new
     officeInformationList.forEach(officeInformation => {
         // ignore closed offices and include only selected types
@@ -70,13 +73,13 @@ function refreshOfficeInformation(officeInformationList) {
                 return false;
             })[0];
             if (existingOffice) {
-                log.info('UPDATE :: ' + officeInformation.enhet.enhetId);
+                numUpdated++;
                 libs.content.modify({
                     key: existingOffice._id,
                     editor: o => ({ ...o, data: officeInformation }),
                 });
             } else {
-                log.info('CREATE :: ' + officeInformation.enhet.enhetId);
+                numNew++;
                 libs.content.create({
                     parentPath: officeFolder._path,
                     displayName: officeInformation.enhet.navn,
@@ -100,16 +103,19 @@ function refreshOfficeInformation(officeInformationList) {
             enhetId = existingOffice.data.enhet.enhetId;
         }
         if (!officesInNorg[enhetId]) {
-            log.info('DELETE :: ' + existingOffice._id + ' ' + existingOffice.displayName);
-            log.info('ENHET :: ' + enhetId);
+            numDeleted++;
             libs.content.delete({
                 key: existingOffice._id,
             });
         }
     });
+
+    // log info
+    log.info(`NORG - Updated: ${numUpdated} New: ${numNew} Deleted: ${numDeleted}`);
 }
 
 function checkForRefresh() {
+    log.info('NORG - Start update');
     const startBackupJob = () => {
         // stop cron job first, just in case it has been failing for more than a day
         libs.cron.unschedule({
@@ -145,7 +151,7 @@ function checkForRefresh() {
 
     const hasNavRepo = libs.repo.get('no.nav.navno');
     if (!hasNavRepo) {
-        log.info('Create no.nav.navno repo');
+        log.info('NORG - Create no.nav.navno repo');
         libs.repo.create({
             id: 'no.nav.navno',
         });
@@ -160,20 +166,25 @@ function checkForRefresh() {
         pricipals: ['role:system.admin'],
     });
 
-    let officeInformation = navRepo.get('/officeInformation');
+    const officeInformation = navRepo.get('/officeInformation');
     if (!officeInformation) {
-        log.info('Create office information node');
-        officeInformation = navRepo.create({
-            _name: 'officeInformation',
-            parentPath: '/',
-            refresh: true,
-            data: {
-                lastRefresh: null,
-                lastRefreshFormated: new Date().toISOString(),
-                isRefreshing: false,
-                failedLastRefresh: false,
-            },
-        });
+        log.info('NORG - Create office information node');
+        try {
+            navRepo.create({
+                _name: 'officeInformation',
+                parentPath: '/',
+                refresh: true,
+                data: {
+                    lastRefresh: null,
+                    lastRefreshFormated: new Date().toISOString(),
+                    isRefreshing: false,
+                    failedLastRefresh: false,
+                },
+            });
+        } catch (e) {
+            log.info('NORG - Failed to create office information node');
+            log.info(e);
+        }
     }
 
     // set isRefreshing true so only cluster node runs this
@@ -194,7 +205,7 @@ function checkForRefresh() {
         const officeInformationList = JSON.parse(response.body);
         refreshOfficeInformation(officeInformationList);
 
-        log.info('PUBLISH OFFICE INFORMATION');
+        log.info('NORG - Publish office information');
         libs.content.publish({
             keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
             sourceBranch: 'draft',
@@ -202,7 +213,7 @@ function checkForRefresh() {
             includeDependencies: true,
         });
     } catch (e) {
-        log.info('FAILED TO GET OFFICE INFORMATION FROM NORG2');
+        log.info('NORG - Failed to get office information from norg2');
         log.info(e);
         failedToRefresh = true;
     }
