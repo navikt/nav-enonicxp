@@ -19,12 +19,9 @@ const navRepo = libs.node.connect({
     },
     pricipals: ['role:system.admin'],
 });
-
 let prevTestDate = new Date();
 let taskHasStarted = false;
-
 const TIME_BETWEEN_CHECKS = 60000;
-// const PADDING = 10000;
 const TASK_DESCRIPTION = 'CacheInvalidatorForTimedPublishingEvents';
 exports.taskDescription = TASK_DESCRIPTION;
 

@@ -214,34 +214,24 @@ function nodeListenerCallback(event) {
 function activateEventListener() {
     wipeAll();
     if (!hasSetupListeners) {
-        try {
-            libs.event.listener({
-                type: 'node.*',
-                localOnly: false,
-                callback: nodeListenerCallback,
-            });
-            log.info('Started: Cache eventListener on node.updated');
-            try {
-                libs.event.listener({
-                    type: 'custom.prepublish',
-                    localOnly: false,
-                    callback: e => {
-                        e.data.prepublished.forEach(el => {
-                            wipeOnChange(el._path);
-                            clearReferences(el._id, el._path, 0);
-                        });
-                    },
+        libs.event.listener({
+            type: 'node.*',
+            localOnly: false,
+            callback: nodeListenerCallback,
+        });
+        log.info('Started: Cache eventListener on node.updated');
+        libs.event.listener({
+            type: 'custom.prepublish',
+            localOnly: false,
+            callback: e => {
+                e.data.prepublished.forEach(el => {
+                    wipeOnChange(el._path);
+                    clearReferences(el._id, el._path, 0);
                 });
-                log.info('Started: Cache eventListener on custom.prepublish');
-                hasSetupListeners = true;
-            } catch (e) {
-                log.info('Failed to start: Cache eventListener on custom.prepublish');
-                log.error(e);
-            }
-        } catch (e) {
-            log.info('Failed to start: Cache eventListener on node.updated');
-            log.error(e);
-        }
+            },
+        });
+        log.info('Started: Cache eventListener on custom.prepublish');
+        hasSetupListeners = true;
     } else {
         log.info('Cache node listeners already running');
     }
@@ -255,9 +245,6 @@ module.exports = {
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
     activateEventListener,
-    wipeAll,
     stripPath: getPath,
     etag: getEtag,
-    wipeOnChange,
-    clearReferences,
 };

@@ -166,25 +166,19 @@ function checkForRefresh() {
         pricipals: ['role:system.admin'],
     });
 
-    const officeInformation = navRepo.get('/officeInformation');
-    if (!officeInformation) {
+    if (!navRepo.get('/officeInformation')) {
         log.info('NORG - Create office information node');
-        try {
-            navRepo.create({
-                _name: 'officeInformation',
-                parentPath: '/',
-                refresh: true,
-                data: {
-                    lastRefresh: null,
-                    lastRefreshFormated: new Date().toISOString(),
-                    isRefreshing: false,
-                    failedLastRefresh: false,
-                },
-            });
-        } catch (e) {
-            log.info('NORG - Failed to create office information node');
-            log.info(e);
-        }
+        navRepo.create({
+            _name: 'officeInformation',
+            parentPath: '/',
+            refresh: true,
+            data: {
+                lastRefresh: null,
+                lastRefreshFormated: new Date().toISOString(),
+                isRefreshing: false,
+                failedLastRefresh: false,
+            },
+        });
     }
 
     // set isRefreshing true so only cluster node runs this
@@ -213,8 +207,8 @@ function checkForRefresh() {
             includeDependencies: true,
         });
     } catch (e) {
-        log.info('NORG - Failed to get office information from norg2');
-        log.info(e);
+        log.error('NORG - Failed to get office information from norg2');
+        log.error(e);
         failedToRefresh = true;
     }
 
