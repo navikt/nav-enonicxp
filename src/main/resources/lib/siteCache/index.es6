@@ -71,10 +71,9 @@ function wipe(name) {
     return key => {
         if (!key) {
             caches[name].clear();
-            log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
+            log.info(`WIPE: [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         } else {
             caches[name].remove(key);
-            log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
     };
 }
@@ -84,7 +83,9 @@ function wipeOnChange(path) {
         return false;
     }
 
+    log.info(`WIPE: [${path}]`);
     const w = wipe('paths');
+
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
@@ -123,6 +124,7 @@ function wipeAll() {
     wipe('decorator')();
     wipe('azList')();
     wipe('paths')();
+    wipe('redirects')();
 }
 
 function getSome(cacheStoreName) {
