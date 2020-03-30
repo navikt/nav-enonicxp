@@ -106,7 +106,6 @@ exports.handle404 = function(req) {
     if (element) {
         let redirect;
         if (element.type === app.name + ':external-link') {
-            log.info(element.data.url);
             redirect = element.data.url;
         } else {
             redirect = libs.portal.pageUrl({
@@ -123,26 +122,6 @@ exports.handle404 = function(req) {
     // log error and send the user to a 404 page
     log.info(`404: not found on: ${req.request.url}`);
 
-    /* Fjerner dette for å sikre 404 statuskode. TODO: Finnes en bedre løsning?
-    const has404 = libs.content.get({
-        key: '/www.nav.no/404',
-    });
-    let redirect;
-    if (!has404) {
-        // Try to create 404 page if not found
-        redirect = create404page();
-    } else {
-        redirect = libs.portal.pageUrl({
-            path: '/www.nav.no/404',
-        });
-    }
-    if (redirect) {
-        log.info(JSON.stringify(redirect, null, 4));
-        return {
-            redirect,
-            status: 404,
-        };
-    } */
     return {
         body:
             '<html lang="no">\n' +
@@ -157,49 +136,10 @@ exports.handle404 = function(req) {
     };
 };
 
-// function create404page() {
-//     return libs.context.run(
-//         {
-//             repository: 'com.enonic.cms.default',
-//             branch: 'draft',
-//             user: {
-//                 login: 'su',
-//                 userStore: 'system',
-//             },
-//             principals: ['role:system.admin'],
-//         },
-//         () => {
-//             const page = libs.content.create({
-//                 name: '404',
-//                 parentPath: '/www.nav.no',
-//                 displayName: 'Oops, noe gikk galt',
-//                 contentType: app.name + ':404',
-//                 data: {
-//                     errorMessage: 'Siden eller tjenesten finnes ikke'
-//                       ++ 'eller er for tiden<br/>utilgjengelig. Vi beklager dette.'
-//                       ++ ' Prøv igjen senere.',
-//                 },
-//             });
-//             const res = libs.content.publish({
-//                 keys: ['/www.nav.no/404'],
-//                 sourceBranch: 'draft',
-//                 targetBranch: 'master',
-//                 includeDependencies: false,
-//             });
-//             if (res) {
-//                 return libs.portal.pageUrl({
-//                     path: page,
-//                 });
-//             }
-//             return null;
-//         }
-//     );
-// }
-
 // Handle all other errors - to avoid default error page with stack trace
 exports.handleError = function(err) {
     return {
         contentType: 'text/html',
-        body: `<html><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,
+        body: `<html lang="no"><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,
     };
 };
