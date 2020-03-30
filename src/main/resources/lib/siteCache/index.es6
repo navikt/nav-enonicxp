@@ -121,10 +121,7 @@ function wipeOnChange(path) {
 
 function wipeAll() {
     setEtag();
-    wipe('decorator')();
-    wipe('azList')();
-    wipe('paths')();
-    wipe('redirects')();
+    Object.keys(caches).forEach(name => wipe(name)());
 }
 
 function getSome(cacheStoreName) {
