@@ -53,15 +53,20 @@ function nodeListenerCallback(event) {
 
 function activateEventListener() {
     if (!hasSetupListeners) {
-        log.info(`Started: textCleaner eventListener on node.updated`);
-        libs.event.listener({
-            type: 'node.updated',
-            localOnly: true,
-            callback: nodeListenerCallback,
-        });
-        hasSetupListeners = true;
+        try {
+            libs.event.listener({
+                type: 'node.updated',
+                localOnly: true,
+                callback: nodeListenerCallback,
+            });
+            log.info('Started: textCleaner eventListener on node.updated');
+            hasSetupListeners = true;
+        } catch (e) {
+            log.info('Failed to start: textCleaner eventListener on node.updated');
+            log.error(e);
+        }
     } else {
-        log.info('text cleaner already started');
+        log.info('Eventlistener textcleaner already started');
     }
 }
 

@@ -219,22 +219,34 @@ function nodeListenerCallback(event) {
 function activateEventListener() {
     wipeAll();
     if (!hasSetupListeners) {
-        libs.event.listener({
-            type: 'node.*',
-            localOnly: false,
-            callback: nodeListenerCallback,
-        });
-        libs.event.listener({
-            type: 'custom.prepublish',
-            localOnly: false,
-            callback: e => {
-                e.data.prepublished.forEach(el => {
-                    wipeOnChange(el._path);
-                    clearReferences(el._id, el._path, 0);
+        try {
+            libs.event.listener({
+                type: 'node.*',
+                localOnly: false,
+                callback: nodeListenerCallback,
+            });
+            log.info('Started: Cache eventListener on node.updated');
+            try {
+                libs.event.listener({
+                    type: 'custom.prepublish',
+                    localOnly: false,
+                    callback: e => {
+                        e.data.prepublished.forEach(el => {
+                            wipeOnChange(el._path);
+                            clearReferences(el._id, el._path, 0);
+                        });
+                    },
                 });
-            },
-        });
-        hasSetupListeners = true;
+                log.info('Started: Cache eventListener on custom.prepublish');
+                hasSetupListeners = true;
+            } catch (e) {
+                log.info('Failed to start: Cache eventListener on custom.prepublish');
+                log.error(e);
+            }
+        } catch (e) {
+            log.info('Failed to start: Cache eventListener on node.updated');
+            log.error(e);
+        }
     } else {
         log.info('Cache node listeners already running');
     }
