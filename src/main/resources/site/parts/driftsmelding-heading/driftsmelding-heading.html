@@ -1,6 +1,24 @@
-<div id="driftsmelding" class="service-notification">
-    <section>
-        <h2 data-th-text="${heading}"></h2>
-        <a data-th-href="${linkurl}" data-th-text="${linktext}"></a>
+<div  id="driftsmelding" class="service-notification breaking-news">
+    <section data-th-if="prodStatus">
+        <h2 data-th-text="${prodStatus.heading}"></h2>
+        <a data-th-href="${prodStatus.url}" data-th-text="${prodStatus.linktext}"></a>
+    </section>
+    <section class="breaking-news inner-row" data-th-if="${infoMsg}">
+        <a data-th-href="${infoMsg.url}"
+           class="lenkepanel kampanje lenkepanel--border"
+        >
+            <div class="kampanje-varsel__ikon-rad">
+                <div class="kampanje-varsel__pulse"></div>
+                <div class="kampanje-varsel__sirkel"></div>
+            </div>
+            <div class="kampanje-varsel__tekst-rad">
+                <h2 class="typo-systemtittel lenkepanel__heading">
+                    [[${infoMsg.heading}]]
+                </h2>
+                <p data-th-utext="${infoMsg.text}" class="typo-normal kampanje-varsel__ingress">
+                </p>
+            </div>
+            <span class="lenkepanel__indikator"></span>
+        </a>
     </section>
 </div>

@@ -15,7 +15,14 @@
           </config>
           <default>site</default>
         </input>
-
+        <input name="title" type="TextLine">
+          <label>Tittel (overstyrer sidetittel fra valgt innhold)</label>
+          <help-text>
+            Fylles ut hvis du vil overstyre visning av tittel fra innhold
+            det henvises til.
+          </help-text>
+          <occurrences maximum="1" minimum="0"/>
+        </input>
         <input type="HtmlArea" name="text">
           <label>Brødtekst</label>
           <help-text>Kort og konsis meldingstekst.</help-text>
@@ -25,8 +32,19 @@
           <label>Type</label>
           <config>
             <option value="prodstatus">Driftsmelding</option>
+            <option value="info">Kritisk informasjon</option>
+            <option value="warning">Advarsel</option>
           </config>
           <default>prodstatus</default>
+        </input>
+        <input name="target" type="ContentSelector">
+          <label>Innhold det skal henvises til</label>
+          <help-text>Velg innhold som det skal henvises til</help-text>
+          <occurrences maximum="1" minimum="0"/>
+          <config>
+            <allowPath>/www.nav.no/*</allowPath>
+            <showStatus>true</showStatus>
+          </config>
         </input>
       </items>
     </field-set>
