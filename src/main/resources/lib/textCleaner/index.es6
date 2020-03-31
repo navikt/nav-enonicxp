@@ -53,15 +53,15 @@ function nodeListenerCallback(event) {
 
 function activateEventListener() {
     if (!hasSetupListeners) {
-        log.info(`Started: textCleaner eventListener on node.updated`);
         libs.event.listener({
             type: 'node.updated',
             localOnly: true,
             callback: nodeListenerCallback,
         });
+        log.info('Started: textCleaner eventListener on node.updated');
         hasSetupListeners = true;
     } else {
-        log.info('text cleaner already started');
+        log.info('Eventlistener textcleaner already started');
     }
 }
 
