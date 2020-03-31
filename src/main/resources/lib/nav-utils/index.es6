@@ -22,10 +22,12 @@ function getExtensionForImage(contentId) {
         'image/svg+xml': 'svg',
     };
     const content = libs.content.get({ key: contentId });
-    const imageInfo = content.x && content.x.media ? content.x.media.imageInfo : false;
+    if (content) {
+        const imageInfo = content.x && content.x.media ? content.x.media.imageInfo : false;
 
-    if (imageInfo) {
-        return mimeTypes[imageInfo.contentType] || '';
+        if (imageInfo) {
+            return mimeTypes[imageInfo.contentType] || '';
+        }
     }
     return '';
 }
