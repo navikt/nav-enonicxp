@@ -321,6 +321,11 @@ function unicodeLiteral(str) {
     return result;
 }
 
+/* Returns the content path of the site */
+function getSitePath() {
+    return libs.portal.getSite()._path + '/';
+}
+
 module.exports = {
     dateTimePublished,
     fixDateFormat,
@@ -338,4 +343,5 @@ module.exports = {
     getExtensionForImage,
     sortContents,
     unicodeLiteral,
+    getSitePath,
 };
