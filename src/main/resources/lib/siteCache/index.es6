@@ -5,6 +5,10 @@ const libs = {
     content: require('/lib/xp/content'),
     common: require('/lib/xp/common'),
 };
+
+// Define site path as a literal, because portal.getSite() cant´t be called from main.js
+const sitePath = '/www.nav.no/';
+
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
@@ -41,7 +45,7 @@ function getPath(path, type) {
     if (!path) {
         return false;
     }
-    const arr = path.split('/www.nav.no/');
+    const arr = path.split(sitePath);
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
     let key = arr[arr.length - 1];
@@ -82,7 +86,6 @@ function wipeOnChange(path) {
     if (!path) {
         return false;
     }
-
     const w = wipe('paths');
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
@@ -100,7 +103,9 @@ function wipeOnChange(path) {
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');
     }
-    log.info(`WIPED: [${path}] (${caches.paths.getSize()})`);
+    // Log path without leading /www.nav.no or leading /content/www.nav.no
+    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
+    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()})`);
 
     if (path.indexOf('/megamenu/') !== -1) {
         wipe('decorator')();

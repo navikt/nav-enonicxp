@@ -323,6 +323,18 @@ function unicodeLiteral(str) {
     return result;
 }
 
+/* Returns the content path of the site */
+function getSitePath() {
+    try {
+        const siteInfo = libs.portal.getSite();
+        return siteInfo && siteInfo._path ? siteInfo._path + '/' : '';
+    } catch (e) {
+        log.error('Kan ikke hente ut site-info');
+        log.error(e);
+        return '';
+    }
+}
+
 module.exports = {
     dateTimePublished,
     fixDateFormat,
@@ -340,4 +352,5 @@ module.exports = {
     getExtensionForImage,
     sortContents,
     unicodeLiteral,
+    getSitePath,
 };
