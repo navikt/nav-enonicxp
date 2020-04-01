@@ -327,8 +327,8 @@ function getSitePath() {
         const siteInfo = libs.portal.getSite();
         return siteInfo && siteInfo._path ? siteInfo._path + '/' : '';
     } catch (e) {
-        log.info('Kan ikke hente ut site-info');
-        log.info(e);
+        log.error('Kan ikke hente ut site-info');
+        log.error(e);
         return '';
     }
 }
