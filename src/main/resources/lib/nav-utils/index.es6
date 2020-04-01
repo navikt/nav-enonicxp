@@ -324,8 +324,8 @@ function unicodeLiteral(str) {
 /* Returns the content path of the site */
 function getSitePath() {
     try {
-        const path = libs.portal.getSite()._path;
-        return path ? path + '/' : '';
+        const siteInfo = libs.portal.getSite();
+        return siteInfo && siteInfo._path ? siteInfo._path + '/' : '';
     } catch (e) {
         log.info('Kan ikke hente ut site-info');
         log.info(e);
