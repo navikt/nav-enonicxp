@@ -323,7 +323,14 @@ function unicodeLiteral(str) {
 
 /* Returns the content path of the site */
 function getSitePath() {
-    return libs.portal.getSite()._path + '/';
+    try {
+        const path = libs.portal.getSite()._path;
+        return path ? path + '/' : '';
+    } catch (e) {
+        log.info('Kan ikke hente ut site-info');
+        log.info(e);
+        return '';
+    }
 }
 
 module.exports = {
