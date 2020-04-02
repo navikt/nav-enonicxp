@@ -22,10 +22,12 @@ function getExtensionForImage(contentId) {
         'image/svg+xml': 'svg',
     };
     const content = libs.content.get({ key: contentId });
-    const imageInfo = content.x && content.x.media ? content.x.media.imageInfo : false;
+    if (content) {
+        const imageInfo = content.x && content.x.media ? content.x.media.imageInfo : false;
 
-    if (imageInfo) {
-        return mimeTypes[imageInfo.contentType] || '';
+        if (imageInfo) {
+            return mimeTypes[imageInfo.contentType] || '';
+        }
     }
     return '';
 }
@@ -321,6 +323,18 @@ function unicodeLiteral(str) {
     return result;
 }
 
+/* Returns the content path of the site */
+function getSitePath() {
+    try {
+        const siteInfo = libs.portal.getSite();
+        return siteInfo && siteInfo._path ? siteInfo._path + '/' : '';
+    } catch (e) {
+        log.error('Kan ikke hente ut site-info');
+        log.error(e);
+        return '';
+    }
+}
+
 module.exports = {
     dateTimePublished,
     fixDateFormat,
@@ -338,4 +352,5 @@ module.exports = {
     getExtensionForImage,
     sortContents,
     unicodeLiteral,
+    getSitePath,
 };

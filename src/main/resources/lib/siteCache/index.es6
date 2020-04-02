@@ -5,6 +5,10 @@ const libs = {
     content: require('/lib/xp/content'),
     common: require('/lib/xp/common'),
 };
+
+// Define site path as a literal, because portal.getSite() cant´t be called from main.js
+const sitePath = '/www.nav.no/';
+
 const oneDay = 3600 * 24;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
@@ -41,7 +45,7 @@ function getPath(path, type) {
     if (!path) {
         return false;
     }
-    const arr = path.split('/www.nav.no/');
+    const arr = path.split(sitePath);
     // remove / from start of key. Because of how the vhost changes the url on the server,
     // we won't have www.nav.no in the path and the key ends up starting with a /
     let key = arr[arr.length - 1];
@@ -71,10 +75,9 @@ function wipe(name) {
     return key => {
         if (!key) {
             caches[name].clear();
-            log.info(`Removed [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
+            log.info(`WIPE: [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         } else {
             caches[name].remove(key);
-            log.info(`Removed [${key}] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
         }
     };
 }
@@ -83,7 +86,6 @@ function wipeOnChange(path) {
     if (!path) {
         return false;
     }
-
     const w = wipe('paths');
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
@@ -101,6 +103,10 @@ function wipeOnChange(path) {
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');
     }
+    // Log path without leading /www.nav.no or leading /content/www.nav.no
+    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
+    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()})`);
+
     if (path.indexOf('/megamenu/') !== -1) {
         wipe('decorator')();
     }
@@ -120,23 +126,14 @@ function wipeOnChange(path) {
 
 function wipeAll() {
     setEtag();
-    wipe('decorator')();
-    wipe('azList')();
-    wipe('paths')();
+    Object.keys(caches).forEach(name => wipe(name)());
 }
 
 function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
         if (branch !== 'draft' || cacheStoreName === 'decorator') {
-            return caches[cacheStoreName].get(getPath(key, type), () => {
-                log.info(
-                    `Store [${getPath(key, type)}] in [${cacheStoreName} (${caches[
-                        cacheStoreName
-                    ].getSize()})] on [${myHash}]`
-                );
-                return f(params);
-            });
+            return caches[cacheStoreName].get(getPath(key, type), () => f(params));
         }
         return f(params);
     };
@@ -224,6 +221,7 @@ function activateEventListener() {
             localOnly: false,
             callback: nodeListenerCallback,
         });
+        log.info('Started: Cache eventListener on node.updated');
         libs.event.listener({
             type: 'custom.prepublish',
             localOnly: false,
@@ -234,6 +232,7 @@ function activateEventListener() {
                 });
             },
         });
+        log.info('Started: Cache eventListener on custom.prepublish');
         hasSetupListeners = true;
     } else {
         log.info('Cache node listeners already running');
@@ -248,9 +247,6 @@ module.exports = {
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
     activateEventListener,
-    wipeAll,
     stripPath: getPath,
     etag: getEtag,
-    wipeOnChange,
-    clearReferences,
 };
