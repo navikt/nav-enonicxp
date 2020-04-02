@@ -94,8 +94,6 @@ const showMessages = () => {
             }
         );
 
-    log.info(JSON.stringify(messages, null, 4));
-    log.info(`length: ${messages.items.length}`);
     if (messages.items.length > 0) {
         body = libs.thymeleaf.render(view, messages);
     }
