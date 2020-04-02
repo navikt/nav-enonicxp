@@ -1,0 +1,9 @@
+<macro>
+    <display-name>Sett inn oransje varselikon</display-name>
+    <description>Sett inn oransje varselikon i brødteksten</description>
+    <form>
+        <input name="varselikonOransje" type="TextLine">
+            <label>Teksten som skal legges inn</label>
+        </input>
+    </form>
+</macro>
