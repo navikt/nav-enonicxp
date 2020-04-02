@@ -19,12 +19,9 @@ const navRepo = libs.node.connect({
     },
     pricipals: ['role:system.admin'],
 });
-
 let prevTestDate = new Date();
 let taskHasStarted = false;
-
 const TIME_BETWEEN_CHECKS = 60000;
-// const PADDING = 10000;
 const TASK_DESCRIPTION = 'CacheInvalidatorForTimedPublishingEvents';
 exports.taskDescription = TASK_DESCRIPTION;
 
@@ -169,7 +166,7 @@ function removeExpiredContentFromMaster(expiredContent) {
     }
 }
 
-function setupTask(applicationIsRunning) {
+function runTask(applicationIsRunning) {
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
@@ -234,15 +231,15 @@ function setupTask(applicationIsRunning) {
         },
     });
 }
-exports.setupTask = setupTask;
+exports.runTask = runTask;
 
-exports.start = function(appIsRunning) {
+exports.start = appIsRunning => {
+    log.info(`Starting: ${TASK_DESCRIPTION}`);
     if (!taskHasStarted && appIsRunning) {
         taskHasStarted = true;
-        const currentTaskId = setupTask(appIsRunning);
-        return currentTaskId;
+        return runTask(appIsRunning);
     }
 
-    log.info('unpublish task already running or app has shut down');
+    log.info(`Task ${TASK_DESCRIPTION} already running or app has shut down`);
     return false;
 };

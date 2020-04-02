@@ -10,85 +10,6 @@ const repo = libs.node.connect({
     principals: ['role:system.admin'],
 });
 
-exports.handle = function(socket) {
-    const elements = createElements();
-    socket.emit('newTask', elements);
-
-    socket.on('do', () => {
-        libs.tools.runInContext(socket, createTemplates);
-    });
-};
-
-function createElements() {
-    return {
-        isNew: true,
-        head: 'Lag templates',
-        body: {
-            elements: [
-                {
-                    tag: 'div',
-                    tagClass: ['row'],
-                    elements: [
-                        {
-                            tag: 'p',
-                            text: 'Lag nye sidemaler',
-                        },
-                        {
-                            tag: 'button',
-                            text: 'Lag',
-                            action: 'do',
-                            id: 'testid',
-                            tagClass: ['button', 'is-info'],
-                        },
-                        {
-                            tag: 'div',
-                            update: 'templateUpdate',
-                        },
-                    ],
-                },
-            ],
-        },
-    };
-}
-
-function createTemplates(socket) {
-    templates.forEach(function(value) {
-        let parent = libs.content.get({
-            key: value.content.parentPath,
-        });
-        if (!parent) {
-            parent = libs.content.create({
-                displayName: 'Templates',
-                parentPath: value.content.parentPath.replace('_templates/', ''),
-                name: '_templates',
-                contentType: 'portal:template-folder',
-                data: {},
-            });
-        }
-        const exists = libs.content.get({
-            key:
-                value.content.parentPath +
-                value.content.displayName
-                    .toLowerCase()
-                    .replace(/ - /g, '-')
-                    .replace(/ /g, '-')
-                    .replace(/ø/g, 'o'),
-        });
-        const elem = exists || libs.content.create(value.content);
-        repo.modify({
-            key: elem._id,
-            editor: c => {
-                c.components = value.components;
-                if (exists) {
-                    c.data = value.content.data;
-                }
-                return c;
-            },
-        });
-        socket.emit('templateUpdate', elem.displayName + ' created');
-    });
-}
-
 const tavleListePage = [
     {
         type: 'page',
@@ -812,7 +733,6 @@ const officeInformationPage = [
         },
     },
 ];
-
 const templates = [
     {
         content: {
@@ -988,3 +908,82 @@ const templates = [
         components: officeInformationPage,
     },
 ];
+
+function createElements() {
+    return {
+        isNew: true,
+        head: 'Lag templates',
+        body: {
+            elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag nye sidemaler',
+                        },
+                        {
+                            tag: 'button',
+                            text: 'Lag',
+                            action: 'do',
+                            id: 'testid',
+                            tagClass: ['button', 'is-info'],
+                        },
+                        {
+                            tag: 'div',
+                            update: 'templateUpdate',
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+}
+
+function createTemplates(socket) {
+    templates.forEach(function(value) {
+        const parent = libs.content.get({
+            key: value.content.parentPath,
+        });
+        if (!parent) {
+            libs.content.create({
+                displayName: 'Templates',
+                parentPath: value.content.parentPath.replace('_templates/', ''),
+                name: '_templates',
+                contentType: 'portal:template-folder',
+                data: {},
+            });
+        }
+        const exists = libs.content.get({
+            key:
+                value.content.parentPath +
+                value.content.displayName
+                    .toLowerCase()
+                    .replace(/ - /g, '-')
+                    .replace(/ /g, '-')
+                    .replace(/ø/g, 'o'),
+        });
+        const elem = exists || libs.content.create(value.content);
+        repo.modify({
+            key: elem._id,
+            editor: c => {
+                return {
+                    ...c,
+                    components: value.components,
+                    data: exists ? value.content.data : c.data,
+                };
+            },
+        });
+        socket.emit('templateUpdate', elem.displayName + ' created');
+    });
+}
+
+exports.handle = function(socket) {
+    const elements = createElements();
+    socket.emit('newTask', elements);
+
+    socket.on('do', () => {
+        libs.tools.runInContext(socket, createTemplates);
+    });
+};

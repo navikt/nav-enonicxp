@@ -3,8 +3,9 @@
 </h1>
 
 <section class="breaking-news inner-row" data-th-if="${breakingNews}">
-    <a data-th-href="${breakingNews.url}"
+    <a data-ga="kampanje-lenkepanel"
        class="lenkepanel kampanje lenkepanel--border"
+       data-th-href="${breakingNews.url}"
     >
         <div class="kampanje-varsel__ikon-rad">
             <div class="kampanje-varsel__pulse"></div>
@@ -14,11 +15,14 @@
             <h2 class="typo-systemtittel lenkepanel__heading">
                 [[${breakingNews.title}]]
             </h2>
-            <p class="typo-normal kampanje-varsel__ingress">
+            <p data-th-if="${breakingNews.ingress}"
+               class="typo-normal kampanje-varsel__ingress"
+            >
                 [[${breakingNews.ingress}]]
             </p>
             <p data-th-if="${breakingNews.updated}"
-               class="typo-undertekst kampanje-varsel__dato-tid">
+               class="typo-undertekst kampanje-varsel__dato-tid"
+            >
                 [[${breakingNews.updated}]]
             </p>
         </div>
