@@ -7,6 +7,11 @@ const libs = {
     cache: require('/lib/siteCache'),
 };
 const view = resolve('driftsmelding-heading.html');
+const htmlClasses = {
+    info: 'info',
+    prodstatus: 'status',
+    warning: 'warning',
+};
 
 const getLinkText = (message, target, language) => {
     const defaultText = libs.lang.parseBundle(language).message.linktext;
@@ -18,13 +23,10 @@ const getLinkText = (message, target, language) => {
 };
 
 const getHeading = (message, target) => {
-    if (message.data.type === 'info' || message.data.type === 'warning') {
-        if (target) {
-            return message.data.title || target.displayName;
-        }
-        return message.data.title || message.displayName;
+    if (target) {
+        return message.data.title || target.displayName;
     }
-    return message.displayName;
+    return message.data.title || message.displayName;
 };
 
 const getText = (message, target) => {
@@ -44,6 +46,7 @@ const constructMessage = (message, language) => {
         const url = libs.portal.pageUrl({
             path: targetArticle ? targetArticle._path : message._path,
         });
+
         const linktext = getLinkText(message, targetArticle, language);
         const heading = getHeading(message, targetArticle);
         const text = getText(message, targetArticle);
@@ -52,6 +55,8 @@ const constructMessage = (message, language) => {
             url,
             linktext,
             text,
+            publishedDate: message.publish.from,
+            type: htmlClasses[message.data.type] || '',
         };
     }
     return false;
@@ -59,6 +64,9 @@ const constructMessage = (message, language) => {
 
 const showMessages = () => {
     let body = null;
+    const content = libs.portal.getContent();
+    const language = content.language || 'no';
+
     const result = libs.content.getChildren({
         key: '/www.nav.no/no/driftsmeldinger',
         start: 0,
@@ -66,40 +74,30 @@ const showMessages = () => {
         sort: 'publish.from DESC',
     });
 
-    let hasMessages = false;
     const messages = result.hits
         .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
         .reduce(
             (agg, item) => {
-                agg[item.data.type].push(item);
-                hasMessages = true;
-                return agg;
+                const latestPublishedDate =
+                    agg.latestPublishedDate && agg.latestPublishedDate > item.publish.from
+                        ? agg.latestPublishedDate
+                        : item.publish.from;
+
+                // massage hit to a message object
+                agg.items.push(constructMessage(item, language));
+
+                return { ...agg, latestPublishedDate };
             },
             {
-                prodstatus: [],
-                info: [],
-                error: [],
+                items: [],
+                latestPublishedDate: '',
             }
         );
 
-    if (hasMessages) {
-        const content = libs.portal.getContent();
-        const language = content.language || 'no';
-
-        const prodStatus =
-            messages.prodstatus.length >= 1
-                ? constructMessage(messages.prodstatus[0], language)
-                : false;
-
-        const infoMsg =
-            messages.info.length >= 1 ? constructMessage(messages.info[0], language) : false;
-
-        const model = {
-            prodStatus,
-            infoMsg,
-        };
-
-        body = libs.thymeleaf.render(view, model);
+    log.info(JSON.stringify(messages, null, 4));
+    log.info(`length: ${messages.items.length}`);
+    if (messages.items.length > 0) {
+        body = libs.thymeleaf.render(view, messages);
     }
 
     return {

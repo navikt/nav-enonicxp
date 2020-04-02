@@ -3353,7 +3353,33 @@ body > img[src*="nav.tns-cs.net"] {
 .service-notification {
     text-align: center;
     border-bottom: 1px solid #d1d1d1;
-    padding: 10px 0
+    padding: 10px 0;
+    display: flex;
+    align-items: flex-start;
+    background-color: #CCE1F3;
+}
+
+.service-notification__header{
+    position: relative;
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    min-width: 50px;
+    min-height: 50px;
+    margin: 15px;
+}
+@media (min-width: 38.75em) {
+    .service-notification__header {
+        min-width: 72px;
+        min-height: 60px;
+    }
+}
+.service-notification-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .service-notification h2 {
@@ -3361,13 +3387,12 @@ body > img[src*="nav.tns-cs.net"] {
     margin: 0 14px 0 0;
     text-transform: none;
     font-size: 1.0675rem;
-    color: #c30000;
     font-family: Modus, Arial;
     font-weight: 600
 }
 
 .service-notification a {
-    display: inline-block;
+    display: inline-flex;
     position: relative;
     font-size: 1.0675rem;
     font-family: Modus, Arial
