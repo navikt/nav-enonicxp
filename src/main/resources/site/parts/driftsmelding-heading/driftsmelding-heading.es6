@@ -8,9 +8,9 @@ const libs = {
 };
 const view = resolve('driftsmelding-heading.html');
 const htmlClasses = {
-    info: 'info',
     prodstatus: 'status',
     warning: 'warning',
+    info: 'info',
 };
 
 const getLinkText = (message, target, language) => {
@@ -73,7 +73,6 @@ const showMessages = () => {
         count: 10,
         sort: 'publish.from DESC',
     });
-
     const messages = result.hits
         .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
         .reduce(
@@ -93,7 +92,6 @@ const showMessages = () => {
                 latestPublishedDate: '',
             }
         );
-
     if (messages.items.length > 0) {
         body = libs.thymeleaf.render(view, messages);
     }
@@ -104,7 +102,7 @@ const showMessages = () => {
     };
 };
 
-const handleGet = req => {
+const handleGet = () => {
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // alltid vise en driftsmelding
     // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer return

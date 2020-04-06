@@ -1,23 +1,29 @@
-<div data-th-if="${items}" id="driftsmelding" data-th-attr="data-published=${latestPublishedDate}" class="service-notification">
-    <div class="service-notification__header" id="notification-header">
-        <div class="kampanje-varsel__ikon-rad">
-            <div class="kampanje-varsel__pulse"></div>
-            <div class="kampanje-varsel__sirkel"></div>
-        </div>
-        <h2>Viktig informasjon fra NAV:</h2>
-    </div>
-    <div class="service-notification-container" id="notification-messages">
-        <section data-th-classappend="${message.type}" class="service-notification__message" data-th-each="message : ${items}">
-            <a data-th-href="${message.url}"
-               class="lenkepanel kampanje lenkepanel--border"
+<section class="container notifications">
+    <div data-th-if="${items}" data-th-attr="data-published=${latestPublishedDate}" class="lenkepanel-container">
+        <div data-th-each="message : ${items}" data-th-remove="tag">
+            <a data-th-classappend="${message.type}"
+               class="lenkepanel lenkepanel--border"
+               data-th-href="${message.url}"
             >
-                <div class="kampanje-varsel__tekst-rad">
-                    <h2 class="typo-systemtittel lenkepanel__heading">
+                <div class="lenkepanel-ikon-col">
+                    <img data-th-if="${message.type != 'warning'}" data-th-src="xxx" />
+                    <div data-th-if="${message.type == 'warning'}" data-th-remove="tag">
+                        <div class="kampanje-varsel__pulse"></div>
+                        <div class="kampanje-varsel__sirkel"></div>
+                    </div>
+                </div>
+                <div class="lenkepanel-tekst-col">
+                    <h2 class="typo-element lenkepanel__heading">
                         [[${message.heading}]]
                     </h2>
+                    <p data-th-if="${message.published}"
+                       class="typo-undertekst"
+                    >
+                        [[${message.published}]]
+                    </p>
                 </div>
                 <span class="lenkepanel__indikator"></span>
             </a>
-        </section>
+        </div>
     </div>
-</div>
+</section>

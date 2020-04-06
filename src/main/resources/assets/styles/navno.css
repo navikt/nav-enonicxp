@@ -7514,6 +7514,11 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel--border.panel-interaktiv-mixin--hover {
     border: 1px solid #0067C5;
 }
+.lenkepanel-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -1rem;
+}
 .kampanje {
     display: flex;
     flex-direction: row;
@@ -7527,10 +7532,18 @@ div.placeholder .top-link-wrapper.sticky-top-link {
         margin: 1rem 0;
     }
 }
-.kampanje-varsel__ikon-rad {
+.lenkepanel-container .lenkepanel {
+    margin: 1rem 0 0 2%;
+    width: calc(50% - 2rem);
+}
+@media (max-width: 48em) {
+    .lenkepanel-container .lenkepanel {
+        width: 100%
+    }
+}
+.kampanje-varsel__ikon-rad, .lenkepanel-ikon-col {
     position: relative;
     display: flex;
-    align-self: flex-start;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -7538,7 +7551,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     min-height: 50px;
 }
 @media (min-width: 38.75em) {
-    .kampanje-varsel__ikon-rad {
+    .kampanje-varsel__ikon-rad, .lenkepanel-ikon-col {
         min-width: 72px;
         min-height: 60px;
     }
@@ -7567,15 +7580,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     animation-iteration-count: infinite;
     animation-timing-function: ease-out;
 }
-.kampanje-varsel__tekst-rad {
+.kampanje-varsel__tekst-rad, .lenkepanel-tekst-col {
     flex-grow: 1;
-    padding: 0.75rem 0.5rem 0.5rem 0.5rem;
     text-align: left;
-}
-@media (min-width: 38.75em) {
-    .kampanje-varsel__tekst-rad {
-        padding: 1rem;
-    }
 }
 .kampanje-varsel__ingress {
     margin-top: 0.75rem;
