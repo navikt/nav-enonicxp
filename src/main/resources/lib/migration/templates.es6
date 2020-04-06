@@ -477,8 +477,18 @@ const searchResult = [
         },
     },
     {
-        type: 'layout',
+        type: 'part',
         path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:driftsmelding-heading',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:search',
             config: {
@@ -488,7 +498,7 @@ const searchResult = [
     },
     {
         type: 'part',
-        path: '/main/1/searchbar/0',
+        path: '/main/2/searchbar/0',
         part: {
             descriptor: 'no.nav.navno:searchbar',
             config: {
@@ -498,7 +508,7 @@ const searchResult = [
     },
     {
         type: 'part',
-        path: '/main/1/result/0',
+        path: '/main/2/result/0',
         part: {
             descriptor: 'no.nav.navno:searchresult',
             config: {
@@ -739,6 +749,7 @@ const officeInformationPage = [
         },
     },
 ];
+
 const templates = [
     {
         content: {
@@ -813,19 +824,6 @@ const templates = [
         content: {
             displayName: 'Page - Ekstra Stor Tabell',
             parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:large-table',
-            },
-        },
-        components: largeTable,
-    },
-    {
-        content: {
-            displayName: 'Page - Ekstra Stor Tabell',
-            parentPath: '/content/_templates/',
             requireValid: true,
             contentType: 'portal:page-template',
             branch: 'draft',

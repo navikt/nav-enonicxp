@@ -8,11 +8,15 @@ const libs = {
 };
 const view = resolve('driftsmelding-heading.html');
 const htmlClasses = {
-    prodstatus: 'status',
     warning: 'warning',
+    prodstatus: 'status',
     info: 'info',
 };
-
+const icon = {
+    warning: null,
+    prodstatus: 'alertstripe__ikon_advarsel.svg',
+    info: 'alertstripe__ikon_info.svg',
+};
 const getLinkText = (message, target, language) => {
     const defaultText = libs.lang.parseBundle(language).message.linktext;
 
@@ -49,9 +53,16 @@ const constructMessage = (message, language) => {
 
         const linktext = getLinkText(message, targetArticle, language);
         const heading = getHeading(message, targetArticle);
+        const iconUrl =
+            icon[message.data.type] &&
+            libs.portal.assetUrl({
+                path: 'img/navno/' + icon[message.data.type],
+                type: 'absolute',
+            });
         const text = getText(message, targetArticle);
         return {
             heading,
+            iconUrl,
             url,
             linktext,
             text,

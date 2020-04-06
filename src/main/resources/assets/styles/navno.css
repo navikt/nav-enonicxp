@@ -7435,6 +7435,57 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     font-weight: 400
 }
 
+.alertstripe {
+    background-color: #FFF;
+    padding: 1rem 1rem 1rem 1rem;
+    display: flex;
+    align-content: center;
+    border-radius: 0.25rem;
+    color: #3E3832;
+}
+
+.alertstripe--info {
+    border: 1px solid #5690a2;
+    background-color: #e0f5fb;
+}
+
+.alertstripe--advarsel {
+    border: 1px solid #d87f0a;
+    background-color: #ffe9cc;
+}
+
+.alertstripe__ikon {
+    margin-right: 0.75rem;
+    display: flex;
+    top: 1rem;
+    flex-shrink: 0;
+}
+
+.alertstripe__tekst {
+    margin: auto 0;
+    display: block;
+    flex: 1;
+    font-size: 1rem;
+}
+
+@media (min-width: 38.75em) {
+    .alertstripe__tekst {
+        font-size: 0.875rem;
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+    white-space: nowrap;
+}
+
 .lenkepanel {
     background-color: #FFF;
     padding: 1rem;
