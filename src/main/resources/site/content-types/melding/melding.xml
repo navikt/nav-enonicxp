@@ -11,21 +11,20 @@
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <option value="site">På nettsidene NAV.no</option>
-                        <option value="global">Over alt i NAV (vises i Dekoratøren)</option>
                     </config>
                     <default>site</default>
                 </input>
                 <input type="RadioButton" name="type">
                     <label>Type</label>
                     <config>
-                        <option value="prodstatus">Driftsmelding</option>
-                        <option value="warning">Kritisk informasjon</option>
+                        <option value="prodstatus">Driftsmelding (brukes av Ops)</option>
                         <option value="info">Viktig informasjon</option>
+                        <option value="warning">Kritisk informasjon</option>
                     </config>
                     <default>prodstatus</default>
                 </input>
                 <input name="title" type="TextLine">
-                    <label>Tittel (overstyrer sidetittel fra ev valgt innhold)</label>
+                    <label>Tittel (overstyrer sidetittel fra eventuelt valgt innhold)</label>
                     <help-text>
                         Fylles ut hvis du vil overstyre visning av tittel fra innhold
                         det henvises til.
@@ -33,12 +32,12 @@
                     <occurrences maximum="1" minimum="0"/>
                 </input>
                 <input type="HtmlArea" name="text">
-                    <label>Brødtekst for Driftsmelding</label>
+                    <label>Brødtekst melding (brukes ikke hvis det henvises til annet innhold)</label>
                     <help-text>Kort og konsis meldingstekst.</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
                 <input name="target" type="ContentSelector">
-                    <label>Innhold det skal henvises til</label>
+                    <label>Innhold det eventuelt skal henvises til</label>
                     <help-text>Velg innhold som det skal henvises til</help-text>
                     <occurrences maximum="1" minimum="0"/>
                     <config>

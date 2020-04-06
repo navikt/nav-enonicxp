@@ -82,7 +82,7 @@ const showMessages = () => {
         key: '/www.nav.no/no/driftsmeldinger',
         start: 0,
         count: 10,
-        sort: 'publish.from DESC',
+        sort: '_manualordervalue DESC',
     });
     const messages = result.hits
         .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
