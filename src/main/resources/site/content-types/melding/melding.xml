@@ -6,7 +6,7 @@
         <field-set name="melding">
             <label>Melding</label>
             <items>
-                <input type="RadioButton" name="exposureLevel">
+                <input name="exposureLevel" type="RadioButton">
                     <label>Hvor skal meldingen vises?</label>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
@@ -14,7 +14,7 @@
                     </config>
                     <default>site</default>
                 </input>
-                <input type="RadioButton" name="type">
+                <input name="type" type="RadioButton">
                     <label>Type</label>
                     <config>
                         <option value="prodstatus">Driftsmelding (brukes av Ops)</option>
@@ -29,6 +29,17 @@
                         Fylles ut hvis du vil overstyre visning av tittel fra innhold
                         det henvises til.
                     </help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="showDescription" type="CheckBox">
+                    <label>Vis beskrivelse/ingress</label>
+                    <help-text>Kryss av for å vise en beskrivelse eller ingress i lenkepanelet</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <mixin name="ingress"/>
+                <input name="showUpdated" type="CheckBox">
+                    <label>Vis oppdateringstidspunkt</label>
+                    <help-text>Kryss av for å vise oppdateringstidspunktet i lenkepanelet</help-text>
                     <occurrences maximum="1" minimum="0"/>
                 </input>
                 <input type="HtmlArea" name="text">
