@@ -70,7 +70,6 @@ const constructMessage = (message, language) => {
             messageProps.icon &&
             libs.portal.assetUrl({
                 path: 'img/navno/' + messageProps.icon,
-                type: 'absolute',
             });
         return {
             heading,
