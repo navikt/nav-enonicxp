@@ -5,6 +5,7 @@ const libs = {
     context: require('/lib/xp/context'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/siteCache'),
+    navUtils: require('/lib/nav-utils'),
 };
 const view = resolve('driftsmelding-heading.html');
 const messagesProps = {
@@ -39,18 +40,20 @@ const getDescription = (message, target) => {
     return null;
 };
 
-const getUpdated = (message, target) => {
+const getUpdated = (message, target, language) => {
     if (message.data.showUpdated) {
-        if (target) {
-            return target.modifiedTime || null;
+        const updated = target ? target.modifiedTime : message.modifiedTime;
+        if (updated) {
+            return `Oppdatert: ${libs.navUtils.formatDateTime(updated, language)}`;
         }
-        return message.modifiedTime || null;
     }
     return null;
 };
 
 const constructMessage = message => {
     if (message && message.data) {
+        const content = libs.portal.getContent();
+        const language = content.language || 'no';
         const target = message.data.target
             ? libs.content.get({
                   key: message.data.target,
@@ -62,7 +65,7 @@ const constructMessage = message => {
         const messageProps = messagesProps[message.data.type];
         const heading = getHeading(message, target);
         const description = getDescription(message, target);
-        const updated = getUpdated(message, target);
+        const updated = getUpdated(message, target, language);
         const iconUrl =
             messageProps.icon &&
             libs.portal.assetUrl({
