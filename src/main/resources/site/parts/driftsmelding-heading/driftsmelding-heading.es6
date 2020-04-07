@@ -32,12 +32,14 @@ const getHeading = (message, target) => {
 
 const getDescription = (message, target) => {
     if (message.data.showDescription) {
-        if (target) {
-            return target.data.ingress || target.data.description || null;
+        if (message.data.ingress) {
+            return message.data.ingress;
         }
-        return message.data.ingress || null;
+        if (target && target.data) {
+            return target.data.ingress || target.data.description || '';
+        }
     }
-    return null;
+    return '';
 };
 
 const getUpdated = (message, target, language) => {
@@ -50,10 +52,8 @@ const getUpdated = (message, target, language) => {
     return null;
 };
 
-const constructMessage = message => {
+const constructMessage = (message, language) => {
     if (message && message.data) {
-        const content = libs.portal.getContent();
-        const language = content.language || 'no';
         const target = message.data.target
             ? libs.content.get({
                   key: message.data.target,
@@ -62,7 +62,7 @@ const constructMessage = message => {
         const url = libs.portal.pageUrl({
             path: target ? target._path : message._path,
         });
-        const messageProps = messagesProps[message.data.type];
+        const messageProps = messagesProps[message.data.type] || {};
         const heading = getHeading(message, target);
         const description = getDescription(message, target);
         const updated = getUpdated(message, target, language);
@@ -78,7 +78,7 @@ const constructMessage = message => {
             updated,
             url,
             iconUrl,
-            class: messageProps.class || '',
+            class: messageProps.class,
         };
     }
     return false;
@@ -86,6 +86,8 @@ const constructMessage = message => {
 
 const showMessages = () => {
     let body = null;
+    const content = libs.portal.getContent();
+    const language = content.language || 'no';
     const result = libs.content.getChildren({
         key: '/www.nav.no/no/driftsmeldinger',
         start: 0,
@@ -94,7 +96,7 @@ const showMessages = () => {
     });
     const messages = result.hits
         .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
-        .map(item => constructMessage(item));
+        .map(item => constructMessage(item, language));
 
     if (messages.length > 0) {
         body = libs.thymeleaf.render(view, {
