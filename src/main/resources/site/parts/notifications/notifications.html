@@ -1,0 +1,37 @@
+<section class="container notifications">
+    <div data-th-if="${messages}" class="lenkepanel-container">
+        <div data-th-each="message : ${messages}" data-th-remove="tag">
+            <a class="lenkepanel lenkepanel--border"
+               data-th-classappend="${message.class}"
+               data-ga="notifications"
+               data-th-href="${message.url}"
+            >
+                <div class="lenkepanel-ikon-col">
+                    <img data-th-if="${message.class != 'warning'}"
+                         data-th-src="${message.iconUrl}"
+                    />
+                    <div data-th-if="${message.class == 'warning'}" data-th-remove="tag">
+                        <div class="kampanje-varsel__pulse"></div>
+                        <div class="kampanje-varsel__sirkel"></div>
+                    </div>
+                </div>
+                <div class="lenkepanel-tekst-col">
+                    <h2 class="typo-element lenkepanel__heading">
+                        [[${message.heading}]]
+                    </h2>
+                    <p data-th-if="${message.description}"
+                       class="typo-normal"
+                    >
+                        [[${message.description}]]
+                    </p>
+                    <p data-th-if="${message.updated}"
+                       class="typo-undertekst"
+                    >
+                        [[${message.updated}]]
+                    </p>
+                </div>
+                <span class="lenkepanel__indikator"></span>
+            </a>
+        </div>
+    </div>
+</section>
