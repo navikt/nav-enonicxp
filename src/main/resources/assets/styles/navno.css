@@ -3350,68 +3350,6 @@ body > img[src*="nav.tns-cs.net"] {
     }
 }
 
-.service-notification {
-    text-align: center;
-    border-bottom: 1px solid #d1d1d1;
-    padding: 10px 0;
-    display: flex;
-    align-items: flex-start;
-    background-color: #CCE1F3;
-}
-
-.service-notification__header{
-    position: relative;
-    display: flex;
-    align-self: flex-start;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    min-width: 50px;
-    min-height: 50px;
-    margin: 15px;
-}
-@media (min-width: 38.75em) {
-    .service-notification__header {
-        min-width: 72px;
-        min-height: 60px;
-    }
-}
-.service-notification-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.service-notification h2 {
-    display: inline-block;
-    margin: 0 14px 0 0;
-    text-transform: none;
-    font-size: 1.0675rem;
-    font-family: Modus, Arial;
-    font-weight: 600
-}
-
-.service-notification a {
-    display: inline-flex;
-    position: relative;
-    font-size: 1.0675rem;
-    font-family: Modus, Arial
-}
-
-.service-notification a:first-of-type {
-    margin-right: 32px
-}
-
-@media (max-width: 47.99em) {
-    .service-notification {
-        padding: 0 15px
-    }
-
-    .service-notification h2 {
-        line-height: 1.7
-    }
-}
-
 a.knapp {
     display: inline-block;
     cursor: pointer
@@ -7591,6 +7529,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     .lenkepanel-container .lenkepanel {
         width: 100%
     }
+}
+.notifications .lenkepanel-container .lenkepanel {
+    padding: 0.75rem;
 }
 .kampanje-varsel__ikon-rad, .lenkepanel-ikon-col {
     position: relative;
