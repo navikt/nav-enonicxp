@@ -110,24 +110,23 @@ const showMessages = () => {
     };
 };
 
-const handleGet = () => {
+const handleGet = req => {
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // alltid vise en driftsmelding
-    // Midlertidig fix: Cacher aldri TODO: Sette tilbake når cache fungerer return
-    // libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () =>
-    // {
-    return libs.context.run(
-        {
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            user: {
-                login: 'su',
-                userStore: 'system',
+    return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
+        return libs.context.run(
+            {
+                repository: 'com.enonic.cms.default',
+                branch: 'master',
+                user: {
+                    login: 'su',
+                    userStore: 'system',
+                },
+                principals: ['role:system.admin'],
             },
-            principals: ['role:system.admin'],
-        },
-        showMessages
-    );
+            showMessages
+        );
+    });
 };
 
 exports.get = handleGet;
