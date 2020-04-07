@@ -7,7 +7,7 @@ const libs = {
     cache: require('/lib/siteCache'),
     navUtils: require('/lib/nav-utils'),
 };
-const view = resolve('driftsmelding-heading.html');
+const view = resolve('notifications.html');
 const messagesProps = {
     warning: {
         class: 'warning',

@@ -36,7 +36,7 @@ const tavleListePage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -120,7 +120,7 @@ const mainArticlePage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -214,7 +214,7 @@ const faqPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -308,7 +308,7 @@ const transportPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -382,7 +382,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -480,7 +480,7 @@ const searchResult = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -554,7 +554,7 @@ const publishingCalendarPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -628,7 +628,7 @@ const genericPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -702,7 +702,7 @@ const officeInformationPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
