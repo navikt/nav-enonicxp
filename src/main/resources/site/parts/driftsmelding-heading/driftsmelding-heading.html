@@ -21,6 +21,11 @@
                     <h2 class="typo-element lenkepanel__heading">
                         [[${message.heading}]]
                     </h2>
+                    <p data-th-if="${message.description}"
+                       class="typo-normal"
+                    >
+                        [[${message.description}]]
+                    </p>
                     <p data-th-if="${message.published}"
                        class="typo-undertekst"
                     >
