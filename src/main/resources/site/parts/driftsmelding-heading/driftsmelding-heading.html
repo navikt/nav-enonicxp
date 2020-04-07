@@ -1,18 +1,15 @@
 <section class="container notifications">
-    <div data-th-if="${items}"
-         data-th-attr="data-published=${latestPublishedDate}"
-         class="lenkepanel-container"
-    >
-        <div data-th-each="message : ${items}" data-th-remove="tag">
-            <a data-th-classappend="${message.type}"
+    <div data-th-if="${messages}" class="lenkepanel-container">
+        <div data-th-each="message : ${messages}" data-th-remove="tag">
+            <a data-th-classappend="${message.class}"
                class="lenkepanel lenkepanel--border"
                data-th-href="${message.url}"
             >
                 <div class="lenkepanel-ikon-col">
-                    <img data-th-if="${message.type != 'warning'}"
+                    <img data-th-if="${message.class != 'warning'}"
                          data-th-src="${message.iconUrl}"
                     />
-                    <div data-th-if="${message.type == 'warning'}" data-th-remove="tag">
+                    <div data-th-if="${message.class == 'warning'}" data-th-remove="tag">
                         <div class="kampanje-varsel__pulse"></div>
                         <div class="kampanje-varsel__sirkel"></div>
                     </div>
