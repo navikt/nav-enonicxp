@@ -1,0 +1,9 @@
+<macro>
+    <display-name>Sett inn varselboks</display-name>
+    <description>Sett inn varselboks i brødteksten</description>
+    <form>
+        <input name="varselBoks" type="TextLine">
+            <label>Teksten som skal legges inn</label>
+        </input>
+    </form>
+</macro>
