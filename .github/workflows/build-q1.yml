@@ -15,7 +15,7 @@ jobs:
       - name: Define variables
         id: vars
         run: |
-          echo ::set-output name=VERSION::$(git describe --tags `git rev-list --tags --max-count=1`)-$(git rev-parse --short HEAD)
+          echo ::set-output name=VERSION::$(git tag --sort=committerdate | grep -E '^v[0-9]' | tail -1)-$(git rev-parse --short HEAD)
           echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
       - uses: actions/setup-java@v1
         with:
