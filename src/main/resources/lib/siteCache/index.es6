@@ -91,10 +91,13 @@ function wipeOnChange(path) {
     if (!path) {
         return false;
     }
+    // Log path without leading /www.nav.no or leading /content/www.nav.no
+    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
+
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
-        log.info('WIPED: All caches due to updated template');
+        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template`);
         return true;
     }
     const w = wipe('paths');
@@ -114,8 +117,6 @@ function wipeOnChange(path) {
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');
     }
-    // Log path without leading /www.nav.no or leading /content/www.nav.no
-    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()})`);
 
     if (path.indexOf('/megamenu/') !== -1) {
