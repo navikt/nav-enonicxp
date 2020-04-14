@@ -82,9 +82,23 @@ function wipe(name) {
     };
 }
 
+function wipeAll() {
+    setEtag();
+    Object.keys(caches).forEach(name => wipe(name)());
+}
+
 function wipeOnChange(path) {
     if (!path) {
         return false;
+    }
+    // Log path without leading /www.nav.no or leading /content/www.nav.no
+    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
+
+    // When a template is updated we need to wipe all caches
+    if (path.indexOf('_templates/') !== -1) {
+        wipeAll();
+        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template`);
+        return true;
     }
     const w = wipe('paths');
     w(getPath(path, 'main-page'));
@@ -98,13 +112,11 @@ function wipeOnChange(path) {
     w(getPath(path, 'office-information'));
     w(getPath(path, 'page-large-table'));
     if (path.indexOf('/driftsmeldinger/') !== -1) {
-        w('driftsmelding-heading');
+        w('notifications');
     }
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');
     }
-    // Log path without leading /www.nav.no or leading /content/www.nav.no
-    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()})`);
 
     if (path.indexOf('/megamenu/') !== -1) {
@@ -122,11 +134,6 @@ function wipeOnChange(path) {
     }
 
     return true;
-}
-
-function wipeAll() {
-    setEtag();
-    Object.keys(caches).forEach(name => wipe(name)());
 }
 
 function getSome(cacheStoreName) {
