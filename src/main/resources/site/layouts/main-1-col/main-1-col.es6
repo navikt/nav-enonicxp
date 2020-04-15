@@ -5,7 +5,7 @@ const libs = {
 };
 const view = resolve('./main-1-col.html');
 
-exports.get = function (req) {
+exports.get = function() {
     const content = libs.portal.getContent();
     const component = libs.portal.getComponent();
     const language = content.language || 'no';

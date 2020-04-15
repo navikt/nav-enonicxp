@@ -10,11 +10,8 @@
                     <label>Norsk tittel (hvis fremmedspråklig innhold)</label>
                     <help-text>For fremmedspråklig innhold skal norsk tittel angis her. Norsk tittel vil da vises ved siden av fremmedspråklig tittel i Enonic. </help-text>
                 </input>
-                <input name="ingress" type="TextArea">
-                    <label>Ingress</label>
-                    <help-text>Ingressen bør være maks. 240 tegn.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
+                <mixin name="ingress"/>
+                <mixin name="meta-description"/>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst</label>
                     <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
@@ -255,7 +252,7 @@
             </items>
         </field-set>
         <field-set name="socialSharing">
-            <label>Sosiale medier og søkemotorer</label>
+            <label>Sosiale medier</label>
             <items>
                 <input name="social" type="ComboBox">
                     <label>Del på sosiale medier</label>
@@ -267,7 +264,6 @@
                     </config>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
-                <mixin name="meta-description"/>
             </items>
         </field-set>
         <field-set name="Angi andre språkversjoner">
@@ -284,5 +280,6 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="canonical-url"/>
     </form>
 </content-type>

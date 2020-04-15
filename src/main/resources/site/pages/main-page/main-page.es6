@@ -24,12 +24,13 @@ function handleGet(req) {
             path: 'img/navno/social-share-fallback.png',
             type: 'absolute',
         });
+        const canonicalUrl = content.data.canonicalUrl || url;
         const header = [
             '<meta charset="utf-8" />',
             `<title>${title}</title>`,
             '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
             '<meta name="apple-mobile-web-app-capable" content="yes" />',
-            `<link rel="canonical" href="${url}" />`,
+            `<link rel="canonical" href="${canonicalUrl}" />`,
             description ? `<meta name="description" content="${description}" />` : '',
             `<meta property="og:title" content="${title}" />`,
             '<meta property="og:site_name" content="NAV" />',
@@ -53,6 +54,8 @@ function handleGet(req) {
         const regions = content.page.regions;
         const model = {
             mainRegion: regions.main,
+            footerRegion: regions.footer,
+            language: content.language || 'no',
         };
         return {
             contentType: 'text/html',

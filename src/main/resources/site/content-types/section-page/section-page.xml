@@ -3,15 +3,15 @@
     <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="beskrivelse">
-            <label>Beskrivelse</label>
+        <field-set name="ingress-description">
+            <label>Ingress og sidebeskrivelse</label>
             <items>
-            <mixin name="meta-description"/>
+                <mixin name="ingress"/>
+                <mixin name="meta-description"/>
             </items>
         </field-set>
         <field-set name="table">
             <label>Tavleoppføringer</label>
-            <help-text>Tavleoppføringer hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
                 <input name="nrTableEntries" type="Long">
                     <label>Oppgi antall tavler/bokser på seksjonssiden</label>
@@ -94,5 +94,6 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="canonical-url"/>
     </form>
 </content-type>

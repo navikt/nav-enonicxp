@@ -1,0 +1,73 @@
+<article class="full-article factsheet tblc" id="pagecontent">
+
+    <div data-th-remove="tag" data-th-if="${!content.data}">
+        <p>Sorry, couldn't find the article you were looking for!</p>
+    </div>
+
+    <div data-th-remove="tag" data-th-if="${content.type}">
+        <header data-th-classappend="${!driftsMelding}? 'article-head'">
+            <time class="pubdate muted" data-th-datetime="${content.publish.from}">
+                [[${published}]]
+            </time>
+            <h1>[[${content.displayName}]]</h1>
+            <div class="toolbar">
+                <div class="content-languages leftmost-in-toolbar" data-th-if="${hasLanguageVersions}"
+                     role="button" tabindex="0" aria-haspopup="true"
+                     aria-owns="language-selection" aria-controls="language-selection"
+                >
+                    <span>Language</span>
+                    <ul class="nav hide" id="language-selection">
+                        <li data-th-each="language : ${languages}">
+                            <a data-th-href="${language.href}" data-th-class="${language.tClass}" data-th-title="${language.title}">
+                                [[${language.text}]]
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-print" id="print-page" role="button" tabindex="0">
+                    <span>[[${langBundle.printpage}]]</span>
+                </div>
+            </div>
+            <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
+                <br data-th-if="${#strings.contains(content.data.ingress,'\n')}"/>
+                [[${content.data.ingress}]]
+                <br>
+            </p>
+            <div data-th-if="${questionsAndAnswers}" data-th-remove="tag">
+                <nav class="table-of-contents" data-selected-id>
+                    <h2 class="visuallyhidden" role="heading" aria-level="2">
+                        [[${langBundle.tableOfContents}]]
+                    </h2>
+                    <ol>
+                        <li data-th-each="qanda: ${overview}">
+                            <a data-th-href="${qanda.url}" data-th-title="${qanda.text} + ' (' + ${langBundle.tableOfContents} + ')'">
+                                [[${qanda.text}]]
+                            </a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </header>
+        <div class="article-body" data-th-if="${questionsAndAnswers}" >
+            <div data-th-each="qanda: ${questionsAndAnswers}" data-th-remove="tag">
+                <h3 data-th-id="${qanda.elementId}" class="chapter-header" tabindex="-1">
+                    [[${qanda.question}]]
+                </h3>
+                <div data-th-utext="${qanda.answer}" data-th-remove="tag"></div>
+            </div>
+        </div>
+        <div class="share-social-media" data-th-if="${socials}">
+            <ul class="share-social-media-pills">
+                <li data-th-each="social : ${socials}">
+                    <a data-th-href="${social.href}" class="js-share share-container" data-th-attr="data-medium=${social.type}">
+                        <span class="share-social" data-th-classappend="${'share-' + social.type}">
+                            [[${social.text}]]
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+</article>

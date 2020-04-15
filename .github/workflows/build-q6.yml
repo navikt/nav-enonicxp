@@ -4,16 +4,19 @@ on:
   push:
     tags:
       - "v*-*-*"
+    branches:
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Define variables
         id: vars
         run: |
-          echo ::set-output name=VERSION::${GITHUB_REF##*/}
+          echo ::set-output name=VERSION::$(git tag | grep -E '^v[0-9]' | grep -v '-' | sort -V | tail -1)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)
           echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
       - name: Fetch url lookup table from nav-enonicxp-iac
         run: |

@@ -10,87 +10,6 @@ const repo = libs.node.connect({
     principals: ['role:system.admin'],
 });
 
-exports.handle = function (socket) {
-    const elements = createElements();
-    socket.emit('newTask', elements);
-
-    socket.on('do', () => {
-        libs.tools.runInContext(socket, createTemplates);
-    });
-};
-
-function createElements () {
-    return {
-        isNew: true,
-        head: 'Lag templates',
-        body: {
-            elements: [
-                {
-                    tag: 'div',
-                    tagClass: ['row'],
-                    elements: [
-                        {
-                            tag: 'p',
-                            text: 'Lag nye sidemaler',
-                        },
-                        {
-                            tag: 'button',
-                            text: 'Lag',
-                            action: 'do',
-                            id: 'testid',
-                            tagClass: ['button', 'is-info'],
-                        },
-                        {
-                            tag: 'div',
-                            update: 'templateUpdate',
-                        },
-                    ],
-                },
-            ],
-        },
-    };
-}
-
-function createTemplates (socket) {
-    templates.forEach(function (value) {
-        let parent = libs.content.get({
-            key: value.content.parentPath,
-        });
-        if (!parent) {
-            parent = libs.content.create({
-                displayName: 'Templates',
-                parentPath: value.content.parentPath.replace('_templates/', ''),
-                name: '_templates',
-                contentType: 'portal:template-folder',
-                data: {
-
-                },
-            });
-        }
-        const exists = libs.content.get({
-            key:
-                        value.content.parentPath +
-                        value.content.displayName
-                            .toLowerCase()
-                            .replace(/ - /g, '-')
-                            .replace(/ /g, '-')
-                            .replace(/ø/g, 'o'),
-        });
-        const elem = exists || libs.content.create(value.content);
-        repo.modify({
-            key: elem._id,
-            editor: (c) => {
-                c.components = value.components;
-                if (exists) {
-                    c.data = value.content.data;
-                }
-                return c;
-            },
-        });
-        socket.emit('templateUpdate', elem.displayName + ' created');
-    });
-}
-
 const tavleListePage = [
     {
         type: 'page',
@@ -99,9 +18,7 @@ const tavleListePage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -109,47 +26,69 @@ const tavleListePage = [
         type: 'part',
         path: '/main/0',
         part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'layout',
-        path: '/main/1',
+        path: '/main/3',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:page-list',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/second/0',
+        path: '/main/3/second/0',
         part: {
             descriptor: 'no.nav.navno:menu-list',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
@@ -163,9 +102,7 @@ const mainArticlePage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -173,59 +110,173 @@ const mainArticlePage = [
         type: 'part',
         path: '/main/0',
         part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'layout',
-        path: '/main/1',
+        path: '/main/3',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:main-article',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/second/0',
+        path: '/main/3/second/0',
         part: {
             descriptor: 'no.nav.navno:main-article-linked-list',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/second/1',
+        path: '/main/3/second/1',
         part: {
             descriptor: 'no.nav.navno:menu-list',
             config: {
-                'no-nav-navno': {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
 
-                },
+const faqPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/3',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/first/0',
+        part: {
+            descriptor: 'no.nav.navno:faq-page',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/second/0',
+        part: {
+            descriptor: 'no.nav.navno:main-article-linked-list',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/second/1',
+        part: {
+            descriptor: 'no.nav.navno:menu-list',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
@@ -239,9 +290,7 @@ const transportPage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -249,35 +298,59 @@ const transportPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:page-crumbs',
+            descriptor: 'no.nav.navno:page-heading-with-menu',
             config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main-1-col',
-            config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/3',
+        layout: {
+            descriptor: 'no.nav.navno:main-1-col',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:transport',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
@@ -291,9 +364,7 @@ const hovedSeksjonPage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -301,11 +372,9 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:page-heading-with-menu',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -313,35 +382,49 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:page-crumbs',
+            descriptor: 'no.nav.navno:notifications',
             config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/2',
-        layout: {
-            descriptor: 'no.nav.navno:main-1-col',
-            config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/2/first/0',
+        path: '/main/2',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/3',
+        layout: {
+            descriptor: 'no.nav.navno:main-1-col',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:section-page',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
@@ -354,9 +437,19 @@ const largeTable = {
         descriptor: 'no.nav.navno:page-large-table',
         customized: true,
         config: {
-            'no-nav-navno': {
+            'no-nav-navno': {},
+        },
+    },
+};
 
-            },
+const chatPage = {
+    type: 'page',
+    path: '/',
+    page: {
+        descriptor: 'no.nav.navno:chat-page',
+        customized: true,
+        config: {
+            'no-nav-navno': {},
         },
     },
 };
@@ -369,45 +462,67 @@ const searchResult = [
             descriptor: 'no.nav.navno:main-page',
             customized: false,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/0',
+        part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'layout',
-        path: '/main/0',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:search',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/0/searchbar/0',
+        path: '/main/2/searchbar/0',
         part: {
             descriptor: 'no.nav.navno:searchbar',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/0/result/0',
+        path: '/main/2/result/0',
         part: {
             descriptor: 'no.nav.navno:searchresult',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
@@ -421,9 +536,7 @@ const publishingCalendarPage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -431,35 +544,59 @@ const publishingCalendarPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:page-crumbs',
+            descriptor: 'no.nav.navno:page-heading-with-menu',
             config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main',
-            config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/3',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:publishing-calendar',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
@@ -473,9 +610,7 @@ const genericPage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -483,87 +618,59 @@ const genericPage = [
         type: 'part',
         path: '/main/0',
         part: {
+            descriptor: 'no.nav.navno:page-heading-with-menu',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'layout',
-        path: '/main/1',
+        path: '/main/3',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:generic-page',
             config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-];
-
-const errorPage = [
-    {
-        type: 'page',
-        path: '/',
-        page: {
-            descriptor: 'no.nav.navno:main-page',
-            customized: true,
-            config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/0',
+        path: '/footer/0',
         part: {
-            descriptor: 'no.nav.navno:page-crumbs',
+            descriptor: 'no.nav.navno:page-footer',
             config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main-1-col',
-            config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/first/0',
-        part: {
-            descriptor: 'no.nav.navno:404',
-            config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -577,9 +684,7 @@ const officeInformationPage = [
             descriptor: 'no.nav.navno:main-page',
             customized: true,
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
@@ -587,41 +692,78 @@ const officeInformationPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:page-crumbs',
+            descriptor: 'no.nav.navno:page-heading-with-menu',
             config: {
-                'no-nav-navno': {
-
-                },
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main',
-            config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
             },
         },
     },
     {
         type: 'part',
-        path: '/main/1/first/0',
+        path: '/main/1',
+        part: {
+            descriptor: 'no.nav.navno:notifications',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2',
+        part: {
+            descriptor: 'no.nav.navno:page-crumbs',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'layout',
+        path: '/main/3',
+        layout: {
+            descriptor: 'no.nav.navno:main',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/3/first/0',
         part: {
             descriptor: 'no.nav.navno:office-information',
             config: {
-                'no-nav-navno': {
-
-                },
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/footer/0',
+        part: {
+            descriptor: 'no.nav.navno:page-footer',
+            config: {
+                'no-nav-navno': {},
             },
         },
     },
 ];
 
 const templates = [
+    {
+        content: {
+            displayName: 'FAQ Side',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: ['no.nav.navno:faq-page'],
+            },
+        },
+        components: faqPage,
+    },
     {
         content: {
             displayName: 'Artikkel - Hovedartikkel',
@@ -693,6 +835,19 @@ const templates = [
     },
     {
         content: {
+            displayName: 'Page - Chat',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:chat-page',
+            },
+        },
+        components: chatPage,
+    },
+    {
+        content: {
             displayName: 'Søkeresultat',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
@@ -732,19 +887,6 @@ const templates = [
     },
     {
         content: {
-            displayName: '404',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:404',
-            },
-        },
-        components: errorPage,
-    },
-    {
-        content: {
             displayName: 'Enhetsinformasjon',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
@@ -757,3 +899,82 @@ const templates = [
         components: officeInformationPage,
     },
 ];
+
+function createElements() {
+    return {
+        isNew: true,
+        head: 'Lag templates',
+        body: {
+            elements: [
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Lag nye sidemaler',
+                        },
+                        {
+                            tag: 'button',
+                            text: 'Lag',
+                            action: 'do',
+                            id: 'testid',
+                            tagClass: ['button', 'is-info'],
+                        },
+                        {
+                            tag: 'div',
+                            update: 'templateUpdate',
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+}
+
+function createTemplates(socket) {
+    templates.forEach(function(value) {
+        const parent = libs.content.get({
+            key: value.content.parentPath,
+        });
+        if (!parent) {
+            libs.content.create({
+                displayName: 'Templates',
+                parentPath: value.content.parentPath.replace('_templates/', ''),
+                name: '_templates',
+                contentType: 'portal:template-folder',
+                data: {},
+            });
+        }
+        const exists = libs.content.get({
+            key:
+                value.content.parentPath +
+                value.content.displayName
+                    .toLowerCase()
+                    .replace(/ - /g, '-')
+                    .replace(/ /g, '-')
+                    .replace(/ø/g, 'o'),
+        });
+        const elem = exists || libs.content.create(value.content);
+        repo.modify({
+            key: elem._id,
+            editor: c => {
+                return {
+                    ...c,
+                    components: value.components,
+                    data: exists ? value.content.data : c.data,
+                };
+            },
+        });
+        socket.emit('templateUpdate', elem.displayName + ' created');
+    });
+}
+
+exports.handle = function(socket) {
+    const elements = createElements();
+    socket.emit('newTask', elements);
+
+    socket.on('do', () => {
+        libs.tools.runInContext(socket, createTemplates);
+    });
+};

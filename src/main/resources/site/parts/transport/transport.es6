@@ -22,6 +22,7 @@ exports.get = function(req) {
         const content = libs.portal.getContent();
         const items = libs.navUtils.forceArray(content.data.items);
         const model = {
+            heading: content.displayName,
             ingress: content.data.ingress,
             items: items.map(value => ({
                 title: value.title,

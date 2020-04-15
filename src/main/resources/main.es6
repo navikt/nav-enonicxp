@@ -2,9 +2,10 @@ import {  UrlLookupTable } from '/lib/menu-utils/url-lookup-table';
 
 log.info('Started running main');
 const cache = require('/lib/siteCache');
-const unpublish = require('/lib/siteCache/invalidator');
+const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const eventLib = require('/lib/xp/event');
+const textCleaner = require('/lib/textCleaner');
 
 let appIsRunning = true;
 let taskIds = [];
@@ -13,6 +14,8 @@ let taskIds = [];
 officeInformation.startCronJob();
 // start cache invalidator
 cache.activateEventListener();
+// start text cleaner
+textCleaner.activateEventListener();
 
 // init url lookup table
 if (app.config.env !== 'p') {
@@ -20,7 +23,7 @@ if (app.config.env !== 'p') {
 }
 
 // start task for handling caching of expired and prepublished content
-let currentTaskId = unpublish.start(appIsRunning);
+let currentTaskId = invalidator.start(appIsRunning);
 taskIds.push(currentTaskId);
 
 // keep the process of handling expired content in the cache alive.
@@ -32,14 +35,14 @@ eventLib.listener({
         if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
             return false;
         }
-        if (event.data.description === unpublish.taskDescription) {
+        if (event.data.description === invalidator.taskDescription) {
             // if the task which have finished is not in current state, ignore it.
             if (taskIds.indexOf(event.data.id) === -1) {
                 return false;
             }
             // update state and spawn of a new task
             taskIds = taskIds.filter(task => task !== event.data.id);
-            currentTaskId = unpublish.setupTask(appIsRunning);
+            currentTaskId = invalidator.runTask(appIsRunning);
             taskIds.push(currentTaskId);
         }
         return true;

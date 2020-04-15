@@ -15,10 +15,7 @@
             <label>Skjul dato på artikkellisten</label>
             <default>checked</default>
         </input>
-        <input type="TextArea" name="ingress">
-            <label>Ingress</label>
-            <occurrences minimum="0" maximum="1"/>
-        </input>
+        <mixin name="ingress"/>
         <mixin name="meta-description"/>
         <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på artiklene i artikkellisten</label>
@@ -59,7 +56,6 @@
             <options minimum="0" maximum="11">
                 <option name="shortcuts">
                     <label>Snarveier</label>
-                    <help-text ></help-text>
                     <items>
                         <input name="link" type="ContentSelector">
                             <label>Snarveier</label>
@@ -87,5 +83,6 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="canonical-url"/>
     </form>
 </content-type>

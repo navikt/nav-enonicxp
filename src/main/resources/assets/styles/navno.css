@@ -612,7 +612,7 @@ h6, .h6 {
     font-weight: 600
 }
 
-h1:first-child, h2:first-child, h3:first-child, .article-body h1:first-child, .article-body h2:first-child, .article-body h3:first-child {
+h1:first-child, h2:first-child, h3:first-child, .article-body h1:first-child, .article-body h2:first-child {
     margin-top: 0
 }
 
@@ -3246,43 +3246,6 @@ body > img[src*="nav.tns-cs.net"] {
     }
 }
 
-.service-notification {
-    text-align: center;
-    border-bottom: 1px solid #d1d1d1;
-    padding: 10px 0
-}
-
-.service-notification h2 {
-    display: inline-block;
-    margin: 0 14px 0 0;
-    text-transform: none;
-    font-size: 1.0675rem;
-    color: #c30000;
-    font-family: Modus, Arial;
-    font-weight: 600
-}
-
-.service-notification a {
-    display: inline-block;
-    position: relative;
-    font-size: 1.0675rem;
-    font-family: Modus, Arial
-}
-
-.service-notification a:first-of-type {
-    margin-right: 32px
-}
-
-@media (max-width: 47.99em) {
-    .service-notification {
-        padding: 0 15px
-    }
-
-    .service-notification h2 {
-        line-height: 1.7
-    }
-}
-
 a.knapp {
     display: inline-block;
     cursor: pointer
@@ -3465,14 +3428,34 @@ a.knapp {
  }
 
 .article-body table {
-    border: 1px solid #ddd;
-    border-color: #ddd;
     width: 100%;
-    line-height: 1.15em
+    line-height: 1.15em;
 }
 
 .article-body table tr:first-child th, .article-body table tr:first-child td {
-    background-color: #f1f1f1
+    color: #3E3832;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+    font-weight: 600;
+    line-height: 1.375rem
+}
+
+.article-body table tr:nth-child(even)  {
+    color: #3E3832;
+    font-size: 1rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    font-weight: 400;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    line-height: 1.375rem
+}
+
+.article-body table tr:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.55);
 }
 
 .article-body table tr:first-child th strong, .article-body table tr:first-child td strong {
@@ -3482,8 +3465,6 @@ a.knapp {
 }
 
 .article-body table th, .article-body table td {
-    border-color: #ddd;
-    padding-top: 0;
     padding: 10px;
     vertical-align: top;
     font-size: .875rem
@@ -5200,115 +5181,6 @@ a.knapp {
     background-image: url('../img/navno/gfx/icons/share-linkedin-hover.png')
 }
 
-.din-situasjon-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around
-}
-
-.din-situasjon-wrapper .ingress {
-    text-align: center;
-    margin-bottom: 50px;
-    flex-basis: 100%
-}
-
-.din-situasjon-wrapper .lenkeboks {
-    background-color: #fff;
-    padding: 2rem 3rem 4rem;
-    display: block;
-    margin: 0.5rem;
-    color: #3e3832;
-    text-decoration: none;
-    position: relative;
-    border: 4px solid #fff;
-    flex: 1 1 100%;
-    width: 0
-}
-
-.din-situasjon-wrapper .lenkeboks.heldekkende {
-    flex-basis: 100%;
-    padding: 1.5rem 3rem 2rem;
-    border-color: #c2eaf7;
-    display: flex
-}
-
-@media (min-width: 38.75em) {
-    .din-situasjon-wrapper .lenkeboks.heldekkende .tekst {
-        padding-left: 1.5rem
-    }
-}
-
-.din-situasjon-wrapper .lenkeboks.heldekkende .panelChevron {
-    position: absolute;
-    bottom: 0;
-    left: auto;
-    height: 100%;
-    align-items: center;
-    width: 20px;
-    right: 10px;
-    display: flex
-}
-
-.din-situasjon-wrapper .lenkeboks.heldekkende .icon-size {
-    height: 100%;
-    width: 80px
-}
-
-.din-situasjon-wrapper .lenkeboks .icon {
-    display: flex;
-    justify-content: center;
-    padding-bottom: 0.75rem
-}
-
-@media (max-width: 38.75em) {
-    .din-situasjon-wrapper .lenkeboks .icon {
-        display: none
-    }
-}
-
-.din-situasjon-wrapper .lenkeboks .icon-size {
-    height: 40px;
-    width: 100%
-}
-
-.din-situasjon-wrapper .lenkeboks h2 {
-    margin-bottom: 1rem;
-    word-wrap: break-word
-}
-
-.din-situasjon-wrapper .lenkeboks .panelChevron {
-    text-align: center;
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: 2rem
-}
-
-.din-situasjon-wrapper .lenkeboks:focus {
-    box-shadow: 0 0 0 4px #ffbd66
-}
-
-.din-situasjon-wrapper .lenkeboks:hover {
-    border: 4px solid #0067c5
-}
-
-.din-situasjon-wrapper::after {
-    content: '';
-    flex-grow: 1;
-    flex-basis: 36%;
-    margin: 0.5rem
-}
-
-@media (min-width: 38.75em) {
-    .din-situasjon-wrapper .lenkeboks {
-        flex-basis: 36%
-    }
-
-    .din-situasjon-wrapper .lenkeboks.heldekkende {
-        flex-basis: 100%
-    }
-}
-
 .chevron--ned, .chevron--opp, .chevron--hoyre, .chevron--venstre {
     position: relative;
     text-align: center;
@@ -5371,32 +5243,6 @@ a.knapp {
 
 .chevron--venstre:after {
     transform: skew(0deg, 45deg)
-}
-
-.chevronboks {
-    width: 20px;
-    height: 2px;
-    display: inline-block;
-    flex-shrink: 0
-}
-
-.panelChevron--horisontalMidstilt {
-    text-align: center;
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: 2rem
-}
-
-.panelChevron--vertikaltMidtstilt {
-    position: absolute;
-    bottom: 0;
-    left: auto;
-    height: 100%;
-    align-items: center;
-    width: 20px;
-    right: 10px;
-    display: flex
 }
 
 header.decorated .pre-heading {
@@ -7423,9 +7269,60 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     font-weight: 400
 }
 
-.lenkepanel {
+.alertstripe {
     background-color: #FFF;
     padding: 1rem 1rem 1rem 1rem;
+    display: flex;
+    align-content: center;
+    border-radius: 0.25rem;
+    color: #3E3832;
+}
+
+.alertstripe--info {
+    border: 1px solid #5690a2;
+    background-color: #e0f5fb;
+}
+
+.alertstripe--advarsel {
+    border: 1px solid #d87f0a;
+    background-color: #ffe9cc;
+}
+
+.alertstripe__ikon {
+    margin-right: 0.75rem;
+    display: flex;
+    top: 1rem;
+    flex-shrink: 0;
+}
+
+.alertstripe__tekst {
+    margin: auto 0;
+    display: block;
+    flex: 1;
+    font-size: 1rem;
+}
+
+@media (min-width: 38.75em) {
+    .alertstripe__tekst {
+        font-size: 0.875rem;
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+    white-space: nowrap;
+}
+
+.lenkepanel {
+    background-color: #FFF;
+    padding: 1rem;
     border-radius: 4px;
     position: relative;
     margin-bottom: 1rem;
@@ -7496,12 +7393,16 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     left: 6px;
 }
 .lenkepanel--border {
-    /* border: 1px solid #C6C2BF; */
     border: 1px solid #78706A;
 }
 .lenkepanel--border:hover,
 .lenkepanel--border.panel-interaktiv-mixin--hover {
     border: 1px solid #0067C5;
+}
+.lenkepanel-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -1rem;
 }
 .kampanje {
     display: flex;
@@ -7516,10 +7417,21 @@ div.placeholder .top-link-wrapper.sticky-top-link {
         margin: 1rem 0;
     }
 }
-.kampanje-varsel__ikon-rad {
+.lenkepanel-container .lenkepanel {
+    margin: 1rem 0 0 2%;
+    width: calc(50% - 2rem);
+}
+@media (max-width: 48em) {
+    .lenkepanel-container .lenkepanel {
+        width: 100%
+    }
+}
+.notifications .lenkepanel-container .lenkepanel {
+    padding: 0.75rem 0.75rem 0.75rem 0;
+}
+.kampanje-varsel__ikon-rad, .lenkepanel-ikon-col {
     position: relative;
     display: flex;
-    align-self: flex-start;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -7527,14 +7439,14 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     min-height: 50px;
 }
 @media (min-width: 38.75em) {
-    .kampanje-varsel__ikon-rad {
+    .kampanje-varsel__ikon-rad, .lenkepanel-ikon-col {
         min-width: 72px;
         min-height: 60px;
     }
 }
 .kampanje-varsel__sirkel {
     position: absolute;
-    z-index: 1;
+    z-index: 0;
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -7556,14 +7468,10 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     animation-iteration-count: infinite;
     animation-timing-function: ease-out;
 }
-.kampanje-varsel__tekst-rad {
-    padding: 0.75rem 0.5rem 0.5rem 0.5rem;
+.kampanje-varsel__tekst-rad, .lenkepanel-tekst-col {
+    flex-grow: 1;
     text-align: left;
-}
-@media (min-width: 38.75em) {
-    .kampanje-varsel__tekst-rad {
-        padding: 1rem;
-    }
+    padding-right: 0.5rem;
 }
 .kampanje-varsel__ingress {
     margin-top: 0.75rem;
@@ -7598,4 +7506,59 @@ div.placeholder .top-link-wrapper.sticky-top-link {
         background-color: transparent;
         transform: scale(3);
     }
+}
+
+.transport {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 1.5rem;
+}
+.din-situasjon-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+.din-situasjon-wrapper .ingress {
+    text-align: center;
+    margin-bottom: 50px;
+    flex-basis: 100%
+}
+.din-situasjon-wrapper .lenkepanel {
+    margin: 1rem 0 0 2%;
+    padding: 1.5rem;
+    flex-grow: 1;
+    width: calc(50% - 2rem);
+}
+@media (max-width: 48em) {
+    .din-situasjon-wrapper .lenkepanel {
+        width: 100%
+    }
+}
+.din-situasjon-wrapper .lenkepanel.heldekkende {
+    flex-basis: 100%;
+}
+.din-situasjon-wrapper .lenkepanel.heldekkende .icon-size {
+    height: 100%;
+    width: 80px
+}
+.din-situasjon-wrapper .lenkepanel .icon-size {
+    height: 100%;
+    width: 40px
+}
+@media (max-width: 38.75em) {
+    .din-situasjon-wrapper .lenkepanel .icon {
+        display: none
+    }
+}
+.din-situasjon-wrapper .lenkepanel h2 {
+    word-wrap: break-word
+}
+.din-situasjon-wrapper .lenkepanel .icon {
+    padding: 0.5rem;
+}
+.din-situasjon-wrapper .lenkepanel .tekst {
+    flex-grow: 1;
+    text-align: left;
+}
+.din-situasjon-wrapper .lenkepanel .tekst p {
+    margin-top: 1rem;
 }

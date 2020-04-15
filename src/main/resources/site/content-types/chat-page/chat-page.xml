@@ -3,10 +3,8 @@
     <description>Side for Puzzel chat </description>
     <super-type>base:unstructured</super-type>
     <form>
-        <input type="TextArea" name="ingress">
-            <label>Ingress</label>
-            <occurrences minimum="0" maximum="1"/>
-        </input>
+        <mixin name="ingress"/>
+        <mixin name="meta-description"/>
         <input type ="TextLine" name="customerKey">
             <label>customerKey</label>
             <occurrences minimum="1" maximum="1"/>
