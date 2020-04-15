@@ -1,0 +1,61 @@
+<content-type>
+    <display-name>Varsel</display-name>
+    <description>Vikting informasjon som vises over alt annet innhold</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="notification">
+            <label>Varsel</label>
+            <items>
+                <input name="type" type="RadioButton">
+                    <label>Type</label>
+                    <config>
+                        <option value="warning">Kritisk informasjon (!)</option>
+                        <option value="info">Viktig informasjon (i)</option>
+                    </config>
+                    <default>warning</default>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Tittel (overstyrer sidetittel fra valgt innhold)</label>
+                    <help-text>
+                        Fylles ut hvis du vil overstyre visning av tittel fra innhold
+                        det henvises til.
+                    </help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="showDescription" type="CheckBox">
+                    <label>Vis beskrivelse/ingress</label>
+                    <help-text>Kryss av for å vise en beskrivelse eller ingress i lenkepanelet</help-text>
+                </input>
+                <mixin name="ingress"/>
+                <input name="showUpdated" type="CheckBox">
+                    <label>Vis oppdateringstidspunkt</label>
+                    <help-text>Kryss av for å vise oppdateringstidspunktet i lenkepanelet</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                </input>
+                <input name="target" type="ContentSelector">
+                    <label>Innhold det henvises til</label>
+                    <help-text>Velg innhold som det skal henvises til</help-text>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <allowPath>${site}/*</allowPath>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+                <input name="replace" type="CheckBox">
+                    <label>Ersatt globalt varsel</label>
+                    <help-text>Kryss av for å ersatte et globalt varsel. Dette må det da henvises til under!</help-text>
+                </input>
+                <input name="notificationToReplace" type="ContentSelector">
+                    <label>Innhold varselet skal ersatte</label>
+                    <help-text>Velg globalt varsel som varselet skal ersatte</help-text>
+                    <occurrences maximum="1" minimum="0"/>
+                    <config>
+                        <allowPath>${site}/global-notifications</allowPath>
+                        <allowContentType>notification</allowContentType>
+                        <showStatus>true</showStatus>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>
