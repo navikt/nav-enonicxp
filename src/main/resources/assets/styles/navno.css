@@ -7499,21 +7499,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     border: 1px solid #0067C5;
 }
 .lenkepanel-container {
-    display: flex;
-    flex-wrap: wrap;
-}
-.kampanje {
-    display: flex;
-    flex-direction: row;
-    border-color: black;
-}
-@media (min-width: 48em) {
-    .kampanje {
-        padding: 1.5rem;
-        margin: 1rem 0;
-    }
-}
-.lenkepanel-container {
     margin: 1rem auto;
     display: -ms-grid;
     display: grid;
@@ -7530,6 +7515,17 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .notifications .lenkepanel-container .lenkepanel {
     padding: 0.75rem 0.75rem 0.75rem 0;
+}
+.kampanje {
+    display: flex;
+    flex-direction: row;
+    border-color: black;
+}
+@media (min-width: 48em) {
+    .kampanje {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
 }
 .kampanje-varsel__ikon-rad, .lenkepanel-ikon-col {
     position: relative;
