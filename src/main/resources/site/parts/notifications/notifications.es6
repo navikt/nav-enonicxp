@@ -13,10 +13,6 @@ const messagesProps = {
         class: 'warning',
         icon: null,
     },
-    prodstatus: {
-        class: 'status',
-        icon: 'alertstripe__ikon_advarsel.svg',
-    },
     info: {
         class: 'info',
         icon: 'alertstripe__ikon_info.svg',
@@ -24,10 +20,7 @@ const messagesProps = {
 };
 
 const getHeading = (message, target) => {
-    if (target) {
-        return message.data.title || target.displayName;
-    }
-    return message.data.title || message.displayName;
+    return message.data.title || target.displayName;
 };
 
 const getDescription = (message, target) => {
@@ -88,13 +81,13 @@ const showMessages = () => {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
     const result = libs.content.getChildren({
-        key: '/www.nav.no/no/driftsmeldinger',
+        key: '/www.nav.no/global-notifications',
         start: 0,
-        count: 4,
+        count: 2,
         sort: '_manualordervalue DESC',
     });
     const messages = result.hits
-        .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
+        .filter(item => item.type === 'no.nav.navno:notification')
         .map(item => constructMessage(item, language));
 
     if (messages.length > 0) {
