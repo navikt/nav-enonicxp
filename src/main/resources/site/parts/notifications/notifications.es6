@@ -39,7 +39,7 @@ const getUpdated = (message, target, language) => {
     if (message.data.showUpdated) {
         const updated = target ? target.modifiedTime : message.modifiedTime;
         if (updated) {
-            return `Oppdatert: ${libs.navUtils.formatDateTime(updated, language)}`;
+            return libs.navUtils.dateTimeUpdated(updated, language);
         }
     }
     return null;

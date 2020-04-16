@@ -30,7 +30,7 @@ const getUpdated = (message, language) => {
     if (message.data.showUpdated) {
         const updated = message.modifiedTime;
         if (updated) {
-            return `Oppdatert: ${libs.navUtils.formatDateTime(updated, language)}`;
+            return libs.navUtils.dateTimeUpdated(updated, language);
         }
     }
     return null;
