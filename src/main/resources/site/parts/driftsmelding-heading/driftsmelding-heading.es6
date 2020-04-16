@@ -87,9 +87,12 @@ const showMessages = () => {
 };
 
 const handleGet = req => {
+    const content = libs.portal.getContent();
+    const language = content.language || 'no';
+
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // alltid vise en driftsmelding
-    return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
+    return libs.cache.getPaths(`driftsmelding-heading-${language}`, undefined, req.branch, () => {
         return libs.context.run(
             {
                 repository: 'com.enonic.cms.default',

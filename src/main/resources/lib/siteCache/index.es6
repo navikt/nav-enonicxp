@@ -101,6 +101,7 @@ function wipeOnChange(path) {
         return true;
     }
     const w = wipe('paths');
+    w(getPath(path, 'notifications'));
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
@@ -112,7 +113,8 @@ function wipeOnChange(path) {
     w(getPath(path, 'office-information'));
     w(getPath(path, 'page-large-table'));
     if (path.indexOf('/driftsmeldinger/') !== -1) {
-        w('notifications');
+        w('driftsmelding-heading-no');
+        w('driftsmelding-heading-en');
     }
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');
@@ -179,10 +181,9 @@ function clearReferences(id, path, depth) {
         references.push(parent);
     }
 
+    const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
     references.forEach(el => {
         wipeOnChange(el._path);
-
-        const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
         if (deepTypes.indexOf(el.type) !== -1) {
             clearReferences(el._id, el._path, depth + 1);
         }

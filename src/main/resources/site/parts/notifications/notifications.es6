@@ -102,23 +102,22 @@ const showMessages = () => {
     };
 };
 
-const handleGet = req => {
+const handleGet = () => {
+    // Ingen caching, da invalidering blir for komplisert/usikkert
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
-    // alltid vise en driftsmelding
-    return libs.cache.getPaths('notifications', undefined, req.branch, () => {
-        return libs.context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'master',
-                user: {
-                    login: 'su',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
+    // vise upubliserte varsler
+    return libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
             },
-            showMessages
-        );
-    });
+            principals: ['role:system.admin'],
+        },
+        showMessages
+    );
 };
 
 exports.get = handleGet;
