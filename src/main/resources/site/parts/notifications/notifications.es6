@@ -19,6 +19,46 @@ const messagesProps = {
     },
 };
 
+const getGlobalMessages = () => {
+    // Hent ut gobale varsler
+    return libs.content
+        .getChildren({
+            key: '/www.nav.no/global-notifications',
+            start: 0,
+            count: 2,
+            sort: '_manualordervalue DESC',
+        })
+        .hits.filter(item => item.type === 'no.nav.navno:notification');
+};
+
+const getLocalMessage = contentPath => {
+    // Hent alle varsler som er i min path
+    let result = libs.content
+        .query({
+            query: '',
+            count: 100,
+            contentTypes: [`${app.name}:notification`],
+        })
+        .hits.filter(item =>
+            contentPath.contains(item._path.slice(0, item._path.lastIndexOf('/')))
+        );
+    // Ved flere varsler: Hent varselet som er lengst ned i hierarkiet
+    if (result.length > 1) {
+        result = result
+            .map(item => {
+                return { ...item, pathDepth: item._path.split('/').length };
+            })
+            .reduce((prev, current) => {
+                return prev.pathDepth > current.pathDepth ? prev : current;
+            });
+    }
+    // Returnerer alltid bare et objekt
+    if (Array.isArray(result)) {
+        return result[0];
+    }
+    return result;
+};
+
 const getHeading = (message, target) => {
     return message.data.title || target.displayName;
 };
@@ -80,15 +120,24 @@ const showMessages = () => {
     let body = null;
     const content = libs.portal.getContent();
     const language = content.language || 'no';
-    const result = libs.content.getChildren({
-        key: '/www.nav.no/global-notifications',
-        start: 0,
-        count: 2,
-        sort: '_manualordervalue DESC',
-    });
-    const messages = result.hits
-        .filter(item => item.type === 'no.nav.navno:notification')
-        .map(item => constructMessage(item, language));
+
+    // Hent ut gobale varsler
+    let global = getGlobalMessages();
+    log.info('*** GLOBAL ***');
+    log.info(JSON.stringify(global, null, 4));
+
+    // Hent ut eventuelt lokalt varsel
+    const local = getLocalMessage(content._path);
+    log.info('*** LOCAL ***');
+    log.info(JSON.stringify(local, null, 4));
+
+    // Fjern globalt varsel hvis det lokale skal ersatte dette
+    if (local && local.data && local.data.replace) {
+        global = global.filter(item => local.data.notificationToReplace !== item._id);
+    }
+    const messages = global.concat(local).map(item => constructMessage(item, language));
+    log.info('*** MESSAGES ***');
+    log.info(JSON.stringify(messages, null, 4));
 
     if (messages.length > 0) {
         body = libs.thymeleaf.render(view, {

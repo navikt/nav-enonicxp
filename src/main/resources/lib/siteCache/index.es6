@@ -101,7 +101,6 @@ function wipeOnChange(path) {
         return true;
     }
     const w = wipe('paths');
-    w(getPath(path, 'notifications'));
     w(getPath(path, 'main-page'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
