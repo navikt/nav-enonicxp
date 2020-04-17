@@ -50,7 +50,7 @@ const getLocalMessage = contentPath => {
             })
             .reduce((prev, current) => {
                 return prev.pathDepth > current.pathDepth ? prev : current;
-            });
+            }, null);
     }
     // Returnerer alltid bare et objekt
     if (Array.isArray(result)) {
@@ -121,21 +121,24 @@ const showMessages = () => {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
 
-    // Hent ut gobale varsler
-    let global = getGlobalMessages();
+    // Hent ut globale varsler
+    let messages = getGlobalMessages();
     log.info('*** GLOBAL ***');
-    log.info(JSON.stringify(global, null, 4));
+    log.info(JSON.stringify(messages, null, 4));
 
     // Hent ut eventuelt lokalt varsel
     const local = getLocalMessage(content._path);
     log.info('*** LOCAL ***');
     log.info(JSON.stringify(local, null, 4));
 
-    // Fjern globalt varsel hvis det lokale skal ersatte dette
-    if (local && local.data && local.data.replace) {
-        global = global.filter(item => local.data.notificationToReplace !== item._id);
+    if (local && local.data) {
+        // Fjern globalt varsel hvis det lokale skal ersatte dette
+        if (local.data.notificationToReplace) {
+            messages = messages.filter(item => item._id !== local.data.notificationToReplace);
+        }
+        messages.push(local);
     }
-    const messages = global.concat(local).map(item => constructMessage(item, language));
+    messages = messages.map(item => constructMessage(item, language));
     log.info('*** MESSAGES ***');
     log.info(JSON.stringify(messages, null, 4));
 

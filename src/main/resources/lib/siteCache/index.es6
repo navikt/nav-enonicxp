@@ -114,6 +114,7 @@ function wipeOnChange(path) {
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
+        w('driftsmelding-heading-se');
     }
     if (path.indexOf('/publiseringskalender/') !== -1) {
         w('publiseringskalender');

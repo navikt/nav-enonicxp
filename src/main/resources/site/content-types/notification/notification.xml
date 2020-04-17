@@ -43,7 +43,7 @@
                 </input>
                 <input name="replace" type="CheckBox">
                     <label>Ersatt globalt varsel</label>
-                    <help-text>Kryss av for å ersatte et globalt varsel. Dette må det da henvises til under!</help-text>
+                    <help-text>Kryss av for å erstatte et globalt varsel. Dette må det da henvises til under!</help-text>
                 </input>
                 <input name="notificationToReplace" type="ContentSelector">
                     <label>Innhold varselet skal ersatte</label>
