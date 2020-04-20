@@ -114,7 +114,7 @@ function wipeOnChange(path) {
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('notifications');
     }
-    if (path.indexOf('/publiseringskalender/') !== -1) {
+    if (path.indexOf('/publiseringskalender') !== -1) {
         w('publiseringskalender');
     }
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()})`);
