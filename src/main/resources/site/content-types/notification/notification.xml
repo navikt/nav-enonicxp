@@ -41,12 +41,8 @@
                         <showStatus>true</showStatus>
                     </config>
                 </input>
-                <input name="replace" type="CheckBox">
-                    <label>Ersatt globalt varsel</label>
-                    <help-text>Kryss av for å erstatte et globalt varsel. Dette må det da henvises til under!</help-text>
-                </input>
-                <input name="notificationToReplace" type="ContentSelector">
-                    <label>Innhold varselet skal ersatte</label>
+                <input name="notificationToReplaceId" type="ContentSelector">
+                    <label>Hvis du skal ersatte et globalt varsel, velg hvilket</label>
                     <help-text>Velg globalt varsel som varselet skal ersatte</help-text>
                     <occurrences maximum="1" minimum="0"/>
                     <config>

@@ -134,7 +134,7 @@ const showMessages = () => {
     if (local && local.data) {
         // Fjern globalt varsel hvis det lokale skal ersatte dette
         if (local.data.notificationToReplace) {
-            messages = messages.filter(item => item._id !== local.data.notificationToReplace);
+            messages = messages.filter(item => item._id !== local.data.notificationToReplaceId);
         }
         messages.push(local);
     }
