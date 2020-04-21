@@ -170,24 +170,33 @@ function runTask(applicationIsRunning) {
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
-            const state = getState();
+            try {
+                const state = getState();
 
-            // There are three conditions which must be upheld for the cache invalidator to run
-            // --
-            // 1. The navno application must be running
-            // 2. No other task is currently doing the invalidation
-            // 3. Should not run more often then TIME_BETWEEN_CHECKS
-            // --
-            // if not the task must sleep for TIME_BETWEEN_CHECKS
-            if (!applicationIsRunning) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
-            if (state.isRunning) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
-            if (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS > Date.now()) {
+                // There are three conditions which must be upheld for the cache invalidator to run
+                // --
+                // 1. The navno application must be running
+                // 2. No other task is currently doing the invalidation
+                // 3. Should not run more often then TIME_BETWEEN_CHECKS
+                // --
+                // if not the task must sleep for TIME_BETWEEN_CHECKS
+                if (!applicationIsRunning) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+                if (state.isRunning) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+                if (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS > Date.now()) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+            } catch (e) {
+                log.error(
+                    `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS /
+                        1000} seconds`
+                );
                 libs.task.sleep(TIME_BETWEEN_CHECKS);
                 return;
             }
