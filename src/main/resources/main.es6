@@ -28,7 +28,6 @@ eventLib.listener({
         if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
             return false;
         }
-
         if (event.data.description === invalidator.taskDescription) {
             // if the task which have finished is not in current state, ignore it.
             if (taskIds.indexOf(event.data.id) === -1) {
