@@ -198,11 +198,11 @@ function runTask(applicationIsRunning) {
                 return;
             }
 
-            // set flag to prevent others from invalidating the cache simultaneously
-            setIsRunning(true);
-
             let sleepFor = TIME_BETWEEN_CHECKS;
             try {
+                // set flag to prevent others from invalidating the cache simultaneously
+                setIsRunning(true);
+
                 const now = Date.now();
                 const testDate = new Date(now);
 
@@ -229,9 +229,14 @@ function runTask(applicationIsRunning) {
             } catch (e) {
                 log.error(e);
             }
-            // release the lock
-            setIsRunning(false);
 
+            // release the lock
+            try {
+                setIsRunning(false);
+            } catch (e) {
+                log.info('could not release the lock');
+                log.error(e);
+            }
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
             // events are scheduled before that time
             libs.task.sleep(sleepFor);
