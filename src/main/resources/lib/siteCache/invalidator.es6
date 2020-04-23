@@ -170,33 +170,39 @@ function runTask(applicationIsRunning) {
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
-            const state = getState();
+            try {
+                const state = getState();
 
-            // There are three conditions which must be upheld for the cache invalidator to run
-            // --
-            // 1. The navno application must be running
-            // 2. No other task is currently doing the invalidation
-            // 3. Should not run more often then TIME_BETWEEN_CHECKS
-            // --
-            // if not the task must sleep for TIME_BETWEEN_CHECKS
-            if (!applicationIsRunning) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
-            if (state.isRunning) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
-            if (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS > Date.now()) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
+                // There are two conditions which must be upheld for the cache invalidator to run
+                // --
+                // 1. The navno application must be running
+                // 2. No other task is currently doing the invalidation
+                // --
+                // if not the task must sleep for TIME_BETWEEN_CHECKS
 
-            // set flag to prevent others from invalidating the cache simultaneously
-            setIsRunning(true);
+                if (!applicationIsRunning) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+                if (state.isRunning) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+            } catch (e) {
+                log.error(
+                    `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS /
+                        1000} seconds`
+                );
+                log.error(e);
+                libs.task.sleep(TIME_BETWEEN_CHECKS);
+                return;
+            }
 
             let sleepFor = TIME_BETWEEN_CHECKS;
             try {
+                // set flag to prevent others from invalidating the cache simultaneously
+                setIsRunning(true);
+
                 const now = Date.now();
                 const testDate = new Date(now);
 
@@ -216,15 +222,21 @@ function runTask(applicationIsRunning) {
                     testDate,
                     new Date(now + TIME_BETWEEN_CHECKS)
                 );
+
                 if (prepublishOnNext.length > 0) {
                     sleepFor = getSleepFor(prepublishOnNext, now);
                 }
             } catch (e) {
                 log.error(e);
             }
-            // release the lock
-            setIsRunning(false);
 
+            // release the lock
+            try {
+                setIsRunning(false);
+            } catch (e) {
+                log.info('could not release the lock');
+                log.error(e);
+            }
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
             // events are scheduled before that time
             libs.task.sleep(sleepFor);
