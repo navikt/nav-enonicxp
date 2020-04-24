@@ -5,6 +5,7 @@ const libs = {
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
     event: require('/lib/xp/event'),
+    cluster: require('/lib/xp/cluster'),
 };
 const masterRepo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
