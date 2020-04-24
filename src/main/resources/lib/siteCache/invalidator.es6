@@ -5,6 +5,7 @@ const libs = {
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
     event: require('/lib/xp/event'),
+    cluster: require('/lib/xp/cluster'),
 };
 const masterRepo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
@@ -187,13 +188,18 @@ function runTask(applicationIsRunning) {
             try {
                 const state = getState();
 
-                // There is one conditions which must be upheld for the cache invalidator to run
+                // There is two conditions which must be upheld for the cache invalidator to run
                 // --
                 // 1. No other task is currently doing the invalidation
+                // 2. The node has to be master
                 // --
                 // if not the task must sleep for TIME_BETWEEN_CHECKS
 
                 if (state.isRunning) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+                if (!libs.cluster.isMaster()) {
                     libs.task.sleep(TIME_BETWEEN_CHECKS);
                     return;
                 }
