@@ -184,10 +184,9 @@ function runTask(applicationIsRunning) {
             try {
                 const state = getState();
 
-                // There are two conditions which must be upheld for the cache invalidator to run
+                // There are one conditions which must be upheld for the cache invalidator to run
                 // --
-                // 1. The navno application must be running
-                // 2. No other task is currently doing the invalidation
+                // 1. No other task is currently doing the invalidation
                 // --
                 // if not the task must sleep for TIME_BETWEEN_CHECKS
 
