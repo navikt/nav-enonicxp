@@ -27,38 +27,38 @@ if (app.config.env !== 'p') {
 if (clusterLib.isMaster()) {
     // make sure the lock is released on startup
     invalidator.releaseInvalidatorLock();
+}
 
-    let currentTaskId = invalidator.start(appIsRunning);
-    taskIds.push(currentTaskId);
+let currentTaskId = invalidator.start(appIsRunning);
+taskIds.push(currentTaskId);
 
-    // keep the process of handling expired content in the cache alive.
+// keep the process of handling expired content in the cache alive.
 
-    eventLib.listener({
-        type: 'task.*',
-        localOnly: true,
-        callback: event => {
-            // need to listen to all task events and filter on finished and failed for resurrection
-            if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
+eventLib.listener({
+    type: 'task.*',
+    localOnly: true,
+    callback: event => {
+        // need to listen to all task events and filter on finished and failed for resurrection
+        if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
+            return false;
+        }
+        if (event.data.description === invalidator.taskDescription) {
+            log.info(`valid event: ${event.data.id} - ${event.type}`);
+            // if the task which have finished is not in current state, ignore it.
+            if (taskIds.indexOf(event.data.id) === -1) {
                 return false;
             }
-            if (event.data.description === invalidator.taskDescription) {
-                log.info(`valid event: ${event.data.id} - ${event.type}`);
-                // if the task which have finished is not in current state, ignore it.
-                if (taskIds.indexOf(event.data.id) === -1) {
-                    return false;
-                }
-                // update state and spawn of a new task
-                taskIds = taskIds.filter(task => task !== event.data.id);
-                currentTaskId = invalidator.runTask(appIsRunning);
-                if (currentTaskId) {
-                    taskIds.push(currentTaskId);
-                    log.info(`spawning task: ${currentTaskId} - ${taskIds}`);
-                }
+            // update state and spawn of a new task
+            taskIds = taskIds.filter(task => task !== event.data.id);
+            currentTaskId = invalidator.runTask(appIsRunning);
+            if (currentTaskId) {
+                taskIds.push(currentTaskId);
+                log.info(`spawning task: ${currentTaskId} - ${taskIds}`);
             }
-            return true;
-        },
-    });
-}
+        }
+        return true;
+    },
+});
 log.info('Finished running main');
 
 __.disposer(function() {

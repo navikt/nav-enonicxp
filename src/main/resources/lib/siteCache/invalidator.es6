@@ -195,6 +195,11 @@ function runTask(applicationIsRunning) {
                     libs.task.sleep(TIME_BETWEEN_CHECKS);
                     return;
                 }
+
+                if (!libs.cluster.isMaster()) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
             } catch (e) {
                 log.error(
                     `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS /
