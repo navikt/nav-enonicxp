@@ -1,4 +1,4 @@
-import {  UrlLookupTable } from '/lib/menu-utils/url-lookup-table';
+import { UrlLookupTable } from '/lib/menu-utils/url-lookup-table';
 
 log.info('Started running main');
 const cache = require('/lib/siteCache');
@@ -36,6 +36,7 @@ eventLib.listener({
             return false;
         }
         if (event.data.description === invalidator.taskDescription) {
+            log.info(`valid event: ${event.data.id} - ${event.type}`);
             // if the task which have finished is not in current state, ignore it.
             if (taskIds.indexOf(event.data.id) === -1) {
                 return false;
@@ -44,6 +45,7 @@ eventLib.listener({
             taskIds = taskIds.filter(task => task !== event.data.id);
             currentTaskId = invalidator.runTask(appIsRunning);
             taskIds.push(currentTaskId);
+            log.info(`spawning task: ${currentTaskId} - ${taskIds}`);
         }
         return true;
     },

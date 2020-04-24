@@ -181,10 +181,12 @@ function runTask(applicationIsRunning) {
                 // if not the task must sleep for TIME_BETWEEN_CHECKS
 
                 if (!applicationIsRunning) {
+                    log.info('application is not running, sleep for 60secs');
                     libs.task.sleep(TIME_BETWEEN_CHECKS);
                     return;
                 }
                 if (state.isRunning) {
+                    log.info('another task is running, sleep for 60secs');
                     libs.task.sleep(TIME_BETWEEN_CHECKS);
                     return;
                 }
@@ -239,6 +241,8 @@ function runTask(applicationIsRunning) {
             }
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
             // events are scheduled before that time
+
+            log.info(`had a normal run, sleeping for ${sleepFor}`);
             libs.task.sleep(sleepFor);
         },
     });
