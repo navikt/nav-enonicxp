@@ -54,6 +54,7 @@ function getState() {
     }
     return unpublishContent.data;
 }
+exports.getInvalidatorState = getState;
 
 function setIsRunning(isRunning) {
     navRepo.modify({
@@ -68,6 +69,11 @@ function setIsRunning(isRunning) {
         },
     });
 }
+
+function releaseInvalidatorLock() {
+    setIsRunning(false);
+}
+exports.releaseInvalidatorLock = releaseInvalidatorLock;
 
 function getPrepublishedContent(fromDate, toDate) {
     let prepublishedContent = [];
@@ -167,6 +173,11 @@ function removeExpiredContentFromMaster(expiredContent) {
 }
 
 function runTask(applicationIsRunning) {
+    if (!applicationIsRunning) {
+        log.info('application is not running, abort the spawn');
+        return false;
+    }
+
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
@@ -180,11 +191,6 @@ function runTask(applicationIsRunning) {
                 // --
                 // if not the task must sleep for TIME_BETWEEN_CHECKS
 
-                if (!applicationIsRunning) {
-                    log.info('application is not running, sleep for 60secs');
-                    libs.task.sleep(TIME_BETWEEN_CHECKS);
-                    return;
-                }
                 if (state.isRunning) {
                     log.info('another task is running, sleep for 60secs');
                     libs.task.sleep(TIME_BETWEEN_CHECKS);

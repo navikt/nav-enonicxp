@@ -44,8 +44,10 @@ eventLib.listener({
             // update state and spawn of a new task
             taskIds = taskIds.filter(task => task !== event.data.id);
             currentTaskId = invalidator.runTask(appIsRunning);
-            taskIds.push(currentTaskId);
-            log.info(`spawning task: ${currentTaskId} - ${taskIds}`);
+            if (currentTaskId) {
+                taskIds.push(currentTaskId);
+                log.info(`spawning task: ${currentTaskId} - ${taskIds}`);
+            }
         }
         return true;
     },
@@ -55,5 +57,6 @@ log.info('Finished running main');
 __.disposer(function() {
     // when the app is closed down, tasks might have survived and should not
     // spawn of new tasks. We keep this state to make sure of this.
+    invalidator.releaseInvalidatorLock();
     appIsRunning = false;
 });
