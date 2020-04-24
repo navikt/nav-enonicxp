@@ -4,6 +4,7 @@ const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const eventLib = require('/lib/xp/event');
 const textCleaner = require('/lib/textCleaner');
+const clusterLib = require('/lib/xp/cluster');
 
 let appIsRunning = true;
 let taskIds = [];
@@ -16,31 +17,38 @@ cache.activateEventListener();
 textCleaner.activateEventListener();
 
 // start task for handling caching of expired and prepublished content
-let currentTaskId = invalidator.start(appIsRunning);
-taskIds.push(currentTaskId);
+if (clusterLib.isMaster()) {
+    // make sure the lock is released on startup
+    invalidator.releaseInvalidatorLock();
 
-// keep the process of handling expired content in the cache alive.
-eventLib.listener({
-    type: 'task.*',
-    localOnly: true,
-    callback: event => {
-        // need to listen to all task events and filter on finished and failed for resurrection
-        if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
-            return false;
-        }
-        if (event.data.description === invalidator.taskDescription) {
-            // if the task which have finished is not in current state, ignore it.
-            if (taskIds.indexOf(event.data.id) === -1) {
+    let currentTaskId = invalidator.start(appIsRunning);
+    taskIds.push(currentTaskId);
+
+    // keep the process of handling expired content in the cache alive.
+    eventLib.listener({
+        type: 'task.*',
+        localOnly: true,
+        callback: event => {
+            // need to listen to all task events and filter on finished and failed for resurrection
+            if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
                 return false;
             }
-            // update state and spawn of a new task
-            taskIds = taskIds.filter(task => task !== event.data.id);
-            currentTaskId = invalidator.runTask(appIsRunning);
-            taskIds.push(currentTaskId);
-        }
-        return true;
-    },
-});
+            if (event.data.description === invalidator.taskDescription) {
+                // if the task which have finished is not in current state, ignore it.
+                if (taskIds.indexOf(event.data.id) === -1) {
+                    return false;
+                }
+                // update state and spawn of a new task
+                taskIds = taskIds.filter(task => task !== event.data.id);
+                currentTaskId = invalidator.runTask(appIsRunning);
+                if (currentTaskId) {
+                    taskIds.push(currentTaskId);
+                }
+            }
+            return true;
+        },
+    });
+}
 log.info('Finished running main');
 
 __.disposer(function() {
