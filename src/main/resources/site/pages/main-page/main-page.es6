@@ -46,6 +46,7 @@ function handleGet(req) {
             `<link href="${libs.portal.assetUrl({
                 path: 'styles/navno.css',
             })}" rel="stylesheet" />`,
+            `<section id="decorator-styles"></section>`,
             `<script src="${decUrl}/client.js"></script>`,
             '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
