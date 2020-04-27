@@ -100,6 +100,7 @@ const showMessages = () => {
     if (messages.length > 0) {
         body = libs.thymeleaf.render(view, {
             messages,
+            containerClass: messages.length === 1 ? 'one-col' : '',
         });
     }
 
