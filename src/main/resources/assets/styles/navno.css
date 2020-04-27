@@ -7508,6 +7508,30 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     flex-wrap: wrap;
     margin: 0 -1rem;
 }
+.driftsmeldinger {
+    background-color: #00548E;
+}
+.message-container {
+    display: flex;
+    justify-content: center;
+}
+.driftsmeldinger .message {
+    color: #FFF;
+    padding: 1rem 0;
+}
+.message-container .message {
+    margin: 0 1.5rem;
+    display: flex;
+    align-items: center;
+}
+@media (max-width: 48em) {
+    .message-container {
+        display: block;
+    }
+}
+.message .message-icon {
+    margin-right: 0.5rem;
+}
 .kampanje {
     display: flex;
     flex-direction: row;

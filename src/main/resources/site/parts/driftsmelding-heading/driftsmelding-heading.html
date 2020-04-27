@@ -1,36 +1,22 @@
-<section class="container notifications">
-    <div data-th-if="${messages}" class="lenkepanel-container">
+<section data-th-if="${messages}" class="driftsmeldinger">
+    <div class="container message-container">
         <div data-th-each="message : ${messages}" data-th-remove="tag">
-            <a class="lenkepanel lenkepanel--border"
+            <a class="message"
                data-th-classappend="${message.class}"
                data-ga="driftsmeldinger"
                data-th-href="${message.url}"
             >
-                <div class="lenkepanel-ikon-col">
-                    <img data-th-if="${message.class != 'warning'}"
-                         data-th-src="${message.iconUrl}"
-                    />
-                    <div data-th-if="${message.class == 'warning'}" data-th-remove="tag">
-                        <div class="kampanje-varsel__pulse"></div>
-                        <div class="kampanje-varsel__sirkel"></div>
-                    </div>
-                </div>
-                <div class="lenkepanel-tekst-col">
-                    <h2 class="typo-element lenkepanel__heading">
-                        [[${message.heading}]]
-                    </h2>
-                    <p data-th-if="${message.description}"
-                       class="typo-normal"
-                    >
-                        [[${message.description}]]
-                    </p>
-                    <p data-th-if="${message.updated}"
-                       class="typo-undertekst"
-                    >
+                <span class="message-icon">
+                    <div data-th-remove="tag" data-th-utext="${message.iconSVG}"></div>
+                </span>
+                <div class="message-text typo-normal">
+                    <span data-th-if="${message.updated}">
                         [[${message.updated}]]
-                    </p>
+                    </span>
+                    <span>
+                        [[${message.heading}]]
+                    </span>
                 </div>
-                <span class="lenkepanel__indikator"></span>
             </a>
         </div>
     </div>
