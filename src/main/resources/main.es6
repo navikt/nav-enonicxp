@@ -53,12 +53,12 @@ eventLib.listener({
             currentTaskId = invalidator.runTask(appIsRunning);
             if (currentTaskId) {
                 taskIds.push(currentTaskId);
-                log.info(`spawning task: ${currentTaskId} - ${taskIds}`);
             }
         }
         return true;
     },
 });
+
 log.info('Finished running main');
 
 __.disposer(function() {
