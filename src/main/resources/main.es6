@@ -4,6 +4,7 @@ const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const eventLib = require('/lib/xp/event');
 const textCleaner = require('/lib/textCleaner');
+const clusterLib = require('/lib/xp/cluster');
 
 let appIsRunning = true;
 let taskIds = [];
@@ -16,8 +17,17 @@ cache.activateEventListener();
 textCleaner.activateEventListener();
 
 // start task for handling caching of expired and prepublished content
+if (clusterLib.isMaster()) {
+    // make sure the lock is released on startup
+    invalidator.releaseInvalidatorLock();
+}
+
 let currentTaskId = invalidator.start(appIsRunning);
-taskIds.push(currentTaskId);
+if (currentTaskId) {
+    taskIds.push(currentTaskId);
+} else {
+    log.error('Could not start the invalidator task');
+}
 
 // keep the process of handling expired content in the cache alive.
 eventLib.listener({
@@ -36,11 +46,14 @@ eventLib.listener({
             // update state and spawn of a new task
             taskIds = taskIds.filter(task => task !== event.data.id);
             currentTaskId = invalidator.runTask(appIsRunning);
-            taskIds.push(currentTaskId);
+            if (currentTaskId) {
+                taskIds.push(currentTaskId);
+            }
         }
         return true;
     },
 });
+
 log.info('Finished running main');
 
 __.disposer(function() {

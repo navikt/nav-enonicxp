@@ -1,5 +1,8 @@
 <section class="container notifications">
-    <div data-th-if="${messages}" class="lenkepanel-container">
+    <div data-th-if="${messages}"
+         class="lenkepanel-container"
+         data-th-classappend="${containerClass}"
+    >
         <div data-th-each="message : ${messages}" data-th-remove="tag">
             <a class="lenkepanel lenkepanel--border"
                data-th-classappend="${message.class}"

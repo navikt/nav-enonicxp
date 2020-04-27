@@ -100,6 +100,7 @@ const showMessages = () => {
     if (messages.length > 0) {
         body = libs.thymeleaf.render(view, {
             messages,
+            containerClass: messages.length === 1 ? 'one-col' : '',
         });
     }
 
@@ -112,7 +113,7 @@ const showMessages = () => {
 const handleGet = req => {
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // alltid vise en driftsmelding
-    return libs.cache.getPaths('driftsmelding-heading', undefined, req.branch, () => {
+    return libs.cache.getPaths('notifications', undefined, req.branch, () => {
         return libs.context.run(
             {
                 repository: 'com.enonic.cms.default',

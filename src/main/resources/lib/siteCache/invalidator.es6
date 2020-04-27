@@ -5,6 +5,7 @@ const libs = {
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
     event: require('/lib/xp/event'),
+    cluster: require('/lib/xp/cluster'),
 };
 const masterRepo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
@@ -54,6 +55,7 @@ function getState() {
     }
     return unpublishContent.data;
 }
+exports.getInvalidatorState = getState;
 
 function setIsRunning(isRunning) {
     navRepo.modify({
@@ -68,6 +70,11 @@ function setIsRunning(isRunning) {
         },
     });
 }
+
+function releaseInvalidatorLock() {
+    setIsRunning(false);
+}
+exports.releaseInvalidatorLock = releaseInvalidatorLock;
 
 function getPrepublishedContent(fromDate, toDate) {
     let prepublishedContent = [];
@@ -108,6 +115,9 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
                     data: {
                         prepublished: content,
                     },
+                });
+                content.forEach(item => {
+                    log.info(`PREPUBLISHED: ${item._path}`);
                 });
             }
         }
@@ -167,36 +177,48 @@ function removeExpiredContentFromMaster(expiredContent) {
 }
 
 function runTask(applicationIsRunning) {
+    // TODO: Make sure this doesn't result in tight loop
+    if (!applicationIsRunning) {
+        log.info('application is not running, abort the spawn');
+        return false;
+    }
+
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
-            const state = getState();
+            try {
+                const state = getState();
 
-            // There are three conditions which must be upheld for the cache invalidator to run
-            // --
-            // 1. The navno application must be running
-            // 2. No other task is currently doing the invalidation
-            // 3. Should not run more often then TIME_BETWEEN_CHECKS
-            // --
-            // if not the task must sleep for TIME_BETWEEN_CHECKS
-            if (!applicationIsRunning) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
-            if (state.isRunning) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
-            if (state.lastRun && Date.parse(state.lastRun) + TIME_BETWEEN_CHECKS > Date.now()) {
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
+                // There is two conditions which must be upheld for the cache invalidator to run
+                // --
+                // 1. No other task is currently doing the invalidation
+                // 2. The node has to be master
+                // --
+                // if not the task must sleep for TIME_BETWEEN_CHECKS
 
-            // set flag to prevent others from invalidating the cache simultaneously
-            setIsRunning(true);
+                if (state.isRunning) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+                if (!libs.cluster.isMaster()) {
+                    libs.task.sleep(TIME_BETWEEN_CHECKS);
+                    return;
+                }
+            } catch (e) {
+                log.error(
+                    `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS /
+                        1000} seconds`
+                );
+                log.error(e);
+                libs.task.sleep(TIME_BETWEEN_CHECKS);
+                return;
+            }
 
             let sleepFor = TIME_BETWEEN_CHECKS;
             try {
+                // set flag to prevent others from invalidating the cache simultaneously
+                setIsRunning(true);
+
                 const now = Date.now();
                 const testDate = new Date(now);
 
@@ -216,15 +238,21 @@ function runTask(applicationIsRunning) {
                     testDate,
                     new Date(now + TIME_BETWEEN_CHECKS)
                 );
+
                 if (prepublishOnNext.length > 0) {
                     sleepFor = getSleepFor(prepublishOnNext, now);
                 }
             } catch (e) {
                 log.error(e);
             }
-            // release the lock
-            setIsRunning(false);
 
+            // release the lock
+            try {
+                setIsRunning(false);
+            } catch (e) {
+                log.error('could not release the lock');
+                log.error(e);
+            }
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
             // events are scheduled before that time
             libs.task.sleep(sleepFor);
