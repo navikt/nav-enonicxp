@@ -23,7 +23,11 @@ if (clusterLib.isMaster()) {
 }
 
 let currentTaskId = invalidator.start(appIsRunning);
-taskIds.push(currentTaskId);
+if (currentTaskId) {
+    taskIds.push(currentTaskId);
+} else {
+    log.error('Could not start the invalidator task');
+}
 
 // keep the process of handling expired content in the cache alive.
 eventLib.listener({

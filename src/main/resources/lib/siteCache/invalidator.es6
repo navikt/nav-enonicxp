@@ -177,6 +177,7 @@ function removeExpiredContentFromMaster(expiredContent) {
 }
 
 function runTask(applicationIsRunning) {
+    // TODO: Make sure this doesn't result in tight loop
     if (!applicationIsRunning) {
         log.info('application is not running, abort the spawn');
         return false;
@@ -249,7 +250,7 @@ function runTask(applicationIsRunning) {
             try {
                 setIsRunning(false);
             } catch (e) {
-                log.info('could not release the lock');
+                log.error('could not release the lock');
                 log.error(e);
             }
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
