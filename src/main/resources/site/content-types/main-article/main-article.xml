@@ -98,7 +98,6 @@
                                         <allow-content-type>${app}:external-link</allow-content-type>
                                         <allow-content-type>${app}:internal-link</allow-content-type>
                                         <allow-content-type>${app}:section-page</allow-content-type>
-                                        <allow-content-type>media:*</allow-content-type>
                                         <showStatus>true</showStatus>
                                     </config>
                                 </input>
