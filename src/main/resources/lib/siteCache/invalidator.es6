@@ -255,7 +255,6 @@ function runTask(applicationIsRunning) {
             // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
             // events are scheduled before that time
 
-            log.info(`had a normal run, sleeping for ${sleepFor}`);
             libs.task.sleep(sleepFor);
         },
     });

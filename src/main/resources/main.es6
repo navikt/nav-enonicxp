@@ -43,7 +43,6 @@ eventLib.listener({
             return false;
         }
         if (event.data.description === invalidator.taskDescription) {
-            log.info(`valid event: ${event.data.id} - ${event.type}`);
             // if the task which have finished is not in current state, ignore it.
             if (taskIds.indexOf(event.data.id) === -1) {
                 return false;
