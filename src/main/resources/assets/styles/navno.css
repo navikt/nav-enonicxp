@@ -7507,10 +7507,18 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     column-gap: 1rem;
     row-gap: 1rem;
 }
+.lenkepanel-container.one-col {
+    -ms-grid-columns: (1fr)[1];
+    grid-template-columns: repeat(1, 1fr);
+    width: 80%;
+}
 @media (max-width: 48em) {
     .lenkepanel-container {
         -ms-grid-columns: (1fr)[1];
         grid-template-columns: repeat(1, 1fr);
+    }
+    .lenkepanel-container.one-col {
+        width: 100%;
     }
 }
 .notifications .lenkepanel-container .lenkepanel {
