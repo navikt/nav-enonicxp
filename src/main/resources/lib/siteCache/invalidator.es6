@@ -5,6 +5,7 @@ const libs = {
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
     event: require('/lib/xp/event'),
+    cluster: require('/lib/xp/cluster'),
 };
 const masterRepo = libs.node.connect({
     repoId: 'com.enonic.cms.default',
@@ -54,6 +55,7 @@ function getState() {
     }
     return unpublishContent.data;
 }
+exports.getInvalidatorState = getState;
 
 function setIsRunning(isRunning) {
     navRepo.modify({
@@ -68,6 +70,11 @@ function setIsRunning(isRunning) {
         },
     });
 }
+
+function releaseInvalidatorLock() {
+    setIsRunning(false);
+}
+exports.releaseInvalidatorLock = releaseInvalidatorLock;
 
 function getPrepublishedContent(fromDate, toDate) {
     let prepublishedContent = [];
@@ -108,6 +115,9 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
                     data: {
                         prepublished: content,
                     },
+                });
+                content.forEach(item => {
+                    log.info(`PREPUBLISHED: ${item._path}`);
                 });
             }
         }
@@ -167,24 +177,29 @@ function removeExpiredContentFromMaster(expiredContent) {
 }
 
 function runTask(applicationIsRunning) {
+    if (!applicationIsRunning) {
+        log.info('application is not running, abort the spawn');
+        return false;
+    }
+
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
             try {
                 const state = getState();
 
-                // There are two conditions which must be upheld for the cache invalidator to run
+                // There is two conditions which must be upheld for the cache invalidator to run
                 // --
-                // 1. The navno application must be running
-                // 2. No other task is currently doing the invalidation
+                // 1. No other task is currently doing the invalidation
+                // 2. The node has to be master
                 // --
                 // if not the task must sleep for TIME_BETWEEN_CHECKS
 
-                if (!applicationIsRunning) {
+                if (state.isRunning) {
                     libs.task.sleep(TIME_BETWEEN_CHECKS);
                     return;
                 }
-                if (state.isRunning) {
+                if (!libs.cluster.isMaster()) {
                     libs.task.sleep(TIME_BETWEEN_CHECKS);
                     return;
                 }
