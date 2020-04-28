@@ -57,22 +57,24 @@ function getState() {
 }
 exports.getInvalidatorState = getState;
 
-function setIsRunning(isRunning) {
+function setIsRunning(isRunning, clearLock = false) {
+    const now = new Date().toISOString();
     navRepo.modify({
         key: '/unpublish',
         editor: el => {
             const data = { ...el.data };
-            if (isRunning === false) {
-                data.lastRun = new Date().toISOString();
+            if (isRunning === false && !clearLock) {
+                data.lastRun = now;
             }
             data.isRunning = isRunning;
             return { ...el, data };
         },
     });
+    return isRunning ? null : now;
 }
 
 function releaseInvalidatorLock() {
-    setIsRunning(false);
+    setIsRunning(false, true);
 }
 exports.releaseInvalidatorLock = releaseInvalidatorLock;
 
@@ -186,8 +188,9 @@ function runTask(applicationIsRunning) {
     return libs.task.submit({
         description: TASK_DESCRIPTION,
         task: () => {
+            let state = null;
             try {
-                const state = getState();
+                state = getState();
 
                 // There is two conditions which must be upheld for the cache invalidator to run
                 // --
@@ -220,7 +223,11 @@ function runTask(applicationIsRunning) {
                 setIsRunning(true);
 
                 const now = Date.now();
-                const testDate = new Date(now);
+                const testDate = new Date();
+                if (state) {
+                    // use last run from the lock if exists
+                    prevTestDate = new Date(state.lastRun) || prevTestDate;
+                }
 
                 // remove cache for prepublished content
                 const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
@@ -229,9 +236,6 @@ function runTask(applicationIsRunning) {
                 // unpublish expired content
                 const expiredContent = getExpiredContent(testDate);
                 removeExpiredContentFromMaster(expiredContent);
-
-                // update global prevTestDate with last test date for next run
-                prevTestDate = testDate;
 
                 // calculate time to sleep
                 const prepublishOnNext = getPrepublishedContent(
@@ -246,9 +250,10 @@ function runTask(applicationIsRunning) {
                 log.error(e);
             }
 
-            // release the lock
+            // release the lock, and store local test date
             try {
-                setIsRunning(false);
+                const updatedLastRun = setIsRunning(false);
+                prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
             } catch (e) {
                 log.error('could not release the lock');
                 log.error(e);
