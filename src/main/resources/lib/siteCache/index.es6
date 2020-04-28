@@ -97,7 +97,7 @@ function wipeOnChange(path) {
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
-        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template`);
+        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template on [${myHash}]`);
         return true;
     }
     const w = wipe('paths');
@@ -116,10 +116,10 @@ function wipeOnChange(path) {
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
     }
-    if (path.indexOf('/publiseringskalender/') !== -1) {
+    if (path.indexOf('/publiseringskalender') !== -1) {
         w('publiseringskalender');
     }
-    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()})`);
+    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
 
     if (path.indexOf('/megamenu/') !== -1) {
         wipe('decorator')();
