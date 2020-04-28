@@ -9,14 +9,9 @@
                 <span class="message-icon">
                     <div data-th-remove="tag" data-th-utext="${message.iconSVG}"></div>
                 </span>
-                <div class="message-text typo-normal">
-                    <span data-th-if="${message.updated}">
-                        [[${message.updated}]]
-                    </span>
-                    <span>
-                        [[${message.heading}]]
-                    </span>
-                </div>
+                <span class="message-text typo-normal">
+                    [[${message.heading}]]
+                </span>
             </a>
         </div>
     </div>

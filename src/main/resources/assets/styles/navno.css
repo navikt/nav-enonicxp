@@ -1385,7 +1385,8 @@ button.toggle-search.m-open span {
         padding: 9px 0 0 0;
         vertical-align: top;
         display: inline-block;
-        margin-left: 10px
+        margin-left: 1rem;
+        margin-right: -2.5rem;
     }
 
     .sitesearch .inputwrapper {
@@ -1413,7 +1414,8 @@ button.toggle-search.m-open span {
     .sitesearch .inputwrapper .input-sitesearch {
         padding-left: 3px;
         font-size: 1em;
-        margin: 1px
+        margin: 1px;
+        min-width: 14rem;
     }
 
     .sitesearch .btn-sitesearch {
@@ -1423,10 +1425,6 @@ button.toggle-search.m-open span {
 }
 
 @media (min-width: 60em) {
-    .sitesearch {
-        margin-left: 20px
-    }
-
     .topnavsection .topnavitem > a {
         display: block;
         padding: 10px 20px 10px 10px
@@ -7534,6 +7532,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .driftsmeldinger .message {
     color: #FFF;
     padding: 1rem 0;
+}
+.driftsmeldinger .message:focus {
+        box-shadow: none;
 }
 .message-container .message {
     margin: 0 1.5rem;
