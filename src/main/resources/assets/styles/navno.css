@@ -1386,7 +1386,7 @@ button.toggle-search.m-open span {
         vertical-align: top;
         display: inline-block;
         margin-left: 1rem;
-        margin-right: -2.5rem;
+        margin-right: -3.5rem;
     }
 
     .sitesearch .inputwrapper {
@@ -7528,13 +7528,17 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .message-container {
     display: flex;
     justify-content: center;
+    padding: 0.5rem 0;
 }
 .driftsmeldinger .message {
     color: #FFF;
-    padding: 1rem 0;
+    padding: 0.5rem;
 }
-.driftsmeldinger .message:focus {
-        box-shadow: none;
+.driftsmeldinger a.message:focus {
+    color: #0067C5;
+    background-color: #FFF;
+    text-decoration: underline;
+    box-shadow: none;
 }
 .message-container .message {
     margin: 0 1.5rem;
