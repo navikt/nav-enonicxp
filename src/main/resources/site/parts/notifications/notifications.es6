@@ -13,21 +13,54 @@ const messagesProps = {
         class: 'warning',
         icon: null,
     },
-    prodstatus: {
-        class: 'status',
-        icon: 'alertstripe__ikon_advarsel.svg',
-    },
     info: {
         class: 'info',
         icon: 'alertstripe__ikon_info.svg',
     },
 };
 
-const getHeading = (message, target) => {
-    if (target) {
-        return message.data.title || target.displayName;
+const getGlobalMessages = () => {
+    // Hent ut gobale varsler
+    return libs.content
+        .getChildren({
+            key: '/www.nav.no/global-notifications',
+            start: 0,
+            count: 2,
+            sort: '_manualordervalue DESC',
+        })
+        .hits.filter(item => item.type === 'no.nav.navno:notification');
+};
+
+const getLocalMessage = contentPath => {
+    // Hent alle varsler som er i min path
+    let result = libs.content
+        .query({
+            query: '',
+            count: 100,
+            contentTypes: [`${app.name}:notification`],
+        })
+        .hits.filter(item =>
+            contentPath.contains(item._path.slice(0, item._path.lastIndexOf('/')))
+        );
+    // Ved flere varsler: Hent varselet som er lengst ned i hierarkiet
+    if (result.length > 1) {
+        result = result
+            .map(item => {
+                return { ...item, pathDepth: item._path.split('/').length };
+            })
+            .reduce((prev, current) => {
+                return prev.pathDepth > current.pathDepth ? prev : current;
+            }, null);
     }
-    return message.data.title || message.displayName;
+    // Returnerer alltid bare et objekt
+    if (Array.isArray(result)) {
+        return result[0];
+    }
+    return result;
+};
+
+const getHeading = (message, target) => {
+    return message.data.title || target.displayName;
 };
 
 const getDescription = (message, target) => {
@@ -46,7 +79,7 @@ const getUpdated = (message, target, language) => {
     if (message.data.showUpdated) {
         const updated = target ? target.modifiedTime : message.modifiedTime;
         if (updated) {
-            return `Oppdatert: ${libs.navUtils.formatDateTime(updated, language)}`;
+            return libs.navUtils.dateTimeUpdated(updated, language);
         }
     }
     return null;
@@ -87,15 +120,27 @@ const showMessages = () => {
     let body = null;
     const content = libs.portal.getContent();
     const language = content.language || 'no';
-    const result = libs.content.getChildren({
-        key: '/www.nav.no/no/driftsmeldinger',
-        start: 0,
-        count: 4,
-        sort: '_manualordervalue DESC',
-    });
-    const messages = result.hits
-        .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
-        .map(item => constructMessage(item, language));
+
+    // Hent ut globale varsler
+    let messages = getGlobalMessages();
+    log.info('*** GLOBAL ***');
+    log.info(JSON.stringify(messages, null, 4));
+
+    // Hent ut eventuelt lokalt varsel
+    const local = getLocalMessage(content._path);
+    log.info('*** LOCAL ***');
+    log.info(JSON.stringify(local, null, 4));
+
+    if (local && local.data) {
+        // Fjern globalt varsel hvis det lokale skal ersatte dette
+        if (local.data.notificationToReplace) {
+            messages = messages.filter(item => item._id !== local.data.notificationToReplaceId);
+        }
+        messages.push(local);
+    }
+    messages = messages.map(item => constructMessage(item, language));
+    log.info('*** MESSAGES ***');
+    log.info(JSON.stringify(messages, null, 4));
 
     if (messages.length > 0) {
         body = libs.thymeleaf.render(view, {
@@ -110,23 +155,22 @@ const showMessages = () => {
     };
 };
 
-const handleGet = req => {
+const handleGet = () => {
+    // Ingen caching, da invalidering blir for komplisert/usikkert
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
-    // alltid vise en driftsmelding
-    return libs.cache.getPaths('notifications', undefined, req.branch, () => {
-        return libs.context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'master',
-                user: {
-                    login: 'su',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
+    // vise upubliserte varsler
+    return libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
             },
-            showMessages
-        );
-    });
+            principals: ['role:system.admin'],
+        },
+        showMessages
+    );
 };
 
 exports.get = handleGet;

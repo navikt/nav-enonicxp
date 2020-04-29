@@ -17,44 +17,24 @@
                 <input name="type" type="RadioButton">
                     <label>Type</label>
                     <config>
-                        <option value="prodstatus">Driftsmelding (brukes av Ops)</option>
+                        <option value="prodstatus">Kritisk driftsmelding</option>
                         <option value="info">Viktig informasjon</option>
-                        <option value="warning">Kritisk informasjon</option>
                     </config>
                     <default>prodstatus</default>
                 </input>
-                <input name="title" type="TextLine">
-                    <label>Tittel (overstyrer sidetittel fra eventuelt valgt innhold)</label>
-                    <help-text>
-                        Fylles ut hvis du vil overstyre visning av tittel fra innhold
-                        det henvises til.
-                    </help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
                 <input name="showDescription" type="CheckBox">
-                    <label>Vis beskrivelse/ingress</label>
-                    <help-text>Kryss av for å vise en beskrivelse eller ingress i lenkepanelet</help-text>
-                    <occurrences maximum="1" minimum="0"/>
+                    <label>Vis ingress</label>
+                    <help-text>Kryss av for å vise ingressen</help-text>
                 </input>
                 <mixin name="ingress"/>
                 <input name="showUpdated" type="CheckBox">
                     <label>Vis oppdateringstidspunkt</label>
-                    <help-text>Kryss av for å vise oppdateringstidspunktet i lenkepanelet</help-text>
-                    <occurrences maximum="1" minimum="0"/>
+                    <help-text>Kryss av for å vise oppdateringstidspunktet</help-text>
                 </input>
                 <input type="HtmlArea" name="text">
-                    <label>Brødtekst melding (brukes ikke hvis det henvises til annet innhold)</label>
-                    <help-text>Kort og konsis meldingstekst.</help-text>
+                    <label>Brødtekst melding</label>
+                    <help-text>Kort og konsis meldingstekst</help-text>
                     <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input name="target" type="ContentSelector">
-                    <label>Innhold det eventuelt skal henvises til</label>
-                    <help-text>Velg innhold som det skal henvises til</help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                    <config>
-                        <allowPath>/www.nav.no/*</allowPath>
-                        <showStatus>true</showStatus>
-                    </config>
                 </input>
             </items>
         </field-set>

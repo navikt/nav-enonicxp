@@ -1,0 +1,18 @@
+<section data-th-if="${messages}" class="driftsmeldinger">
+    <div class="container message-container">
+        <div data-th-each="message : ${messages}" data-th-remove="tag">
+            <a class="message"
+               data-th-classappend="${message.class}"
+               data-ga="driftsmeldinger"
+               data-th-href="${message.url}"
+            >
+                <span class="message-icon">
+                    <div data-th-remove="tag" data-th-utext="${message.iconSVG}"></div>
+                </span>
+                <span class="message-text typo-normal">
+                    [[${message.heading}]]
+                </span>
+            </a>
+        </div>
+    </div>
+</section>
