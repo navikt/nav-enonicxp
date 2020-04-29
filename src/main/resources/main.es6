@@ -58,6 +58,6 @@ log.info('Finished running main');
 
 __.disposer(function() {
     // when the app is closed down, tasks might have survived and should not
-    // spawn of  new tasks. We keep this state to make sure of this.
+    // spawn of new tasks. We keep this state to make sure of this.
     appIsRunning = false;
 });
