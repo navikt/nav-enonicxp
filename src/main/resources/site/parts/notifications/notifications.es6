@@ -48,9 +48,9 @@ const getLocalMessage = contentPath => {
             .map(item => {
                 return { ...item, pathDepth: item._path.split('/').length };
             })
-            .reduce((prev, current) => {
-                return prev.pathDepth > current.pathDepth ? prev : current;
-            }, null);
+            .reduce((acc, current) => {
+                return acc.pathDepth > current.pathDepth ? acc : current;
+            }, []);
     }
     // Returnerer alltid bare et objekt
     if (Array.isArray(result)) {
@@ -123,24 +123,18 @@ const showMessages = () => {
 
     // Hent ut globale varsler
     let messages = getGlobalMessages();
-    log.info('*** GLOBAL ***');
-    log.info(JSON.stringify(messages, null, 4));
 
     // Hent ut eventuelt lokalt varsel
     const local = getLocalMessage(content._path);
-    log.info('*** LOCAL ***');
-    log.info(JSON.stringify(local, null, 4));
 
     if (local && local.data) {
         // Fjern globalt varsel hvis det lokale skal ersatte dette
-        if (local.data.notificationToReplace) {
+        if (local.data.notificationToReplaceId) {
             messages = messages.filter(item => item._id !== local.data.notificationToReplaceId);
         }
         messages.push(local);
     }
     messages = messages.map(item => constructMessage(item, language));
-    log.info('*** MESSAGES ***');
-    log.info(JSON.stringify(messages, null, 4));
 
     if (messages.length > 0) {
         body = libs.thymeleaf.render(view, {
@@ -148,7 +142,6 @@ const showMessages = () => {
             containerClass: messages.length === 1 ? 'one-col' : '',
         });
     }
-
     return {
         contentType: 'text/html',
         body,
