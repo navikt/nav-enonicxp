@@ -118,8 +118,8 @@ const showMessages = () => {
 
     if (global || local) {
         // Fjern eventuelle globale varsler som skal erstattes
-        const removedWarnings = [];
         if (global) {
+            const removedWarnings = [];
             local.forEach(localMessage => {
                 const localSubId = localMessage.data.notificationToReplaceId;
                 if (localSubId && removedWarnings.indexOf(localSubId) === -1) {
