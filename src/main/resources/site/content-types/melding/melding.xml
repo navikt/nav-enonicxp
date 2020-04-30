@@ -6,14 +6,6 @@
         <field-set name="melding">
             <label>Melding</label>
             <items>
-                <input name="exposureLevel" type="RadioButton">
-                    <label>Hvor skal meldingen vises?</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <option value="site">På nettsidene NAV.no</option>
-                    </config>
-                    <default>site</default>
-                </input>
                 <input name="type" type="RadioButton">
                     <label>Type</label>
                     <config>
@@ -22,15 +14,7 @@
                     </config>
                     <default>prodstatus</default>
                 </input>
-                <input name="showDescription" type="CheckBox">
-                    <label>Vis ingress</label>
-                    <help-text>Kryss av for å vise ingressen</help-text>
-                </input>
                 <mixin name="ingress"/>
-                <input name="showUpdated" type="CheckBox">
-                    <label>Vis oppdateringstidspunkt</label>
-                    <help-text>Kryss av for å vise oppdateringstidspunktet</help-text>
-                </input>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst melding</label>
                     <help-text>Kort og konsis meldingstekst</help-text>

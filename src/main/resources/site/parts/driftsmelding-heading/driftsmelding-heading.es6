@@ -11,8 +11,7 @@ const view = resolve('driftsmelding-heading.html');
 const messagesProps = {
     prodstatus: {
         class: 'status',
-        iconSVG:'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
-            '    <title>New icons 2px/24px/warning</title>\n' +
+        iconSVG:'<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
             '    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n' +
             '        <g transform="translate(-222.000000, -106.000000)" fill="currentColor">\n' +
             '            <g id="New-icons-2px/24px/warning" transform="translate(222.000000, 106.000000)">\n' +
@@ -24,8 +23,7 @@ const messagesProps = {
     },
     info: {
         class: 'info',
-        iconSVG: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
-            '    <title>New icons 2px/24px/information</title>\n' +
+        iconSVG: '<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
             '    <g id="News-varsel" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n' +
             '        <g transform="translate(-164.000000, -106.000000)" fill="currentColor">\n' +
             '            <g transform="translate(164.000000, 106.000000)">\n' +
@@ -37,34 +35,13 @@ const messagesProps = {
     },
 };
 
-const getDescription = message => {
-    if (message.data.showDescription && message.data.ingress) {
-        return message.data.ingress;
-    }
-    return '';
-};
-
-const getUpdated = (message, language) => {
-    if (message.data.showUpdated) {
-        const updated = message.modifiedTime;
-        if (updated) {
-            return libs.navUtils.dateTimeUpdated(updated, language);
-        }
-    }
-    return null;
-};
-
 const constructMessage = (message, language) => {
     if (message && message.data) {
-        const messageProps = messagesProps[message.data.type] || {};
         const heading = message.displayName;
         const url = libs.portal.pageUrl({ path: message._path });
-        const description = getDescription(message);
-        const updated = getUpdated(message, language);
+        const messageProps = messagesProps[message.data.type] || {};
         return {
             heading,
-            description,
-            updated,
             url,
             iconSVG: messageProps.iconSVG,
             class: messageProps.class,
