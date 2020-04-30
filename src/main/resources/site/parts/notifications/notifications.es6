@@ -114,11 +114,7 @@ const showMessages = () => {
     let body = null;
     const content = libs.portal.getContent();
     const language = content.language || 'no';
-
-    // Hent ut globale varsler
     let global = getGlobalMessages();
-
-    // Hent ut lokale varsler
     const local = getLocalMessages(content._path);
 
     if (global || local) {
