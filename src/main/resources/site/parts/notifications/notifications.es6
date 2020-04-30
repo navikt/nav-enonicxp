@@ -43,13 +43,12 @@ const getLocalMessages = contentPath => {
             contentPath.contains(item._path.slice(0, item._path.lastIndexOf('/')))
         );
     // Ved flere varsler: Sorter hierarkisk
-    result = result
-        .map(item => {
-            return { ...item, pathDepth: item._path.split('/').length };
-        })
-        .sort((a, b) => a.pathDepth - b.pathDepth);
+    result = result.sort((a, b) => {
+        const aPathDepth = a._path.split('/').length;
+        const bPathDepth = b._path.split('/').length;
+        return aPathDepth - bPathDepth;
+    });
 
-    // Returnerer alltid en array
     return libs.navUtils.forceArray(result);
 };
 
@@ -118,17 +117,20 @@ const showMessages = () => {
     const local = getLocalMessages(content._path);
 
     if (global || local) {
-        // Fjern eventuelle globale varsler som skal ersattes
-        local.forEach(localMessage => {
-            if (localMessage.data.notificationToReplaceId) {
-                global = global.filter(
-                    item => item._id !== localMessage.data.notificationToReplaceId
-                );
-            }
-        });
+        // Fjern eventuelle globale varsler som skal erstattes
+        const removedWarnings = [];
+        if (global) {
+            local.forEach(localMessage => {
+                const localSubId = localMessage.data.notificationToReplaceId;
+                if (localSubId && removedWarnings.indexOf(localSubId) === -1) {
+                    global = global.filter(item => item._id !== localSubId);
+                    removedWarnings.push(localSubId);
+                }
+            });
+        }
         const messages = global.concat(local).map(item => constructMessage(item, language));
 
-        if (messages.length > 0) {
+        if (messages) {
             body = libs.thymeleaf.render(view, {
                 messages,
                 containerClass: messages.length === 1 ? 'one-col' : '',

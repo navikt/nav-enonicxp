@@ -11,7 +11,8 @@ const view = resolve('driftsmelding-heading.html');
 const messagesProps = {
     prodstatus: {
         class: 'status',
-        iconSVG:'<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
+        iconSVG:
+            '<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
             '    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n' +
             '        <g transform="translate(-222.000000, -106.000000)" fill="currentColor">\n' +
             '            <g id="New-icons-2px/24px/warning" transform="translate(222.000000, 106.000000)">\n' +
@@ -19,11 +20,12 @@ const messagesProps = {
             '            </g>\n' +
             '        </g>\n' +
             '    </g>\n' +
-            '</svg>'
+            '</svg>',
     },
     info: {
         class: 'info',
-        iconSVG: '<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
+        iconSVG:
+            '<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n' +
             '    <g id="News-varsel" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n' +
             '        <g transform="translate(-164.000000, -106.000000)" fill="currentColor">\n' +
             '            <g transform="translate(164.000000, 106.000000)">\n' +
@@ -31,7 +33,7 @@ const messagesProps = {
             '            </g>\n' +
             '        </g>\n' +
             '    </g>\n' +
-            '</svg>\n'
+            '</svg>\n',
     },
 };
 
