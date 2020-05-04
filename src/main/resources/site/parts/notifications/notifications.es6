@@ -20,7 +20,7 @@ const messagesProps = {
 };
 
 const getGlobalMessages = () => {
-    // Hent ut gobale varsler
+    // Hent ut globale varsler
     return libs.content
         .getChildren({
             key: '/www.nav.no/global-notifications',
@@ -114,7 +114,13 @@ const showMessages = () => {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
     let global = getGlobalMessages();
-    const local = getLocalMessages(content._path);
+    const local = libs.cache.getNotifications(
+        content._path,
+        'notifications',
+        'master',
+        getLocalMessages,
+        content._path
+    );
 
     if (global || local) {
         // Fjern eventuelle globale varsler som skal erstattes
@@ -143,7 +149,7 @@ const showMessages = () => {
     };
 };
 
-const handleGet = () => {
+const handleGet = req => {
     // Ingen caching, da invalidering blir for komplisert/usikkert
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // vise upubliserte varsler
