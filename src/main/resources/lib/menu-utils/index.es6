@@ -13,7 +13,7 @@ const getMegaMenu = ({ content, levels }) => {
         if (menuLevel > 0) {
             subMenus = getMegaMenu({
                 content: menuContent,
-                levels: menuLevel
+                levels: menuLevel,
             });
         }
 
@@ -34,6 +34,7 @@ const getMegaMenu = ({ content, levels }) => {
         return {
             displayName: menuContent.displayName,
             path: app.config.env === 'p' ? path : UrlLookupTable.getUrlFromTable(path),
+            displayLock: menuContent.data.displayLock,
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
             children: subMenus,
