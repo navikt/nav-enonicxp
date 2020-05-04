@@ -143,7 +143,9 @@ const showMessages = content => {
 };
 
 const handleGet = req => {
-    // Ingen caching, da invalidering blir for komplisert/usikkert
+    // Cacher pr path i 60 sekunder. Vil unnslippe komplisert logikk
+    // med individuell cacheinvalidering.
+
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // vise upubliserte varsler
     return libs.context.run(
