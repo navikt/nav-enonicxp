@@ -109,18 +109,11 @@ const constructMessage = (message, language) => {
     return false;
 };
 
-const showMessages = () => {
+const showMessages = content => {
     let body = null;
-    const content = libs.portal.getContent();
     const language = content.language || 'no';
     let global = getGlobalMessages();
-    const local = libs.cache.getNotifications(
-        content._path,
-        'notifications',
-        'master',
-        getLocalMessages,
-        content._path
-    );
+    const local = getLocalMessages(content._path);
 
     if (global || local) {
         // Fjern eventuelle globale varsler som skal erstattes
@@ -163,7 +156,16 @@ const handleGet = req => {
             },
             principals: ['role:system.admin'],
         },
-        showMessages
+        () => {
+            const content = libs.portal.getContent();
+            return libs.cache.getNotifications(
+                content._path,
+                'notifications',
+                'master',
+                showMessages,
+                content
+            );
+        }
     );
 };
 
