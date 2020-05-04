@@ -25,7 +25,7 @@
                 <span>[[${langBundle.printpage}]]</span>
             </div>
         </div>
-        <p data-th-utext="${#strings.replace(#strings.escapeXml(ingress),'&#10;','&lt;br&gt;')}" class="preface" data-th-if="${ingress && ingress != ''}">
+        <p data-th-utext="${#strings.replace(#strings.escapeXml(ingress),'&#10;','&lt;br&gt;')}" class="preface" data-th-if="${ingress && ingress != ''}"></p>
     </header>
     <article data-th-each="item : ${items}">
         <h2 role="heading" aria-level="2">
