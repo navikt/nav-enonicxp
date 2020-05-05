@@ -38,6 +38,15 @@
                     <occurrences maximum="1" minimum="1"/>
                     <config>
                         <allowPath>${site}/*</allowPath>
+                        <allowContentType>${app}:external-link</allowContentType>
+                        <allowContentType>${app}:faq-page</allowContentType>
+                        <allowContentType>${app}:internal-link</allowContentType>
+                        <allowContentType>${app}:main-article</allowContentType>
+                        <allowContentType>${app}:main-article-chapter</allowContentType>
+                        <allowContentType>${app}:page-list</allowContentType>
+                        <allowContentType>${app}:section-page</allowContentType>
+                        <allowContentType>${app}:transport-page</allowContentType>
+                        <allowContentType>media:video</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
                 </input>
