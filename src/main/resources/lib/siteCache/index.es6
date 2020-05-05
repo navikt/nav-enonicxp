@@ -25,7 +25,7 @@ const myHash =
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
-    notification: libs.cache.newCache({
+    notifications: libs.cache.newCache({
         size: 500,
         expire: oneMinute,
     }),
@@ -260,7 +260,7 @@ module.exports = {
     getAZList: getSome('azList'),
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
-    getNotifications: getSome('notification'),
+    getNotifications: getSome('notifications'),
     activateEventListener,
     stripPath: getPath,
     etag: getEtag,
