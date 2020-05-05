@@ -53,11 +53,12 @@ const getLocalMessages = contentPath => {
 };
 
 const getHeading = (message, target) => {
-    return message.data.title || target.displayName;
+    const targetName = target ? target.displayName : '';
+    return message.data.title || targetName;
 };
 
 const getDescription = (message, target) => {
-    if (message.data.showDescription) {
+    if (message && message.data && message.data.showDescription) {
         if (message.data.ingress) {
             return message.data.ingress;
         }
