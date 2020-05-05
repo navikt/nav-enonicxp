@@ -10,6 +10,8 @@ const libs = {
 const sitePath = '/www.nav.no/';
 
 const oneDay = 3600 * 24;
+const oneMinute = 60;
+
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
 const myHash =
@@ -23,6 +25,10 @@ const myHash =
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
+    notifications: libs.cache.newCache({
+        size: 500,
+        expire: oneMinute,
+    }),
     decorator: libs.cache.newCache({
         size: 50,
         expire: oneDay,
@@ -254,6 +260,7 @@ module.exports = {
     getAZList: getSome('azList'),
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
+    getNotifications: getSome('notifications'),
     activateEventListener,
     stripPath: getPath,
     etag: getEtag,

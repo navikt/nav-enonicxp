@@ -20,7 +20,7 @@ const messagesProps = {
 };
 
 const getGlobalMessages = () => {
-    // Hent ut gobale varsler
+    // Hent ut globale varsler
     return libs.content
         .getChildren({
             key: '/www.nav.no/global-notifications',
@@ -43,13 +43,12 @@ const getLocalMessages = contentPath => {
             contentPath.contains(item._path.slice(0, item._path.lastIndexOf('/')))
         );
     // Ved flere varsler: Sorter hierarkisk
-    result = result
-        .map(item => {
-            return { ...item, pathDepth: item._path.split('/').length };
-        })
-        .sort((a, b) => a.pathDepth - b.pathDepth);
+    result = result.sort((a, b) => {
+        const aPathDepth = a._path.split('/').length;
+        const bPathDepth = b._path.split('/').length;
+        return aPathDepth - bPathDepth;
+    });
 
-    // Returnerer alltid en array
     return libs.navUtils.forceArray(result);
 };
 
@@ -110,25 +109,27 @@ const constructMessage = (message, language) => {
     return false;
 };
 
-const showMessages = () => {
+const showMessages = content => {
     let body = null;
-    const content = libs.portal.getContent();
     const language = content.language || 'no';
     let global = getGlobalMessages();
     const local = getLocalMessages(content._path);
 
     if (global || local) {
-        // Fjern eventuelle globale varsler som skal ersattes
-        local.forEach(localMessage => {
-            if (localMessage.data.notificationToReplaceId) {
-                global = global.filter(
-                    item => item._id !== localMessage.data.notificationToReplaceId
-                );
-            }
-        });
+        // Fjern eventuelle globale varsler som skal erstattes
+        if (global) {
+            const removedWarnings = [];
+            local.forEach(localMessage => {
+                const localSubId = localMessage.data.notificationToReplaceId;
+                if (localSubId && removedWarnings.indexOf(localSubId) === -1) {
+                    global = global.filter(item => item._id !== localSubId);
+                    removedWarnings.push(localSubId);
+                }
+            });
+        }
         const messages = global.concat(local).map(item => constructMessage(item, language));
 
-        if (messages.length > 0) {
+        if (messages) {
             body = libs.thymeleaf.render(view, {
                 messages,
                 containerClass: messages.length === 1 ? 'one-col' : '',
@@ -141,8 +142,10 @@ const showMessages = () => {
     };
 };
 
-const handleGet = () => {
-    // Ingen caching, da invalidering blir for komplisert/usikkert
+const handleGet = req => {
+    // Cacher pr path i 60 sekunder. Vil unnslippe komplisert logikk
+    // med individuell cacheinvalidering.
+
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
     // vise upubliserte varsler
     return libs.context.run(
@@ -155,7 +158,16 @@ const handleGet = () => {
             },
             principals: ['role:system.admin'],
         },
-        showMessages
+        () => {
+            const content = libs.portal.getContent();
+            return libs.cache.getNotifications(
+                content._path,
+                'notifications',
+                'master',
+                showMessages,
+                content
+            );
+        }
     );
 };
 
