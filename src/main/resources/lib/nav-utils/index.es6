@@ -1,6 +1,7 @@
 const libs = {
     content: require('/lib/xp/content'),
     i18n: require('/lib/xp/i18n'),
+    lang: require('/lib/i18nUtil'),
     portal: require('/lib/xp/portal'),
     moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
 };
@@ -271,6 +272,11 @@ function dateTimePublished(content, language) {
     return publishedString + modifiedString;
 }
 
+const dateTimeUpdated = (dateTime, language) => {
+    const updatedText = libs.lang.parseBundle(language).message.updated;
+    return `${updatedText}: ${formatDateTime(dateTime, language)}`;
+};
+
 /**
  * @description get all children of content
  * @param {object} content content to find all children of
@@ -336,21 +342,22 @@ function getSitePath() {
 }
 
 module.exports = {
-    dateTimePublished,
-    fixDateFormat,
+    getExtensionForImage,
+    getImageUrl,
+    validateUrl: validUrl,
     forceArray,
-    formatDate,
-    formatDateTime,
-    getAllChildren,
+    sortContents,
+    getParameterValue,
     getContentByCmsKey,
     getContentByMenuKey,
     getContentParam,
+    fixDateFormat,
+    formatDate,
+    formatDateTime,
     getLanguageVersions,
-    getParameterValue,
-    getImageUrl,
-    validateUrl: validUrl,
-    getExtensionForImage,
-    sortContents,
+    dateTimePublished,
+    dateTimeUpdated,
+    getAllChildren,
     unicodeLiteral,
     getSitePath,
 };

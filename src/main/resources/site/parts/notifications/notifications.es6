@@ -13,25 +13,52 @@ const messagesProps = {
         class: 'warning',
         icon: null,
     },
-    prodstatus: {
-        class: 'status',
-        icon: 'alertstripe__ikon_advarsel.svg',
-    },
     info: {
         class: 'info',
         icon: 'alertstripe__ikon_info.svg',
     },
 };
 
+const getGlobalMessages = () => {
+    // Hent ut globale varsler
+    return libs.content
+        .getChildren({
+            key: '/www.nav.no/global-notifications',
+            start: 0,
+            count: 2,
+            sort: '_manualordervalue DESC',
+        })
+        .hits.filter(item => item.type === 'no.nav.navno:notification');
+};
+
+const getLocalMessages = contentPath => {
+    // Hent alle varsler som er i min path
+    let result = libs.content
+        .query({
+            query: '',
+            count: 100,
+            contentTypes: [`${app.name}:notification`],
+        })
+        .hits.filter(item =>
+            contentPath.contains(item._path.slice(0, item._path.lastIndexOf('/')))
+        );
+    // Ved flere varsler: Sorter hierarkisk
+    result = result.sort((a, b) => {
+        const aPathDepth = a._path.split('/').length;
+        const bPathDepth = b._path.split('/').length;
+        return aPathDepth - bPathDepth;
+    });
+
+    return libs.navUtils.forceArray(result);
+};
+
 const getHeading = (message, target) => {
-    if (target) {
-        return message.data.title || target.displayName;
-    }
-    return message.data.title || message.displayName;
+    const targetName = target ? target.displayName : '';
+    return message.data.title || targetName;
 };
 
 const getDescription = (message, target) => {
-    if (message.data.showDescription) {
+    if (message && message.data && message.data.showDescription) {
         if (message.data.ingress) {
             return message.data.ingress;
         }
@@ -46,7 +73,7 @@ const getUpdated = (message, target, language) => {
     if (message.data.showUpdated) {
         const updated = target ? target.modifiedTime : message.modifiedTime;
         if (updated) {
-            return `Oppdatert: ${libs.navUtils.formatDateTime(updated, language)}`;
+            return libs.navUtils.dateTimeUpdated(updated, language);
         }
     }
     return null;
@@ -83,27 +110,33 @@ const constructMessage = (message, language) => {
     return false;
 };
 
-const showMessages = () => {
+const showMessages = content => {
     let body = null;
-    const content = libs.portal.getContent();
     const language = content.language || 'no';
-    const result = libs.content.getChildren({
-        key: '/www.nav.no/no/driftsmeldinger',
-        start: 0,
-        count: 4,
-        sort: '_manualordervalue DESC',
-    });
-    const messages = result.hits
-        .filter(item => item.type === 'no.nav.navno:melding' && item.data.exposureLevel === 'site')
-        .map(item => constructMessage(item, language));
+    let global = getGlobalMessages();
+    const local = getLocalMessages(content._path);
 
-    if (messages.length > 0) {
-        body = libs.thymeleaf.render(view, {
-            messages,
-            containerClass: messages.length === 1 ? 'one-col' : '',
-        });
+    if (global || local) {
+        // Fjern eventuelle globale varsler som skal erstattes
+        if (global) {
+            const removedWarnings = [];
+            local.forEach(localMessage => {
+                const localSubId = localMessage.data.notificationToReplaceId;
+                if (localSubId && removedWarnings.indexOf(localSubId) === -1) {
+                    global = global.filter(item => item._id !== localSubId);
+                    removedWarnings.push(localSubId);
+                }
+            });
+        }
+        const messages = global.concat(local).map(item => constructMessage(item, language));
+
+        if (messages) {
+            body = libs.thymeleaf.render(view, {
+                messages,
+                containerClass: messages.length === 1 ? 'one-col' : '',
+            });
+        }
     }
-
     return {
         contentType: 'text/html',
         body,
@@ -111,22 +144,32 @@ const showMessages = () => {
 };
 
 const handleGet = req => {
+    // Cacher pr path i 60 sekunder. Vil unnslippe komplisert logikk
+    // med individuell cacheinvalidering.
+
     // Må kjøre i context av master-branch, ellers vil preview i Content studio
-    // alltid vise en driftsmelding
-    return libs.cache.getPaths('notifications', undefined, req.branch, () => {
-        return libs.context.run(
-            {
-                repository: 'com.enonic.cms.default',
-                branch: 'master',
-                user: {
-                    login: 'su',
-                    userStore: 'system',
-                },
-                principals: ['role:system.admin'],
+    // vise upubliserte varsler
+    return libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
             },
-            showMessages
-        );
-    });
+            principals: ['role:system.admin'],
+        },
+        () => {
+            const content = libs.portal.getContent();
+            return libs.cache.getNotifications(
+                content._path,
+                'notifications',
+                'master',
+                showMessages,
+                content
+            );
+        }
+    );
 };
 
 exports.get = handleGet;
