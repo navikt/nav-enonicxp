@@ -498,7 +498,7 @@ const searchResult = [
     },
     {
         type: 'part',
-        path: '/main/3/searchbar/0',
+        path: '/main/2/searchbar/0',
         part: {
             descriptor: 'no.nav.navno:searchbar',
             config: {
@@ -508,7 +508,7 @@ const searchResult = [
     },
     {
         type: 'part',
-        path: '/main/3/result/0',
+        path: '/main/2/result/0',
         part: {
             descriptor: 'no.nav.navno:searchresult',
             config: {
