@@ -92,3 +92,6 @@ crashlytics-build.properties
 
 node_modules/
 .enonic
+
+# Assets
+src/main/resources/assets/iac

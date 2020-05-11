@@ -1,21 +1,17 @@
 const libs = {
-    portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
+    portal: require('/lib/xp/portal'),
+    cache: require('/lib/siteCache'),
     menuUtils: require('/lib/menu-utils'),
 };
 
-function handleGet() {
-    const menu = libs.menuUtils.getMegaMenu(
-        libs.content.get({
-            key: '/www.nav.no/dekorator-meny/',
-        }),
-        10
-    );
+const handleGet = () => {
+    const menu = libs.menuUtils.getMegaMenu({
+        content: libs.content.get({ key: '/www.nav.no/dekorator-meny/' }),
+        levels: 10,
+    });
 
-    return {
-        body: menu,
-        contentType: 'application/json',
-    };
-}
+    return { body: menu, contentType: 'application/json' };
+};
 
 exports.get = handleGet;

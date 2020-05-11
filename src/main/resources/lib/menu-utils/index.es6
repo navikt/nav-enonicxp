@@ -1,14 +1,20 @@
+import { UrlLookupTable } from './url-lookup-table';
+
 const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
+    io: require('/lib/xp/io'),
 };
 
-const getMegaMenu = (content, levels) => {
+const getMegaMenu = ({ content, levels }) => {
     const menuToJson = (menuContent, menuLevel) => {
         let subMenus = [];
 
         if (menuLevel > 0) {
-            subMenus = getMegaMenu(menuContent, menuLevel);
+            subMenus = getMegaMenu({
+                content: menuContent,
+                levels: menuLevel,
+            });
         }
 
         let path = libs.portal.pageUrl({
@@ -27,7 +33,7 @@ const getMegaMenu = (content, levels) => {
 
         return {
             displayName: menuContent.displayName,
-            path,
+            path: app.config.env === 'p' ? path : UrlLookupTable.getUrlFromTable(path),
             displayLock: menuContent.data.displayLock,
             id: menuContent._id,
             hasChildren: subMenus.length > 0,

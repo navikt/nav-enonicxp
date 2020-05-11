@@ -1,12 +1,8 @@
-const portalLib = require('/lib/xp/portal');
+import { getUrlOrPage } from '/lib/menu-utils/url-lookup-table';
 
 exports.macro = function(context) {
     const text = context.params.text;
-    const href = context.params.url
-        ? context.params.url
-        : portalLib.pageUrl({
-              id: context.params.content,
-          });
+    const href = getUrlOrPage(context.params.url, context.params.content);
 
     const body = `<p><a class="btn btn-link btn-primary" href="${href}">${text}</a></p>`;
 

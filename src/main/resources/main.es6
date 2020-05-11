@@ -1,3 +1,5 @@
+import { UrlLookupTable } from '/lib/menu-utils/url-lookup-table';
+
 log.info('Started running main');
 const cache = require('/lib/siteCache');
 const invalidator = require('/lib/siteCache/invalidator');
@@ -16,6 +18,11 @@ cache.activateEventListener();
 // start text cleaner
 textCleaner.activateEventListener();
 
+// init url lookup table
+if (app.config.env !== 'p') {
+    UrlLookupTable.getTableFromFile();
+}
+
 // start task for handling caching of expired and prepublished content
 if (clusterLib.isMaster()) {
     // make sure the lock is released on startup
@@ -30,6 +37,7 @@ if (currentTaskId) {
 }
 
 // keep the process of handling expired content in the cache alive.
+
 eventLib.listener({
     type: 'task.*',
     localOnly: true,

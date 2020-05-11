@@ -1,68 +1,9 @@
-const libs = {
-    thymeleaf: require('/lib/thymeleaf'),
-    portal: require('/lib/xp/portal'),
-    lang: require('/lib/i18nUtil'),
-    cache: require('/lib/siteCache'),
+// Placeholder for old part to be able to go live without downtime
+
+// TODO: Remove the whole part as soon as we're live with the regenerated templates
+exports.get = () => {
+    return {
+        contentType: 'text/html',
+        body: null,
+    };
 };
-const view = resolve('page-footer.html');
-
-function handleGet(req) {
-    const content = libs.portal.getContent();
-    const language = content.language || 'no';
-
-    return libs.cache.getDecorator(
-        `footer-${language}-${req.branch}`,
-        undefined,
-        req.branch,
-        () => {
-            const languageBundles = libs.lang.parseBundle(language).pagenav;
-            const contentAZUrl = libs.portal.serviceUrl({
-                service: 'contentAZ',
-            });
-            const accessibleLetters =
-                'abcdefghijklmnopqrstuvwxyz' +
-                (language === 'no' || language === 'se' ? 'æøå' : '');
-            const urls = {
-                frontPage: libs.portal.pageUrl({
-                    path: '/www.nav.no/',
-                }),
-                contactUs: libs.portal.pageUrl({
-                    path: '/www.nav.no/footer-contactus-' + language,
-                }),
-                accessibility:
-                    language !== 'en'
-                        ? libs.portal.pageUrl({
-                              path: '/www.nav.no/footer-accessibility-no',
-                          })
-                        : undefined,
-                privacy:
-                    language !== 'en'
-                        ? libs.portal.pageUrl({
-                              path: '/www.nav.no/personvern',
-                          })
-                        : undefined,
-                rss:
-                    language !== 'en'
-                        ? libs.portal.pageUrl({
-                              path: '/www.nav.no/no/rss',
-                          })
-                        : undefined,
-            };
-            const dato = new Date();
-            const model = {
-                contentAZUrl,
-                accessibleLetters: accessibleLetters.split(''),
-                lang: languageBundles,
-                urls,
-                year: dato.getUTCFullYear().toString(),
-            };
-
-            return {
-                contentType: 'text/html',
-                body: libs.thymeleaf.render(view, model),
-            };
-        }
-    );
-}
-
-exports.get = handleGet;
