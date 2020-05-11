@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Varsel</display-name>
-    <description>Vikting informasjon som vises over alt annet innhold</description>
+    <description>Viktig informasjon som vises over alt annet innhold</description>
     <super-type>base:unstructured</super-type>
     <form>
         <field-set name="notification">
@@ -56,7 +56,7 @@
                     <occurrences maximum="1" minimum="0"/>
                     <config>
                         <allowPath>${site}/global-notifications</allowPath>
-                        <allowContentType>notification</allowContentType>
+                        <allowContentType>${app}:notification</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
                 </input>
