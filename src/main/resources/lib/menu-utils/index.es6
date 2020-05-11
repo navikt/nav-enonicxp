@@ -28,6 +28,7 @@ const getMegaMenu = (content, levels) => {
         return {
             displayName: menuContent.displayName,
             path,
+            displayLock: menuContent.data.displayLock,
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
             children: subMenus,
