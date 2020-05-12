@@ -11,9 +11,5 @@
             <label>Nivå 4 - Vis hengelås</label>
             <help-text>Tjenesten krever nivå 4 innlogging</help-text>
         </input>
-        <input name="displayLock" type="CheckBox">
-            <label>Nivå 4 - Vis hengelås</label>
-            <help-text>Tjenesten krever nivå 4 innlogging</help-text>
-        </input>
     </form>
 </content-type>
