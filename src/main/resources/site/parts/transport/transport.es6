@@ -1,4 +1,4 @@
-import { UrlLookupTable } from '/lib/menu-utils/url-lookup-table';
+import { getUrlFromTable } from '/lib/menu-utils/url-lookup-table';
 
 const libs = {
     portal: require('/lib/xp/portal'),
@@ -10,7 +10,7 @@ const view = resolve('transport.html');
 
 function getUrl(url) {
     if (url.text) {
-        return app.config.env === 'p' ? url.text : UrlLookupTable.getUrlFromTable(url.text);
+        return app.config.env === 'p' ? url.text : getUrlFromTable(url.text);
     }
     return libs.portal.pageUrl({
         id: url.ref,
