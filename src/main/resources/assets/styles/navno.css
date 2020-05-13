@@ -551,7 +551,7 @@ p, .paragraph {
     }
 
     p, .paragraph, input, button, .article-body li {
-        font-size: .875rem
+        font-size: 1rem
     }
 }
 
@@ -3547,7 +3547,7 @@ a.knapp {
 
 .link-list a, .link-list-meta a {
     word-break: break-word;
-    font-size: .875rem
+    font-size: 1rem
 }
 
 @media (max-width: 38.75em) {
@@ -4292,7 +4292,7 @@ a.knapp {
 }
 
 .article-facts li {
-    font-size: .875rem
+    font-size: 1rem
 }
 
 .content-languages.selected {
