@@ -7594,3 +7594,11 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .din-situasjon-wrapper .lenkepanel .tekst p {
     margin-top: 1rem;
 }
+.navno-dekorator {
+    min-height: 88px;
+}
+@media (min-width: 48em) {
+    .navno-dekorator {
+        min-height: 150px;
+    }
+}
