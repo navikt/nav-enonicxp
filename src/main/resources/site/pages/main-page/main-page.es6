@@ -6,6 +6,7 @@ const libs = {
 };
 const etag = libs.cache.etag;
 const view = resolve('main-page.html');
+const decUrl = app.config.decoratorUrl;
 
 function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
@@ -24,7 +25,7 @@ function handleGet(req) {
             type: 'absolute',
         });
         const canonicalUrl = content.data.canonicalUrl || url;
-        const metaData = [
+        const header = [
             '<meta charset="utf-8" />',
             `<title>${title}</title>`,
             '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
@@ -41,7 +42,16 @@ function handleGet(req) {
             `<meta name="twitter:title" content="${title}" />`,
             description ? `<meta name="twitter:description" content="${description}" />` : '',
             `<meta name="twitter:image:src" content="${imageUrl}" />`,
+            `<link href="${decUrl}/css/client.css" rel="stylesheet" />`,
+            `<link href="${libs.portal.assetUrl({
+                path: 'styles/navno.css',
+            })}" rel="stylesheet" />`,
+            `<section id="decorator-styles"></section>`,
+            `<script src="${decUrl}/client.js"></script>`,
+            '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
+            `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
+        const footer = [`<div id="decorator-env" data-src="${decUrl}/env"></div>`];
         const regions = content.page.regions;
         const model = {
             mainRegion: regions.main,
@@ -56,7 +66,8 @@ function handleGet(req) {
                 ETag: etag(),
             },
             pageContributions: {
-                headBegin: metaData,
+                headBegin: header,
+                bodyEnd: footer,
             },
         };
     });

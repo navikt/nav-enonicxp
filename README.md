@@ -12,9 +12,8 @@ Deployed by [nav-enonicxp-actions-runner
 ](https://github.com/navikt/nav-enonicxp-actions-runner)
 
 ## How to get started
-
 1. Install Enonic by following the guide at https://developer.enonic.com/start
-2. Create a sandbox
+2. Create a sandbox (preferably called **navno**)
 ```
 enonic sandbox start
 ```
@@ -25,6 +24,14 @@ open http://localhost:8080/admin
 4. Download the NAV.no - XP Application
 ```
 git clone https://github.com/navikt/nav-enonicxp.git
+```
+5. Copy **no.nav.navno.cfg.sample** to your sandbox
+```
+cp no.nav.navno.cfg.sample /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
+```
+6. Kjør dekoratøren med
+```
+docker-compose up -d
 ```
 
 ## Development

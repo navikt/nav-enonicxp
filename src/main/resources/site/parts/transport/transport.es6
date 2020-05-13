@@ -1,3 +1,5 @@
+import { getUrlFromTable } from '/lib/menu-utils/url-lookup-table';
+
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
@@ -8,7 +10,7 @@ const view = resolve('transport.html');
 
 function getUrl(url) {
     if (url.text) {
-        return url.text;
+        return app.config.env === 'p' ? url.text : getUrlFromTable(url.text);
     }
     return libs.portal.pageUrl({
         id: url.ref,
