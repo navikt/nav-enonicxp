@@ -1,4 +1,4 @@
-import { getTableFromFile } from './url-lookup-table';
+import { getTableFromFile } from '/lib/menu-utils/url-lookup-table';
 
 log.info('Started running main');
 const cache = require('/lib/siteCache');
