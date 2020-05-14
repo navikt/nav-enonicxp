@@ -551,7 +551,7 @@ p, .paragraph {
     }
 
     p, .paragraph, input, button, .article-body li {
-        font-size: .875rem
+        font-size: 1rem
     }
 }
 
@@ -2097,7 +2097,6 @@ button.toggle-search.m-open span {
 
 .pagewrapper {
     height: auto;
-    min-height: 100%;
     margin-bottom: -200px;
     padding-bottom: 200px
 }
@@ -3547,7 +3546,7 @@ a.knapp {
 
 .link-list a, .link-list-meta a {
     word-break: break-word;
-    font-size: .875rem
+    font-size: 1rem
 }
 
 @media (max-width: 38.75em) {
@@ -3607,7 +3606,7 @@ a.knapp {
 
 @media (min-width: 38.75em) {
     .link-list-descriptive p {
-        font-size: .75rem
+        font-size: .875rem
     }
 }
 
@@ -3617,7 +3616,7 @@ a.knapp {
 
 .link-list-meta time {
     display: block;
-    font-size: .75rem
+    font-size: .875rem
 }
 
 @media (max-width: 48em) {
@@ -3625,7 +3624,7 @@ a.knapp {
         text-align: left;
         padding: 0;
         margin-right: 10px;
-        font-size: .75rem
+        font-size: .875rem
     }
 }
 
@@ -3739,7 +3738,7 @@ a.knapp {
 
 @media (min-width: 38.75em) and (max-width: 48em) {
     .link-list a, .link-list-meta a, .link-list time, .link-list-meta time {
-        font-size: .75rem
+        font-size: .875rem
     }
 }
 
@@ -4292,7 +4291,7 @@ a.knapp {
 }
 
 .article-facts li {
-    font-size: .875rem
+    font-size: 1rem
 }
 
 .content-languages.selected {
@@ -7593,4 +7592,12 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .din-situasjon-wrapper .lenkepanel .tekst p {
     margin-top: 1rem;
+}
+.navno-dekorator {
+    min-height: 88px;
+}
+@media (min-width: 48em) {
+    .navno-dekorator {
+        min-height: 150px;
+    }
 }
