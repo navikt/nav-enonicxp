@@ -52,7 +52,7 @@ function handleGet(req) {
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
         const footer = [`<div id="decorator-env" data-src="${decUrl}/env"></div>`];
-        const decoratorClass = content._path.contains('/no/') ? 'with-context' : '';
+        const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
         const model = {
             decoratorClass,
