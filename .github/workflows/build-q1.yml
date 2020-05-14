@@ -5,7 +5,8 @@ on:
     tags:
       - "v*-*"
       - "!v*-*-*"
-
+    branches:
+      - develop
 jobs:
   build:
     runs-on: ubuntu-latest
