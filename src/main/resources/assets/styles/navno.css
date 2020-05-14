@@ -3607,7 +3607,7 @@ a.knapp {
 
 @media (min-width: 38.75em) {
     .link-list-descriptive p {
-        font-size: .75rem
+        font-size: .875rem
     }
 }
 
@@ -3617,7 +3617,7 @@ a.knapp {
 
 .link-list-meta time {
     display: block;
-    font-size: .75rem
+    font-size: .875rem
 }
 
 @media (max-width: 48em) {
@@ -3625,7 +3625,7 @@ a.knapp {
         text-align: left;
         padding: 0;
         margin-right: 10px;
-        font-size: .75rem
+        font-size: .875rem
     }
 }
 
@@ -3739,7 +3739,7 @@ a.knapp {
 
 @media (min-width: 38.75em) and (max-width: 48em) {
     .link-list a, .link-list-meta a, .link-list time, .link-list-meta time {
-        font-size: .75rem
+        font-size: .875rem
     }
 }
 
