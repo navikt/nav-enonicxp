@@ -229,7 +229,7 @@ body {
     font-family: 'Source Sans Pro', Arial, sans-serif;
     line-height: 1.375;
     color: #3e3832;
-    background-color: #f1f1f1
+    background-color: #fff;
 }
 
 * {
@@ -2097,8 +2097,7 @@ button.toggle-search.m-open span {
 
 .pagewrapper {
     height: auto;
-    margin-bottom: -200px;
-    padding-bottom: 200px
+    background-color: #f1f1f1;
 }
 
 .maincontent {
@@ -7598,6 +7597,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 @media (min-width: 48em) {
     .navno-dekorator {
+        min-height: 106px;
+    }
+    .navno-dekorator.with-context {
         min-height: 150px;
     }
 }
