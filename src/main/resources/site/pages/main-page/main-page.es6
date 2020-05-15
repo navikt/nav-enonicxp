@@ -51,7 +51,13 @@ function handleGet(req) {
             '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
-        const footer = [`<div id="decorator-env" data-src="${decUrl}/env"></div>`];
+        let context = 'privatperson';
+        if (content._path.indexOf('/no/bedrift') !== -1) {
+            context = 'arbeidsgiver';
+        } else if (content._path.indexOf('/no/samarbeidspartner') !== -1) {
+            context = 'samarbeidspartner';
+        }
+        const footer = [`<div id="decorator-env" data-src="${decUrl}/env?context=${context}"></div>`];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
         const model = {
