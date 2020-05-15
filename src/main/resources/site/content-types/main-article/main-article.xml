@@ -218,6 +218,7 @@
                 </input>
             </items>
         </item-set>
+        <mixin name="keywords" />
         <field-set name="facts">
             <label>Faktaboks</label>
             <items>
