@@ -36,6 +36,7 @@ function handleGet(req) {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
+                // Concat links and files. 20200518: Keep files for backwards compatibility
                 const links = libs.navUtils
                     .forceArray(menuListItems[el].link)
                     .concat(libs.navUtils.forceArray(menuListItems[el].files));
