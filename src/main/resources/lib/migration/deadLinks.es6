@@ -8,6 +8,7 @@ const libs = {
     unpublish: require('/lib/siteCache/invalidator'),
     officeInformation: require('/lib/officeInformation'),
     templates: require('/lib/migration/templates'),
+    updateRepo: require('/lib/migration/updateRepo'),
 };
 
 const visitedAdresses = {};
@@ -51,6 +52,43 @@ function createNewElements() {
                             tagClass: ['button', 'is-primary'],
                             action: 'templates',
                             text: 'Templates',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
+                            text: 'Konvertering av noder',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'convert-nodes',
+                            progress: {
+                                value: 'convert-nodes-value',
+                                max: 'convert-nodes-max',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'convert',
+                            text: 'Start konvertering',
                         },
                         {
                             tag: 'li',
@@ -367,6 +405,14 @@ exports.handle = s => {
             description: 'Lager lenkeråterapport',
             task: () => {
                 libs.tools.runInMasterContext(socket, handleDeadLinks);
+            },
+        });
+    });
+    socket.on('convert', () => {
+        libs.task.submit({
+            description: 'Konverterer data',
+            task: () => {
+                libs.tools.runInContext(socket, libs.updateRepo.handle);
             },
         });
     });
