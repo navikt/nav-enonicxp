@@ -25,6 +25,8 @@ function convert(socket) {
             editor: c => {
                 const current = { ...c };
                 const target = current.data.menuListItems['related-information'];
+                log.info(element._path);
+                log.info(JSON.stringify(target, null, 4));
                 if (target.files) {
                     if (target.link) {
                         target.link = libs.navUtils.forceArray(target.link);
@@ -34,6 +36,7 @@ function convert(socket) {
                     }
                     delete target.files;
                 }
+                log.info(JSON.stringify(target, null, 4));
                 return current;
             },
         });
