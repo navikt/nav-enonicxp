@@ -19,13 +19,12 @@ function convert(socket) {
     socket.emit('convert-nodes-max', hits.length);
     hits.forEach((element, index) => {
         socket.emit('convert-nodes-value', index + 1);
-        repo.modify({
+        libs.content.modify({
             key: element._id,
             requireValid: false,
             editor: c => {
-                const target = c.data.menuListItems['related-information'];
-                log.info(element._path);
-                log.info(JSON.stringify(target, null, 4));
+                const current = { ...c };
+                const target = current.data.menuListItems['related-information'];
                 if (target.files) {
                     if (target.link) {
                         target.link = libs.navUtils.forceArray(target.link);
@@ -35,8 +34,7 @@ function convert(socket) {
                     }
                     delete target.files;
                 }
-                log.info(JSON.stringify(target, null, 4));
-                return c;
+                return current;
             },
         });
         repo.push({
