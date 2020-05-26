@@ -93,7 +93,7 @@ mark {
 
 code, kbd, pre, samp {
     font-family: monospace, serif;
-    font-size: 1em
+    font-size: 1rem
 }
 
 pre {
@@ -511,11 +511,11 @@ p, .paragraph, input, button, .article-body li {
 }
 
 .article-body li li {
-    font-size: 1em
+    font-size: 1rem
 }
 
 p input, .paragraph input, p button, .paragraph button, p .paragraph, .paragraph .paragraph {
-    font-size: 1em
+    font-size: 1rem
 }
 
 p, .paragraph {
@@ -577,19 +577,19 @@ h3, .h3 {
 }
 
 h4, .h4 {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     text-transform: uppercase
 }
 
 h5, .h5 {
-    font-size: .875rem;
+    font-size: 1rem;
     font-weight: 600;
     text-transform: uppercase
 }
 
 h6, .h6 {
-    font-size: .75rem
+    font-size: .875rem
 }
 
 .strong {
@@ -922,7 +922,7 @@ body > img[src*="nav.tns-cs.net"] {
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 1em;
+    font-size: 1rem;
     white-space: nowrap;
     border-radius: 0.125em;
     cursor: pointer;
@@ -1019,7 +1019,7 @@ body > img[src*="nav.tns-cs.net"] {
 }
 
 .article-body table tr:first-child th strong, .article-body table tr:first-child td strong {
-    font-size: 1.1em;
+    font-size: 1.1rem;
     font-weight: 700;
 }
 
@@ -1030,7 +1030,7 @@ body > img[src*="nav.tns-cs.net"] {
 }
 
 .article-body table th p, .article-body table td p {
-    font-size: 1em
+    font-size: 1rem
 }
 
 .article-body table th p:last-child, .article-body table td p:last-child {
@@ -1352,7 +1352,7 @@ body > img[src*="nav.tns-cs.net"] {
 }
 
 .events-list table tr td.event-info h2 {
-    font-size: 1.2em;
+    font-size: 1.2rem;
     margin: 0;
     line-height: 1.25
 }
