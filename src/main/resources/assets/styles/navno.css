@@ -687,7 +687,7 @@ blockquote:before {
     content: "\201C";
     font-size: 3.5rem;
     color: #c30000;
-    font-family: "Times new roman";
+    font-family: "Times new roman", serif;
     position: absolute;
     left: 0;
     top: 10px
@@ -1508,54 +1508,6 @@ body > img[src*="nav.tns-cs.net"] {
 
 .icon-document:hover {
     background: url('../img/navno/gfx/icons/dokument_hover.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-utenarbeid {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/uten_arbeid.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-arbeidhelsesykdom {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/arbeid_helse_sykdom.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-familie {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/familie.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-pensjon {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/pensjon.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-dodsfall {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/stonader_dodsfall.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-hjelpemidler {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/hjelpemidler.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-lonnsgaranti {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/lonnsgaranti.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-internasjonalt {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/internasjonalt.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-diverse {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/div.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-privatperson {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/privat.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-arbeidsgiver {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/arbeidsgiver.png') center 0 no-repeat
-}
-
-.leading-icon-large.icon-arbeidspraksis {
-    background: url('../../img/navno/gfx/skjemaveileder-v2/arbeidspraksis.png') center 0 no-repeat
 }
 
 .icon-soknad {
@@ -3070,7 +3022,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     }
 
     .maincontent {
-        padding: 10px !important;
         padding: 0 25px !important;
         page-break-after: auto
     }
@@ -3143,7 +3094,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     }
 
     .article-body a[href]:before, article a[href]:before {
-        content: " (" attr(href) ")";
         content: none !important
     }
 
@@ -3323,7 +3273,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel--focus {
     color: #3E3832;
     background-color: #FFF;
-    box-shadow: 0 0 0px 3px #254b6d;
+    box-shadow: 0 0 0 3px #254b6d;
     outline: none;
 }
 .lenkepanel__indikator {
