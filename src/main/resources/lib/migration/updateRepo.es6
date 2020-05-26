@@ -6,18 +6,24 @@ const libs = {
 };
 
 function convert(socket) {
-    const repo = libs.node.connect({
+    const repoDraft = libs.node.connect({
         repoId: 'com.enonic.cms.default',
         branch: 'draft',
         principals: ['role:system.admin'],
     });
-    const hits = libs.content.query({
+    const repoMaster = libs.node.connect({
+        repoId: 'com.enonic.cms.default',
+        branch: 'master',
+        principals: ['role:system.admin'],
+    });
+    const draftHits = libs.content.query({
         start: 0,
         count: 10000,
         query: 'data.menuListItems.related-information.files LIKE "*"',
     }).hits;
-    socket.emit('convert-nodes-max', hits.length);
-    hits.forEach((element, index) => {
+    const targetIds = [];
+    socket.emit('convert-nodes-max', draftHits.length);
+    draftHits.forEach((element, index) => {
         socket.emit('convert-nodes-value', index + 1);
         libs.content.modify({
             key: element._id,
@@ -40,11 +46,23 @@ function convert(socket) {
                 return current;
             },
         });
-        repo.push({
-            key: element._id,
-            target: 'master',
-        });
+        targetIds.push(element._id);
     });
+    log.info(`Modified ${draftHits.length} elements in draft`);
+    const masterHits = repoMaster.query({
+        count: targetIds.length,
+        filters: {
+            ids: {
+                values: targetIds,
+            },
+        },
+    }).hits;
+    const masterIds = masterHits.map(el => el.id);
+    repoDraft.push({
+        keys: masterIds,
+        target: 'master',
+    });
+    log.info(`Pushed ${masterIds.length} elements to master`);
 }
 
 exports.handle = convert;
