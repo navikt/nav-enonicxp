@@ -1043,7 +1043,7 @@ body > img[src*="nav.tns-cs.net"] {
 .crumb {
     margin-right: 1rem;
     position: relative;
-    font-size: .9rem;
+    font-size: .925rem;
     color: #3e3832
 }
 
@@ -1051,18 +1051,16 @@ body > img[src*="nav.tns-cs.net"] {
     margin-right: 0
 }
 
-.crumb:after {
+.crumb:before {
     border: 2px solid #3e3832;
     border-radius: 50% 50% 50% 50%;
     content: " ";
     left: -12px;
-    top: 5px;
-    float: left;
+    margin-top: 9px;
     position: absolute;
-    text-align: left
 }
 
-.crumb:first-child:after {
+.crumb:first-child:before {
     display: none
 }
 
