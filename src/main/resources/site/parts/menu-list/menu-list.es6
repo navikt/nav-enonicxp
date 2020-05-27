@@ -36,7 +36,6 @@ function handleGet(req) {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
-                // TODO: Remove concat of files after migration files->link
                 const links = libs.navUtils
                     .forceArray(menuListItems[el].link)
                     .concat(libs.navUtils.forceArray(menuListItems[el].files));
@@ -52,12 +51,7 @@ function handleGet(req) {
                                 return undefined;
                             }
                             let link = '';
-                            if (
-                                element.type === 'media:document' ||
-                                element.type === 'media:spreadsheet' ||
-                                element.type === 'media:presentation' ||
-                                element.type === 'media:archive'
-                            ) {
+                            if (element.type.indexOf('media:') !== -1) {
                                 link = libs.portal.attachmentUrl({
                                     id: element._id,
                                     download: true,
