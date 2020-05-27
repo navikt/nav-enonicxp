@@ -36,7 +36,6 @@ function handleGet(req) {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
-                // TODO: Remove concat of files after migration files->link
                 const links = libs.navUtils
                     .forceArray(menuListItems[el].link)
                     .concat(libs.navUtils.forceArray(menuListItems[el].files));
