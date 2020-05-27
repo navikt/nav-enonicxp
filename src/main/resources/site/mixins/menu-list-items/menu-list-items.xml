@@ -88,7 +88,7 @@
                             <label>Legg ved filer</label>
                             <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
                             <config>
-                                <allow-content-type>${app}:media:*</allow-content-type>
+                                <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
                         </input>
