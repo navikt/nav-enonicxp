@@ -1,0 +1,18 @@
+<mixin>
+    <display-name>Nøkkelord</display-name>
+    <form>
+        <field-set name="keywords">
+            <label>Søke optimalisering</label>
+            <items>
+                <input type="Tag" name="keywords">
+                    <label>Nøkkelord</label>
+                    <help-text>Dette feltet er ment for å brukes til å vekte viktige nøkkelord høyt i
+                        søkeresultat.
+                        Ikke endre på dette feltet uten å avtale med andre redaktører.
+                    </help-text>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

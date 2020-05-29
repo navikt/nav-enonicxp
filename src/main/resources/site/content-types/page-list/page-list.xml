@@ -83,6 +83,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="keywords"/>
         <mixin name="canonical-url"/>
     </form>
 </content-type>

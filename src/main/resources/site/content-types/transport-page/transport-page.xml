@@ -41,6 +41,7 @@
             </items>
             <occurrences maximum="0" minimum="1"/>
         </item-set>
+        <mixin name="keywords"/>
         <mixin name="canonical-url"/>
     </form>
 </content-type>
