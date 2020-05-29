@@ -70,7 +70,6 @@
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
-        <mixin name="keywords" />
         <field-set name="Angi andre språkversjoner">
             <label>Legg til andre språkversjoner</label>
             <items>
