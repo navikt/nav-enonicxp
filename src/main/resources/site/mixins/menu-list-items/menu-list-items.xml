@@ -9,26 +9,39 @@
                     <label>Logg inn</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Logg inn</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:external-link</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
-                                </input>
+                            <label>Logg inn</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
+                        </input>
                     </items>
                 </option>
                 <option name="form-and-application">
                     <label>Skjema og søknad</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Skjema og søknad</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Skjema og søknad</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -36,13 +49,19 @@
                     <label>Saksbehandlingstider</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Saksbehandlingstider</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Saksbehandlingstider</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -50,26 +69,28 @@
                     <label>Relatert informasjon</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Innhold</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="0"/>
-                        <config>
-                            <allow-content-type>${app}:main-article</allow-content-type>
-                            <allow-content-type>${app}:main-article-chapter</allow-content-type>
-                            <allow-content-type>${app}:external-link</allow-content-type>
-                            <allow-content-type>${app}:internal-link</allow-content-type>
-                            <allow-content-type>${app}:section-page</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Innhold</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="0"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                         <input name="files" type="MediaSelector">
-                        <occurrences minimum="0" maximum="0"/>
-                        <label>Legg ved filer</label>
-                        <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
-                        <config>
-                            <allow-content-type>${app}:media:*</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <occurrences minimum="0" maximum="0"/>
+                            <label>Legg ved filer</label>
+                            <help-text>Bruk som hovedregel kun pdf-filer. Filer skal ha beskrivende navn da disse vises.</help-text>
+                            <config>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -77,12 +98,19 @@
                     <label>Internasjonalt</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Internasjonalt</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Internasjonalt</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -90,13 +118,19 @@
                     <label>Meld fra om endringer</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Meld fra om endringer</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Meld fra om endringer</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -104,13 +138,19 @@
                     <label>Satser</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Satser</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Satser</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -118,13 +158,19 @@
                     <label>Klagerettigheter</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Klagerettigheter</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Klagerettigheter</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -132,13 +178,19 @@
                     <label>Medlemskap i folketrygden</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Medlemskap i folketrygden</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:main-article</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Medlemskap i folketrygden</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
@@ -146,13 +198,19 @@
                     <label>Regelverk</label>
                     <items>
                         <input name="link" type="ContentSelector">
-                        <label>Regelverk</label>
-                        <custom-text>contentdata/links</custom-text>
-                        <occurrences maximum="0" minimum="1"/>
-                        <config>
-                            <allow-content-type>no.nav.navno:external-link</allow-content-type>
-                            <showStatus>true</showStatus>
-                        </config>
+                            <label>Regelverk</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences maximum="0" minimum="1"/>
+                            <config>
+                                <allowContentType>${app}:section-page</allowContentType>
+                                <allowContentType>${app}:main-article</allowContentType>
+                                <allowContentType>${app}:main-article-chapter</allowContentType>
+                                <allowContentType>${app}:page-list</allowContentType>
+                                <allowContentType>${app}:external-link</allowContentType>
+                                <allowContentType>${app}:internal-link</allowContentType>
+                                <allowContentType>media:*</allowContentType>
+                                <showStatus>true</showStatus>
+                            </config>
                         </input>
                     </items>
                 </option>
