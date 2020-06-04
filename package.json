@@ -42,7 +42,7 @@
         "onchange": "^6.1.0",
         "prettier": "^1.19.1",
         "prompt": "^1.0.0",
-        "replace": "^0.3.0",
+        "replace": "^1.2.0",
         "serve": "^11.2.0"
     },
     "dependencies": {}
