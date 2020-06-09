@@ -33,10 +33,6 @@ const caches = {
         size: 50,
         expire: oneDay,
     }),
-    azList: libs.cache.newCache({
-        size: 100,
-        expire: oneDay,
-    }),
     paths: libs.cache.newCache({
         size: 5000,
         expire: oneDay,
@@ -127,15 +123,8 @@ function wipeOnChange(path) {
     }
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
 
-    if (path.indexOf('/megamenu/') !== -1) {
+    if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
-    }
-    if (
-        path.indexOf('/megamenu/') !== -1 ||
-        path.indexOf('/en/content-a-z/') !== -1 ||
-        path.indexOf('/no/innhold-a-aa/') !== -1
-    ) {
-        wipe('azList')();
     }
     if (path.indexOf('/content/redirects/') !== -1) {
         wipe('redirects')();
@@ -147,7 +136,7 @@ function wipeOnChange(path) {
 function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
-        if (branch !== 'draft' || cacheStoreName === 'decorator') {
+        if (branch !== 'draft') {
             return caches[cacheStoreName].get(getPath(key, type), () => f(params));
         }
         return f(params);
@@ -220,7 +209,7 @@ function nodeListenerCallback(event) {
                     clearReferences(node.id, node.path, 0);
                 }
             );
-        } else if (node.path.indexOf('/megamenu/') !== -1) {
+        } else if (node.path.indexOf('/dekorator-meny/') !== -1) {
             wipe('decorator')();
         }
     });
@@ -257,7 +246,6 @@ module.exports = {
     wipeDecorator: wipe('decorator'),
     wipePaths: wipe('paths'),
     getDecorator: getSome('decorator'),
-    getAZList: getSome('azList'),
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
     getNotifications: getSome('notifications'),

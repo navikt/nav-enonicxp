@@ -16,6 +16,7 @@
                 <include>Undo | Redo</include>
             </config>
         </input>
+        <mixin name="keywords"/>
         <mixin name="canonical-url"/>
     </form>
 </content-type>

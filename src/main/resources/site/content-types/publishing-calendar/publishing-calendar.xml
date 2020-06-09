@@ -8,5 +8,6 @@
     <form>
         <mixin name="ingress"/>
         <mixin name="meta-description"/>
+        <mixin name="keywords"/>
     </form>
 </content-type>

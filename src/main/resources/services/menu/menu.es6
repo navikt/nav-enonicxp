@@ -6,12 +6,16 @@ const libs = {
 };
 
 const handleGet = () => {
-    const menu = libs.menuUtils.getMegaMenu({
-        content: libs.content.get({ key: '/www.nav.no/dekorator-meny/' }),
-        levels: 10,
+    const menu = libs.cache.getDecorator('decorator', undefined, 'master', () => {
+        return libs.menuUtils.getMegaMenu({
+            content: libs.content.get({ key: '/www.nav.no/dekorator-meny/' }),
+            levels: 10,
+        });
     });
-
-    return { body: menu, contentType: 'application/json' };
+    return {
+        body: menu,
+        contentType: 'application/json',
+    };
 };
 
 exports.get = handleGet;
