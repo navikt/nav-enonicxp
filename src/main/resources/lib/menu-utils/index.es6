@@ -1,4 +1,4 @@
-import { getUrlFromTable } from './url-lookup-table';
+import { getUrlFromTable } from './url-lookup-table.es6';
 
 const libs = {
     portal: require('/lib/xp/portal'),
@@ -21,7 +21,7 @@ const libs = {
  *   for menu items, default is 'server', only other option is 'absolute'.
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
-exports.getBreadcrumbMenu = function(params) {
+exports.getBreadcrumbMenu = function (params) {
     const content = libs.portal.getContent();
     const site = libs.portal.getSite();
     const breadcrumbItems = []; // Stores each menu item
