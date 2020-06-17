@@ -51,6 +51,12 @@ function handleGet(req) {
             '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
+        let languageParam = 'norsk';
+        if (content._path.indexOf('/en/') !== -1) {
+            languageParam = 'engelsk';
+        } else if (content._path.indexOf('/se/') !== -1) {
+            languageParam = 'samisk';
+        }
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
             context = 'privatperson';
@@ -60,8 +66,10 @@ function handleGet(req) {
         } else if (content._path.indexOf('/no/samarbeidspartner') !== -1) {
             context = 'samarbeidspartner';
         }
-        const contextUrl = context ? `?context=${context}` : '';
-        const footer = [`<div id="decorator-env" data-src="${decUrl}/env${contextUrl}"></div>`];
+        const contextParam = context ? `&context=${context}` : '';
+        const footer = [
+            `<div id="decorator-env" data-src="${decUrl}/env?language=${languageParam}${contextParam}"></div>`,
+        ];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
         const model = {
