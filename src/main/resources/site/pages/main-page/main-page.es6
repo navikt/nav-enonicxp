@@ -60,15 +60,15 @@ function handleGet(req) {
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
             context = 'privatperson';
-        }
-        if (content._path.indexOf('/no/bedrift') !== -1) {
+        } else if (content._path.indexOf('/no/bedrift') !== -1) {
             context = 'arbeidsgiver';
         } else if (content._path.indexOf('/no/samarbeidspartner') !== -1) {
             context = 'samarbeidspartner';
         }
-        const contextParam = context ? `&context=${context}` : '';
         const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env?language=${languageParam}${contextParam}"></div>`,
+            `<div id="decorator-env" data-src="${decUrl}/env?language=${languageParam}${
+                context ? `&context=${context}` : ''
+            }"></div>`,
         ];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
