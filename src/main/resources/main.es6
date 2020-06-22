@@ -1,4 +1,4 @@
-import { getTableFromFile } from '/lib/menu-utils/url-lookup-table';
+import { getTableFromFile } from '/lib/menu-utils/url-lookup-table.es6';
 
 log.info('Started running main');
 const cache = require('/lib/siteCache');
@@ -41,7 +41,7 @@ if (currentTaskId) {
 eventLib.listener({
     type: 'task.*',
     localOnly: true,
-    callback: event => {
+    callback: (event) => {
         // need to listen to all task events and filter on finished and failed for resurrection
         if (['task.finished', 'task.failed'].indexOf(event.type) === -1) {
             return false;
@@ -52,7 +52,7 @@ eventLib.listener({
                 return false;
             }
             // update state and spawn of a new task
-            taskIds = taskIds.filter(task => task !== event.data.id);
+            taskIds = taskIds.filter((task) => task !== event.data.id);
             currentTaskId = invalidator.runTask(appIsRunning);
             if (currentTaskId) {
                 taskIds.push(currentTaskId);
@@ -64,7 +64,7 @@ eventLib.listener({
 
 log.info('Finished running main');
 
-__.disposer(function() {
+__.disposer(() => {
     // when the app is closed down, tasks might have survived and should not
     // spawn of new tasks. We keep this state to make sure of this.
     appIsRunning = false;

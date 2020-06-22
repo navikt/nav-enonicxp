@@ -2,7 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
-    menu: require('/lib/menu'),
+    menu: require('/lib/menu-utils'),
     lang: require('/lib/i18nUtil'),
     cache: require('/lib/siteCache'),
 };
