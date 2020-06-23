@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-  <x-data name="cmsContent"/>
-  <x-data name="cmsMenu"/>
-  <x-data name="cmsStatus"/>
-  <x-data name="menu-item"/>
-  <x-data name="fasetter"/>
-  <x-data name="oldContentType"/>
-  <config>
-
-  </config>
-  <mappings>
-    <mapping controller="/lib/enonic/url-redirect/index.js">
-      <match>type:'no.nav.navno:url'</match>
-    </mapping>
-  </mappings>
+    <x-data name="cmsContent"/>
+    <x-data name="cmsMenu"/>
+    <x-data name="cmsStatus"/>
+    <x-data name="menu-item"/>
+    <x-data name="fasetter"/>
+    <x-data name="oldContentType"/>
+    <config>
+    </config>
+    <mappings>
+        <mapping controller="/lib/enonic/url-redirect/index.js">
+            <match>type:'no.nav.navno:url'</match>
+        </mapping>
+    </mappings>
 </site>
