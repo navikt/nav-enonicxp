@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
   <x-data name="cmsContent"/>
-  <x-data name="cmsMenu"/>
-  <x-data name="cmsStatus"/>
-  <x-data name="menu-item"/>
   <x-data name="fasetter"/>
   <x-data name="oldContentType"/>
   <config>
