@@ -31,11 +31,14 @@
 
         var count = Number($('input[name=c]').val());
         var $resultList = $('.sokeresultatliste');
-        const sort = $th.find('#Nyheter').parent().hasClass('erValgt') ? '&s=1' : '&s=0';
+        let data = $th.serialize() + '&start=' + (count - 1);
+        if ($th.find('#Nyheter').parent().hasClass('erValgt')) {
+          data.replace(/s=\d/,'s=1');
+        }
         $.ajax({
             type: $th.attr('method'),
             url: $th.attr('action'),
-            data: $th.serialize() + '&start=' + (count - 1) + sort,
+            data,
             success: function(data) {
                 // update heading
                 $('#search-result-heading').text(data.fasett);
