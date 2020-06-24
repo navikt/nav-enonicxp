@@ -1,4 +1,4 @@
-import { getUrlFromTable } from '/lib/menu-utils/url-lookup-table';
+import { getUrlFromTable } from '/lib/menu-utils/url-lookup-table.es6';
 
 const libs = {
     portal: require('/lib/xp/portal'),
@@ -17,14 +17,14 @@ function getUrl(url) {
     });
 }
 
-exports.get = function(req) {
+exports.get = function (req) {
     return libs.cache.getPaths(req.rawPath, 'transport', req.branch, () => {
         const content = libs.portal.getContent();
         const items = libs.navUtils.forceArray(content.data.items);
         const model = {
             heading: content.displayName,
             ingress: content.data.ingress,
-            items: items.map(value => ({
+            items: items.map((value) => ({
                 title: value.title,
                 ingress: value.ingress,
                 url: getUrl(value.url),

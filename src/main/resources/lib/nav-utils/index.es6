@@ -139,20 +139,6 @@ function getParameterValue(content, paramName) {
 }
 
 /**
- * Fetch a content by its cms menu key.
- * @param {string} cmsMenuKey Menu key.
- * @returns {object|null} content object or null if not found.
- */
-function getContentByMenuKey(cmsMenuKey) {
-    const queryResult = libs.content.query({
-        start: 0,
-        count: 1,
-        query: 'x.' + app.name.replace(/\./g, '-') + ".cmsMenu.menuKey = '" + cmsMenuKey + "'",
-    });
-    return queryResult.count > 0 ? queryResult.hits[0] : null;
-}
-
-/**
  * Fetch a content by its cms content key.
  * @param {string} contentKey Content key.
  * @returns {object|null} content object or null if not found.
@@ -349,7 +335,6 @@ module.exports = {
     sortContents,
     getParameterValue,
     getContentByCmsKey,
-    getContentByMenuKey,
     getContentParam,
     fixDateFormat,
     formatDate,
