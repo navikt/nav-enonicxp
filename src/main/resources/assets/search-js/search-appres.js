@@ -31,10 +31,11 @@
 
         var count = Number($('input[name=c]').val());
         var $resultList = $('.sokeresultatliste');
+        const sort = $th.find('#Nyheter').parent().hasClass('erValgt') ? '&s=1' : '&s=0';
         $.ajax({
             type: $th.attr('method'),
             url: $th.attr('action'),
-            data: $th.serialize() + '&start=' + (count - 1),
+            data: $th.serialize() + '&start=' + (count - 1) + sort,
             success: function(data) {
                 // update heading
                 $('#search-result-heading').text(data.fasett);
@@ -176,7 +177,7 @@
         $('.wic').prop('checked', false);
         update(e);
     }
-    function changeFasettMobile(e) {
+    function changeFasettMobile() {
         var $facet = $('input[name="f"][value="' + $(this).data('facet') + '"]').eq(0);
         if (!$facet.is(':checked')) {
             $facet.prop('checked', true);
