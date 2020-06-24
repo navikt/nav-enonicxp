@@ -2,7 +2,7 @@
     <display-name>Nøkkelord</display-name>
     <form>
         <field-set name="keywords">
-            <label>Søke optimalisering</label>
+            <label>Søkeoptimalisering</label>
             <items>
                 <input type="Tag" name="keywords">
                     <label>Nøkkelord</label>

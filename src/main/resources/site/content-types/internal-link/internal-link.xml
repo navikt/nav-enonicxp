@@ -15,5 +15,6 @@
                 <showStatus>true</showStatus>
             </config>
         </input>
+        <mixin name="keywords"/>
     </form>
 </content-type>
