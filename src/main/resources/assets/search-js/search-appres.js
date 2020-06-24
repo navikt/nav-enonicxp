@@ -31,14 +31,10 @@
 
         var count = Number($('input[name=c]').val());
         var $resultList = $('.sokeresultatliste');
-        let data = $th.serialize() + '&start=' + (count - 1);
-        if ($th.find('#Nyheter').parent().hasClass('erValgt')) {
-          data.replace(/s=\d/,'s=1');
-        }
         $.ajax({
             type: $th.attr('method'),
             url: $th.attr('action'),
-            data,
+            data: $th.serialize() + '&start=' + (count - 1),
             success: function(data) {
                 // update heading
                 $('#search-result-heading').text(data.fasett);
@@ -176,6 +172,9 @@
         var $parent = $(this).parent();
         $parent.addClass('erValgt');
         $parent.find('div input.defaultFasett').prop('checked', true);
+        if( $(this).attr('for') === "Nyheter" ) {
+            $('#sort-date').prop('checked', true);
+        }
         $('ul.fasettListe>li[data-facet="' + $(this).val() + '"]').addClass('erValgt');
         $('.wic').prop('checked', false);
         update(e);
