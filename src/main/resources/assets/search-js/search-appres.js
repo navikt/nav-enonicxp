@@ -174,8 +174,8 @@
         $parent.find('div input.defaultFasett').prop('checked', true);
         $('ul.fasettListe>li[data-facet="' + $(this).val() + '"]').addClass('erValgt');
         $('.wic').prop('checked', false);
-        if( $('#Nyheter').val() === "1" ) {
-            $('#sort-date').prop('checked', true);
+        if ( $('#Nyheter').parent().hasClass('erValgt') ) {
+            $('#sort-date').prop('checked', true).trigger('change');
         }
         update(e);
     }
