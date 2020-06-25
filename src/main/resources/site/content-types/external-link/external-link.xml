@@ -20,5 +20,6 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="keywords"/>
     </form>
 </content-type>
