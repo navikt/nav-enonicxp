@@ -174,9 +174,12 @@
         $parent.find('div input.defaultFasett').prop('checked', true);
         $('ul.fasettListe>li[data-facet="' + $(this).val() + '"]').addClass('erValgt');
         $('.wic').prop('checked', false);
+        if ( $('#Nyheter').parent().hasClass('erValgt') ) {
+            $('#sort-date').prop('checked', true).trigger('change');
+        }
         update(e);
     }
-    function changeFasettMobile(e) {
+    function changeFasettMobile() {
         var $facet = $('input[name="f"][value="' + $(this).data('facet') + '"]').eq(0);
         if (!$facet.is(':checked')) {
             $facet.prop('checked', true);
