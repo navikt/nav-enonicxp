@@ -887,8 +887,11 @@ body > img[src*="nav.tns-cs.net"] {
     outline-offset: -1px
 }
 
-#maincontent .btn {
-    text-decoration: none
+#maincontent{
+    padding-bottom: 1rem;
+    .btn {
+        text-decoration: none
+    }
 }
 
 .navno .btn, .btn-link {
@@ -2716,7 +2719,6 @@ a.normal-text {
 }
 
 div.placeholder {
-    margin-bottom: 1rem;
     margin-top: -2rem;
 }
 div.placeholder .top-link-wrapper {
