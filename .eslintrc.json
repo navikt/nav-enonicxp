@@ -1,5 +1,5 @@
 {
-    "extends": ["airbnb", "prettier"],
+    "extends": ["airbnb", "prettier", "prettier/react"],
     "plugins": ["prettier"],
     "rules": {
         "prettier/prettier": ["warn"],
@@ -31,7 +31,7 @@
     },
     "overrides": [
         {
-            "files": ["*.html", "*.ftl", "*.xml"],
+            "files": ["*.html", "*.ftl", "*.xml", "*.jsx"],
             "rules": {
                 "max-len": "off"
             }
