@@ -178,6 +178,16 @@ const mainArticlePage = [
     },
     {
         type: 'part',
+        path: '/main/4',
+        part: {
+            descriptor: 'no.nav.navno:design-tester',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
         path: '/footer/0',
         part: {
             descriptor: 'no.nav.navno:page-footer',
@@ -923,7 +933,7 @@ function createElements() {
 }
 
 function createTemplates(socket) {
-    templates.forEach(function(value) {
+    templates.forEach(function (value) {
         const parent = libs.content.get({
             key: value.content.parentPath,
         });
@@ -948,7 +958,7 @@ function createTemplates(socket) {
         const elem = exists || libs.content.create(value.content);
         repo.modify({
             key: elem._id,
-            editor: c => {
+            editor: (c) => {
                 return {
                     ...c,
                     components: value.components,
@@ -960,7 +970,7 @@ function createTemplates(socket) {
     });
 }
 
-exports.handle = function(socket) {
+exports.handle = function (socket) {
     const elements = createElements();
     socket.emit('newTask', elements);
 
