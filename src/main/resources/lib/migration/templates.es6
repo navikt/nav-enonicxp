@@ -342,7 +342,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/2/first/1',
         part: {
-            descriptor: 'no.nav.navno:main-panels',
+            descriptor: 'no.nav.navno:breaking-news',
             config: {
                 'no-nav-navno': {},
             },
@@ -352,7 +352,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/2/first/2',
         part: {
-            descriptor: 'no.nav.navno:link-panels',
+            descriptor: 'no.nav.navno:main-panels',
             config: {
                 'no-nav-navno': {},
             },
@@ -361,6 +361,16 @@ const hovedSeksjonPage = [
     {
         type: 'part',
         path: '/main/2/first/3',
+        part: {
+            descriptor: 'no.nav.navno:link-panels',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/4',
         part: {
             descriptor: 'no.nav.navno:link-lists',
             config: {
