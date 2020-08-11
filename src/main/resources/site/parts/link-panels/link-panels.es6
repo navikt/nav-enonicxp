@@ -9,10 +9,13 @@ const view = resolve('link-panels.html');
 exports.get = (req) => {
     return libs.cache.getPaths(req.rawPath, 'link-panels', req.branch, () => {
         const content = libs.portal.getContent();
-        const items = libs.navUtils.forceArray(content.data.items);
+        const heading =
+            content.data.panelsHeading && content.data.panelsHeading !== ''
+                ? content.data.panelsHeading
+                : false;
+        const items = libs.navUtils.forceArray(content.data.panelItems);
         const model = {
-            heading: content.displayName,
-            ingress: content.data.ingress,
+            heading,
             items: items.map((value) => ({
                 title: value.title,
                 ingress: value.ingress,

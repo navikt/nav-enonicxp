@@ -8,9 +8,11 @@ const view = resolve('page-heading.html');
 exports.get = (req) => {
     return libs.cache.getPaths(req.rawPath, 'page-heading', req.branch, () => {
         const content = libs.portal.getContent();
+        const ingress =
+            content.data.ingress && content.data.ingress !== '' ? content.data.ingress : false;
         const model = {
             heading: content.displayName,
-            ingress: !!content.data.ingress,
+            ingress,
         };
 
         return {

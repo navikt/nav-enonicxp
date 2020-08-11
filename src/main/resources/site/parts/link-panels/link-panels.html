@@ -1,4 +1,7 @@
 <section class="row inner-row link-panels-container">
+    <h2 data-th-if="${heading}" class="text-center">
+        [[${heading}]]
+    </h2>
     <a data-th-each="item : ${items}"
        class="lenkepanel lenkepanel--border"
        data-th-classappend="${item.className}"
