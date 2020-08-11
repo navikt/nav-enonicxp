@@ -23,6 +23,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="panels"/>
         <field-set name="nyheter">
             <label>Nyheter</label>
             <help-text>Nyheter hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
