@@ -1,6 +1,7 @@
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
     cache: require('/lib/siteCache'),
     navUtils: require('/lib/nav-utils'),
 };
