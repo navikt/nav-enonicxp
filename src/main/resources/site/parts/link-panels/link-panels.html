@@ -1,0 +1,20 @@
+<section class="row inner-row link-panels-container">
+    <a data-th-each="item : ${items}"
+       class="lenkepanel lenkepanel--border"
+       data-th-classappend="${item.className}"
+       data-th-href="${item.url}"
+    >
+        <div class="icon" data-th-if="${item.logo}">
+            <img data-th-src="${item.logo}" class="icon-size" />
+        </div>
+        <div class="tekst">
+            <h2 class="typo-systemtittel lenkepanel__heading">
+                [[${item.title}]]
+            </h2>
+            <p data-th-if="${item.ingress}" class="typo-normal">
+                [[${item.ingress}]]
+            </p>
+        </div>
+        <span class="lenkepanel__indikator"></span>
+    </a>
+</section>

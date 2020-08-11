@@ -1,0 +1,19 @@
+<section class="row inner-row">
+    <div data-th-if="${table}" class="hero-links">
+        <div class="col-md-4 col-sm-12 hero-link-wrapper" data-th-each="content : ${table}">
+            <a data-th-href="${content.src}" class="hero-link">
+                <h2 class="h4 decorated leading-icon" data-th-classappend="${content.icon}">
+                    [[${content.heading}]]
+                </h2>
+                <p data-th-if="${content.isHtml}"
+                   data-th-utext="${content.ingress}"
+                   data-th-remove="tag"
+                >
+                </p>
+                <p data-th-if="${!content.isHtml}">
+                    [[${content.ingress}]]
+                </p>
+            </a>
+        </div>
+    </div>
+</section>

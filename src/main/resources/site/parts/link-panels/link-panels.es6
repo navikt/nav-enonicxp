@@ -1,24 +1,13 @@
-import { getUrlFromTable } from '/lib/menu-utils/url-lookup-table.es6';
-
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/siteCache'),
     navUtils: require('/lib/nav-utils'),
 };
-const view = resolve('transport.html');
+const view = resolve('link-panels.html');
 
-function getUrl(url) {
-    if (url.text) {
-        return app.config.env === 'p' ? url.text : getUrlFromTable(url.text);
-    }
-    return libs.portal.pageUrl({
-        id: url.ref,
-    });
-}
-
-exports.get = function (req) {
-    return libs.cache.getPaths(req.rawPath, 'transport', req.branch, () => {
+exports.get = (req) => {
+    return libs.cache.getPaths(req.rawPath, 'link-panels', req.branch, () => {
         const content = libs.portal.getContent();
         const items = libs.navUtils.forceArray(content.data.items);
         const model = {
@@ -27,7 +16,7 @@ exports.get = function (req) {
             items: items.map((value) => ({
                 title: value.title,
                 ingress: value.ingress,
-                url: getUrl(value.url),
+                url: libs.navUtils.getUrl(value.url),
                 logo: value.logo
                     ? libs.portal.attachmentUrl({
                           id: value.logo,
@@ -39,15 +28,6 @@ exports.get = function (req) {
 
         return {
             body: libs.thymeleaf.render(view, model),
-            pageContributions: {
-                headEnd: [
-                    '<link rel="stylesheet" href="' +
-                        libs.portal.assetUrl({
-                            path: 'styles/navno.css',
-                        }) +
-                        '"/>',
-                ],
-            },
         };
     });
 };
