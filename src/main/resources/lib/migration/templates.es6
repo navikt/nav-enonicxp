@@ -26,7 +26,7 @@ const tavleListePage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -36,16 +36,6 @@ const tavleListePage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -54,7 +44,7 @@ const tavleListePage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -64,7 +54,7 @@ const tavleListePage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:page-list',
             config: {
@@ -74,19 +64,9 @@ const tavleListePage = [
     },
     {
         type: 'part',
-        path: '/main/3/second/0',
+        path: '/main/2/second/0',
         part: {
             descriptor: 'no.nav.navno:menu-list',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
             config: {
                 'no-nav-navno': {},
             },
@@ -110,7 +90,7 @@ const mainArticlePage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -120,16 +100,6 @@ const mainArticlePage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -138,7 +108,7 @@ const mainArticlePage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -148,7 +118,7 @@ const mainArticlePage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:main-article',
             config: {
@@ -158,7 +128,7 @@ const mainArticlePage = [
     },
     {
         type: 'part',
-        path: '/main/3/second/0',
+        path: '/main/2/second/0',
         part: {
             descriptor: 'no.nav.navno:main-article-linked-list',
             config: {
@@ -168,19 +138,9 @@ const mainArticlePage = [
     },
     {
         type: 'part',
-        path: '/main/3/second/1',
+        path: '/main/2/second/1',
         part: {
             descriptor: 'no.nav.navno:menu-list',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
             config: {
                 'no-nav-navno': {},
             },
@@ -204,7 +164,7 @@ const faqPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -214,16 +174,6 @@ const faqPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -232,7 +182,7 @@ const faqPage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -242,7 +192,7 @@ const faqPage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:faq-page',
             config: {
@@ -252,7 +202,7 @@ const faqPage = [
     },
     {
         type: 'part',
-        path: '/main/3/second/0',
+        path: '/main/2/second/0',
         part: {
             descriptor: 'no.nav.navno:main-article-linked-list',
             config: {
@@ -262,19 +212,9 @@ const faqPage = [
     },
     {
         type: 'part',
-        path: '/main/3/second/1',
+        path: '/main/2/second/1',
         part: {
             descriptor: 'no.nav.navno:menu-list',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
             config: {
                 'no-nav-navno': {},
             },
@@ -298,7 +238,7 @@ const transportPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -308,16 +248,6 @@ const transportPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -326,7 +256,7 @@ const transportPage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main-1-col',
             config: {
@@ -336,9 +266,9 @@ const transportPage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
-            descriptor: 'no.nav.navno:transport',
+            descriptor: 'no.nav.navno:page-heading',
             config: {
                 'no-nav-navno': {},
             },
@@ -346,9 +276,9 @@ const transportPage = [
     },
     {
         type: 'part',
-        path: '/footer/0',
+        path: '/main/2/first/1',
         part: {
-            descriptor: 'no.nav.navno:page-footer',
+            descriptor: 'no.nav.navno:link-panels',
             config: {
                 'no-nav-navno': {},
             },
@@ -372,7 +302,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -382,16 +312,6 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -400,7 +320,7 @@ const hovedSeksjonPage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main-1-col',
             config: {
@@ -410,9 +330,9 @@ const hovedSeksjonPage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
-            descriptor: 'no.nav.navno:section-page',
+            descriptor: 'no.nav.navno:page-heading',
             config: {
                 'no-nav-navno': {},
             },
@@ -420,9 +340,29 @@ const hovedSeksjonPage = [
     },
     {
         type: 'part',
-        path: '/footer/0',
+        path: '/main/2/first/1',
         part: {
-            descriptor: 'no.nav.navno:page-footer',
+            descriptor: 'no.nav.navno:main-panels',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/2',
+        part: {
+            descriptor: 'no.nav.navno:link-panels',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+    {
+        type: 'part',
+        path: '/main/2/first/3',
+        part: {
+            descriptor: 'no.nav.navno:link-lists',
             config: {
                 'no-nav-navno': {},
             },
@@ -470,16 +410,6 @@ const searchResult = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1',
-        part: {
             descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
@@ -488,7 +418,7 @@ const searchResult = [
     },
     {
         type: 'layout',
-        path: '/main/2',
+        path: '/main/1',
         layout: {
             descriptor: 'no.nav.navno:search',
             config: {
@@ -498,7 +428,7 @@ const searchResult = [
     },
     {
         type: 'part',
-        path: '/main/2/searchbar/0',
+        path: '/main/1/searchbar/0',
         part: {
             descriptor: 'no.nav.navno:searchbar',
             config: {
@@ -508,19 +438,9 @@ const searchResult = [
     },
     {
         type: 'part',
-        path: '/main/2/result/0',
+        path: '/main/1/result/0',
         part: {
             descriptor: 'no.nav.navno:searchresult',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
             config: {
                 'no-nav-navno': {},
             },
@@ -580,16 +500,6 @@ const publishingCalendarPage = [
             },
         },
     },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
 ];
 
 const genericPage = [
@@ -608,7 +518,7 @@ const genericPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -618,16 +528,6 @@ const genericPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -636,7 +536,7 @@ const genericPage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -646,19 +546,9 @@ const genericPage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:generic-page',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
             config: {
                 'no-nav-navno': {},
             },
@@ -682,7 +572,7 @@ const officeInformationPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
+            descriptor: 'no.nav.navno:notifications',
             config: {
                 'no-nav-navno': {},
             },
@@ -692,16 +582,6 @@ const officeInformationPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/2',
-        part: {
             descriptor: 'no.nav.navno:page-crumbs',
             config: {
                 'no-nav-navno': {},
@@ -710,7 +590,7 @@ const officeInformationPage = [
     },
     {
         type: 'layout',
-        path: '/main/3',
+        path: '/main/2',
         layout: {
             descriptor: 'no.nav.navno:main',
             config: {
@@ -720,19 +600,9 @@ const officeInformationPage = [
     },
     {
         type: 'part',
-        path: '/main/3/first/0',
+        path: '/main/2/first/0',
         part: {
             descriptor: 'no.nav.navno:office-information',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/footer/0',
-        part: {
-            descriptor: 'no.nav.navno:page-footer',
             config: {
                 'no-nav-navno': {},
             },
@@ -923,7 +793,7 @@ function createElements() {
 }
 
 function createTemplates(socket) {
-    templates.forEach(function(value) {
+    templates.forEach(function (value) {
         const parent = libs.content.get({
             key: value.content.parentPath,
         });
@@ -948,7 +818,7 @@ function createTemplates(socket) {
         const elem = exists || libs.content.create(value.content);
         repo.modify({
             key: elem._id,
-            editor: c => {
+            editor: (c) => {
                 return {
                     ...c,
                     components: value.components,
@@ -960,7 +830,7 @@ function createTemplates(socket) {
     });
 }
 
-exports.handle = function(socket) {
+exports.handle = function (socket) {
     const elements = createElements();
     socket.emit('newTask', elements);
 
