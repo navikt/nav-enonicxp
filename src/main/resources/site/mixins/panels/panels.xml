@@ -4,14 +4,14 @@
         <field-set name="panels">
             <label>Lenkepaneler</label>
             <items>
-                <input name="heading" type="TextLine">
+                <input name="panelsHeading" type="TextLine">
                     <label>Overskrift over lenkepanelene</label>
                     <help-text>
                         Fylles ut hvis du vil ha en overskrift over lenkepanelene.
                     </help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-                <item-set name="items">
+                <item-set name="panelItems">
                     <label>Klikkbart lenkepanel</label>
                     <items>
                         <input name="title" type="TextLine">
@@ -33,7 +33,7 @@
                                 <input name="text" type="TextLine">
                                     <label>URL til lenke</label>
                                 </input>
-                                <input type="ContentSelector" name="ref">
+                                <input name="ref" type="ContentSelector">
                                     <label>Velg innhold</label>
                                 </input>
                             </items>
