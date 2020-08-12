@@ -6,6 +6,7 @@
         <a data-th-each="item : ${items}"
            class="lenkepanel lenkepanel--border"
            data-th-classappend="${item.className}"
+           data-ga="link-panel"
            data-th-href="${item.url}"
         >
             <div class="icon" data-th-if="${item.logo}">

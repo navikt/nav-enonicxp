@@ -5,7 +5,7 @@
         </h2>
         <ul class="link-list">
             <li data-th-each="content : ${niceToKnow.data}">
-                <a data-th-href="${content.src}">
+                <a data-ga="link-list" data-th-href="${content.src}">
                     [[${content.heading}]]
                 </a>
             </li>
@@ -20,12 +20,12 @@
                 <time data-th-attr="datetime=${content.published}">
                     [[${content.published}]]
                 </time>
-                <a data-th-href="${content.src}">
+                <a data-ga="link-list" data-th-href="${content.src}">
                     [[${content.heading}]]
                 </a>
             </li>
             <li data-th-if="${moreNewsUrl}">
-                <a data-th-href="${moreNewsUrl}"
+                <a data-ga="moreNews" data-th-href="${moreNewsUrl}"
                    data-th-text="${localSectionPage ? 'Flere lokalsaker' : 'Flere nyheter'}"
                 >
                 </a>
@@ -38,7 +38,7 @@
         </h2>
         <ul class="link-list">
             <li data-th-each="content : ${shortcuts.data}">
-                <a data-th-href="${content.src}">
+                <a data-ga="link-list" data-th-href="${content.src}">
                     [[${content.heading}]]
                 </a>
             </li>

@@ -1,7 +1,10 @@
 <section class="row inner-row">
     <div data-th-if="${table}" class="hero-links">
         <div class="col-md-4 col-sm-12 hero-link-wrapper" data-th-each="content : ${table}">
-            <a data-th-href="${content.src}" class="hero-link">
+            <a class="hero-link"
+               data-ga="main-panel"
+               data-th-href="${content.src}"
+            >
                 <h2 class="h4 decorated leading-icon" data-th-classappend="${content.icon}">
                     [[${content.heading}]]
                 </h2>
