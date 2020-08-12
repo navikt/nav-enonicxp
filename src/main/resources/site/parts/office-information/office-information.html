@@ -9,6 +9,7 @@
         </div>
     </header>
     <div class="article-body">
+        <div data-th-id="${targetId}"></div>
         <div data-th-if="${enhet.isHmsOrAls}" itemprop="location" itemscope="" itemtype="http://schema.org/PostalAddress">
             <h3>Besøksadresse</h3>
             <p class="p-street-address" itemprop="streetAddress">[[${enhet.besoeksadresse}]]</p>
@@ -60,11 +61,11 @@
                 <h2 itemprop="name">[[${pm.stedbeskrivelse}]]</h2>
                 <p></p>
                 <p class="p-street-address" itemprop="address" itemtype="http://schema.org/PostalAddress">[[${pm.besokkom}]]</p>
-                <div data-th-if="${pm.unntakAapning}"> 
+                <div data-th-if="${pm.unntakAapning}">
                     <h5>Spesielle åpningstider</h5>
                     <ul style="display: none;">
                         <li data-th-each="event: ${pm.unntakAapning} "itemprop="specialOpeningHoursSpecification" itemscope itemtype="http://schema.org/OpeningHoursSpecification">
-                            <time itemprop="validFrom" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time> 
+                            <time itemprop="validFrom" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time>
                             <time itemprop="validThrough" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time>
                             <time data-th-if="${!event.stengt}" itemprop="opens" data-th-datetime="${event.fra}">[[${event.fra}]]</time>
                             <time data-th-if="${!event.stengt}" itemprop="closes" data-th-datetime="${event.til}">[[${event.til}]]</time>

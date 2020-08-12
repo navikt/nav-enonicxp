@@ -1,5 +1,6 @@
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
+    React4xp: require('/lib/enonic/react4xp'),
     portal: require('/lib/xp/portal'),
     navUtils: require('/lib/nav-utils'),
     cache: require('/lib/siteCache'),
@@ -135,10 +136,10 @@ function parseSpecialInfo(infoContent) {
         return '';
     }
     // replace \n with <br />
-    parsedString = parsedString.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    parsedString = parsedString.replace(/(?:\r\n|\r|\n)/g, '<br />');
     // replace urls
     const urls = specialInfoParseLink(parsedString);
-    urls.forEach(url => {
+    urls.forEach((url) => {
         parsedString = parsedString.replace(url.match, `<a href='${url.url}'>${url.text}</a>`);
     });
 
@@ -203,20 +204,24 @@ function handleGet(req) {
             faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
             telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
             telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
-            pms: publikumsmottak.map(val => formatAudienceReception(val, content.language)),
+            pms: publikumsmottak.map((val) => formatAudienceReception(val, content.language)),
             isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
             spesielleOpplysninger: specialInfo,
         };
 
-        const body = libs.thymeleaf.render(view, {
+        // Setting up entryObj, the data-holding object for entry.jsx:
+        const entryObj = new libs.React4xp(`MyIntegrator`);
+        entryObj.setProps({ officeName: enhet.navn }).setId('myEntry').uniqueId();
+        let body = libs.thymeleaf.render(view, {
             content,
             published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
             enhet,
+            targetId: entryObj.react4xpId,
             lang,
         });
-
+        body = entryObj.renderBody({ body });
         return {
             contentType: 'text/html',
             body: body,
