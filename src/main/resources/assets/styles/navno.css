@@ -887,11 +887,11 @@ body > img[src*="nav.tns-cs.net"] {
     outline-offset: -1px
 }
 
-#maincontent{
+#maincontent {
     padding-bottom: 1rem;
-    .btn {
-        text-decoration: none
-    }
+}
+#maincontent .btn {
+    text-decoration: none
 }
 
 .navno .btn, .btn-link {
@@ -3326,6 +3326,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     grid-template-columns: repeat(1, 1fr);
     width: 80%;
 }
+.row.inner-row .lenkepanel-container {
+    padding: 0 1rem;
+}
 @media (max-width: 48em) {
     .lenkepanel-container {
         -ms-grid-columns: (1fr)[1];
@@ -3459,60 +3462,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     }
 }
 
-.transport {
-    background-color: #fff;
-    border-radius: 4px;
-    padding: 1.5rem;
-}
-.din-situasjon-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
-.din-situasjon-wrapper .ingress {
-    text-align: center;
-    margin-bottom: 50px;
-    flex-basis: 100%
-}
-.din-situasjon-wrapper .lenkepanel {
-    margin: 1rem 0 0 2%;
-    padding: 1.5rem;
-    flex-grow: 1;
-    width: calc(50% - 2rem);
-}
-@media (max-width: 48em) {
-    .din-situasjon-wrapper .lenkepanel {
-        width: 100%
-    }
-}
-.din-situasjon-wrapper .lenkepanel.heldekkende {
-    flex-basis: 100%;
-}
-.din-situasjon-wrapper .lenkepanel.heldekkende .icon-size {
-    height: 100%;
-    width: 80px
-}
-.din-situasjon-wrapper .lenkepanel .icon-size {
-    height: 100%;
-    width: 40px
-}
-@media (max-width: 38.75em) {
-    .din-situasjon-wrapper .lenkepanel .icon {
-        display: none
-    }
-}
-.din-situasjon-wrapper .lenkepanel h2 {
-    word-wrap: break-word
-}
-.din-situasjon-wrapper .lenkepanel .icon {
-    padding: 0.5rem;
-}
-.din-situasjon-wrapper .lenkepanel .tekst {
-    flex-grow: 1;
-    text-align: left;
-}
-.din-situasjon-wrapper .lenkepanel .tekst p {
-    margin-top: 1rem;
-}
 .navno-dekorator {
     min-height: 88px;
 }
