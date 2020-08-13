@@ -3312,6 +3312,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel--border.panel-interaktiv-mixin--hover {
     border: 1px solid #0067C5;
 }
+.lenkepanel .tekst h2 {
+    padding-bottom: 0.5rem;
+}
 .lenkepanel-container {
     margin: 1rem auto;
     display: -ms-grid;
@@ -3340,37 +3343,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .notifications .lenkepanel-container .lenkepanel {
     padding: 0.75rem 0.75rem 0.75rem 0;
-}
-.driftsmeldinger {
-    background-color: #00548E;
-}
-.message-container {
-    display: flex;
-    justify-content: center;
-    padding: 0.5rem 0;
-}
-.driftsmeldinger .message {
-    color: #FFF;
-    padding: 0.5rem;
-}
-.driftsmeldinger a.message:focus {
-    color: #0067C5;
-    background-color: #FFF;
-    text-decoration: underline;
-    box-shadow: none;
-}
-.message-container .message {
-    margin: 0 1.5rem;
-    display: flex;
-    align-items: center;
-}
-@media (max-width: 48em) {
-    .message-container {
-        display: block;
-    }
-}
-.message .message-icon {
-    margin-right: 0.5rem;
 }
 .kampanje {
     display: flex;
