@@ -21,9 +21,9 @@ exports.get = (req) => {
                     title: value.title,
                     ingress: value.ingress,
                     url: libs.navUtils.getUrl(value.url),
-                    logo: value.logo
+                    icon: value.icon
                         ? libs.portal.attachmentUrl({
-                              id: value.logo,
+                              id: value.icon,
                           })
                         : null,
                     className: value.spanning ? 'heldekkende' : '',

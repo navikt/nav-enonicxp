@@ -9,8 +9,8 @@
            data-ga="link-panel"
            data-th-href="${item.url}"
         >
-            <div class="icon" data-th-if="${item.logo}">
-                <img data-th-src="${item.logo}" class="icon-size" />
+            <div data-th-if="${item.icon}" class="icon">
+                <img data-th-src="${item.icon}" class="icon-size" />
             </div>
             <div class="tekst">
                 <h3 class="typo-systemtittel lenkepanel__heading">

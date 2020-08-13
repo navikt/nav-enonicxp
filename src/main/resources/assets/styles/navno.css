@@ -329,15 +329,15 @@ body {
 }
 
 .inner-row {
-    margin-bottom: 60px
+    margin-bottom: 3rem;
 }
 
 .inner-row.tight {
-    margin-bottom: 30px
+    margin-bottom: 1.5rem;
 }
 
 .inner-row.tighter {
-    margin-bottom: 15px
+    margin-bottom: 1rem;
 }
 
 @media (min-width: 48.0625em) {
@@ -3312,9 +3312,22 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel--border.panel-interaktiv-mixin--hover {
     border: 1px solid #0067C5;
 }
+.lenkepanel .tekst {
+    width: 100%;
+}
 .lenkepanel .tekst h3 {
     font-size: 1.1rem;
     padding-bottom: 0.5rem;
+}
+.lenkepanel .icon {
+    padding-right: 1rem;
+}
+.lenkepanel .icon-size {
+    width: 40px;
+}
+.lenkepanel.heldekkende {
+    grid-column-start: 1;
+    grid-column-end: -1;
 }
 .lenkepanel-container {
     margin: 1rem auto;

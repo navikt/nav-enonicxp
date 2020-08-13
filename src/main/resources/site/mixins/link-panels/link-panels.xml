@@ -38,8 +38,8 @@
                                 </input>
                             </items>
                         </item-set>
-                        <input name="logo" type="ImageSelector">
-                            <label>Velg logo</label>
+                        <input name="icon" type="ImageSelector">
+                            <label>Velg ikon</label>
                             <occurrences minimum="0" maximum="1"/>
                         </input>
                     </items>
