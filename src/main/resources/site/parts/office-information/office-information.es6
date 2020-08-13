@@ -213,7 +213,7 @@ function handleGet(req) {
 
         // Setting up entryObj, the data-holding object for entry.jsx:
         const entryObj = new libs.React4xp(`MyIntegrator`);
-        entryObj.setProps({ officeName: enhet.navn }).setId('myEntry').uniqueId();
+        entryObj.setProps({ officeName: enhet.navn }).setId('myintegrator').uniqueId();
         let body = libs.thymeleaf.render(view, {
             content,
             published: libs.navUtils.dateTimePublished(content, content.language || 'no'),

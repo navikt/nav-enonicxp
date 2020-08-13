@@ -702,7 +702,7 @@ const officeInformationPage = [
         type: 'part',
         path: '/main/1',
         part: {
-            descriptor: 'no.nav.navno:notifications',
+            descriptor: 'no.nav.navno:newNotifications',
             config: {
                 'no-nav-navno': {},
             },
