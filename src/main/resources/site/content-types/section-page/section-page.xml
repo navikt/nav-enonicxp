@@ -23,7 +23,7 @@
                 </input>
             </items>
         </field-set>
-        <mixin name="panels"/>
+        <mixin name="link-panels"/>
         <field-set name="nyheter">
             <label>Nyheter</label>
             <help-text>Nyheter hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
@@ -37,6 +37,7 @@
                     <occurrences maximum="1" minimum="0"/>
                     <config>
                         <treeMode>true</treeMode>
+                        <allowContentType>${app}:content-list</allowContentType>
                     </config>
                 </input>
                 <input type="TextLine" name="moreNewsUrl">
@@ -57,6 +58,7 @@
                     <occurrences maximum="1" minimum="0"/>
                     <config>
                         <treeMode>true</treeMode>
+                        <allowContentType>${app}:content-list</allowContentType>
                     </config>
                 </input>
             </items>
@@ -74,6 +76,7 @@
                     <occurrences maximum="1" minimum="0"/>
                     <config>
                         <treeMode>true</treeMode>
+                        <allowContentType>${app}:content-list</allowContentType>
                     </config>
                 </input>
             </items>
