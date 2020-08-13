@@ -3312,7 +3312,8 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel--border.panel-interaktiv-mixin--hover {
     border: 1px solid #0067C5;
 }
-.lenkepanel .tekst h2 {
+.lenkepanel .tekst h3 {
+    font-size: 1.1rem;
     padding-bottom: 0.5rem;
 }
 .lenkepanel-container {
