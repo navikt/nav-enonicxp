@@ -94,22 +94,27 @@ exports.get = (req) => {
             data: scList && scList.length > 0 ? scList.slice(0, content.data.nrSC) : null,
         };
 
-        // Sentralt eller lokalt innhold?
-        let localSectionPage = false;
-        const pathParts = content._path.split('/');
-        if (pathParts[pathParts.length - 2] === 'lokalt') {
-            localSectionPage = true;
-        }
+        if (ntkList.length > 0 || newsList.length > 0 || scList.length > 0) {
+            // Sentralt eller lokalt innhold?
+            let localSectionPage = false;
+            const pathParts = content._path.split('/');
+            if (pathParts[pathParts.length - 2] === 'lokalt') {
+                localSectionPage = true;
+            }
 
-        const model = {
-            niceToKnow,
-            news,
-            moreNewsUrl: content.data.moreNewsUrl,
-            shortcuts,
-            localSectionPage,
-        };
+            const model = {
+                niceToKnow,
+                news,
+                moreNewsUrl: content.data.moreNewsUrl,
+                shortcuts,
+                localSectionPage,
+            };
+            return {
+                body: libs.thymeleaf.render(view, model),
+            };
+        }
         return {
-            body: libs.thymeleaf.render(view, model),
+            body: null,
         };
     });
 };

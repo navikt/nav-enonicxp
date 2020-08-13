@@ -51,12 +51,16 @@ exports.get = (req) => {
             tableList && tableList.length > 0
                 ? tableList.slice(0, content.data.nrTableEntries)
                 : null;
-
-        const model = {
-            table,
-        };
+        if (table) {
+            const model = {
+                table,
+            };
+            return {
+                body: libs.thymeleaf.render(view, model),
+            };
+        }
         return {
-            body: libs.thymeleaf.render(view, model),
+            body: null,
         };
     });
 };
