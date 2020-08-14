@@ -1,3 +1,5 @@
+import { getUrlFromTable } from '/lib/menu-utils/url-lookup-table.es6';
+
 const libs = {
     content: require('/lib/xp/content'),
     i18n: require('/lib/xp/i18n'),
@@ -81,9 +83,9 @@ function sortContents(contents, sortedIds) {
     const ids = exports.forceArray(sortedIds);
     let content = contents;
 
-    ids.forEach(id => {
+    ids.forEach((id) => {
         let found = false;
-        content = content.filter(item => {
+        content = content.filter((item) => {
             if (!found && item._id === id) {
                 sorted.push(item);
                 found = true;
@@ -215,7 +217,7 @@ function getLanguageVersions(content) {
     if (!Array.isArray(lRefs)) {
         lRefs = [lRefs];
     }
-    lRefs.forEach(ref => {
+    lRefs.forEach((ref) => {
         const el = libs.content.get({
             key: ref,
         });
@@ -327,6 +329,34 @@ function getSitePath() {
     }
 }
 
+function getUrl(url) {
+    if (url.text) {
+        return app.config.env === 'p' ? url.text : getUrlFromTable(url.text);
+    }
+    return libs.portal.pageUrl({
+        id: url.ref,
+    });
+}
+
+function getSrc(el) {
+    if (el) {
+        if (el.type === `${app.name}:internal-link` || el.type === `${app.name}:breaking-news`) {
+            return getSrc(
+                libs.content.get({
+                    key: el.data.target,
+                })
+            );
+        }
+        if (el.type === `${app.name}:external-link`) {
+            return el.data.url;
+        }
+        return libs.portal.pageUrl({
+            id: el._id,
+        });
+    }
+    return '/';
+}
+
 module.exports = {
     getExtensionForImage,
     getImageUrl,
@@ -345,4 +375,6 @@ module.exports = {
     getAllChildren,
     unicodeLiteral,
     getSitePath,
+    getUrl,
+    getSrc,
 };

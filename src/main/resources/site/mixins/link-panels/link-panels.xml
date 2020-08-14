@@ -1,0 +1,51 @@
+<mixin>
+    <display-name>Lenkepaneler</display-name>
+    <form>
+        <field-set name="panels">
+            <label>Lenkepaneler</label>
+            <items>
+                <input name="panelsHeading" type="TextLine">
+                    <label>Overskrift over lenkepanelene</label>
+                    <help-text>
+                        Fylles ut hvis du vil ha en overskrift over lenkepanelene.
+                    </help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <item-set name="panelItems">
+                    <label>Klikkbart lenkepanel</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Paneltittel</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input name="ingress" type="TextLine">
+                            <label>Panelbeskrivelse</label>
+                            <occurrences  minimum="0" maximum="1"/>
+                        </input>
+                        <input name="spanning" type="Checkbox">
+                            <label>Heldekkende panel</label>
+                            <help-text>Gjør at panelet spenner over hele raden</help-text>
+                        </input>
+                        <item-set name="url">
+                            <label>Peker til innhold</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <items>
+                                <input name="text" type="TextLine">
+                                    <label>URL til lenke</label>
+                                </input>
+                                <input name="ref" type="ContentSelector">
+                                    <label>Velg innhold</label>
+                                </input>
+                            </items>
+                        </item-set>
+                        <input name="icon" type="ImageSelector">
+                            <label>Velg ikon</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                    <occurrences maximum="0" minimum="1"/>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</mixin>

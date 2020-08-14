@@ -99,15 +99,19 @@ function wipeOnChange(path) {
     }
     const w = wipe('paths');
     w(getPath(path, 'main-page'));
+    w(getPath(path, 'page-heading'));
+    w(getPath(path, 'breaking-news'));
+    w(getPath(path, 'main-panels'));
+    w(getPath(path, 'link-panels'));
+    w(getPath(path, 'link-lists'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
-    w(getPath(path, 'faq-page'));
     w(getPath(path, 'menu-list'));
-    w(getPath(path, 'section-page'));
     w(getPath(path, 'page-list'));
-    w(getPath(path, 'transport'));
     w(getPath(path, 'office-information'));
     w(getPath(path, 'page-large-table'));
+    w(getPath(path, 'faq-page'));
+    w(getPath(path, 'generic-page'));
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('driftsmelding-heading-no');
