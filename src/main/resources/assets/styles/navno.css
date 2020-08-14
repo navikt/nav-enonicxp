@@ -2764,7 +2764,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .lenkepanel .tekst h3 {
     font-size: 1.1rem;
-    padding-bottom: 0.5rem;
+}
+.lenkepanel .tekst p {
+    padding-top: 0.5rem;
 }
 .lenkepanel .icon {
     padding-right: 1rem;
