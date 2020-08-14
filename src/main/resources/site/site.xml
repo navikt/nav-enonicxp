@@ -7,6 +7,10 @@
     <x-data name="fasetter"/>
     <x-data name="oldContentType"/>
     <config>
+        <input name="name" type="TextLine">
+            <label>Felt for at Guillotine skal fungere (er en bug der)</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
     </config>
     <mappings>
         <mapping controller="/lib/enonic/url-redirect/index.js">
