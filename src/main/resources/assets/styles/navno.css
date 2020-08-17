@@ -2774,38 +2774,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel .icon-size {
     width: 40px;
 }
-/*
-.lenkepanel.heldekkende {
-    grid-column-start: 1;
-    grid-column-end: -1;
-}
-.lenkepanel-container {
-    margin: 1rem auto;
-    display: -ms-grid;
-    display: grid;
-    -ms-grid-columns: (1fr)[2];
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 1rem;
-    row-gap: 1rem;
-}
-.lenkepanel-container.one-col {
-    -ms-grid-columns: (1fr)[1];
-    grid-template-columns: repeat(1, 1fr);
-    width: 80%;
-}
-.row.inner-row .lenkepanel-container {
-    padding: 0 1rem;
-}
-@media (max-width: 48em) {
-    .lenkepanel-container {
-        -ms-grid-columns: (1fr)[1];
-        grid-template-columns: repeat(1, 1fr);
-    }
-    .lenkepanel-container.one-col {
-        width: 100%;
-    }
-}
-*/
 .notifications .lenkepanel-container.one-col {
     width: 80%;
     margin: auto;
