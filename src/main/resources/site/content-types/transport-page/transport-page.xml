@@ -7,40 +7,7 @@
     <form>
         <mixin name="ingress"/>
         <mixin name="meta-description"/>
-        <item-set name="items">
-            <label>Klikkbar lenkepanel</label>
-            <items>
-                <input name="title" type="TextLine">
-                    <label>Paneltittel</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-                <input name="ingress" type="TextLine">
-                    <label>Panelbeskrivelse</label>
-                    <occurrences  minimum="0" maximum="1"/>
-                </input>
-                <input name="spanning" type="Checkbox">
-                    <label>Heldekkende panel</label>
-                    <help-text>Gjør at panelet spenner over hele raden</help-text>
-                </input>
-                <item-set name="url">
-                    <label>Peker til innhold</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <items>
-                        <input name="text" type="TextLine">
-                            <label>URL til lenke</label>
-                        </input>
-                        <input type="ContentSelector" name="ref">
-                            <label>Velg innhold</label>
-                        </input>
-                    </items>
-                </item-set>
-                <input name="logo" type="ImageSelector">
-                    <label>Velg logo</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-            </items>
-            <occurrences maximum="0" minimum="1"/>
-        </item-set>
+        <mixin name="link-panels"/>
         <mixin name="keywords"/>
         <mixin name="canonical-url"/>
     </form>
