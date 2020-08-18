@@ -540,6 +540,9 @@ blockquote:before {
     padding-top: 1rem;
     padding-bottom: 3rem;
 }
+header .page-ingress {
+    margin-bottom: 1rem;
+}
 @media (max-width: 38.6875em) {
     .contentpage .container.maincontent {
         padding: 0 0 60px 0
