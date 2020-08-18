@@ -326,10 +326,41 @@ $.fn.navnoAccordion = function () {
     });
 };
 
+function logAmplitudeEvent(event, data) {
+    return new Promise(function (resolve) {
+        const eventData = data || {};
+        eventData.origin = 'navno';
+        eventData.title = document.title;
+        eventData.src = window.location.href;
+        console.log(event);
+        console.log(eventData);
+        amplitude.getInstance().logEvent(event, eventData, resolve);
+    });
+}
+
 $(document).ready(function () {
     $('#related-content-accordion').navnoAccordion();
     $('#related-content-accordion>[data-expand="true"] .accordion-toggle').click();
     navno.initContentPrintHandler();
     navno.contentLanguages();
     navno.scrollToTopHandler();
+
+    amplitude.getInstance().init('default', '', {
+        apiEndpoint: 'amplitude.nav.no/collect-auto',
+        saveEvents: false,
+        includeUtm: true,
+        includeReferrer: true,
+        platform: window.location.toString(),
+    });
+    document.querySelectorAll('[data-ga]').forEach( function(el) {
+        el.onclick = function() {
+            const eventData = {
+                type: this.getAttribute('data-ga'),
+                tekst: this.innerHTML.trim(),
+                target: this.getAttribute('href'),
+            };
+            logAmplitudeEvent('klikk', eventData );
+        }
+    });
+    logAmplitudeEvent('sidevisning');
 });
