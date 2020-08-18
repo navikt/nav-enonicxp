@@ -332,12 +332,20 @@ function logAmplitudeEvent(event, data) {
         eventData.origin = 'navno';
         eventData.title = document.title;
         eventData.src = window.location.href;
-        console.log(event);
-        console.log(eventData);
         amplitude.getInstance().logEvent(event, eventData, resolve);
     });
 }
-
+function getLinkText(element) {
+    let text = '';
+    if (element.classList.contains('hero-link')) {
+        text = element.querySelector('.leading-icon').innerHTML;
+    } else if (element.classList.contains('lenkepanel')) {
+        text = element.querySelector('.lenkepanel__heading').innerHTML;
+    } else {
+        text = element.innerHTML;
+    }
+    return text.trim();
+}
 $(document).ready(function () {
     $('#related-content-accordion').navnoAccordion();
     $('#related-content-accordion>[data-expand="true"] .accordion-toggle').click();
@@ -356,7 +364,7 @@ $(document).ready(function () {
         el.onclick = function() {
             const eventData = {
                 type: this.getAttribute('data-ga'),
-                tekst: this.innerHTML.trim(),
+                tekst: getLinkText(this),
                 target: this.getAttribute('href'),
             };
             logAmplitudeEvent('klikk', eventData );
