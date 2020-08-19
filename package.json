@@ -55,9 +55,7 @@
         "serve": "^11.3.2",
         "style-loader": "^1.2.1",
         "webpack": "^4.44.1",
-        "webpack-cli": "^3.3.12"
-    },
-    "dependencies": {
+        "webpack-cli": "^3.3.12",
         "classnames": "^2.2.6",
         "lodash.throttle": "^4.1.1",
         "nav-frontend-alertstriper": "^3.0.23",
@@ -69,6 +67,8 @@
         "nav-frontend-hjelpetekst-style": "^2.0.25",
         "nav-frontend-ikoner-assets": "^2.0.3",
         "nav-frontend-js-utils": "^1.0.9",
+        "nav-frontend-lenkepanel": "^1.0.47",
+        "nav-frontend-lenkepanel-style": "^0.3.31",
         "nav-frontend-paneler-style": "^0.3.21",
         "nav-frontend-popover": "0.0.28",
         "nav-frontend-popover-style": "0.0.5",
@@ -78,5 +78,6 @@
         "nav-frontend-typografi-style": "^1.0.22",
         "prop-types": "^15.7.2",
         "react": "^16.13.1"
-    }
+    },
+    "dependencies": {}
 }
