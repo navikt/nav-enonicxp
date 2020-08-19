@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import LenkepanelBase from 'nav-frontend-lenkepanel';
+import { Ingress, Undertekst, Systemtittel } from 'nav-frontend-typografi';
 
-const Notifications = function (props, context) {
-    const foo = classNames('bar', 'foo');
-    console.log(foo);
+const DesignNotifications = function (props, context) {
     const { messages, containerClass } = props;
     const messageNodes = messages.map((message) => {
         const icon =
@@ -18,30 +17,22 @@ const Notifications = function (props, context) {
                     <div className="kampanje-varsel__sirkel" />
                 </div>
             );
-        const description = message.description ? (
-            <p className="typo-normal">{message.description}</p>
-        ) : null;
-        const updated = message.updated ? (
-            <p className="typo-undertekst">{message.updated}</p>
-        ) : null;
+        const description = message.description ? <Ingress>{message.description}</Ingress> : null;
+        const updated = message.updated ? <Undertekst>{message.updated}</Undertekst> : null;
 
-        const linkPanelClassName = `lenkepanel lenkepanel--border ${message.className}`;
         return (
-            <a className={linkPanelClassName} data-ga="notifications" href={message.url}>
+            <LenkepanelBase href={message.url} border>
                 {icon}
-                <div className="lenkepanel-tekst-col">
-                    <h2 className="typo-element lenkepanel__heading">{message.heading}</h2>
-                    {description}
-                    {updated}
-                </div>
-                <span className="lenkepanel__indikator" />
-            </a>
+                <Systemtittel className="lenkepanel__heading">{message.heading}</Systemtittel>
+                {description}
+                {updated}
+            </LenkepanelBase>
         );
     });
 
     const containerClasses = `lenkepanel-container ${containerClass}`;
     return (
-        <section className="container notifications">
+        <section className="container notifications app">
             <div className={containerClasses}>
                 <div>{messageNodes}</div>
             </div>
@@ -49,7 +40,7 @@ const Notifications = function (props, context) {
     );
 };
 
-Notifications.propTypes = {
+DesignNotifications.propTypes = {
     messages: PropTypes.arrayOf(
         PropTypes.shape({
             heading: PropTypes.string,
@@ -63,8 +54,8 @@ Notifications.propTypes = {
     containerClass: PropTypes.string,
 };
 
-Notifications.defaultProps = {
+DesignNotifications.defaultProps = {
     messages: [],
     containerClass: '',
 };
-export default Notifications;
+export default DesignNotifications;
