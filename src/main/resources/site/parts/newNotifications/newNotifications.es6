@@ -105,7 +105,7 @@ const constructMessage = (message, language) => {
             updated,
             url,
             iconUrl,
-            class: messageProps.class,
+            className: messageProps.class,
         };
     }
     return false;
