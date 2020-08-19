@@ -32,9 +32,20 @@
                             <items>
                                 <input name="text" type="TextLine">
                                     <label>URL til lenke</label>
+                                    <help-text>
+                                        Legg url på formen https://*.nav.no/* - Hvis innhold velges under, vil dette overstyre url
+                                    </help-text>
+                                    <config>
+                                        <regexp>
+                                            (?:https:\/\/)[\w.-]+(?:\.nav\.no\/)[\w\-\._~:\/?#\[\]@!\$\&amp;\'\(\)\*\+,;=.]*
+                                        </regexp>
+                                    </config>
                                 </input>
                                 <input name="ref" type="ContentSelector">
-                                    <label>Velg innhold</label>
+                                    <label>ELLER - Velg innhold</label>
+                                    <help-text>
+                                        Vil overstyre evnentuell url lagt inn over
+                                    </help-text>
                                 </input>
                             </items>
                         </item-set>

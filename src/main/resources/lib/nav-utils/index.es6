@@ -37,7 +37,8 @@ function getExtensionForImage(contentId) {
 
 /**
  * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
- * @param {String} contentId The id of the content
+ * @param {String} contentId The id of the content.
+ * scale is default blank
  */
 function getImageUrl(contentId, scale = '') {
     const extension = getExtensionForImage(contentId);
@@ -328,9 +329,9 @@ function getSitePath() {
         return '';
     }
 }
-
-function getUrl(url) {
-    if (url.text) {
+/* prefers url.txt over url.ref by default, call with preferUrl=true to prefer url.txt */
+function getUrl(url, preferUrl = false) {
+    if (preferUrl && url.text) {
         return app.config.env === 'p' ? url.text : getUrlFromTable(url.text);
     }
     return libs.portal.pageUrl({
