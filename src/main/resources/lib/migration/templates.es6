@@ -592,16 +592,6 @@ const officeInformationPage = [
         type: 'part',
         path: '/main/0',
         part: {
-            descriptor: 'no.nav.navno:driftsmelding-heading',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1',
-        part: {
             descriptor: 'no.nav.navno:newNotifications',
             config: {
                 'no-nav-navno': {},
