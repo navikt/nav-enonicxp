@@ -111,7 +111,8 @@ const constructMessage = (message, language) => {
     return false;
 };
 
-const showMessages = (content) => {
+const showMessages = (content, req) => {
+    const component = libs.portal.getComponent();
     const language = content.language || 'no';
     let global = getGlobalMessages();
     const local = getLocalMessages(content._path);
@@ -129,19 +130,15 @@ const showMessages = (content) => {
     }
     const messages = global.concat(local).map((item) => constructMessage(item, language));
 
-    const { body } = libs.React4xp.render(
-        'Notifications',
+    return libs.React4xp.render(
+        component,
         {
             messages,
             containerClass: messages.length === 1 ? 'one-col' : '',
         },
-        {},
-        {}
+        req,
+        { clientRender: false }
     );
-    return {
-        contentType: 'text/html',
-        body,
-    };
 };
 
 const handleGet = (req) => {
@@ -162,13 +159,15 @@ const handleGet = (req) => {
         },
         () => {
             const content = libs.portal.getContent();
-            return libs.cache.getNotifications(
-                content._path,
-                'notifications',
-                'master',
-                showMessages,
-                content
-            );
+            return showMessages(content, req);
+            // return libs.cache.getNotifications(
+            //     content._path,
+            //     'notifications',
+            //     'master',
+            //     showMessages,
+            //     content,
+            //     req
+            // );
         }
     );
 };
