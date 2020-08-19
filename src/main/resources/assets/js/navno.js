@@ -370,5 +370,4 @@ $(document).ready(function () {
             logAmplitudeEvent('klikk', eventData );
         }
     });
-    logAmplitudeEvent('sidevisning');
 });
