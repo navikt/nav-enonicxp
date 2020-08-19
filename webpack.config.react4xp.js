@@ -21,7 +21,7 @@ module.exports = function (env, config) {
                     loader: 'less-loader',
                     options: {
                         lessOptions: {
-                            strictMath: true,
+                            strictMath: false,
                         },
                     },
                 },
