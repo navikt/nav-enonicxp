@@ -331,7 +331,7 @@ function getSitePath() {
 }
 /* prefers url.txt over url.ref by default, call with preferUrl=true to prefer url.txt */
 function getUrl(url, preferUrl = false) {
-    if (preferUrl && url.text) {
+    if (url.text && (preferUrl || !url.ref)) {
         return app.config.env === 'p' ? url.text : getUrlFromTable(url.text);
     }
     return libs.portal.pageUrl({
