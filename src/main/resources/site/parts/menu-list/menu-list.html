@@ -1,5 +1,8 @@
 <aside role="complementary" class="related-content accordion" id="related-content-accordion">
-    <section data-th-each="content : ${menuLists}" class="accordion-item" data-th-data-expand="${content.expanded} ? 'true' : ''">
+    <section data-th-each="content : ${menuLists}"
+             class="accordion-item"
+             data-th-data-expand="${content.expanded} ? 'true' : ''"
+    >
         <h2 class="h3">
             <a href="#accordion-information" class="accordion-toggle">
                 [[${content.name}]]
@@ -9,7 +12,7 @@
         <div id="accordion-information" class="accordion-panel">
             <ul>
                 <li data-th-each="link : ${content.links}">
-                    <a data-th-href="${link.link}">
+                    <a data-ga="related-content" data-th-href="${link.link}">
                         [[${link.title}]]
                     </a>
                 </li>

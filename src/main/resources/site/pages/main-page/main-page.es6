@@ -75,7 +75,6 @@ function handleGet(req) {
         const model = {
             decoratorClass,
             mainRegion: regions.main,
-            footerRegion: regions.footer,
             language: content.language || 'no',
         };
         return {
