@@ -540,6 +540,9 @@ blockquote:before {
     padding-top: 1rem;
     padding-bottom: 3rem;
 }
+header .page-ingress {
+    margin-bottom: 1rem;
+}
 @media (max-width: 38.6875em) {
     .contentpage .container.maincontent {
         padding: 0 0 60px 0
@@ -2816,6 +2819,12 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .lenkepanel-container .lenkepanel.heldekkende {
     width: calc(100% - 1rem);
+}
+.no-margin {
+    margin: 0;
+}
+.no-margin-bottom {
+    margin-bottom: 0;
 }
 .kampanje {
     display: flex;
