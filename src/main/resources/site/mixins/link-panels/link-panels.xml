@@ -44,7 +44,7 @@
                                 <input name="ref" type="ContentSelector">
                                     <label>ELLER - Velg innhold</label>
                                     <help-text>
-                                        Vil overstyre evnentuell url lagt inn over
+                                        Vil overstyre eventuell url lagt inn over
                                     </help-text>
                                 </input>
                             </items>
