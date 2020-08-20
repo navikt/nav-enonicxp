@@ -344,7 +344,8 @@ function getLinkText(element) {
     } else {
         text = element.innerHTML;
     }
-    return text.trim();
+    //Fjern eventuelle gjenværende html-tags og whitespace
+    return text.replace(/(<([^>]+)>)/gi, '').trim();
 }
 $(document).ready(function () {
     $('#related-content-accordion').navnoAccordion();

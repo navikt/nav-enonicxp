@@ -78,7 +78,7 @@
                     <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
-                        <allow-content-type>no.nav.navno:tavleliste</allow-content-type>
+                        <allow-content-type>${app}:page-list</allow-content-type>
                     </config>
                 </input>
             </items>
