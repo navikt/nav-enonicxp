@@ -370,7 +370,7 @@ $(document).ready(function () {
                 lenketekst: getLinkText(this),
                 destinasjon: this.getAttribute('href'),
             };
-            logAmplitudeEvent('klikk', eventData );
+            logAmplitudeEvent('navigere', eventData );
         }
     });
 });
