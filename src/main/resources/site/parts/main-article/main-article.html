@@ -37,9 +37,7 @@
                 </div>
             </div>
             <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
-                <br data-th-if="${#strings.contains(content.data.ingress,'\n')}"/>
                 [[${content.data.ingress}]]
-                <br>
             </p>
             <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
                 <nav class="table-of-contents" data-selected-id>
