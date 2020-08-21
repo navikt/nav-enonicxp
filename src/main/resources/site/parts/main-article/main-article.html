@@ -12,9 +12,12 @@
             </time>
             <h1>[[${content.displayName}]]</h1>
             <div class="toolbar">
-                <div class="content-languages leftmost-in-toolbar" data-th-if="${hasLanguageVersions}"
-                     role="button" tabindex="0" aria-haspopup="true"
-                     aria-owns="language-selection" aria-controls="language-selection"
+                <div data-th-if="${hasLanguageVersions}"
+                     class="content-languages leftmost-in-toolbar"
+                     tabindex="0"
+                     aria-haspopup="true"
+                     aria-owns="language-selection"
+                     aria-controls="language-selection"
                 >
                     <span>Language</span>
                     <ul class="nav hide" id="language-selection">

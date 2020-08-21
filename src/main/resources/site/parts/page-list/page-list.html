@@ -9,7 +9,7 @@
         <div class="toolbar">
             <div
                 data-th-if="${hasLanguageVersions}"
-                class="content-languages leftmost-in-toolbar" role="button" tabindex="0"
+                class="content-languages leftmost-in-toolbar" tabindex="0"
                 aria-haspopup="true" aria-owns="language-selection" aria-controls="language-selection"
             >
                 <span>Language</span>
@@ -26,8 +26,8 @@
             </div>
         </div>
         <p data-th-if="${ingress && ingress != ''}"
-        class="preface" 
-        data-th-utext="${#strings.replace(#strings.escapeXml(ingress),'&#10;','&lt;br&gt;')}" 
+        class="preface"
+        data-th-utext="${#strings.replace(#strings.escapeXml(ingress),'&#10;','&lt;br&gt;')}"
         >
         </p>
     </header>
