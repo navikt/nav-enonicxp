@@ -329,9 +329,11 @@ $.fn.navnoAccordion = function () {
 function logAmplitudeEvent(event, data) {
     return new Promise(function (resolve) {
         const eventData = data || {};
-        eventData.origin = 'navno';
-        eventData.title = document.title;
-        eventData.src = window.location.href;
+        eventData.app = 'navno';
+        eventData.url = window.location.origin + window.location.pathname;
+        eventData.hostname = window.location.hostname;
+        eventData.pagePath = window.location.pathname;
+        eventData.sidetittel = document.title;
         amplitude.getInstance().logEvent(event, eventData, resolve);
     });
 }
@@ -364,9 +366,9 @@ $(document).ready(function () {
     document.querySelectorAll('[data-ga]').forEach( function(el) {
         el.onclick = function() {
             const eventData = {
-                type: this.getAttribute('data-ga'),
-                tekst: getLinkText(this),
-                target: this.getAttribute('href'),
+                komponent: this.getAttribute('data-ga'),
+                lenketekst: getLinkText(this),
+                destinasjon: this.getAttribute('href'),
             };
             logAmplitudeEvent('klikk', eventData );
         }
