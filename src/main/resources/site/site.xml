@@ -16,5 +16,8 @@
         <mapping controller="/lib/enonic/url-redirect/index.js">
             <match>type:'no.nav.navno:url'</match>
         </mapping>
+        <mapping controller="/controllers/graphql.js" order="50">
+            <pattern>/api</pattern>
+        </mapping>
     </mappings>
 </site>

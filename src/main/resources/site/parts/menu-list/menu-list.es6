@@ -21,13 +21,13 @@ function handleGet(req) {
         const keys = [
             'shortcuts',
             'selfservice',
-            'form-and-application',
-            'process-times',
-            'related-information',
+            'form_and_application',
+            'process_times',
+            'related_information',
             'international',
-            'report-changes',
+            'report_changes',
             'rates',
-            'appeal-rights',
+            'appeal_rights',
             'membership',
             'rules-and-regulations',
         ];
