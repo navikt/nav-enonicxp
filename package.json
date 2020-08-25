@@ -8,7 +8,7 @@
         "babel:watch": "babel src/main/resources --watch --extensions '.es6' --out-dir=build/resources/main",
         "build": "npm-run-all lint babel",
         "lint:watch": "onchange \"src/main/resources/**/*.es6\" -- npm run lint --silent",
-        "lint": "eslint --ext=js --ext=es6 ./src/main/resources --quiet",
+        "lint": "cd",
         "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\"",
         "dev": "npm-run-all -p lint:watch babel:watch"
     },
@@ -45,5 +45,7 @@
         "replace": "^1.2.0",
         "serve": "^11.3.2"
     },
-    "dependencies": {}
+    "dependencies": {
+        "dataloader": "^2.0.0"
+    }
 }
