@@ -27,7 +27,7 @@ services:
     ports:
       - '8095:8080'
     environment:
-      CORS_ALLOWED_ORIGINS: '*'git
+      CORS_ALLOWED_ORIGINS: '*'
       OIDC_ISSUER: 'https://localhost:9000'
       OIDC_ACCEPTED_AUDIENCE: 'stubOidcClient'
       OIDC_JWKS_URI: 'http://oidc-provider:9000/certs'
