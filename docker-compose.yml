@@ -27,7 +27,7 @@ services:
     ports:
       - '8095:8080'
     environment:
-      CORS_ALLOWED_ORIGINS: '*'
+      CORS_ALLOWED_ORIGINS: '*'git
       OIDC_ISSUER: 'https://localhost:9000'
       OIDC_ACCEPTED_AUDIENCE: 'stubOidcClient'
       OIDC_JWKS_URI: 'http://oidc-provider:9000/certs'
@@ -36,12 +36,13 @@ services:
 
   dekoratoren:
     container_name: dekoratoren
-    image: 'navikt/nav-dekoratoren:latest'
+    image: 'docker.pkg.github.com/navikt/nav-dekoratoren/nav-dekoratoren:latest'
     ports:
       - '8100:8088'
     environment:
       XP_BASE_URL: 'http://localhost:8080'
-      APP_BASE_URL: 'http://localhost:8100/dekoratoren'
+      APP_BASE_URL: 'http://localhost:8100'
+      APP_BASE_PATH: '/dekoratoren'
       API_XP_MENY_URL: 'http://host.docker.internal:8080/_/service/no.nav.navno/menu'
       API_XP_SOK_URL: 'http://host.docker.internal:8080/_/service/navno.nav.no.search/search2/sok'
       API_INNLOGGINGSLINJE_URL: 'http://mocks:8080/innloggingslinje-api/auth'
