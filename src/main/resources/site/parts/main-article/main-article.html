@@ -19,7 +19,11 @@
                     <span>Language</span>
                     <ul class="nav hide" id="language-selection">
                         <li data-th-each="language : ${languages}">
-                            <a data-th-href="${language.href}" data-th-class="${language.tClass}" data-th-title="${language.title}">
+                            <a data-th-class="${language.tClass}"
+                               data-ga="language-selector"
+                               data-th-title="${language.title}"
+                               data-th-href="${language.href}"
+                            >
                                 [[${language.text}]]
                             </a>
                         </li>
@@ -41,7 +45,10 @@
                     </h2>
                     <ol>
                         <li data-th-each="tocEntry,i : ${toc}">
-                            <a data-th-href="'#chapter-' + ${i.index + 1}" data-th-title="${tocEntry} + ' (' + ${langBundle.tableOfContents} + ')'">
+                            <a data-ga="toc"
+                               data-th-title="${tocEntry} + ' (' + ${langBundle.tableOfContents} + ')'"
+                               data-th-href="'#chapter-' + ${i.index + 1}"
+                            >
                                 [[${tocEntry}]]
                             </a>
                         </li>
@@ -75,7 +82,11 @@
         <div class="share-social-media" data-th-if="${socials}">
             <ul class="share-social-media-pills">
                 <li data-th-each="social : ${socials}">
-                    <a data-th-href="${social.href}" class="js-share share-container" data-th-attr="data-medium=${social.type}">
+                    <a data-ga="share-social-media"
+                       class="js-share share-container"
+                       data-th-attr="data-medium=${social.type}"
+                       data-th-href="${social.href}"
+                    >
                         <span class="share-social" data-th-classappend="${'share-' + social.type}">
                             [[${social.text}]]
                         </span>

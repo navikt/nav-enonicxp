@@ -1,0 +1,18 @@
+<mixin>
+    <display-name>Hovedpaneler</display-name>
+    <form>
+        <field-set name="table">
+            <label>Tavleoppføringer</label>
+            <items>
+                <input name="nrTableEntries" type="Long">
+                    <label>Oppgi antall tavler/bokser på seksjonssiden</label>
+                </input>
+                <input name="tableContents" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences maximum="0" minimum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
