@@ -34,7 +34,7 @@ exports.cronConfig = CRON_CONFIG;
 
 function getSleepFor(prepublishOnNext, now) {
     let sleepFor = TIME_BETWEEN_CHECKS;
-    prepublishOnNext.forEach(c => {
+    prepublishOnNext.forEach((c) => {
         const content = masterRepo.get(c.id);
         const publishOn = new Date(content.publish.from);
         if (publishOn - now < sleepFor) {
@@ -67,7 +67,7 @@ function setIsRunning(isRunning, clearLock = false) {
     const now = new Date().toISOString();
     navRepo.modify({
         key: '/unpublish',
-        editor: el => {
+        editor: (el) => {
             const data = { ...el.data };
             if (isRunning === false && !clearLock) {
                 data.lastRun = now;
@@ -115,8 +115,8 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
         },
         () => {
             const content = prepublishedContent
-                .map(el => libs.content.get({ key: el.id }))
-                .filter(s => !!s);
+                .map((el) => libs.content.get({ key: el.id }))
+                .filter((s) => !!s);
             if (content.length > 0) {
                 libs.event.send({
                     type: 'prepublish',
@@ -125,7 +125,7 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
                         prepublished: content,
                     },
                 });
-                content.forEach(item => {
+                content.forEach((item) => {
                     log.info(`PREPUBLISHED: ${item._path}`);
                 });
             }
@@ -165,7 +165,7 @@ function removeExpiredContentFromMaster(expiredContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            expiredContent.forEach(c => {
+            expiredContent.forEach((c) => {
                 try {
                     const content = masterRepo.get(c.id);
                     if (content) {
@@ -259,7 +259,7 @@ function theJob() {
     }
 }
 
-exports.start = appIsRunning => {
+exports.start = (appIsRunning) => {
     log.info(`Starting: ${TASK_DESCRIPTION}`);
     if (!taskHasStarted && appIsRunning) {
         taskHasStarted = true;

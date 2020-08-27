@@ -308,9 +308,11 @@ function runDeep(something, deadLinksFound, socket, el) {
             }
         }
     } else if (Array.isArray(something)) {
-        something.forEach(s => runDeep(s, deadLinksFound, socket, el));
+        something.forEach((s) => runDeep(s, deadLinksFound, socket, el));
     } else if (typeof something === 'object') {
-        Object.keys(something).forEach(key => runDeep(something[key], deadLinksFound, socket, el));
+        Object.keys(something).forEach((key) =>
+            runDeep(something[key], deadLinksFound, socket, el)
+        );
     }
 }
 
@@ -325,7 +327,7 @@ function deadLinks(el, deadLinksFound, socket) {
     const children = libs.navUtils.getAllChildren(el);
     deadLinksMaxCount += children.length;
     socket.emit('dl-childCount', deadLinksMaxCount);
-    children.forEach(child => {
+    children.forEach((child) => {
         deadLinks(child, deadLinksFound, socket);
     });
 }
@@ -369,7 +371,7 @@ function dumpDeadlinks(socket) {
     const navRepo = libs.tools.getNavRepo();
     const deadlinks = navRepo.get('/deadlinks').data.links;
     let csv = 'Kilde\tFeilende url\tLenketekst\tBegrunnelse\r\n';
-    deadlinks.forEach(l => {
+    deadlinks.forEach((l) => {
         csv += `${l.path.substring(1)}\t${l.address}\t"${l.linktext}"\t"${l.reason}"\r\n`;
     });
     const file = {
@@ -381,7 +383,7 @@ function dumpDeadlinks(socket) {
 }
 
 const elements = createNewElements();
-exports.handle = s => {
+exports.handle = (s) => {
     const socket = s;
 
     elements.action = [

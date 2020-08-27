@@ -31,7 +31,7 @@ function handleGet(req) {
                 start: 0,
                 count: 100,
             })
-            .hits.map(el => {
+            .hits.map((el) => {
                 const publDate = new Date(el.data.date);
                 return {
                     displayName: el.displayName,

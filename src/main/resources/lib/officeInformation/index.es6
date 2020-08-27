@@ -11,7 +11,7 @@ const libs = {
 function setIsRefreshing(navRepo, isRefreshing, failed) {
     navRepo.modify({
         key: '/officeInformation',
-        editor: o => {
+        editor: (o) => {
             const object = o;
             if (isRefreshing === false) {
                 object.data.failedLastRefresh = failed;
@@ -46,7 +46,7 @@ function refreshOfficeInformation(officeInformationList) {
     let numUpdated = 0;
     let numDeleted = 0;
     // update office information or create new
-    officeInformationList.forEach(officeInformation => {
+    officeInformationList.forEach((officeInformation) => {
         // ignore closed offices and include only selected types
         if (
             officeInformation.enhet.status !== 'Nedlagt' &&
@@ -66,7 +66,7 @@ function refreshOfficeInformation(officeInformationList) {
                 officeInformation.enhet.type === 'OPPFUTLAND')
         ) {
             // check if the office already exists
-            const existingOffice = existingOffices.filter(o => {
+            const existingOffice = existingOffices.filter((o) => {
                 if (o.data && o.data.enhet && o.data.enhet.enhetId) {
                     return o.data.enhet.enhetId === officeInformation.enhet.enhetId;
                 }
@@ -76,7 +76,7 @@ function refreshOfficeInformation(officeInformationList) {
                 numUpdated++;
                 libs.content.modify({
                     key: existingOffice._id,
-                    editor: o => ({ ...o, data: officeInformation }),
+                    editor: (o) => ({ ...o, data: officeInformation }),
                 });
             } else {
                 numNew++;
@@ -92,7 +92,7 @@ function refreshOfficeInformation(officeInformationList) {
     });
 
     // delete old offices
-    existingOffices.forEach(existingOffice => {
+    existingOffices.forEach((existingOffice) => {
         let enhetId;
         if (
             existingOffice &&
