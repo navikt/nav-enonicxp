@@ -1,5 +1,7 @@
-const portal = require('/lib/xp/portal');
-const httpClient = require('/lib/http-client');
+const guillotineLib = require('/lib/guillotine');
+const graphQlLib = require('/lib/graphql');
+
+const schema = guillotineLib.createSchema();
 
 const queryGetId = `query($path:ID!){
     guillotine {
@@ -18,31 +20,20 @@ const queryGetId = `query($path:ID!){
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
 
-const fetchContentAndParse = (id, url) => {
-    const res = httpClient.request({
-        url: url,
-        method: 'POST',
-        body: JSON.stringify({
-            query: queryGetId,
-            variables: {
-                path: id,
-            },
-        }),
-        contentType: 'application/json',
+const getContent = (id) => {
+    const queryResponse = graphQlLib.execute(schema, queryGetId, {
+        path: id,
     });
 
-    log.info(`query response: ${res}`);
-    log.info(`query response body: ${res.body}`);
-
-    const dataParsed = JSON.parse(res.body)?.data?.guillotine?.get;
-    if (!dataParsed) {
+    const content = queryResponse?.data?.guillotine?.get;
+    if (!content) {
         return null;
     }
 
     return {
-        ...dataParsed,
+        ...content,
         dataAsJson: undefined,
-        data: dataParsed.dataAsJson ? JSON.parse(dataParsed.dataAsJson) : undefined,
+        data: content.dataAsJson ? JSON.parse(content.dataAsJson) : undefined,
     };
 };
 
@@ -59,20 +50,12 @@ const handleGet = (req) => {
         };
     }
 
-    const graphqlServiceUrl = portal.serviceUrl({
-        service: 'graphql',
-        application: 'com.enonic.app.guillotine',
-        type: 'absolute',
-    });
+    const content = getContent(id);
 
-    log.info(`graphql service url: ${graphqlServiceUrl}`);
-
-    const contentParsed = fetchContentAndParse(id, graphqlServiceUrl);
-
-    return contentParsed
+    return content
         ? {
               status: 200,
-              body: contentParsed,
+              body: content,
               contentType: 'application/json',
           }
         : {
@@ -97,26 +80,20 @@ const handlePost = (req) => {
         };
     }
 
-    const graphqlServiceUrl = portal.serviceUrl({
-        service: 'graphql',
-        application: 'com.enonic.app.guillotine',
-        type: 'absolute',
-    });
-
     // TODO: flere sorteringsmuligheter?
     const sortFunc = sorted
         ? (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a)
         : () => {};
 
-    const contentParsedArray = ids
-        ?.map((id) => fetchContentAndParse(id, graphqlServiceUrl))
+    const contentArray = ids
+        ?.map((id) => getContent(id))
         .filter(Boolean)
         .sort(sortFunc)
         .slice(0, numItems || undefined);
 
     return {
         status: 200,
-        body: contentParsedArray,
+        body: contentArray,
         contentType: 'application/json',
     };
 };
