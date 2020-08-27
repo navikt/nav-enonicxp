@@ -23,7 +23,6 @@
                         <li data-th-each="language : ${languages}">
                             <a data-th-class="${language.tClass}"
                                data-ga="language-selector"
-                               data-th-title="${language.title}"
                                data-th-href="${language.href}"
                             >
                                 [[${language.text}]]
@@ -46,7 +45,6 @@
                     <ol>
                         <li data-th-each="tocEntry,i : ${toc}">
                             <a data-ga="toc"
-                               data-th-title="${tocEntry} + ' (' + ${langBundle.tableOfContents} + ')'"
                                data-th-href="'#chapter-' + ${i.index + 1}"
                             >
                                 [[${tocEntry}]]
