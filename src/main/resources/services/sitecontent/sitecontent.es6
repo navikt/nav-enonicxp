@@ -31,6 +31,9 @@ const fetchContentAndParse = (id, url) => {
         contentType: 'application/json',
     });
 
+    log.info(`query response: ${res}`);
+    log.info(`query response body: ${res.body}`);
+
     const dataParsed = JSON.parse(res.body)?.data?.guillotine?.get;
     if (!dataParsed) {
         return null;
@@ -61,6 +64,8 @@ const handleGet = (req) => {
         application: 'com.enonic.app.guillotine',
         type: 'absolute',
     });
+
+    log.info(`graphql service url: ${graphqlServiceUrl}`);
 
     const contentParsed = fetchContentAndParse(id, graphqlServiceUrl);
 
