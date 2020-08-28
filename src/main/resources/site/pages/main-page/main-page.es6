@@ -49,7 +49,7 @@ function handleGet(req) {
             `<section id="decorator-styles"></section>`,
             `<script src="${decUrl}/client.js"></script>`,
             '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
-            '<script src="https://amplitude.nav.no/libs/amplitude-5.6.0-min.gz.js"></script>',
+            '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
         let languageParam = 'norsk';

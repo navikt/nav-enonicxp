@@ -11,14 +11,19 @@
             </time>
             <h1>[[${content.displayName}]]</h1>
             <div class="toolbar">
-                <div class="content-languages leftmost-in-toolbar" data-th-if="${hasLanguageVersions}"
-                     role="button" tabindex="0" aria-haspopup="true"
-                     aria-owns="language-selection" aria-controls="language-selection"
+                <div data-th-if="${hasLanguageVersions}"
+                     class="content-languages leftmost-in-toolbar"
+                     aria-haspopup="true"
+                     aria-owns="language-selection"
+                     aria-controls="language-selection"
                 >
                     <span>Language</span>
                     <ul class="nav hide" id="language-selection">
                         <li data-th-each="language : ${languages}">
-                            <a data-th-href="${language.href}" data-th-class="${language.tClass}" data-th-title="${language.title}">
+                            <a data-th-class="${language.tClass}"
+                               data-ga="language-selector"
+                               data-th-href="${language.href}"
+                            >
                                 [[${language.text}]]
                             </a>
                         </li>
@@ -29,9 +34,7 @@
                 </div>
             </div>
             <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
-                <br data-th-if="${#strings.contains(content.data.ingress,'\n')}"/>
                 [[${content.data.ingress}]]
-                <br>
             </p>
             <div data-th-if="${questionsAndAnswers}" data-th-remove="tag">
                 <nav class="table-of-contents" data-selected-id>
@@ -40,7 +43,9 @@
                     </h2>
                     <ol>
                         <li data-th-each="qanda: ${overview}">
-                            <a data-th-href="${qanda.url}" data-th-title="${qanda.text} + ' (' + ${langBundle.tableOfContents} + ')'">
+                            <a data-ga="faq-toc"
+                               data-th-href="${qanda.url}"
+                            >
                                 [[${qanda.text}]]
                             </a>
                         </li>
@@ -59,7 +64,11 @@
         <div class="share-social-media" data-th-if="${socials}">
             <ul class="share-social-media-pills">
                 <li data-th-each="social : ${socials}">
-                    <a data-th-href="${social.href}" class="js-share share-container" data-th-attr="data-medium=${social.type}">
+                    <a data-ga="share-social-media"
+                       class="js-share share-container"
+                       data-th-attr="data-medium=${social.type}"
+                       data-th-href="${social.href}"
+                    >
                         <span class="share-social" data-th-classappend="${'share-' + social.type}">
                             [[${social.text}]]
                         </span>
@@ -69,5 +78,4 @@
         </div>
 
     </div>
-
 </article>

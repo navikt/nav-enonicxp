@@ -8,14 +8,21 @@
         </div>
         <p class="preface" data-th-if="${ingress && ingress != ''}">
             [[${ingress}]]
-            <br><br>
         </p>
     </header>
     <table data-th-title="${heading}">
         <thead>
             <tr>
-                <th scope="col"><span class="visuallyhidden">[[${langBundle.publishdate}]]</span></th>
-                <th scope="col"><span class="visuallyhidden">[[${langBundle.event}]]></span></th>
+                <th scope="col">
+                    <span class="visuallyhidden">
+                        [[${langBundle.publishdate}]]
+                    </span>
+                </th>
+                <th scope="col">
+                    <span class="visuallyhidden">
+                        [[${langBundle.event}]]
+                    </span>
+                </th>
             </tr>
         </thead>
         <tbody>
