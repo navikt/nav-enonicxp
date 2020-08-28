@@ -83,7 +83,7 @@ const handlePost = (req) => {
     }
 
     const contentArray = ids
-        ?.map((id) => getContent(id))
+        .map(getContent)
         .filter(Boolean)
         .sort(sorted ? sortByLastModified : undefined)
         .slice(0, numItems || undefined);
