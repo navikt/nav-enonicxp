@@ -20,6 +20,8 @@ const queryGetId = `query($path:ID!){
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
 
+const sortByLastModified = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
+
 const getContent = (id) => {
     const queryResponse = graphQlLib.execute(schema, queryGetId, {
         path: id,
@@ -80,15 +82,10 @@ const handlePost = (req) => {
         };
     }
 
-    // TODO: flere sorteringsmuligheter?
-    const sortFunc = sorted
-        ? (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a)
-        : () => {};
-
     const contentArray = ids
         ?.map((id) => getContent(id))
         .filter(Boolean)
-        .sort(sortFunc)
+        .sort(sorted ? sortByLastModified : undefined)
         .slice(0, numItems || undefined);
 
     return {
