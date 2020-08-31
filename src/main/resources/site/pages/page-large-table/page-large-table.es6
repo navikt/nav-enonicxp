@@ -7,7 +7,7 @@ const libs = {
 const etag = libs.cache.etag;
 const view = resolve('page-large-table.html');
 
-exports.get = function(req) {
+exports.get = function (req) {
     return libs.cache.getPaths(req.rawPath, 'page-large-table', req.branch, () => {
         const content = libs.portal.getContent();
         let parsed;
