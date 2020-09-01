@@ -1,9 +1,9 @@
 <macro>
     <display-name>Sett inn video</display-name>
-    <description>Sett inn video i brødteksten</description>
+    <description>Sett inn URL</description>
     <form>
         <input name="video" type="TextLine">
-            <label>Video</label>
+            <label>URL</label>
         </input>
     </form>
 </macro>
