@@ -28,7 +28,7 @@ function convert(socket) {
         libs.content.modify({
             key: element._id,
             requireValid: false,
-            editor: c => {
+            editor: (c) => {
                 const current = { ...c };
                 const target = current.data.menuListItems['related-information'];
                 log.info(element._path);
@@ -57,7 +57,7 @@ function convert(socket) {
             },
         },
     }).hits;
-    const masterIds = masterHits.map(el => el.id);
+    const masterIds = masterHits.map((el) => el.id);
     repoDraft.push({
         keys: masterIds,
         target: 'master',

@@ -1,7 +1,7 @@
 const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
-    task: require('/lib/xp/task'),
+    cron: require('/lib/cron'),
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
     event: require('/lib/xp/event'),
@@ -26,9 +26,15 @@ const TIME_BETWEEN_CHECKS = 60000;
 const TASK_DESCRIPTION = 'CacheInvalidatorForTimedPublishingEvents';
 exports.taskDescription = TASK_DESCRIPTION;
 
+const CRON_CONFIG = {
+    name: TASK_DESCRIPTION,
+    fixedDelay: TIME_BETWEEN_CHECKS,
+};
+exports.cronConfig = CRON_CONFIG;
+
 function getSleepFor(prepublishOnNext, now) {
     let sleepFor = TIME_BETWEEN_CHECKS;
-    prepublishOnNext.forEach(c => {
+    prepublishOnNext.forEach((c) => {
         const content = masterRepo.get(c.id);
         const publishOn = new Date(content.publish.from);
         if (publishOn - now < sleepFor) {
@@ -61,7 +67,7 @@ function setIsRunning(isRunning, clearLock = false) {
     const now = new Date().toISOString();
     navRepo.modify({
         key: '/unpublish',
-        editor: el => {
+        editor: (el) => {
             const data = { ...el.data };
             if (isRunning === false && !clearLock) {
                 data.lastRun = now;
@@ -109,8 +115,8 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
         },
         () => {
             const content = prepublishedContent
-                .map(el => libs.content.get({ key: el.id }))
-                .filter(s => !!s);
+                .map((el) => libs.content.get({ key: el.id }))
+                .filter((s) => !!s);
             if (content.length > 0) {
                 libs.event.send({
                     type: 'prepublish',
@@ -119,7 +125,7 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
                         prepublished: content,
                     },
                 });
-                content.forEach(item => {
+                content.forEach((item) => {
                     log.info(`PREPUBLISHED: ${item._path}`);
                 });
             }
@@ -159,7 +165,7 @@ function removeExpiredContentFromMaster(expiredContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            expiredContent.forEach(c => {
+            expiredContent.forEach((c) => {
                 try {
                     const content = masterRepo.get(c.id);
                     if (content) {
@@ -179,100 +185,85 @@ function removeExpiredContentFromMaster(expiredContent) {
     }
 }
 
-function runTask(applicationIsRunning) {
-    // TODO: Make sure this doesn't result in tight loop
-    if (!applicationIsRunning) {
-        log.info('application is not running, abort the spawn');
-        return false;
+function theJob() {
+    let state = null;
+    try {
+        state = getState();
+
+        // There is two conditions which must be upheld for the cache invalidator to run
+        // --
+        // 1. No other task is currently doing the invalidation
+        // 2. The node has to be master
+        // --
+        // if not the task must sleep for TIME_BETWEEN_CHECKS
+
+        if (state.isRunning) {
+            return;
+        }
+        if (!libs.cluster.isMaster()) {
+            return;
+        }
+    } catch (e) {
+        log.error(
+            `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS / 1000} seconds`
+        );
+        log.error(e);
+        return;
     }
 
-    return libs.task.submit({
-        description: TASK_DESCRIPTION,
-        task: () => {
-            let state = null;
-            try {
-                state = getState();
+    let sleepFor = TIME_BETWEEN_CHECKS;
+    try {
+        // set flag to prevent others from invalidating the cache simultaneously
+        setIsRunning(true);
 
-                // There is two conditions which must be upheld for the cache invalidator to run
-                // --
-                // 1. No other task is currently doing the invalidation
-                // 2. The node has to be master
-                // --
-                // if not the task must sleep for TIME_BETWEEN_CHECKS
+        const now = Date.now();
+        const testDate = new Date();
+        if (state) {
+            // use last run from the lock if exists
+            prevTestDate = new Date(state.lastRun) || prevTestDate;
+        }
 
-                if (state.isRunning) {
-                    libs.task.sleep(TIME_BETWEEN_CHECKS);
-                    return;
-                }
-                if (!libs.cluster.isMaster()) {
-                    libs.task.sleep(TIME_BETWEEN_CHECKS);
-                    return;
-                }
-            } catch (e) {
-                log.error(
-                    `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS /
-                        1000} seconds`
-                );
-                log.error(e);
-                libs.task.sleep(TIME_BETWEEN_CHECKS);
-                return;
-            }
+        // remove cache for prepublished content
+        const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
+        removeCacheOnPrepublishedContent(prepublishedContent);
 
-            let sleepFor = TIME_BETWEEN_CHECKS;
-            try {
-                // set flag to prevent others from invalidating the cache simultaneously
-                setIsRunning(true);
+        // unpublish expired content
+        const expiredContent = getExpiredContent(testDate);
+        removeExpiredContentFromMaster(expiredContent);
 
-                const now = Date.now();
-                const testDate = new Date();
-                if (state) {
-                    // use last run from the lock if exists
-                    prevTestDate = new Date(state.lastRun) || prevTestDate;
-                }
+        // calculate time to sleep
+        const prepublishOnNext = getPrepublishedContent(
+            testDate,
+            new Date(now + TIME_BETWEEN_CHECKS)
+        );
 
-                // remove cache for prepublished content
-                const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
-                removeCacheOnPrepublishedContent(prepublishedContent);
+        if (prepublishOnNext.length > 0) {
+            sleepFor = getSleepFor(prepublishOnNext, now);
+        }
+    } catch (e) {
+        log.error(e);
+    }
 
-                // unpublish expired content
-                const expiredContent = getExpiredContent(testDate);
-                removeExpiredContentFromMaster(expiredContent);
-
-                // calculate time to sleep
-                const prepublishOnNext = getPrepublishedContent(
-                    testDate,
-                    new Date(now + TIME_BETWEEN_CHECKS)
-                );
-
-                if (prepublishOnNext.length > 0) {
-                    sleepFor = getSleepFor(prepublishOnNext, now);
-                }
-            } catch (e) {
-                log.error(e);
-            }
-
-            // release the lock, and store local test date
-            try {
-                const updatedLastRun = setIsRunning(false);
-                prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
-            } catch (e) {
-                log.error('could not release the lock');
-                log.error(e);
-            }
-            // keep the task running (sleep) for TIME_BETWEEN_CHECKS or less if publishing
-            // events are scheduled before that time
-
-            libs.task.sleep(sleepFor);
-        },
-    });
+    // release the lock, and store local test date
+    try {
+        const updatedLastRun = setIsRunning(false);
+        prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
+    } catch (e) {
+        log.error('could not release the lock');
+        log.error(e);
+    }
+    // reschedule to for TIME_BETWEEN_CHECKS or less if publishing
+    // events are scheduled before that time
+    if (sleepFor !== TIME_BETWEEN_CHECKS) {
+        libs.cron.reschedule({ ...CRON_CONFIG, delay: sleepFor, callback: theJob });
+    }
 }
-exports.runTask = runTask;
 
-exports.start = appIsRunning => {
+exports.start = (appIsRunning) => {
     log.info(`Starting: ${TASK_DESCRIPTION}`);
     if (!taskHasStarted && appIsRunning) {
         taskHasStarted = true;
-        return runTask(appIsRunning);
+        return libs.cron.schedule({ ...CRON_CONFIG, callback: theJob });
     }
 
     log.info(`Task ${TASK_DESCRIPTION} already running or app has shut down`);

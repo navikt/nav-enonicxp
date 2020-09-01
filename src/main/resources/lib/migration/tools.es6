@@ -23,7 +23,7 @@ function runInMasterContext(socket, func) {
             },
             principals: ['role:system.admin'],
         },
-        function() {
+        function () {
             func(socket);
         }
     );
@@ -66,7 +66,7 @@ function runInContext(socket, func) {
             },
             principals: ['role:system.admin'],
         },
-        function() {
+        function () {
             func(socket);
         }
     );
@@ -96,7 +96,7 @@ function getIdFromUrl(urlParam, skipNavRepo = false) {
             const navRepo = getNavRepo();
             const links = navRepo.get('/links');
             if (links) {
-                const match = links.data.links.filter(l => l.url.toLowerCase() === url)[0];
+                const match = links.data.links.filter((l) => l.url.toLowerCase() === url)[0];
                 if (match) {
                     // check if the new path is an internal path or a replacement for an external url
                     if (match.newPath.indexOf('http') === 0) {

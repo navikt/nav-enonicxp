@@ -1,7 +1,11 @@
 <div class="container page-head">
     <nav class="breadcrumbs" itemprop="breadcrumb" role="navigation" data-th-aria-label="${langBundles.description}">
         <div data-th-each="item : ${breadcrumbs.items}" data-th-remove="tag">
-            <a data-th-if="${item.url}" class="crumb" data-th-href="${item.url}">
+            <a data-th-if="${item.url}"
+               class="crumb"
+               data-ga="breadcrumb"
+               data-th-href="${item.url}"
+            >
                 [[${item.text}]]
             </a>
             <span data-th-unless="${item.url}" class="crumb" data-th-classappend="${item.active ? 'crumb-current' : ''}">

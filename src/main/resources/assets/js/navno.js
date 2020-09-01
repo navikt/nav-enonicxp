@@ -292,11 +292,19 @@ $.fn.navnoAccordion = function () {
         var t = $(e.target);
         var n = t.closest('.accordion-item');
         var i = n.find('ul').height() + 30;
-        n.siblings().removeClass('expanded js-animated').find('.accordion-panel').css('height', '').parent().find('[aria-expanded]').attr('aria-expanded', 'false').attr('aria-hidden', 'true'),
-        n.hasClass('expanded') ? (n.removeClass('expanded').find('.accordion-panel').css('height', '').parent().find('[aria-expanded]').attr('aria-expanded', 'false').attr('aria-hidden', 'true'),
-        setTimeout(function () {
-            n.removeClass('js-animated');
-        }, 200)) : n.addClass('expanded js-animated').find('.accordion-panel').css('height', i).parent().find('[aria-expanded]').attr('aria-expanded', 'true').attr('aria-hidden', 'false');
+        n.siblings().removeClass('expanded js-animated').find('.accordion-panel').css('height', '').parent().find('[aria-expanded]').attr('aria-expanded', 'false'),
+        n.siblings().find('[aria-hidden]').attr('aria-hidden', 'true'),
+        n.hasClass('expanded') ?
+            (
+                n.removeClass('expanded').find('.accordion-panel').css('height', '').parent().find('[aria-expanded]').attr('aria-expanded', 'false'),
+                n.find('[aria-hidden]').attr('aria-hidden', 'true'),
+                setTimeout(function () {
+                    n.removeClass('js-animated');
+                }, 200)
+            ) : (
+                n.addClass('expanded js-animated').find('.accordion-panel').css('height', i).parent().find('[aria-expanded]').attr('aria-expanded', 'true'),
+                n.find('[aria-hidden]').attr('aria-hidden', 'false')
+            )
     },
     this.each(function () {
         var n = $(this);
@@ -308,15 +316,14 @@ $.fn.navnoAccordion = function () {
             e(o),
             e(a),
             a.attr({
-                'aria-haspopup': !0,
+                'aria-haspopup': 'true',
                 'aria-owns': o.attr('id'),
                 'aria-controls': o.attr('id'),
-                'aria-expanded': !1,
+                'aria-expanded': 'false',
             }),
             o.attr({
                 role: 'group',
-                'aria-expanded': !1,
-                'aria-hidden': !0,
+                'aria-hidden': 'true',
             }).not('[aria-labelledby]').attr('aria-labelledby', a.attr('id'));
         }),
         $('.accordion-toggle').on('click', function (e) {
@@ -326,10 +333,51 @@ $.fn.navnoAccordion = function () {
     });
 };
 
+function logAmplitudeEvent(event, data) {
+    return new Promise(function (resolve) {
+        const eventData = data || {};
+        eventData.app = 'navno';
+        eventData.url = window.location.origin + window.location.pathname;
+        eventData.hostname = window.location.hostname;
+        eventData.pagePath = window.location.pathname;
+        eventData.sidetittel = document.title;
+        amplitude.getInstance().logEvent(event, eventData, resolve);
+    });
+}
+function getLinkText(element) {
+    let text = '';
+    if (element.classList.contains('hero-link')) {
+        text = element.querySelector('.leading-icon').innerHTML;
+    } else if (element.classList.contains('lenkepanel')) {
+        text = element.querySelector('.lenkepanel__heading').innerHTML;
+    } else {
+        text = element.innerHTML;
+    }
+    //Fjern eventuelle gjenværende html-tags og whitespace
+    return text.replace(/(<([^>]+)>)/gi, '').trim();
+}
 $(document).ready(function () {
     $('#related-content-accordion').navnoAccordion();
     $('#related-content-accordion>[data-expand="true"] .accordion-toggle').click();
     navno.initContentPrintHandler();
     navno.contentLanguages();
     navno.scrollToTopHandler();
+
+    amplitude.getInstance().init('default', '', {
+        apiEndpoint: 'amplitude.nav.no/collect-auto',
+        saveEvents: false,
+        includeUtm: true,
+        includeReferrer: true,
+        platform: window.location.toString(),
+    });
+    document.querySelectorAll('[data-ga]').forEach( function(el) {
+        el.onclick = function() {
+            const eventData = {
+                komponent: this.getAttribute('data-ga'),
+                lenketekst: getLinkText(this),
+                destinasjon: this.getAttribute('href'),
+            };
+            logAmplitudeEvent('navigere', eventData );
+        }
+    });
 });

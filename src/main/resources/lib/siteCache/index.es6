@@ -15,12 +15,7 @@ const oneMinute = 60;
 let etag = Date.now().toString(16);
 let hasSetupListeners = false;
 const myHash =
-    Math.random()
-        .toString(36)
-        .substring(2, 15) +
-    Math.random()
-        .toString(36)
-        .substring(2, 15);
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
@@ -74,7 +69,7 @@ function setEtag() {
 }
 
 function wipe(name) {
-    return key => {
+    return (key) => {
         if (!key) {
             caches[name].clear();
             log.info(`WIPE: [ALL] in [${name} (${caches[name].getSize()})] on [${myHash}]`);
@@ -86,7 +81,7 @@ function wipe(name) {
 
 function wipeAll() {
     setEtag();
-    Object.keys(caches).forEach(name => wipe(name)());
+    Object.keys(caches).forEach((name) => wipe(name)());
 }
 
 function wipeOnChange(path) {
@@ -104,25 +99,30 @@ function wipeOnChange(path) {
     }
     const w = wipe('paths');
     w(getPath(path, 'main-page'));
+    w(getPath(path, 'page-heading'));
+    w(getPath(path, 'breaking-news'));
+    w(getPath(path, 'main-panels'));
+    w(getPath(path, 'link-panels'));
+    w(getPath(path, 'link-lists'));
     w(getPath(path, 'main-article'));
     w(getPath(path, 'main-article-linked-list'));
-    w(getPath(path, 'faq-page'));
     w(getPath(path, 'menu-list'));
-    w(getPath(path, 'section-page'));
     w(getPath(path, 'page-list'));
-    w(getPath(path, 'transport'));
     w(getPath(path, 'office-information'));
     w(getPath(path, 'page-large-table'));
+    w(getPath(path, 'faq-page'));
+    w(getPath(path, 'generic-page'));
+    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
+        log.info(`WIPED: [driftsmeldinger] (${caches.paths.getSize()} on [${myHash}])`);
     }
     if (path.indexOf('/publiseringskalender') !== -1) {
         w('publiseringskalender');
+        log.info(`WIPED: [publiseringskalender] (${caches.paths.getSize()} on [${myHash}])`);
     }
-    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
-
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
     }
@@ -162,10 +162,7 @@ function clearReferences(id, path, depth) {
 
     // get parent
     const parent = libs.content.get({
-        key: newPath
-            .split('/')
-            .slice(0, -1)
-            .join('/'),
+        key: newPath.split('/').slice(0, -1).join('/'),
     });
 
     // remove parents cache if its of a type that autogenerates content based on
@@ -177,7 +174,7 @@ function clearReferences(id, path, depth) {
     }
 
     const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
-    references.forEach(el => {
+    references.forEach((el) => {
         wipeOnChange(el._path);
         if (deepTypes.indexOf(el.type) !== -1) {
             clearReferences(el._id, el._path, depth + 1);
@@ -187,12 +184,12 @@ function clearReferences(id, path, depth) {
 
 function nodeListenerCallback(event) {
     // Stop execution if not valid event type.
-    const shouldRun = cacheInvalidatorEvents.filter(eventType => event.type === eventType);
+    const shouldRun = cacheInvalidatorEvents.filter((eventType) => event.type === eventType);
     if (!shouldRun) {
         return false;
     }
 
-    event.data.nodes.forEach(node => {
+    event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
             libs.context.run(
@@ -228,8 +225,8 @@ function activateEventListener() {
         libs.event.listener({
             type: 'custom.prepublish',
             localOnly: false,
-            callback: e => {
-                e.data.prepublished.forEach(el => {
+            callback: (e) => {
+                e.data.prepublished.forEach((el) => {
                     wipeOnChange(el._path);
                     clearReferences(el._id, el._path, 0);
                 });

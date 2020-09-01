@@ -1,0 +1,47 @@
+<section class="row inner-row linklists-container">
+    <div data-th-if="${niceToKnow.data}" class="col-sm-12 col-md-4" >
+        <h2 class="h4 decorated">
+            [[${niceToKnow.sectionName}]]
+        </h2>
+        <ul class="link-list">
+            <li data-th-each="content : ${niceToKnow.data}">
+                <a data-ga="link-list" data-th-href="${content.src}">
+                    [[${content.heading}]]
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div data-th-if="${news.data}" class="col-sm-12 col-md-4">
+        <h2 class="h4 decorated">
+            [[${news.sectionName}]]
+        </h2>
+        <ul class="link-list-meta">
+            <li data-th-each="content : ${news.data}">
+                <time data-th-attr="datetime=${content.published}">
+                    [[${content.published}]]
+                </time>
+                <a data-ga="link-list" data-th-href="${content.src}">
+                    [[${content.heading}]]
+                </a>
+            </li>
+            <li data-th-if="${moreNewsUrl}">
+                <a data-ga="moreNews" data-th-href="${moreNewsUrl}"
+                   data-th-text="${localSectionPage ? 'Flere lokalsaker' : 'Flere nyheter'}"
+                >
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div data-th-if="${shortcuts.data}" class="col-sm-12 col-md-4">
+        <h2 class="h4 decorated">
+            [[${shortcuts.sectionName}]]
+        </h2>
+        <ul class="link-list">
+            <li data-th-each="content : ${shortcuts.data}">
+                <a data-ga="link-list" data-th-href="${content.src}">
+                    [[${content.heading}]]
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
