@@ -28,10 +28,10 @@ const getGlobalMessages = () => {
             count: 2,
             sort: '_manualordervalue DESC',
         })
-        .hits.filter(item => item.type === 'no.nav.navno:notification');
+        .hits.filter((item) => item.type === 'no.nav.navno:notification');
 };
 
-const getLocalMessages = contentPath => {
+const getLocalMessages = (contentPath) => {
     // Hent alle varsler som er i min path
     let result = libs.content
         .query({
@@ -39,7 +39,7 @@ const getLocalMessages = contentPath => {
             count: 100,
             contentTypes: [`${app.name}:notification`],
         })
-        .hits.filter(item =>
+        .hits.filter((item) =>
             contentPath.contains(item._path.slice(0, item._path.lastIndexOf('/')))
         );
     // Ved flere varsler: Sorter hierarkisk
@@ -110,7 +110,7 @@ const constructMessage = (message, language) => {
     return false;
 };
 
-const showMessages = content => {
+const showMessages = (content) => {
     let body = null;
     const language = content.language || 'no';
     let global = getGlobalMessages();
@@ -120,15 +120,15 @@ const showMessages = content => {
         // Fjern eventuelle globale varsler som skal erstattes
         if (global) {
             const removedWarnings = [];
-            local.forEach(localMessage => {
+            local.forEach((localMessage) => {
                 const localSubId = localMessage.data.notificationToReplaceId;
                 if (localSubId && removedWarnings.indexOf(localSubId) === -1) {
-                    global = global.filter(item => item._id !== localSubId);
+                    global = global.filter((item) => item._id !== localSubId);
                     removedWarnings.push(localSubId);
                 }
             });
         }
-        const messages = global.concat(local).map(item => constructMessage(item, language));
+        const messages = global.concat(local).map((item) => constructMessage(item, language));
 
         if (messages) {
             body = libs.thymeleaf.render(view, {
@@ -143,7 +143,7 @@ const showMessages = content => {
     };
 };
 
-const handleGet = req => {
+const handleGet = (req) => {
     // Cacher pr path i 60 sekunder. Vil unnslippe komplisert logikk
     // med individuell cacheinvalidering.
 

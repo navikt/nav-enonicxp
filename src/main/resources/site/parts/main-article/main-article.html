@@ -12,16 +12,17 @@
             </time>
             <h1>[[${content.displayName}]]</h1>
             <div class="toolbar">
-                <div class="content-languages leftmost-in-toolbar" data-th-if="${hasLanguageVersions}"
-                     role="button" tabindex="0" aria-haspopup="true"
-                     aria-owns="language-selection" aria-controls="language-selection"
+                <div data-th-if="${hasLanguageVersions}"
+                     class="content-languages leftmost-in-toolbar"
+                     aria-haspopup="true"
+                     aria-owns="language-selection"
+                     aria-controls="language-selection"
                 >
                     <span>Language</span>
                     <ul class="nav hide" id="language-selection">
                         <li data-th-each="language : ${languages}">
                             <a data-th-class="${language.tClass}"
                                data-ga="language-selector"
-                               data-th-title="${language.title}"
                                data-th-href="${language.href}"
                             >
                                 [[${language.text}]]
@@ -34,9 +35,7 @@
                 </div>
             </div>
             <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
-                <br data-th-if="${#strings.contains(content.data.ingress,'\n')}"/>
                 [[${content.data.ingress}]]
-                <br />
             </p>
             <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
                 <nav class="table-of-contents" data-selected-id>
@@ -46,7 +45,6 @@
                     <ol>
                         <li data-th-each="tocEntry,i : ${toc}">
                             <a data-ga="toc"
-                               data-th-title="${tocEntry} + ' (' + ${langBundle.tableOfContents} + ')'"
                                data-th-href="'#chapter-' + ${i.index + 1}"
                             >
                                 [[${tocEntry}]]
