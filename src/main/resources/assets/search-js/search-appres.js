@@ -1,4 +1,4 @@
-(function() {
+(function () {
     function init() {
         $('#searchbar').submit(submitForm);
         $('#fasettform').submit(submitForm);
@@ -35,7 +35,7 @@
             type: $th.attr('method'),
             url: $th.attr('action'),
             data: $th.serialize() + '&start=' + (count - 1),
-            success: function(data) {
+            success: function (data) {
                 // update heading
                 $('#search-result-heading').text(data.fasett);
                 // append all hits to result list
@@ -74,27 +74,18 @@
                             '<td>' +
                             hit.officeInformation.phone +
                             '</td>';
-                        hitTemplate +=
-                            '</tr>' +
-                            '<tr>' +
-                            '<td>' +
-                            'PUBLIKUMSMOTTAK:' +
-                            '</td>' +
-                            '<td>' +
-                            '<ul>';
-                        for (
-                            var j = 0;
-                            j < hit.officeInformation.audienceReceptions.length;
-                            j += 1
-                        ) {
+                        if (hit.officeInformation.audienceReception) {
                             hitTemplate +=
-                                '<li class="listeinnisoketreff">' +
-                                '<span>' +
-                                hit.officeInformation.audienceReceptions[j] +
-                                '</span>' +
-                                '</li>';
+                                '</tr>' +
+                                '<tr>' +
+                                '<td>' +
+                                'PUBLIKUMSMOTTAK:' +
+                                '</td>' +
+                                '<td>' +
+                                hit.officeInformation.audienceReception +
+                                '</td>';
                         }
-                        hitTemplate += '</ul>' + '</td>' + '</tr>' + '</tbody>' + '</table>';
+                        hitTemplate += '</tr>' + '</tbody>' + '</table>';
                     }
                     if (hit.priority) {
                         hitTemplate +=
@@ -109,7 +100,7 @@
 
                 // update date periods
                 var totalInDateCount = 0;
-                var timeIntervals = data.aggregations.Tidsperiode.buckets.map(function(elem, ix) {
+                var timeIntervals = data.aggregations.Tidsperiode.buckets.map(function (elem, ix) {
                     elem.index = ix;
                     return elem;
                 });
@@ -120,7 +111,7 @@
                     'Siste 12 måneder',
                     'Eldre enn 12 måneder',
                 ];
-                timeIntervals = timeIntervals.sort(function(a, b) {
+                timeIntervals = timeIntervals.sort(function (a, b) {
                     if (order.indexOf(a.key) > order.indexOf(b.key)) {
                         return 1;
                     }
@@ -150,7 +141,7 @@
                     $('#flere').addClass('hidden');
                 }
             },
-            error: function(error) {
+            error: function (error) {
                 console.log(error);
             },
         });
@@ -174,7 +165,7 @@
         $parent.find('div input.defaultFasett').prop('checked', true);
         $('ul.fasettListe>li[data-facet="' + $(this).val() + '"]').addClass('erValgt');
         $('.wic').prop('checked', false);
-        if ( $('#Nyheter').parent().hasClass('erValgt') ) {
+        if ($('#Nyheter').parent().hasClass('erValgt')) {
             $('#sort-date').prop('checked', true).trigger('change');
         }
         update(e);
@@ -196,13 +187,9 @@
         setC(1);
         $('.sokeresultatliste').empty();
         if ($('.utvidbar.erValgt div input:checked').length === 0) {
-            $('.utvidbar.erValgt')
-                .find('input.defaultFasett')
-                .prop('checked', true);
+            $('.utvidbar.erValgt').find('input.defaultFasett').prop('checked', true);
         } else {
-            $('.utvidbar.erValgt')
-                .find('input.defaultFasett')
-                .prop('checked', false);
+            $('.utvidbar.erValgt').find('input.defaultFasett').prop('checked', false);
         }
         update(e);
     }

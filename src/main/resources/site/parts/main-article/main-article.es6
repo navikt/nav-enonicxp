@@ -83,7 +83,7 @@ function renderPage(req) {
             socials = Array.isArray(data.social) ? data.social : [data.social];
         }
         socials = socials
-            ? socials.map(el => {
+            ? socials.map((el) => {
                   let tmpText = 'Del på ';
                   if (el === 'linkedin') {
                       tmpText += 'LinkedIn';
@@ -131,7 +131,7 @@ function renderPage(req) {
     };
 }
 
-exports.get = function(req) {
+exports.get = function (req) {
     // Midlertidig fix: Kaller render-function direkte for driftsmeldinger
     // TODO: Sette tilbake når cache fungerer
 
