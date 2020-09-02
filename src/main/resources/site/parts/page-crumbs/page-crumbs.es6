@@ -23,7 +23,7 @@ function handleGet(req) {
             breadcrumbs.items = breadcrumbs.items.slice(2);
             // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
             breadcrumbs.items = breadcrumbs.items.filter(
-                el =>
+                (el) =>
                     el.type === app.name + ':main-article' ||
                     el.type === app.name + ':section-page' ||
                     el.type === app.name + ':page-list' ||

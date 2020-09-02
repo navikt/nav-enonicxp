@@ -7,7 +7,7 @@ const libs = {
 };
 
 // Handle 404
-exports.handle404 = function(req) {
+exports.handle404 = function (req) {
     // get path relative to www.nav.no site
     let path = '/www.nav.no' + req.request.rawPath.split('/www.nav.no')[1];
     // remove trailing /
@@ -47,10 +47,7 @@ exports.handle404 = function(req) {
     if (!element) {
         const isRedirect = path.split('/').length === 3;
         if (isRedirect) {
-            const contentName = path
-                .split('/')
-                .pop()
-                .toLowerCase();
+            const contentName = path.split('/').pop().toLowerCase();
             const redirects = libs.cache.getRedirects(
                 'redirects',
                 undefined,
@@ -137,7 +134,7 @@ exports.handle404 = function(req) {
 };
 
 // Handle all other errors - to avoid default error page with stack trace
-exports.handleError = function(err) {
+exports.handleError = function (err) {
     return {
         contentType: 'text/html',
         body: `<html lang="no"><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,

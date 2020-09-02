@@ -5,7 +5,7 @@ const libs = {
 };
 const view = resolve('./searchresult.html');
 
-const sortTimePeriod = intervals => {
+const sortTimePeriod = (intervals) => {
     const order = ['Siste 7 dager', 'Siste 30 dager', 'Siste 12 måneder', 'Eldre enn 12 måneder'];
 
     const orderedIntervals = intervals.buckets.map((interval, ix) => ({

@@ -69,16 +69,12 @@
                                     </td>
                                     <td>[[${hit.officeInformation.phone}]]</td>
                                 </tr>
-                                <tr>
+                                <tr data-th-if="${hit.officeInformation.audienceReception}">
                                     <td>
                                         PUBLIKUMSMOTTAK:
                                     </td>
                                     <td>
-                                        <ul>
-                                            <li class="listeinnisoketreff" data-th-each="audienceReception : ${hit.officeInformation.audienceReceptions}">
-                                                <span>[[${audienceReception}]]</span>
-                                            </li>
-                                        </ul>
+                                        [[${hit.officeInformation.audienceReception}]]
                                     </td>
                                 </tr>
                             </tbody>

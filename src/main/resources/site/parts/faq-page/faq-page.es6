@@ -55,7 +55,7 @@ function renderPage(req) {
             socials = Array.isArray(data.social) ? data.social : [data.social];
         }
         socials = socials
-            ? socials.map(el => {
+            ? socials.map((el) => {
                   let tmpText = 'Del på ';
                   if (el === 'linkedin') {
                       tmpText += 'LinkedIn';
@@ -74,13 +74,13 @@ function renderPage(req) {
 
         const questionsAndAnswers = libs.utils
             .forceArray(content.data.questionsAndAnswers)
-            .map(item => ({
+            .map((item) => ({
                 ...item,
                 elementId: libs.common.sanitize(item.question),
                 answer: libs.portal.processHtml({ value: item.answer }),
             }));
 
-        const overview = questionsAndAnswers.map(qanda => {
+        const overview = questionsAndAnswers.map((qanda) => {
             return { url: `#${libs.common.sanitize(qanda.question)}`, text: qanda.question };
         });
 
@@ -101,7 +101,7 @@ function renderPage(req) {
     };
 }
 
-exports.get = function(req) {
+exports.get = function (req) {
     const render = renderPage(req);
     return libs.cache.getPaths(req.rawPath, 'faq-page', req.branch, render);
 };

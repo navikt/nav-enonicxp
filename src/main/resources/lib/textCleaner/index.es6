@@ -6,7 +6,7 @@ const libs = {
 
 let hasSetupListeners = false;
 
-const cleanText = nodeId => {
+const cleanText = (nodeId) => {
     const content = libs.content.get({
         key: nodeId,
     });
@@ -21,7 +21,7 @@ const cleanText = nodeId => {
             const modifiedText = text.replace(narrowBreakTest, ' ');
             libs.content.modify({
                 key: nodeId,
-                editor: contentElem => {
+                editor: (contentElem) => {
                     return { ...contentElem, data: { ...contentElem.data, text: modifiedText } };
                 },
             });
@@ -30,7 +30,7 @@ const cleanText = nodeId => {
 };
 
 function nodeListenerCallback(event) {
-    event.data.nodes.forEach(node => {
+    event.data.nodes.forEach((node) => {
         if (node.branch === 'draft' && node.repo === 'com.enonic.cms.default') {
             libs.context.run(
                 {

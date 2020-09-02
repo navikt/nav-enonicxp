@@ -5,7 +5,7 @@ const libs = {
 };
 const view = resolve('./main.html');
 
-exports.get = function(req) {
+exports.get = function (req) {
     const component = libs.portal.getComponent();
     const language = libs.portal.getContent().language || 'no';
     const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
