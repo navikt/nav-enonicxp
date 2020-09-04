@@ -5,7 +5,6 @@ const libs = {
 const handleGet = (req) => {
     const { features } = req.params;
 
-    log.info(features);
     if (!features) {
         return null;
     }
@@ -21,12 +20,11 @@ const handleGet = (req) => {
                 ...acc,
                 [feature.data.featureName]: {
                     toggle: feature.data.toggle,
-                    rollout: feature.data.gradualRollout,
+                    percentage: feature.data.percentage,
                 },
             }),
             {}
         );
-    log.info(JSON.stringify(result));
 
     return {
         body: result,
