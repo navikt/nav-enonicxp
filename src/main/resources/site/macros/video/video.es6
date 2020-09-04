@@ -1,6 +1,7 @@
-exports.macro = function(context) {
-    const body = `<div class="video-container"><iframe src="${context.params.video}"></iframe></div>`;
+exports.macro = function (context) {
+    const title = context.params.title || '';
+    const src = context.params.video || '';
     return {
-        body,
+        body: `<div class="video-container"><iframe title="Video: ${title}" src="${src}"></iframe></div>`,
     };
 };
