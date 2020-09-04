@@ -410,5 +410,5 @@ module.exports = {
     getSitePath,
     getUrl,
     getSrc,
-    getSocialRef
+    getSocialRef,
 };

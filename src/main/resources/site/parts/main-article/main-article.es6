@@ -68,6 +68,10 @@ function renderPage(req) {
               })
             : false;
 
+        // Fjern tomme headings og br-tagger fra HTML
+        data.text = data.text.replace(/<h\d>\s*<\/h\d>/g, '');
+        data.text = data.text.replace(/<h\d>&nbsp;<\/h\d>/g, '');
+        data.text = data.text.replace(/<br.*>/g, '');
         // Prosessering av HTML-felter (håndtere url-er inne i html-en) og image-urls
         data.text = libs.portal.processHtml({
             value: data.text,
