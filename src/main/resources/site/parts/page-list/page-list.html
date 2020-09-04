@@ -9,13 +9,18 @@
         <div class="toolbar">
             <div
                 data-th-if="${hasLanguageVersions}"
-                class="content-languages leftmost-in-toolbar" role="button" tabindex="0"
-                aria-haspopup="true" aria-owns="language-selection" aria-controls="language-selection"
+                class="content-languages leftmost-in-toolbar"
+                aria-haspopup="true"
+                aria-owns="language-selection"
+                aria-controls="language-selection"
             >
                 <span>Language</span>
                 <ul class="nav hide" id="language-selection">
                     <li data-th-each="language : ${languages}">
-                        <a data-th-href="${language.href}" data-th-class="${language.tClass}" data-th-title="${language.title}">
+                        <a data-th-class="${language.tClass}"
+                           data-ga="language-selector"
+                           data-th-href="${language.href}"
+                        >
                             [[${language.text}]]
                         </a>
                     </li>
