@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DesignLenkepanel from '../shared/DesignLenkepanel';
 
-const DesignNotifications = function (props, context) {
+const DesignNotifications = function (props) {
     const { messages, containerClass } = props;
     const messageNodes = messages.map((message) => {
         return <DesignLenkepanel {...message} />;
@@ -36,4 +36,5 @@ DesignNotifications.defaultProps = {
     messages: [],
     containerClass: '',
 };
-export default DesignNotifications;
+// export default DesignNotifications;
+export default (props) => <DesignNotifications {...props} />;
