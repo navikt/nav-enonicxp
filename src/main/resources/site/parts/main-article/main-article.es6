@@ -8,38 +8,6 @@ const libs = {
 };
 const view = resolve('main-article.html');
 
-function getSocialRef(el, content, req) {
-    if (!req) {
-        return null;
-    }
-    switch (el) {
-        case 'facebook':
-            return (
-                'https://www.facebook.com/sharer/sharer.php?u=' +
-                req.url +
-                '&amp;title=' +
-                content.displayName.replace(/ /g, '%20')
-            );
-        case 'twitter':
-            return (
-                'https://twitter.com/intent/tweet?text=' +
-                content.displayName.replace(/ /g, '%20') +
-                ': ' +
-                req.url
-            );
-        case 'linkedin':
-            return (
-                'https://www.linkedin.com/shareArticle?mini=true&amp;url=' +
-                req.url +
-                '&amp;title=' +
-                content.displayName.replace(/ /g, '%20') +
-                '&amp;source=nav.no'
-            );
-        default:
-            return null;
-    }
-}
-
 function renderPage(req) {
     return () => {
         let content = libs.portal.getContent();
@@ -95,7 +63,7 @@ function renderPage(req) {
                   return {
                       type: el,
                       text: tmpText,
-                      href: getSocialRef(el, content, req),
+                      href: libs.utils.getSocialRef(el, content, req),
                   };
               })
             : false;
@@ -132,12 +100,6 @@ function renderPage(req) {
 }
 
 exports.get = function (req) {
-    // Midlertidig fix: Kaller render-function direkte for driftsmeldinger
-    // TODO: Sette tilbake når cache fungerer
-
     const render = renderPage(req);
-    if (req.path.indexOf('/driftsmeldinger/') !== -1) {
-        return render();
-    }
     return libs.cache.getPaths(req.rawPath, 'main-article', req.branch, render);
 };
