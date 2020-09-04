@@ -4,6 +4,7 @@
     <form>
         <input name="infoBoks" type="TextLine">
             <label>Teksten som skal legges inn</label>
+            <occurrences maximum="0" minimum="1"/>
         </input>
     </form>
 </macro>

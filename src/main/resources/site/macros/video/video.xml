@@ -1,9 +1,14 @@
 <macro>
     <display-name>Sett inn video</display-name>
-    <description>Sett inn URL</description>
+    <description>Legg inn URL og beskrivende tittel</description>
     <form>
         <input name="video" type="TextLine">
             <label>URL</label>
+            <occurrences maximum="0" minimum="1"/>
+        </input>
+        <input name="title" type="TextLine">
+            <label>Beskrivende tittel</label>
+            <occurrences maximum="0" minimum="1"/>
         </input>
     </form>
 </macro>

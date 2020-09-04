@@ -4,6 +4,7 @@
     <form>
         <input name="fotnote" type="TextLine">
             <label>Teksten i fotnoten</label>
+            <occurrences maximum="0" minimum="1"/>
         </input>
     </form>
 </macro>

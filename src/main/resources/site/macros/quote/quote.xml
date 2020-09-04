@@ -4,6 +4,7 @@
     <form>
         <input name="quote" type="TextLine">
             <label>Sitat</label>
+            <occurrences maximum="0" minimum="1"/>
         </input>
     </form>
 </macro>

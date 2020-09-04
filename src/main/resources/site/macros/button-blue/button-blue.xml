@@ -7,6 +7,7 @@
         </input>
         <input name="text" type="TextLine">
             <label>Tekst</label>
+            <occurrences maximum="0" minimum="1"/>
         </input>
         <input name="content" type="ContentSelector">
             <label>Innhold</label>
