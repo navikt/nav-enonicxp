@@ -278,6 +278,10 @@ function visit(addressParam) {
 }
 
 function runDeep(something, deadLinksFound, socket, el) {
+    if (something === null) {
+        return;
+    }
+
     if (typeof something === 'string') {
         // eslint-disable-next-line no-useless-escape
         const guidRegex = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/g;
