@@ -788,6 +788,7 @@ body > img[src*="nav.tns-cs.net"] {
 .article-body table {
     width: 100%;
     line-height: 1.15em;
+    margin-bottom: 1rem;
 }
 .article-body table tr:first-child th, .article-body table tr:first-child td {
     color: #3E3832;
