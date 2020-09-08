@@ -8,7 +8,7 @@ const libs = {
     cluster: require('/lib/xp/cluster'),
 };
 
-function setIsRefreshing(navRepo, isRefreshing, failed) {
+function setIsRefreshing(navRepo, isRefreshing, failed, data = {}) {
     navRepo.modify({
         key: '/officeInformation',
         editor: (o) => {
@@ -19,6 +19,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
                 if (failed === false) {
                     object.data.lastRefresh = Date.now();
                     object.data.lastRefreshFormated = new Date();
+                    object.data.offices = data;
                 }
             }
             object.data.isRefreshing = isRefreshing;
@@ -177,6 +178,7 @@ function checkForRefresh() {
                 lastRefreshFormated: new Date().toISOString(),
                 isRefreshing: false,
                 failedLastRefresh: false,
+                offices: [],
             },
         });
     }
@@ -185,6 +187,7 @@ function checkForRefresh() {
     setIsRefreshing(navRepo, true);
 
     let failedToRefresh = false;
+    let officeInformationList = [];
     // get data from norg2
     try {
         const response = libs.httpClient.request({
@@ -196,7 +199,7 @@ function checkForRefresh() {
             },
         });
 
-        const officeInformationList = JSON.parse(response.body);
+        officeInformationList = JSON.parse(response.body);
         refreshOfficeInformation(officeInformationList);
 
         log.info('NORG - Publish office information');
@@ -212,8 +215,8 @@ function checkForRefresh() {
         failedToRefresh = true;
     }
 
-    // set isRefreshing to false since we're done refresing office information
-    setIsRefreshing(navRepo, false, failedToRefresh);
+    // set isRefreshing to false since we're done refreshing office information
+    setIsRefreshing(navRepo, false, failedToRefresh, officeInformationList);
 
     if (failedToRefresh) {
         startBackupJob();
