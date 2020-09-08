@@ -192,13 +192,15 @@ function handleGet(req) {
         const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
         const epost = parseEmail(kontaktInformasjon.epost);
         const specialInfo = parseSpecialInfo(kontaktInformasjon.spesielleOpplysninger);
+        let poststed = postadresse ? postadresse.poststed || '' : '';
+        poststed = poststed.toUpperCase();
 
         const enhet = {
             navn: `${content.data.enhet.navn} - kontorinformasjon`,
             orgNr: content.data.enhet.organisasjonsnummer,
             kontornr: content.data.enhet.enhetNr,
             postaddresse: postAdr,
-            poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
+            poststed,
             postnummer: postadresse ? postadresse.postnummer : '',
             faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
             telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
