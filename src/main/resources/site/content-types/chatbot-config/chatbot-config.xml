@@ -1,0 +1,58 @@
+<content-type>
+    <display-name>Chatbot config</display-name>
+    <description>Configurerer chatbot</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <field-set name="feature-toggle">
+            <label>Feature toggle</label>
+            <items>
+                <input name="toggle" type="CheckBox">
+                    <label>Aktivér chatbot</label>
+                </input>
+                <input name="percentage" type="Long" min="0" max="100">
+                    <label>Gradvis utrullering</label>
+                    <help-text>
+                        Prosentandel av brukere som skal se chatbot
+                    </help-text>
+                    <default>100</default>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <min>0</min>
+                        <max>100</max>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="analytics">
+            <label>Tilbakemeldinger/målinger</label>
+            <help-text>Spørsmål som vises i spørreskjema etter avsluttet chat</help-text>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input name="label" type="TextLine">
+                    <label>Spørsmål</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="event" type="TextLine">
+                    <label>Event</label>
+                    <help-text>
+                        Event-navn som sendes til analyse-verktøy
+                    </help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="type" type="RadioButton">
+                    <label>Type</label>
+                    <help-text>Ett valg (radio buttons) eller flere valg (checkboxes)</help-text>
+                    <config>
+                        <option value="radio">Radio buttons</option>
+                        <option value="checkbox">Checkboxes</option>
+                    </config>
+                    <default>radio</default>
+                </input>
+                <input name="options" type="TextLine">
+                    <label>Alternativer</label>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>
