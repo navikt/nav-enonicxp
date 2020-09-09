@@ -3,7 +3,7 @@ const libs = {
     utils: require('/lib/nav-utils'),
 };
 exports.macro = function (context) {
-    const text = context.params.text;
+    const text = context.params.text || '';
     const fileLinks = libs.utils
         .forceArray(context.params.files)
         .map((id) => {
