@@ -7,7 +7,7 @@
             <occurrences minimum="1" maximum="1"/>
         </input>
         <input name="files" type="MediaSelector">
-            <occurrences minimum="1" maximum="0"/>
+            <occurrences minimum="1" maximum="5"/>
             <label>Legg ved filer</label>
             <help-text>Filtypen vil fremkomme etter lenketeksten</help-text>
             <config>
