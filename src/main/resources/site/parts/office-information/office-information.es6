@@ -21,7 +21,10 @@ function formatAddress(address, withZip) {
         formatedAddress = `${address.gatenavn}${husnummer}${husbokstav}`;
     }
     if (withZip) {
-        formatedAddress += `, ${address.postnummer} ${address.poststed.toUpperCase()}`;
+        let poststed = address ? address.poststed || '' : '';
+        poststed = poststed.toUpperCase();
+
+        formatedAddress += `, ${address.postnummer} ${poststed}`;
     }
     return formatedAddress;
 }
