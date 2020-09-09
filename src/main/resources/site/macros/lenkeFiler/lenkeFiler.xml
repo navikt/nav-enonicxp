@@ -1,0 +1,19 @@
+<macro>
+    <display-name>Lenker til filer</display-name>
+    <description>Sette opp lenker til filer med samme basis lenketekst</description>
+    <form>
+        <input name="text" type="TextLine">
+            <label>Felles lenketekst</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="files" type="MediaSelector">
+            <occurrences minimum="1" maximum="0"/>
+            <label>Legg ved filer</label>
+            <help-text>Filtypen vil fremkomme etter lenketeksten</help-text>
+            <config>
+                <allowContentType>media:*</allowContentType>
+                <showStatus>true</showStatus>
+            </config>
+        </input>
+    </form>
+</macro>
