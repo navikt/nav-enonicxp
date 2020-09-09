@@ -3,7 +3,7 @@
         <time class="pubdate muted" data-th-if="${!hideDate}" data-th-datetime="${from}">
             [[${published}]]
         </time>
-        <h1 role="heading" aria-level="1">
+        <h1>
             [[${heading}]]
         </h1>
         <div class="toolbar">
@@ -37,7 +37,7 @@
         </p>
     </header>
     <article data-th-each="item : ${items}">
-        <h2 role="heading" aria-level="2">
+        <h2>
             <a data-th-href="${item.src}">
                 [[${item.heading}]]
             </a>
