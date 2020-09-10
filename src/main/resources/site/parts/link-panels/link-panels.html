@@ -10,7 +10,7 @@
            data-th-href="${item.url}"
         >
             <div data-th-if="${item.icon}" class="icon">
-                <img data-th-src="${item.icon}" class="icon-size" />
+                <img data-th-src="${item.icon}" data-th-attr="alt =${item.altText}" class="icon-size" />
             </div>
             <div class="tekst">
                 <h3 class="typo-systemtittel lenkepanel__heading">
@@ -24,3 +24,4 @@
         </a>
     </div>
 </section>
+

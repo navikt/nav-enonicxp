@@ -21,6 +21,7 @@ exports.get = (req) => {
                     title: value.title,
                     ingress: value.ingress,
                     url: libs.navUtils.getUrl(value.url),
+                    altText: value.altText,
                     icon: value.icon
                         ? libs.portal.attachmentUrl({
                               id: value.icon,
