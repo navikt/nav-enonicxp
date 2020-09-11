@@ -52,11 +52,11 @@ function handleGet(req) {
             '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
-        let languageParam = 'norsk';
+        let languageParam = 'nb';
         if (content._path.indexOf('/en/') !== -1) {
-            languageParam = 'engelsk';
+            languageParam = 'en';
         } else if (content._path.indexOf('/se/') !== -1) {
-            languageParam = 'samisk';
+            languageParam = 'se';
         }
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
