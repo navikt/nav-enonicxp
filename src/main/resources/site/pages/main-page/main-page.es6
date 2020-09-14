@@ -46,7 +46,6 @@ function handleGet(req) {
             `<link href="${libs.portal.assetUrl({
                 path: 'styles/navno.css',
             })}" rel="stylesheet" />`,
-            `<section id="decorator-styles"></section>`,
             `<script src="${decUrl}/client.js"></script>`,
             '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
             '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
