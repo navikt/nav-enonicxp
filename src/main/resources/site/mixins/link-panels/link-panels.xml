@@ -53,6 +53,13 @@
                             <label>Velg ikon</label>
                             <occurrences minimum="0" maximum="1"/>
                         </input>
+                        <input name="altText" type="TextLine">
+                            <label>Alternativ tekst til ikonet</label>
+                            <help-text>
+                                Tekst som vises eller leses opp når bildet ikke vises for brukeren
+                            </help-text>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
                     </items>
                     <occurrences maximum="0" minimum="0"/>
                 </item-set>

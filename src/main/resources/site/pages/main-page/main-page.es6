@@ -47,15 +47,15 @@ function handleGet(req) {
                 path: 'styles/navno.css',
             })}" rel="stylesheet" />`,
             `<script src="${decUrl}/client.js"></script>`,
-            '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>',
+            '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>',
             '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
-        let languageParam = 'norsk';
+        let languageParam = 'nb';
         if (content._path.indexOf('/en/') !== -1) {
-            languageParam = 'engelsk';
+            languageParam = 'en';
         } else if (content._path.indexOf('/se/') !== -1) {
-            languageParam = 'samisk';
+            languageParam = 'se';
         }
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
