@@ -9,8 +9,8 @@ exports.macro = function (context) {
     const body =
         '<div class="alertstripe alertstripe--advarsel">' +
         '<div class="alertstripe__ikon">' +
-        '<span class="sr-only">Varselboks</span>' +
-        `<img src="${imageUrl}" alt="varselboks">` +
+        '<span class="sr-only">advarsel</span>' +
+        `<img src="${imageUrl}" alt="">` +
         '</div>' +
         '<div class="alertstripe__tekst">' +
         `<span>${text}</span>` +
@@ -18,6 +18,6 @@ exports.macro = function (context) {
         '</div>';
 
     return {
-        body: body,
+        body,
     };
 };
