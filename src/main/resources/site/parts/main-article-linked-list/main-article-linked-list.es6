@@ -2,6 +2,7 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
+    lang: require('/lib/i18nUtil'),
     cache: require('/lib/siteCache'),
     navUtils: require('/lib/nav-utils'),
 };
@@ -61,9 +62,11 @@ exports.get = function (req) {
     return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
         const content = libs.portal.getContent();
         const list = createList(content);
+        const langBundle = libs.lang.parseBundle(content.language).main_article.linkedList;
         const model = {
             hasList: list.length > 1,
             list,
+            description: langBundle.description,
         };
 
         return {
