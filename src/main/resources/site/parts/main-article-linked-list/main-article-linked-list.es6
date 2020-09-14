@@ -62,11 +62,13 @@ exports.get = function (req) {
     return libs.cache.getPaths(req.rawPath, 'main-article-linked-list', req.branch, () => {
         const content = libs.portal.getContent();
         const list = createList(content);
-        const langBundle = libs.lang.parseBundle(content.language).main_article.linkedList;
+        const langBundle = libs.lang.parseBundle(content.language).main_article;
+        const description =
+            langBundle && langBundle.linkedList && langBundle.linkedList.description;
         const model = {
             hasList: list.length > 1,
             list,
-            description: langBundle.description,
+            description,
         };
 
         return {
