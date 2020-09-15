@@ -2,6 +2,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/siteCache'),
+    menu: require('/lib/menu-utils'),
     utils: require('/lib/nav-utils'),
 };
 const etag = libs.cache.etag;
@@ -12,8 +13,12 @@ function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const content = libs.portal.getContent();
         const url = libs.utils.validateUrl(req);
-        const title = content.displayName;
+        const breadcrumbs = libs.menu.getBreadcrumbMenu({
+            linkActiveItem: true,
+            showHomepage: false,
+        });
 
+        const title = content.displayName;
         let ingress = content.data.ingress;
         if (!content.data.metaDescription && ingress && ingress.length > 140) {
             ingress = ingress.substring(0, 140);
@@ -52,11 +57,11 @@ function handleGet(req) {
             '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
-        let languageParam = 'nb';
+        let language = 'nb';
         if (content._path.indexOf('/en/') !== -1) {
-            languageParam = 'en';
+            language = 'en';
         } else if (content._path.indexOf('/se/') !== -1) {
-            languageParam = 'se';
+            language = 'se';
         }
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
@@ -66,10 +71,18 @@ function handleGet(req) {
         } else if (content._path.indexOf('/no/samarbeidspartner') !== -1) {
             context = 'samarbeidspartner';
         }
+
+        const languageParam = `?language=${language}`;
+        const contextParam = context ? `&context=${context}` : '';
+        const breadcrumbParam =
+            breadcrumbs.length > 1 ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}` : '';
+
+        log.info(JSON.stringify(breadcrumbs));
+        log.info(breadcrumbParam);
+        log.info(`${decUrl}/env${languageParam}${contextParam}${breadcrumbParam}`);
+
         const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env?language=${languageParam}${
-                context ? `&context=${context}` : ''
-            }"></div>`,
+            `<div id="decorator-env" data-src="${decUrl}/env?${languageParam}${contextParam}${breadcrumbParam}"></div>`,
         ];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
