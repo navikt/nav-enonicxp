@@ -212,9 +212,7 @@ function getLanguageVersions(content) {
         lRefs = [lRefs];
     }
     lRefs.forEach((ref) => {
-        const el = libs.content.get({
-            key: ref,
-        });
+        const el = libs.content.get({ key: ref });
         if (el) {
             ret.push({
                 locale: mapDecoratorLocale[el.language],
