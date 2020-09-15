@@ -3094,8 +3094,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
   width: 40px;
 }
 .notifications {
-  margin: 0.5rem 0;
+  padding: 0.5rem 0;
 }
+
 .notifications .lenkepanel-container.one-col {
   width: 80%;
   margin: auto;
