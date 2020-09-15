@@ -84,7 +84,7 @@ function handleGet(req) {
             : '';
 
         const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env?language=${decoratorLanguage}${decoratorContext}${decoratorBreadcrumb}${decoratorAvailableLanguages}"></div>`,
+            `<div id="decorator-env" data-src="${decUrl}/env${decoratorLanguage}${decoratorContext}${decoratorBreadcrumb}${decoratorAvailableLanguages}"></div>`,
         ];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
