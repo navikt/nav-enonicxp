@@ -194,7 +194,7 @@ function formatDateTime(date, language) {
 }
 
 function getLanguageVersions(content) {
-    const locale = {
+    const mapDecoratorLocale = {
         no: 'nb',
         en: 'en',
         se: 'se',
@@ -204,7 +204,7 @@ function getLanguageVersions(content) {
         pl: 'en',
     };
     let lRefs = content.data.languages;
-    const ret = [{ locale: locale[content.language], url: content._path }];
+    const ret = [{ locale: mapDecoratorLocale[content.language], url: content._path }];
     if (!lRefs) {
         return [];
     }
@@ -217,7 +217,7 @@ function getLanguageVersions(content) {
         });
         if (el) {
             ret.push({
-                locale: locale[el.language],
+                locale: mapDecoratorLocale[el.language],
                 url: libs.portal.pageUrl({
                     id: ref,
                 }),
