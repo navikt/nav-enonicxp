@@ -58,12 +58,14 @@ function handleGet(req) {
             '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
+
         let language = 'nb';
         if (content._path.indexOf('/en/') !== -1) {
             language = 'en';
         } else if (content._path.indexOf('/se/') !== -1) {
             language = 'se';
         }
+
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
             context = 'privatperson';
@@ -73,7 +75,6 @@ function handleGet(req) {
             context = 'samarbeidspartner';
         }
 
-        log.info(JSON.stringify(languages));
         const languageParam = `?language=${language}`;
         const contextParam = context ? `&context=${context}` : '';
         const breadcrumbParam =
