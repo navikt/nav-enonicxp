@@ -3093,6 +3093,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel .icon-size {
   width: 40px;
 }
+.notifications {
+  margin: 0.5rem 0;
+}
 .notifications .lenkepanel-container.one-col {
   width: 80%;
   margin: auto;
@@ -3113,7 +3116,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel-container .lenkepanel {
   min-height: 84px;
   box-sizing: border-box;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 @media (max-width: 768px) {
   .row .lenkepanel-container {
