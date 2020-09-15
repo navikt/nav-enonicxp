@@ -75,16 +75,16 @@ function handleGet(req) {
             context = 'samarbeidspartner';
         }
 
-        const languageParam = `?language=${language}`;
-        const contextParam = context ? `&context=${context}` : '';
-        const breadcrumbParam =
+        const decoratorLanguage = `?language=${language}`;
+        const decoratorContext = context ? `&context=${context}` : '';
+        const decoratorBreadcrumb =
             breadcrumbs.length > 1 ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}` : '';
-        const languagesParam = languages.length
+        const decoratorAvailableLanguages = languages.length
             ? `&availableLanguages=${encodeURI(JSON.stringify(languages))}`
             : '';
 
         const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env${languageParam}${contextParam}${breadcrumbParam}${languagesParam}"></div>`,
+            `<div id="decorator-env" data-src="${decUrl}/env?language=${decoratorLanguage}${decoratorContext}${decoratorBreadcrumb}${decoratorAvailableLanguages}"></div>`,
         ];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
