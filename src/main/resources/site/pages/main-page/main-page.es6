@@ -13,12 +13,12 @@ function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const content = libs.portal.getContent();
         const url = libs.utils.validateUrl(req);
+        const title = content.displayName;
         const breadcrumbs = libs.menu.getBreadcrumbMenu({
             linkActiveItem: true,
             showHomepage: false,
         });
 
-        const title = content.displayName;
         let ingress = content.data.ingress;
         if (!content.data.metaDescription && ingress && ingress.length > 140) {
             ingress = ingress.substring(0, 140);
