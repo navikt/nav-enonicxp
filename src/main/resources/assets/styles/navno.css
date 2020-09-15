@@ -3116,7 +3116,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel-container .lenkepanel {
   min-height: 84px;
   box-sizing: border-box;
-  margin: 0.5rem 0;
+  margin-top: 1rem;
 }
 @media (max-width: 768px) {
   .row .lenkepanel-container {
