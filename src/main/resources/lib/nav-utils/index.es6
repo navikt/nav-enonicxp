@@ -194,24 +194,17 @@ function formatDateTime(date, language) {
 }
 
 function getLanguageVersions(content) {
-    const lang = {
-        no: 'Bokmål',
-        en: 'English',
-        se: 'Sámegiella',
-        se_NO: 'Sámegiella',
-        nn: 'Nynorsk',
-        nn_NO: 'Nynorsk',
-        pl: 'Polski',
+    const locale = {
+        no: 'nb',
+        en: 'en',
+        se: 'se',
+        se_NO: 'se',
+        nn: 'nn',
+        nn_NO: 'nn',
+        pl: 'en',
     };
     let lRefs = content.data.languages;
-    const ret = [
-        {
-            href: '#',
-            tClass: 'active-lang',
-            text: lang[content.language],
-            title: lang[content.language] + ' (Språkversjon)',
-        },
-    ];
+    const ret = [{ locale: locale[content.language], url: content._path }];
     if (!lRefs) {
         return [];
     }
@@ -224,12 +217,10 @@ function getLanguageVersions(content) {
         });
         if (el) {
             ret.push({
-                href: libs.portal.pageUrl({
+                locale: locale[el.language],
+                url: libs.portal.pageUrl({
                     id: ref,
                 }),
-                text: lang[el.language],
-                tClass: '',
-                title: lang[el.language] + ' (Språkversjon)',
             });
         }
     });

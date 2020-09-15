@@ -14,6 +14,7 @@ function handleGet(req) {
         const content = libs.portal.getContent();
         const url = libs.utils.validateUrl(req);
         const title = content.displayName;
+        const languages = libs.utils.getLanguageVersions(content);
         const breadcrumbs = libs.menu.getBreadcrumbMenu({
             linkActiveItem: true,
             showHomepage: false,
@@ -72,13 +73,17 @@ function handleGet(req) {
             context = 'samarbeidspartner';
         }
 
+        log.info(JSON.stringify(languages));
         const languageParam = `?language=${language}`;
         const contextParam = context ? `&context=${context}` : '';
         const breadcrumbParam =
             breadcrumbs.length > 1 ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}` : '';
+        const languagesParam = languages.length
+            ? `&availableLanguages=${encodeURI(JSON.stringify(languages))}`
+            : '';
 
         const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env?${languageParam}${contextParam}${breadcrumbParam}"></div>`,
+            `<div id="decorator-env" data-src="${decUrl}/env${languageParam}${contextParam}${breadcrumbParam}${languagesParam}"></div>`,
         ];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;

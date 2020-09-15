@@ -1690,7 +1690,6 @@ body > img[src*='nav.tns-cs.net'] {
 .content-print {
   vertical-align: top;
   position: relative;
-  margin-left: 4%;
   display: inline-block;
   padding-left: 21px;
   background: transparent url('../img/navno/gfx/tts/print.png') no-repeat left center;
