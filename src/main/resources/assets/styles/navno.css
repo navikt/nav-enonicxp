@@ -3093,7 +3093,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel .icon-size {
   width: 40px;
 }
-.notifications {
+.notifications .row {
   padding: 0.5rem 0;
 }
 .notifications .lenkepanel-container.one-col {
