@@ -77,10 +77,6 @@ function handleGet(req) {
         const breadcrumbParam =
             breadcrumbs.length > 1 ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}` : '';
 
-        log.info(JSON.stringify(breadcrumbs));
-        log.info(breadcrumbParam);
-        log.info(`${decUrl}/env${languageParam}${contextParam}${breadcrumbParam}`);
-
         const footer = [
             `<div id="decorator-env" data-src="${decUrl}/env?${languageParam}${contextParam}${breadcrumbParam}"></div>`,
         ];
