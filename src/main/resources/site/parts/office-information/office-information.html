@@ -4,7 +4,7 @@
          itemtype="http://schema.org/Organization"
 >
     <header>
-        <time class="pubdate muted" data-th-datetime="${content.publish.from}">
+        <time class="pubdate muted" data-th-datetime="${publishedFrom}">
             [[${published}]]
         </time>
         <h1>
@@ -21,17 +21,18 @@
         </div>
     </header>
     <div class="article-body">
-        <div data-th-if="${enhet.isHmsOrAls}"
+        <div data-th-if="${enhet.isHmsOrAls && enhet.besoeksadresse != '' }"
              itemprop="location"
              itemscope=""
              itemtype="http://schema.org/PostalAddress"
         >
+
             <h3>Besøksadresse</h3>
             <p class="p-street-address" itemprop="streetAddress">
                 [[${enhet.besoeksadresse}]]
             </p>
         </div>
-        <div data-th-if="${enhet.isHmsOrAls && enhet.epost}"
+        <div data-th-if="${enhet.isHmsOrAls && enhet.epost !='' }"
              itemprop="contactPoint"
              itemscope=""
              itemtype="http://schema.org/ContactPoint"
@@ -41,7 +42,11 @@
                 [[${enhet.epost}]]
             </p>
         </div>
-        <div itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint">
+        <div data-th-if="${enhet.isHmsOrAls && enhet.telefon !='' }"
+             itemprop="contactPoint"
+             itemscope=""
+             itemtype="http://schema.org/ContactPoint"
+        >
             <h3 itemprop="contactType">Telefon</h3>
             <p class="p-tel" itemprop="telephone">
                 [[${enhet.telefon}]]
