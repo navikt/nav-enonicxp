@@ -1,5 +1,5 @@
 <aside role="complementary" class="related-content accordion" id="related-content-accordion">
-    <section data-th-each="content, i : ${menuLists}"
+    <div data-th-each="content, i : ${menuLists}"
              class="accordion-item"
              data-th-data-expand="${content.expanded} ? 'true' : ''"
     >
@@ -18,5 +18,5 @@
                 </li>
             </ul>
         </div>
-    </section>
+    </div>
 </aside>

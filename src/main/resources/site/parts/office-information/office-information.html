@@ -1,36 +1,67 @@
-<article id="pagecontent" class="full-article office-details h-card" itemscope="" itemtype="http://schema.org/Organization">
+<article id="pagecontent"
+         class="full-article office-details h-card"
+         itemscope=""
+         itemtype="http://schema.org/Organization"
+>
     <header>
-        <time class="pubdate muted" data-th-datetime="${content.publish.from}">[[${published}]]</time>
-        <h1>[[${enhet.navn}]]</h1>
+        <time class="pubdate muted" data-th-datetime="${content.publish.from}">
+            [[${published}]]
+        </time>
+        <h1>
+            [[${enhet.navn}]]
+        </h1>
         <div class="toolbar">
-            <div class="content-print leftmost-in-toolbar" id="print-page" role="button" tabindex="0">
+            <div class="content-print leftmost-in-toolbar"
+                 id="print-page"
+                 role="button"
+                 tabindex="0"
+            >
                 <span>Skriv ut side</span>
             </div>
         </div>
     </header>
     <div class="article-body">
-        <div data-th-if="${enhet.isHmsOrAls}" itemprop="location" itemscope="" itemtype="http://schema.org/PostalAddress">
+        <div data-th-if="${enhet.isHmsOrAls}"
+             itemprop="location"
+             itemscope=""
+             itemtype="http://schema.org/PostalAddress"
+        >
             <h3>Besøksadresse</h3>
-            <p class="p-street-address" itemprop="streetAddress">[[${enhet.besoeksadresse}]]</p>
+            <p class="p-street-address" itemprop="streetAddress">
+                [[${enhet.besoeksadresse}]]
+            </p>
         </div>
-        <div data-th-if="${enhet.isHmsOrAls && enhet.epost}" itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint">
+        <div data-th-if="${enhet.isHmsOrAls && enhet.epost}"
+             itemprop="contactPoint"
+             itemscope=""
+             itemtype="http://schema.org/ContactPoint"
+        >
             <h3 itemprop="contactType">Epost</h3>
-            <p class="u-email" itemprop="email">[[${enhet.epost}]]</p>
+            <p class="u-email" itemprop="email">
+                [[${enhet.epost}]]
+            </p>
         </div>
         <div itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint">
             <h3 itemprop="contactType">Telefon</h3>
-            <p class="p-tel" itemprop="telephone">[[${enhet.telefon}]]</p>
-            <p>[[${enhet.telefonkommentar}]]</p>
+            <p class="p-tel" itemprop="telephone">
+                [[${enhet.telefon}]]
+            </p>
+            <p>
+                [[${enhet.telefonkommentar}]]
+            </p>
         </div>
         <div class="p-note">
             <h3>Innsending av skjemaer</h3>
             <p>
                 Skal du sende søknader og skjemaer, må du bruke
-                <a href="https://www.nav.no/soknader/nb/person" rel="external">NAVs skjemaveileder.</a> Skjemaveilederen gir deg hjelp til å
-                velge rett skjema og rett adresse det skal sendes til.
+                <a href="https://www.nav.no/soknader/nb/person" rel="external">
+                    NAVs skjemaveileder.
+                </a>
+                Skjemaveilederen gir deg hjelp til å velge rett skjema og rett adresse det skal
+                sendes til.
             </p>
         </div>
-        <div class="p-note" data-th-if="${enhet.spesielleOpplysninger != ''}">
+        <div data-th-if="${enhet.spesielleOpplysninger != ''}" class="p-note">
             <h3>Opplysninger</h3>
             <p>
                 [( ${enhet.spesielleOpplysninger} )]
@@ -39,63 +70,132 @@
         <div itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress">
             <h3>Postadresse</h3>
             <p>
-                <span class="p-post-office-box" itemprop="postOfficeBoxNumber">[[${enhet.postaddresse}]]</span>,
-                <span class="p-postal-code" itemprop="postalCode">[[${enhet.postnummer}]]</span>
-                <span class="p-locality" itemprop="addressRegion">[[${enhet.poststed}]]</span>
+                <span class="p-post-office-box" itemprop="postOfficeBoxNumber">
+                    [[${enhet.postaddresse}]]
+                </span>,
+                <span class="p-postal-code" itemprop="postalCode">
+                    [[${enhet.postnummer}]]
+                </span>
+                <span class="p-locality" itemprop="addressRegion">
+                    [[${enhet.poststed}]]
+                </span>
             </p>
         </div>
-        <div itemprop="contactPoint" itemscope="" itemtype="http://schema.org/ContactPoint" data-th-if="${enhet.faks}">
+        <div data-th-if="${enhet.faks}"
+             itemprop="contactPoint"
+             itemscope=""
+             itemtype="http://schema.org/ContactPoint"
+        >
             <h3 itemprop="contactType">Telefaks</h3>
-            <p class="p-tel-fax" itemprop="faxNumber">[[${enhet.faks}]]</p>
+            <p class="p-tel-fax" itemprop="faxNumber">
+                [[${enhet.faks}]]
+            </p>
         </div>
-        <div data-th-remove="tag" data-th-if="${enhet.orgNr}">
+        <div data-th-if="${enhet.orgNr}" data-th-remove="tag">
             <h3>Organisasjonsnummer</h3>
-            <p>[[${enhet.orgNr}]]</p>
+            <p>
+                [[${enhet.orgNr}]]
+            </p>
         </div>
         <h3>Kontornummer</h3>
-        <p>[[${enhet.kontornr}]]</p>
-        <div data-th-if="${!enhet.isHmsOrAls && enhet.pms && enhet.pms.size > 0}" data-th-remove="tag">
+        <p>
+            [[${enhet.kontornr}]]
+        </p>
+        <div data-th-if="${!enhet.isHmsOrAls && enhet.pms && enhet.pms.size > 0}"
+             data-th-remove="tag"
+        >
             <h1>Publikumsmottak</h1>
-            <div itemscope="" itemtype="http://schema.org/LocalBusiness" data-th-each="pm : ${enhet.pms}">
-                <h2 itemprop="name">[[${pm.stedbeskrivelse}]]</h2>
+            <div data-th-each="pm : ${enhet.pms}"
+                 itemscope=""
+                 itemtype="http://schema.org/LocalBusiness"
+            >
+                <h2 itemprop="name">
+                    [[${pm.stedbeskrivelse}]]
+                </h2>
                 <p></p>
-                <p class="p-street-address" itemprop="address" itemtype="http://schema.org/PostalAddress">[[${pm.besokkom}]]</p>
-                <div data-th-if="${pm.unntakAapning}"> 
+                <p class="p-street-address"
+                   itemprop="address"
+                   itemtype="http://schema.org/PostalAddress"
+                >
+                    [[${pm.besokkom}]]
+                </p>
+                <div data-th-if="${pm.unntakAapning && pm.unntakAapning.size > 0}" data-th-remove="tag">
                     <h5>Spesielle åpningstider</h5>
                     <ul style="display: none;">
-                        <li data-th-each="event: ${pm.unntakAapning} "itemprop="specialOpeningHoursSpecification" itemscope itemtype="http://schema.org/OpeningHoursSpecification">
-                            <time itemprop="validFrom" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time> 
-                            <time itemprop="validThrough" data-th-datetime="${event.isoDate}">[[${event.dato}]]</time>
-                            <time data-th-if="${!event.stengt}" itemprop="opens" data-th-datetime="${event.fra}">[[${event.fra}]]</time>
-                            <time data-th-if="${!event.stengt}" itemprop="closes" data-th-datetime="${event.til}">[[${event.til}]]</time>
+                        <li data-th-each="event: ${pm.unntakAapning}"
+                            itemprop="specialOpeningHoursSpecification"
+                            itemscope
+                            itemtype="http://schema.org/OpeningHoursSpecification"
+                        >
+                            <time itemprop="validFrom" data-th-datetime="${event.isoDate}">
+                                [[${event.dato}]]
+                            </time>
+                            <time itemprop="validThrough" data-th-datetime="${event.isoDate}">
+                                [[${event.dato}]]
+                            </time>
+                            <time data-th-if="${!event.stengt}"
+                                  itemprop="opens"
+                                  data-th-datetime="${event.fra}"
+                            >
+                                [[${event.fra}]]
+                            </time>
+                            <time data-th-if="${!event.stengt}"
+                                  itemprop="closes"
+                                  data-th-datetime="${event.til}"
+                            >
+                                [[${event.til}]]
+                            </time>
                         </li>
                     </ul>
                     <table>
                         <tbody>
                             <tr data-th-each="exception : ${pm.unntakAapning}">
-                                <td>[[${exception.dato}]]</td>
-                                <td>[[${exception.dag}]]</td>
-                                <td data-th-if="${!exception.stengt}">[[${exception.a}]]</td>
-                                <td data-th-if="${exception.stengt}">[[${lang.closed}]]</td>
-                                <td>[[${exception.kommentar}]]</td>
+                                <td>
+                                    [[${exception.dato}]]
+                                </td>
+                                <td>
+                                    [[${exception.dag}]]
+                                </td>
+                                <td data-th-if="${!exception.stengt}">
+                                    [[${exception.a}]]
+                                </td>
+                                <td data-th-if="${exception.stengt}">
+                                    [[${lang.closed}]]
+                                </td>
+                                <td>
+                                    [[${exception.kommentar}]]
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <h5>Åpningstider</h5>
-                <div data-th-each="day : ${pm.apning}" data-th-remove="tag">
-                    <meta data-th-if="${!day.stengt}" itemprop="openingHours" data-th-content="${day.meta}" />
+                <div data-th-if="${pm.apning && pm.apning.size > 0}" data-th-remove="tag">
+                    <h5>Åpningstider</h5>
+                    <div data-th-each="day : ${pm.apning}" data-th-remove="tag">
+                        <meta data-th-if="${!day.stengt}"
+                              itemprop="openingHours"
+                              data-th-content="${day.meta}"
+                        />
+                    </div>
+                    <table style="margin-bottom: 25px; border: none; width: auto;">
+                        <tbody>
+                            <tr data-th-each="dag : ${pm.apning}">
+                                <td>
+                                    [[${dag.dag}]]
+                                </td>
+                                <td data-th-if="${!dag.stengt}">
+                                    [[${dag.a}]]
+                                </td>
+                                <td data-th-if="${dag.stengt}">
+                                    [[${lang.closed}]]
+                                </td>
+                                <td>
+                                    [[${dag.kommentar}]]
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table style="margin-bottom: 25px; border: none; width: auto;">
-                    <tbody>
-                        <tr data-th-each="dag : ${pm.apning}">
-                            <td>[[${dag.dag}]]</td>
-                            <td data-th-if="${!dag.stengt}">[[${dag.a}]]</td>
-                            <td data-th-if="${dag.stengt}">[[${lang.closed}]]</td>
-                            <td>[[${dag.kommentar}]]</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
