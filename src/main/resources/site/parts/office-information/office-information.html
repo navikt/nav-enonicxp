@@ -119,7 +119,7 @@
                 >
                     [[${pm.besokkom}]]
                 </p>
-                <div data-th-if="${pm.unntakAapning && pm.unntakAapning.size > 0}">
+                <div data-th-if="${pm.unntakAapning && pm.unntakAapning.size > 0}" data-th-remove="tag">
                     <h5>Spesielle åpningstider</h5>
                     <ul style="display: none;">
                         <li data-th-each="event: ${pm.unntakAapning}"
@@ -169,31 +169,33 @@
                         </tbody>
                     </table>
                 </div>
-                <h5>Åpningstider</h5>
-                <div data-th-each="day : ${pm.apning}" data-th-remove="tag">
-                    <meta data-th-if="${!day.stengt}"
-                          itemprop="openingHours"
-                          data-th-content="${day.meta}"
-                    />
+                <div data-th-if="${pm.apning && pm.apning.size > 0}" data-th-remove="tag">
+                    <h5>Åpningstider</h5>
+                    <div data-th-each="day : ${pm.apning}" data-th-remove="tag">
+                        <meta data-th-if="${!day.stengt}"
+                              itemprop="openingHours"
+                              data-th-content="${day.meta}"
+                        />
+                    </div>
+                    <table style="margin-bottom: 25px; border: none; width: auto;">
+                        <tbody>
+                            <tr data-th-each="dag : ${pm.apning}">
+                                <td>
+                                    [[${dag.dag}]]
+                                </td>
+                                <td data-th-if="${!dag.stengt}">
+                                    [[${dag.a}]]
+                                </td>
+                                <td data-th-if="${dag.stengt}">
+                                    [[${lang.closed}]]
+                                </td>
+                                <td>
+                                    [[${dag.kommentar}]]
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table style="margin-bottom: 25px; border: none; width: auto;">
-                    <tbody>
-                        <tr data-th-each="dag : ${pm.apning}">
-                            <td>
-                                [[${dag.dag}]]
-                            </td>
-                            <td data-th-if="${!dag.stengt}">
-                                [[${dag.a}]]
-                            </td>
-                            <td data-th-if="${dag.stengt}">
-                                [[${lang.closed}]]
-                            </td>
-                            <td>
-                                [[${dag.kommentar}]]
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
