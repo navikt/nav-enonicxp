@@ -32,7 +32,7 @@ function handleGet(req) {
             'rules-and-regulations',
         ];
         const menuLists = keys
-            .map(el => {
+            .map((el) => {
                 if (!menuListItems[el]) {
                     return undefined;
                 }
@@ -43,7 +43,7 @@ function handleGet(req) {
                     name: selectNames[el] !== undefined ? selectNames[el] : '',
                     expanded: el === 'shortcuts',
                     links: links
-                        .map(contentId => {
+                        .map((contentId) => {
                             const element = libs.content.get({
                                 key: contentId,
                             });
@@ -72,10 +72,10 @@ function handleGet(req) {
                                 link,
                             };
                         })
-                        .filter(elem => !!elem),
+                        .filter((elem) => !!elem),
                 };
             })
-            .filter(el => el && el.links && el.links.length > 0);
+            .filter((el) => el && el.links && el.links.length > 0);
 
         if (menuLists.length > 0) {
             const model = {

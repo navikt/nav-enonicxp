@@ -41,10 +41,6 @@ a:focus {
     background-color: #254b6d;
     box-shadow: 0 0 0 2px #254b6d;
 }
-nav a:focus {
-    background-color: #ffbd66;
-    box-shadow: 0 0 0 2px #ffbd66;
-}
 main:focus, nav:focus {
     outline: none
 }
@@ -792,6 +788,7 @@ body > img[src*="nav.tns-cs.net"] {
 .article-body table {
     width: 100%;
     line-height: 1.15em;
+    margin-bottom: 1rem;
 }
 .article-body table tr:first-child th, .article-body table tr:first-child td {
     color: #3E3832;
@@ -843,6 +840,13 @@ body > img[src*="nav.tns-cs.net"] {
 }
 .breadcrumbs a:hover, .breadcrumbs a:focus, .breadcrumbs a:active {
     text-decoration: none
+
+}
+.breadcrumbs a:focus {
+    outline: none;
+    color: white;
+    background-color: #254b6d;
+    box-shadow: 0 0 0 2px #254b6d;
 }
 @media (min-width: 48em) {
     .aligned-with-content {
@@ -1784,8 +1788,14 @@ body > img[src*="nav.tns-cs.net"] {
     position: relative;
     text-decoration: none
 }
-.table-of-contents ol a:hover, .table-of-contents ol a:focus, .table-of-contents ol a:active {
+.table-of-contents ol a:hover, .table-of-contents ol a:active {
     color: #0067c5
+}
+.table-of-contents a:focus {
+    outline: none;
+    color: white;
+    background-color: #254b6d;
+    box-shadow: 0 0 0 2px #254b6d;
 }
 .table-of-contents ol a:hover:before, .table-of-contents ol a:focus:before, .table-of-contents ol a:active:before {
     border: 3px solid #0067c5;
@@ -1814,11 +1824,11 @@ body > img[src*="nav.tns-cs.net"] {
 .related-content li {
     font-size: .925rem
 }
-.related-content section {
-    margin-bottom: 5px;
-}
 .related-content.accordion {
     border: none;
+}
+.related-content .accordion-item {
+    margin-bottom: 5px;
 }
 .accordion .accordion-item .h3 {
     font-size: 1.0675rem;
@@ -2915,14 +2925,14 @@ div.placeholder .top-link-wrapper.sticky-top-link {
         transform: scale(3);
     }
 }
-.navno-dekorator {
+#decorator-header {
     min-height: 88px;
 }
 @media (min-width: 48em) {
-    .navno-dekorator {
+    #decorator-header {
         min-height: 106px;
     }
-    .navno-dekorator.with-context {
+    #decorator-header.with-context {
         min-height: 150px;
     }
 }

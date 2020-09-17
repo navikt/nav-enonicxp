@@ -11,7 +11,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Logg inn</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -31,7 +31,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Skjema og søknad</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -51,7 +51,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Saksbehandlingstider</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -100,7 +100,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Internasjonalt</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -120,7 +120,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Meld fra om endringer</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -140,7 +140,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Satser</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -160,7 +160,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Klagerettigheter</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -180,7 +180,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Medlemskap i folketrygden</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>
@@ -200,7 +200,7 @@
                         <input name="link" type="ContentSelector">
                             <label>Regelverk</label>
                             <custom-text>contentdata/links</custom-text>
-                            <occurrences maximum="0" minimum="1"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <allowContentType>${app}:section-page</allowContentType>
                                 <allowContentType>${app}:main-article</allowContentType>

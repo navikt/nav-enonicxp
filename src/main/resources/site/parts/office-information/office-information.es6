@@ -21,7 +21,10 @@ function formatAddress(address, withZip) {
         formatedAddress = `${address.gatenavn}${husnummer}${husbokstav}`;
     }
     if (withZip) {
-        formatedAddress += `, ${address.postnummer} ${address.poststed.toUpperCase()}`;
+        let poststed = address ? address.poststed || '' : '';
+        poststed = poststed.toUpperCase();
+
+        formatedAddress += `, ${address.postnummer} ${poststed}`;
     }
     return formatedAddress;
 }
@@ -138,7 +141,7 @@ function parseSpecialInfo(infoContent) {
     parsedString = parsedString.replace(/(?:\r\n|\r|\n)/g, '<br>');
     // replace urls
     const urls = specialInfoParseLink(parsedString);
-    urls.forEach(url => {
+    urls.forEach((url) => {
         parsedString = parsedString.replace(url.match, `<a href='${url.url}'>${url.text}</a>`);
     });
 
@@ -192,18 +195,20 @@ function handleGet(req) {
         const besoeksadresse = formatAddress(kontaktInformasjon.besoeksadresse, true);
         const epost = parseEmail(kontaktInformasjon.epost);
         const specialInfo = parseSpecialInfo(kontaktInformasjon.spesielleOpplysninger);
+        let poststed = postadresse ? postadresse.poststed || '' : '';
+        poststed = poststed.toUpperCase();
 
         const enhet = {
             navn: `${content.data.enhet.navn} - kontorinformasjon`,
             orgNr: content.data.enhet.organisasjonsnummer,
             kontornr: content.data.enhet.enhetNr,
             postaddresse: postAdr,
-            poststed: postadresse ? postadresse.poststed.toUpperCase() : '',
+            poststed,
             postnummer: postadresse ? postadresse.postnummer : '',
             faks: parsePhoneNumber(kontaktInformasjon.faksnummer),
             telefon: parsePhoneNumber(kontaktInformasjon.telefonnummer),
             telefonkommentar: kontaktInformasjon.telefonnummerKommentar,
-            pms: publikumsmottak.map(val => formatAudienceReception(val, content.language)),
+            pms: publikumsmottak.map((val) => formatAudienceReception(val, content.language)),
             isHmsOrAls: type === 'HMS' || type === 'ALS' || type === 'TILTAK',
             besoeksadresse,
             epost,
@@ -211,8 +216,8 @@ function handleGet(req) {
         };
 
         const body = libs.thymeleaf.render(view, {
-            content,
             published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
+            publishedFrom: content.publish.from,
             enhet,
             lang,
         });
