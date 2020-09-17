@@ -103,7 +103,7 @@ exports.getBreadcrumbMenu = function (params) {
     breadcrumbMenu.divider = settings.dividerHtml || null;
     breadcrumbMenu.items = breadcrumbItems
         .reverse()
-        // Ta vekk de øverste to nivåene: <hjem>/<språk>
+        // Ta vekk de øverste tre nivåene: <hjem>/<språk>/<context>
         .slice(3)
         // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
         .filter(
@@ -115,7 +115,6 @@ exports.getBreadcrumbMenu = function (params) {
                 el.type === app.name + ':generic-page'
         );
 
-    log.info(JSON.stringify(breadcrumbMenu.items));
     return breadcrumbMenu.items.map((breadcrumb) => ({
         title: breadcrumb.text,
         url: breadcrumb.url,
