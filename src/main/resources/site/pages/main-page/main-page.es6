@@ -76,8 +76,9 @@ function handleGet(req) {
 
         const decoratorLanguage = `?language=${language}`;
         const decoratorContext = context ? `&context=${context}` : '';
-        const decoratorBreadcrumb =
-            breadcrumbs.length > 1 ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}` : '';
+        const decoratorBreadcrumb = breadcrumbs.length
+            ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}`
+            : '';
         const decoratorAvailableLanguages = languages.length
             ? `&availableLanguages=${encodeURI(JSON.stringify(languages))}`
             : '';

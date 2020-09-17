@@ -104,7 +104,7 @@ exports.getBreadcrumbMenu = function (params) {
     breadcrumbMenu.items = breadcrumbItems
         .reverse()
         // Ta vekk de øverste to nivåene: <hjem>/<språk>
-        .slice(2)
+        .slice(3)
         // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
         .filter(
             (el) =>
@@ -115,6 +115,7 @@ exports.getBreadcrumbMenu = function (params) {
                 el.type === app.name + ':generic-page'
         );
 
+    log.info(JSON.stringify(breadcrumbMenu.items));
     return breadcrumbMenu.items.map((breadcrumb) => ({
         title: breadcrumb.text,
         url: breadcrumb.url,
