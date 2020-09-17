@@ -204,7 +204,14 @@ function getLanguageVersions(content) {
         pl: 'en',
     };
     let lRefs = content.data.languages;
-    const ret = [{ locale: mapDecoratorLocale[content.language], url: content._path }];
+    const ret = [
+        {
+            locale: mapDecoratorLocale[content.language],
+            url: libs.portal.pageUrl({
+                id: content._id,
+            }),
+        },
+    ];
     if (!lRefs) {
         return [];
     }
