@@ -17,7 +17,6 @@ function renderPage(req) {
             });
         }
         const langBundle = libs.lang.parseBundle(content.language).main_article;
-        const languages = libs.utils.getLanguageVersions(content);
         const data = content.data;
         const hasFact = !!data.fact;
 
@@ -92,8 +91,6 @@ function renderPage(req) {
             toc,
             content,
             hasFact,
-            hasLanguageVersions: languages.length > 0,
-            languages,
             socials,
             langBundle,
         };

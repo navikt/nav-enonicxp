@@ -193,23 +193,24 @@ function formatDateTime(date, language) {
         .format('LLL');
 }
 
+const mapDecoratorLocale = {
+    no: 'nb',
+    en: 'en',
+    se: 'se',
+    se_NO: 'se',
+    nn: 'nn',
+    nn_NO: 'nn',
+    pl: 'en',
+};
+
 function getLanguageVersions(content) {
-    const lang = {
-        no: 'Bokmål',
-        en: 'English',
-        se: 'Sámegiella',
-        se_NO: 'Sámegiella',
-        nn: 'Nynorsk',
-        nn_NO: 'Nynorsk',
-        pl: 'Polski',
-    };
     let lRefs = content.data.languages;
     const ret = [
         {
-            href: '#',
-            tClass: 'active-lang',
-            text: lang[content.language],
-            title: lang[content.language] + ' (Språkversjon)',
+            locale: mapDecoratorLocale[content.language],
+            url: libs.portal.pageUrl({
+                id: content._id,
+            }),
         },
     ];
     if (!lRefs) {
@@ -219,17 +220,13 @@ function getLanguageVersions(content) {
         lRefs = [lRefs];
     }
     lRefs.forEach((ref) => {
-        const el = libs.content.get({
-            key: ref,
-        });
+        const el = libs.content.get({ key: ref });
         if (el) {
             ret.push({
-                href: libs.portal.pageUrl({
+                locale: mapDecoratorLocale[el.language],
+                url: libs.portal.pageUrl({
                     id: ref,
                 }),
-                text: lang[el.language],
-                tClass: '',
-                title: lang[el.language] + ' (Språkversjon)',
             });
         }
     });
@@ -402,6 +399,7 @@ module.exports = {
     fixDateFormat,
     formatDate,
     formatDateTime,
+    mapDecoratorLocale,
     getLanguageVersions,
     dateTimePublished,
     dateTimeUpdated,

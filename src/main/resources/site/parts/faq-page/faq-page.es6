@@ -14,7 +14,6 @@ function renderPage(req) {
         const content = libs.portal.getContent();
 
         const langBundle = libs.lang.parseBundle(content.language).main_article;
-        const languages = libs.utils.getLanguageVersions(content);
         const data = content.data;
 
         // Sosiale medier
@@ -58,8 +57,6 @@ function renderPage(req) {
             content,
             overview,
             questionsAndAnswers,
-            hasLanguageVersions: languages.length > 0,
-            languages,
             socials,
             langBundle,
         };

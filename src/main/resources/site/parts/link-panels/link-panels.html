@@ -1,27 +1,27 @@
 <section class="row inner-row">
-    <h2 data-th-if="${heading}" class="text-center no-margin-bottom">
-        [[${heading}]]
-    </h2>
-    <div class="lenkepanel-container">
-        <a data-th-each="item : ${items}"
-           class="lenkepanel lenkepanel--border"
-           data-th-classappend="${item.className}"
-           data-ga="link-panel"
-           data-th-href="${item.url}"
-        >
-            <div data-th-if="${item.icon}" class="icon">
-                <img data-th-src="${item.icon}" data-th-attr="alt=${item.altText}" class="icon-size" />
-            </div>
-            <div class="tekst">
-                <h3 class="typo-systemtittel lenkepanel__heading">
-                    [[${item.title}]]
-                </h3>
-                <p data-th-if="${item.ingress}" class="typo-normal">
-                    [[${item.ingress}]]
-                </p>
-            </div>
-            <span class="lenkepanel__indikator"></span>
-        </a>
-    </div>
+  <h2 data-th-if="${heading}" class="text-center">
+    [[${heading}]]
+  </h2>
+  <div class="lenkepanel-container">
+    <a
+      data-th-each="item : ${items}"
+      class="lenkepanel lenkepanel--border"
+      data-th-classappend="${item.className}"
+      data-ga="link-panel"
+      data-th-href="${item.url}"
+    >
+      <div data-th-if="${item.icon}" class="icon">
+        <img data-th-src="${item.icon}" data-th-attr="alt=${item.altText}" class="icon-size" />
+      </div>
+      <div class="tekst">
+        <h3 class="typo-systemtittel lenkepanel__heading">
+          [[${item.title}]]
+        </h3>
+        <p data-th-if="${item.ingress}" class="typo-normal">
+          [[${item.ingress}]]
+        </p>
+      </div>
+      <span class="lenkepanel__indikator"></span>
+    </a>
+  </div>
 </section>
-
