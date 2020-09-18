@@ -193,16 +193,17 @@ function formatDateTime(date, language) {
         .format('LLL');
 }
 
+const mapDecoratorLocale = {
+    no: 'nb',
+    en: 'en',
+    se: 'se',
+    se_NO: 'se',
+    nn: 'nn',
+    nn_NO: 'nn',
+    pl: 'en',
+};
+
 function getLanguageVersions(content) {
-    const mapDecoratorLocale = {
-        no: 'nb',
-        en: 'en',
-        se: 'se',
-        se_NO: 'se',
-        nn: 'nn',
-        nn_NO: 'nn',
-        pl: 'en',
-    };
     let lRefs = content.data.languages;
     const ret = [
         {
@@ -398,6 +399,7 @@ module.exports = {
     fixDateFormat,
     formatDate,
     formatDateTime,
+    mapDecoratorLocale,
     getLanguageVersions,
     dateTimePublished,
     dateTimeUpdated,

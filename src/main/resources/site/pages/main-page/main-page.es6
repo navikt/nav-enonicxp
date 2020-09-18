@@ -11,10 +11,11 @@ const decUrl = app.config.decoratorUrl;
 
 function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
+        const { utils } = libs;
         const content = libs.portal.getContent();
-        const url = libs.utils.validateUrl(req);
+        const url = utils.validateUrl(req);
         const title = content.displayName;
-        const languages = libs.utils.getLanguageVersions(content);
+        const languages = utils.getLanguageVersions(content);
         const breadcrumbs = libs.menu.getBreadcrumbMenu({
             linkActiveItem: true,
             showHomepage: false,
@@ -58,13 +59,6 @@ function handleGet(req) {
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
 
-        let language = 'nb';
-        if (content._path.indexOf('/en/') !== -1) {
-            language = 'en';
-        } else if (content._path.indexOf('/se/') !== -1) {
-            language = 'se';
-        }
-
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
             context = 'privatperson';
@@ -74,18 +68,23 @@ function handleGet(req) {
             context = 'samarbeidspartner';
         }
 
-        const decoratorLanguage = `?language=${language}`;
-        const decoratorContext = context ? `&context=${context}` : '';
-        const decoratorBreadcrumb = breadcrumbs.length
-            ? `&breadcrumbs=${encodeURI(JSON.stringify(breadcrumbs))}`
-            : '';
-        const decoratorAvailableLanguages = languages.length
-            ? `&availableLanguages=${encodeURI(JSON.stringify(languages))}`
-            : '';
-
-        const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env${decoratorLanguage}${decoratorContext}${decoratorBreadcrumb}${decoratorAvailableLanguages}"></div>`,
+        const decParams = [
+            { key: 'language', value: utils.mapDecoratorLocale[content.language] || 'nb' },
         ];
+        if (context) {
+            decParams.push({ key: 'context', value: context });
+        }
+        if (breadcrumbs.length) {
+            const encodedBreadcrumbs = encodeURI(JSON.stringify(breadcrumbs));
+            decParams.push({ key: 'breadcrumbs', value: encodedBreadcrumbs });
+        }
+        if (languages.length) {
+            const encodedLanguages = encodeURI(JSON.stringify(languages));
+            decParams.push({ key: 'availableLanguages', value: encodedLanguages });
+        }
+
+        const decEnv = decParams.map((p, i) => `${!i ? `?` : ``}${p.key}=${p.value}`).join('&');
+        const footer = [`<div id="decorator-env" data-src="${decUrl}/env${decEnv}"></div>`];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
         const model = {
