@@ -17,14 +17,25 @@ const queryGetId = `query($path:ID!){
     }
 }`;
 
+const dataContentToFetchByType = {
+    'no.nav.navno:section-page': {
+        keys: ['tableContents', 'newsContents', 'ntkContents', 'scContents'],
+        deepFetch: true,
+    },
+    'no.nav.navno:content-list': {
+        keys: ['sectionContents'],
+        deepFetch: false,
+    },
+};
+
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
 
 const sortByLastModified = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
 
-const getContent = (id) => {
+const getContent = (contentId, deepFetch) => {
     const queryResponse = graphQlLib.execute(schema, queryGetId, {
-        path: id,
+        path: contentId,
     });
 
     const content = queryResponse?.data?.guillotine?.get;
@@ -32,10 +43,29 @@ const getContent = (id) => {
         return null;
     }
 
+    const data = content.dataAsJson ? JSON.parse(content.dataAsJson) : undefined;
+
+    if (deepFetch && data) {
+        const contentToFetch = dataContentToFetchByType[content.type];
+
+        if (contentToFetch) {
+            contentToFetch.keys.forEach((key) => {
+                const _contentId = data[key];
+                if (Array.isArray(_contentId)) {
+                    data[key] = _contentId.map((__contentId) =>
+                        getContent(__contentId, contentToFetch.deepFetch)
+                    );
+                } else {
+                    data[key] = getContent(_contentId, contentToFetch.deepFetch);
+                }
+            });
+        }
+    }
+
     return {
         ...content,
         dataAsJson: undefined,
-        data: content.dataAsJson ? JSON.parse(content.dataAsJson) : undefined,
+        data: data,
     };
 };
 
@@ -52,7 +82,7 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getContent(id);
+    const content = getContent(id, true);
 
     return content
         ? {
@@ -83,7 +113,7 @@ const handlePost = (req) => {
     }
 
     const contentArray = ids
-        .map(getContent)
+        .map((id) => getContent(id, true))
         .filter(Boolean)
         .sort(sorted ? sortByLastModified : undefined)
         .slice(0, numItems || undefined);
