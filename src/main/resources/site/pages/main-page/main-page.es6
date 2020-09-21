@@ -2,6 +2,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/siteCache'),
+    menu: require('/lib/menu-utils'),
     utils: require('/lib/nav-utils'),
 };
 const etag = libs.cache.etag;
@@ -10,9 +11,15 @@ const decUrl = app.config.decoratorUrl;
 
 function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
+        const { utils } = libs;
         const content = libs.portal.getContent();
-        const url = libs.utils.validateUrl(req);
+        const url = utils.validateUrl(req);
         const title = content.displayName;
+        const languages = utils.getLanguageVersions(content);
+        const breadcrumbs = libs.menu.getBreadcrumbMenu({
+            linkActiveItem: true,
+            showHomepage: false,
+        });
 
         let ingress = content.data.ingress;
         if (!content.data.metaDescription && ingress && ingress.length > 140) {
@@ -51,12 +58,7 @@ function handleGet(req) {
             '<script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>',
             `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
         ];
-        let languageParam = 'nb';
-        if (content._path.indexOf('/en/') !== -1) {
-            languageParam = 'en';
-        } else if (content._path.indexOf('/se/') !== -1) {
-            languageParam = 'se';
-        }
+
         let context = null;
         if (content._path.indexOf('/no/person') !== -1) {
             context = 'privatperson';
@@ -65,11 +67,24 @@ function handleGet(req) {
         } else if (content._path.indexOf('/no/samarbeidspartner') !== -1) {
             context = 'samarbeidspartner';
         }
-        const footer = [
-            `<div id="decorator-env" data-src="${decUrl}/env?language=${languageParam}${
-                context ? `&context=${context}` : ''
-            }"></div>`,
+
+        const decParams = [
+            { key: 'language', value: utils.mapDecoratorLocale[content.language] || 'nb' },
         ];
+        if (context) {
+            decParams.push({ key: 'context', value: context });
+        }
+        if (breadcrumbs.length) {
+            const encodedBreadcrumbs = encodeURI(JSON.stringify(breadcrumbs));
+            decParams.push({ key: 'breadcrumbs', value: encodedBreadcrumbs });
+        }
+        if (languages.length) {
+            const encodedLanguages = encodeURI(JSON.stringify(languages));
+            decParams.push({ key: 'availableLanguages', value: encodedLanguages });
+        }
+
+        const decEnv = decParams.map((p, i) => `${!i ? `?` : ``}${p.key}=${p.value}`).join('&');
+        const footer = [`<div id="decorator-env" data-src="${decUrl}/env${decEnv}"></div>`];
         const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
         const regions = content.page.regions;
         const model = {

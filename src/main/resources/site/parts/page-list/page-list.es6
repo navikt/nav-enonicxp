@@ -46,8 +46,6 @@ function createModel() {
         items = items.sort((a, b) => b.published - a.published);
     }
 
-    const languages = libs.utils.getLanguageVersions(content);
-
     const model = {
         published: libs.utils.dateTimePublished(content, content.language || 'no'),
         from: content.publish.from,
@@ -56,8 +54,6 @@ function createModel() {
         items,
         hideDate: !!content.data.hide_date,
         hideSectionContentsDate: !!content.data.hideSectionContentsDate,
-        hasLanguageVersions: languages.length > 0,
-        languages,
         langBundle,
     };
 

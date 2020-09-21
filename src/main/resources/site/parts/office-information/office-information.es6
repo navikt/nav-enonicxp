@@ -216,8 +216,8 @@ function handleGet(req) {
         };
 
         const body = libs.thymeleaf.render(view, {
-            content,
             published: libs.navUtils.dateTimePublished(content, content.language || 'no'),
+            publishedFrom: content.publish.from,
             enhet,
             lang,
         });

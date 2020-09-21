@@ -101,9 +101,24 @@ exports.getBreadcrumbMenu = function (params) {
 
     // Add divider html (if any) and reverse the menu item array
     breadcrumbMenu.divider = settings.dividerHtml || null;
-    breadcrumbMenu.items = breadcrumbItems.reverse();
+    breadcrumbMenu.items = breadcrumbItems
+        .reverse()
+        // Ta vekk de øverste tre nivåene: <hjem>/<språk>/<context>
+        .slice(3)
+        // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
+        .filter(
+            (el) =>
+                el.type === app.name + ':main-article' ||
+                el.type === app.name + ':section-page' ||
+                el.type === app.name + ':page-list' ||
+                el.type === app.name + ':transport-page' ||
+                el.type === app.name + ':generic-page'
+        );
 
-    return breadcrumbMenu;
+    return breadcrumbMenu.items.map((breadcrumb) => ({
+        title: breadcrumb.text,
+        url: breadcrumb.url,
+    }));
 };
 
 const getMegaMenu = ({ content, levels }) => {
