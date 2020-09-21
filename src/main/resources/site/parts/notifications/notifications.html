@@ -1,9 +1,9 @@
-<section class="container notifications">
+<section data-th-if="${messages}"
+         class="container notifications"
+         data-th-aria-label="${label}"
+>
     <div class="row">
-        <div data-th-if="${messages}"
-             class="lenkepanel-container"
-             data-th-classappend="${containerClass}"
-        >
+        <div class="lenkepanel-container" data-th-classappend="${containerClass}">
             <div data-th-each="message : ${messages}" data-th-remove="tag">
                 <a class="lenkepanel lenkepanel--border"
                    data-th-classappend="${message.class}"

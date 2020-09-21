@@ -3,6 +3,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     cache: require('/lib/siteCache'),
+    lang: require('/lib/i18nUtil'),
     navUtils: require('/lib/nav-utils'),
 };
 const view = resolve('main-panels.html');
@@ -52,7 +53,10 @@ exports.get = (req) => {
                 ? tableList.slice(0, content.data.nrTableEntries)
                 : null;
         if (table) {
+            const langBundle = libs.lang.parseBundle(content.language).main_panels;
+            const label = (langBundle && langBundle.label) || '';
             const model = {
+                label,
                 table,
             };
             return {
