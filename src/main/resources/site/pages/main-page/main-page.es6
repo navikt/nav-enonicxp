@@ -22,9 +22,9 @@ function getLegacyHtml() {
 
 const getHostname = (url) => {
     if (url.indexOf('localhost') > -1) {
-        return 'http://localhost:8090/person/navno-frontend';
+        return 'http://localhost:8090/person/xp-frontend';
     }
-    return 'https://www-q6.nav.no/person/navno-frontend';
+    return 'https://www-q6.nav.no/person/xp-frontend';
 };
 
 function handleGet(req) {
