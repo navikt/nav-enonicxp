@@ -1,71 +1,66 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
+const globalFragment = require('./fragments/global.es6');
+const sectionPageFragment = require('./fragments/sectionPage.es6');
+const contentListFragment = require('./fragments/contentList.es6');
+const internalLinkFragment = require('./fragments/internalLink.es6');
+const notificationsFragment = require('./fragments/notification.es6');
+const transportPageFragment = require('./fragments/transportPage.es6');
+const externalLinkFragment = require('./fragments/externalLink.es6');
+const pageListFragment = require('./fragments/pageList.es6');
+const mainArticleFragment = require('./fragments/mainArticle.es6');
 
 const schema = guillotineLib.createSchema();
+
+const queryFields = [
+    'dataAsJson',
+    globalFragment,
+    contentListFragment,
+    externalLinkFragment,
+    internalLinkFragment,
+    mainArticleFragment,
+    notificationsFragment,
+    pageListFragment,
+    sectionPageFragment,
+    transportPageFragment,
+].join('\n');
 
 const queryGetId = `query($path:ID!){
     guillotine {
         get(key:$path) {
-            _id
-            _path
-            createdTime
-            modifiedTime
-            displayName
-            type
-            dataAsJson
+            ${queryFields}
+            ...on base_Folder {
+                children {
+                    ${queryFields}
+                }
+            }
         }
     }
 }`;
 
-const dataContentToFetchByType = {
-    'no.nav.navno:section-page': {
-        keys: ['tableContents', 'newsContents', 'ntkContents', 'scContents'],
-        deepFetch: true,
-    },
-    'no.nav.navno:content-list': {
-        keys: ['sectionContents'],
-        deepFetch: false,
-    },
-};
-
-const getLastUpdatedUnixTime = (content) =>
-    new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
-
-const sortByLastModified = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
-
-const getContent = (contentId, deepFetch) => {
+const getContent = (contentId) => {
     const queryResponse = graphQlLib.execute(schema, queryGetId, {
         path: contentId,
     });
 
-    const content = queryResponse?.data?.guillotine?.get;
+    const { data, errors } = queryResponse;
+
+    if (errors) {
+        errors.forEach((error) => log.info(error.message));
+        return null;
+    }
+
+    const content = data.guillotine?.get;
     if (!content) {
         return null;
     }
 
-    const data = content.dataAsJson ? JSON.parse(content.dataAsJson) : undefined;
-
-    if (deepFetch && data) {
-        const contentToFetch = dataContentToFetchByType[content.type];
-
-        if (contentToFetch) {
-            contentToFetch.keys.forEach((key) => {
-                const _contentId = data[key];
-                if (Array.isArray(_contentId)) {
-                    data[key] = _contentId.map((__contentId) =>
-                        getContent(__contentId, contentToFetch.deepFetch)
-                    );
-                } else {
-                    data[key] = getContent(_contentId, contentToFetch.deepFetch);
-                }
-            });
-        }
-    }
+    const dataFromJson = content.dataAsJson ? JSON.parse(content.dataAsJson) : undefined;
 
     return {
         ...content,
         dataAsJson: undefined,
-        data: data,
+        data: { ...dataFromJson, ...content.data },
     };
 };
 
@@ -99,31 +94,4 @@ const handleGet = (req) => {
           };
 };
 
-const handlePost = (req) => {
-    const { ids, numItems, sorted } = JSON.parse(req.body);
-
-    if (ids?.length === 0) {
-        return {
-            status: 400,
-            body: {
-                message: 'No content ids were provided',
-            },
-            contentType: 'application/json',
-        };
-    }
-
-    const contentArray = ids
-        .map((id) => getContent(id, true))
-        .filter(Boolean)
-        .sort(sorted ? sortByLastModified : undefined)
-        .slice(0, numItems || undefined);
-
-    return {
-        status: 200,
-        body: contentArray,
-        contentType: 'application/json',
-    };
-};
-
 exports.get = handleGet;
-exports.post = handlePost;

@@ -136,9 +136,9 @@ function wipeOnChange(path) {
 function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
-        if (branch !== 'draft') {
-            return caches[cacheStoreName].get(getPath(key, type), () => f(params));
-        }
+        // if (branch !== 'draft') {
+        //     return caches[cacheStoreName].get(getPath(key, type), () => f(params));
+        // }
         return f(params);
     };
 }
