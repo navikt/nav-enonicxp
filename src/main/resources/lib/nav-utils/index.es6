@@ -200,7 +200,7 @@ const mapDecoratorLocale = {
     se_NO: 'se',
     nn: 'nn',
     nn_NO: 'nn',
-    pl: 'en',
+    pl: 'pl',
 };
 
 function getLanguageVersions(content) {
