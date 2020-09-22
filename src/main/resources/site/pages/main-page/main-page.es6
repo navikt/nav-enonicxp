@@ -28,22 +28,53 @@ const getHostname = (url) => {
 };
 
 function handleGet(req) {
-    Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${JSON.stringify(req[k])}`));
+    Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${req[k]}`));
     if (req.params.legacy) {
         return getLegacyHtml(req);
+    }
+
+    if (req.method !== 'GET') {
+        return {
+            status: 200,
+        };
     }
 
     const path = req.rawPath.split(req.branch).splice(1);
     const previewUrl = `${getHostname(req.url)}/api/preview?secret=asdf&branch=${
         req.branch
     }&slug=${path}`;
+    log.info(`path: ${path}`);
+    log.info(`url: ${previewUrl}`);
 
-    return libs.httpClient.request({
+    const response = libs.httpClient.request({
         url: previewUrl,
-        method: 'GET',
-        followRedirects: false,
         contentType: 'text/html',
     });
+
+    if (response.body) {
+        const { url } = JSON.parse(response.body);
+        return {
+            status: 307,
+            headers: {
+                Location: url,
+            },
+        };
+    }
+
+    return {
+        status: 404,
+        body: {
+            message: 'Content not found',
+        },
+        contentType: 'application/json',
+    };
+
+    // return libs.httpClient.request({
+    //     url: previewUrl,
+    //     method: 'GET',
+    //     followRedirects: false,
+    //     contentType: 'text/html',
+    // });
 }
 
 exports.get = handleGet;

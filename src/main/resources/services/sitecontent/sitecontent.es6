@@ -46,12 +46,14 @@ const getContent = (contentId) => {
     const { data, errors } = queryResponse;
 
     if (errors) {
+        log.info('GraphQL errors:');
         errors.forEach((error) => log.info(error.message));
         return null;
     }
 
     const content = data.guillotine?.get;
     if (!content) {
+        log.info(`Content not found: ${contentId}`);
         return null;
     }
 
