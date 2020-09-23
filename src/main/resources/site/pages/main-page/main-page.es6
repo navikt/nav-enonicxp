@@ -22,9 +22,9 @@ function getLegacyHtml() {
 
 const getHostname = (url) => {
     if (url.indexOf('localhost') > -1) {
-        return 'http://localhost:3000/person/xp-frontend';
+        return 'http://localhost:3000';
     }
-    return 'https://www-q6.nav.no/person/xp-frontend';
+    return 'https://www-q6.nav.no';
 };
 
 function handleGet(req) {
@@ -53,6 +53,23 @@ function handleGet(req) {
 
     if (response.body) {
         const { url } = JSON.parse(response.body);
+        // const html = libs.httpClient.request({
+        //     url: url,
+        //     method: 'GET',
+        //     followRedirects: false,
+        //     contentType: 'text/html',
+        // });
+        //
+        // return html;
+
+        // return {
+        //     status: 200,
+        //     body: html.body.replace(
+        //         /\/person\/xp-frontend\/_next/g,
+        //         'http://localhost:3000/person/xp-frontend/_next'
+        //     ),
+        //     contentType: 'text/html',
+        // };
         return {
             status: 307,
             headers: {
