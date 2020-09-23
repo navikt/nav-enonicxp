@@ -1,50 +1,31 @@
 <article class="article-list" id="pagecontent">
-    <header class="article-head">
-        <time class="pubdate muted" data-th-if="${!hideDate}" data-th-datetime="${from}">
-            [[${published}]]
-        </time>
-        <h1>
-            [[${heading}]]
-        </h1>
-        <div class="toolbar">
-            <div
-                data-th-if="${hasLanguageVersions}"
-                class="content-languages leftmost-in-toolbar"
-                aria-haspopup="true"
-                aria-owns="language-selection"
-                aria-controls="language-selection"
-            >
-                <span>Language</span>
-                <ul class="nav hide" id="language-selection">
-                    <li data-th-each="language : ${languages}">
-                        <a data-th-class="${language.tClass}"
-                           data-ga="language-selector"
-                           data-th-href="${language.href}"
-                        >
-                            [[${language.text}]]
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="content-print" id="print-page" role="button" tabindex="0">
-                <span>[[${langBundle.printpage}]]</span>
-            </div>
-        </div>
-        <p data-th-if="${ingress && ingress != ''}"
-        class="preface"
-        data-th-utext="${#strings.replace(#strings.escapeXml(ingress),'&#10;','&lt;br&gt;')}"
-        >
-        </p>
-    </header>
-    <article data-th-each="item : ${items}">
-        <h2>
-            <a data-th-href="${item.src}">
-                [[${item.heading}]]
-            </a>
-        </h2>
-        <p data-th-text="${item.ingress}"></p>
-        <time data-th-if="${!hideSectionContentsDate}">
-            [[${item.publishedText}]]
-        </time>
-    </article>
+  <header class="article-head">
+    <time class="pubdate muted" data-th-if="${!hideDate}" data-th-datetime="${from}">
+      [[${published}]]
+    </time>
+    <h1>
+      [[${heading}]]
+    </h1>
+    <div class="toolbar">
+      <div class="content-print" id="print-page" role="button" tabindex="0">
+        <span>[[${langBundle.printpage}]]</span>
+      </div>
+    </div>
+    <p
+      data-th-if="${ingress && ingress != ''}"
+      class="preface"
+      data-th-utext="${#strings.replace(#strings.escapeXml(ingress),'&#10;','&lt;br&gt;')}"
+    ></p>
+  </header>
+  <article data-th-each="item : ${items}">
+    <h2>
+      <a data-th-href="${item.src}">
+        [[${item.heading}]]
+      </a>
+    </h2>
+    <p data-th-text="${item.ingress}"></p>
+    <time data-th-if="${!hideSectionContentsDate}">
+      [[${item.publishedText}]]
+    </time>
+  </article>
 </article>

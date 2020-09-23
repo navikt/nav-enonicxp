@@ -2,6 +2,8 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     http: require('/lib/http-client'),
     portal: require('/lib/xp/portal'),
+    content: require('/lib/xp/content'),
+    lang: require('/lib/i18nUtil'),
 };
 const view = resolve('./searchresult.html');
 
@@ -29,41 +31,35 @@ function get(req) {
         application: 'navno.nav.no.search',
         type: 'absolute',
     });
-
     if (url.indexOf('localhost') === -1 && url.indexOf('https://') === -1) {
         url = url.replace('http', 'https');
     }
-
     if (req.params.ord && req.params.ord.length > 200) {
         req.params.ord = req.params.ord.substring(0, 200);
     }
-
     if (req.params.ord) {
         req.params.ord = encodeURI(req.params.ord);
     }
-
     if (Array.isArray(req.params.uf)) {
         req.params.uf = JSON.stringify(req.params.uf);
     }
-
     const response = libs.http.request({
         url,
         params: req.params,
         method: 'GET',
     });
-
     let model = {};
-
     try {
         model = JSON.parse(response.body);
-
-        const sortedTimeIntervals = sortTimePeriod(model.aggregations.Tidsperiode);
-        model.aggregations.Tidsperiode.buckets = sortedTimeIntervals;
+        model.aggregations.Tidsperiode.buckets = sortTimePeriod(model.aggregations.Tidsperiode);
     } catch (e) {
         log.info(e);
         log.info(response.body);
     }
-
+    const content = libs.portal.getContent();
+    const langBundle = libs.lang.parseBundle(content.language).search;
+    model.labelResults = (langBundle && langBundle.labelResults) || '';
+    model.labelFacets = (langBundle && langBundle.labelFacets) || '';
     model.searchApi = url;
     model.form = libs.portal.pageUrl({
         id: libs.portal.getContent()._id,

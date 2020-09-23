@@ -131,8 +131,11 @@ const showMessages = (content) => {
         const messages = global.concat(local).map((item) => constructMessage(item, language));
 
         if (messages) {
+            const langBundle = libs.lang.parseBundle(content.language).notifications;
+            const label = (langBundle && langBundle.label) || '';
             body = libs.thymeleaf.render(view, {
                 messages,
+                label,
                 containerClass: messages.length === 1 ? 'one-col' : '',
             });
         }
