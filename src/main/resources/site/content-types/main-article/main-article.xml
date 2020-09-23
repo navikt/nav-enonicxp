@@ -71,13 +71,13 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="media">
-            <label>Legg til bilder</label>
+        <item-set name="image">
+            <label>Legg til ett bilde</label>
             <items>
-                <input name="image" type="ImageSelector">
+                <input name="target" type="ImageSelector">
                     <label>Bilde</label>
                     <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input name="imagesize" type="RadioButton">
                     <label>Velg bildestørrelse</label>
@@ -89,11 +89,17 @@
                     </config>
                 </input>
                 <input name="caption" type="TextLine">
+                    <occurrences minimum="1" maximum="1"/>
                     <label>Bildetekst</label>
                     <help-text>Bildene skal ha en beskrivende tekst og skal gi merverdi til artikkelen!</help-text>
                 </input>
+                <input name="altText" type="TextLine">
+                    <occurrences minimum="1" maximum="1"/>
+                    <label>Alternativ tekst</label>
+                    <help-text>Tekst som vises eller leses opp når bildet ikke vises for brukeren</help-text>
+                </input>
             </items>
-        </field-set>
+        </item-set>
         <field-set name="socialSharing">
             <label>Sosiale medier</label>
             <items>
