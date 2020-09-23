@@ -1,14 +1,12 @@
-/* eslint-disable */
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
     httpClient: require('/lib/http-client'),
 };
 
-const view = resolve('/site/pages/main-page/main-page.html');
-
-// TODO: hente fra vault el?
 const previewSecret = 'asdf';
+const legacySource = '/_/service/legacy';
+const view = resolve('/site/pages/main-page/main-page.html');
 
 // TODO: denne funksjonaliteten finnes kanskje allerede? :)
 const previewApiUrlMap = {
@@ -20,7 +18,7 @@ const previewApiUrlMap = {
 
 const previewApiUrl = previewApiUrlMap[app.config.env] || previewApiUrlMap.p;
 
-function getLegacyHtml() {
+const generateLegacyHtml = () => {
     const content = libs.portal.getContent();
     const regions = content.page.regions;
     const model = {
@@ -31,15 +29,21 @@ function getLegacyHtml() {
         contentType: 'text/html',
         body: libs.thymeleaf.render(view, model),
     };
-}
+};
 
-function handleGet(req) {
-    Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${req[k]}`));
-    if (req.params.legacy) {
-        return getLegacyHtml(req);
+const handleGet = (req) => {
+    Object.keys(req).forEach((k) => log.info(`key main-controller: ${k} - value: ${req[k]}`));
+    if (req.path.startsWith(legacySource)) {
+        return generateLegacyHtml();
     }
 
     if (req.method !== 'GET') {
+        return {
+            status: 200,
+        };
+    }
+
+    if (req.params.didRedirect) {
         return {
             status: 200,
         };
@@ -56,13 +60,13 @@ function handleGet(req) {
     });
 
     if (response.body) {
-        const { url } = JSON.parse(response.body);
+        const body = JSON.parse(response.body);
 
-        return url
+        return body && body.url
             ? {
                   status: 307,
                   headers: {
-                      Location: url,
+                      Location: `${body.url}?didRedirect=true`,
                   },
               }
             : {
@@ -81,6 +85,6 @@ function handleGet(req) {
         },
         contentType: 'application/json',
     };
-}
+};
 
 exports.get = handleGet;
