@@ -1,11 +1,24 @@
 /* eslint-disable */
-
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
     httpClient: require('/lib/http-client'),
 };
+
 const view = resolve('/site/pages/main-page/main-page.html');
+
+// TODO: hente fra vault el?
+const previewSecret = 'asdf';
+
+// TODO: denne funksjonaliteten finnes kanskje allerede? :)
+const previewApiUrlMap = {
+    localhost: 'http://localhost:3000/api/preview',
+    q6: 'https://www-q6.nav.no/api/preview',
+    q1: 'https://www-q1.nav.no/api/preview',
+    p: 'https://www.nav.no/api/preview',
+};
+
+const previewApiUrl = previewApiUrlMap[app.config.env] || previewApiUrlMap.p;
 
 function getLegacyHtml() {
     const content = libs.portal.getContent();
@@ -20,13 +33,6 @@ function getLegacyHtml() {
     };
 }
 
-const getHostname = (url) => {
-    if (url.indexOf('localhost') > -1) {
-        return 'http://localhost:3000';
-    }
-    return 'https://www-q6.nav.no';
-};
-
 function handleGet(req) {
     Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${req[k]}`));
     if (req.params.legacy) {
@@ -40,9 +46,7 @@ function handleGet(req) {
     }
 
     const path = req.rawPath.split(req.branch).splice(1);
-    const previewUrl = `${getHostname(req.url)}/api/preview?secret=asdf&branch=${
-        req.branch
-    }&slug=${path}`;
+    const previewUrl = `${previewApiUrl}?secret=${previewSecret}&branch=${req.branch}&path=${path}`;
     log.info(`path: ${path}`);
     log.info(`url: ${previewUrl}`);
 
@@ -53,29 +57,21 @@ function handleGet(req) {
 
     if (response.body) {
         const { url } = JSON.parse(response.body);
-        // const html = libs.httpClient.request({
-        //     url: url,
-        //     method: 'GET',
-        //     followRedirects: false,
-        //     contentType: 'text/html',
-        // });
-        //
-        // return html;
 
-        // return {
-        //     status: 200,
-        //     body: html.body.replace(
-        //         /\/person\/xp-frontend\/_next/g,
-        //         'http://localhost:3000/person/xp-frontend/_next'
-        //     ),
-        //     contentType: 'text/html',
-        // };
-        return {
-            status: 307,
-            headers: {
-                Location: url,
-            },
-        };
+        return url
+            ? {
+                  status: 307,
+                  headers: {
+                      Location: url,
+                  },
+              }
+            : {
+                  status: 500,
+                  body: {
+                      message: 'Invalid api response',
+                  },
+                  contentType: 'application/json',
+              };
     }
 
     return {
@@ -85,13 +81,6 @@ function handleGet(req) {
         },
         contentType: 'application/json',
     };
-
-    // return libs.httpClient.request({
-    //     url: previewUrl,
-    //     method: 'GET',
-    //     followRedirects: false,
-    //     contentType: 'text/html',
-    // });
 }
 
 exports.get = handleGet;
