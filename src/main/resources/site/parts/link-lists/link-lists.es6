@@ -68,19 +68,19 @@ function getContentLists(content, contentType, max, doSort) {
 exports.get = (req) => {
     return libs.cache.getPaths(req.rawPath, 'link-lists', req.branch, () => {
         const content = libs.portal.getContent();
-        const lang = libs.lang.parseBundle(content.language).oppslagstavle;
+        const langBundle = libs.lang.parseBundle(content.language).link_lists;
 
         // nice to know
         const ntkList = getContentLists(content, 'ntkContents', content.data.nrNTK, false);
         const niceToKnow = {
-            sectionName: lang.niceToKnow,
+            sectionName: langBundle.niceToKnow,
             data: ntkList && ntkList.length > 0 ? ntkList.slice(0, content.data.nrNTK) : null,
         };
 
         // news
         const newsList = getContentLists(content, 'newsContents', content.data.nrNews, true);
         const news = {
-            sectionName: lang.news,
+            sectionName: langBundle.news,
             data:
                 newsList && newsList.length > 0
                     ? newsList.sort((a, b) => b.publDate - a.publDate).slice(0, content.data.nrNews)
@@ -90,7 +90,7 @@ exports.get = (req) => {
         // shortcuts
         const scList = getContentLists(content, 'scContents', content.data.nrSC, false);
         const shortcuts = {
-            sectionName: lang.shortcuts,
+            sectionName: langBundle.shortcuts,
             data: scList && scList.length > 0 ? scList.slice(0, content.data.nrSC) : null,
         };
 
@@ -101,13 +101,14 @@ exports.get = (req) => {
             if (pathParts[pathParts.length - 2] === 'lokalt') {
                 localSectionPage = true;
             }
-
+            const label = (langBundle && langBundle.label) || '';
             const model = {
                 niceToKnow,
                 news,
                 moreNewsUrl: content.data.moreNewsUrl,
                 shortcuts,
                 localSectionPage,
+                label,
             };
             return {
                 body: libs.thymeleaf.render(view, model),

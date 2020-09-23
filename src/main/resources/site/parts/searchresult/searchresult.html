@@ -1,19 +1,5 @@
-<!--div data-th-if="${mostLikely.is}">
-    <p data-th-text="'Mente du ' + ${ mostLikely.word }"> </p>
-</div>
-<div data-th-each="hit : ${hits}">
-    <p data-th-if="${ hit.dym != ''}" data-th-text="'Viser treff for ' + ${hit.dym}">
-
-    </p>
-    <a data-th-text="${hit.displayName}" data-th-href="${hit.href}"></a>
-    <p data-th-if="${hit.priority}">Innhold anbefalt av NAV</p>
-</div>
-<div class="sokeresultatContainer">
-    <div id="res"></div>
-</div-->
-
 <div class="row">
-    <section class="col-md-8 col-8">
+    <section class="col-md-8 col-8" data-th-aria-label="${labelResults}">
         <div class="sokeresultatContainer">
             <div class="minimertFiltreringspanel">
                 <ul data-th-if="${aggregations}" class="fasettListe">
@@ -83,12 +69,12 @@
                     </a>
                 </li>
             </ul>
-            <a class="flereResultater" data-th-classappend="${!isMore} ? hidden : ''" href="javascript:;" id="flere" role="button">
+            <a class="flereResultater" data-th-classappend="${!isMore} ? hidden : ''" href="javascript:" id="flere" role="button">
                 Vis flere
             </a>
         </div>
     </section>
-    <section class="col-md-4 col-4">
+    <section class="col-md-4 col-4" data-th-aria-label="${labelFacets}">
         <form data-th-action="${searchApi}" id="fasettform" method="GET">
             <div class="fasettGruppeElement">
                 <ul data-th-if="${aggregations}" class="fasettListe">
@@ -101,16 +87,13 @@
                             name="f"
                             type="radio"
                         />
-
                         <label data-th-for="${agg.key}" data-th-text="${agg.key}"></label>
                         <span class="antallTreff" data-th-text="${agg.docCount} "></span>
                         <div data-th-if="${agg.docCount > 0}">
                             <ul class="underFasettListe clearfix">
                                 <li class="defaultFasett" data-th-classappend="${agg.defaultClassName}">
                                     <input class="defaultFasett" data-th-checked="${agg.default}" data-th-id="${agg.key + 'all'}" type="checkbox" />
-
                                     <label data-th-for="${agg.key + 'all'}">Alt innhold</label>
-
                                     <span class="antallTreff" data-th-text="${agg.docCount}"></span>
                                 </li>
                                 <li data-th-classappend="${bucket.className}" data-th-each="bucket : ${agg.underaggregeringer.buckets}">
@@ -133,7 +116,6 @@
             </div>
             <div data-th-if="${aggregations}" class="fasettGruppeElement radiobuttons">
                 <h2>Tidsperiode</h2>
-
                 <ul class="fasettListe">
                     <li>
                         <input class="svart" data-th-checked="${aggregations.Tidsperiode.checked}" id="tpfirst" name="daterange" type="radio" value="-1" />

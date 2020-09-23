@@ -1,98 +1,80 @@
-<article class="full-article" data-th-classappend="${hasTableOfContents} ? 'factsheet tblc'" id="pagecontent">
+<article
+  class="full-article"
+  data-th-classappend="${hasTableOfContents} ? 'factsheet tblc'"
+  id="pagecontent"
+>
+  <div data-th-remove="tag" data-th-if="${!content.data}">
+    <p>Sorry, couldn't find the article you were looking for!</p>
+  </div>
 
-    <div data-th-remove="tag" data-th-if="${!content.data}">
-        <p>Sorry, couldn't find the article you were looking for!</p>
+  <div data-th-remove="tag" data-th-if="${content.type}">
+    <header data-th-classappend="${!driftsMelding}? 'article-head'">
+      <time class="pubdate muted" data-th-datetime="${content.publish.from}">
+        [[${published}]]
+      </time>
+      <h1>[[${content.displayName}]]</h1>
+      <div class="toolbar">
+        <div class="content-print" id="print-page" role="button" tabindex="0">
+          <span>[[${langBundle.printpage}]]</span>
+        </div>
+      </div>
+      <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
+        [[${content.data.ingress}]]
+      </p>
+      <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
+        <nav class="table-of-contents" data-selected-id>
+          <h2 class="visuallyhidden" role="heading" aria-level="2">
+            [[${langBundle.tableOfContents}]]
+          </h2>
+          <ol>
+            <li data-th-each="tocEntry,i : ${toc}">
+              <a data-ga="toc" data-th-href="'#chapter-' + ${i.index + 1}">
+                [[${tocEntry}]]
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </header>
+
+    <div class="article-body">
+      <div data-th-utext="${content.data.text}" data-th-remove="tag"></div>
     </div>
 
-    <div data-th-remove="tag" data-th-if="${content.type}">
+    <div class="well article-facts" data-th-if="${hasFact}">
+      <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
+      <div data-th-utext="${content.data.fact}"></div>
+    </div>
 
-        <header data-th-classappend="${!driftsMelding}? 'article-head'">
-            <time class="pubdate muted" data-th-datetime="${content.publish.from}">
-                [[${published}]]
-            </time>
-            <h1>[[${content.displayName}]]</h1>
-            <div class="toolbar">
-                <div data-th-if="${hasLanguageVersions}"
-                     class="content-languages leftmost-in-toolbar"
-                     aria-owns="language-selection"
-                     aria-controls="language-selection"
-                     tabindex="0"
-                >
-                    <span>Language</span>
-                    <ul class="nav hide" id="language-selection">
-                        <li data-th-each="language : ${languages}">
-                            <a data-th-class="${language.tClass}"
-                               data-ga="language-selector"
-                               data-th-href="${language.href}"
-                            >
-                                [[${language.text}]]
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="content-print" id="print-page" role="button" tabindex="0">
-                    <span>[[${langBundle.printpage}]]</span>
-                </div>
-            </div>
-            <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
-                [[${content.data.ingress}]]
-            </p>
-            <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
-                <nav class="table-of-contents" data-selected-id>
-                    <h2 class="visuallyhidden" role="heading" aria-level="2">
-                        [[${langBundle.tableOfContents}]]
-                    </h2>
-                    <ol>
-                        <li data-th-each="tocEntry,i : ${toc}">
-                            <a data-ga="toc"
-                               data-th-href="'#chapter-' + ${i.index + 1}"
-                            >
-                                [[${tocEntry}]]
-                            </a>
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </header>
-
-        <div class="article-body">
-            <div data-th-utext="${content.data.text}" data-th-remove="tag"></div>
-        </div>
-
-        <div class="well article-facts" data-th-if="${hasFact}">
-            <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
-            <div data-th-utext="${content.data.fact}"></div>
-        </div>
-
-        <div class="figure-container" data-th-if="${content.data.image}">
-            <figure data-th-classappend="|
+    <div class="figure-container" data-th-if="${content.data.image}">
+      <figure
+        data-th-classappend="|
                 ${content.data.imagesize == '100' ? 'figure-full' : ''}
                 ${content.data.imagesize == '70' ? 'figure-medium' : ''}
                 ${content.data.imagesize == '40' ? 'figure-small' : ''}|"
-            >
-                <img data-th-src="${content.data.imageUrl}"/>
-                <figcaption class="decorated" data-th-if="${content.data.caption}">
-                    [[${content.data.caption}]]
-                </figcaption>
-            </figure>
-        </div>
-
-        <div class="share-social-media" data-th-if="${socials}">
-            <ul class="share-social-media-pills">
-                <li data-th-each="social : ${socials}">
-                    <a data-ga="share-social-media"
-                       class="js-share share-container"
-                       data-th-attr="data-medium=${social.type}"
-                       data-th-href="${social.href}"
-                    >
-                        <span class="share-social" data-th-classappend="${'share-' + social.type}">
-                            [[${social.text}]]
-                        </span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
+      >
+        <img data-th-src="${content.data.imageUrl}" />
+        <figcaption class="decorated" data-th-if="${content.data.caption}">
+          [[${content.data.caption}]]
+        </figcaption>
+      </figure>
     </div>
 
+    <div class="share-social-media" data-th-if="${socials}">
+      <ul class="share-social-media-pills">
+        <li data-th-each="social : ${socials}">
+          <a
+            data-ga="share-social-media"
+            class="js-share share-container"
+            data-th-attr="data-medium=${social.type}"
+            data-th-href="${social.href}"
+          >
+            <span class="share-social" data-th-classappend="${'share-' + social.type}">
+              [[${social.text}]]
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </article>

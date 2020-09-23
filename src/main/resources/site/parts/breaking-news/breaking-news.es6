@@ -3,6 +3,7 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     cache: require('/lib/siteCache'),
+    lang: require('/lib/i18nUtil'),
     navUtils: require('/lib/nav-utils'),
 };
 const view = resolve('breaking-news.html');
@@ -49,10 +50,13 @@ exports.get = (req) => {
                 breakingNews.url = libs.navUtils.getSrc(breakingNewsContent);
             }
         }
+        const langBundle = libs.lang.parseBundle(content.language).breaking_news;
+        const label = (langBundle && langBundle.label) || '';
 
         const model = {
             breakingNews: Object.keys(breakingNews).length > 0 ? breakingNews : false,
             localSectionPage,
+            label,
         };
         return {
             body: libs.thymeleaf.render(view, model),
