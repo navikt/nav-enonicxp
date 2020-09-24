@@ -1,14 +1,11 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
-    lang: require('/lib/i18nUtil'),
 };
 const view = resolve('./main.html');
 
-exports.get = function (req) {
+exports.get = function () {
     const component = libs.portal.getComponent();
-    const language = libs.portal.getContent().language || 'no';
-    const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
 
     const model = {
         firstRegion: component.regions.first,
@@ -22,7 +19,6 @@ exports.get = function (req) {
                   first: 'col-sm-12',
                   second: '',
               },
-        toTop,
     };
 
     return {
