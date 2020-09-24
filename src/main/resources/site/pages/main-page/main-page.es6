@@ -20,6 +20,12 @@ const previewApiUrl = previewApiUrlMap[app.config.env] || previewApiUrlMap.p;
 
 const generateLegacyHtml = () => {
     const content = libs.portal.getContent();
+    const header = [
+        `<link href="${libs.portal.assetUrl({
+            path: 'styles/navno.css',
+        })}" rel="stylesheet" />`,
+        `<script src="${libs.portal.assetUrl({ path: 'js/navno.js' })}"></script>`,
+    ];
     const regions = content.page.regions;
     const model = {
         mainRegion: regions.main,
@@ -28,6 +34,9 @@ const generateLegacyHtml = () => {
     return {
         contentType: 'text/html',
         body: libs.thymeleaf.render(view, model),
+        pageContributions: {
+            headBegin: header,
+        },
     };
 };
 
