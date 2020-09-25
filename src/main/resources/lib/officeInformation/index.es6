@@ -123,7 +123,7 @@ function checkForRefresh() {
         });
         libs.cron.schedule({
             name: 'office_info_norg2_hourly',
-            cron: '15 * * * *',
+            cron: '0 */1 * * *',
             times: 1,
             context: {
                 repository: 'com.enonic.cms.default',
