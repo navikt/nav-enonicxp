@@ -102,6 +102,43 @@ function createNewElements() {
                     elements: [
                         {
                             tag: 'p',
+                            text: 'Importer nye data fra NORG',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'lprog',
+                            progress: {
+                                value: 'd-Value',
+                                max: 'dl-childCount',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'runNORG',
+                            text: 'Start',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
                             text: 'Lag en lenkeråterapport',
                         },
                         {
@@ -402,6 +439,14 @@ exports.handle = (s) => {
         },
     ];
     socket.emit('newTask', elements);
+    socket.on('runNORG', () => {
+        libs.task.submit({
+            description: 'Importerer NORG',
+            task: () => {
+                libs.tools.runInMasterContext(socket, libs.officeInformation.runOneTimeJob);
+            },
+        });
+    });
     socket.on('lenke', () => {
         libs.task.submit({
             description: 'Lager lenkeråterapport',
