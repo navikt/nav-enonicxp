@@ -72,22 +72,32 @@ function refreshOfficeInformation(officeInformationList) {
                 }
                 return false;
             })[0];
+
+            let updatedUnit = false;
             if (existingOffice) {
                 numUpdated++;
-                libs.content.modify({
+                updatedUnit = libs.content.modify({
                     key: existingOffice._id,
                     editor: (o) => ({ ...o, data: officeInformation }),
                 });
             } else {
                 numNew++;
-                libs.content.create({
+                updatedUnit = libs.content.create({
                     parentPath: officeFolder._path,
                     displayName: officeInformation.enhet.navn,
                     contentType: app.name + ':office-information',
                     data: officeInformation,
                 });
             }
-            officesInNorg[officeInformation.enhet.enhetId] = true;
+
+            if (updatedUnit) {
+                libs.content.publish({
+                    keys: [updatedUnit._id],
+                    sourceBranch: 'draft',
+                    targetBranch: 'master',
+                });
+                officesInNorg[officeInformation.enhet.enhetId] = true;
+            }
         }
     });
 
@@ -197,14 +207,14 @@ function checkForRefresh() {
         });
 
         const officeInformationList = JSON.parse(response.body);
-        refreshOfficeInformation(officeInformationList);
 
-        log.info('NORG - Publish office information');
-        libs.content.publish({
-            keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
-            sourceBranch: 'draft',
-            targetBranch: 'master',
-            includeDependencies: true,
+        const n = 5;
+        const result = new Array(Math.ceil(officeInformationList.length / n))
+            .fill()
+            .map((_) => officeInformationList.splice(0, n));
+
+        result.forEach((offices) => {
+            refreshOfficeInformation(offices);
         });
     } catch (e) {
         log.error('NORG - Failed to get office information from norg2');
