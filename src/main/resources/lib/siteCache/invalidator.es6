@@ -188,19 +188,19 @@ function removeExpiredContentFromMaster(expiredContent) {
 function theJob() {
     let state = null;
     try {
-        state = getState();
-
         // There is two conditions which must be upheld for the cache invalidator to run
         // --
-        // 1. No other task is currently doing the invalidation
-        // 2. The node has to be master
+        // 1. The node has to be master
+        // 2. No other task is currently doing the invalidation
         // --
         // if not the task must sleep for TIME_BETWEEN_CHECKS
 
-        if (state.isRunning) {
+        if (!libs.cluster.isMaster()) {
             return;
         }
-        if (!libs.cluster.isMaster()) {
+
+        state = getState();
+        if (state.isRunning) {
             return;
         }
     } catch (e) {
