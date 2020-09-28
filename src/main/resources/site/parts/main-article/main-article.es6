@@ -81,15 +81,15 @@ function renderPage(req) {
                   value: data.fact,
               })
             : null;
-        const image = data.image;
+        const picture = !!data.picture && data.picture.target; // Data model after 28.09.2020?
         let imageObj = null;
-        if (image) {
-            const target = Object.prototype.hasOwnProperty.call(image, 'target');
+        if (picture || !!data.image) {
+            const image = picture ? data.picture : data.image; // Pointer to image (both data models)
             imageObj = {
-                url: libs.utils.getImageUrl(target ? image.target : image, 'max(768)'),
-                size: target ? image.imagesize : data.imagesize,
-                caption: target ? image.caption : data.caption,
-                altText: target ? image.altText : '',
+                url: libs.utils.getImageUrl(picture ? image.target : image, 'max(768)'),
+                size: picture ? image.imagesize : data.imagesize,
+                caption: picture ? image.caption : data.caption,
+                altText: picture ? image.altText : '',
             };
         }
         // Definer model og kall rendring (view)

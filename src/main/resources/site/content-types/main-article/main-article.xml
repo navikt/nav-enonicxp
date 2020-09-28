@@ -71,7 +71,7 @@
                 </input>
             </items>
         </field-set>
-        <item-set name="image">
+        <item-set name="picture">
             <label>Legg til ett bilde</label>
             <items>
                 <input name="target" type="ImageSelector">
