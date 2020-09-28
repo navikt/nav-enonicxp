@@ -207,11 +207,19 @@ function checkForRefresh(oneTimeRun = false) {
         });
 
         const officeInformationList = JSON.parse(response.body);
-
         const n = 5;
-        const result = new Array(Math.ceil(officeInformationList.length / n))
-            .fill()
-            .map((_) => officeInformationList.splice(0, n));
+        const result = [[], [], [], [], []];
+        const wordsPerLine = Math.ceil(officeInformationList.length / n);
+
+        for (let line = 0; line < n; line++) {
+            for (let i = 0; i < wordsPerLine; i++) {
+                const value = officeInformationList[i + line * wordsPerLine];
+                if (value) {
+                    result[line].push(value);
+                }
+            }
+        }
+        log.info(JSON.stringify(result, null, 4));
 
         result.forEach((offices) => {
             refreshOfficeInformation(offices);
