@@ -38,6 +38,25 @@ const queryGetId = `query($path:ID!){
     }
 }`;
 
+const deepSearchJsonToData = (obj) => {
+    if (obj && typeof obj === 'object') {
+        if (Array.isArray(obj)) {
+            return obj.map(deepSearchJsonToData);
+        }
+
+        const newObj = {};
+        Object.keys(obj).forEach((key) => {
+            if (key === 'dataAsJson') {
+                newObj.data = { ...obj.data, ...JSON.parse(obj.dataAsJson) };
+            } else {
+                newObj[key] = deepSearchJsonToData(obj[key]);
+            }
+        });
+        return newObj;
+    }
+    return obj;
+};
+
 const getContent = (contentId) => {
     const queryResponse = graphQlLib.execute(schema, queryGetId, {
         path: contentId,
@@ -57,13 +76,7 @@ const getContent = (contentId) => {
         return null;
     }
 
-    const dataFromJson = content.dataAsJson ? JSON.parse(content.dataAsJson) : undefined;
-
-    return {
-        ...content,
-        dataAsJson: undefined,
-        data: { ...dataFromJson, ...content.data },
-    };
+    return deepSearchJsonToData(content);
 };
 
 const handleGet = (req) => {

@@ -6,8 +6,10 @@ const notificationsFragment = `
             showDescription
             showUpdated
             target {
+                __typename
                 _path
                 displayName
+                dataAsJson
             }
         }
     }`;
