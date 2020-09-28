@@ -27,24 +27,14 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
     });
 }
 
-function refreshOfficeInformation(officeInformationList) {
+function refreshOfficeInformation(officeInformationList, existingOffices, officeFolderPath) {
     // find all existing offices
-    const officeFolder = libs.content.get({
-        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer',
-    });
-
-    const existingOffices = libs.content.getChildren({
-        key: officeFolder._id,
-        count: 2000,
-    }).hits;
-
     const officesInNorg = {
         // map over offices in norg2, so we can delete old offices
     };
 
     let numNew = 0;
     let numUpdated = 0;
-    let numDeleted = 0;
     // update office information or create new
     officeInformationList.forEach((officeInformation) => {
         // ignore closed offices and include only selected types
@@ -83,7 +73,7 @@ function refreshOfficeInformation(officeInformationList) {
             } else {
                 numNew++;
                 updatedUnit = libs.content.create({
-                    parentPath: officeFolder._path,
+                    parentPath: officeFolderPath,
                     displayName: officeInformation.enhet.navn,
                     contentType: app.name + ':office-information',
                     data: officeInformation,
@@ -101,7 +91,14 @@ function refreshOfficeInformation(officeInformationList) {
         }
     });
 
+    // log info
+    log.info(`NORG - Updated: ${numUpdated} New: ${numNew}`);
+    return officesInNorg;
+}
+
+function removeOldOffices(officesInNorg, existingOffices) {
     // delete old offices
+    let numDeleted = 0;
     existingOffices.forEach((existingOffice) => {
         let enhetId;
         if (
@@ -119,11 +116,10 @@ function refreshOfficeInformation(officeInformationList) {
             });
         }
     });
+    log.info(`NORG - Deleted: ${numDeleted}`);
 
-    // log info
-    log.info(`NORG - Updated: ${numUpdated} New: ${numNew} Deleted: ${numDeleted}`);
+    return numDeleted;
 }
-
 function checkForRefresh(oneTimeRun = false) {
     log.info('NORG - Start update');
     const startBackupJob = () => {
@@ -207,6 +203,15 @@ function checkForRefresh(oneTimeRun = false) {
         });
 
         const officeInformationList = JSON.parse(response.body);
+        const officeFolder = libs.content.get({
+            key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer',
+        });
+
+        const existingOffices = libs.content.getChildren({
+            key: officeFolder._id,
+            count: 2000,
+        }).hits;
+
         const n = 5;
         const result = [[], [], [], [], []];
         const wordsPerLine = Math.ceil(officeInformationList.length / n);
@@ -219,11 +224,20 @@ function checkForRefresh(oneTimeRun = false) {
                 }
             }
         }
-        log.info(JSON.stringify(result, null, 4));
 
-        result.forEach((offices) => {
-            refreshOfficeInformation(offices);
+        let updatedOffices = {};
+        result.forEach((offices, ix) => {
+            log.info(`refreshing: block ${ix}, ${offices.length} items`);
+            const currentlyUpdatedOffices = refreshOfficeInformation(
+                offices,
+                existingOffices,
+                officeFolder._path
+            );
+            updatedOffices = { ...updatedOffices, ...currentlyUpdatedOffices };
         });
+        // removing older offices
+        removeOldOffices(updatedOffices, existingOffices);
+        log.info(`done refreshing ${officeInformationList.length} items`);
     } catch (e) {
         log.error('NORG - Failed to get office information from norg2');
         log.error(e);
