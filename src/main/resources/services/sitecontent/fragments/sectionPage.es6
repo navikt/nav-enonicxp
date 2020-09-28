@@ -1,4 +1,4 @@
-const globalFragment = require('./global.es6');
+const globalFragment = require('./_global.es6');
 const contentListFragment = require('./contentList.es6');
 const transportPageFragment = require('./transportPage.es6');
 const externalLinkFragment = require('./externalLink.es6');

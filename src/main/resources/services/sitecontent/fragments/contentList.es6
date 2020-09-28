@@ -1,4 +1,4 @@
-const globalFragment = require('./global');
+const globalFragment = require('./_global.es6');
 
 const contentListFragment = `
     ...on no_nav_navno_ContentList {

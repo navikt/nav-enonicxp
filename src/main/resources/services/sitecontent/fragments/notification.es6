@@ -3,6 +3,8 @@ const notificationsFragment = `
         data {
             type
             title
+            showDescription
+            showUpdated
             target {
                 _path
                 displayName
