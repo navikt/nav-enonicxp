@@ -43,18 +43,17 @@
         <div data-th-utext="${htmlFact}"></div>
     </div>
 
-    <div class="figure-container" data-th-if="${imageObj}">
-        <figure data-th-classappend="|
-            ${imageObj.size == '100' ? 'figure-full' : ''}
-            ${imageObj.size == '70' ? 'figure-medium' : ''}
-            ${imageObj.size == '40' ? 'figure-small' : ''}|"
-        >
-            <img data-th-if="${imageObj.altText!=''}"
+    <div data-th-if="${imageObj}" class="figure-container">
+        <figure data-th-class="${imageObj.imgClass}">
+            <img data-th-if="${imageObj.altText != ''}"
                  data-th-src="${imageObj.url}"
                  data-th-alt="${imageObj.altText}"
+                 src=""
+                 alt=""
             />
-            <img data-th-if="${imageObj.altText==''}"
+            <img data-th-if="${imageObj.altText == ''}"
                  data-th-src="${imageObj.url}"
+                 src=""
                  alt=""
             />
             <figcaption class="decorated" data-th-if="${imageObj.caption}">

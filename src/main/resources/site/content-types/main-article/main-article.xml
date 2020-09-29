@@ -72,14 +72,14 @@
             </items>
         </field-set>
         <item-set name="picture">
-            <label>Legg til ett bilde</label>
+            <label>Bilde med beskrivelse</label>
             <items>
                 <input name="target" type="ImageSelector">
                     <label>Bilde</label>
                     <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-                <input name="imagesize" type="RadioButton">
+                <input name="size" type="RadioButton">
                     <label>Velg bildestørrelse</label>
                     <help-text>Bredden på bildet skal ikke være mindre enn 580 piksler.</help-text>
                     <config>
@@ -100,6 +100,24 @@
                 </input>
             </items>
         </item-set>
+        <field-set name="media">
+            <items>
+                <input name="image" type="ImageSelector">
+                    <label>Skal ikke brukes lenger - slett innholdet</label>
+                </input>
+                <input name="imagesize" type="RadioButton">
+                    <label>Skal ikke brukes lenger</label>
+                    <config>
+                        <option value="100">100%</option>
+                        <option value="70">70%</option>
+                        <option value="40">40%</option>
+                    </config>
+                </input>
+                <input name="caption" type="TextLine">
+                    <label>Skal ikke brukes lenger - slett innholdet</label>
+                </input>
+            </items>
+        </field-set>
         <field-set name="socialSharing">
             <label>Sosiale medier</label>
             <items>

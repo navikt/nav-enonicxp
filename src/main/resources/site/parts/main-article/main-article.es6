@@ -85,9 +85,13 @@ function renderPage(req) {
         let imageObj = null;
         if (picture || !!data.image) {
             const image = picture ? data.picture : data.image; // Pointer to image (both data models)
+            const size = picture ? image.size : data.imagesize;
+            const imgClass =
+                // eslint-disable-next-line no-nested-ternary
+                size === '40' ? 'figure-small' : size === '70' ? 'figure-medium' : 'figure-full';
             imageObj = {
                 url: libs.utils.getImageUrl(picture ? image.target : image, 'max(768)'),
-                size: picture ? image.imagesize : data.imagesize,
+                imgClass,
                 caption: picture ? image.caption : data.caption,
                 altText: picture ? image.altText : '',
             };
