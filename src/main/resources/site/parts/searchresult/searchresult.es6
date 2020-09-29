@@ -58,7 +58,6 @@ function get(req) {
     }
     const content = libs.portal.getContent();
     const langBundle = libs.lang.parseBundle(content.language).search;
-    const header = ['<meta name="robots" content="noindex" />'];
     model.labelResults = (langBundle && langBundle.labelResults) || '';
     model.labelFacets = (langBundle && langBundle.labelFacets) || '';
     model.searchApi = url;
@@ -68,9 +67,6 @@ function get(req) {
 
     return {
         body: libs.thymeleaf.render(view, model),
-        pageContributions: {
-            headBegin: header,
-        },
     };
 }
 
