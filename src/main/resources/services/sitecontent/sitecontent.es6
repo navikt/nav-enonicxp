@@ -13,7 +13,6 @@ const mainArticleFragment = require('./fragments/mainArticle.es6');
 const schema = guillotineLib.createSchema();
 
 const queryFields = [
-    'dataAsJson',
     globalFragment,
     contentListFragment,
     externalLinkFragment,
@@ -47,7 +46,9 @@ const deepSearchJsonToData = (obj) => {
         const newObj = {};
         Object.keys(obj).forEach((key) => {
             if (key === 'dataAsJson') {
-                newObj.data = { ...obj.data, ...JSON.parse(obj.dataAsJson) };
+                newObj.data = { ...JSON.parse(obj.dataAsJson), ...newObj?.data };
+            } else if (key === 'data') {
+                newObj.data = { ...newObj.data, ...deepSearchJsonToData(obj.data) };
             } else {
                 newObj[key] = deepSearchJsonToData(obj[key]);
             }

@@ -7,11 +7,7 @@ const mainArticleFragment = require('./mainArticle.es6');
 
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
-        dataAsJson
         data {
-            ingress
-            nrTableEntries
-            panelsHeading
             tableContents {
                 ${globalFragment}
                 ${transportPageFragment}
@@ -19,23 +15,20 @@ const sectionPageFragment = `
                 ${pageListFragment}
                 ${mainArticleFragment}
             }
-            nrNews
             newsContents {
                 ${globalFragment}
                 ${contentListFragment}
             }
-            moreNewsUrl
-            nrNTK
             ntkContents {
                 ${globalFragment}
                 ${contentListFragment}
             }
-            nrSC
             scContents {
                 ${globalFragment}
                 ${contentListFragment}
             }
         }
-    }`;
+    }
+`;
 
 module.exports = sectionPageFragment;

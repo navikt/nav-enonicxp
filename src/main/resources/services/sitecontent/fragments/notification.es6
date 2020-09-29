@@ -1,17 +1,13 @@
+const globalFragment = require('./_global');
+
 const notificationsFragment = `
     ...on no_nav_navno_Notification {
         data {
-            type
-            title
-            showDescription
-            showUpdated
             target {
-                __typename
-                _path
-                displayName
-                dataAsJson
+                ${globalFragment}
             }
         }
-    }`;
+    }
+`;
 
 module.exports = notificationsFragment;

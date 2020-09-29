@@ -9,7 +9,11 @@ exports.get = (req) => {
     return libs.cache.getPaths(req.rawPath, 'page-heading', req.branch, () => {
         const content = libs.portal.getContent();
         const ingress =
-            content.data.ingress && content.data.ingress !== '' ? content.data.ingress : false;
+            content.type !== `${app.name}:section-page` &&
+            content.data.ingress &&
+            content.data.ingress !== ''
+                ? content.data.ingress
+                : false;
         const model = {
             heading: content.displayName,
             ingress,
