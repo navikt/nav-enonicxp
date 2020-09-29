@@ -124,7 +124,7 @@ function createNewElements() {
                         {
                             tag: 'button',
                             tagClass: ['button', 'is-primary'],
-                            action: 'runNORG',
+                            action: 'runnorg',
                             text: 'Start',
                         },
                         {
@@ -439,7 +439,7 @@ exports.handle = (s) => {
         },
     ];
     socket.emit('newTask', elements);
-    socket.on('runNORG', () => {
+    socket.on('runnorg', () => {
         libs.task.submit({
             description: 'Importerer NORG',
             task: () => {
