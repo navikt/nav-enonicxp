@@ -9,10 +9,10 @@
 
   <div data-th-remove="tag" data-th-if="${content.type}">
     <header data-th-classappend="${!driftsMelding}? 'article-head'">
+      <h1>[[${content.displayName}]]</h1>
       <time class="pubdate muted" data-th-datetime="${content.publish.from}">
         [[${published}]]
       </time>
-      <h1>[[${content.displayName}]]</h1>
       <div class="toolbar">
         <div class="content-print" id="print-page" role="button" tabindex="0">
           <span>[[${langBundle.printpage}]]</span>
