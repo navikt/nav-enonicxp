@@ -1,13 +1,13 @@
 const libs = {
-    menu: require('/lib/menu-utils'),
+    utils: require('/lib/nav-utils'),
 };
 
 const handleGet = (req) => {
     const { id } = req.params;
-    const breadcrumbs = libs.menu.getBreadcrumbMenu(id);
+    const languages = libs.utils.getLanguageVersions(id);
 
     return {
-        body: breadcrumbs,
+        body: languages,
         contentType: 'application/json',
     };
 };

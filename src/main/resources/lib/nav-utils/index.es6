@@ -203,7 +203,8 @@ const mapDecoratorLocale = {
     pl: 'pl',
 };
 
-function getLanguageVersions(content) {
+function getLanguageVersions(id) {
+    const content = libs.content.get({ key: id });
     let lRefs = content.data.languages;
     const ret = [
         {
