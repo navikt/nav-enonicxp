@@ -7,6 +7,7 @@ const mainArticleFragment = require('./mainArticle.es6');
 
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
+        dataAsJson
         data {
             ingress
             nrTableEntries
