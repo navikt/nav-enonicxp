@@ -73,7 +73,7 @@ const handleGet = (req) => {
     }
 
     const localNotifications = path
-        ? notifications.filter((item) => item._path?.startsWith(path))
+        ? notifications.filter((item) => item._path?.split('/').slice(0, -1).join('/') === path)
         : [];
 
     const globalNotifications = notifications
