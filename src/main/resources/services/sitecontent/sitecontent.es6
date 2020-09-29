@@ -13,7 +13,6 @@ const mainArticleFragment = require('./fragments/mainArticle.es6');
 const schema = guillotineLib.createSchema();
 
 const queryFields = [
-    'dataAsJson',
     globalFragment,
     contentListFragment,
     externalLinkFragment,

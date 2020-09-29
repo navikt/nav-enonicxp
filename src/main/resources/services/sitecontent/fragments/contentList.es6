@@ -7,6 +7,7 @@ const contentListFragment = `
                 ${globalFragment}
             }
         }
-    }`;
+    }
+`;
 
 module.exports = contentListFragment;

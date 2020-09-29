@@ -1,8 +1,3 @@
-const mainArticleFragment = `
-    ...on no_nav_navno_MainArticle {
-        data {
-            ingress
-        }
-    }`;
+const mainArticleFragment = ``;
 
 module.exports = mainArticleFragment;

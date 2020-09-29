@@ -1,9 +1,3 @@
-const externalLinkFragment = `
-    ...on no_nav_navno_ExternalLink {
-        data {
-            description
-            url
-        }
-    }`;
+const externalLinkFragment = ``;
 
 module.exports = externalLinkFragment;
