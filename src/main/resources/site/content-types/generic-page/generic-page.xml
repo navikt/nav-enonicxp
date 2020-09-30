@@ -7,7 +7,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="ingress"/>
-        <mixin name="meta-description"/>
+        <mixin name="keywords"/>
         <input type="HtmlArea" name="text">
             <label>Brødtekst</label>
             <help-text>Brukes ved behov</help-text>
@@ -16,7 +16,6 @@
                 <include>Undo | Redo</include>
             </config>
         </input>
-        <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
+        <mixin name="seo"/>
     </form>
 </content-type>

@@ -3,7 +3,7 @@
     <description>Visning av Nyheter/Nyttig å vite/Snarveier</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="innholdsliste">
+        <field-set>
             <label>Innholdsliste</label>
             <help-text>Innhold som skal vises i nyheter, snarveier, eller nyttig å vite i oppslagstavle</help-text>
             <items>
