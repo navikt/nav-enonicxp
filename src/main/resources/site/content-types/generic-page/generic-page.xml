@@ -7,6 +7,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="ingress"/>
+        <mixin name="keywords"/>
         <input type="HtmlArea" name="text">
             <label>Brødtekst</label>
             <help-text>Brukes ved behov</help-text>
@@ -16,6 +17,5 @@
             </config>
         </input>
         <mixin name="seo"/>
-        <mixin name="keywords"/>
     </form>
 </content-type>

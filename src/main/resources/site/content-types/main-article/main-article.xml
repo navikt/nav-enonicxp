@@ -11,6 +11,7 @@
                     <help-text>For fremmedspråklig innhold skal norsk tittel angis her. Norsk tittel vil da vises ved siden av fremmedspråklig tittel i Enonic. </help-text>
                 </input>
                 <mixin name="ingress"/>
+                <mixin name="keywords"/>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst</label>
                     <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
@@ -147,6 +148,5 @@
             </items>
         </field-set>
         <mixin name="seo"/>
-        <mixin name="keywords"/>
     </form>
 </content-type>

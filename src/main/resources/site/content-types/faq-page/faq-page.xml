@@ -11,6 +11,7 @@
                     <help-text>For fremmedspråklig innhold skal norsk tittel angis her. Norsk tittel vil da vises ved siden av fremmedspråklig tittel i Enonic. </help-text>
                 </input>
                 <mixin name="ingress"/>
+                <mixin name="keywords"/>
                 <item-set name="questionsAndAnswers">
                     <label>Spørsmål og svar</label>
                     <items>
@@ -79,6 +80,5 @@
             </items>
         </field-set>
         <mixin name="seo"/>
-        <mixin name="keywords"/>
     </form>
 </content-type>

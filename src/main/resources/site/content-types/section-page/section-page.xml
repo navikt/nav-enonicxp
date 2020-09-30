@@ -3,12 +3,13 @@
     <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="ingress-description">
-            <label>Ingress og sidebeskrivelse</label>
+        <field-set>
+            <label>Ingress</label>
             <items>
                 <mixin name="ingress"/>
             </items>
         </field-set>
+        <mixin name="keywords"/>
         <mixin name="main-panels"/>
         <mixin name="link-panels"/>
         <field-set name="nyheter">
@@ -86,6 +87,5 @@
             </items>
         </field-set>
         <mixin name="seo"/>
-        <mixin name="keywords"/>
     </form>
 </content-type>

@@ -11,11 +11,12 @@
             <help-text>Norsk tittel (hvis fremmedspråklig innhold)</help-text>
             <occurrences minimum="0" maximum="1"/>
         </input>
+        <mixin name="ingress"/>
+        <mixin name="keywords"/>
         <input type="CheckBox" name="hide_date">
             <label>Skjul dato på artikkellisten</label>
             <default>checked</default>
         </input>
-        <mixin name="ingress"/>
         <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på artiklene i artikkellisten</label>
             <default>unchecked</default>
@@ -83,6 +84,5 @@
             </items>
         </field-set>
         <mixin name="seo"/>
-        <mixin name="keywords"/>
     </form>
 </content-type>
