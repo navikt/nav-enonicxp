@@ -62,21 +62,20 @@ const handleGet = (req) => {
 
     if (response.body) {
         const body = JSON.parse(response.body);
+        const html = libs.httpClient.request({
+            url: body.url,
+            contentType: 'text/html',
+        });
 
-        return body && body.url
-            ? {
-                  status: 307,
-                  headers: {
-                      Location: `${body.url}?didRedirect=true`,
-                  },
-              }
-            : {
-                  status: 500,
-                  body: {
-                      message: 'Invalid api response',
-                  },
-                  contentType: 'application/json',
-              };
+        return (
+            html || {
+                status: 500,
+                body: {
+                    message: 'Invalid api response',
+                },
+                contentType: 'application/json',
+            }
+        );
     }
 
     return {

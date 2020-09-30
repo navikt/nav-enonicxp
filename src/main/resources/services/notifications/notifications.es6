@@ -76,14 +76,11 @@ const handleGet = (req) => {
         ? notifications.filter((item) => item._path?.split('/').slice(0, -1).join('/') === path)
         : [];
 
-    const globalNotifications = notifications
-        .filter((item) => item._path.startsWith('/www.nav.no/global-notifications'))
-        .filter(
-            (item) =>
-                !localNotifications.some(
-                    (local) => local.data?.notificationToReplaceId === item._id
-                )
-        );
+    const globalNotifications = notifications.filter(
+        (item) =>
+            item._path.startsWith('/www.nav.no/global-notifications') &&
+            !localNotifications.some((local) => local.data?.notificationToReplaceId === item._id)
+    );
 
     return {
         status: 200,
