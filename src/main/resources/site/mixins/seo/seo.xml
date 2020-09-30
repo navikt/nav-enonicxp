@@ -1,7 +1,7 @@
 <mixin>
     <display-name>Søkemotor-optimalisering (SEO)</display-name>
     <form>
-        <field-set name="seo">
+        <field-set>
             <label>Søkeoptimalisering (SEO)</label>
             <items>
                 <input name="metaDescription" type="TextLine">

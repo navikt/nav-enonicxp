@@ -3,7 +3,7 @@
     <description>Viktig informasjon som vises over alt annet innhold</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="notification">
+        <field-set>
             <label>Varsel</label>
             <items>
                 <input name="type" type="RadioButton">

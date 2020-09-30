@@ -51,7 +51,7 @@
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
-        <field-set name="Angi andre språkversjoner">
+        <field-set>
             <label>Legg til andre språkversjoner</label>
             <items>
                 <input name="languages" type="ContentSelector">

@@ -6,7 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <field-set name="Ekstern lenke">
+        <field-set>
             <label>Ekstern lenke</label>
             <items>
                 <input name="description" type="TextArea">

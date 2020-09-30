@@ -3,7 +3,7 @@
     <description>Brukes til spørsmål og svar sider</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="article">
+        <field-set>
             <label>FAQ-side</label>
             <items>
                 <input name="originaltitle" type="TextLine">
@@ -31,7 +31,7 @@
                 <mixin name="menu-list-items"/>
             </items>
         </field-set>
-        <field-set name="socialSharing">
+        <field-set>
             <label>Sosiale medier</label>
             <items>
                 <input name="social" type="ComboBox">
@@ -46,7 +46,7 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="Angi andre språkversjoner">
+        <field-set>
             <label>Legg til andre språkversjoner</label>
             <items>
                 <input name="languages" type="ContentSelector">
