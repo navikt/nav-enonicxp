@@ -7,7 +7,6 @@
             <label>Ingress og sidebeskrivelse</label>
             <items>
                 <mixin name="ingress"/>
-                <mixin name="meta-description"/>
             </items>
         </field-set>
         <mixin name="main-panels"/>
@@ -86,7 +85,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="seo"/>
         <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
     </form>
 </content-type>

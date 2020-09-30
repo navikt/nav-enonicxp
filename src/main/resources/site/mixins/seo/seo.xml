@@ -1,0 +1,43 @@
+<mixin>
+    <display-name>Søkemotor-optimalisering (SEO)</display-name>
+    <form>
+        <field-set name="seo">
+            <label>Søkeoptimalisering (SEO)</label>
+            <items>
+                <input name="metaDescription" type="TextLine">
+                    <label>
+                        Sidebeskrivelse for søk og sosiale medier
+                    </label>
+                    <help-text>
+                        Søkemotorer/sosiale medier bruker beskrivelsen i søkeresultat/når siden blir delt.
+                        Hvis feltet ikke fylles ut, brukes ingress-feltet.
+                    </help-text>
+                </input>
+                <input name="canonicalUrl" type="TextLine">
+                    <label>
+                        Canonical url - NB! Skal bare legges inn av hovedreaktør/administrator
+                    </label>
+                    <help-text>
+                        Legg url på formen https://*.nav.no/* til nytt innhold som skal erstatte siden.
+                        Det skal også opprettes en redirect til det nye innholdet.
+                        Siden bør avpubliseres etter 1-2 uker.
+                    </help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <regexp>
+                            (?:https:\/\/)[\w.-]+(?:\.nav\.no\/)[\w\-\._~:\/?#\[\]@!\$\&amp;\'\(\)\*\+,;=.]*
+                        </regexp>
+                    </config>
+                </input>
+                <input name="noindex" type="CheckBox">
+                    <label>
+                        Fjern siden fra eksternt søk - NB! Skal bare legges inn av hovedreaktør/administrator
+                    </label>
+                    <help-text>
+                        Ved å krysse av her blir siden ikke indeksert av Google og andre
+                    </help-text>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

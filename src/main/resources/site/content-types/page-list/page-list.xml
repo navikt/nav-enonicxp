@@ -16,7 +16,6 @@
             <default>checked</default>
         </input>
         <mixin name="ingress"/>
-        <mixin name="meta-description"/>
         <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på artiklene i artikkellisten</label>
             <default>unchecked</default>
@@ -83,7 +82,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="seo"/>
         <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
     </form>
 </content-type>
