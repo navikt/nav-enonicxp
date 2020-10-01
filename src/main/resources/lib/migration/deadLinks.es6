@@ -102,6 +102,47 @@ function createNewElements() {
                     elements: [
                         {
                             tag: 'p',
+                            text: 'Konvertering av bilder',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'convert-nodes',
+                            progress: {
+                                value: 'convert-nodes-value',
+                                max: 'convert-nodes-max',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'div',
+                            update: 'convertedElement',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'convertimages',
+                            text: 'Start konvertering',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
                             text: 'Lag en lenkeråterapport',
                         },
                         {
@@ -407,6 +448,15 @@ exports.handle = (s) => {
             description: 'Lager lenkeråterapport',
             task: () => {
                 libs.tools.runInMasterContext(socket, handleDeadLinks);
+            },
+        });
+    });
+
+    socket.on('convertimages', () => {
+        libs.task.submit({
+            description: 'Konverterer data',
+            task: () => {
+                libs.tools.runInContext(socket, libs.updateRepo.handleImages);
             },
         });
     });
