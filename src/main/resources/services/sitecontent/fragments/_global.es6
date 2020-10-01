@@ -6,6 +6,7 @@ const globalFragment = `
     modifiedTime
     displayName
     dataAsJson
+    pageAsJson
 `;
 
 module.exports = globalFragment;
