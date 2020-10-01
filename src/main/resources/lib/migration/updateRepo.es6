@@ -74,24 +74,32 @@ function convertImages(socket) {
         const data = elem.data;
         const { caption, imagesize } = data;
         const image = libs.content.get({ key: data.image });
-        const modifiedContent = libs.content.modify({
-            key: elem._id,
-            requireValid: false,
-            editor: (c) => {
-                const current = { ...c };
-                const targetProps = current.data.picture || {};
-                current.data.picture = {
-                    ...targetProps,
-                    target: current.data.image,
-                    size: imagesize || '100',
-                    caption: caption || image.displayName,
-                    altText: caption || image.displayName,
-                };
-                return current;
-            },
-        });
-
-        socket.emit('progressUpdate', `${elem.displayName} - ${elem._path}`);
+        let modifiedContent;
+        if (image) {
+            modifiedContent = libs.content.modify({
+                key: elem._id,
+                requireValid: false,
+                editor: (c) => {
+                    const current = { ...c };
+                    const targetProps = current.data.picture || {};
+                    current.data.picture = {
+                        ...targetProps,
+                        target: current.data.image,
+                        size: imagesize || '100',
+                        caption: caption || image.displayName,
+                        altText: caption || image.displayName,
+                    };
+                    return current;
+                },
+            });
+            socket.emit('progressUpdate', `${elem.displayName} - ${elem._path}`);
+        } else {
+            socket.emit(
+                'progressUpdate',
+                `image NOT found for ${elem.displayName} - ${elem._path}`
+            );
+            log.info(`image NOT found for ${elem.displayName} - ${elem._path}`);
+        }
         return modifiedContent ? modifiedContent._id : undefined;
     });
 
