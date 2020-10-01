@@ -38,20 +38,23 @@ const queryGetId = `query($path:ID!){
     }
 }`;
 
-const deepSearchJsonToData = (obj) => {
+const deepSearchAndAppendJson = (obj, searchFor, appendTo) => {
     if (obj && typeof obj === 'object') {
         if (Array.isArray(obj)) {
-            return obj.map(deepSearchJsonToData);
+            return obj.map((item) => deepSearchAndAppendJson(item, searchFor, appendTo));
         }
 
         const newObj = {};
         Object.keys(obj).forEach((key) => {
-            if (key === 'dataAsJson') {
-                newObj.data = { ...JSON.parse(obj.dataAsJson), ...newObj?.data };
-            } else if (key === 'data') {
-                newObj.data = { ...newObj.data, ...deepSearchJsonToData(obj.data) };
+            if (key === searchFor) {
+                newObj[appendTo] = { ...JSON.parse(obj[searchFor]), ...newObj[appendTo] };
+            } else if (key === appendTo) {
+                newObj[appendTo] = {
+                    ...newObj[appendTo],
+                    ...deepSearchAndAppendJson(obj[appendTo], searchFor, appendTo),
+                };
             } else {
-                newObj[key] = deepSearchJsonToData(obj[key]);
+                newObj[key] = deepSearchAndAppendJson(obj[key], searchFor, appendTo);
             }
         });
         return newObj;
@@ -78,7 +81,13 @@ const getContent = (contentId) => {
         return null;
     }
 
-    return deepSearchJsonToData(content);
+    const withPageAndDataJson = deepSearchAndAppendJson(
+        deepSearchAndAppendJson(content, 'dataAsJson', 'data'),
+        'pageAsJson',
+        'page'
+    );
+
+    return withPageAndDataJson;
 };
 
 const handleGet = (req) => {
