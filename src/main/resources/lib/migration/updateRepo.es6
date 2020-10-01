@@ -73,7 +73,7 @@ function convertImages(socket) {
         socket.emit('convert-nodes-value', ix + 1);
         const data = elem.data;
         const { caption, imagesize } = data;
-        const image = libs.content.get({ key: elem.data.image });
+        const image = libs.content.get({ key: data.image });
         const modifiedContent = libs.content.modify({
             key: elem._id,
             requireValid: false,
