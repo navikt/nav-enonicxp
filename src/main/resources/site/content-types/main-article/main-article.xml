@@ -84,10 +84,10 @@
         <field-set>
             <items>
                 <input name="image" type="ImageSelector">
-                    <label>Skal ikke brukes lenger - slett innholdet</label>
+                    <label>Ikke i bruk</label>
                 </input>
                 <input name="imagesize" type="RadioButton">
-                    <label>Skal ikke brukes lenger</label>
+                    <label>Ikke i bruk</label>
                     <config>
                         <option value="100">100%</option>
                         <option value="70">70%</option>
@@ -95,7 +95,7 @@
                     </config>
                 </input>
                 <input name="caption" type="TextLine">
-                    <label>Skal ikke brukes lenger - slett innholdet</label>
+                    <label>Ikke i bruk</label>
                 </input>
             </items>
         </field-set>
