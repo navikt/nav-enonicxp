@@ -2,6 +2,7 @@ const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 
 const globalFragment = require('./fragments/_global.es6');
+const componentsFragment = require('./fragments/_components.es6');
 const sectionPageFragment = require('./fragments/sectionPage.es6');
 const contentListFragment = require('./fragments/contentList.es6');
 const internalLinkFragment = require('./fragments/internalLink.es6');
@@ -15,6 +16,7 @@ const schema = guillotineLib.createSchema();
 
 const queryFields = [
     globalFragment,
+    componentsFragment,
     contentListFragment,
     externalLinkFragment,
     internalLinkFragment,
