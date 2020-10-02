@@ -31,10 +31,10 @@
                 </input>
                 <input name="noindex" type="CheckBox">
                     <label>
-                        Fjern siden fra eksternt søk - NB! Skal bare legges inn av hovedreaktør/administrator
+                        Skal ikke vises i eksternt søk - NB! Skal bare legges inn av hovedreaktør/administrator
                     </label>
                     <help-text>
-                        Ved å krysse av her blir siden ikke indeksert av Google og andre
+                        Med eksternt søk menes Google, Bing mv.
                     </help-text>
                 </input>
             </items>

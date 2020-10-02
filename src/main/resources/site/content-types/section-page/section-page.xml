@@ -4,7 +4,6 @@
     <super-type>base:unstructured</super-type>
     <form>
         <mixin name="ingress"/>
-        <mixin name="keywords"/>
         <mixin name="main-panels"/>
         <mixin name="link-panels"/>
         <field-set>
@@ -82,5 +81,6 @@
             </items>
         </field-set>
         <mixin name="seo"/>
+        <mixin name="keywords"/>
     </form>
 </content-type>
