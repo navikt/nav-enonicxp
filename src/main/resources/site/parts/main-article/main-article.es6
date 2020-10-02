@@ -81,19 +81,18 @@ function renderPage(req) {
                   value: data.fact,
               })
             : null;
-        const picture = !!data.picture && data.picture.target; // Data model after 28.09.2020?
+
         let imageObj = null;
-        if (picture || !!data.image) {
-            const image = picture ? data.picture : data.image; // Pointer to image (both data models)
-            const size = picture ? image.size : data.imagesize;
+        if (!!data.picture && data.picture.target) {
+            const { caption, altText, target, size } = data.picture;
             const imgClass =
                 // eslint-disable-next-line no-nested-ternary
                 size === '40' ? 'figure-small' : size === '70' ? 'figure-medium' : 'figure-full';
             imageObj = {
-                url: libs.utils.getImageUrl(picture ? image.target : image, 'max(768)'),
+                url: libs.utils.getImageUrl(target, 'max(768)'),
                 imgClass,
-                caption: picture ? image.caption : data.caption,
-                altText: picture ? image.altText : '',
+                caption,
+                altText,
             };
         }
         // Definer model og kall rendring (view)
