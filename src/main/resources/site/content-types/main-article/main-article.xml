@@ -51,6 +51,9 @@
                 </input>
             </items>
         </field-set>
+        <field-set>
+            <label>Bilde</label>
+        </field-set>
         <item-set name="picture">
             <label>Bilde med beskrivelse</label>
             <items>
