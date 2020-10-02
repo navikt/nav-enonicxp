@@ -1,7 +1,7 @@
 <mixin>
     <display-name>Lenkepaneler</display-name>
     <form>
-        <field-set name="panels">
+        <field-set>
             <label>Lenkepaneler</label>
             <items>
                 <input name="panelsHeading" type="TextLine">

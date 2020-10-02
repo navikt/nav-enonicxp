@@ -11,12 +11,11 @@
             <help-text>Norsk tittel (hvis fremmedspråklig innhold)</help-text>
             <occurrences minimum="0" maximum="1"/>
         </input>
+        <mixin name="ingress"/>
         <input type="CheckBox" name="hide_date">
             <label>Skjul dato på artikkellisten</label>
             <default>checked</default>
         </input>
-        <mixin name="ingress"/>
-        <mixin name="meta-description"/>
         <input type="CheckBox" name="hideSectionContentsDate">
             <label>Skjul dato på artiklene i artikkellisten</label>
             <default>unchecked</default>
@@ -30,25 +29,6 @@
             <help-text>Add contents to section</help-text>
             <occurrences maximum="0" minimum="0"/>
         </input>
-        <item-set name="parameters">
-            <label>Menu item parameters</label>
-            <occurrences maximum="0" minimum="0"/>
-            <items>
-                <input name="name" type="TextLine">
-                    <label>Parameter name</label>
-                    <occurrences maximum="1" minimum="1"/>
-                </input>
-                <input name="value" type="TextLine">
-                    <label>Parameter value</label>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-                <input name="override" type="CheckBox">
-                    <label>Override</label>
-                    <help-text>Can be overridden by the request</help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-            </items>
-        </item-set>
         <option-set name="menuListItems">
             <label >Innhold i høyremenyen</label>
             <expanded>false</expanded>
@@ -70,7 +50,7 @@
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
-        <field-set name="Angi andre språkversjoner">
+        <field-set>
             <label>Legg til andre språkversjoner</label>
             <items>
                 <input name="languages" type="ContentSelector">
@@ -83,7 +63,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="seo"/>
         <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
     </form>
 </content-type>

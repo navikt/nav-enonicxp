@@ -3,7 +3,7 @@
     <description>Statistikk for publisering</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="publishing-calendar-entry">
+        <field-set>
             <label>Kalenderhendelse</label>
             <items>
                 <input type="TextArea" name="period">

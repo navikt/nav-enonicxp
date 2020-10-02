@@ -13,7 +13,6 @@ function handleGet(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
         const { utils } = libs;
         const content = libs.portal.getContent();
-        const url = utils.validateUrl(req);
         const title = content.displayName;
         const languages = utils.getLanguageVersions(content);
         const breadcrumbs = libs.menu.getBreadcrumbMenu({
@@ -31,13 +30,20 @@ function handleGet(req) {
             path: 'img/navno/social-share-fallback.png',
             type: 'absolute',
         });
+        const noindex =
+            content.type === `${app.name}:searchresult` ||
+            content._path.indexOf('/noindex') !== -1 ||
+            content.data.noindex;
+        const url = utils.validateUrl(req);
         const canonicalUrl = content.data.canonicalUrl || url;
         const header = [
             '<meta charset="utf-8" />',
             `<title>${title}</title>`,
             '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
             '<meta name="apple-mobile-web-app-capable" content="yes" />',
-            `<link rel="canonical" href="${canonicalUrl}" />`,
+            noindex
+                ? '<meta name="robots" content="noindex" />'
+                : `<link rel="canonical" href="${canonicalUrl}" />`,
             description ? `<meta name="description" content="${description}" />` : '',
             `<meta property="og:title" content="${title}" />`,
             '<meta property="og:site_name" content="NAV" />',

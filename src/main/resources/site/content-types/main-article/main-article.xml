@@ -3,7 +3,7 @@
     <description>Brukes til artikler/nyheter/pressemeldinger</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="article">
+        <field-set>
             <label>Artikkel</label>
             <items>
                 <input name="originaltitle" type="TextLine">
@@ -11,7 +11,6 @@
                     <help-text>For fremmedspråklig innhold skal norsk tittel angis her. Norsk tittel vil da vises ved siden av fremmedspråklig tittel i Enonic. </help-text>
                 </input>
                 <mixin name="ingress"/>
-                <mixin name="meta-description"/>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst</label>
                     <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
@@ -42,26 +41,7 @@
                 <mixin name="menu-list-items"/>
             </items>
         </field-set>
-        <item-set name="parameters">
-            <label>Menu item parameters</label>
-            <occurrences maximum="0" minimum="0"/>
-            <items>
-                <input name="name" type="TextLine">
-                    <label>Parameter name</label>
-                    <occurrences maximum="1" minimum="1"/>
-                </input>
-                <input name="value" type="TextLine">
-                    <label>Parameter value</label>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-                <input name="override" type="CheckBox">
-                    <label>Override</label>
-                    <help-text>Can be overridden by the request</help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-            </items>
-        </item-set>
-        <field-set name="facts">
+        <field-set>
             <label>Faktaboks</label>
             <items>
                 <input name="fact" type="HtmlArea">
@@ -71,15 +51,18 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="media">
-            <label>Legg til bilder</label>
+        <field-set>
+            <label>Bilde</label>
+        </field-set>
+        <item-set name="picture">
+            <label>Bilde med beskrivelse</label>
             <items>
-                <input name="image" type="ImageSelector">
+                <input name="target" type="ImageSelector">
                     <label>Bilde</label>
                     <help-text>Du kan kun legge inn ett bilde/illustrasjon.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
-                <input name="imagesize" type="RadioButton">
+                <input name="size" type="RadioButton">
                     <label>Velg bildestørrelse</label>
                     <help-text>Bredden på bildet skal ikke være mindre enn 580 piksler.</help-text>
                     <config>
@@ -89,12 +72,36 @@
                     </config>
                 </input>
                 <input name="caption" type="TextLine">
+                    <occurrences minimum="1" maximum="1"/>
                     <label>Bildetekst</label>
                     <help-text>Bildene skal ha en beskrivende tekst og skal gi merverdi til artikkelen!</help-text>
                 </input>
+                <input name="altText" type="TextLine">
+                    <occurrences minimum="1" maximum="1"/>
+                    <label>Alternativ tekst</label>
+                    <help-text>Tekst som vises eller leses opp når bildet ikke vises for brukeren</help-text>
+                </input>
+            </items>
+        </item-set>
+        <field-set>
+            <items>
+                <input name="image" type="ImageSelector">
+                    <label>Ikke i bruk</label>
+                </input>
+                <input name="imagesize" type="RadioButton">
+                    <label>Ikke i bruk</label>
+                    <config>
+                        <option value="100">100%</option>
+                        <option value="70">70%</option>
+                        <option value="40">40%</option>
+                    </config>
+                </input>
+                <input name="caption" type="TextLine">
+                    <label>Ikke i bruk</label>
+                </input>
             </items>
         </field-set>
-        <field-set name="socialSharing">
+        <field-set>
             <label>Sosiale medier</label>
             <items>
                 <input name="social" type="ComboBox">
@@ -109,7 +116,7 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="Angi andre språkversjoner">
+        <field-set>
             <label>Legg til andre språkversjoner</label>
             <items>
                 <input name="languages" type="ContentSelector">
@@ -123,7 +130,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="seo"/>
         <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
     </form>
 </content-type>
