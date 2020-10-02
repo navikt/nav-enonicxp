@@ -5,7 +5,7 @@
             <label>Nøkkelord (internt søk)</label>
             <help-text>
                 Dette feltet er ment for å brukes til å vekte viktige nøkkelord høyt i
-                vårt interne søke.
+                vårt interne søk.
                 Ikke endre på dette feltet uten å avtale med andre redaktører.
             </help-text>
         </input>

@@ -6,8 +6,8 @@
     </super-type>
     <form>
         <mixin name="ingress"/>
-        <mixin name="keywords"/>
         <mixin name="link-panels"/>
         <mixin name="seo"/>
+        <mixin name="keywords"/>
     </form>
 </content-type>

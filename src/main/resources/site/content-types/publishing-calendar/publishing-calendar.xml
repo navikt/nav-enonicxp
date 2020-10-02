@@ -7,7 +7,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="ingress"/>
-        <mixin name="keywords"/>
         <mixin name="seo"/>
+        <mixin name="keywords"/>
     </form>
 </content-type>
