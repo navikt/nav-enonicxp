@@ -4,19 +4,18 @@ const libs = {
     httpClient: require('/lib/http-client'),
 };
 
-const previewSecret = 'asdf';
 const legacySource = '/_/service/legacy';
 const view = resolve('/site/pages/main-page/main-page.html');
 
 // TODO: denne funksjonaliteten finnes kanskje allerede? :)
-const previewApiUrlMap = {
-    localhost: 'http://localhost:3000/api/preview',
-    q6: 'https://www-q6.nav.no/api/preview',
-    q1: 'https://www-q1.nav.no/api/preview',
-    p: 'https://www.nav.no/api/preview',
+const frontendOriginMap = {
+    localhost: 'http://localhost:3000',
+    q6: 'https://www-q6.nav.no',
+    q1: 'https://www-q1.nav.no',
+    p: 'https://www.nav.no',
 };
 
-const previewApiUrl = previewApiUrlMap[app.config.env] || previewApiUrlMap.p;
+const frontendOrigin = frontendOriginMap[app.config.env] || frontendOriginMap.p;
 
 const generateLegacyHtml = () => {
     const content = libs.portal.getContent();
@@ -28,12 +27,13 @@ const generateLegacyHtml = () => {
     return {
         contentType: 'text/html',
         body: libs.thymeleaf.render(view, model),
-        pageContributions: {},
     };
 };
 
 const handleGet = (req) => {
-    Object.keys(req).forEach((k) => log.info(`key main-controller: ${k} - value: ${req[k]}`));
+    log.info('main-page controller req-object:');
+    Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${req[k]}`));
+
     if (req.path.startsWith(legacySource)) {
         return generateLegacyHtml();
     }
@@ -44,47 +44,24 @@ const handleGet = (req) => {
         };
     }
 
-    if (req.params.didRedirect) {
-        return {
-            status: 200,
-        };
-    }
+    const path = req.rawPath.split('/www.nav.no').splice(1).join('/');
+    const url = `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${path}`;
+    log.info(`requesting html from frontend: ${url}`);
 
-    const path = req.rawPath.split(req.branch).splice(1);
-    const previewUrl = `${previewApiUrl}?secret=${previewSecret}&branch=${req.branch}&path=${path}`;
-    log.info(`path: ${path}`);
-    log.info(`url: ${previewUrl}`);
-
-    const response = libs.httpClient.request({
-        url: previewUrl,
+    const html = libs.httpClient.request({
+        url: `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${path}`,
         contentType: 'text/html',
     });
 
-    if (response.body) {
-        const body = JSON.parse(response.body);
-        const html = libs.httpClient.request({
-            url: body.url,
-            contentType: 'text/html',
-        });
-
-        return (
-            html || {
-                status: 500,
-                body: {
-                    message: 'Invalid api response',
-                },
-                contentType: 'application/json',
-            }
-        );
-    }
-
-    return {
-        status: 404,
-        body: {
-            message: 'Content not found',
-        },
-        contentType: 'application/json',
-    };
+    return (
+        html || {
+            status: 500,
+            body: {
+                message: 'No response from frontend',
+            },
+            contentType: 'application/json',
+        }
+    );
 };
 
 exports.get = handleGet;
