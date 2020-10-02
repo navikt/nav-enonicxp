@@ -12,11 +12,11 @@ exports.get = function () {
         secondRegion: component.regions.second,
         lClass: component.regions.second
             ? {
-                  first: 'col-sm-12 col-md-8',
-                  second: 'col-sm-12 col-md-4',
+                  first: 'region__first col-sm-12 col-md-8 ',
+                  second: 'region__second col-sm-12 col-md-4 ',
               }
             : {
-                  first: 'col-sm-12',
+                  first: 'region__main col-sm-12 ',
                   second: '',
               },
     };
