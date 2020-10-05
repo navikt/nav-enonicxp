@@ -38,13 +38,11 @@ const handleGet = (req) => {
         return generateLegacyHtml();
     }
 
-    if (req.method !== 'GET') {
-        return {
-            status: 200,
-        };
-    }
-
-    const frontendPath = req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
+    const frontendPath = req.rawPath
+        .replace('/www.nav.no', '')
+        .split(req.branch)
+        .splice(1)
+        .join('/');
     const frontendUrl = `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${frontendPath}`;
     log.info(`requesting html from frontend: ${frontendUrl}`);
 

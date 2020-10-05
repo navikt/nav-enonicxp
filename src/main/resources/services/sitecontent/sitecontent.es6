@@ -76,11 +76,7 @@ const getContent = (contentId) => {
         errors.forEach((error) => log.info(error.message));
     }
 
-    if (!data) {
-        return null;
-    }
-
-    const content = data.guillotine?.get;
+    const content = data?.guillotine?.get;
     if (!content) {
         log.info(`Content not found: ${contentId}`);
         return null;
