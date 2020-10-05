@@ -8,8 +8,17 @@ const componentsFragment = `
             }
         }
         part {
-          descriptor
-          configAsJson
+            descriptor
+            configAsJson
+        }
+        text {
+            value
+        }
+        fragment {
+            id
+            fragment {
+                type
+            }
         }
     }
 `;
