@@ -7,6 +7,10 @@ const componentsFragment = `
                 imageUrl(scale:"$scale", type:absolute)
             }
         }
+        part {
+          descriptor
+          configAsJson
+        }
     }
 `;
 
