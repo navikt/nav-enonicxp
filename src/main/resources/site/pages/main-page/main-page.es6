@@ -45,11 +45,11 @@ const handleGet = (req) => {
     }
 
     const frontendPath = req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
-    const url = `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${frontendPath}`;
-    log.info(`requesting html from frontend: ${url}`);
+    const frontendUrl = `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${frontendPath}`;
+    log.info(`requesting html from frontend: ${frontendUrl}`);
 
     const html = libs.httpClient.request({
-        url: url,
+        url: frontendUrl,
         contentType: 'text/html',
     });
 
