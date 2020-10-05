@@ -74,6 +74,9 @@ const getContent = (contentId) => {
     if (errors) {
         log.info('GraphQL errors:');
         errors.forEach((error) => log.info(error.message));
+    }
+
+    if (!data) {
         return null;
     }
 
