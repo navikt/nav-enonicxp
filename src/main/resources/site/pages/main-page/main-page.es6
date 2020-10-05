@@ -44,7 +44,7 @@ const handleGet = (req) => {
         };
     }
 
-    const path = req.rawPath.split('/www.nav.no').splice(1).join('/');
+    const path = req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
     const url = `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${path}`;
     log.info(`requesting html from frontend: ${url}`);
 
