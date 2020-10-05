@@ -78,7 +78,7 @@ exports.get = (req) => {
         };
 
         // news
-        const newsList = getContentLists(content, 'newsContents', content.data.nrNews, true);
+        const newsList = getContentLists(content, 'newsContents', 999, false);
         const news = {
             sectionName: langBundle.news,
             data:
