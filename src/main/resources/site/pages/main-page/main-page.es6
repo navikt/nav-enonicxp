@@ -4,7 +4,7 @@ const libs = {
     httpClient: require('/lib/http-client'),
 };
 
-const legacySource = '/_/service/legacy';
+const legacyPath = '/_/legacy';
 const view = resolve('/site/pages/main-page/main-page.html');
 
 // TODO: denne funksjonaliteten finnes kanskje allerede? :)
@@ -34,7 +34,7 @@ const handleGet = (req) => {
     log.info('main-page controller req-object:');
     Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${req[k]}`));
 
-    if (req.path.startsWith(legacySource)) {
+    if (req.path.startsWith(legacyPath)) {
         return generateLegacyHtml();
     }
 
@@ -49,7 +49,7 @@ const handleGet = (req) => {
     log.info(`requesting html from frontend: ${url}`);
 
     const html = libs.httpClient.request({
-        url: `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${path}`,
+        url: url,
         contentType: 'text/html',
     });
 
