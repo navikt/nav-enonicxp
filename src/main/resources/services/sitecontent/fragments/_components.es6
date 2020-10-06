@@ -1,3 +1,5 @@
+const globalFragment = require('./_global');
+
 const componentsFragment = `
     components {
         type
@@ -9,7 +11,20 @@ const componentsFragment = `
         }
         part {
             descriptor
-            configAsJson
+            config {
+                no_nav_navno{
+                    link_panel_with_background {
+                        title
+                        description
+                        background {
+                            ${globalFragment}
+                        }
+                        target {
+                            ${globalFragment}
+                        }
+                    }
+                }
+            }
         }
         text {
             value
