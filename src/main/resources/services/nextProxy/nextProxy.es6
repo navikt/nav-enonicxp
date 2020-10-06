@@ -12,6 +12,7 @@ const nextApiUrl = nextApiUrlMap[app.config.env] || nextApiUrlMap.p;
 const handleGet = (req) => {
     const { path } = req;
     const url = `${nextApiUrl}?path=${path}`;
+    log.info(`json url: ${url}`);
 
     return httpClient.request({
         method: 'GET',
