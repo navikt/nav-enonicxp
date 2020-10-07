@@ -1,0 +1,13 @@
+<content-type>
+    <display-name>Dynamisk side</display-name>
+    <description>Side som bygges med dynamiske komponenter</description>
+    <super-type>base:unstructured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="meta-description"/>
+        <mixin name="keywords"/>
+        <mixin name="canonical-url"/>
+    </form>
+</content-type>
