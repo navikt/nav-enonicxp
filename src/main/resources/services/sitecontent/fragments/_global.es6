@@ -5,7 +5,6 @@ const globalFragment = `
     createdTime
     modifiedTime
     displayName
-    dataAsJson
     pageAsJson
 `;
 
