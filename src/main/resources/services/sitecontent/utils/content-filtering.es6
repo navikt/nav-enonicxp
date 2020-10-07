@@ -28,7 +28,7 @@ const filterContent = (content) => {
             scContents: scContents,
         });
 
-        return objectAssign(content, data);
+        return objectAssign(content, { data: data });
     }
 
     return content;
