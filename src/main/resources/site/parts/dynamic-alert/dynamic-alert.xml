@@ -1,0 +1,24 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Dynamisk alertstripe</display-name>
+    <description>https://design.nav.no/components/alertstripe</description>
+    <form>
+        <input type="ComboBox" name="type">
+            <label>Type</label>
+            <occurrences minimum="0" maximum="1"/>
+            <default>info</default>
+            <config>
+                <option value="info">Info</option>
+                <option value="suksess">Suksess</option>
+                <option value="advarsel">Advarsel</option>
+                <option value="feil">Feil</option>
+            </config>
+        </input>
+        <input type="HtmlArea" name="content">
+            <label>Innhold</label>
+        </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <default>1rem 0 1rem 0</default>
+        </input>
+    </form>
+</part>
