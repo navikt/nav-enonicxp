@@ -1,6 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Dynamisk alertstripe</display-name>
-    <description>Innhold av HTML</description>
+    <description>https://design.nav.no/components/alertstripe</description>
     <form>
         <input type="ComboBox" name="type">
             <label>Type</label>
@@ -14,6 +14,10 @@
         </input>
         <input type="HtmlArea" name="content">
             <label>Innhold</label>
+        </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <default>1rem 0 1rem 0</default>
         </input>
     </form>
 </part>

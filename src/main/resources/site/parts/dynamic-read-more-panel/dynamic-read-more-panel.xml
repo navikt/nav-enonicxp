@@ -1,12 +1,25 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Dynamisk veilederpanel</display-name>
-    <description>Innhold av HTML</description>
+    <display-name>Dynamisk les-mer panel</display-name>
+    <description>https://design.nav.no/components/lesmerpanel</description>
     <form>
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
         </input>
         <input type="HtmlArea" name="content">
             <label>Innhold</label>
+        </input>
+        <input type="RadioButton" name="border">
+            <label>Border</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="true">På</option>
+                <option value="false">Av</option>
+            </config>
+            <default>true</default>
+        </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <default>1rem 0 1rem 0</default>
         </input>
     </form>
 </part>

@@ -24,15 +24,19 @@ const componentsFragment = `
                         }
                     }
                     dynamic_supervisor_panel {
-                        content
+                        content,
+                        margin
                     }
-                    dynamic_alert_panel {
+                    dynamic_alert {
                         type
-                        content
+                        content,
+                        margin
                     }
                     dynamic_read_more_panel {
                         ingress
-                        content
+                        content,
+                        border,
+                        margin
                     }
                 }
             }
