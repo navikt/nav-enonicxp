@@ -1,0 +1,21 @@
+<layout>
+    <display-name>Dynamisk - 3 kolonner</display-name>
+    <description>Tre kolonner med valgfri bredde for dynamiske komponenter</description>
+    <form>
+        <input type="TextArea" name="distribution">
+            <label>Fordeling</label>
+            <label>NB! Må innholde en definert bredde per kolonne.</label>
+            <default>33-33-33</default>
+        </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <label>NB! Må innholde en definert bredde per kolonne.</label>
+            <default>1rem 0 1rem 0</default>
+        </input>
+    </form>
+    <regions>
+        <region name="dynamic-1"/>
+        <region name="dynamic-2"/>
+        <region name="dynamic-3"/>
+    </regions>
+</layout>
