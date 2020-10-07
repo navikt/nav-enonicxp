@@ -5,7 +5,7 @@ const getLastUpdatedUnixTime = (content) =>
 
 const sortByLastModified = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
 
-const sortAndPruneContentList = (maxItems, contentList, sortFunc = sortByLastModified) => {
+const sortAndPruneContentList = (maxItems, contentList, sortFunc) => {
     const data = {
         sectionContents: contentList.data.sectionContents.sort(sortFunc).slice(0, maxItems),
     };
@@ -18,7 +18,8 @@ const filterContent = (content) => {
         const ntkContents = sortAndPruneContentList(content.data.nrNTK, content.data.ntkContents);
         const newsContents = sortAndPruneContentList(
             content.data.nrNews,
-            content.data.newsContents
+            content.data.newsContents,
+            sortByLastModified
         );
         const scContents = sortAndPruneContentList(content.data.nrSC, content.data.scContents);
 
