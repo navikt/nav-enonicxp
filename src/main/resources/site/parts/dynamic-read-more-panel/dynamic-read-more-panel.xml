@@ -1,0 +1,12 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Dynamisk veilederpanel</display-name>
+    <description>Innhold av HTML</description>
+    <form>
+        <input type="TextArea" name="ingress">
+            <label>Ingress</label>
+        </input>
+        <input type="HtmlArea" name="content">
+            <label>Innhold</label>
+        </input>
+    </form>
+</part>
