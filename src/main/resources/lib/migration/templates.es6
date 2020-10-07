@@ -496,6 +496,20 @@ const genericPage = [
     },
 ];
 
+const dynamicPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
+
 const officeInformationPage = [
     {
         type: 'page',
@@ -674,6 +688,19 @@ const templates = [
             },
         },
         components: genericPage,
+    },
+    {
+        content: {
+            displayName: 'Dynamisk side',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:dynamic-page',
+            },
+        },
+        components: dynamicPage,
     },
     {
         content: {

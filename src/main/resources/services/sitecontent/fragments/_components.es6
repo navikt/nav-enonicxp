@@ -13,7 +13,7 @@ const componentsFragment = `
             descriptor
             config {
                 no_nav_navno{
-                    link_panel_with_background {
+                    dynamic_link_panel {
                         title
                         description
                         background {

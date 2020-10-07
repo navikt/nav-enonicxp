@@ -5,14 +5,10 @@ const libs = {
     lang: require('/lib/i18nUtil'),
     navUtils: require('/lib/nav-utils'),
 };
-const view = resolve('link-panel-with-background.html');
+const view = resolve('dynamic-link-panel.html');
 
 exports.get = (req) => {
-    const model = {
-        heading: 'Test heading',
-        label: 'Test label',
-        items: [],
-    };
+    const model = {};
     return {
         body: libs.thymeleaf.render(view, model),
     };

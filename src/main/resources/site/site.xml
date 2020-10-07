@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-    <x-data name="cmsContent"/>
-    <x-data name="cmsMenu"/>
-    <x-data name="cmsStatus"/>
-    <x-data name="menu-item"/>
-    <x-data name="fasetter"/>
-    <x-data name="oldContentType"/>
+    <x-data name="cmsContent"  optional="true"/>
+    <x-data name="cmsMenu"  optional="true"/>
+    <x-data name="cmsStatus"  optional="true"/>
+    <x-data name="menu-item" optional="true"/>
+    <x-data name="fasetter" optional="true"/>
+    <x-data name="oldContentType" optional="true"/>
     <config>
         <input name="name" type="TextLine">
             <label>Felt for at Guillotine skal fungere (er en bug der)</label>
