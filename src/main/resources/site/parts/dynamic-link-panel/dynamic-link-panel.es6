@@ -5,7 +5,7 @@ const libs = {
     lang: require('/lib/i18nUtil'),
     navUtils: require('/lib/nav-utils'),
 };
-const view = resolve('dynamic-link-panel-with-background.html');
+const view = resolve('dynamic-link-panel.html');
 
 exports.get = (req) => {
     const model = {};
