@@ -23,6 +23,9 @@ const componentsFragment = `
                             ${globalFragment}
                         }
                     }
+                    dynamic_supervisor_panel {
+                        content
+                    }
                 }
             }
         }
