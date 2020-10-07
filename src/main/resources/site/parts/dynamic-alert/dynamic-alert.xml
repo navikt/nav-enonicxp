@@ -5,6 +5,7 @@
         <input type="ComboBox" name="type">
             <label>Type</label>
             <occurrences minimum="0" maximum="1"/>
+            <default>info</default>
             <config>
                 <option value="info">Info</option>
                 <option value="suksess">Suksess</option>
