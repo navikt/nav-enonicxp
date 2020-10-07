@@ -7,6 +7,11 @@
             <label>NB! Må innholde en definert bredde per kolonne.</label>
             <default>50-50</default>
         </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <label>NB! Må innholde en definert bredde per kolonne.</label>
+            <default>1rem 0 1rem 0</default>
+        </input>
     </form>
     <regions>
         <region name="dynamic-1"/>
