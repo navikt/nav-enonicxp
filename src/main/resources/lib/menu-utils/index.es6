@@ -18,6 +18,7 @@ exports.getBreadcrumbMenu = function (id) {
         app.name + ':page-list',
         app.name + ':transport-page',
         app.name + ':generic-page',
+        app.name + ':dynamic-page',
     ];
 
     // Loop the entire path for current content based on the slashes. Generate
