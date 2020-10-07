@@ -1,0 +1,17 @@
+<layout>
+    <display-name>Dynamisk - 4 kolonner</display-name>
+    <description>To kolonner med valgfri bredde for dynamiske komponenter</description>
+    <form>
+        <input type="TextArea" name="distribution">
+            <label>Fordeling</label>
+            <label>NB! Må innholde en definert bredde per kolonne.</label>
+            <default>25-25-25-25</default>
+        </input>
+    </form>
+    <regions>
+        <region name="dynamic-1"/>
+        <region name="dynamic-2"/>
+        <region name="dynamic-3"/>
+        <region name="dynamic-4"/>
+    </regions>
+</layout>
