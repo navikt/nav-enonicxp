@@ -33,9 +33,15 @@ const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${queryFields}
+            pageAsJson
             ...on base_Folder {
                 children {
                     ${queryFields}
+                }
+            }
+            ...on portal_PageTemplate {
+                pageTemplate {
+                    pageAsJson
                 }
             }
         }
