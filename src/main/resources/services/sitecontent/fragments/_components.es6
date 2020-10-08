@@ -25,6 +25,21 @@ const componentsFragment = `
                             ${globalFragment}
                         }
                     }
+                    dynamic_supervisor_panel {
+                        content,
+                        margin
+                    }
+                    dynamic_alert {
+                        type
+                        content,
+                        margin
+                    }
+                    dynamic_read_more_panel {
+                        ingress
+                        content,
+                        border,
+                        margin
+                    }
                 }
             }
         }
