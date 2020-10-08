@@ -4,12 +4,10 @@
     <form>
         <input type="TextArea" name="distribution">
             <label>Fordeling</label>
-            <label>NB! Må innholde en definert bredde per kolonne.</label>
             <default>33-33-33</default>
         </input>
         <input type="TextArea" name="margin">
             <label>Margin på containeren</label>
-            <label>NB! Må innholde en definert bredde per kolonne.</label>
             <default>1rem 0 1rem 0</default>
         </input>
     </form>
