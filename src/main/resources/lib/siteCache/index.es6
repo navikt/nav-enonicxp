@@ -109,7 +109,6 @@ function wipeOnChange(path) {
     w(getPath(path, 'menu-list'));
     w(getPath(path, 'page-list'));
     w(getPath(path, 'office-information'));
-    w(getPath(path, 'page-large-table'));
     w(getPath(path, 'faq-page'));
     w(getPath(path, 'generic-page'));
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
