@@ -1,14 +1,16 @@
 const globalFragment = require('./_global.es6');
-const transportPageShortFragment = require('./transportPageShort.es6');
-const mainArticleShortFragment = require('./mainArticleShort.es6');
+const pageList = require('./pageList.es6');
+const transportPage = require('./transportPage.es6');
+const mainArticle = require('./mainArticle.es6');
 
 const contentListFragment = `
     ...on no_nav_navno_ContentList {
         data {
             sectionContents {
                 ${globalFragment}
-                ${transportPageShortFragment}
-                ${mainArticleShortFragment}
+                ${pageList.shortFragment}
+                ${transportPage.shortFragment}
+                ${mainArticle.shortFragment}
             }
         }
     }

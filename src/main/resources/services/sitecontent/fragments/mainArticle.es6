@@ -4,4 +4,12 @@ const mainArticleFragment = `
     }
 `;
 
-module.exports = mainArticleFragment;
+const mainArticleShortFragment = `
+    ...on no_nav_navno_MainArticle {
+        data {
+            ingress
+        }
+    }
+`;
+
+module.exports = { fragment: mainArticleFragment, shortFragment: mainArticleShortFragment };

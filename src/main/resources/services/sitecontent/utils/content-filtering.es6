@@ -3,9 +3,9 @@ const objectAssign = require('/lib/object-assign');
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
 
-const sortByLastModified = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
+const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
 
-const sortAndPruneContentList = (maxItems, contentList, sortFunc) => {
+const sortAndPruneContentList = (contentList, maxItems, sortFunc) => {
     const data = {
         sectionContents: contentList.data.sectionContents.sort(sortFunc).slice(0, maxItems),
     };
@@ -15,13 +15,13 @@ const sortAndPruneContentList = (maxItems, contentList, sortFunc) => {
 
 const filterContent = (content) => {
     if (content.__typename === 'no_nav_navno_SectionPage') {
-        const ntkContents = sortAndPruneContentList(content.data.nrNTK, content.data.ntkContents);
+        const ntkContents = sortAndPruneContentList(content.data.ntkContents, content.data.nrNTK);
         const newsContents = sortAndPruneContentList(
-            content.data.nrNews,
             content.data.newsContents,
-            sortByLastModified
+            content.data.nrNews,
+            sortByLastModifiedDesc
         );
-        const scContents = sortAndPruneContentList(content.data.nrSC, content.data.scContents);
+        const scContents = sortAndPruneContentList(content.data.scContents, content.data.nrSC);
 
         const data = objectAssign(content.data, {
             ntkContents: ntkContents,

@@ -7,10 +7,10 @@ const sectionPageFragment = require('./fragments/sectionPage.es6');
 const contentListFragment = require('./fragments/contentList.es6');
 const internalLinkFragment = require('./fragments/internalLink.es6');
 const notificationsFragment = require('./fragments/notification.es6');
-const transportPageFragment = require('./fragments/transportPage.es6');
+const transportPage = require('./fragments/transportPage.es6');
 const externalLinkFragment = require('./fragments/externalLink.es6');
-const pageListFragment = require('./fragments/pageList.es6');
-const mainArticleFragment = require('./fragments/mainArticle.es6');
+const pageList = require('./fragments/pageList.es6');
+const mainArticle = require('./fragments/mainArticle.es6');
 const filterContent = require('./utils/content-filtering.es6');
 const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
 
@@ -22,11 +22,11 @@ const queryFields = [
     contentListFragment,
     externalLinkFragment,
     internalLinkFragment,
-    mainArticleFragment,
+    mainArticle.fragment,
     notificationsFragment,
-    pageListFragment,
+    pageList.fragment,
     sectionPageFragment,
-    transportPageFragment,
+    transportPage.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
