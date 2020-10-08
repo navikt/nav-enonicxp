@@ -29,6 +29,7 @@ const componentsFragment = `
                     }
                     dynamic_alert {
                         type
+                        inline,
                         content,
                         margin
                     }
