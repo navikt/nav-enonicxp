@@ -34,14 +34,12 @@ const queryGetContentByRef = `query($ref:ID!){
         get(key:$ref) {
             ${queryFields}
             pageAsJson
+            pageTemplate {
+                pageAsJson
+            }
             ...on base_Folder {
                 children {
                     ${queryFields}
-                }
-            }
-            ...on portal_PageTemplate {
-                pageTemplate {
-                    pageAsJson
                 }
             }
         }
