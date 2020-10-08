@@ -13,6 +13,7 @@ const pageList = require('./fragments/pageList.es6');
 const mainArticle = require('./fragments/mainArticle.es6');
 const filterContent = require('./utils/content-filtering.es6');
 const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
+const largeTable = require('./fragments/largeTable.es6');
 
 const schema = guillotineLib.createSchema();
 
@@ -27,6 +28,7 @@ const queryFields = [
     pageList.fragment,
     sectionPageFragment,
     transportPage.fragment,
+    largeTable.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
