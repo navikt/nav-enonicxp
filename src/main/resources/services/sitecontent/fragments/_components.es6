@@ -12,14 +12,16 @@ const componentsFragment = `
         part {
             descriptor
             config {
-                no_nav_navno{
+                no_nav_navno {
                     dynamic_link_panel {
                         title
                         description
                         background {
+                            dataAsJson
                             ${globalFragment}
                         }
                         target {
+                            dataAsJson
                             ${globalFragment}
                         }
                     }

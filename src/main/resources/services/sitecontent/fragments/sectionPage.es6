@@ -1,19 +1,20 @@
 const globalFragment = require('./_global.es6');
 const contentListFragment = require('./contentList.es6');
-const transportPageFragment = require('./transportPage.es6');
 const externalLinkFragment = require('./externalLink.es6');
-const pageListFragment = require('./pageList.es6');
-const mainArticleFragment = require('./mainArticle.es6');
+const pageList = require('./pageList.es6');
+const mainArticle = require('./mainArticle.es6');
+const transportPage = require('./transportPage.es6');
 
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
+        dataAsJson
         data {
             tableContents {
                 ${globalFragment}
-                ${transportPageFragment}
                 ${externalLinkFragment}
-                ${pageListFragment}
-                ${mainArticleFragment}
+                ${pageList.shortFragment}
+                ${transportPage.shortFragment}
+                ${mainArticle.shortFragment}
             }
             newsContents {
                 ${globalFragment}

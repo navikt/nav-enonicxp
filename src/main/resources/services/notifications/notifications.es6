@@ -3,6 +3,7 @@ const graphQlLib = require('/lib/graphql');
 
 const notificationsFragment = require('../sitecontent/fragments/notification');
 const globalFragment = require('../sitecontent/fragments/_global');
+const deepSearchParseJsonAndAppend = require('../sitecontent/utils/deep-json-parser.es6');
 
 const schema = guillotineLib.createSchema();
 
@@ -14,27 +15,6 @@ const queryGetNotifications = `query {
         }
     }
 }`;
-
-const deepSearchJsonToData = (obj) => {
-    if (obj && typeof obj === 'object') {
-        if (Array.isArray(obj)) {
-            return obj.map(deepSearchJsonToData);
-        }
-
-        const newObj = {};
-        Object.keys(obj).forEach((key) => {
-            if (key === 'dataAsJson') {
-                newObj.data = { ...JSON.parse(obj.dataAsJson), ...newObj?.data };
-            } else if (key === 'data') {
-                newObj.data = { ...newObj.data, ...deepSearchJsonToData(obj.data) };
-            } else {
-                newObj[key] = deepSearchJsonToData(obj[key]);
-            }
-        });
-        return newObj;
-    }
-    return obj;
-};
 
 const getNotifications = () => {
     const queryResponse = graphQlLib.execute(schema, queryGetNotifications);
@@ -54,7 +34,7 @@ const getNotifications = () => {
         return null;
     }
 
-    return deepSearchJsonToData(notifications);
+    return deepSearchParseJsonAndAppend(notifications, 'dataAsJson', 'data');
 };
 
 const handleGet = (req) => {

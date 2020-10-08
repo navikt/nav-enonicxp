@@ -7,10 +7,12 @@ const sectionPageFragment = require('./fragments/sectionPage.es6');
 const contentListFragment = require('./fragments/contentList.es6');
 const internalLinkFragment = require('./fragments/internalLink.es6');
 const notificationsFragment = require('./fragments/notification.es6');
-const transportPageFragment = require('./fragments/transportPage.es6');
+const transportPage = require('./fragments/transportPage.es6');
 const externalLinkFragment = require('./fragments/externalLink.es6');
-const pageListFragment = require('./fragments/pageList.es6');
-const mainArticleFragment = require('./fragments/mainArticle.es6');
+const pageList = require('./fragments/pageList.es6');
+const mainArticle = require('./fragments/mainArticle.es6');
+const filterContent = require('./utils/content-filtering.es6');
+const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
 
 const schema = guillotineLib.createSchema();
 
@@ -20,16 +22,16 @@ const queryFields = [
     contentListFragment,
     externalLinkFragment,
     internalLinkFragment,
-    mainArticleFragment,
+    mainArticle.fragment,
     notificationsFragment,
-    pageListFragment,
+    pageList.fragment,
     sectionPageFragment,
-    transportPageFragment,
+    transportPage.fragment,
 ].join('\n');
 
-const queryGetId = `query($path:ID!){
+const queryGetContentByRef = `query($ref:ID!){
     guillotine {
-        get(key:$path) {
+        get(key:$ref) {
             ${queryFields}
             ...on base_Folder {
                 children {
@@ -40,33 +42,9 @@ const queryGetId = `query($path:ID!){
     }
 }`;
 
-const deepSearchAndAppendJson = (obj, searchFor, appendTo) => {
-    if (obj && typeof obj === 'object') {
-        if (Array.isArray(obj)) {
-            return obj.map((item) => deepSearchAndAppendJson(item, searchFor, appendTo));
-        }
-
-        const newObj = {};
-        Object.keys(obj).forEach((key) => {
-            if (key === searchFor) {
-                newObj[appendTo] = { ...JSON.parse(obj[searchFor]), ...newObj[appendTo] };
-            } else if (key === appendTo) {
-                newObj[appendTo] = {
-                    ...newObj[appendTo],
-                    ...deepSearchAndAppendJson(obj[appendTo], searchFor, appendTo),
-                };
-            } else {
-                newObj[key] = deepSearchAndAppendJson(obj[key], searchFor, appendTo);
-            }
-        });
-        return newObj;
-    }
-    return obj;
-};
-
 const getContent = (contentId) => {
-    const queryResponse = graphQlLib.execute(schema, queryGetId, {
-        path: contentId,
+    const queryResponse = graphQlLib.execute(schema, queryGetContentByRef, {
+        ref: contentId,
     });
 
     const { data, errors } = queryResponse;
@@ -82,13 +60,15 @@ const getContent = (contentId) => {
         return null;
     }
 
-    const withPageAndDataJson = deepSearchAndAppendJson(
-        deepSearchAndAppendJson(content, 'dataAsJson', 'data'),
+    const contentWithParsedJsonData = deepSearchParseJsonAndAppend(
+        deepSearchParseJsonAndAppend(content, 'dataAsJson', 'data'),
         'pageAsJson',
         'page'
     );
 
-    return withPageAndDataJson;
+    const filteredContent = filterContent(contentWithParsedJsonData);
+
+    return filteredContent;
 };
 
 const handleGet = (req) => {
