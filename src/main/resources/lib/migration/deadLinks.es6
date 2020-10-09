@@ -102,6 +102,47 @@ function createNewElements() {
                     elements: [
                         {
                             tag: 'p',
+                            text: 'Ta vekk avpubliserte fra master',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'convert-nodes',
+                            progress: {
+                                value: 'convert-nodes-value',
+                                max: 'convert-nodes-max',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'div',
+                            update: 'convertedElement',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'unpublish',
+                            text: 'Start konvertering',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
                             text: 'Konvertering av bilder',
                         },
                         {
@@ -452,6 +493,14 @@ exports.handle = (s) => {
         });
     });
 
+    socket.on('unpublish', () => {
+        libs.task.submit({
+            description: 'Avpubliser feil i master',
+            task: () => {
+                libs.tools.runInContext(socket, libs.updateRepo.handleUnpublish);
+            },
+        });
+    });
     socket.on('convertimages', () => {
         libs.task.submit({
             description: 'Konverterer data',
