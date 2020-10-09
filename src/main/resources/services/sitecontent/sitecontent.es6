@@ -1,18 +1,19 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 
+const filterContent = require('./utils/content-filtering.es6');
+const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
+
 const globalFragment = require('./fragments/_global.es6');
 const componentsFragment = require('./fragments/_components.es6');
 const sectionPage = require('./fragments/sectionPage.es6');
 const contentList = require('./fragments/contentList.es6');
 const internalLink = require('./fragments/internalLink.es6');
-const notifications = require('./fragments/notification.es6');
+const notification = require('./fragments/notification.es6');
 const transportPage = require('./fragments/transportPage.es6');
 const externalLink = require('./fragments/externalLink.es6');
 const pageList = require('./fragments/pageList.es6');
 const mainArticle = require('./fragments/mainArticle.es6');
-const filterContent = require('./utils/content-filtering.es6');
-const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
 const largeTable = require('./fragments/largeTable.es6');
 
 const schema = guillotineLib.createSchema();
@@ -24,7 +25,7 @@ const queryFields = [
     externalLink.fragment,
     internalLink.fragment,
     mainArticle.fragment,
-    notifications.fragment,
+    notification.fragment,
     pageList.fragment,
     sectionPage.fragment,
     transportPage.fragment,

@@ -1,9 +1,10 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 
-const notificationsFragment = require('../sitecontent/fragments/notification');
-const globalFragment = require('../sitecontent/fragments/_global');
 const deepSearchParseJsonAndAppend = require('../sitecontent/utils/deep-json-parser.es6');
+
+const notification = require('../sitecontent/fragments/notification');
+const globalFragment = require('../sitecontent/fragments/_global');
 
 const schema = guillotineLib.createSchema();
 
@@ -11,7 +12,7 @@ const queryGetNotifications = `query {
     guillotine {
         query(contentTypes:"no.nav.navno:notification") {
             ${globalFragment}
-            ${notificationsFragment}
+            ${notification.fragment}
         }
     }
 }`;
