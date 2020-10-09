@@ -1,5 +1,5 @@
 const globalFragment = require('./_global');
-const externalLinkFragment = require('./externalLink.es6');
+const externalLink = require('./externalLink.es6');
 
 const notificationsFragment = `
     ...on no_nav_navno_Notification {
@@ -7,10 +7,10 @@ const notificationsFragment = `
         data {
             target {
                 ${globalFragment}
-                ${externalLinkFragment}
+                ${externalLink.fragment}
             }
         }
     }
 `;
 
-module.exports = notificationsFragment;
+module.exports = { fragment: notificationsFragment };

@@ -10,4 +10,4 @@ const internalLinkFragment = `
     }
 `;
 
-module.exports = internalLinkFragment;
+module.exports = { fragment: internalLinkFragment };

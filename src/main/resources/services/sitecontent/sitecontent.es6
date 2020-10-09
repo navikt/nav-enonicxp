@@ -3,30 +3,32 @@ const graphQlLib = require('/lib/graphql');
 
 const globalFragment = require('./fragments/_global.es6');
 const componentsFragment = require('./fragments/_components.es6');
-const sectionPageFragment = require('./fragments/sectionPage.es6');
-const contentListFragment = require('./fragments/contentList.es6');
-const internalLinkFragment = require('./fragments/internalLink.es6');
-const notificationsFragment = require('./fragments/notification.es6');
+const sectionPage = require('./fragments/sectionPage.es6');
+const contentList = require('./fragments/contentList.es6');
+const internalLink = require('./fragments/internalLink.es6');
+const notifications = require('./fragments/notification.es6');
 const transportPage = require('./fragments/transportPage.es6');
-const externalLinkFragment = require('./fragments/externalLink.es6');
+const externalLink = require('./fragments/externalLink.es6');
 const pageList = require('./fragments/pageList.es6');
 const mainArticle = require('./fragments/mainArticle.es6');
 const filterContent = require('./utils/content-filtering.es6');
 const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
+const largeTable = require('./fragments/largeTable.es6');
 
 const schema = guillotineLib.createSchema();
 
 const queryFields = [
     globalFragment,
     componentsFragment,
-    contentListFragment,
-    externalLinkFragment,
-    internalLinkFragment,
+    contentList.fragment,
+    externalLink.fragment,
+    internalLink.fragment,
     mainArticle.fragment,
-    notificationsFragment,
+    notifications.fragment,
     pageList.fragment,
-    sectionPageFragment,
+    sectionPage.fragment,
     transportPage.fragment,
+    largeTable.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
@@ -70,9 +72,7 @@ const getContent = (contentId) => {
         'page'
     );
 
-    const filteredContent = filterContent(contentWithParsedJsonData);
-
-    return filteredContent;
+    return filterContent(contentWithParsedJsonData);
 };
 
 const handleGet = (req) => {
