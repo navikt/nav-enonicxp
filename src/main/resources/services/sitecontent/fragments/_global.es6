@@ -5,10 +5,6 @@ const globalFragment = `
     createdTime
     modifiedTime
     displayName
-    pageAsJson
-    pageTemplate {
-        pageAsJson
-    }
 `;
 
 module.exports = globalFragment;
