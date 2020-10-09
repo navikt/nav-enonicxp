@@ -9,7 +9,6 @@ const componentsFragment = require('./fragments/_components.es6');
 const sectionPage = require('./fragments/sectionPage.es6');
 const contentList = require('./fragments/contentList.es6');
 const internalLink = require('./fragments/internalLink.es6');
-const notification = require('./fragments/notification.es6');
 const transportPage = require('./fragments/transportPage.es6');
 const externalLink = require('./fragments/externalLink.es6');
 const pageList = require('./fragments/pageList.es6');
@@ -25,7 +24,6 @@ const queryFields = [
     externalLink.fragment,
     internalLink.fragment,
     mainArticle.fragment,
-    notification.fragment,
     pageList.fragment,
     sectionPage.fragment,
     transportPage.fragment,
