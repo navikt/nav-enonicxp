@@ -1,6 +1,6 @@
 const globalFragment = require('./_global.es6');
-const contentListFragment = require('./contentList.es6');
-const externalLinkFragment = require('./externalLink.es6');
+const contentList = require('./contentList.es6');
+const externalLink = require('./externalLink.es6');
 const pageList = require('./pageList.es6');
 const mainArticle = require('./mainArticle.es6');
 const transportPage = require('./transportPage.es6');
@@ -11,22 +11,22 @@ const sectionPageFragment = `
         data {
             tableContents {
                 ${globalFragment}
-                ${externalLinkFragment}
+                ${externalLink.fragment}
                 ${pageList.shortFragment}
                 ${transportPage.shortFragment}
                 ${mainArticle.shortFragment}
             }
             newsContents {
                 ${globalFragment}
-                ${contentListFragment}
+                ${contentList.fragment}
             }
             ntkContents {
                 ${globalFragment}
-                ${contentListFragment}
+                ${contentList.fragment}
             }
             scContents {
                 ${globalFragment}
-                ${contentListFragment}
+                ${contentList.fragment}
             }
         }
     }
