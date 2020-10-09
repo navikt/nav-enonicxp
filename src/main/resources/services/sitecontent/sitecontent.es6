@@ -37,6 +37,7 @@ const queryGetContentByRef = `query($ref:ID!){
             pageAsJson
             pageTemplate {
                 pageAsJson
+                ${componentsFragment}
             }
             ...on base_Folder {
                 children {
