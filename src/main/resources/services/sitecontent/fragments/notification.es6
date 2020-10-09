@@ -13,4 +13,4 @@ const notificationsFragment = `
     }
 `;
 
-module.exports = notificationsFragment;
+module.exports = { fragment: notificationsFragment };

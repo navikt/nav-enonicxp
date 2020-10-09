@@ -4,4 +4,4 @@ const externalLinkFragment = `
     }
 `;
 
-module.exports = externalLinkFragment;
+module.exports = { fragment: externalLinkFragment };

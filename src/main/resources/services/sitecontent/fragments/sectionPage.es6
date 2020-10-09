@@ -32,4 +32,4 @@ const sectionPageFragment = `
     }
 `;
 
-module.exports = sectionPageFragment;
+module.exports = { fragment: sectionPageFragment };

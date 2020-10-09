@@ -16,4 +16,4 @@ const contentListFragment = `
     }
 `;
 
-module.exports = contentListFragment;
+module.exports = { fragment: contentListFragment };
