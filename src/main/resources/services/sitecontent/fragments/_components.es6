@@ -1,5 +1,14 @@
 const globalFragment = require('./_global');
 
+const imageMediaUrlFragment = `
+    ...on media_Vector {
+        mediaUrl(download:false, type:absolute)
+    }
+    ...on media_Image {
+        mediaUrl(download:false, type:absolute)
+    }
+`;
+
 const componentsFragment = `
     components {
         type
@@ -18,6 +27,7 @@ const componentsFragment = `
                         description
                         background {
                             dataAsJson
+                            ${imageMediaUrlFragment}
                             ${globalFragment}
                         }
                         target {
