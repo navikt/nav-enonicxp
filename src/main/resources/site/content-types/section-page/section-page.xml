@@ -3,16 +3,10 @@
     <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
     <super-type>base:unstructured</super-type>
     <form>
-        <field-set name="ingress-description">
-            <label>Ingress og sidebeskrivelse</label>
-            <items>
-                <mixin name="ingress"/>
-                <mixin name="meta-description"/>
-            </items>
-        </field-set>
+        <mixin name="ingress"/>
         <mixin name="main-panels"/>
         <mixin name="link-panels"/>
-        <field-set name="nyheter">
+        <field-set>
             <label>Nyheter</label>
             <help-text>Nyheter hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
@@ -33,7 +27,7 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="ntk">
+        <field-set>
             <label>Nyttig å vite</label>
             <help-text>'Nyttig å vite' hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
@@ -51,7 +45,7 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="shortcuts">
+        <field-set>
             <label>Snarveier</label>
             <help-text>Snarveier hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
             <items>
@@ -69,7 +63,7 @@
                 </input>
             </items>
         </field-set>
-        <field-set name="breaking_news">
+        <field-set>
             <label>Kampanje - Skal bare brukes sentralt</label>
             <items>
                 <input name="breaking_news" type="ContentSelector">
@@ -86,7 +80,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="seo"/>
         <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
     </form>
 </content-type>

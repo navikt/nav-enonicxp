@@ -4,7 +4,6 @@
     <super-type>base:unstructured</super-type>
     <form>
         <mixin name="ingress"/>
-        <mixin name="meta-description"/>
         <input type ="TextLine" name="customerKey">
             <label>customerKey</label>
             <occurrences minimum="1" maximum="1"/>

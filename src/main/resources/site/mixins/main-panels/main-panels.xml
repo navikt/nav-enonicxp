@@ -1,7 +1,7 @@
 <mixin>
     <display-name>Hovedpaneler</display-name>
     <form>
-        <field-set name="table">
+        <field-set>
             <label>Tavleoppføringer</label>
             <items>
                 <input name="nrTableEntries" type="Long">
