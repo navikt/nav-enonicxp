@@ -71,7 +71,10 @@ function unpublisher(socket) {
         count: 10000,
         query: 'publish.from NOT LIKE "*" AND (type LIKE "no.nav.navno:*" OR type LIKE "media:*")',
     }).hits;
-    let targets = masterHits.map((elem) => {
+
+    socket.emit('convert-nodes-max', masterHits.length);
+    let targets = masterHits.map((elem, ix) => {
+        socket.emit('convert-nodes-value', ix + 1);
         let targetContent = false;
         try {
             targetContent = libs.content.get({ key: elem.id });
@@ -81,6 +84,7 @@ function unpublisher(socket) {
         }
         if (targetContent) {
             log.info(`unpublish: ${targetContent.displayName} - ${targetContent._path}`);
+            socket.emit('progressUpdate', `${targetContent.displayName} - ${targetContent._path}`);
             return targetContent._id;
         }
         return false;
@@ -91,8 +95,9 @@ function unpublisher(socket) {
         return !!elem;
     });
 
-    libs.content.unpublish({ keys: targets });
+    const unpublishedResult = libs.content.unpublish({ keys: targets });
     log.info(`unpublished ${targets.length} elements`);
+    log.info('Unpublished content ids: ' + unpublishedResult.join(','));
     return targets;
 }
 

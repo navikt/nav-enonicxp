@@ -129,7 +129,7 @@ function createNewElements() {
                             tag: 'button',
                             tagClass: ['button', 'is-primary'],
                             action: 'unpublish',
-                            text: 'Start konvertering',
+                            text: 'Åpne avpubliseringsdialog',
                         },
                         {
                             tag: 'li',
