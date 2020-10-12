@@ -6,8 +6,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="meta-description"/>
-        <mixin name="keywords"/>
-        <mixin name="canonical-url"/>
+        <mixin name="seo"/>
     </form>
 </content-type>

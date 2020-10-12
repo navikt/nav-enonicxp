@@ -1,78 +1,76 @@
 <article
-        class="full-article"
-        data-th-classappend="${hasTableOfContents} ? 'factsheet tblc'"
-        id="pagecontent"
+  class="full-article"
+  data-th-classappend="${hasTableOfContents} ? 'factsheet tblc'"
+  id="pagecontent"
 >
-    <header data-th-classappend="${!driftsMelding}? 'article-head'">
-      <h1>[[${content.displayName}]]</h1>
-      <time class="pubdate muted" data-th-datetime="${content.publish.from}">
-        [[${published}]]
-      </time>
-      <div class="toolbar">
-        <div class="content-print" id="print-page" role="button" tabindex="0">
-          <span>[[${langBundle.printpage}]]</span>
-        </div>
+  <header data-th-classappend="${!driftsMelding}? 'article-head'">
+    <h1>[[${displayName}]]</h1>
+    <time class="pubdate muted" data-th-datetime="${publishedFrom}">
+      [[${published}]]
+    </time>
+    <div class="toolbar">
+      <div class="content-print" id="print-page" role="button" tabindex="0">
+        <span>[[${langBundle.printpage}]]</span>
       </div>
-      <p class="preface" data-th-if="${content.data.ingress && content.data.ingress != ''}">
-        [[${content.data.ingress}]]
-      </p>
-      <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
-        <nav class="table-of-contents" data-selected-id>
-          <h2 class="visuallyhidden" role="heading" aria-level="2">
-            [[${langBundle.tableOfContents}]]
-          </h2>
-          <ol>
-            <li data-th-each="tocEntry,i : ${toc}">
-              <a data-ga="toc" data-th-href="'#chapter-' + ${i.index + 1}">
-                [[${tocEntry}]]
-              </a>
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </header>
-
-    <div class="article-body">
-        <div data-th-utext="${htmlText}" data-th-remove="tag"></div>
     </div>
-
-    <div class="well article-facts" data-th-if="${hasFact}">
-        <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
-        <div data-th-utext="${htmlFact}"></div>
+    <p class="preface" data-th-if="${ingress && ingress != ''}">
+      [[${ingress}]]
+    </p>
+    <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
+      <nav class="table-of-contents" data-selected-id>
+        <h2 class="visuallyhidden" role="heading" aria-level="2">
+          [[${langBundle.tableOfContents}]]
+        </h2>
+        <ol>
+          <li data-th-each="tocEntry,i : ${toc}">
+            <a data-ga="toc" data-th-href="'#chapter-' + ${i.index + 1}">
+              [[${tocEntry}]]
+            </a>
+          </li>
+        </ol>
+      </nav>
     </div>
+  </header>
 
-    <div data-th-if="${imageObj}" class="figure-container">
-        <figure data-th-class="${imageObj.imgClass}">
-            <img data-th-if="${imageObj.altText != ''}"
-                 data-th-src="${imageObj.url}"
-                 data-th-alt="${imageObj.altText}"
-                 src=""
-                 alt=""
-            />
-            <img data-th-if="${imageObj.altText == ''}"
-                 data-th-src="${imageObj.url}"
-                 src=""
-                 alt=""
-            />
-            <figcaption class="decorated" data-th-if="${imageObj.caption}">
-                [[${imageObj.caption}]]
-            </figcaption>
-        </figure>
-    </div>
+  <div class="article-body">
+    <div data-th-utext="${htmlText}" data-th-remove="tag"></div>
+  </div>
 
-    <div class="share-social-media" data-th-if="${socials}">
-        <ul class="share-social-media-pills">
-            <li data-th-each="social : ${socials}">
-                <a data-ga="share-social-media"
-                   class="js-share share-container"
-                   data-th-attr="data-medium=${social.type}"
-                   data-th-href="${social.href}"
-                >
-                    <span class="share-social" data-th-classappend="${'share-' + social.type}">
-                        [[${social.text}]]
-                    </span>
-                </a>
-            </li>
-        </ul>
-    </div>
+  <div class="well article-facts" data-th-if="${hasFact}">
+    <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
+    <div data-th-utext="${htmlFact}"></div>
+  </div>
+
+  <div data-th-if="${imageObj}" class="figure-container">
+    <figure data-th-class="${imageObj.imgClass}">
+      <img
+        data-th-if="${imageObj.altText != ''}"
+        data-th-src="${imageObj.url}"
+        data-th-alt="${imageObj.altText}"
+        src=""
+        alt=""
+      />
+      <img data-th-if="${imageObj.altText == ''}" data-th-src="${imageObj.url}" src="" alt="" />
+      <figcaption class="decorated" data-th-if="${imageObj.caption}">
+        [[${imageObj.caption}]]
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="share-social-media" data-th-if="${socials}">
+    <ul class="share-social-media-pills">
+      <li data-th-each="social : ${socials}">
+        <a
+          data-ga="share-social-media"
+          class="js-share share-container"
+          data-th-attr="data-medium=${social.type}"
+          data-th-href="${social.href}"
+        >
+          <span class="share-social" data-th-classappend="${'share-' + social.type}">
+            [[${social.text}]]
+          </span>
+        </a>
+      </li>
+    </ul>
+  </div>
 </article>
