@@ -53,12 +53,52 @@ function republishLiveElements(targetIds) {
         },
     }).hits;
     const masterIds = masterHits.map((el) => el.id);
-    repoDraft.push({
+
+    // important that we use resolve false when pushing objects to master, else we can get objects
+    // which were unpublished back to master without a published.from property
+    const pushResult = repoDraft.push({
         keys: masterIds,
+        resolve: false,
         target: 'master',
     });
 
     log.info(`Pushed ${masterIds.length} elements to master`);
+    log.info(JSON.stringify(pushResult, null, 4));
+}
+
+function unpublisher(socket) {
+    const masterHits = repoMaster.query({
+        count: 10000,
+        query: 'publish.from NOT LIKE "*" AND (type LIKE "no.nav.navno:*" OR type LIKE "media:*")',
+    }).hits;
+
+    socket.emit('convert-nodes-max', masterHits.length);
+    let targets = masterHits.map((elem, ix) => {
+        socket.emit('convert-nodes-value', ix + 1);
+        let targetContent = false;
+        try {
+            targetContent = libs.content.get({ key: elem.id });
+        } catch (e) {
+            log.info('error for: ');
+            log.info(JSON.stringify(elem, null, 4));
+        }
+        if (targetContent) {
+            log.info(`unpublish: ${targetContent.displayName} - ${targetContent._path}`);
+            socket.emit('progressUpdate', `${targetContent.displayName} - ${targetContent._path}`);
+            return targetContent._id;
+        }
+        return false;
+    });
+
+    // publish changes
+    targets = targets.filter((elem) => {
+        return !!elem;
+    });
+
+    const unpublishedResult = libs.content.unpublish({ keys: targets });
+    log.info(`unpublished ${targets.length} elements`);
+    log.info('Unpublished content ids: ' + unpublishedResult.join(','));
+    return targets;
 }
 
 function convertImages(socket) {
@@ -107,10 +147,18 @@ function convertImages(socket) {
     targetIds = targetIds.filter((elem) => {
         return !!elem;
     });
+
     republishLiveElements(targetIds);
     return targetIds;
 }
-
+function handleUnpublish(socket) {
+    const action = 'unpublish';
+    const elements = createDialog('Avpublisererer', action);
+    socket.emit('newTask', elements);
+    socket.on(action, () => {
+        libs.tools.runInContext(socket, unpublisher);
+    });
+}
 function handleImages(socket) {
     const action = 'convertimages';
     const elements = createDialog('Konverter bilder for alt-tekst', action);
@@ -158,4 +206,4 @@ function convert(socket) {
     republishLiveElements(targetIds);
 }
 
-module.exports = { handle: convert, handleImages };
+module.exports = { handle: convert, handleImages, handleUnpublish };
