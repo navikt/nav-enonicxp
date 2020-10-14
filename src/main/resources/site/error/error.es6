@@ -1,9 +1,11 @@
 const libs = {
     content: require('/lib/xp/content'),
-    context: require('/lib/xp/context'),
+    thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
     cache: require('/lib/siteCache'),
     tools: require('/lib/migration/tools'),
+    menu: require('/lib/menu-utils'),
+    utils: require('/lib/nav-utils'),
 };
 
 // Handle 404
@@ -24,7 +26,7 @@ exports.handle404 = function (req) {
     }
 
     // get content
-    const content = libs.content.get({
+    let content = libs.content.get({
         key: path,
     });
 
@@ -37,7 +39,7 @@ exports.handle404 = function (req) {
     ) {
         element = content;
     } else if (content) {
-        // if the content has no template, and is not an intenral link or
+        // if the content has no template, and is not an internal link or
         // external link, send the user to 404, this should stop endless
         // redirect loops
         contentExistsButHasNoTemplate = true;
@@ -119,17 +121,74 @@ exports.handle404 = function (req) {
     // log error and send the user to a 404 page
     log.info(`404: not found on: ${req.request.url}`);
 
-    return {
-        body:
-            '<html lang="no">\n' +
-            '<head><meta charset="utf-8" /><title>Finnes ikke (404)</title></head>\n' +
-            '<body>\n' +
+    // go up the chain to find a valid content
+    const myContent = path.split('/');
+    let pathLength = myContent.length;
+    while (pathLength > 1) {
+        myContent.pop();
+        log.info(myContent.join('/'));
+        content = libs.content.get({
+            key: myContent.join('/'),
+        });
+        if (content) {
+            break;
+        } else {
+            pathLength--;
+        }
+    }
+
+    // fallback to norwegian frontpage
+    if (!content) {
+        content = libs.content.get({
+            key: '/www.nav.no/forsiden',
+        });
+    }
+
+    const decUrl = app.config.decoratorUrl;
+    const decParams = [
+        {
+            key: 'language',
+            value: libs.utils.mapDecoratorLocale[content.language] || 'nb',
+        },
+        {
+            key: 'feedback',
+            value: false,
+        },
+    ];
+
+    const languages = libs.utils.getLanguageVersions(content);
+    if (languages.length) {
+        const encodedLanguages = encodeURI(JSON.stringify(languages));
+        decParams.push({ key: 'availableLanguages', value: encodedLanguages });
+    }
+
+    const decEnv = decParams.map((p, i) => `${!i ? `?` : ``}${p.key}=${p.value}`).join('&');
+    const view = resolve('error-page.html');
+
+    // const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
+    const model = {
+        decorator: {
+            class: '',
+            url: decUrl,
+            env: decEnv,
+            src: `${decUrl}/env${decEnv}`,
+        },
+        styleUrl: libs.portal.assetUrl({
+            path: 'styles/navno.css',
+        }),
+        jsUrl: libs.portal.assetUrl({ path: 'js/navno.js' }),
+        mainRegion:
             '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n' +
             '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n' +
-            '<p>Feilkode 404</p>\n' +
-            '</body>\n' +
-            '</html>',
+            '<p>Feilkode 404</p>\n',
+        language: content.language,
+    };
+    return {
         contentType: 'text/html',
+        body: libs.thymeleaf.render(view, model),
+        headers: {
+            'Cache-Control': 'must-revalidate',
+        },
     };
 };
 
