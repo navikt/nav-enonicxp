@@ -126,12 +126,21 @@ exports.handle404 = function (req) {
     let pathLength = myContent.length;
     while (pathLength > 1) {
         myContent.pop();
-        log.info(myContent.join('/'));
         content = libs.content.get({
             key: myContent.join('/'),
         });
         if (content) {
-            break;
+            if (
+                content.type === `${app.name}:internal-link` ||
+                content.type === `${app.name}:breaking-news`
+            ) {
+                content = libs.content.get({
+                    key: content.data.target,
+                });
+            }
+            if (content) {
+                break;
+            }
         } else {
             pathLength--;
         }
@@ -139,16 +148,18 @@ exports.handle404 = function (req) {
 
     // fallback to norwegian frontpage
     if (!content) {
+        log.error('Unable to find an exisiting parent in path, fallback to no frontpage');
         content = libs.content.get({
             key: '/www.nav.no/forsiden',
         });
     }
 
     const decUrl = app.config.decoratorUrl;
+    const currentLocale = libs.utils.mapDecoratorLocale[content.language] || 'nb';
     const decParams = [
         {
             key: 'language',
-            value: libs.utils.mapDecoratorLocale[content.language] || 'nb',
+            value: currentLocale,
         },
         {
             key: 'feedback',
@@ -165,7 +176,6 @@ exports.handle404 = function (req) {
     const decEnv = decParams.map((p, i) => `${!i ? `?` : ``}${p.key}=${p.value}`).join('&');
     const view = resolve('error-page.html');
 
-    // const decoratorClass = content._path.indexOf('/no/') !== -1 ? 'with-context' : '';
     const model = {
         decorator: {
             class: '',
