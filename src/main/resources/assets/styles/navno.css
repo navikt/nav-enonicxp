@@ -3099,10 +3099,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .notifications .row {
   padding: 1rem 0;
 }
-.notifications .lenkepanel-container.one-col {
-  width: 80%;
-  margin: auto;
-}
 .notifications .lenkepanel-container .lenkepanel {
   padding: 0.75rem 0.75rem 0.75rem 0;
   flex-grow: 1;
@@ -3112,6 +3108,10 @@ div.placeholder .top-link-wrapper.sticky-top-link {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
+.lenkepanel-container.one-col {
+    width: 80%;
+    margin: auto;
 }
 .row .lenkepanel-container {
   padding-right: 1rem;
