@@ -24,14 +24,25 @@
         </div>
         <div data-portal-region="main" data-th-remove="tag">
             <div class="navno error-page" id="page-top">
-                <section>
+                <section data-th-if="${language == 'no'}">
+                    <h1>Siden fins ikke</h1>
+                    <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
+                    <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
+                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>
+                </section>
+                <section data-th-if="${language == 'en'}">
+                    <h1>Page not found</h1>
+                    <p>The page you requested can not be displayed.</p>
+                    <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
+                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Report an error</a></p>
+                </section>
+                <section data-th-if="${language == 'se'}">
                     <h1>Siden fins ikke</h1>
                     <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
                     <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
                     <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>
                 </section>
             </div>
-        </div>
         </div>
         <div id="decorator-footer"></div>
         <div id="decorator-env" data-th-attr="data-src=${decorator.src}"></div>
