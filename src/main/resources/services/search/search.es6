@@ -1,6 +1,8 @@
 const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 
+const maxQueryLength = 200;
+
 const handleGet = (req) => {
     const serviceUrl = portalLib.serviceUrl({
         service: 'search',
@@ -13,30 +15,26 @@ const handleGet = (req) => {
     const params = {
         ...req.params,
         debug: true,
-        ord: ord && encodeURI(ord.slice(0, 200)),
+        ord: ord ? encodeURI(ord.slice(0, maxQueryLength)) : '',
         uf: Array.isArray(uf) ? JSON.stringify(uf) : uf,
     };
 
-    log.info(JSON.stringify(params));
-
-    const response = httpClient.request({ url: serviceUrl, params: params, method: 'GET' });
-
-    return response
-        ? {
-              status: 200,
-              body: {
-                  serviceUrl: serviceUrl,
-                  response: response,
-              },
-              contentType: 'application/json',
-          }
-        : {
-              status: 500,
-              body: {
-                  message: 'Search service malfunctioning',
-              },
-              contentType: 'application/json',
-          };
+    try {
+        const response = httpClient.request({ url: serviceUrl, params: params, method: 'GET' });
+        return {
+            ...response,
+            body: JSON.parse(response.body),
+            contentType: 'application/json',
+        };
+    } catch (error) {
+        return {
+            status: 500,
+            body: {
+                message: error,
+            },
+            contentType: 'application/json',
+        };
+    }
 };
 
 exports.get = handleGet;

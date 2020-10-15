@@ -88,7 +88,7 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getContent(id, true);
+    const content = getContent(id);
 
     return content
         ? {
