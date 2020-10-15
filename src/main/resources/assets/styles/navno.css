@@ -3255,3 +3255,9 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .decorator-utils-container {
   background: #f1f1f1;
 }
+
+.error-page {
+    text-align: center;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}

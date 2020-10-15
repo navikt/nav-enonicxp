@@ -23,13 +23,15 @@
         >
         </div>
         <div data-portal-region="main" data-th-remove="tag">
-            <div class="navno pagewrapper" id="page-top">
-                <div data-th-if="${mainRegion}"
-                     data-th-remove="tag"
-                     data-th-utext="${mainRegion}"
-                >
-                </div>
+            <div class="navno error-page" id="page-top">
+                <section>
+                    <h1>Siden fins ikke</h1>
+                    <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
+                    <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
+                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>
+                </section>
             </div>
+        </div>
         </div>
         <div id="decorator-footer"></div>
         <div id="decorator-env" data-th-attr="data-src=${decorator.src}"></div>

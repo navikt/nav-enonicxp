@@ -187,10 +187,6 @@ exports.handle404 = function (req) {
             path: 'styles/navno.css',
         }),
         jsUrl: libs.portal.assetUrl({ path: 'js/navno.js' }),
-        mainRegion:
-            '<h1>Finner ikke siden</h1><p>Vi kan ikke finne siden eller tjenesten du etterspør.</p>\n' +
-            '<p><a href="/">Gå til forsiden av nav.no</a> - <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>\n' +
-            '<p>Feilkode 404</p>\n',
         language: content.language,
     };
     return {
