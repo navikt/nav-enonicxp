@@ -190,6 +190,7 @@ exports.handle404 = function (req) {
         language: content.language,
     };
     return {
+        status: 404,
         contentType: 'text/html',
         body: libs.thymeleaf.render(view, model),
         headers: {
