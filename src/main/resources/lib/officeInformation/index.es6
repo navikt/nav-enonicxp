@@ -222,11 +222,11 @@ function checkForRefresh() {
 
 exports.startCronJob = () => {
     libs.cron.unschedule({
-        name: 'office_info_norg2_daily',
+        name: 'office_info_norg2_hourly',
     });
     libs.cron.schedule({
-        name: 'office_info_norg2_daily',
-        cron: '10 4 * * *',
+        name: 'office_info_norg2_hourly',
+        cron: '10 * * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
