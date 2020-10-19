@@ -68,32 +68,32 @@ const lookForExceptions = (path, content, req) => {
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
     if (!element) {
         element = searchForRedirect(path, req);
-    } else if (!contentExistsButHasNoTemplate) {
-        // try to convert from old url style to new
-        const info = libs.tools.getIdFromUrl(
-            path
-                .toLowerCase()
-                .replace('/www.nav.no/', 'https://www.nav.no/')
-                .replace(/ - /g, '-')
-                .replace(/\+/g, '-')
-                .replace(/ /g, '-')
-                .replace(/ø/g, 'o')
-                .replace(/æ/g, 'ae')
-                .replace(/å/g, 'a'),
-            true
-        );
-        if (info.invalid === false && info.refId) {
-            const redirect = libs.portal.pageUrl({
-                id: info.refId,
-            });
-            if (redirect) {
-                return {
-                    redirect,
-                };
+        if (!element && !contentExistsButHasNoTemplate) {
+            // try to convert from old url style to new
+            const info = libs.tools.getIdFromUrl(
+                path
+                    .toLowerCase()
+                    .replace('/www.nav.no/', 'https://www.nav.no/')
+                    .replace(/ - /g, '-')
+                    .replace(/\+/g, '-')
+                    .replace(/ /g, '-')
+                    .replace(/ø/g, 'o')
+                    .replace(/æ/g, 'ae')
+                    .replace(/å/g, 'a'),
+                true
+            );
+            if (info.invalid === false && info.refId) {
+                const redirect = libs.portal.pageUrl({
+                    id: info.refId,
+                });
+                if (redirect) {
+                    return {
+                        redirect,
+                    };
+                }
             }
         }
     }
-
     // if we found a matching redirect, send the user there
     if (element) {
         let redirect;
