@@ -8,15 +8,40 @@ const libs = {
     utils: require('/lib/nav-utils'),
 };
 
-// Handle 404
-exports.handle404 = function (req) {
-    // get path relative to www.nav.no site
-    let path = '/www.nav.no' + req.request.rawPath.split('/www.nav.no')[1];
-    // remove trailing /
-    if (path[path.length - 1] === '/') {
-        path = path.substr(0, path.length - 1);
-    }
+const searchForRedirect = (path, req) => {
+    const isRedirect = path.split('/').length === 3;
+    let element = false;
+    if (isRedirect) {
+        const contentName = path.split('/').pop().toLowerCase();
+        const redirects = libs.cache.getRedirects(
+            'redirects',
+            undefined,
+            req.branch,
+            () =>
+                libs.content.getChildren({
+                    key: '/redirects',
+                    start: 0,
+                    count: 10000,
+                }).hits
+        );
 
+        for (let i = 0; i < redirects.length; i += 1) {
+            const el = redirects[i];
+            if (el.displayName.toLowerCase() === contentName) {
+                if (
+                    el.type === app.name + ':internal-link' ||
+                    el.type === app.name + ':external-link'
+                ) {
+                    element = el;
+                    break;
+                }
+            }
+        }
+    }
+    return element;
+};
+
+const lookForExceptions = (path, content, req) => {
     let element;
     // redirect the user to /forsiden if the user is trying to reach www.nav.no/ directly
     if (path === '/www.nav.no') {
@@ -24,11 +49,6 @@ exports.handle404 = function (req) {
             key: '/www.nav.no/forsiden',
         });
     }
-
-    // get content
-    let content = libs.content.get({
-        key: path,
-    });
 
     let contentExistsButHasNoTemplate = false;
     // if its an internal- or external-link, redirect the user
@@ -47,56 +67,29 @@ exports.handle404 = function (req) {
 
     // the content we are trying to hit doesn't exist, try to look for a redirect with the same name
     if (!element) {
-        const isRedirect = path.split('/').length === 3;
-        if (isRedirect) {
-            const contentName = path.split('/').pop().toLowerCase();
-            const redirects = libs.cache.getRedirects(
-                'redirects',
-                undefined,
-                req.branch,
-                () =>
-                    libs.content.getChildren({
-                        key: '/redirects',
-                        start: 0,
-                        count: 10000,
-                    }).hits
-            );
-
-            for (let i = 0; i < redirects.length; i += 1) {
-                const el = redirects[i];
-                if (el.displayName.toLowerCase() === contentName) {
-                    if (
-                        el.type === app.name + ':internal-link' ||
-                        el.type === app.name + ':external-link'
-                    ) {
-                        element = el;
-                        break;
-                    }
-                }
-            }
-        } else if (!contentExistsButHasNoTemplate) {
-            // try to convert from old url style to new
-            const info = libs.tools.getIdFromUrl(
-                path
-                    .toLowerCase()
-                    .replace('/www.nav.no/', 'https://www.nav.no/')
-                    .replace(/ - /g, '-')
-                    .replace(/\+/g, '-')
-                    .replace(/ /g, '-')
-                    .replace(/ø/g, 'o')
-                    .replace(/æ/g, 'ae')
-                    .replace(/å/g, 'a'),
-                true
-            );
-            if (info.invalid === false && info.refId) {
-                const redirect = libs.portal.pageUrl({
-                    id: info.refId,
-                });
-                if (redirect) {
-                    return {
-                        redirect,
-                    };
-                }
+        element = searchForRedirect(path, req);
+    } else if (!contentExistsButHasNoTemplate) {
+        // try to convert from old url style to new
+        const info = libs.tools.getIdFromUrl(
+            path
+                .toLowerCase()
+                .replace('/www.nav.no/', 'https://www.nav.no/')
+                .replace(/ - /g, '-')
+                .replace(/\+/g, '-')
+                .replace(/ /g, '-')
+                .replace(/ø/g, 'o')
+                .replace(/æ/g, 'ae')
+                .replace(/å/g, 'a'),
+            true
+        );
+        if (info.invalid === false && info.refId) {
+            const redirect = libs.portal.pageUrl({
+                id: info.refId,
+            });
+            if (redirect) {
+                return {
+                    redirect,
+                };
             }
         }
     }
@@ -116,6 +109,32 @@ exports.handle404 = function (req) {
                 redirect,
             };
         }
+    }
+    return false;
+};
+
+// Handle 404
+exports.handle404 = function (req) {
+    // get path relative to www.nav.no site
+    let path = '/www.nav.no' + req.request.rawPath.split('/www.nav.no')[1];
+    // remove trailing /
+    if (path[path.length - 1] === '/') {
+        path = path.substr(0, path.length - 1);
+    }
+
+    // get content
+    let content = libs.content.get({
+        key: path,
+    });
+
+    // Check for exceptions
+    // 1. redirect the user to /forsiden if the user is trying to reach www.nav.no/ directly
+    // 2. if its an internal- or external-link, redirect the user
+    // 3. the content we are trying to hit doesn't exist, try to look for a redirect with the same name
+    // 4. check if the given urls is pre-migration
+    const exceptions = lookForExceptions(path, content, req);
+    if (exceptions) {
+        return exceptions;
     }
 
     // log error and send the user to a 404 page
