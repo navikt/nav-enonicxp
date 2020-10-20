@@ -11,6 +11,7 @@ const view = resolve('breaking-news.html');
 exports.get = (req) => {
     return libs.cache.getPaths(req.rawPath, 'breaking-news', req.branch, () => {
         const content = libs.portal.getContent();
+        let body = null;
 
         // Sentralt eller lokalt innhold?
         let localSectionPage = false;
@@ -21,52 +22,49 @@ exports.get = (req) => {
 
         if (!localSectionPage) {
             const breakingNewsContent = libs.navUtils.forceArray(content.data.breaking_news);
-            if (breakingNewsContent.length > 0) {
-                let contentLen = 0;
-                const breakingNews = breakingNewsContent.map((item) => {
-                    const contentObj = libs.content.get({
-                        key: item,
-                    });
-                    if (contentObj && contentObj.data && contentObj.data.target) {
-                        // Sett tittel, ingress, og oppdateringstidspunkt
-                        const target = libs.content.get({
-                            key: contentObj.data.target,
-                        });
-                        if (target) {
-                            const updated = contentObj.data.timestamp;
-                            contentLen++;
-                            return {
-                                title: contentObj.data.title || contentObj.displayName,
-                                ingress:
-                                    contentObj.data.description ||
-                                    (target.data ? target.data.ingress : ''),
-                                updated: updated
-                                    ? `Oppdatert: ${libs.navUtils.formatDateTime(
-                                          updated,
-                                          content.language
-                                      )}`
-                                    : null,
-                                url: libs.navUtils.getSrc(target),
-                            };
-                        }
-                    }
-                    return null;
+            const breakingNews = breakingNewsContent.reduce((t, item) => {
+                const contentObj = libs.content.get({
+                    key: item,
                 });
+                if (contentObj && contentObj.data && contentObj.data.target) {
+                    // Sett tittel, ingress, og oppdateringstidspunkt
+                    const target = libs.content.get({
+                        key: contentObj.data.target,
+                    });
+                    if (target) {
+                        const updated = contentObj.data.timestamp;
+                        t.push({
+                            title: contentObj.data.title || contentObj.displayName,
+                            ingress:
+                                contentObj.data.description ||
+                                (target.data ? target.data.ingress : ''),
+                            updated: updated
+                                ? `Oppdatert: ${libs.navUtils.formatDateTime(
+                                      updated,
+                                      content.language
+                                  )}`
+                                : null,
+                            url: libs.navUtils.getSrc(target),
+                        });
+                    }
+                }
+                return t;
+            }, []);
+            const contentLen = breakingNews.length;
+            if (contentLen > 0) {
                 const langBundle = libs.lang.parseBundle(content.language).breaking_news;
                 const label = (langBundle && langBundle.label) || '';
                 const model = {
-                    breakingNews: contentLen > 0 ? breakingNews : false,
+                    breakingNews,
                     label,
                     containerClass: contentLen === 1 ? 'one-col' : '',
-                    elementClass: contentLen === 1 ? 'heldekkende' : ''
+                    elementClass: contentLen === 1 ? 'heldekkende' : '',
                 };
-                return {
-                    body: libs.thymeleaf.render(view, model),
-                };
+                body = libs.thymeleaf.render(view, model);
             }
         }
         return {
-            body: null,
+            body,
         };
     });
 };
