@@ -113,6 +113,28 @@ const lookForExceptions = (path, content, req) => {
     return false;
 };
 
+const findPossibleSearchWords = (path) => {
+    // initial implementation of finding search words from path
+    // needs more work to be complete
+    const potentialSearchwords = path.split('/');
+    const partialNonos = ['www', '@'];
+
+    return potentialSearchwords.reduce((acc, item) => {
+        const hasPartial = partialNonos.reduce((a, filter) => {
+            return item.indexOf(filter) !== -1 || a;
+        }, false);
+
+        if (['no', 'person'].indexOf(item) === -1 && !hasPartial) {
+            if (item.indexOf('-')) {
+                item.split('-').forEach((subWord) => acc.push(subWord));
+            } else {
+                acc.push(item);
+            }
+        }
+        return acc;
+    }, []);
+};
+
 // Handle 404
 exports.handle404 = function (req) {
     // get path relative to www.nav.no site
@@ -207,6 +229,7 @@ exports.handle404 = function (req) {
         }),
         jsUrl: libs.portal.assetUrl({ path: 'js/navno.js' }),
         language: content.language,
+        potentialSearchWords: findPossibleSearchWords(path),
     };
     return {
         status: 404,

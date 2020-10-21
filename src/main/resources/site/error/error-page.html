@@ -22,33 +22,55 @@
              data-th-classappend="${decorator.class}"
         >
         </div>
-        <div data-portal-region="main" data-th-remove="tag">
-            <div data-th-switch="${language}" class="navno error-page" id="page-top">
-                <section data-th-case="'no'">
-                    <h1>Siden fins ikke</h1>
-                    <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
-                    <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
-                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>
-                </section>
-                <section data-th-case="'en'">
-                    <h1>Page not found</h1>
-                    <p>The page you requested can not be displayed.</p>
-                    <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
-                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Report an error</a></p>
-                </section>
-                <section data-th-case="'se'">
-                    <h1>Siden fins ikke</h1>
-                    <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
-                    <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
-                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>
-                </section>
-                <section data-th-case="'*'">
-                    <h1>Page not found</h1>
-                    <p>The page you requested can not be displayed.</p>
-                    <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
-                    <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Report an error</a></p>
-                </section>
-            </div>
+
+        <div class="navno pagewrapper">
+            <main class="content-page">
+                <div class="container maincontent">
+                    <div class="error-page__center row">
+                        <div data-th-switch="${language}" class="error-page col-sm-12 col-md-8" id="page-top">
+                            <section data-th-case="'no'">
+                                <h1 class="typo-inneholdstittel">Siden finnes ikke</h1>
+                                <span class="typo-undertekst">
+                                    <p>Beklager, siden kan være slettet eller flyttet, eller lenken du fulgte kan ha en feil.</p>
+                                    <p>Du kan gå <a href="/">til forsiden</a>, bruke menyen eller søkefeltet.</p>
+                                </span>
+                                <div class="error-page__search-container">
+                                    <h3 class="typo-etikett-liten">Hva leter du etter?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Søk på nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">Søk</button>
+                                    </form>
+                                </div>
+
+                                <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Meld gjerne fra til oss om denne feilen</a></p>
+                                <h2 class="typo-undertittel">In english:</h2>
+                                <p>The page you requested can not be displayed.</p>
+                                <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
+                            </section>
+                            <section data-th-case="'en'">
+                                <h1>Page not found</h1>
+                                <p>The page you requested can not be displayed.</p>
+                                <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
+                                <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Report an error</a></p>
+                            </section>
+                            <section data-th-case="'se'">
+                                <h1>Siden fins ikke</h1>
+                                <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
+                                <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
+                                <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Melde feil og mangler</a></p>
+                            </section>
+                            <section data-th-case="'*'">
+                                <h1>Page not found</h1>
+                                <p>The page you requested can not be displayed.</p>
+                                <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
+                                <p><a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Report an error</a></p>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
         <div id="decorator-footer"></div>
         <div id="decorator-env" data-th-attr="data-src=${decorator.src}"></div>

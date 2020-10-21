@@ -3257,7 +3257,110 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 
 .error-page {
-    text-align: center;
     padding-top: 5rem;
     padding-bottom: 5rem;
+}
+
+.error-page__search-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.error-page__center {
+    display: flex;
+    justify-content: center;
+}
+
+.search-input__input {
+    flex-grow: 1;
+}
+
+.search-input {
+    margin-bottom: 1rem;
+    display: flex;
+    position: relative;
+}
+
+.search-input__input input {
+    margin: 0;
+    font-family: "Source Sans Pro", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.375rem;
+    font-weight: 400;
+    font-size: 150%;
+    border-width: 2px;
+    border-color: #0067c5;
+    border-radius: 4px;
+    padding-right: 8rem;
+}
+
+.skjemaelement {
+    font-family: "Source Sans Pro", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.375rem;
+    font-weight: 400;
+    position: relative;
+}
+
+.skjemaelement__input {
+    font-family: "Source Sans Pro", Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    appearance: none;
+    padding: 0.5rem;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #78706a;
+    box-sizing: border-box;
+    line-height: 1.375rem;
+    width: 100%;
+}
+
+
+.search-knapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-family: "Source Sans Pro", Arial, sans-serif;
+    font-size: 1em;
+    white-space: nowrap;
+    border-radius: 0.125em;
+    cursor: pointer;
+    user-select: none;
+    letter-spacing: 0.0625em;
+    line-height: 1.375rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    background-color: #fff;
+    padding: calc(.475rem - 1px) 2.5rem calc(.525rem - 1px) 2.5rem;
+    min-height: 2.5rem;
+    vertical-align: middle;
+    border: 2px solid #0067c5;
+    color: #0067c5;
+}
+
+.search-knapp--hoved {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 0 #c6c2bf;
+    color: #fff;
+    border-color: #0067c5;
+    background-color: #0067c5;
+    position: relative;
+}
+
+.search-input__button {
+    margin: 0;
+    font-family: "Source Sans Pro", Arial, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.5625rem;
+    font-weight: 600;
+    position: absolute;
+    right: 0;
+    align-self: center;
+    text-transform: none;
+    transform: none;
+    box-shadow: none;
+    border-radius: 0 4px 4px 0;
+    height: 100%;
 }
