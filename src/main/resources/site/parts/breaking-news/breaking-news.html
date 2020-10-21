@@ -1,26 +1,31 @@
 <section  data-th-if="${breakingNews}"
-          class="breaking-news inner-row"
+          class="breaking-news row inner-row"
           data-th-aria-label="${label}"
 >
-    <a class="lenkepanel kampanje lenkepanel--border"
-       data-ga="kampanje-lenkepanel"
-       data-th-href="${breakingNews.url}"
-    >
-        <div class="kampanje-varsel__tekst-rad">
-            <h2 class="typo-systemtittel lenkepanel__heading">
-                [[${breakingNews.title}]]
-            </h2>
-            <p data-th-if="${breakingNews.ingress}"
-               class="typo-normal kampanje-varsel__ingress"
+    <div class="lenkepanel-container" data-th-classappend="${containerClass}">
+        <div data-th-each="newsItem : ${breakingNews}" data-th-remove="tag">
+           <a class="lenkepanel kampanje lenkepanel--border"
+              data-th-classappend="${elementClass}"
+              data-ga="kampanje-lenkepanel"
+              data-th-href="${newsItem.url}"
             >
-                [[${breakingNews.ingress}]]
-            </p>
-            <p data-th-if="${breakingNews.updated}"
-               class="typo-undertekst kampanje-varsel__dato-tid"
-            >
-                [[${breakingNews.updated}]]
-            </p>
+                <div class="kampanje-varsel__tekst-rad">
+                    <h2 class="typo-systemtittel lenkepanel__heading">
+                        [[${newsItem.title}]]
+                    </h2>
+                    <p data-th-if="${newsItem.ingress}"
+                       class="typo-normal kampanje-varsel__ingress"
+                    >
+                        [[${newsItem.ingress}]]
+                    </p>
+                    <p data-th-if="${newsItem.updated}"
+                       class="typo-undertekst kampanje-varsel__dato-tid"
+                    >
+                        [[${newsItem.updated}]]
+                    </p>
+                </div>
+                <span class="lenkepanel__indikator"></span>
+            </a>
         </div>
-        <span class="lenkepanel__indikator"></span>
-    </a>
+    </div>
 </section>
