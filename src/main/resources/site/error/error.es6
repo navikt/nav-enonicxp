@@ -119,7 +119,7 @@ const findPossibleSearchWords = (path) => {
     const potentialSearchwords = path.split('/');
     const partialNonos = ['www', '@'];
 
-    return potentialSearchwords.reduce((acc, item) => {
+    const searchWords = potentialSearchwords.reduce((acc, item) => {
         const hasPartial = partialNonos.reduce((a, filter) => {
             return item.indexOf(filter) !== -1 || a;
         }, false);
@@ -133,6 +133,7 @@ const findPossibleSearchWords = (path) => {
         }
         return acc;
     }, []);
+    return searchWords.filter((word) => word.length > 2);
 };
 
 // Handle 404
@@ -229,7 +230,7 @@ exports.handle404 = function (req) {
         }),
         jsUrl: libs.portal.assetUrl({ path: 'js/navno.js' }),
         language: content.language,
-        potentialSearchWords: findPossibleSearchWords(path),
+        potentialSearchWords: findPossibleSearchWords(path).join(' '),
     };
     return {
         status: 404,
