@@ -44,6 +44,5 @@
         "prompt": "^1.0.0",
         "replace": "^1.2.0",
         "serve": "^11.3.2"
-    },
-    "dependencies": {}
+    }
 }

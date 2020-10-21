@@ -232,5 +232,6 @@ src/main/resources/lib/i18nUtil/index.es6
 src/main/resources/assets/**/*.js
 src/main/resources/services/jquery.js
 src/main/resources/services/client.es6
+src/main/resources/lib/tableFunctions/tableFunctions.es6
 src/main/resources/lib/moment.js
 src/main/resources/lib/momenttimezone.js

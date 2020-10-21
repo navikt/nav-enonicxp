@@ -277,7 +277,7 @@ const largeTable = {
     type: 'page',
     path: '/',
     page: {
-        descriptor: 'no.nav.navno:main-page',
+        descriptor: 'no.nav.navno:page-large-table',
         customized: true,
         config: {
             'no-nav-navno': {},
