@@ -21,8 +21,11 @@ const libs = {
  *   for menu items, default is 'server', only other option is 'absolute'.
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
-exports.getBreadcrumbMenu = function (params) {
-    const content = libs.portal.getContent();
+exports.getBreadcrumbMenu = function (params, initialContent = false) {
+    let content = initialContent;
+    if (!content) {
+        content = libs.portal.getContent();
+    }
     const site = libs.portal.getSite();
     const breadcrumbItems = []; // Stores each menu item
     const breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf

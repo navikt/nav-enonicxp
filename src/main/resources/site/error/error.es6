@@ -215,6 +215,12 @@ exports.handle404 = function (req) {
         decParams.push({ key: 'availableLanguages', value: encodedLanguages });
     }
 
+    const breadcrumbs = [
+        { url: '/', title: content.language === 'en' ? 'Page not found' : 'Fant ikke siden' },
+    ];
+    const encodedBreadcrumbs = encodeURI(JSON.stringify(breadcrumbs));
+    decParams.push({ key: 'breadcrumbs', value: encodedBreadcrumbs });
+
     const decEnv = decParams.map((p, i) => `${!i ? `?` : ``}${p.key}=${p.value}`).join('&');
     const view = resolve('error-page.html');
 
