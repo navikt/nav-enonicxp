@@ -1,15 +1,15 @@
 const proxyFlag = 'newFrontend';
 const livenessCheckPeriod = 10000;
-let newFrontendLivenessCheckRetryTime = 0;
+let livenessCheckRetryTime = 0;
 
 const isLive = (req) => {
     // Checks if request to the new frontend looped back
     if (req.params[proxyFlag]) {
-        newFrontendLivenessCheckRetryTime = Date.now() + livenessCheckPeriod;
+        livenessCheckRetryTime = Date.now() + livenessCheckPeriod;
         delete req.params[proxyFlag];
     }
 
-    return Date.now() > newFrontendLivenessCheckRetryTime;
+    return Date.now() > livenessCheckRetryTime;
 };
 
 module.exports = { isLive, proxyFlag };
