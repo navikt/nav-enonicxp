@@ -1,116 +1,142 @@
 <!DOCTYPE html>
 <html data-th-lang="${language}">
-    <head>
-        <meta charset="utf-8" />
-        <title>404 side</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="robots" content="noindex" />
-        <meta name="description" content="404 side" />
-        <link data-th-href="${decorator.url} + '/css/client.css'" rel="stylesheet" />
-        <link data-th-href="${styleUrl}" rel="stylesheet" />
-        <script data-th-src="${decorator.url} + '/client.js'" ></script>
-        <script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>
-        <script data-th-src="${jsUrl}"></script>
-    </head>
-    <body
-        itemscope=""
-        itemtype="http://schema.org/Webpage"
-        data-portal-component-type="page"
-    >
-        <div id="decorator-header"
-             data-th-classappend="${decorator.class}"
-        >
-        </div>
 
-        <div class="navno pagewrapper">
-            <main class="content-page">
-                <div class="container maincontent">
-                    <div class="error-page__center row">
-                        <div data-th-switch="${language}"
-                             class="error-page col-sm-12 col-md-8"
-                             id="page-top"
-                        >
-                            <div data-th-case="'no'" data-th-remove="tag">
-                                <h1 class="typo-inneholdstittel">
-                                    Siden finnes ikke
-                                </h1>
-                                <div class="inner-row">
-                                    <p>Beklager, siden kan være slettet eller flyttet, eller lenken du fulgte kan ha en feil.</p>
-                                    <p>Du kan gå <a href="/">til forsiden</a>, bruke menyen eller søkefeltet.</p>
-                                    <div class="error-page__search-container">
-                                        <h3>Hva leter du etter?</h3>
-                                        <form action="/sok" class="search-input">
-                                            <div class="skjemaelement search-input__input">
-                                                <input data-th-value="${potentialSearchWords}"
-                                                       class="skjemaelement__input input--fullbredde"
-                                                       id="sok" name="ord" type="text"
-                                                       aria-label="Søk på nav.no"
-                                                />
-                                            </div>
-                                            <button class="search-knapp search-input__button search-knapp--hoved"
-                                                    type="submit"
-                                            >
-                                                Søk
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <p>
-                                        <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">
-                                            Meld gjerne fra til oss om denne feilen
-                                        </a>
-                                    </p>
+<head>
+    <meta charset="utf-8" />
+    <title>Fant ikke siden</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Fant ikke siden" />
+    <link data-th-href="${decorator.url} + '/css/client.css'" rel="stylesheet" />
+    <link data-th-href="${styleUrl}" rel="stylesheet" />
+    <script data-th-src="${decorator.url} + '/client.js'"></script>
+    <script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>
+    <script data-th-src="${jsUrl}"></script>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/Webpage" data-portal-component-type="page">
+    <div id="decorator-header" data-th-classappend="${decorator.class}">
+    </div>
+
+    <div class="navno pagewrapper">
+        <main class="content-page">
+            <div class="container maincontent error-page__container">
+                <div class="error-page__center error-page__container row">
+                    <div data-th-switch="${language}" class="error-page col-sm-12 col-md-8" id="page-top">
+                        <div data-th-case="'no'" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">Fant ikke siden</h1>
+                            <div class="inner-row">
+                                <p>Beklager, siden kan være slettet eller flyttet, eller lenken du fulgte kan ha en feil.</p>
+                                <p>Du kan gå <a href="/">til forsiden</a>, bruke menyen eller søkefeltet.</p>
+                                <div class="error-page__search-container">
+                                    <h3>Hva leter du etter?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input placeholder="Søk i hele nav.no" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Søk på nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Søk
+                                        </button>
+                                    </form>
                                 </div>
-                                <div class="inner-row">
-                                    <h2 class="typo-undertittel">
-                                        In english:
-                                    </h2>
-                                    <p>The page you requested can not be displayed.</p>
-                                    <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
-                                </div>
+                                <p>
+                                    <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">
+                                        Meld gjerne fra til oss om denne feilen
+                                    </a>
+                                </p>
                             </div>
-                            <div data-th-case="'en'" data-th-remove="tag">
-                                <h1 class="typo-inneholdstittel">
-                                    Page not found
-                                </h1>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    In english:
+                                </h2>
                                 <p>The page you requested can not be displayed.</p>
                                 <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
+                            </div>
+                        </div>
+                        <div data-th-case="'en'" data-th-remove="tag">
+
+                            <h1 class="typo-inneholdstittel">
+                                Page not found
+                            </h1>
+                            <div class="inner-row">
+                                <p>Sorry, the page has been deleted, moved or there was an error in the link that brought you here. </p>
+                                <p>You can go to the <a href="/">front page</a>, use the navigation menu or search.</p>
+                                <div class="error-page__search-container">
+                                    <h3>What are you looking for?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input placeholder="Search nav.no" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Search nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Search
+                                        </button>
+                                    </form>
+                                </div>
                                 <p>
                                     <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">
-                                        Report an error
+                                        Please tell us about this error
                                     </a>
                                 </p>
                             </div>
-                            <div data-th-case="'se'" data-th-remove="tag">
-                                <h1 class="typo-inneholdstittel">
-                                    Siden fins ikke
-                                </h1>
-                                <p>Siden kan være flyttet eller slettet. Det kan også være en lenkefeil.</p>
-                                <p>Du kan gå <a href="/">tilbake forsiden</a> eller prøve menyen og søkefeltet over.</p>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    På norsk:
+                                </h2>
+                                <p>Beklager, siden kan være slettet eller flyttet, eller lenken du fulgte kan ha en feil.</p>
+                                <p>Du kan gå <a href="/">til forsiden</a>, bruke menyen eller søkefeltet.</p>
+                            </div>
+
+                        </div>
+                        <div data-th-case="'se'" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">Finner ikke siden</h1>
+                            <div class="inner-row">
+                                <p>Beklager, siden kan være slettet eller flyttet, eller lenken du fulgte kan ha en feil.</p>
+                                <p>Du kan gå <a href="/">til forsiden</a>, bruke menyen eller søkefeltet.</p>
+                                <div class="error-page__search-container">
+                                    <h3>Hva leter du etter?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input data-th-value="${potentialSearchWords}" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Søk på nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Søk
+                                        </button>
+                                    </form>
+                                </div>
                                 <p>
                                     <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">
-                                        Melde feil og mangler
+                                        Meld gjerne fra til oss om denne feilen
                                     </a>
                                 </p>
                             </div>
-                            <div data-th-case="'*'" data-th-remove="tag">
-                                <h1 class="typo-inneholdstittel">
-                                    Page not found
-                                </h1>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    In english:
+                                </h2>
                                 <p>The page you requested can not be displayed.</p>
                                 <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
-                                <p>
-                                    <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">
-                                        Report an error
-                                    </a>
-                                </p>
                             </div>
+                        </div>
+                        <div data-th-case="'*'" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">
+                                Page not found
+                            </h1>
+                            <p>The page you requested can not be displayed.</p>
+                            <p>Return to the <a href="/">front page</a> or use on of the links in the menu.</p>
+                            <p>
+                                <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">
+                                    Report an error
+                                </a>
+                            </p>
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
-        <div id="decorator-footer"></div>
-        <div id="decorator-env" data-th-attr="data-src=${decorator.src}"></div>
-    </body>
+            </div>
+        </main>
+    </div>
+    <div id="decorator-footer"></div>
+    <div id="decorator-env" data-th-attr="data-src=${decorator.src}"></div>
+</body>
+
 </html>

@@ -3260,6 +3260,11 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     padding-top: 5rem;
     padding-bottom: 5rem;
 }
+
+.error-page__container {
+    background-color: #fff;
+}
+
 .error-page__search-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
