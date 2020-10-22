@@ -109,6 +109,7 @@ function wipeOnChange(path) {
     w(getPath(path, 'menu-list'));
     w(getPath(path, 'page-list'));
     w(getPath(path, 'office-information'));
+    w(getPath(path, 'page-large-table'));
     w(getPath(path, 'faq-page'));
     w(getPath(path, 'generic-page'));
     log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
@@ -135,9 +136,9 @@ function wipeOnChange(path) {
 function getSome(cacheStoreName) {
     return (key, type, branch, f, params) => {
         /* Vil ikke cache innhold på draft */
-        // if (branch !== 'draft') {
-        //     return caches[cacheStoreName].get(getPath(key, type), () => f(params));
-        // }
+        if (branch !== 'draft') {
+            return caches[cacheStoreName].get(getPath(key, type), () => f(params));
+        }
         return f(params);
     };
 }

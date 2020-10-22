@@ -1,8 +1,8 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 
-const filterContent = require('./utils/content-filtering.es6');
-const deepSearchParseJsonAndAppend = require('./utils/deep-json-parser.es6');
+const filterContent = require('/lib/headless-utils/content-filtering.es6');
+const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser.es6');
 
 const globalFragment = require('./fragments/_global.es6');
 const componentsFragment = require('./fragments/_components.es6');

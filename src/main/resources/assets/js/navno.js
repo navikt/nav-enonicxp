@@ -23,6 +23,83 @@ navno.onScrollAndResize = function () {
         navno.topLinkStickyElement.removeClass('sticky-top-link');
     }
 };
+navno.updatedScrollToTopLink = function () {
+    navno.buttonBottomOffset =
+        navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height();
+    navno.onScrollAndResize();
+};
+navno.scrollToTopHandler = function () {
+    var $placeHolder = $('#maincontent .placeholder');
+    if ($placeHolder.length === 0) {
+        return false;
+    }
+    navno.topLinkButtonPlaceholder = $placeHolder;
+    navno.topLinkStickyElement = $('#top-scroll-link').parent();
+    navno.requiredScrollDistanceForSticky = $('#decorator-header').height() + 500;
+    var footerMenuTop = $('#decorator-footer').offset().top;
+    if ($(window).height() * 2 + 200 < footerMenuTop) {
+        navno.topLinkButtonPlaceholder.removeClass('hide');
+        navno.topLinkStickyElement.removeClass('hide-on-pageload');
+        // Keep document height by preserving the height of where the sticky element resides, so that coordinates of elements doesn't get skewed when button is taken out by "position: fixed",
+        $placeHolder.css('height', navno.topLinkButtonPlaceholder.height());
+        navno.buttonBottomOffset =
+            navno.topLinkButtonPlaceholder.offset().top + navno.topLinkButtonPlaceholder.height();
+        if (
+            $(document).scrollTop() > navno.requiredScrollDistanceForSticky &&
+            $(document).scrollTop() + $(window).height() < footerMenuTop
+        ) {
+            navno.topLinkStickyElement.addClass('sticky-top-link');
+        }
+        $(document).on('scroll', navno.onScrollAndResize);
+        // REFACTOR: global namespace a "isTouch" variable
+        if (!('ontouchstart' in document.documentElement)) {
+            $(window).on('resize', function onResize() {
+                var thisWindow = $(window);
+                thisWindow.off('resize');
+                navno.buttonBottomOffset =
+                    navno.topLinkButtonPlaceholder.offset().top +
+                    navno.topLinkButtonPlaceholder.height();
+                navno.onScrollAndResize();
+                setTimeout(function () {
+                    navno.buttonBottomOffset =
+                        navno.topLinkButtonPlaceholder.offset().top +
+                        navno.topLinkButtonPlaceholder.height();
+                    navno.onScrollAndResize();
+                    thisWindow.on('resize', onResize);
+                }, 2000);
+            });
+        }
+        if ('ontouchstart' in document.documentElement) {
+            var onOrientationChange = function (e) {
+                e.stopPropagation();
+                setTimeout(function () {
+                    navno.buttonBottomOffset =
+                        navno.topLinkButtonPlaceholder.offset().top +
+                        navno.topLinkButtonPlaceholder.height();
+                    navno.onScrollAndResize();
+                }, 500);
+            };
+            $(window).on('resize', onOrientationChange); // using resize instead of orientationchange for compatibility
+            // touchmove mostly for iOS which doesn't support scroll events while holding touch down on screen (only when finger is released does scroll event fire)
+            $(document).on('touchmove', navno.onScrollAndResize);
+        }
+    }
+};
+$(function () {
+    $('#top-scroll-link').on('click', function (e) {
+        e.preventDefault();
+        var t = $('#page-top');
+        $('html, body').animate(
+            {
+                scrollTop: t.offset().top,
+            },
+            {
+                duration: 250,
+            }
+        );
+        t.attr('tabindex', '-1').focus();
+    });
+});
 $(function () {
     $('nav.table-of-contents li a').click(function (e) {
         var t = $(this);
@@ -292,6 +369,7 @@ $(document).ready(function () {
     }
     navno.initContentPrintHandler();
     navno.contentLanguages();
+    navno.scrollToTopHandler();
 
     amplitude.getInstance().init('default', '', {
         apiEndpoint: 'amplitude.nav.no/collect-auto',

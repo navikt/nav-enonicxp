@@ -1,18 +1,12 @@
 const httpClient = require('/lib/http-client');
+const frontendOriginMap = require('/lib/headless-utils/frontend-origin.es6');
 
-const nextApiUrlMap = {
-    localhost: 'http://localhost:3000/api/jsonProxy',
-    q6: 'https://www-q6.nav.no/api/jsonProxy',
-    q1: 'https://www-q1.nav.no/api/jsonProxy',
-    p: 'https://www.nav.no/api/jsonProxy',
-};
-
-const nextApiUrl = nextApiUrlMap[app.config.env] || nextApiUrlMap.p;
+const nextApiUrl = `${frontendOriginMap[app.config.env] || frontendOriginMap.p}/api/jsonProxy`;
 
 const handleGet = (req) => {
     const { path } = req;
     const url = `${nextApiUrl}?path=${path}`;
-    log.info(`json url: ${url}`);
+    log.info(`Requesting frontend asset from: ${url}`);
 
     return httpClient.request({
         method: 'GET',
