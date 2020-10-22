@@ -23,7 +23,7 @@ const legacyHtml = () => {
     };
 };
 
-const frontendProxyController = (req) => {
+const frontendProxy = (req) => {
     if (req.path.startsWith(legacyPath)) {
         return legacyHtml();
     }
@@ -54,4 +54,4 @@ const frontendProxyController = (req) => {
     );
 };
 
-module.exports = frontendProxyController;
+module.exports = frontendProxy;

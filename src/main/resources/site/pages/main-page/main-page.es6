@@ -1,6 +1,6 @@
 const mainPageLegacy = require('./main-page-legacy.es6');
 const frontendLiveness = require('/lib/headless-utils/frontend-liveness.es6');
-const frontendProxyController = require('/lib/headless-utils/frontend-proxy-controller.es6');
+const frontendProxy = require('/lib/headless-utils/frontend-proxy-controller.es6');
 
 const handleGet = (req) => {
     log.info('main-page controller req-object:');
@@ -10,7 +10,7 @@ const handleGet = (req) => {
         return mainPageLegacy(req);
     }
 
-    return frontendProxyController(req);
+    return frontendProxy(req);
 };
 
 exports.get = handleGet;
