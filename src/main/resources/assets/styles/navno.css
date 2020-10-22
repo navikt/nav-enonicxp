@@ -588,17 +588,12 @@ h3:first-child,
   margin-top: 0;
 }
 .page-head h1 {
-  margin: 50px 0 0 0;
+  margin: 2rem 0 1rem 0;
   text-align: center;
 }
 @media (max-width: 38.6875em) {
   .page-head h1 {
-    margin-bottom: 0;
-    margin-top: 40px;
     font-size: 1.5rem;
-  }
-  .contentpage .page-head h1 {
-    margin-bottom: 30px;
   }
   h2,
   .h2 {
@@ -673,8 +668,7 @@ blockquote:before {
   background-color: #f1f1f1;
 }
 .maincontent {
-  padding-top: 1rem;
-  padding-bottom: 3rem;
+  padding: 1rem 0;
 }
 header .page-ingress {
   margin-bottom: 1rem;
@@ -2764,25 +2758,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
     display: block !important;
     clear: left;
   }
-  .page-head {
-    display: block !important;
-    margin-left: 0 !important;
-    padding-left: 50px !important;
-  }
-  .page-head .breadcrumbs {
-    margin: 20px 0 !important;
-    display: block !important;
-  }
-  .page-head .breadcrumbs .crumb {
-    margin-right: 16px;
-  }
-  .page-head .breadcrumbs a.crumb,
-  .page-head .breadcrumbs a.crumb span {
-    color: #3e3832 !important;
-  }
-  .page-head .breadcrumbs span.crumb {
-    border-bottom: 0 !important;
-  }
   .maincontent {
     padding: 0 25px !important;
     page-break-after: auto;
@@ -3148,17 +3123,6 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 }
 .no-margin-bottom {
   margin-bottom: 0;
-}
-.kampanje {
-  display: flex;
-  flex-direction: row;
-  border-color: black;
-}
-@media (min-width: 48em) {
-  .kampanje {
-    padding: 1.5rem;
-    margin: 1rem 0;
-  }
 }
 .kampanje-varsel__ikon-rad,
 .lenkepanel-ikon-col {
