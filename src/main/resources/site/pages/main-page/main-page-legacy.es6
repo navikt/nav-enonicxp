@@ -6,12 +6,12 @@ const libs = {
     utils: require('/lib/nav-utils'),
 };
 const etag = libs.cache.etag;
-const view = resolve('main-page-old.html');
+const view = resolve('main-page-legacy.html');
 const decUrl = app.config.decoratorUrl;
 
-function handleGet(req) {
+function mainPageLegacy(req) {
     return libs.cache.getPaths(req.rawPath, 'main-page', req.branch, () => {
-        const { utils } = libs;
+        const utils = libs.utils;
         const content = libs.portal.getContent();
         const title = content.displayName;
         const languages = utils.getLanguageVersions(content);
@@ -113,4 +113,4 @@ function handleGet(req) {
     });
 }
 
-exports.get = handleGet;
+module.exports = mainPageLegacy;

@@ -4,12 +4,19 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/siteCache'),
 };
+const frontendProxyController = require('/lib/headless-utils/frontend-proxy-controller.es6');
+const frontendLiveness = require('/lib/headless-utils/frontend-liveness.es6');
+
 const etag = libs.cache.etag;
 const view = resolve('page-large-table.html');
 
 exports.get = function (req) {
     log.info('page-large-table controller req-object:');
     Object.keys(req).forEach((k) => log.info(`key: ${k} - value: ${req[k]}`));
+
+    if (frontendLiveness.isLive(req)) {
+        return frontendProxyController(req);
+    }
 
     return libs.cache.getPaths(req.rawPath, 'page-large-table', req.branch, () => {
         const content = libs.portal.getContent();
