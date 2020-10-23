@@ -656,7 +656,7 @@ blockquote:before {
   font-family: 'Times new roman', serif;
   position: absolute;
   left: 0;
-  top: 10px;
+  top: -17px;
 }
 @media (max-width: 48em) {
   @-ms-viewport {
@@ -3059,7 +3059,7 @@ div.placeholder .top-link-wrapper.sticky-top-link {
 .lenkepanel .tekst {
   width: 100%;
 }
-.lenkepanel .tekst h3 {
+.lenkepanel .tekst h3, .lenkepanel h2 {
   font-size: 1.1rem;
 }
 .lenkepanel .tekst p {
