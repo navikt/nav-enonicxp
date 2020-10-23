@@ -13,7 +13,7 @@
                     <h2 class="typo-systemtittel lenkepanel__heading">
                         [[${newsItem.title}]]
                     </h2>
-                    <p data-th-if="${newsItem.ingress}"
+                    <p data-th-if="${newsItem.ingress && newsItem.ingress != ''}"
                        class="typo-normal kampanje-varsel__ingress"
                     >
                         [[${newsItem.ingress}]]
