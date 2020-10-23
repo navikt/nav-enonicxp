@@ -656,7 +656,7 @@ blockquote:before {
   font-family: 'Times new roman', serif;
   position: absolute;
   left: 0;
-  top: 10px;
+  top: -17px;
 }
 @media (max-width: 48em) {
   @-ms-viewport {
