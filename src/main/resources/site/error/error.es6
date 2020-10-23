@@ -209,12 +209,6 @@ exports.handle404 = function (req) {
         },
     ];
 
-    const languages = libs.utils.getLanguageVersions(content);
-    if (languages.length) {
-        const encodedLanguages = encodeURI(JSON.stringify(languages));
-        decParams.push({ key: 'availableLanguages', value: encodedLanguages });
-    }
-
     const breadcrumbs = [
         { url: '/', title: content.language === 'en' ? 'Page not found' : 'Fant ikke siden' },
     ];
