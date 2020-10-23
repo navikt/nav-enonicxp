@@ -104,10 +104,14 @@ exports.getBreadcrumbMenu = function (params, initialContent = false) {
 
     // Add divider html (if any) and reverse the menu item array
     breadcrumbMenu.divider = settings.dividerHtml || null;
+    let slicer = 3;
+    if (breadcrumbItems.length === 2) {
+        slicer = 1;
+    }
     breadcrumbMenu.items = breadcrumbItems
         .reverse()
         // Ta vekk de øverste tre nivåene: <hjem>/<språk>/<context>
-        .slice(3)
+        .slice(slicer)
         // Ta bare med elementer  som har sidevisning knyttet til seg (kan navigere hit)
         .filter(
             (el) =>
@@ -115,6 +119,7 @@ exports.getBreadcrumbMenu = function (params, initialContent = false) {
                 el.type === app.name + ':section-page' ||
                 el.type === app.name + ':page-list' ||
                 el.type === app.name + ':transport-page' ||
+                el.type === app.name + ':searchresult' ||
                 el.type === app.name + ':generic-page'
         );
 
