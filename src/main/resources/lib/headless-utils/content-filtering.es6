@@ -18,21 +18,17 @@ const sortAndPruneContentList = (contentList, maxItems, sortFunc) =>
 
 const filterContent = (content) => {
     if (content?.__typename === 'no_nav_navno_SectionPage' && content.data) {
-        const ntkContents = sortAndPruneContentList(content.data.ntkContents, content.data.nrNTK);
-        const newsContents = sortAndPruneContentList(
-            content.data.newsContents,
-            content.data.nrNews,
-            sortByLastModifiedDesc
-        );
-        const scContents = sortAndPruneContentList(content.data.scContents, content.data.nrSC);
-
         return {
             ...content,
             data: {
                 ...content.data,
-                ntkContents: ntkContents,
-                newsContents: newsContents,
-                scContents: scContents,
+                ntkContents: sortAndPruneContentList(content.data.ntkContents, content.data.nrNTK),
+                newsContents: sortAndPruneContentList(
+                    content.data.newsContents,
+                    content.data.nrNews,
+                    sortByLastModifiedDesc
+                ),
+                scContents: sortAndPruneContentList(content.data.scContents, content.data.nrSC),
             },
         };
     }
