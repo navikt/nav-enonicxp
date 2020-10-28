@@ -8,7 +8,7 @@ const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpda
 const sortAndPruneContentList = (contentList, maxItems, sortFunc) => {
     if (contentList && contentList.data) {
         const data = {
-            sectionContents: list.data.sectionContents.sort(sortFunc).slice(0, maxItems),
+            sectionContents: contentList.data.sectionContents.sort(sortFunc).slice(0, maxItems),
         };
         return objectAssign(contentList, { data: objectAssign(contentList.data, data) });
     }
