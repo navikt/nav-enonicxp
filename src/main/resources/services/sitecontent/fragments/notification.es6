@@ -1,5 +1,5 @@
 const globalFragment = require('./_global');
-const externalLink = require('./externalLink.es6');
+const externalLink = require('./externalLink');
 
 const notificationFragment = `
     ...on no_nav_navno_Notification {

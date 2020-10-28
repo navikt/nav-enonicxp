@@ -1,30 +1,27 @@
-// {...panda, mood: sad}
-// spread operator does not work in exported functions (?!)
-// Object.assign is not defined :(
-const objectAssign = require('/lib/object-assign');
-
-const deepSearchParseJsonAndAppend = (obj, searchFor, appendTo) => {
+const deepParseAndAppendJsonData = (obj, parseFrom, appendTo) => {
     if (obj && typeof obj === 'object') {
         if (Array.isArray(obj)) {
-            return obj.map((item) => deepSearchParseJsonAndAppend(item, searchFor, appendTo));
+            return obj.map((item) => deepParseAndAppendJsonData(item, parseFrom, appendTo));
         }
 
         const newObj = {};
+
         Object.keys(obj).forEach((key) => {
-            if (key === searchFor) {
-                newObj[appendTo] = objectAssign(JSON.parse(obj[searchFor]) || {}, newObj[appendTo]);
+            if (key === parseFrom) {
+                newObj[appendTo] = { ...JSON.parse(obj[parseFrom]), ...newObj[appendTo] };
             } else if (key === appendTo) {
-                newObj[appendTo] = objectAssign(
-                    newObj[appendTo] || {},
-                    deepSearchParseJsonAndAppend(obj[appendTo], searchFor, appendTo)
-                );
+                newObj[appendTo] = {
+                    ...newObj[appendTo],
+                    ...deepParseAndAppendJsonData(obj[appendTo], parseFrom, appendTo),
+                };
             } else {
-                newObj[key] = deepSearchParseJsonAndAppend(obj[key], searchFor, appendTo);
+                newObj[key] = deepParseAndAppendJsonData(obj[key], parseFrom, appendTo);
             }
         });
+
         return newObj;
     }
     return obj;
 };
 
-module.exports = deepSearchParseJsonAndAppend;
+module.exports = deepParseAndAppendJsonData;
