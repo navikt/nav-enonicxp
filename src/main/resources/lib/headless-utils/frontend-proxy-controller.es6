@@ -23,7 +23,7 @@ const legacyHtml = () => {
     };
 };
 
-const frontendProxy = (req) => {
+const frontendProxy = (req, fallbackController) => {
     if (req.path.startsWith(legacyPath)) {
         return legacyHtml();
     }
@@ -38,20 +38,18 @@ const frontendProxy = (req) => {
     }${frontendPath}?${frontendLiveness.proxyFlag}=true`;
     log.info(`requesting html from frontend: ${frontendUrl}`);
 
-    const html = libs.httpClient.request({
-        url: frontendUrl,
-        contentType: 'text/html',
-    });
+    try {
+        return libs.httpClient.request({
+            url: frontendUrl,
+            contentType: 'text/html',
+            connectionTimeout: 1000,
+        });
+    } catch (e) {
+        log.info(`invalid response from external frontend. error: ${e}`);
+    }
 
-    return (
-        html || {
-            status: 500,
-            body: {
-                message: 'No response from frontend',
-            },
-            contentType: 'application/json',
-        }
-    );
+    log.info(`failed to fetch html from external frontend, trying fallback...`);
+    return fallbackController(req);
 };
 
 module.exports = frontendProxy;

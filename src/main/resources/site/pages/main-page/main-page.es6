@@ -10,7 +10,7 @@ const handleGet = (req) => {
         return mainPageLegacy(req);
     }
 
-    return frontendProxy(req);
+    return frontendProxy(req, mainPageLegacy);
 };
 
 exports.get = handleGet;
