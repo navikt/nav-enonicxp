@@ -6,7 +6,7 @@ const getLastUpdatedUnixTime = (content) =>
 const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
 
 const sortAndPruneContentList = (contentList, maxItems, sortFunc) => {
-    if (contentList && maxItems && contentList.data) {
+    if (contentList && contentList.data) {
         const data = {
             sectionContents: contentList.data.sectionContents.sort(sortFunc).slice(0, maxItems),
         };
