@@ -6,15 +6,18 @@ const getLastUpdatedUnixTime = (content) =>
 const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
 
 const sortAndPruneContentList = (contentList, maxItems, sortFunc) => {
-    const data = {
-        sectionContents: contentList.data.sectionContents.sort(sortFunc).slice(0, maxItems),
-    };
+    if (contentList && contentList.data) {
+        const data = {
+            sectionContents: contentList.data.sectionContents.sort(sortFunc).slice(0, maxItems),
+        };
+        return objectAssign(contentList, { data: objectAssign(contentList.data, data) });
+    }
 
-    return objectAssign(contentList, { data: objectAssign(contentList.data, data) });
+    return contentList;
 };
 
 const filterContent = (content) => {
-    if (content.__typename === 'no_nav_navno_SectionPage') {
+    if (content.__typename === 'no_nav_navno_SectionPage' && content.data) {
         const ntkContents = sortAndPruneContentList(content.data.ntkContents, content.data.nrNTK);
         const newsContents = sortAndPruneContentList(
             content.data.newsContents,
