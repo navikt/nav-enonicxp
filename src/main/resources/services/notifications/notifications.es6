@@ -1,7 +1,7 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 
-const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser.es6');
+const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
 
 const notification = require('../sitecontent/fragments/notification');
 const globalFragment = require('../sitecontent/fragments/_global');

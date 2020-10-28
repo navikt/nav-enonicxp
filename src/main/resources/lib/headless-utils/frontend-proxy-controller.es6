@@ -3,8 +3,8 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     httpClient: require('/lib/http-client'),
 };
-const frontendLiveness = require('/lib/headless-utils/frontend-liveness.es6');
-const frontendOriginMap = require('/lib/headless-utils/frontend-origin.es6');
+const frontendLiveness = require('/lib/headless-utils/frontend-liveness');
+const frontendOriginMap = require('/lib/headless-utils/frontend-origin');
 
 const frontendOrigin = frontendOriginMap[app.config.env] || frontendOriginMap.p;
 const legacyPath = '/_/legacy';

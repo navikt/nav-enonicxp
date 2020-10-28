@@ -1,7 +1,7 @@
-const globalFragment = require('./_global.es6');
-const pageList = require('./pageList.es6');
-const transportPage = require('./transportPage.es6');
-const mainArticle = require('./mainArticle.es6');
+const globalFragment = require('./_global');
+const pageList = require('./pageList');
+const transportPage = require('./transportPage');
+const mainArticle = require('./mainArticle');
 
 const contentListFragment = `
     ...on no_nav_navno_ContentList {

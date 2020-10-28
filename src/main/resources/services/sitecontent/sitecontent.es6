@@ -1,19 +1,19 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 
-const filterContent = require('/lib/headless-utils/content-filtering.es6');
-const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser.es6');
+const filterContent = require('/lib/headless-utils/content-filtering');
+const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
 
-const globalFragment = require('./fragments/_global.es6');
-const componentsFragment = require('./fragments/_components.es6');
-const sectionPage = require('./fragments/sectionPage.es6');
-const contentList = require('./fragments/contentList.es6');
-const internalLink = require('./fragments/internalLink.es6');
-const transportPage = require('./fragments/transportPage.es6');
-const externalLink = require('./fragments/externalLink.es6');
-const pageList = require('./fragments/pageList.es6');
-const mainArticle = require('./fragments/mainArticle.es6');
-const largeTable = require('./fragments/largeTable.es6');
+const globalFragment = require('./fragments/_global');
+const componentsFragment = require('./fragments/_components');
+const sectionPage = require('./fragments/sectionPage');
+const contentList = require('./fragments/contentList');
+const internalLink = require('./fragments/internalLink');
+const transportPage = require('./fragments/transportPage');
+const externalLink = require('./fragments/externalLink');
+const pageList = require('./fragments/pageList');
+const mainArticle = require('./fragments/mainArticle');
+const largeTable = require('./fragments/largeTable');
 
 const schema = guillotineLib.createSchema();
 

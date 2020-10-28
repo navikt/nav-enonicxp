@@ -4,8 +4,8 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     cache: require('/lib/siteCache'),
 };
-const frontendProxyController = require('/lib/headless-utils/frontend-proxy-controller.es6');
-const frontendLiveness = require('/lib/headless-utils/frontend-liveness.es6');
+const frontendProxyController = require('/lib/headless-utils/frontend-proxy-controller');
+const frontendLiveness = require('/lib/headless-utils/frontend-liveness');
 
 const etag = libs.cache.etag;
 const view = resolve('page-large-table.html');
