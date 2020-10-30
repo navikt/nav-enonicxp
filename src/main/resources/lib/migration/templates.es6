@@ -293,7 +293,7 @@ const hovedSeksjonPage = [
         type: 'part',
         path: '/main/1/first/1',
         part: {
-            descriptor: 'no.nav.navno:link-panels',
+            descriptor: 'no.nav.navno:breaking-news',
             config: {
                 'no-nav-navno': {},
             },
