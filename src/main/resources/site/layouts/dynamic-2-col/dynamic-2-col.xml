@@ -1,0 +1,18 @@
+<layout>
+    <display-name>Dynamisk - 2 kolonner</display-name>
+    <description>To kolonner med valgfri bredde for dynamiske komponenter</description>
+    <form>
+        <input type="TextArea" name="distribution">
+            <label>Fordeling</label>
+            <default>50-50</default>
+        </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <default>1rem 0 1rem 0</default>
+        </input>
+    </form>
+    <regions>
+        <region name="dynamic-1"/>
+        <region name="dynamic-2"/>
+    </regions>
+</layout>

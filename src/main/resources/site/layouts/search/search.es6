@@ -1,18 +1,14 @@
 const libs = {
     portal: require('/lib/xp/portal'),
     thymeleaf: require('/lib/thymeleaf'),
-    lang: require('/lib/i18nUtil'),
 };
 const view = resolve('./search.html');
 
-exports.get = function (req) {
+exports.get = function () {
     const component = libs.portal.getComponent();
-    const language = libs.portal.getContent().language || 'no';
-    const toTop = libs.lang.parseBundle(language).pagenav.toTheTop;
     const model = {
         searchbar: component.regions.searchbar,
         result: component.regions.result,
-        toTop,
     };
 
     return {

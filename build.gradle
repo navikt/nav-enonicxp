@@ -81,6 +81,8 @@ dependencies {
     include "com.enonic.lib:lib-http-client:2.1.1"
     include "com.enonic.lib:lib-cache:2.1.0"
     include 'com.enonic.lib:lib-cron:1.1.1'
+    include "com.enonic.lib:lib-guillotine:4.2.2"
+    include "com.enonic.lib:lib-graphql-playground:0.0.1"
     include "no.item.wsUtil:wsUtil:1.1.1"
     webjar "org.webjars:momentjs:2.14.1"
 }

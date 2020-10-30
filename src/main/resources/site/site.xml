@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-    <x-data name="cmsContent"/>
-    <x-data name="cmsMenu"/>
-    <x-data name="cmsStatus"/>
-    <x-data name="menu-item"/>
-    <x-data name="fasetter"/>
-    <x-data name="oldContentType"/>
+    <x-data name="cmsContent"  optional="true"/>
+    <x-data name="cmsMenu"  optional="true"/>
+    <x-data name="cmsStatus"  optional="true"/>
+    <x-data name="menu-item" optional="true"/>
+    <x-data name="fasetter" optional="true"/>
+    <x-data name="oldContentType" optional="true"/>
     <config>
+        <input name="name" type="TextLine">
+            <label>Felt for at Guillotine skal fungere (er en bug der)</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
     </config>
     <mappings>
         <mapping controller="/lib/enonic/url-redirect/index.js">
             <match>type:'no.nav.navno:url'</match>
+        </mapping>
+        <mapping controller="/site/pages/main-page/main-page.js">
+            <match>type:'portal:fragment'</match>
+        </mapping>
+        <mapping controller="/controllers/graphql.js" order="50">
+            <pattern>/api</pattern>
         </mapping>
     </mappings>
 </site>

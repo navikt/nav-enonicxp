@@ -29,6 +29,9 @@
         "window": true,
         "__": true
     },
+    "parserOptions": {
+        "ecmaVersion": 2020
+    },
     "overrides": [
         {
             "files": ["*.html", "*.ftl", "*.xml"],

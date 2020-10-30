@@ -288,6 +288,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // Bokser med seperator, e.g. Logg inn på Ditt NAV
     {
         type: 'part',
         path: '/main/1/first/1',
@@ -298,6 +299,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // E.g. Hva er din situasjon?
     {
         type: 'part',
         path: '/main/1/first/2',
@@ -308,6 +310,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // Nyttig og vite, nyheter og snareveier
     {
         type: 'part',
         path: '/main/1/first/3',
@@ -496,6 +499,20 @@ const genericPage = [
     },
 ];
 
+const dynamicPage = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:main-page',
+            customized: true,
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
+
 const officeInformationPage = [
     {
         type: 'page',
@@ -674,6 +691,19 @@ const templates = [
             },
         },
         components: genericPage,
+    },
+    {
+        content: {
+            displayName: 'Dynamisk side',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:dynamic-page',
+            },
+        },
+        components: dynamicPage,
     },
     {
         content: {
