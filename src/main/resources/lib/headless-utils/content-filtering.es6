@@ -1,3 +1,5 @@
+const { generateCamelCase } = require('/lib/guillotine/util/naming');
+
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
 
@@ -32,28 +34,15 @@ const sectionPageFilter = (content) => ({
 
 // Makes sure option names for menuList follows the guillotine naming convention
 const menuListItemsOptionsFilter = (content) => {
-    const guillotineKeyMap = {
-        'form-and-application': 'formAndApplication',
-        'process-time': 'processTime',
-        'related-information': 'relatedInformation',
-        'report-changes': 'reportChanges',
-        'appeal-rights': 'appealRights',
-        'rules-and-regulations': 'rulesAndRegulations',
-    };
-
     const menuListItems = content.data.menuListItems;
     if (!menuListItems) {
         return content;
     }
 
-    const menuListItemsFiltered = Object.keys(content.data.menuListItems).reduce((acc, key) => {
-        const guillotineKey = guillotineKeyMap[key];
-        return guillotineKey
-            ? { ...acc, [guillotineKey]: menuListItems[key] }
-            : { ...acc, [key]: menuListItems[key] };
-    }, {});
-
-    const _selected = guillotineKeyMap[menuListItems._selected] || menuListItems._selected;
+    const menuListItemsFiltered = Object.keys(content.data.menuListItems).reduce(
+        (acc, key) => ({ ...acc, [generateCamelCase(key)]: menuListItems[key] }),
+        {}
+    );
 
     return {
         ...content,
@@ -61,7 +50,7 @@ const menuListItemsOptionsFilter = (content) => {
             ...content.data,
             menuListItems: {
                 ...menuListItemsFiltered,
-                _selected,
+                selected: generateCamelCase(menuListItems._selected),
             },
         },
     };
