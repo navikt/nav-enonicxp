@@ -1,4 +1,5 @@
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
+const { forceArray } = require('/lib/nav-utils');
 
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
@@ -39,18 +40,21 @@ const menuListItemsOptionsFilter = (content) => {
         return content;
     }
 
-    const menuListItemsFiltered = Object.keys(content.data.menuListItems).reduce(
-        (acc, key) => ({ ...acc, [generateCamelCase(key)]: menuListItems[key] }),
-        {}
-    );
+    const menuListItemsFiltered = Object.keys(content.data.menuListItems).reduce((acc, key) => {
+        if (key) {
+            return { ...acc, [generateCamelCase(key)]: menuListItems[key] };
+        }
+        return acc;
+    }, {});
 
+    const selected = forceArray(menuListItems._selected).map((item) => generateCamelCase(item));
     return {
         ...content,
         data: {
             ...content.data,
             menuListItems: {
                 ...menuListItemsFiltered,
-                selected: generateCamelCase(menuListItems._selected),
+                selected,
             },
         },
     };
