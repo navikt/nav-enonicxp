@@ -83,8 +83,8 @@ function unpublisher(socket) {
             log.info(JSON.stringify(elem, null, 4));
         }
         if (targetContent) {
-            log.info(`unpublish: ${targetContent.displayName} - ${targetContent._path}`);
-            socket.emit('progressUpdate', `${targetContent.displayName} - ${targetContent._path}`);
+            log.info(`unpublish: ${targetContent._path}|${targetContent.displayName}`);
+            socket.emit('progressUpdate', `${targetContent._path}|${targetContent.displayName}`);
             return targetContent._id;
         }
         return false;
