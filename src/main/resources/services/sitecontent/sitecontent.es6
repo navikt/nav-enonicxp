@@ -14,6 +14,7 @@ const externalLink = require('./fragments/externalLink');
 const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
 const largeTable = require('./fragments/largeTable');
+const searchForRedirect = require('../../site/error/error.es6');
 
 const schema = guillotineLib.createSchema();
 
@@ -75,6 +76,25 @@ const getContent = (contentId) => {
     return filterContent(contentWithParsedJsonData);
 };
 
+const getRedirectTargetFromContent = (content) => {
+    if (content.type === 'no.nav.navno:internal-link') {
+        return content.data.target;
+    }
+    if (content.type === 'no.nav.navno:external-link') {
+        return content.data.url;
+    }
+    return null;
+};
+
+const getRedirectContent = (contentId, branch = 'master') => {
+    const redirectContent = searchForRedirect(contentId, { branch });
+    const targetId = getRedirectTargetFromContent(redirectContent);
+    if (targetId) {
+        return getContent(targetId);
+    }
+    return null;
+};
+
 const handleGet = (req) => {
     const { id } = req.params;
 
@@ -89,6 +109,17 @@ const handleGet = (req) => {
     }
 
     const content = getContent(id, true);
+
+    if (!content) {
+        const redirectContent = getRedirectContent(id, req.branch);
+        if (redirectContent) {
+            return {
+                status: 200,
+                body: redirectContent,
+                contentType: 'application/json',
+            };
+        }
+    }
 
     return content
         ? {
