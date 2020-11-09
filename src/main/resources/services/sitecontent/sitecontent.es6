@@ -14,7 +14,7 @@ const externalLink = require('./fragments/externalLink');
 const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
 const largeTable = require('./fragments/largeTable');
-const searchForRedirect = require('../../site/error/error.es6');
+const searchForRedirect = require('../../site/error/error');
 
 const schema = guillotineLib.createSchema();
 
