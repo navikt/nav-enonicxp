@@ -76,22 +76,32 @@ const getContent = (contentId) => {
     return filterContent(contentWithParsedJsonData);
 };
 
-const getRedirectTargetFromContent = (content) => {
-    if (content.type === 'no.nav.navno:internal-link') {
-        return content.data.target;
-    }
-    if (content.type === 'no.nav.navno:external-link') {
-        return content.data.url;
-    }
-    return null;
-};
-
 const getRedirectContent = (contentId, branch = 'master') => {
     const redirectContent = searchForRedirect(contentId, { branch });
-    const targetId = getRedirectTargetFromContent(redirectContent);
-    if (targetId) {
-        return getContent(targetId);
+    if (!redirectContent) {
+        return null;
     }
+
+    if (redirectContent.type === 'no.nav.navno:internal-link') {
+        const target = getContent(redirectContent.data?.target);
+        if (!target) {
+            return null;
+        }
+
+        return {
+            ...redirectContent,
+            data: { target: { _path: target._path } },
+            __typename: 'no_nav_navno_InternalLink',
+        };
+    }
+
+    if (redirectContent.type === 'no.nav.navno:external-link') {
+        return {
+            ...redirectContent,
+            __typename: 'no_nav_navno_ExternalLink',
+        };
+    }
+
     return null;
 };
 
