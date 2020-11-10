@@ -109,8 +109,8 @@ function createNewElements() {
                             tagClass: ['progress', 'is-info'],
                             id: 'convert-nodes',
                             progress: {
-                                value: 'convert-nodes-value',
-                                max: 'convert-nodes-max',
+                                value: 'unpublish-nodes-value',
+                                max: 'unpublish-nodes-max',
                             },
                         },
                         {
