@@ -63,7 +63,6 @@ export const getContent = (contentId) => {
 
     const content = data?.guillotine?.get;
     if (!content) {
-        log.info(`Content not found: ${contentId}`);
         return null;
     }
 
@@ -78,7 +77,6 @@ export const getContent = (contentId) => {
 
 export const getRedirectContent = (contentPath, branch = 'master') => {
     const redirectContent = searchForRedirect(contentPath, { branch });
-    log.info(`Redirecting to: ${JSON.stringify(redirectContent)}`);
     if (!redirectContent) {
         return null;
     }
@@ -130,6 +128,8 @@ const handleGet = (req) => {
                 contentType: 'application/json',
             };
         }
+
+        log.info(`Content not found: ${id}`);
     }
 
     return content
