@@ -76,8 +76,9 @@ export const getContent = (contentId) => {
     return filterContent(contentWithParsedJsonData);
 };
 
-export const getRedirectContent = (contentId, branch = 'master') => {
-    const redirectContent = searchForRedirect(contentId, { branch });
+export const getRedirectContent = (contentPath, branch = 'master') => {
+    const redirectContent = searchForRedirect(contentPath, { branch });
+    log.info(`Redirecting to: ${JSON.stringify(redirectContent)}`);
     if (!redirectContent) {
         return null;
     }
