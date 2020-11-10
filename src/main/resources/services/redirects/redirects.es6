@@ -2,6 +2,7 @@ const { getRedirectContent } = require('../sitecontent/sitecontent');
 const contentLib = require('/lib/xp/content');
 const cacheLib = require('/lib/siteCache');
 
+// Denne er ganske "tung", men skal kun kalles build-time fra frontend
 const handleGet = (req) => {
     const redirects = cacheLib
         .getRedirects(
