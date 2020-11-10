@@ -1,6 +1,11 @@
+const mainArticleChapter = require('./mainArticleChapter');
+
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
         dataAsJson
+        children {
+            ${mainArticleChapter.fragment}
+        }
     }
 `;
 

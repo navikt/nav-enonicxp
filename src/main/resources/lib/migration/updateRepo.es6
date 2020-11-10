@@ -72,24 +72,25 @@ function unpublisher(socket) {
         query: 'publish.from NOT LIKE "*" AND (type LIKE "no.nav.navno:*" OR type LIKE "media:*")',
     }).hits;
 
-    socket.emit('convert-nodes-max', masterHits.length);
+    socket.emit('unpublish-nodes-max', masterHits.length);
     let targets = masterHits.map((elem, ix) => {
-        socket.emit('convert-nodes-value', ix + 1);
+        socket.emit('unpublish-nodes-value', ix + 1);
         let targetContent = false;
         try {
-            targetContent = libs.content.get({ key: elem.id });
+            targetContent = repoDraft.get(elem.id);
         } catch (e) {
             log.info('error for: ');
             log.info(JSON.stringify(elem, null, 4));
         }
         if (targetContent) {
-            log.info(`unpublish: ${targetContent.displayName} - ${targetContent._path}`);
-            socket.emit('progressUpdate', `${targetContent.displayName} - ${targetContent._path}`);
+            log.info(`unpublish: ${targetContent._path}|${targetContent.displayName}`);
+            socket.emit('progressUpdate', `${targetContent._path}|${targetContent.displayName}`);
             return targetContent._id;
         }
         return false;
     });
 
+    socket.emit('progressUpdate', `done`);
     // publish changes
     targets = targets.filter((elem) => {
         return !!elem;
@@ -151,6 +152,7 @@ function convertImages(socket) {
     republishLiveElements(targetIds);
     return targetIds;
 }
+
 function handleUnpublish(socket) {
     const action = 'unpublish';
     const elements = createDialog('Avpublisererer', action);
@@ -159,6 +161,7 @@ function handleUnpublish(socket) {
         libs.tools.runInContext(socket, unpublisher);
     });
 }
+
 function handleImages(socket) {
     const action = 'convertimages';
     const elements = createDialog('Konverter bilder for alt-tekst', action);
