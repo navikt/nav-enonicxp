@@ -49,7 +49,7 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
-const getContent = (contentId) => {
+export const getContent = (contentId) => {
     const queryResponse = graphQlLib.execute(schema, queryGetContentByRef, {
         ref: contentId,
     });
@@ -76,7 +76,7 @@ const getContent = (contentId) => {
     return filterContent(contentWithParsedJsonData);
 };
 
-const getRedirectContent = (contentId, branch = 'master') => {
+export const getRedirectContent = (contentId, branch = 'master') => {
     const redirectContent = searchForRedirect(contentId, { branch });
     if (!redirectContent) {
         return null;
