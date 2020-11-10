@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html data-th-lang="${language}">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Fant ikke siden</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Fant ikke siden" />
+    <link data-th-href="${decorator.url} + '/css/client.css'" rel="stylesheet" />
+    <link data-th-href="${styleUrl}" rel="stylesheet" />
+    <script data-th-src="${decorator.url} + '/client.js'"></script>
+    <script src="https://amplitude.nav.no/libs/amplitude-7.1.0-min.gz.js"></script>
+    <script data-th-src="${jsUrl}"></script>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/Webpage" data-portal-component-type="page">
+    <div id="decorator-header" data-th-classappend="${decorator.class}">
+    </div>
+
+    <div class="navno pagewrapper">
+        <main class="content-page">
+            <div class="container maincontent">
+                <div class="error-page__center error-page__container row">
+                    <div data-th-switch="${language}" class="error-page col-sm-12 col-md-8" id="page-top">
+                        <div data-th-case="'no'" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">Fant ikke siden</h1>
+                            <div class="inner-row">
+                                <p>Beklager, siden kan være slettet eller flyttet, eller det var en feil i lenken som førte deg hit.</p>
+                                <p>Bruk gjerne søket, menyen eller <a href="/">gå til forsiden</a>.</p>
+                                <div class="error-page__search-container">
+                                    <h3>Hva leter du etter?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input placeholder="Søk på nav.no" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Søk på nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Søk
+                                        </button>
+                                    </form>
+                                </div>
+                                <p>
+                                    <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Meld gjerne fra om denne lenken</a>
+                                </p>
+                            </div>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    In English:
+                                </h2>
+                                <p>The page you requested, cannot be found.</p>
+                                <p>Go to the <a href="/en">front page</a>, or use one of the links in the menu.</p>
+                            </div>
+                        </div>
+                        <div data-th-case="'se'" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">Siidu ii gávdnon</h1>
+                            <div class="inner-row">
+                                <p>Šállošat, siidu sáhttá leat sihkkojuvvon dahje sirdojuvvon, dahje sáhttá leat meattáhus liŋkkas mii doalvvui du deike.</p>
+                                <p>Geavat áinnas ohcangietti, fálu dahje <a href="/se">mana ovdasiidui</a>.</p>
+                                <div class="error-page__search-container">
+                                    <h3>Maid don leat ohcamin?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input placeholder="Oza siidduin nav.no" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Oza siidduin nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Oza
+                                        </button>
+                                    </form>
+                                </div>
+                                <p>
+                                    <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Dieđit áinnas dán liŋkka</a>
+                                </p>
+                            </div>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    På norsk:
+                                </h2>
+                                <p>Vi fant ikke siden du ba om.</p>
+                                <p>Gå <a href="/">til forsiden</a>, eller prøv menyen.</p>
+                            </div>
+                        </div>
+                        <div data-th-case="'en'" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">
+                                Page not found
+                            </h1>
+                            <div class="inner-row">
+                                <p>Sorry, but this page has been deleted or moved, or there could be an error in the link that brought you here. </p>
+                                <p>You can go to the <a href="/en">front page</a>, use the navigation menu or search.</p>
+                                <div class="error-page__search-container">
+                                    <h3>What are you looking for?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input placeholder="Search nav.no" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Search nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Search
+                                        </button>
+                                    </form>
+                                </div>
+                                <p>
+                                    <a href="https://www.nav.no/person/kontakt-oss/en/tilbakemeldinger/feil-og-mangler">
+                                        Please tell us about this error
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    På norsk:
+                                </h2>
+                                <p>Vi fant ikke siden du ba om.</p>
+                                <p>Gå <a href="/">til forsiden</a>, eller prøv menyen.</p>
+                            </div>
+                        </div>
+                        <div data-th-case="*" data-th-remove="tag">
+                            <h1 class="typo-inneholdstittel">Fant ikke siden</h1>
+                            <div class="inner-row">
+                                <p>Beklager, siden kan være slettet eller flyttet, eller det var en feil i lenken som førte deg hit.</p>
+                                <p>Bruk gjerne søket, menyen eller <a href="/">gå til forsiden</a>.</p>
+                                <div class="error-page__search-container">
+                                    <h3>Hva leter du etter?</h3>
+                                    <form action="/sok" class="search-input">
+                                        <div class="skjemaelement search-input__input">
+                                            <input placeholder="Søk på nav.no" class="skjemaelement__input input--fullbredde" id="sok" name="ord" type="text" aria-label="Søk på nav.no" />
+                                        </div>
+                                        <button class="search-knapp search-input__button search-knapp--hoved" type="submit">
+                                            Søk
+                                        </button>
+                                    </form>
+                                </div>
+                                <p>
+                                    <a href="https://www.nav.no/person/kontakt-oss/tilbakemeldinger/feil-og-mangler">Meld gjerne fra om denne lenken</a>
+                                </p>
+                            </div>
+                            <div class="inner-row">
+                                <h2 class="typo-undertittel">
+                                    In english:
+                                </h2>
+                                <p>The page you requested, cannot be found.</p>
+                                <p>Go to the <a href="/">front page</a>, or use one of the links in the menu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="decorator-footer"></div>
+    <div id="decorator-env" data-th-attr="data-src=${decorator.src}"></div>
+</body>
+
+</html>
