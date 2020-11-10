@@ -13,6 +13,7 @@ const transportPage = require('./fragments/transportPage');
 const externalLink = require('./fragments/externalLink');
 const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
+const mainArticleChapter = require('./fragments/mainArticleChapter');
 const largeTable = require('./fragments/largeTable');
 
 const schema = guillotineLib.createSchema();
@@ -24,6 +25,7 @@ const queryFields = [
     externalLink.fragment,
     internalLink.fragment,
     mainArticle.fragment,
+    mainArticleChapter.fragment,
     pageList.fragment,
     sectionPage.fragment,
     transportPage.fragment,
