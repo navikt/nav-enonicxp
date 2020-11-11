@@ -60,11 +60,15 @@ const mainArticleFragment = `
                     }
                 }
             }
-            text
+            text(processHtml:{type:absolute})
         }
         children {
             ${mainArticleChapter.fragment}
         }
+        publish {
+            from
+        }
+        language
     }
 `;
 

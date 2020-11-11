@@ -9,7 +9,17 @@ const mainArticleChapterFragment = `
                 ${globalFragment}
             }
         }
-        dataAsJson
+        data {
+            article {
+               ...on no_nav_navno_MainArticle {
+               data {
+                   contentType
+                   hasTableOfContents
+                   ingress
+                   text(processHtml:{type:absolute})
+               }
+            }
+        }
     }
 `;
 
