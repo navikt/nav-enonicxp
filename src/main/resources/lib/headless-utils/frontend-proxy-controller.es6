@@ -31,7 +31,7 @@ const frontendProxy = (req, fallbackController) => {
     const frontendPath =
         (req.branch === 'draft' ? '/draft' : '') +
         // Request-paths from content studio in edit-mode comes in the form of the UUID of the content-object.
-        // Need to prepend /www.nav.no to get a valid url from legacy-frontend
+        // Need to prepend /www.nav.no to get a valid url for legacy-frontend
         (req.mode === 'edit' ? '/www.nav.no' : '') +
         req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
 
