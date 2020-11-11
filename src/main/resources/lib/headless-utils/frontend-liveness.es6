@@ -1,4 +1,4 @@
-const proxyFlag = 'newFrontend';
+const proxyFlag = 'fromProxy';
 const livenessCheckPeriod = 10000;
 let livenessCheckRetryTime = 0;
 

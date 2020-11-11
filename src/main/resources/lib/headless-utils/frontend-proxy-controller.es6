@@ -28,14 +28,14 @@ const frontendProxy = (req, fallbackController) => {
         return legacyHtml();
     }
 
-    const frontendPath = req.rawPath
-        .replace('/www.nav.no', '')
-        .split(req.branch)
-        .splice(1)
-        .join('/');
-    const frontendUrl = `${frontendOrigin}${
-        req.branch === 'draft' ? '/draft' : ''
-    }${frontendPath}?${frontendLiveness.proxyFlag}=true`;
+    const frontendPath =
+        (req.branch === 'draft' ? '/draft' : '') +
+        // Request-paths from content studio in edit-mode comes in the form of the UUID of the content-object.
+        // Need to prepend /www.nav.no to get a valid url for legacy-frontend
+        (req.mode === 'edit' ? '/www.nav.no' : '') +
+        req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
+
+    const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.proxyFlag}=true`;
     log.info(`requesting html from frontend: ${frontendUrl}`);
 
     try {
