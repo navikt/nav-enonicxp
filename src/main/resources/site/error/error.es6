@@ -250,4 +250,4 @@ exports.handleError = function (err) {
     };
 };
 
-module.exports = searchForRedirect;
+exports.searchForRedirect = searchForRedirect;

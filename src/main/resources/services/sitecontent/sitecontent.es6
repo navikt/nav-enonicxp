@@ -15,7 +15,7 @@ const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
 const largeTable = require('./fragments/largeTable');
-const searchForRedirect = require('../../site/error/error');
+const { searchForRedirect } = require('../../site/error/error');
 
 const schema = guillotineLib.createSchema();
 
