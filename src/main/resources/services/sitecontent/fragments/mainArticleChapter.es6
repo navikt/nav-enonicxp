@@ -20,6 +20,10 @@ const mainArticleChapterFragment = `
                }
             }
         }
+        publish {
+            from
+        }
+        language
     }
 `;
 
