@@ -15,6 +15,7 @@ const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
 const largeTable = require('./fragments/largeTable');
+const searchForRedirect = require('../../site/error/error');
 
 const schema = guillotineLib.createSchema();
 
@@ -50,7 +51,7 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
-const getContent = (contentId) => {
+export const getContent = (contentId) => {
     const queryResponse = graphQlLib.execute(schema, queryGetContentByRef, {
         ref: contentId,
     });
@@ -64,7 +65,6 @@ const getContent = (contentId) => {
 
     const content = data?.guillotine?.get;
     if (!content) {
-        log.info(`Content not found: ${contentId}`);
         return null;
     }
 
@@ -75,6 +75,35 @@ const getContent = (contentId) => {
     );
 
     return filterContent(contentWithParsedJsonData);
+};
+
+export const getRedirectContent = (contentPath, branch = 'master') => {
+    const redirectContent = searchForRedirect(contentPath, { branch });
+    if (!redirectContent) {
+        return null;
+    }
+
+    if (redirectContent.type === 'no.nav.navno:internal-link') {
+        const target = getContent(redirectContent.data?.target);
+        if (!target) {
+            return null;
+        }
+
+        return {
+            ...redirectContent,
+            data: { target: { _path: target._path } },
+            __typename: 'no_nav_navno_InternalLink',
+        };
+    }
+
+    if (redirectContent.type === 'no.nav.navno:external-link') {
+        return {
+            ...redirectContent,
+            __typename: 'no_nav_navno_ExternalLink',
+        };
+    }
+
+    return null;
 };
 
 const handleGet = (req) => {
@@ -91,6 +120,19 @@ const handleGet = (req) => {
     }
 
     const content = getContent(id, true);
+
+    if (!content) {
+        const redirectContent = getRedirectContent(id, req.branch);
+        if (redirectContent) {
+            return {
+                status: 200,
+                body: redirectContent,
+                contentType: 'application/json',
+            };
+        }
+
+        log.info(`Content not found: ${id}`);
+    }
 
     return content
         ? {
