@@ -7,6 +7,14 @@ const pageListFragment = `
             sectionContents {
                 ${globalFragment}
             }
+            menuListItems {
+                _selected
+                shortcuts {
+                    link {
+                        ${globalFragment}
+                    }
+                }
+            }
         }
     }
 `;
