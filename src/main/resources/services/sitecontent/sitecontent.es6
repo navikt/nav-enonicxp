@@ -1,6 +1,7 @@
 const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 const filterContent = require('/lib/headless-utils/content-filtering');
 const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
+const { isValidBranch } = require('/lib/headless-utils/run-in-context');
 const { searchForRedirect } = require('../../site/error/error');
 
 const globalFragment = require('./fragments/_global');
@@ -112,7 +113,7 @@ const handleGet = (req) => {
         };
     }
 
-    if (branch && branch !== 'master' && branch !== 'draft') {
+    if (branch && !isValidBranch(branch)) {
         return {
             status: 400,
             body: {
