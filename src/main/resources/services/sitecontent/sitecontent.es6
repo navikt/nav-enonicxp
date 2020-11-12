@@ -1,8 +1,7 @@
-const guillotineLib = require('/lib/guillotine');
-const graphQlLib = require('/lib/graphql');
-
+const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 const filterContent = require('/lib/headless-utils/content-filtering');
 const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
+const { searchForRedirect } = require('../../site/error/error');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -15,9 +14,6 @@ const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
 const largeTable = require('./fragments/largeTable');
-const { searchForRedirect } = require('../../site/error/error');
-
-const schema = guillotineLib.createSchema();
 
 const queryFields = [
     globalFragment,
@@ -51,19 +47,16 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
-export const getContent = (contentId) => {
-    const queryResponse = graphQlLib.execute(schema, queryGetContentByRef, {
-        ref: contentId,
-    });
+export const getContent = (contentId, branch) => {
+    const response = guillotineQuery(
+        queryGetContentByRef,
+        {
+            ref: contentId,
+        },
+        branch
+    );
 
-    const { data, errors } = queryResponse;
-
-    if (errors) {
-        log.info('GraphQL errors:');
-        errors.forEach((error) => log.info(error.message));
-    }
-
-    const content = data?.guillotine?.get;
+    const content = response?.get;
     if (!content) {
         return null;
     }
@@ -107,7 +100,7 @@ export const getRedirectContent = (contentPath, branch = 'master') => {
 };
 
 const handleGet = (req) => {
-    const { id } = req.params;
+    const { id, branch } = req.params;
 
     if (!id) {
         return {
@@ -119,10 +112,20 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getContent(id, true);
+    if (branch && branch !== 'master' && branch !== 'draft') {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid branch specified',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const content = getContent(id, branch);
 
     if (!content) {
-        const redirectContent = getRedirectContent(id, req.branch);
+        const redirectContent = getRedirectContent(id, branch);
         if (redirectContent) {
             return {
                 status: 200,

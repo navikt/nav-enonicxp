@@ -1,12 +1,8 @@
-const guillotineLib = require('/lib/guillotine');
-const graphQlLib = require('/lib/graphql');
-
 const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
+const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 
 const notification = require('../sitecontent/fragments/notification');
 const globalFragment = require('../sitecontent/fragments/_global');
-
-const schema = guillotineLib.createSchema();
 
 const queryGetNotifications = `query {
     guillotine {
@@ -17,18 +13,10 @@ const queryGetNotifications = `query {
     }
 }`;
 
-const getNotifications = () => {
-    const queryResponse = graphQlLib.execute(schema, queryGetNotifications);
+const getNotifications = (branch) => {
+    const queryResponse = guillotineQuery(queryGetNotifications, undefined, branch);
 
-    const { data, errors } = queryResponse;
-
-    if (errors) {
-        log.info('GraphQL errors:');
-        errors.forEach((error) => log.info(error.message));
-        return null;
-    }
-
-    const notifications = data.guillotine?.query;
+    const notifications = queryResponse?.query;
 
     if (!notifications) {
         log.info('Notifications not found');
@@ -39,9 +27,9 @@ const getNotifications = () => {
 };
 
 const handleGet = (req) => {
-    const { path } = req.params;
+    const { path, branch } = req.params;
 
-    const notifications = getNotifications();
+    const notifications = getNotifications(branch);
 
     if (!notifications || !Array.isArray(notifications)) {
         return {
