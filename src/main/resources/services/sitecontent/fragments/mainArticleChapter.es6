@@ -12,6 +12,7 @@ const mainArticleChapterFragment = `
         data {
             article {
                ...on no_nav_navno_MainArticle {
+                   ${globalFragment}
                    data {
                        contentType
                        hasTableOfContents
