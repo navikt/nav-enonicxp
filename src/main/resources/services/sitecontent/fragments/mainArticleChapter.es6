@@ -12,18 +12,19 @@ const mainArticleChapterFragment = `
         data {
             article {
                ...on no_nav_navno_MainArticle {
-               data {
-                   contentType
-                   hasTableOfContents
-                   ingress
-                   text(processHtml:{type:absolute})
+                   data {
+                       contentType
+                       hasTableOfContents
+                       ingress
+                       text(processHtml:{type:absolute})
+                   }
+                   publish {
+                       from
+                   }
+                   language
                }
             }
         }
-        publish {
-            from
-        }
-        language
     }
 `;
 
