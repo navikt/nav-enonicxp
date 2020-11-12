@@ -288,7 +288,6 @@ const hovedSeksjonPage = [
             },
         },
     },
-    // Bokser med seperator, e.g. Logg inn på Ditt NAV
     {
         type: 'part',
         path: '/main/1/first/1',
@@ -299,7 +298,7 @@ const hovedSeksjonPage = [
             },
         },
     },
-    // E.g. Hva er din situasjon?
+    // Hovedpaneler (bokser med seperator) f.eks. Logg inn på Ditt NAV
     {
         type: 'part',
         path: '/main/1/first/2',
@@ -310,7 +309,7 @@ const hovedSeksjonPage = [
             },
         },
     },
-    // Nyttig og vite, nyheter og snareveier
+    // Lenkepaneler, f.eks. Hva er din situasjon?
     {
         type: 'part',
         path: '/main/1/first/3',
@@ -321,6 +320,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // Lenkelister, f.eks. Nyttig og vite, nyheter og snareveier
     {
         type: 'part',
         path: '/main/1/first/4',
