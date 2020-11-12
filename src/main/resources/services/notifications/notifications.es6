@@ -29,6 +29,16 @@ const getNotifications = (branch) => {
 const handleGet = (req) => {
     const { path, branch } = req.params;
 
+    if (branch && branch !== 'master' && branch !== 'draft') {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid branch specified',
+            },
+            contentType: 'application/json',
+        };
+    }
+
     const notifications = getNotifications(branch);
 
     if (!notifications || !Array.isArray(notifications)) {
