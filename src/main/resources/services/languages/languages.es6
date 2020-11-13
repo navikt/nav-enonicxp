@@ -1,11 +1,13 @@
+const { runInBranchContext } = require('/lib/headless-utils/run-in-context');
+
 const libs = {
     utils: require('/lib/nav-utils'),
     content: require('/lib/xp/content'),
 };
 
 const handleGet = (req) => {
-    const { id } = req.params;
-    const content = libs.content.get({ key: id });
+    const { id, branch } = req.params;
+    const content = runInBranchContext(() => libs.content.get({ key: id }), branch || req.branch);
     const languages = libs.utils.getLanguageVersions(content);
 
     return {
