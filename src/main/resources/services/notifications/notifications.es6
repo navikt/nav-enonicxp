@@ -40,13 +40,13 @@ const handleGet = (req) => {
         };
     }
 
-    const notifications = getNotifications(branch);
+    const notifications = getNotifications('master');
 
     if (!notifications || !Array.isArray(notifications)) {
         return {
             status: 500,
             body: {
-                message: 'Invalid GraphQL response',
+                message: 'Invalid response',
             },
             contentType: 'application/json',
         };
