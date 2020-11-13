@@ -1,4 +1,5 @@
 const globalFragment = require('./_global');
+const mainArticleContent = require('./mainArticleContent');
 
 const mainArticleChapterFragment = `
     ...on no_nav_navno_MainArticleChapter {
@@ -12,17 +13,7 @@ const mainArticleChapterFragment = `
         data {
             article {
                ...on no_nav_navno_MainArticle {
-                   ${globalFragment}
-                   data {
-                       contentType
-                       hasTableOfContents
-                       ingress
-                       text(processHtml:{type:absolute})
-                   }
-                   publish {
-                       from
-                   }
-                   language
+                   ${mainArticleContent.fragment}
                }
             }
         }
