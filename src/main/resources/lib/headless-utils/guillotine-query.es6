@@ -13,8 +13,8 @@ const guillotineQuery = (query, params, branch = 'master') => {
     const { data, errors } = queryResponse;
 
     if (errors) {
-        log.info('GraphQL errors:');
-        errors.forEach((error) => log.info(error.message));
+        log.error('GraphQL errors:');
+        errors.forEach((error) => log.error(error.message));
     }
 
     return data?.guillotine;

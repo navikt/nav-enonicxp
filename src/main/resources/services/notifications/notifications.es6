@@ -13,8 +13,10 @@ const queryGetNotifications = `query {
     }
 }`;
 
-const getNotifications = (branch) => {
-    const queryResponse = guillotineQuery(queryGetNotifications, undefined, branch);
+const getNotifications = () => {
+    // Notifications should always be fetched from master, we don't want unpublished notifications
+    // to be displayed in content studio
+    const queryResponse = guillotineQuery(queryGetNotifications, undefined, 'master');
 
     const notifications = queryResponse?.query;
 
@@ -29,7 +31,7 @@ const getNotifications = (branch) => {
 const handleGet = (req) => {
     const { path } = req.params;
 
-    const notifications = getNotifications('master');
+    const notifications = getNotifications();
 
     if (!notifications || !Array.isArray(notifications)) {
         return {
