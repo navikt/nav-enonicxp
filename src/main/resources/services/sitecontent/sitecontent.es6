@@ -48,7 +48,7 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
-export const getContent = (contentId, branch) => {
+const getContent = (contentId, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
         {
@@ -71,7 +71,7 @@ export const getContent = (contentId, branch) => {
     return filterContent(contentWithParsedJsonData);
 };
 
-export const getRedirectContent = (contentPath, branch = 'master') => {
+const getRedirectContent = (contentPath, branch = 'master') => {
     const redirectContent = searchForRedirect(contentPath, { branch });
     if (!redirectContent) {
         return null;
