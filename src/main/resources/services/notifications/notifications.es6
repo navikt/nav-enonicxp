@@ -3,7 +3,6 @@ const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 
 const notification = require('../sitecontent/fragments/notification');
 const globalFragment = require('../sitecontent/fragments/_global');
-const { isValidBranch } = require('/lib/headless-utils/run-in-context');
 
 const queryGetNotifications = `query {
     guillotine {
@@ -28,17 +27,7 @@ const getNotifications = (branch) => {
 };
 
 const handleGet = (req) => {
-    const { path, branch } = req.params;
-
-    if (branch && !isValidBranch(branch)) {
-        return {
-            status: 400,
-            body: {
-                message: 'Invalid branch specified',
-            },
-            contentType: 'application/json',
-        };
-    }
+    const { path } = req.params;
 
     const notifications = getNotifications('master');
 
