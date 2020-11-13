@@ -1,12 +1,8 @@
-const guillotineLib = require('/lib/guillotine');
-const graphQlLib = require('/lib/graphql');
-
 const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
+const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 
 const notification = require('../sitecontent/fragments/notification');
 const globalFragment = require('../sitecontent/fragments/_global');
-
-const schema = guillotineLib.createSchema();
 
 const queryGetNotifications = `query {
     guillotine {
@@ -18,17 +14,11 @@ const queryGetNotifications = `query {
 }`;
 
 const getNotifications = () => {
-    const queryResponse = graphQlLib.execute(schema, queryGetNotifications);
+    // Notifications should always be fetched from master, we don't want unpublished notifications
+    // to be displayed in content studio
+    const queryResponse = guillotineQuery(queryGetNotifications, undefined, 'master');
 
-    const { data, errors } = queryResponse;
-
-    if (errors) {
-        log.info('GraphQL errors:');
-        errors.forEach((error) => log.info(error.message));
-        return null;
-    }
-
-    const notifications = data.guillotine?.query;
+    const notifications = queryResponse?.query;
 
     if (!notifications) {
         log.info('Notifications not found');
@@ -47,7 +37,7 @@ const handleGet = (req) => {
         return {
             status: 500,
             body: {
-                message: 'Invalid GraphQL response',
+                message: 'Invalid response',
             },
             contentType: 'application/json',
         };
