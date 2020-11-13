@@ -300,6 +300,15 @@ function logAmplitudeEvent(event, data) {
         amplitude.getInstance().logEvent(event, eventData, resolve);
     });
 }
+function getHeading(element) {
+    let text = '';
+    const $el = $(element);
+    if ($el.attr('data-ga') === 'link-panel' || $el.attr('data-ga') === 'link-list') {
+        text = $el.closest('.ga-container').children('h2').text();
+    }
+    //Fjern eventuelle gjenværende html-tags og whitespace
+    return text.replace(/(<([^>]+)>)/gi, '').trim();
+}
 function getLinkText(element) {
     let text = '';
     if (element.classList.contains('hero-link')) {
@@ -333,6 +342,7 @@ $(document).ready(function () {
         el.onclick = function() {
             const eventData = {
                 komponent: this.getAttribute('data-ga'),
+                lenkegruppe: getHeading(this),
                 lenketekst: getLinkText(this),
                 destinasjon: this.getAttribute('href'),
             };
