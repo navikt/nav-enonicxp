@@ -3,6 +3,16 @@ const globalFragment = require('./_global');
 const mainArticleContentFragment =`
     data {
         contentType
+        picture {
+            target {
+                ...on media_Image {
+                     imageUrl(scale:"$scale", type:absolute)
+                }
+            }
+            size
+            caption
+            altText
+        }
         fact
         social
         hasTableOfContents
@@ -67,6 +77,5 @@ const mainArticleContentFragment =`
     }
     language
 `;
-
 
 module.exports = { fragment: mainArticleContentFragment };
