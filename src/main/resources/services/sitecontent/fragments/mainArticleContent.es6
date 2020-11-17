@@ -2,21 +2,12 @@ const globalFragment = require('./_global');
 
 const mainArticleContentFragment =`
     data {
-        contentType
-        picture {
-            target {
-                ...on media_Image {
-                     imageUrl(scale:"$scale", type:absolute)
-                }
-            }
-            size
-            caption
-            altText
-        }
-        fact
-        social
-        hasTableOfContents
+        language
+        originaltitle
         ingress
+        text(processHtml:{type:absolute})
+        contentType
+        hasTableOfContents
         menuListItems {
             _selected
             selfservice {
@@ -70,12 +61,26 @@ const mainArticleContentFragment =`
                 }
             }
         }
-        text(processHtml:{type:absolute})
+        fact(processHtml:{type:absolute})
+        picture {
+            target {
+                ...on media_Image {
+                     imageUrl(scale:"$scale", type:absolute)
+                }
+            }
+            size
+            caption
+            altText
+        }
+        social
+        metaDescription
+        canonicalUrl
+        noindex
+        Tag
     }
     publish {
        from
     }
-    language
 `;
 
 module.exports = { fragment: mainArticleContentFragment };
