@@ -1,8 +1,9 @@
 const globalFragment = require('./_global');
 
-const mainArticleContentFragment =`
+const mainArticleContentFragment = `
+    displayName
+    language
     data {
-        language
         originaltitle
         ingress
         text(processHtml:{type:absolute})
@@ -76,7 +77,7 @@ const mainArticleContentFragment =`
         metaDescription
         canonicalUrl
         noindex
-        Tag
+        keywords
     }
     publish {
        from
