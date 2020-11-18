@@ -24,7 +24,7 @@ const componentsFragment = `
                 no_nav_navno {
                     dynamic_link_panel {
                         title
-                        description
+                        ingress
                         background {
                             dataAsJson
                             ${imageMediaUrlFragment}

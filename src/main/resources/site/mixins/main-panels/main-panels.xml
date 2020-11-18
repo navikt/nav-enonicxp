@@ -7,6 +7,14 @@
                 <input name="nrTableEntries" type="Long">
                     <label>Oppgi antall tavler/bokser på seksjonssiden</label>
                 </input>
+                <input name="panelIcon" type="ImageSelector">
+                    <label>Velg ikon (valgfri)</label>
+                    <occurrences minimum="0" maximum="1" />
+                    <config>
+                        <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                        <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                    </config>
+                </input>
                 <input name="tableContents" type="ContentSelector">
                     <label>Velg innhold</label>
                     <allowPath>${site}/*</allowPath>

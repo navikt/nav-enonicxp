@@ -47,14 +47,14 @@ const menuListItemsOptionsFilter = (content) => {
         return acc;
     }, {});
 
-    const selected = forceArray(menuListItems._selected).map((item) => generateCamelCase(item));
+    const _selected = forceArray(menuListItems._selected).map((item) => generateCamelCase(item));
     return {
         ...content,
         data: {
             ...content.data,
             menuListItems: {
                 ...menuListItemsFiltered,
-                selected,
+                _selected,
             },
         },
     };
