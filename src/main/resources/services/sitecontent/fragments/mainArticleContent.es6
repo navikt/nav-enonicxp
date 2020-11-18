@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 
-const mainArticleContentFragment =`
+const mainArticleContentFragment = `
+    dataAsJson
     data {
         contentType
         fact
@@ -67,6 +68,5 @@ const mainArticleContentFragment =`
     }
     language
 `;
-
 
 module.exports = { fragment: mainArticleContentFragment };
