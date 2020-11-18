@@ -1,12 +1,14 @@
 const globalFragment = require('./_global');
 
-const mainArticleContentFragment =`
+const mainArticleContentFragment = `
+    displayName
+    language
     data {
-        contentType
-        fact
-        social
-        hasTableOfContents
+        originaltitle
         ingress
+        text(processHtml:{type:absolute})
+        contentType
+        hasTableOfContents
         menuListItems {
             _selected
             selfservice {
@@ -60,13 +62,26 @@ const mainArticleContentFragment =`
                 }
             }
         }
-        text(processHtml:{type:absolute})
+        fact(processHtml:{type:absolute})
+        picture {
+            target {
+                ...on media_Image {
+                     imageUrl(scale:"$scale", type:absolute)
+                }
+            }
+            size
+            caption
+            altText
+        }
+        social
+        metaDescription
+        canonicalUrl
+        noindex
+        keywords
     }
     publish {
        from
     }
-    language
 `;
-
 
 module.exports = { fragment: mainArticleContentFragment };
