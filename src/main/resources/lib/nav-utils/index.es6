@@ -204,6 +204,10 @@ const mapDecoratorLocale = {
 };
 
 function getLanguageVersions(content) {
+    if (!content?.data?.languages) {
+        return [];
+    }
+
     let lRefs = content.data.languages;
     const ret = [
         {
@@ -213,9 +217,6 @@ function getLanguageVersions(content) {
             }),
         },
     ];
-    if (!lRefs) {
-        return [];
-    }
     if (!Array.isArray(lRefs)) {
         lRefs = [lRefs];
     }
