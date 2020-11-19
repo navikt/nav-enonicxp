@@ -35,6 +35,10 @@ const sectionPageFilter = (content) => ({
 
 // Makes sure option names for menuList follows the guillotine naming convention
 const menuListItemsOptionsFilter = (content) => {
+    if (!content.data.menuListItems) {
+        return content;
+    }
+
     const { _selected, ...menuListItems } = content.data.menuListItems;
     if (!menuListItems) {
         return content;
