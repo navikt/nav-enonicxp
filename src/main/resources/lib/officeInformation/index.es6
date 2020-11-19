@@ -114,7 +114,7 @@ function refreshOfficeInformation(officeInformationList) {
     log.info(`NORG - Updated: ${numUpdated} New: ${numNew} Deleted: ${numDeleted}`);
 }
 
-function checkForRefresh() {
+function checkForRefresh(oneTimeRun = false) {
     log.info('NORG - Start update');
     const startBackupJob = () => {
         // stop cron job first, just in case it has been failing for more than a day
@@ -215,10 +215,14 @@ function checkForRefresh() {
     // set isRefreshing to false since we're done refresing office information
     setIsRefreshing(navRepo, false, failedToRefresh);
 
-    if (failedToRefresh) {
+    if (failedToRefresh && !oneTimeRun) {
         startBackupJob();
     }
 }
+
+exports.runOneTimeJob = () => {
+    checkForRefresh(true);
+};
 
 exports.startCronJob = () => {
     libs.cron.unschedule({
