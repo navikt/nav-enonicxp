@@ -35,26 +35,29 @@ const sectionPageFilter = (content) => ({
 
 // Makes sure option names for menuList follows the guillotine naming convention
 const menuListItemsOptionsFilter = (content) => {
-    const menuListItems = content.data.menuListItems;
+    if (!content.data.menuListItems) {
+        return content;
+    }
+
+    const { _selected, ...menuListItems } = content.data.menuListItems;
     if (!menuListItems) {
         return content;
     }
 
-    const menuListItemsFiltered = Object.keys(content.data.menuListItems).reduce((acc, key) => {
-        if (key) {
-            return { ...acc, [generateCamelCase(key)]: menuListItems[key] };
-        }
-        return acc;
-    }, {});
+    const menuListItemsFiltered = Object.keys(menuListItems).reduce(
+        (acc, key) => ({ ...acc, [generateCamelCase(key)]: menuListItems[key] }),
+        {}
+    );
 
-    const _selected = forceArray(menuListItems._selected).map((item) => generateCamelCase(item));
+    const selected = forceArray(_selected).map((item) => generateCamelCase(item));
+
     return {
         ...content,
         data: {
             ...content.data,
             menuListItems: {
                 ...menuListItemsFiltered,
-                _selected,
+                _selected: selected,
             },
         },
     };
