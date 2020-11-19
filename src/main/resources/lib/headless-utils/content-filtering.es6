@@ -40,12 +40,10 @@ const menuListItemsOptionsFilter = (content) => {
         return content;
     }
 
-    const menuListItemsFiltered = Object.keys(menuListItems).reduce((acc, key) => {
-        if (key) {
-            return { ...acc, [generateCamelCase(key)]: menuListItems[key] };
-        }
-        return acc;
-    }, {});
+    const menuListItemsFiltered = Object.keys(menuListItems).reduce(
+        (acc, key) => ({ ...acc, [generateCamelCase(key)]: menuListItems[key] }),
+        {}
+    );
 
     const selected = forceArray(_selected).map((item) => generateCamelCase(item));
 
