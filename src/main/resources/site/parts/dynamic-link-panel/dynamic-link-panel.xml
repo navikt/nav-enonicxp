@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Dynamisk lenkepanel med bakgrunn</display-name>
+    <display-name>Lenkepanel med ikon og/eller bakgrunn</display-name>
     <description>Ink tittel, ingress og bakgrunn</description>
     <form>
         <input name="title" type="TextLine">

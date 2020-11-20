@@ -16,7 +16,8 @@
         "prefer-destructuring": "off",
         "radix": ["error", "as-needed"],
         "no-plusplus": "off",
-        "func-names": "off"
+        "func-names": "off",
+        "no-use-before-define": "off"
     },
     "globals": {
         "require": true,

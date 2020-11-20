@@ -1,6 +1,7 @@
 const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 const filterContent = require('/lib/headless-utils/content-filtering');
-const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
+const deepJsonParser = require('/lib/headless-utils/deep-json-parser');
+const componentsArrayToComponentsTree = require('/lib/headless-utils/unflatten-components');
 const { isValidBranch } = require('/lib/headless-utils/run-in-context');
 const { searchForRedirect } = require('../../site/error/error');
 
@@ -34,11 +35,6 @@ const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${queryFields}
-            pageAsJson
-            pageTemplate {
-                pageAsJson
-                ${componentsFragment}
-            }
             ...on base_Folder {
                 children {
                     ${queryFields}
@@ -62,13 +58,13 @@ const getContent = (contentId, branch) => {
         return null;
     }
 
-    const contentWithParsedJsonData = deepSearchParseJsonAndAppend(
-        deepSearchParseJsonAndAppend(content, 'dataAsJson', 'data'),
-        'pageAsJson',
-        'page'
-    );
+    const contentWithParsedJsonData = deepJsonParser(content, ['data', 'config']);
 
-    return filterContent(contentWithParsedJsonData);
+    const filteredContent = filterContent(contentWithParsedJsonData);
+
+    const pageComponentTree = componentsArrayToComponentsTree(filteredContent.components);
+
+    return { ...filteredContent, page: pageComponentTree, components: undefined };
 };
 
 const getRedirectContent = (contentPath, branch = 'master') => {
@@ -123,34 +119,24 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getContent(id, branch);
+    const content = getContent(id, branch) || getRedirectContent(id, branch);
 
     if (!content) {
-        const redirectContent = getRedirectContent(id, branch);
-        if (redirectContent) {
-            return {
-                status: 200,
-                body: redirectContent,
-                contentType: 'application/json',
-            };
-        }
-
         log.info(`Content not found: ${id}`);
+        return {
+            status: 404,
+            body: {
+                message: 'Site path not found',
+            },
+            contentType: 'application/json',
+        };
     }
 
-    return content
-        ? {
-              status: 200,
-              body: content,
-              contentType: 'application/json',
-          }
-        : {
-              status: 404,
-              body: {
-                  message: 'Site path not found',
-              },
-              contentType: 'application/json',
-          };
+    return {
+        status: 200,
+        body: content,
+        contentType: 'application/json',
+    };
 };
 
 exports.get = handleGet;

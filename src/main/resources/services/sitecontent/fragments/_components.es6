@@ -9,49 +9,42 @@ const imageMediaUrlFragment = `
     }
 `;
 
+const dynamicPartsFragment = `
+    config {
+        no_nav_navno {
+            dynamic_link_panel {
+                background {
+                    ${imageMediaUrlFragment}
+                    ${globalFragment}
+                }
+                target {
+                    ${globalFragment}
+                }
+            }
+        }
+    }
+`;
+
 const componentsFragment = `
-    components {
+    components(resolveTemplate:true) {
         type
         path
-        image {
-            image {
-                imageUrl(scale:"$scale", type:absolute)
-            }
+        page {
+            descriptor
+            configAsJson
+        }
+        layout {
+            descriptor
+            configAsJson
         }
         part {
             descriptor
-            config {
-                no_nav_navno {
-                    dynamic_link_panel {
-                        title
-                        ingress
-                        background {
-                            dataAsJson
-                            ${imageMediaUrlFragment}
-                            ${globalFragment}
-                        }
-                        target {
-                            dataAsJson
-                            ${globalFragment}
-                        }
-                    }
-                    dynamic_supervisor_panel {
-                        content,
-                        margin
-                    }
-                    dynamic_alert {
-                        type
-                        inline,
-                        content,
-                        margin
-                    }
-                    dynamic_read_more_panel {
-                        ingress
-                        content,
-                        border,
-                        margin
-                    }
-                }
+            configAsJson
+            ${dynamicPartsFragment}
+        }
+        image {
+            image {
+                imageUrl(scale:"$scale", type:absolute)
             }
         }
         text {
