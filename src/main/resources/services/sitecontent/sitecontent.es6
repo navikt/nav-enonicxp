@@ -102,6 +102,17 @@ const getRedirectContent = (contentPath, branch = 'master') => {
 
 const handleGet = (req) => {
     const { id, branch } = req.params;
+    const { secret } = req.headers;
+
+    if (secret !== app.config.serviceSecret) {
+        return {
+            status: 401,
+            body: {
+                message: 'Invalid secret',
+            },
+            contentType: 'application/json',
+        };
+    }
 
     if (!id) {
         return {
