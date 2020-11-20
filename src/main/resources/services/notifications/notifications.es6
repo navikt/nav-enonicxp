@@ -1,4 +1,4 @@
-const deepSearchParseJsonAndAppend = require('/lib/headless-utils/deep-json-parser');
+const deepJsonParser = require('/lib/headless-utils/deep-json-parser');
 const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 
 const notification = require('../sitecontent/fragments/notification');
@@ -25,7 +25,7 @@ const getNotifications = () => {
         return null;
     }
 
-    return deepSearchParseJsonAndAppend(notifications, 'dataAsJson', 'data');
+    return deepJsonParser(notifications, ['data']);
 };
 
 const handleGet = (req) => {
