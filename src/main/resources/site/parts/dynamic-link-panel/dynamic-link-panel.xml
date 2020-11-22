@@ -5,6 +5,9 @@
         <input name="title" type="TextLine">
             <label>Tittel</label>
         </input>
+        <input name="ingress" type="TextArea">
+            <label>Ingress</label>
+        </input>
         <input name="icon" type="ImageSelector">
             <label>Ikon (valgfritt)</label>
             <occurrences minimum="0" maximum="1"/>
@@ -12,9 +15,6 @@
                 <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
                 <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
             </config>
-        </input>
-        <input name="ingress" type="TextArea">
-            <label>Ingress</label>
         </input>
         <input name="background" type="ImageSelector">
             <label>Bakgrunn (valgfritt)</label>

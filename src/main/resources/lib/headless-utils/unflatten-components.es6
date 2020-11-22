@@ -32,12 +32,11 @@ const getNestedRegions = (components, rootPath) => {
 };
 
 const unflattenComponents = (components, rootComponent) => {
-    const { path, page, part, layout, image, text, fragment, ...rest } = rootComponent;
+    const { page, part, layout, image, text, fragment, ...rest } = rootComponent;
 
-    const regions = getNestedRegions(components, path);
+    const regions = getNestedRegions(components, rootComponent.path);
 
     return {
-        path,
         ...page,
         ...part,
         ...layout,
@@ -51,16 +50,16 @@ const unflattenComponents = (components, rootComponent) => {
 
 const componentsArrayToComponentsTree = (components) => {
     if (!components) {
-        return {};
+        return undefined;
     }
 
-    const pageComponent = components.filter((component) => component.type === 'page')[0];
+    const rootComponent = components.filter((component) => component.path === '/')[0];
 
-    if (!pageComponent) {
-        return {};
+    if (!rootComponent) {
+        return undefined;
     }
 
-    return unflattenComponents(components, pageComponent);
+    return unflattenComponents(components, rootComponent);
 };
 
 module.exports = componentsArrayToComponentsTree;

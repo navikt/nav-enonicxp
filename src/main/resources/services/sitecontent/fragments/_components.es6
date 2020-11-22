@@ -13,9 +13,13 @@ const dynamicPartsFragment = `
     config {
         no_nav_navno {
             dynamic_link_panel {
+                title
+                ingress
+                icon {
+                    ${imageMediaUrlFragment}
+                }
                 background {
                     ${imageMediaUrlFragment}
-                    ${globalFragment}
                 }
                 target {
                     ${globalFragment}
@@ -31,15 +35,12 @@ const componentsFragment = `
         path
         page {
             descriptor
-            configAsJson
         }
         layout {
             descriptor
-            configAsJson
         }
         part {
             descriptor
-            configAsJson
             ${dynamicPartsFragment}
         }
         image {
