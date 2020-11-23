@@ -1,4 +1,3 @@
-exports.get = () => ({
-    contentType: 'text/html',
-    body: '<div>Mark as ready for preview</div>',
-});
+const controller = require('/lib/headless-utils/dynamic-placeholder-controller');
+
+exports.get = controller;

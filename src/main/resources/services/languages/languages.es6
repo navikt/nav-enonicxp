@@ -8,7 +8,7 @@ const libs = {
 const handleGet = (req) => {
     const { id, branch } = req.params;
     const content = runInBranchContext(() => libs.content.get({ key: id }), branch || req.branch);
-    const languages = content ? libs.utils.getLanguageVersions(content) : [];
+    const languages = libs.utils.getLanguageVersions(content);
 
     return {
         body: languages,
