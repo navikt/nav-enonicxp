@@ -8,10 +8,14 @@ const getNestedRegions = (components, rootPath) => {
     }
 
     return nestedComponents.reduce((regions, component) => {
+        // get the region path segments for the current component
+        // example if rootPath == '/parentRegion/0'
+        // /parentRegion/0/currentRegion/<currentIndex = 1>
+        // -> ['current', 1]
         const pathSegments = component.path
             .replace(rootPath, '')
             .split('/')
-            .filter((s) => s !== '');
+            .filter((s) => s !== ''); // remove empty segments
 
         if (pathSegments.length !== 2) {
             return regions;
@@ -32,6 +36,9 @@ const getNestedRegions = (components, rootPath) => {
 };
 
 const unflattenComponents = (components, rootComponent) => {
+    // Component data from guillotine is stored in a type-specific sub-object
+    // Move this data down to the base component-object, to match the XP page-object
+    // structure
     const { page, part, layout, image, text, fragment, ...rest } = rootComponent;
 
     const regions = getNestedRegions(components, rootComponent.path);
