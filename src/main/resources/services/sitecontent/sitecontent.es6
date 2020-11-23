@@ -14,6 +14,7 @@ const externalLink = require('./fragments/externalLink');
 const pageList = require('./fragments/pageList');
 const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
+const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 
 const queryFields = [
@@ -28,6 +29,7 @@ const queryFields = [
     sectionPage.fragment,
     transportPage.fragment,
     largeTable.fragment,
+    officeInformation.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
