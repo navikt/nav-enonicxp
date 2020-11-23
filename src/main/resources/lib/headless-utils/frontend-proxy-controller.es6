@@ -43,6 +43,9 @@ const frontendProxy = (req, fallbackController) => {
             url: frontendUrl,
             contentType: 'text/html',
             connectionTimeout: 1000,
+            headers: {
+                secret: app.config.serviceSecret,
+            },
         });
     } catch (e) {
         log.info(`invalid response from external frontend. error: ${e}`);
