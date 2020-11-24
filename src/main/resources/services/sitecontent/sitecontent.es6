@@ -1,7 +1,7 @@
 const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 const filterContent = require('/lib/headless-utils/content-filtering');
 const deepJsonParser = require('/lib/headless-utils/deep-json-parser');
-const componentsArrayToComponentsTree = require('/lib/headless-utils/unflatten-components');
+const mergeComponentsIntoPage = require('/lib/headless-utils/unflatten-components');
 const { isValidBranch } = require('/lib/headless-utils/run-in-context');
 const { searchForRedirect } = require('../../site/error/error');
 
@@ -35,6 +35,7 @@ const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${queryFields}
+            pageAsJson(resolveTemplate: true)
             ...on base_Folder {
                 children {
                     ${queryFields}
@@ -58,13 +59,15 @@ const getContent = (contentId, branch) => {
         return null;
     }
 
-    const contentWithParsedJsonData = deepJsonParser(content, ['data', 'config']);
-
+    const contentWithParsedJsonData = deepJsonParser(content, ['data', 'config', 'page']);
     const filteredContent = filterContent(contentWithParsedJsonData);
+    const page = mergeComponentsIntoPage(filteredContent);
 
-    const pageComponentTree = componentsArrayToComponentsTree(filteredContent.components);
-
-    return { ...filteredContent, page: pageComponentTree, components: undefined };
+    return {
+        ...filteredContent,
+        page,
+        components: undefined,
+    };
 };
 
 const getRedirectContent = (contentPath, branch = 'master') => {

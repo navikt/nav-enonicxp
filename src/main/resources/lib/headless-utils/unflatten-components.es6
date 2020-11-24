@@ -1,44 +1,24 @@
-// Gets the regions nested directly under the root component
-const getRegions = (components, rootComponent) => {
-    const rootPath = rootComponent.path;
-    const nestedComponents = components.filter(
-        (component) => component.path !== rootPath && component.path.startsWith(rootPath)
-    );
+// Component data in the components-array is stored in type-specific sub-objects
+// Move this data down to the base object, to match the XP page-object structure
+const destructureComponent = (component) => {
+    const { page, part, layout, image, text, fragment, ...rest } = component;
 
-    if (nestedComponents.length === 0) {
-        return null;
-    }
-
-    return nestedComponents.reduce((regions, component) => {
-        // get the region path segments for the current component
-        // example if rootPath == '/parentRegion/0'
-        // /parentRegion/0/currentRegion/<currentIndex = 1>
-        // -> ['current', 1]
-        const pathSegments = component.path
-            .replace(rootPath, '')
-            .split('/')
-            .filter((s) => s !== ''); // remove empty segments
-
-        if (pathSegments.length !== 2) {
-            return regions;
-        }
-
-        const regionName = pathSegments[0];
-        const prevComponents = regions[regionName]?.components || [];
-        const newComponent = unflattenComponents(components, component);
-
-        return {
-            ...regions,
-            [regionName]: {
-                name: regionName,
-                components: [...prevComponents, newComponent],
-            },
-        };
-    }, {});
+    return {
+        ...page,
+        ...part,
+        ...layout,
+        ...image,
+        ...text,
+        ...fragment,
+        ...rest,
+    };
 };
 
-const getConfig = (component) => {
+// Component config in the components-array is stored in a <app-name>.<region-name> sub-object
+// Move this data down to the base config object, to match the XP page-object structure
+const destructureConfig = (component) => {
     const { descriptor, config } = component;
+
     if (!descriptor || !config) {
         return null;
     }
@@ -58,48 +38,70 @@ const getConfig = (component) => {
     };
 };
 
-// Component data from guillotine is stored in a type-specific sub-object
-// Move this data down to the base component-object, to match the XP page-object
-// structure
-const getDestructuredComponent = (component) => {
-    const { page, part, layout, image, text, fragment, ...rest } = component;
+// Merge data from the components array into the equivalent nested components from the page-object
+// Data from the components array should take precedence, as this has resolved content refs
+const mergeComponents = (componentsFromPage, componentsArray) =>
+    componentsFromPage.map((pageComponent) => {
+        const foundComponent = componentsArray.filter(
+            (arrayComponent) => arrayComponent.path === pageComponent.path
+        )[0];
 
-    return {
-        ...page,
-        ...part,
-        ...layout,
-        ...image,
-        ...text,
-        ...fragment,
-        ...rest,
-    };
-};
+        if (!foundComponent) {
+            return insertComponents(pageComponent, componentsArray);
+        }
 
-const unflattenComponents = (components, rootComponent) => {
-    const destructuredComponent = getDestructuredComponent(rootComponent);
+        const destructuredComponent = destructureComponent(foundComponent);
+        const config = { ...pageComponent.config, ...destructureConfig(destructuredComponent) };
 
-    const config = getConfig(destructuredComponent);
-    const regions = getRegions(components, destructuredComponent);
+        return insertComponents(
+            {
+                ...pageComponent,
+                ...destructuredComponent,
+                config,
+            },
+            componentsArray
+        );
+    });
 
-    return {
-        ...destructuredComponent,
-        ...(config && { config }),
-        ...(regions && { regions }),
-    };
-};
-
-const componentsArrayToComponentsTree = (components) => {
-    if (!components) {
-        return undefined;
+const insertComponents = (obj, componentsArray) => {
+    if (!obj || typeof obj !== 'object') {
+        return obj;
     }
 
-    const rootComponent = components.filter((component) => component.path === '/')[0];
+    return Object.keys(obj).reduce((accObj, key) => {
+        const value = obj[key];
 
-    if (!rootComponent) {
-        return undefined;
-    }
+        if (Array.isArray(value)) {
+            if (key === 'components') {
+                return { ...accObj, components: mergeComponents(value, componentsArray) };
+            }
 
-    return unflattenComponents(components, rootComponent);
+            return {
+                ...accObj,
+                [key]: value.map((item) => insertComponents(item, componentsArray)),
+            };
+        }
+
+        if (value && typeof value === 'object') {
+            return { ...accObj, [key]: insertComponents(value, componentsArray) };
+        }
+
+        return accObj;
+    }, obj);
 };
 
-module.exports = componentsArrayToComponentsTree;
+const mergeComponentsIntoPage = (content) => {
+    const { page, components } = content;
+
+    if (!page) {
+        return {};
+    }
+
+    if (!components || components.length === 0) {
+        return page;
+    }
+
+    return insertComponents(page, components);
+};
+
+module.exports = mergeComponentsIntoPage;
