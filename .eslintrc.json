@@ -17,7 +17,8 @@
         "radix": ["error", "as-needed"],
         "no-plusplus": "off",
         "func-names": "off",
-        "no-use-before-define": "off"
+        "no-use-before-define": "off",
+        "dot-notation": "off"
     },
     "globals": {
         "require": true,

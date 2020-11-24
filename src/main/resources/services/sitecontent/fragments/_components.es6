@@ -49,17 +49,24 @@ const dynamicPartsFragment = `
     }
 `;
 
+const dynamicLayoutsFragment = `
+`;
+
 const componentsFragment = `
     components(resolveTemplate:true) {
         type
         path
         page {
+            configAsJson
             descriptor
         }
         layout {
+            configAsJson
             descriptor
+            ${dynamicLayoutsFragment}
         }
         part {
+            configAsJson
             descriptor
             ${dynamicPartsFragment}
         }

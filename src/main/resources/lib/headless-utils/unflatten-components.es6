@@ -1,4 +1,6 @@
-const getNestedRegions = (components, rootPath) => {
+// Gets the regions nested directly under the root component
+const getRegions = (components, rootComponent) => {
+    const rootPath = rootComponent.path;
     const nestedComponents = components.filter(
         (component) => component.path !== rootPath && component.path.startsWith(rootPath)
     );
@@ -22,26 +24,45 @@ const getNestedRegions = (components, rootPath) => {
         }
 
         const regionName = pathSegments[0];
-        const prevComponents = regions[regionName]?.components;
+        const prevComponents = regions[regionName]?.components || [];
         const newComponent = unflattenComponents(components, component);
 
         return {
             ...regions,
             [regionName]: {
                 name: regionName,
-                components: [...(prevComponents || []), newComponent],
+                components: [...prevComponents, newComponent],
             },
         };
     }, {});
 };
 
-const unflattenComponents = (components, rootComponent) => {
-    // Component data from guillotine is stored in a type-specific sub-object
-    // Move this data down to the base component-object, to match the XP page-object
-    // structure
-    const { page, part, layout, image, text, fragment, ...rest } = rootComponent;
+const getConfig = (component) => {
+    const { descriptor, config } = component;
+    if (!descriptor || !config) {
+        return null;
+    }
 
-    const regions = getNestedRegions(components, rootComponent.path);
+    // Field names from Guillotine queries are not consistent when it comes
+    // to dash/underscore. We have to account for both... -_-
+    const regionNameDash = descriptor.split(':')[1];
+    if (!regionNameDash) {
+        return null;
+    }
+
+    const regionNameUnderscore = regionNameDash.replace(/-/g, '_');
+
+    return {
+        ...(config['no-nav-navno'] && config['no-nav-navno'][regionNameDash]),
+        ...(config['no_nav_navno'] && config['no_nav_navno'][regionNameUnderscore]),
+    };
+};
+
+// Component data from guillotine is stored in a type-specific sub-object
+// Move this data down to the base component-object, to match the XP page-object
+// structure
+const getDestructuredComponent = (component) => {
+    const { page, part, layout, image, text, fragment, ...rest } = component;
 
     return {
         ...page,
@@ -50,8 +71,20 @@ const unflattenComponents = (components, rootComponent) => {
         ...image,
         ...text,
         ...fragment,
-        ...(regions && { regions }),
         ...rest,
+    };
+};
+
+const unflattenComponents = (components, rootComponent) => {
+    const destructuredComponent = getDestructuredComponent(rootComponent);
+
+    const config = getConfig(destructuredComponent);
+    const regions = getRegions(components, destructuredComponent);
+
+    return {
+        ...destructuredComponent,
+        ...(config && { config }),
+        ...(regions && { regions }),
     };
 };
 
