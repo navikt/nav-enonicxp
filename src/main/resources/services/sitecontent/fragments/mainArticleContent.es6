@@ -1,14 +1,25 @@
 const globalFragment = require('./_global');
 
 const mainArticleContentFragment = `
-    displayName
-    language
+    publish {
+       from
+    }
     data {
-        originaltitle
         ingress
         text(processHtml:{type:absolute})
-        contentType
         hasTableOfContents
+        fact(processHtml:{type:absolute})
+        social
+        picture {
+            target {
+                ...on media_Image {
+                     imageUrl(scale:"$scale", type:absolute)
+                }
+            }
+            size
+            caption
+            altText
+        }
         menuListItems {
             _selected
             selfservice {
@@ -62,25 +73,6 @@ const mainArticleContentFragment = `
                 }
             }
         }
-        fact(processHtml:{type:absolute})
-        picture {
-            target {
-                ...on media_Image {
-                     imageUrl(scale:"$scale", type:absolute)
-                }
-            }
-            size
-            caption
-            altText
-        }
-        social
-        metaDescription
-        canonicalUrl
-        noindex
-        keywords
-    }
-    publish {
-       from
     }
 `;
 

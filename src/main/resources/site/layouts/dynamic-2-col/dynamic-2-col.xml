@@ -12,7 +12,7 @@
         </input>
     </form>
     <regions>
-        <region name="dynamic-0"/>
         <region name="dynamic-1"/>
+        <region name="dynamic-2"/>
     </regions>
 </layout>
