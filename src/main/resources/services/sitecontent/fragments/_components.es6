@@ -9,58 +9,57 @@ const imageMediaUrlFragment = `
     }
 `;
 
+const dynamicPartsFragment = `
+    config {
+        no_nav_navno {
+            dynamic_header {
+                title
+                ingress
+            }
+            dynamic_link_panel {
+                title
+                ingress
+                icon {
+                    ${imageMediaUrlFragment}
+                }
+                background {
+                    ${imageMediaUrlFragment}
+                }
+                target {
+                    ${globalFragment}
+                }
+            }
+            dynamic_supervisor_panel {
+                content
+                margin
+            }
+            dynamic_alert {
+                type
+                inline
+                content
+                margin
+            }
+            dynamic_read_more_panel {
+                ingress
+                content
+                border
+                margin
+            }
+        }
+    }
+`;
+
 const componentsFragment = `
-    components {
+    components(resolveTemplate:true) {
         type
         path
+        part {
+            descriptor
+            ${dynamicPartsFragment}
+        }
         image {
             image {
                 imageUrl(scale:"$scale", type:absolute)
-            }
-        }
-        part {
-            descriptor
-            config {
-                no_nav_navno {
-                    dynamic_link_panel {
-                        title
-                        description
-                        background {
-                            dataAsJson
-                            ${imageMediaUrlFragment}
-                            ${globalFragment}
-                        }
-                        target {
-                            dataAsJson
-                            ${globalFragment}
-                        }
-                    }
-                    dynamic_supervisor_panel {
-                        content,
-                        margin
-                    }
-                    dynamic_alert {
-                        type
-                        inline,
-                        content,
-                        margin
-                    }
-                    dynamic_read_more_panel {
-                        ingress
-                        content,
-                        border,
-                        margin
-                    }
-                }
-            }
-        }
-        text {
-            value
-        }
-        fragment {
-            id
-            fragment {
-                type
             }
         }
     }

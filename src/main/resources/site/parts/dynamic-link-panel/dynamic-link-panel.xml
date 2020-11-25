@@ -1,20 +1,28 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Dynamisk lenkepanel med bakgrunn</display-name>
+    <display-name>Lenkepanel med ikon og/eller bakgrunn</display-name>
     <description>Ink tittel, ingress og bakgrunn</description>
     <form>
-        <input type="TextLine" name="title">
+        <input name="title" type="TextLine">
             <label>Tittel</label>
         </input>
-        <input type="TextArea" name="description">
-            <label>Beskrivelse (overstyrer ingress fra valgt innhold)</label>
+        <input name="ingress" type="TextArea">
+            <label>Ingress</label>
+        </input>
+        <input name="icon" type="ImageSelector">
+            <label>Ikon (valgfritt)</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+            </config>
         </input>
         <input name="background" type="ImageSelector">
-            <label>Bakgrunn</label>
+            <label>Bakgrunn (valgfritt)</label>
         </input>
         <input name="target" type="ContentSelector">
             <label>Innhold det skal henvises til</label>
             <help-text>Velg innhold som det skal henvises til</help-text>
-            <occurrences maximum="1" minimum="1"/>
+            <occurrences minimum="1" maximum="1"/>
             <config>
                 <allowPath>/www.nav.no/*</allowPath>
                 <showStatus>true</showStatus>

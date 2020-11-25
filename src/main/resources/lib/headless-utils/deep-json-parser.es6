@@ -1,7 +1,7 @@
-const deepParseAndAppendJsonData = (obj, parseFrom, appendTo) => {
+const deepParseJson = (obj, parseFrom, appendTo) => {
     if (obj && typeof obj === 'object') {
         if (Array.isArray(obj)) {
-            return obj.map((item) => deepParseAndAppendJsonData(item, parseFrom, appendTo));
+            return obj.map((item) => deepParseJson(item, parseFrom, appendTo));
         }
 
         const newObj = {};
@@ -12,10 +12,10 @@ const deepParseAndAppendJsonData = (obj, parseFrom, appendTo) => {
             } else if (key === appendTo) {
                 newObj[appendTo] = {
                     ...newObj[appendTo],
-                    ...deepParseAndAppendJsonData(obj[appendTo], parseFrom, appendTo),
+                    ...deepParseJson(obj[appendTo], parseFrom, appendTo),
                 };
             } else {
-                newObj[key] = deepParseAndAppendJsonData(obj[key], parseFrom, appendTo);
+                newObj[key] = deepParseJson(obj[key], parseFrom, appendTo);
             }
         });
 
@@ -24,4 +24,8 @@ const deepParseAndAppendJsonData = (obj, parseFrom, appendTo) => {
     return obj;
 };
 
-module.exports = deepParseAndAppendJsonData;
+const deepJsonParser = (initialObject, baseKeys) => {
+    return baseKeys.reduce((obj, key) => deepParseJson(obj, `${key}AsJson`, key), initialObject);
+};
+
+module.exports = deepJsonParser;

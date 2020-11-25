@@ -1,0 +1,11 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Tittel og ingress</display-name>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+        </input>
+        <input name="ingress" type="TextArea">
+            <label>Ingress</label>
+        </input>
+    </form>
+</part>

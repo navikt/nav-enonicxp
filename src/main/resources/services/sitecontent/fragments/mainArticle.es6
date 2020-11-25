@@ -1,5 +1,5 @@
-const mainArticleChapter = require('./mainArticleChapter');
 const mainArticleContent = require('./mainArticleContent');
+const mainArticleChapter = require('./mainArticleChapter');
 
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
