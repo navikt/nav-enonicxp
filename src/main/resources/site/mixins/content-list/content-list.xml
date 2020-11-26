@@ -1,0 +1,18 @@
+<mixin xmlns="urn:enonic:xp:model:1.0">
+    <form>
+        <input name="numLinks" type="Long">
+            <label>Maks antall lenker som vises</label>
+            <config>
+                <min>1</min>
+            </config>
+        </input>
+        <input name="target" type="ContentSelector">
+            <label>Velg innholdsliste</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowContentType>no.nav.navno:content-list</allowContentType>
+                <allowPath>${site}/*</allowPath>
+            </config>
+        </input>
+    </form>
+</mixin>

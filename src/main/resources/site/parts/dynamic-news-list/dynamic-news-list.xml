@@ -1,0 +1,32 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Nyhetsliste</display-name>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+            <default>Nyheter</default>
+        </input>
+        <item-set name="contentList">
+            <label>Innholdsliste for nyheter</label>
+            <occurrences minimum="1" maximum="1" />
+            <items>
+                <mixin name="content-list" />
+            </items>
+        </item-set>
+        <item-set name="moreNews">
+            <label>Flere nyheter</label>
+            <occurrences minimum="0" maximum="1" />
+            <items>
+                <input name="url" type="TextLine">
+                    <label>Lenke</label>
+                    <default>/sok?f=1&amp;s=1</default>
+                    <occurrences minimum="1" maximum="1" />
+                </input>
+                <input name="text" type="TextLine">
+                    <label>Lenketekst</label>
+                    <default>Flere nyheter</default>
+                    <occurrences minimum="1" maximum="1" />
+                </input>
+            </items>
+        </item-set>
+    </form>
+</part>

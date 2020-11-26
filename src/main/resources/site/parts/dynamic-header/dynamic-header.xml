@@ -3,6 +3,18 @@
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
+            <occurrences minimum="1" maximum="1" />
+        </input>
+        <input name="titleTypo" type="RadioButton">
+            <label>Typografi</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="sidetittel">Sidetittel</option>
+                <option value="innholdstittel">Innholdstittel</option>
+                <option value="systemtittel">Systemtittel</option>
+                <option value="undertittel">Undertittel</option>
+            </config>
+            <default>innholdstittel</default>
         </input>
         <input name="ingress" type="TextArea">
             <label>Ingress</label>

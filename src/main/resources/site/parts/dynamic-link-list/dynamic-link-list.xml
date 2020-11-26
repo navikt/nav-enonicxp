@@ -1,0 +1,26 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Lenkeliste</display-name>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+        </input>
+        <option-set name="list">
+            <label>Lenker</label>
+            <occurrences minimum="1" maximum="1" />
+            <options minimum="1" maximum="1">
+                <option name="contentList">
+                    <label>Hent lenker fra innholdsliste</label>
+                    <items>
+                        <mixin name="content-list" />
+                    </items>
+                </option>
+                <option name="linkList">
+                    <label>Sett lenker direkte</label>
+                    <items>
+                        <mixin name="links" />
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</part>

@@ -1,4 +1,5 @@
 const globalFragment = require('./_global');
+const contentList = require('./contentList');
 
 const imageMediaUrlFragment = `
     ...on media_Vector {
@@ -9,12 +10,22 @@ const imageMediaUrlFragment = `
     }
 `;
 
+const contentListMixinFragment = `
+    contentList {
+        numLinks
+        target {
+            ${contentList.fragment}
+        }
+    }
+`;
+
 const dynamicPartsFragment = `
     config {
         no_nav_navno {
             dynamic_header {
                 title
                 ingress
+                titleTypo
             }
             dynamic_link_panel {
                 title
@@ -44,6 +55,36 @@ const dynamicPartsFragment = `
                 content
                 border
                 margin
+            }
+            dynamic_link_list {
+                title
+                list {
+                    _selected
+                    ${contentListMixinFragment}
+                    linkList {
+                        links {
+                            _selected
+                            external {
+                                url
+                                text
+                            }
+                            internal {
+                                target {
+                                    ${globalFragment}
+                                }
+                                text
+                            }
+                        }
+                    }
+                }
+            }
+            dynamic_news_list {
+                title
+                ${contentListMixinFragment}
+                moreNews {
+                    url
+                    text
+                }
             }
         }
     }
