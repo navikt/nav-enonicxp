@@ -11,10 +11,24 @@ const imageMediaUrlFragment = `
 `;
 
 const contentListMixinFragment = `
-    contentList {
-        numLinks
-        target {
-            ${contentList.fragment}
+    numLinks
+    target {
+        ${contentList.fragment}
+    }
+`;
+
+const linksMixinFragment = `
+    links {
+        _selected
+        external {
+            url
+            text
+        }
+        internal {
+            target {
+                ${globalFragment}
+            }
+            text
         }
     }
 `;
@@ -60,27 +74,19 @@ const dynamicPartsFragment = `
                 title
                 list {
                     _selected
-                    ${contentListMixinFragment}
+                    contentList {
+                        ${contentListMixinFragment}
+                    }
                     linkList {
-                        links {
-                            _selected
-                            external {
-                                url
-                                text
-                            }
-                            internal {
-                                target {
-                                    ${globalFragment}
-                                }
-                                text
-                            }
-                        }
+                        ${linksMixinFragment}
                     }
                 }
             }
             dynamic_news_list {
                 title
-                ${contentListMixinFragment}
+                contentList {
+                    ${contentListMixinFragment}
+                }
                 moreNews {
                     url
                     text
