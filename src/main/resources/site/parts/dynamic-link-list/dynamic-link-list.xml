@@ -3,6 +3,7 @@
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
+            <default>Lenker</default>
         </input>
         <option-set name="list">
             <label>Lenker</label>
