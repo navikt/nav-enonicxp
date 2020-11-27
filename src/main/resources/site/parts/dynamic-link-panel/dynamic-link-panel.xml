@@ -1,6 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Lenkepanel</display-name>
-    <description>Med ikon/bakgrunn</description>
+    <description>Med valgfri ikon/bakgrunn</description>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
