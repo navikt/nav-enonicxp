@@ -30,7 +30,6 @@ const contentListMixinFragment = `
 `;
 
 const linkWithIngressMixinFragment = `
-    title
     ingress
     link {
         _selected

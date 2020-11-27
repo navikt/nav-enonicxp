@@ -1,13 +1,5 @@
 <mixin>
     <form>
-        <input name="title" type="TextLine">
-            <label>Tittel</label>
-            <occurrences minimum="1" maximum="1" />
-            <default>Tittel</default>
-        </input>
-        <input name="ingress" type="TextArea">
-            <label>Ingress</label>
-        </input>
         <option-set name="link">
             <label>Lenke</label>
             <occurrences minimum="1" maximum="1"/>
@@ -29,5 +21,8 @@
                 </option>
             </options>
         </option-set>
+        <input name="ingress" type="TextArea">
+            <label>Ingress</label>
+        </input>
     </form>
 </mixin>
