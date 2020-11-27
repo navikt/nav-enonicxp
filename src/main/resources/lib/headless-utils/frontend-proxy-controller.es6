@@ -36,8 +36,6 @@ const frontendProxy = (req, fallbackController) => {
         req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
 
     const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.proxyFlag}=true`;
-    log.info(`requesting html from frontend: ${frontendUrl}`);
-
     try {
         return libs.httpClient.request({
             url: frontendUrl,
