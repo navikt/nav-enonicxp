@@ -2,19 +2,12 @@
     <display-name>Lenkepanel</display-name>
     <description>Med valgfri ikon/bakgrunn</description>
     <form>
-        <input name="title" type="TextLine">
-            <label>Tittel</label>
-            <occurrences minimum="1" maximum="1" />
-        </input>
-        <input name="ingress" type="TextArea">
-            <label>Ingress</label>
-        </input>
+        <mixin name="link-with-ingress" />
         <input name="vertical" type="CheckBox">
             <label>Vertikalt layout</label>
         </input>
         <input name="icon" type="ImageSelector">
             <label>Ikon (valgfritt)</label>
-            <occurrences minimum="0" maximum="1" />
             <config>
                 <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
                 <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
@@ -22,15 +15,6 @@
         </input>
         <input name="background" type="ImageSelector">
             <label>Bakgrunn (valgfritt)</label>
-        </input>
-        <input name="target" type="ContentSelector">
-            <label>Innhold det skal henvises til</label>
-            <help-text>Velg innhold som det skal henvises til</help-text>
-            <occurrences minimum="1" maximum="1" />
-            <config>
-                <allowPath>/www.nav.no/*</allowPath>
-                <showStatus>true</showStatus>
-            </config>
         </input>
     </form>
 </part>

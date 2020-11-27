@@ -1,4 +1,4 @@
-<mixin xmlns="urn:enonic:xp:model:1.0">
+<mixin>
     <form>
         <input name="numLinks" type="Long">
             <label>Maks antall lenker som vises</label>

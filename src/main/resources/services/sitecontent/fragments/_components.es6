@@ -10,6 +10,18 @@ const imageMediaUrlFragment = `
     }
 `;
 
+const linkInternalMixinFragment = `
+    target {
+        ${globalFragment}
+    }
+    text
+`;
+
+const linkExternalMixinFragment = `
+    url
+    text
+`;
+
 const contentListMixinFragment = `
     numLinks
     target {
@@ -17,18 +29,16 @@ const contentListMixinFragment = `
     }
 `;
 
-const linksMixinFragment = `
+const linkWithIngressMixinFragment = `
+    title
+    ingress
     links {
         _selected
-        external {
-            url
-            text
-        }
         internal {
-            target {
-                ${globalFragment}
-            }
-            text
+            ${linkInternalMixinFragment}
+        }
+        external {
+            ${linkExternalMixinFragment}
         }
     }
 `;
@@ -42,16 +52,13 @@ const dynamicPartsFragment = `
                 titleTypo
             }
             dynamic_link_panel {
-                title
-                ingress
+                ${linkWithIngressMixinFragment}
+                vertical
                 icon {
                     ${imageMediaUrlFragment}
                 }
                 background {
                     ${imageMediaUrlFragment}
-                }
-                target {
-                    ${globalFragment}
                 }
             }
             dynamic_supervisor_panel {
@@ -78,7 +85,15 @@ const dynamicPartsFragment = `
                         ${contentListMixinFragment}
                     }
                     linkList {
-                        ${linksMixinFragment}
+                        links {
+                            _selected
+                            external {
+                                ${linkExternalMixinFragment}
+                            }
+                            internal {
+                                ${linkInternalMixinFragment}
+                            }
+                        }
                     }
                 }
             }
