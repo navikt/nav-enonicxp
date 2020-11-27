@@ -18,8 +18,6 @@ const mainArticleChapter = require('./fragments/mainArticleChapter');
 const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 
-const { serviceSecret, env } = app.config;
-
 const queryFields = [
     globalFragment,
     componentsFragment,
@@ -107,7 +105,7 @@ const handleGet = (req) => {
     const { id, branch } = req.params;
     const { secret } = req.headers;
 
-    if (secret !== serviceSecret && env !== 'localhost') {
+    if (secret !== app.config.serviceSecret) {
         return {
             status: 401,
             body: {
