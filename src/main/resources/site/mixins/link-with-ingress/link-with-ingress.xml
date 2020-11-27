@@ -1,0 +1,28 @@
+<mixin>
+    <form>
+        <option-set name="link">
+            <label>Lenke</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="internal">
+                    <label>Intern lenke</label>
+                    <help-text>Lenke til internt innhold</help-text>
+                    <default>true</default>
+                    <items>
+                        <mixin name="link-internal" />
+                    </items>
+                </option>
+                <option name="external">
+                    <label>Ekstern lenke</label>
+                    <help-text>Lenke til innhold utenfor CMS'et</help-text>
+                    <items>
+                        <mixin name="link-external" />
+                    </items>
+                </option>
+            </options>
+        </option-set>
+        <input name="ingress" type="TextArea">
+            <label>Ingress</label>
+        </input>
+    </form>
+</mixin>

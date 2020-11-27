@@ -1,4 +1,5 @@
 const globalFragment = require('./_global');
+const contentList = require('./contentList');
 
 const imageMediaUrlFragment = `
     ...on media_Vector {
@@ -9,24 +10,54 @@ const imageMediaUrlFragment = `
     }
 `;
 
+const linkInternalMixinFragment = `
+    target {
+        ${globalFragment}
+    }
+    text
+`;
+
+const linkExternalMixinFragment = `
+    url
+    text
+`;
+
+const contentListMixinFragment = `
+    numLinks
+    target {
+        ${contentList.fragment}
+    }
+`;
+
+const linkWithIngressMixinFragment = `
+    ingress
+    link {
+        _selected
+        internal {
+            ${linkInternalMixinFragment}
+        }
+        external {
+            ${linkExternalMixinFragment}
+        }
+    }
+`;
+
 const dynamicPartsFragment = `
     config {
         no_nav_navno {
             dynamic_header {
                 title
                 ingress
+                titleTypo
             }
             dynamic_link_panel {
-                title
-                ingress
+                ${linkWithIngressMixinFragment}
+                vertical
                 icon {
                     ${imageMediaUrlFragment}
                 }
                 background {
                     ${imageMediaUrlFragment}
-                }
-                target {
-                    ${globalFragment}
                 }
             }
             dynamic_supervisor_panel {
@@ -44,6 +75,36 @@ const dynamicPartsFragment = `
                 content
                 border
                 margin
+            }
+            dynamic_link_list {
+                title
+                list {
+                    _selected
+                    contentList {
+                        ${contentListMixinFragment}
+                    }
+                    linkList {
+                        links {
+                            _selected
+                            external {
+                                ${linkExternalMixinFragment}
+                            }
+                            internal {
+                                ${linkInternalMixinFragment}
+                            }
+                        }
+                    }
+                }
+            }
+            dynamic_news_list {
+                title
+                contentList {
+                    ${contentListMixinFragment}
+                }
+                moreNews {
+                    url
+                    text
+                }
             }
         }
     }

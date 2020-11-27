@@ -1,8 +1,35 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Tittel og ingress</display-name>
+    <display-name>Tittel</display-name>
+    <description>Med valgfri ingress</description>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
+            <occurrences minimum="1" maximum="1" />
+            <default>Tittel</default>
+        </input>
+        <input name="titleTypo" type="RadioButton">
+            <label>Typografi</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="sidetittel">Sidetittel</option>
+                <option value="innholdstittel">Innholdstittel</option>
+                <option value="systemtittel">Systemtittel</option>
+                <option value="undertittel">Undertittel</option>
+            </config>
+            <default>innholdstittel</default>
+        </input>
+        <input name="titleTag" type="RadioButton">
+            <label>Heading tag</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="h1">H1</option>
+                <option value="h2">H2</option>
+                <option value="h3">H3</option>
+                <option value="h4">H4</option>
+                <option value="h5">H5</option>
+                <option value="h6">H6</option>
+            </config>
+            <default>h1</default>
         </input>
         <input name="ingress" type="TextArea">
             <label>Ingress</label>
