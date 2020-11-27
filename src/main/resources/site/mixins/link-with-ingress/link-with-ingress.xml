@@ -7,7 +7,7 @@
         <input name="ingress" type="TextArea">
             <label>Ingress</label>
         </input>
-        <option-set name="links">
+        <option-set name="link">
             <label>Lenke</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">

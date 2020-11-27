@@ -32,7 +32,7 @@ const contentListMixinFragment = `
 const linkWithIngressMixinFragment = `
     title
     ingress
-    links {
+    link {
         _selected
         internal {
             ${linkInternalMixinFragment}
