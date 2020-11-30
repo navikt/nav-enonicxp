@@ -357,60 +357,6 @@ const chatPage = {
     },
 };
 
-const searchResult = [
-    {
-        type: 'page',
-        path: '/',
-        page: {
-            descriptor: 'no.nav.navno:main-page',
-            customized: false,
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/0',
-        part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:search',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/searchbar/0',
-        part: {
-            descriptor: 'no.nav.navno:searchbar',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/result/0',
-        part: {
-            descriptor: 'no.nav.navno:searchresult',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-];
-
 const publishingCalendarPage = [
     {
         type: 'page',
@@ -652,19 +598,6 @@ const templates = [
             },
         },
         components: chatPage,
-    },
-    {
-        content: {
-            displayName: 'Søkeresultat',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:searchresult',
-            },
-        },
-        components: searchResult,
     },
     {
         content: {

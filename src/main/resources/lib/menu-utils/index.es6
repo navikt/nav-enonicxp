@@ -165,7 +165,6 @@ exports.getBreadcrumbMenuOld = function (params, initialContent = false) {
                 el.type === app.name + ':section-page' ||
                 el.type === app.name + ':page-list' ||
                 el.type === app.name + ':transport-page' ||
-                el.type === app.name + ':searchresult' ||
                 el.type === app.name + ':generic-page'
         );
 
