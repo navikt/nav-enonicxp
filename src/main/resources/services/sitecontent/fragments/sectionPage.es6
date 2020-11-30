@@ -30,6 +30,20 @@ const sectionPageFragment = `
                 ${globalFragment}
                 ${contentList.fragment}
             }
+            panelsHeading
+            panelItems {
+                title
+                ingress
+                spanning
+                url {
+                    text
+                    ref {
+                        ${globalFragment}
+                        ${internalLink.fragment}
+                        ${externalLink.fragment}
+                    }
+                }
+            }
         }
     }
 `;
