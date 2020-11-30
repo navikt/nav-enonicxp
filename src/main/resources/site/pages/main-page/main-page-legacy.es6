@@ -30,10 +30,7 @@ function mainPageLegacy(req) {
             path: 'img/navno/social-share-fallback.png',
             type: 'absolute',
         });
-        const noindex =
-            content.type === `${app.name}:searchresult` ||
-            content._path.indexOf('/noindex') !== -1 ||
-            content.data.noindex;
+        const noindex = content._path.indexOf('/noindex') !== -1 || content.data.noindex;
         const url = utils.validateUrl(req);
         const canonicalUrl = content.data.canonicalUrl || url;
         const header = [
