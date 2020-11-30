@@ -8,7 +8,6 @@ const { destructureComponent } = require('/lib/headless-utils/unflatten-componen
 const queryGetComponents = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
-            pageAsJson
             ${componentsFragment}
         }
     }
