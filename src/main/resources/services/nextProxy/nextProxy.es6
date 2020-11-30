@@ -1,7 +1,7 @@
 const httpClient = require('/lib/http-client');
-const frontendOriginMap = require('/lib/headless-utils/frontend-origin');
+const frontendOrigin = require('/lib/headless-utils/frontend-origin');
 
-const nextApiUrl = `${frontendOriginMap[app.config.env] || frontendOriginMap.p}/api/jsonProxy`;
+const nextApiUrl = `${frontendOrigin}/api/json-proxy`;
 
 const handleGet = (req) => {
     const { path } = req;

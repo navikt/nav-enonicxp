@@ -1,19 +1,3 @@
-// Component data in the components-array is stored in type-specific sub-objects
-// Move this data down to the base object, to match the XP page-object structure
-const destructureComponent = (component) => {
-    const { page, part, layout, image, text, fragment, ...rest } = component;
-
-    return {
-        ...page,
-        ...part,
-        ...layout,
-        ...image,
-        ...text,
-        ...fragment,
-        ...rest,
-    };
-};
-
 // Component config in the components-array is stored in a <app-name>.<region-name> sub-object
 // Move this data down to the base config object, to match the XP page-object structure
 const destructureConfig = (component) => {
@@ -38,6 +22,29 @@ const destructureConfig = (component) => {
     };
 };
 
+// Component data in the components-array is stored in type-specific sub-objects
+// Move this data down to the base object, to match the XP page-object structure
+const destructureComponent = (component) => {
+    const { page, part, layout, image, text, fragment, ...rest } = component;
+
+    const destructured = {
+        ...page,
+        ...part,
+        ...layout,
+        ...image,
+        ...text,
+        ...fragment,
+        ...rest,
+    };
+
+    const config = destructureConfig(destructured);
+
+    return {
+        ...destructured,
+        ...(config && { config }),
+    };
+};
+
 // Merge data from the components array into the equivalent nested components from the page-object
 // Data from the components array should take precedence, as this has resolved content refs
 const mergeComponents = (componentsFromPage, componentsArray) =>
@@ -51,7 +58,7 @@ const mergeComponents = (componentsFromPage, componentsArray) =>
         }
 
         const destructuredComponent = destructureComponent(foundComponent);
-        const config = { ...pageComponent.config, ...destructureConfig(destructuredComponent) };
+        const config = { ...pageComponent.config, ...destructuredComponent.config };
 
         return insertComponents(
             {
@@ -104,4 +111,4 @@ const mergeComponentsIntoPage = (content) => {
     return insertComponents(page, components);
 };
 
-module.exports = mergeComponentsIntoPage;
+module.exports = { mergeComponentsIntoPage, destructureComponent };
