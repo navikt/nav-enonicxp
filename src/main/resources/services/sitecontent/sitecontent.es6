@@ -18,7 +18,7 @@ const mainArticleChapter = require('./fragments/mainArticleChapter');
 const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 
-const queryFields = [
+const queryFragments = [
     globalFragment,
     componentsFragment,
     contentList.fragment,
@@ -36,11 +36,11 @@ const queryFields = [
 const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
-            ${queryFields}
+            ${queryFragments}
             pageAsJson(resolveTemplate: true)
             ...on base_Folder {
                 children {
-                    ${queryFields}
+                    ${queryFragments}
                 }
             }
         }

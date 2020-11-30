@@ -8,7 +8,8 @@ const externalLink = require('./externalLink');
 const contentListFragment = `
     ...on no_nav_navno_ContentList {
         data {
-            sectionContents {
+            derp
+            sectionContents(sort:"modifiedTime DESC") {
                 ${globalFragment}
                 ${pageList.shortFragment}
                 ${transportPage.shortFragment}
