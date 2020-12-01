@@ -1,10 +1,8 @@
 const guillotineLib = require('/lib/guillotine');
 const graphQlLib = require('/lib/graphql');
 const contentLib = require('/lib/xp/content');
-const guillotineSortingHook = require('/lib/headless-utils/guillotine-sorting-hook');
 const { runInBranchContext } = require('/lib/headless-utils/run-in-context');
-
-guillotineSortingHook();
+require('/lib/headless-utils/guillotine-sorting-hook');
 
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();

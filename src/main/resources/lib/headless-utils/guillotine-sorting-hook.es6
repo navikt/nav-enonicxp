@@ -3,7 +3,26 @@ const contentLib = require('/lib/xp/content');
 const guillotineDynamicForm = require('/lib/guillotine/dynamic/form');
 const { forceArray } = require('/lib/nav-utils');
 
-const guillotineSortingHook = () => {
+const getSortFunc = (sortByField, order) => (a, b) => {
+    const [fieldA, fieldB] =
+        order === 'ASC' ? [a[sortByField], b[sortByField]] : [b[sortByField], a[sortByField]];
+
+    if (!fieldA && !fieldB) {
+        return 0;
+    }
+
+    if (fieldA > fieldB || !fieldB) {
+        return 1;
+    }
+
+    if (fieldA < fieldB || !fieldA) {
+        return -1;
+    }
+
+    return 0;
+};
+
+const hookGenerateFormItemWithSortArgument = () => {
     const generateFormItemArgumentsPrev = guillotineDynamicForm.generateFormItemArguments;
 
     guillotineDynamicForm.generateFormItemArguments = (context, formItem) => {
@@ -13,7 +32,9 @@ const guillotineSortingHook = () => {
         }
         return args;
     };
+};
 
+const hookGenerateFormItemResolverWithSortFunction = () => {
     const generateFormItemResolveFunctionPrev =
         guillotineDynamicForm.generateFormItemResolveFunction;
 
@@ -30,10 +51,10 @@ const guillotineSortingHook = () => {
                 return resolveFunctionPrev(env);
             }
 
-            const [sortBy, orderByRaw] = sort.split(' ');
-            const orderBy = orderByRaw?.toUpperCase();
+            const [sortBy, orderRaw] = sort.split(' ');
+            const order = orderRaw?.toUpperCase();
 
-            if (!sortBy || (orderBy !== 'DESC' && orderBy !== 'ASC')) {
+            if (!sortBy || (order !== 'DESC' && order !== 'ASC')) {
                 return resolveFunctionPrev(env);
             }
 
@@ -52,25 +73,7 @@ const guillotineSortingHook = () => {
                           })
                     : values;
 
-            const sortFunc = (a, b) => {
-                const [fieldA, fieldB] =
-                    orderBy === 'ASC' ? [a[sortBy], b[sortBy]] : [b[sortBy], a[sortBy]];
-
-                if (!fieldA && !fieldB) {
-                    return 0;
-                }
-
-                if (fieldA > fieldB || !fieldB) {
-                    return 1;
-                }
-
-                if (fieldA < fieldB || !fieldA) {
-                    return -1;
-                }
-
-                return 0;
-            };
-
+            const sortFunc = getSortFunc(sortBy, order);
             const sortedValues = resolvedValues.sort(sortFunc).map((item) => item._id);
 
             const envWithSortedValues = {
@@ -86,4 +89,9 @@ const guillotineSortingHook = () => {
     };
 };
 
-module.exports = guillotineSortingHook;
+const guillotineSortingHook = () => {
+    hookGenerateFormItemWithSortArgument();
+    hookGenerateFormItemResolverWithSortFunction();
+};
+
+module.exports = guillotineSortingHook();
