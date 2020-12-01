@@ -45,9 +45,7 @@ const schema = guillotineLib.createSchema({
                 'nrNews',
                 sortByLastModifiedDesc
             );
-
             params.fields.ntkContents.resolve = contentListResolver('ntkContents', 'nrNTK');
-
             params.fields.scContents.resolve = contentListResolver('scContents', 'nrSC');
         },
     },
