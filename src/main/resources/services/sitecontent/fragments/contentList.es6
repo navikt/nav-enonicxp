@@ -5,10 +5,10 @@ const mainArticle = require('./mainArticle');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
 
-const contentListFragment = `
+const contentListFragment = (sort) => `
     ...on no_nav_navno_ContentList {
         data {
-            sectionContents {
+            sectionContents${sort ? `(sort:"${sort}")` : ''} {
                 ${globalFragment}
                 ${pageList.shortFragment}
                 ${transportPage.shortFragment}
@@ -20,4 +20,7 @@ const contentListFragment = `
     }
 `;
 
-module.exports = { fragment: contentListFragment };
+module.exports = {
+    fragment: contentListFragment(),
+    fragmentSortedDateDesc: contentListFragment('modifiedTime DESC'),
+};

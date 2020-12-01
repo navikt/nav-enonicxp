@@ -22,13 +22,6 @@ const linkExternalMixinFragment = `
     text
 `;
 
-const contentListMixinFragment = `
-    numLinks
-    target {
-        ${contentList.fragment}
-    }
-`;
-
 const linkWithIngressMixinFragment = `
     ingress
     link {
@@ -81,7 +74,10 @@ const dynamicPartsFragment = `
                 list {
                     _selected
                     contentList {
-                        ${contentListMixinFragment}
+                        numLinks
+                        target {
+                            ${contentList.fragment}
+                        }
                     }
                     linkList {
                         links {
@@ -99,7 +95,10 @@ const dynamicPartsFragment = `
             dynamic_news_list {
                 title
                 contentList {
-                    ${contentListMixinFragment}
+                    numLinks
+                    target {
+                        ${contentList.fragmentSortedDateDesc}
+                    }
                 }
                 moreNews {
                     url

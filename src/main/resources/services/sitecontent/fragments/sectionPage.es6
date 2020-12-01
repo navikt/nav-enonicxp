@@ -8,8 +8,8 @@ const transportPage = require('./transportPage');
 
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
-        dataAsJson
         data {
+            moreNewsUrl
             tableContents {
                 ${globalFragment}
                 ${internalLink.fragment}
