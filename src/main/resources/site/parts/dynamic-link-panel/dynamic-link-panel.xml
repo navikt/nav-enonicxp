@@ -11,6 +11,7 @@
             <config>
                 <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
                 <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                <allowPath>./*</allowPath>
             </config>
         </input>
         <input name="background" type="ImageSelector">

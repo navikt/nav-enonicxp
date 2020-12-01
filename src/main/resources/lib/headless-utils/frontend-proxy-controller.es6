@@ -4,9 +4,8 @@ const libs = {
     httpClient: require('/lib/http-client'),
 };
 const frontendLiveness = require('/lib/headless-utils/frontend-liveness');
-const frontendOriginMap = require('/lib/headless-utils/frontend-origin');
+const frontendOrigin = require('/lib/headless-utils/frontend-origin');
 
-const frontendOrigin = frontendOriginMap[app.config.env] || frontendOriginMap.p;
 const legacyPath = '/_/legacy';
 const legacyView = resolve('/site/pages/main-page/main-page-legacy-stripped.html');
 

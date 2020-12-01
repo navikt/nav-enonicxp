@@ -6,4 +6,6 @@ const frontendOriginMap = {
     p: 'https://www.nav.no',
 };
 
-module.exports = frontendOriginMap;
+const frontendOrigin = frontendOriginMap[app.config.env] || frontendOriginMap.p;
+
+module.exports = frontendOrigin;
