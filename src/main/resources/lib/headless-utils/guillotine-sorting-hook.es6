@@ -65,12 +65,8 @@ const hookGenerateFormItemResolverWithSortFunction = () => {
                     formItem.inputType
                 ) !== -1
                     ? values
-                          .map(function (value) {
-                              return contentLib.get({ key: value });
-                          })
-                          .filter(function (content) {
-                              return content != null;
-                          })
+                          .map((value) => contentLib.get({ key: value }))
+                          .filter((content) => content != null)
                     : values;
 
             const sortFunc = getSortFunc(sortBy, order);
