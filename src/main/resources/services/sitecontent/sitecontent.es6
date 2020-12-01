@@ -18,6 +18,7 @@ const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 
 const queryFragments = [
+    '_references {_path}',
     globalFragment,
     componentsFragment,
     contentList.fragment,

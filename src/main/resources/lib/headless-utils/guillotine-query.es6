@@ -10,10 +10,17 @@ const getLastUpdatedUnixTime = (content) =>
 
 const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
 
+// Retrieves nested object value from '.'-delimited string path
+const deepValue = (obj, path) =>
+    path.split('.').reduce((acc, key) => acc && typeof acc === 'object' && acc[key], obj) ||
+    undefined;
+
 // Sorts and slices content lists
-const contentListResolver = (contentListName, maxItemsName, sortFunc = undefined) => (env) => {
-    const contentListId = env.source[contentListName];
-    const maxItems = env.source[maxItemsName];
+const contentListResolver = (contentListPath, maxItemsPath, sortFunc = undefined) => (env) => {
+    const contentListId = deepValue(env.source, contentListPath);
+    const maxItems = deepValue(env.source, maxItemsPath);
+    log.info(`contentlistid: ${contentListId}`);
+    log.info(`maxitems: ${maxItems}`);
 
     const contentList = contentLib.get({ key: contentListId });
     const sectionContentsRefs = contentList?.data?.sectionContents;
@@ -47,6 +54,12 @@ const schema = guillotineLib.createSchema({
             );
             params.fields.ntkContents.resolve = contentListResolver('ntkContents', 'nrNTK');
             params.fields.scContents.resolve = contentListResolver('scContents', 'nrSC');
+        },
+        PartComponentDataApplicationConfig: (context, params) => {
+            params.fields.dynamic_news_list.resolve = contentListResolver(
+                'dynamic_news_list.contentList.target',
+                'dynamic_news_list.contentList.numLinks'
+            );
         },
     },
 });
