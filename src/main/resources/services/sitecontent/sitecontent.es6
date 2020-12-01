@@ -1,5 +1,4 @@
 const guillotineQuery = require('/lib/headless-utils/guillotine-query');
-const filterContent = require('/lib/headless-utils/content-filtering');
 const deepJsonParser = require('/lib/headless-utils/deep-json-parser');
 const mergeComponentsIntoPage = require('/lib/headless-utils/unflatten-components');
 const { isValidBranch } = require('/lib/headless-utils/run-in-context');
@@ -61,12 +60,11 @@ const getContent = (contentId, branch) => {
         return null;
     }
 
-    const contentWithParsedJsonData = deepJsonParser(content, ['data', 'config', 'page']);
-    const filteredContent = filterContent(contentWithParsedJsonData);
-    const page = mergeComponentsIntoPage(filteredContent);
+    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
+    const page = mergeComponentsIntoPage(contentWithParsedData);
 
     return {
-        ...filteredContent,
+        ...contentWithParsedData,
         page,
         components: undefined,
     };
