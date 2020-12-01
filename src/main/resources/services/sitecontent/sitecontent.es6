@@ -1,6 +1,6 @@
 const guillotineQuery = require('/lib/headless-utils/guillotine-query');
 const deepJsonParser = require('/lib/headless-utils/deep-json-parser');
-const mergeComponentsIntoPage = require('/lib/headless-utils/unflatten-components');
+const { mergeComponentsIntoPage } = require('/lib/headless-utils/unflatten-components');
 const { isValidBranch } = require('/lib/headless-utils/run-in-context');
 const { searchForRedirect } = require('../../site/error/error');
 

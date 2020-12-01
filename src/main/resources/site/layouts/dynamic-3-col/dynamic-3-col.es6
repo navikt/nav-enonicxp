@@ -1,12 +1,3 @@
-const libs = {
-    portal: require('/lib/xp/portal'),
-    thymeleaf: require('/lib/thymeleaf'),
-};
-const view = resolve('./dynamic-3-col.html');
+const controller = require('/lib/headless-utils/component-preview-controller');
 
-exports.get = function () {
-    return {
-        body: libs.thymeleaf.render(view, {}),
-        contentType: 'text/html',
-    };
-};
+exports.get = controller;
