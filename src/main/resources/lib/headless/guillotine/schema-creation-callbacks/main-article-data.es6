@@ -23,7 +23,7 @@ const mainArticleDataCallback = (context, params) => {
 
                 return processedHtmlResponse.body;
             } catch (e) {
-                log.info(`Html processing controller failed: ${e}`);
+                log.error(`Html processing controller failed: ${e}`);
             }
 
             return portalLib.processHtml({ value: html, type: type });
