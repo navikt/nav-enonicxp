@@ -6,27 +6,7 @@ const libs = {
 const frontendLiveness = require('/lib/headless/frontend-liveness');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
-const legacyPath = '/_/legacy';
-const legacyView = resolve('/site/pages/main-page/main-page-legacy-stripped.html');
-
-const legacyHtml = () => {
-    const content = libs.portal.getContent();
-    const regions = content.page.regions;
-    const model = {
-        mainRegion: regions.main,
-        language: content.language || 'no',
-    };
-    return {
-        contentType: 'text/html',
-        body: libs.thymeleaf.render(legacyView, model),
-    };
-};
-
 const frontendProxy = (req, fallbackController) => {
-    if (req.path.startsWith(legacyPath)) {
-        return legacyHtml();
-    }
-
     const frontendPath =
         (req.branch === 'draft' ? '/draft' : '') +
         // Request-paths from content studio in edit-mode comes in the form of the UUID of the content-object.
