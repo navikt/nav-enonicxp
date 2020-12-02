@@ -1,5 +1,5 @@
 const httpClient = require('/lib/http-client');
-const frontendOrigin = require('/lib/headless-utils/frontend-origin');
+const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const nextApiUrl = `${frontendOrigin}/api/json-proxy`;
 

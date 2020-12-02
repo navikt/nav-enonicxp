@@ -1,5 +1,5 @@
-const frontendProxyController = require('/lib/headless-utils/frontend-proxy-controller');
-const frontendLiveness = require('/lib/headless-utils/frontend-liveness');
+const frontendProxyController = require('/lib/headless/controllers/frontend-proxy-controller');
+const frontendLiveness = require('/lib/headless/frontend-liveness');
 const pageLargeTableLegacy = require('./page-large-table-legacy');
 
 exports.get = function (req) {
