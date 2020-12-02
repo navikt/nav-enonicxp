@@ -4,6 +4,9 @@ const { xpOrigin } = require('/lib/headless/url-origin');
 
 // Runs the processHtml result through the site-engine HTTP pipeline, which
 // ensures post-processing instructions for macros/components/etc are handled
+//
+// (This strange workaround can probably be removed at some point, if/when Enonic provides
+// alternative ways to run html post-processing)
 const processHtmlWithPostProcessing = (html, type) => {
     try {
         const processedHtmlResponse = httpClient.request({
@@ -25,6 +28,7 @@ const processHtmlWithPostProcessing = (html, type) => {
     return () => portalLib.processHtml({ value: html, type: type });
 };
 
+// This controller should be mapped to respond to post-requests with ?processHtml=true
 const htmlProcessor = (req) => {
     const { html, type } = JSON.parse(req.body);
 
