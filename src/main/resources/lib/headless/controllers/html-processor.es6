@@ -1,7 +1,7 @@
 const portalLib = require('/lib/xp/portal');
 
 const htmlProcessor = (req) => {
-    const { html } = JSON.parse(req.body);
+    const { html, type } = JSON.parse(req.body);
 
     if (!html) {
         return {
@@ -12,7 +12,7 @@ const htmlProcessor = (req) => {
 
     const processedHtml = portalLib.processHtml({
         value: html,
-        type: 'absolute',
+        type: type,
     });
 
     return {
