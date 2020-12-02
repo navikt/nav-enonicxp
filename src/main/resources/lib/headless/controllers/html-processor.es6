@@ -6,7 +6,7 @@ const htmlProcessor = (req) => {
     if (!html) {
         return {
             contentType: 'text/html',
-            body: '<div>Empty html</div>',
+            body: '',
         };
     }
 
