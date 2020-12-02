@@ -1,4 +1,4 @@
-const { runInBranchContext } = require('/lib/headless-utils/run-in-context');
+const { runInBranchContext } = require('/lib/headless/run-in-context');
 
 const libs = {
     menu: require('/lib/menu-utils'),
