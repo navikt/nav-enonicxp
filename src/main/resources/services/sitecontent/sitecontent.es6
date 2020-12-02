@@ -16,6 +16,7 @@ const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
 const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
+const publishingCalendar = require('./fragments/publishingCalendar');
 
 const queryFragments = [
     globalFragment,
@@ -30,6 +31,7 @@ const queryFragments = [
     transportPage.fragment,
     largeTable.fragment,
     officeInformation.fragment,
+    publishingCalendar.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
