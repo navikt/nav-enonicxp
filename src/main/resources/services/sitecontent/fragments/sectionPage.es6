@@ -6,12 +6,21 @@ const pageList = require('./pageList');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 
+const sectionPageShortFragment = `
+    ...on no_nav_navno_SectionPage {
+        data {
+            ingress
+        }
+    }
+`;
+
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
         data {
             moreNewsUrl
             tableContents {
                 ${globalFragment}
+                ${sectionPageShortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
                 ${pageList.shortFragment}
@@ -48,4 +57,4 @@ const sectionPageFragment = `
     }
 `;
 
-module.exports = { fragment: sectionPageFragment };
+module.exports = { fragment: sectionPageFragment, shortFragment: sectionPageShortFragment };
