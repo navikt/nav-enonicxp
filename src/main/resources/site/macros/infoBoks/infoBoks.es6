@@ -8,7 +8,7 @@ exports.macro = function (context) {
         type: 'absolute',
     });
     const body =
-        '<div class="alertstripe alertstripe--info">' +
+        '<div class="macroInfoBoks alertstripe alertstripe--info">' +
         '<div class="alertstripe__ikon">' +
         '<span class="sr-only">info</span>' +
         `<img src="${imageUrl}" alt="">` +

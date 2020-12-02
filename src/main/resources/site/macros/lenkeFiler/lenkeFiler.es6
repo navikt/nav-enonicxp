@@ -16,6 +16,6 @@ exports.macro = function (context) {
         })
         .join('&nbsp;');
     return {
-        body: `<span>${text}&nbsp;${fileLinks}</span>`,
+        body: `<span class="macroLenkeFiler">${text}&nbsp;${fileLinks}</span>`,
     };
 };
