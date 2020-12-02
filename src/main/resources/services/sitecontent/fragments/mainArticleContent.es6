@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 
 const mainArticleContentFragment = `
+    ${globalFragment}
     publish {
        from
     }
