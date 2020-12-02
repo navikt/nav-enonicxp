@@ -1,7 +1,7 @@
 const graphQlLib = require('/lib/graphql');
 const contentLib = require('/lib/xp/content');
 const guillotineDynamicForm = require('/lib/guillotine/dynamic/form');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/nav-utils/index');
 
 const getSortFunc = (sortByField, order) => (a, b) => {
     const [fieldA, fieldB] =
@@ -90,4 +90,4 @@ const guillotineSortingHook = () => {
     hookGenerateFormItemResolverWithSortFunction();
 };
 
-module.exports = guillotineSortingHook();
+module.exports = guillotineSortingHook;

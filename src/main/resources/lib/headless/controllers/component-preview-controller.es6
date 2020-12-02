@@ -1,9 +1,9 @@
 const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
-const frontendOrigin = require('/lib/headless-utils/frontend-origin');
-const componentsFragment = require('../../services/sitecontent/fragments/_components');
-const guillotineQuery = require('/lib/headless-utils/guillotine-query');
-const { destructureComponent } = require('/lib/headless-utils/unflatten-components');
+const { frontendOrigin } = require('/lib/headless/url-origin');
+const componentsFragment = require('../../../services/sitecontent/fragments/_components');
+const guillotineQuery = require('/lib/headless/guillotine/guillotine-query');
+const { destructureComponent } = require('/lib/headless/unflatten-components');
 
 const queryGetComponents = `query($ref:ID!){
     guillotine {
