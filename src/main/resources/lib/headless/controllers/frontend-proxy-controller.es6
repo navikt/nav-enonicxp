@@ -3,8 +3,8 @@ const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     httpClient: require('/lib/http-client'),
 };
-const frontendLiveness = require('/lib/headless-utils/frontend-liveness');
-const frontendOrigin = require('/lib/headless-utils/frontend-origin');
+const frontendLiveness = require('/lib/headless/frontend-liveness');
+const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const legacyPath = '/_/legacy';
 const legacyView = resolve('/site/pages/main-page/main-page-legacy-stripped.html');
