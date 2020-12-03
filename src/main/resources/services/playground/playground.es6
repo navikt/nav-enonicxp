@@ -3,6 +3,7 @@ const graphqlPlaygroundLib = require('/lib/graphql-playground');
 const graphQlLib = require('/lib/graphql');
 const graphQlRxLib = require('/lib/graphql-rx');
 const webSocketLib = require('/lib/xp/websocket');
+const { xpOrigin } = require('/lib/headless/url-origin');
 const { guillotineSchema } = require('/lib/headless/guillotine/guillotine-query');
 const { env } = app.config;
 
@@ -66,9 +67,11 @@ exports.get = (req) => {
         };
     }
 
+    const html = graphqlPlaygroundLib.render().replace(/\/_\/asset/g, `${xpOrigin}/_/asset`);
+
     return {
         contentType: 'text/html; charset=utf-8',
-        body: graphqlPlaygroundLib.render(),
+        body: html,
     };
 };
 
