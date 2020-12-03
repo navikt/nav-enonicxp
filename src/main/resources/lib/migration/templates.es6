@@ -337,50 +337,6 @@ const publishingCalendarPage = [
     },
 ];
 
-const genericPage = [
-    {
-        type: 'page',
-        path: '/',
-        page: {
-            descriptor: 'no.nav.navno:main-page',
-            customized: true,
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/0',
-        part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/first/0',
-        part: {
-            descriptor: 'no.nav.navno:generic-page',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-];
-
 const dynamicPage = [
     {
         type: 'page',
@@ -534,19 +490,6 @@ const templates = [
             },
         },
         components: publishingCalendarPage,
-    },
-    {
-        content: {
-            displayName: 'Generisk side',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:generic-page',
-            },
-        },
-        components: genericPage,
     },
     {
         content: {
