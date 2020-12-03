@@ -67,7 +67,7 @@ exports.get = (req) => {
         };
     }
 
-    const html = graphqlPlaygroundLib.render().replace(/\/_\/asset/g, `${xpOrigin}/_/asset`);
+    const html = graphqlPlaygroundLib.render().replace(/^".*\/_\/asset/g, `${xpOrigin}/_/asset`);
 
     return {
         contentType: 'text/html; charset=utf-8',
