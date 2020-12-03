@@ -50,6 +50,7 @@ const handleStartMessage = (sessionId, message) => {
     }
 };
 
+// TODO: sikre disse i prod?
 exports.get = (req) => {
     if (env === 'p') {
         return {
