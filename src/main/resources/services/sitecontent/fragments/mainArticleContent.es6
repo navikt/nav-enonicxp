@@ -1,4 +1,5 @@
 const globalFragment = require('./_global');
+const media = require('./media');
 
 const mainArticleContentFragment = `
     ${globalFragment}
@@ -41,6 +42,9 @@ const mainArticleContentFragment = `
             relatedInformation {
                 link {
                     ${globalFragment}
+                }
+                files {
+                    ${media.fragment}
                 }
             }
             international {
