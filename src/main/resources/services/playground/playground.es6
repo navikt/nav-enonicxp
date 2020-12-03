@@ -89,6 +89,12 @@ exports.post = (req) => {
 };
 
 exports.webSocketEvent = (event) => {
+    if (env === 'p') {
+        return {
+            status: 403,
+        };
+    }
+
     switch (event.type) {
         case 'close':
             cancelSubscription(event.session.id);
