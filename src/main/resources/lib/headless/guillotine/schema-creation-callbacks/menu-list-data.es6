@@ -63,12 +63,9 @@ const getContentFromRefs = (refs) => {
 const getContentFromRef = (ref) => {
     const content = contentLib.get({ key: ref });
     const path = content._path;
-    const name = content.displayName;
+    const text = content.displayName;
     const type = content.type;
-    return {
-        text: name,
-        url: type.startsWith('media:') ? getAttachmentUrl(ref) : path,
-    };
+    return { text, url: type.startsWith('media:') ? getAttachmentUrl(ref) : path };
 };
 
 const getAttachmentUrl = (ref) => portalLib.attachmentUrl({ id: ref, type: 'absolute' });
