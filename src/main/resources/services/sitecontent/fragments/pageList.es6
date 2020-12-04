@@ -3,6 +3,7 @@ const externalLink = require('./externalLink');
 const internalLink = require('./internalLink');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
+const menuListItems = require('./menuListItems');
 
 const pageListFragment = `
     ...on no_nav_navno_PageList {
@@ -15,14 +16,7 @@ const pageListFragment = `
                 ${internalLink.fragment}
                 ${externalLink.fragment}
             }
-            menuListItems {
-                _selected
-                shortcuts {
-                    link {
-                        ${globalFragment}
-                    }
-                }
-            }
+            ${menuListItems.shortcutsFragment}
         }
     }
 `;
