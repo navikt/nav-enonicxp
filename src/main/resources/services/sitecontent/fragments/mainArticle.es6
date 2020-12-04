@@ -4,7 +4,7 @@ const mainArticleChapter = require('./mainArticleChapter');
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
         ${mainArticleContent.fragment}
-        children {
+        children(first:50) {
             ${mainArticleChapter.fragment}
         }
     }
