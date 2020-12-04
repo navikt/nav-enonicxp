@@ -6,7 +6,7 @@ const mainArticleChapterFragment = `
         ${globalFragment}
         parent{
             ${globalFragment}
-            children(first:50) {
+            children(first:1000) {
                 ${globalFragment}
             }
         }
