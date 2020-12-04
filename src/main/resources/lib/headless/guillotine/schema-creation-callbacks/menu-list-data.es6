@@ -1,59 +1,67 @@
 const contentLib = require('/lib/xp/content');
+const graphQlLib = require('/lib/guillotine/graphql.js');
+const { generateCamelCase } = require('/lib/guillotine/util/naming');
 
-const menuListGetContent = (refs) => {
-    log.info(JSON.stringify(refs));
-    if (refs instanceof Object) {
-        return Object.keys(refs).map((key) => {
-            const ref = refs[key];
-            return contentLib.get({ key: ref });
+const menuListItemMapper = (ref) => {
+    const content = contentLib.get({ key: ref });
+    const attachments = contentLib.getAttachments({ key: ref });
+    log.info(JSON.stringify(attachments));
+    return {
+        url: content._path,
+        text: content.displayName,
+    };
+};
+
+const menuListItemsGetContent = (refs) => {
+    if (Array.isArray(refs)) {
+        return refs.map((key) => menuListItemMapper(key));
+    }
+    return [menuListItemMapper(refs)];
+};
+
+const menuListItemsResolver = (menuListKey) => (env) => {
+    const key = Object.keys(env.source).filter(
+        (item) => generateCamelCase(item) === menuListKey
+    )[0];
+    const link = env.source[key]?.link;
+    const files = env.source[key]?.files;
+    const linksResolved = link ? menuListItemsGetContent(link) : [];
+    const filesResolved = files ? menuListItemsGetContent(files) : [];
+    return { links: [...linksResolved, ...filesResolved] };
+};
+
+const menuListItemsCallback = (context, params) => {
+    if (!context.types.menuListLink) {
+        context.types.menuListLink = graphQlLib.createObjectType(context, {
+            name: context.uniqueName('MenuListLink'),
+            description: 'Lenke i MenuListItem',
+            fields: {
+                url: { type: graphQlLib.GraphQLString },
+                text: { type: graphQlLib.GraphQLString },
+            },
         });
     }
-    return [contentLib.get({ key: refs })];
-};
 
-const menuListResolver = () => (env) => {
-    log.info(JSON.stringify(env));
-    const menuListItems = env.source['menuListItems'];
-
-    if (!menuListItems) {
-        return undefined;
+    if (!context.types.menuListItem) {
+        context.types.menuListItem = graphQlLib.createObjectType(context, {
+            name: context.uniqueName('MenuListItem'),
+            description: 'Lenker i høyremeny',
+            fields: {
+                links: {
+                    type: graphQlLib.list(context.types.menuListLink),
+                },
+            },
+        });
     }
 
-    log.info(JSON.stringify(menuListItems));
-
-    const data = Object.keys(menuListItems)
-        .map((key) => {
-            const value = menuListItems[key];
-            const isObject = value instanceof Object;
-            const links = value.link;
-            const files = value.files;
-            return {
-                [key]: isObject
-                    ? {
-                          ...(links && {
-                              link: menuListGetContent(links),
-                          }),
-                          ...(files && {
-                              files: menuListGetContent(files),
-                          }),
-                      }
-                    : value,
+    Object.keys(params.fields).forEach((key) => {
+        if (key !== '_selected') {
+            params.fields[key] = {
+                resolve: menuListItemsResolver(key),
+                type: context.types.menuListItem,
             };
-        })
-        .reduce(
-            (acc, value) => ({
-                ...acc,
-                ...value,
-            }),
-            {}
-        );
-
-    log.info(JSON.stringify(data));
-    return data;
+        }
+    });
 };
 
-const menuListDataCallback = (context, params) => {
-    params.fields.menuListItems.resolve = menuListResolver();
-};
-
-module.exports = menuListDataCallback;
+module.exports = menuListItemsCallback;

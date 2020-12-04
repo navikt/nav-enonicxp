@@ -1,5 +1,4 @@
 const globalFragment = require('./_global');
-const media = require('./media');
 
 const mainArticleContentFragment = `
     ${globalFragment}
@@ -25,56 +24,63 @@ const mainArticleContentFragment = `
         menuListItems {
             _selected
             selfservice {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             formAndApplication {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             processTimes {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             relatedInformation {
-                link {
-                    ${globalFragment}
-                }
-                files {
-                    ${media.fragment}
+                links {
+                    url
+                    text
                 }
             }
             international {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             reportChanges {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             rates {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             appealRights {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             membership {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
             rulesAndRegulations {
-                link {
-                    ${globalFragment}
+                links {
+                    url
+                    text
                 }
             }
         }

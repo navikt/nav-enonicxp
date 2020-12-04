@@ -18,8 +18,9 @@ const pageListFragment = `
             menuListItems {
                 _selected
                 shortcuts {
-                    link {
-                        ${globalFragment}
+                    links {
+                        url
+                        text
                     }
                 }
             }
