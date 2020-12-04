@@ -42,7 +42,7 @@ const queryGetContentByRef = `query($ref:ID!){
             ${queryFragments}
             pageAsJson(resolveTemplate: true)
             ...on base_Folder {
-                children {
+                children(first:1000) {
                     ${queryFragments}
                 }
             }
