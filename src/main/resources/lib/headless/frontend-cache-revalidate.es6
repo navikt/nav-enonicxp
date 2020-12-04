@@ -4,7 +4,12 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 const frontendCacheRevalidate = (path) => {
     const pathSegments = path.split('/www.nav.no');
     const relativePath = pathSegments[1] || pathSegments[0];
-    log.info(`sending revalidate event to frontend for ${relativePath}`);
+
+    if (!relativePath) {
+        return;
+    }
+
+    log.info(`sending revalidate request to frontend for ${relativePath}`);
 
     httpClient.request({
         url: `${frontendOrigin}/api/cache-revalidator?path=${relativePath}`,
