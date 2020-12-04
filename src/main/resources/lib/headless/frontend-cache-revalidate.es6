@@ -13,6 +13,9 @@ const frontendCacheRevalidate = (path) => {
 
     httpClient.request({
         url: `${frontendOrigin}/api/cache-revalidator?path=${relativePath}`,
+        headers: {
+            secret: app.config.serviceSecret,
+        },
         method: 'GET',
         contentType: 'application/json',
     });
