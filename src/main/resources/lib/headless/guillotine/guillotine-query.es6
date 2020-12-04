@@ -10,7 +10,6 @@ guillotineHooks();
 const schema = guillotineLib.createSchema({
     creationCallbacks: {
         no_nav_navno_SectionPage_Data: sectionPageDataCallback,
-        no_nav_navno_FaqPage_InnholdIHYremenyen: menuListDataCallback,
         no_nav_navno_MainArticle_InnholdIHYremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
     },
