@@ -1,4 +1,5 @@
 const globalFragment = require('./_global');
+const menuListItems = require('./menuListItems');
 
 const mainArticleContentFragment = `
     ${globalFragment}
@@ -21,69 +22,7 @@ const mainArticleContentFragment = `
             caption
             altText
         }
-        menuListItems {
-            _selected
-            selfservice {
-                links {
-                    url
-                    text
-                }
-            }
-            formAndApplication {
-                links {
-                    url
-                    text
-                }
-            }
-            processTimes {
-                links {
-                    url
-                    text
-                }
-            }
-            relatedInformation {
-                links {
-                    url
-                    text
-                }
-            }
-            international {
-                links {
-                    url
-                    text
-                }
-            }
-            reportChanges {
-                links {
-                    url
-                    text
-                }
-            }
-            rates {
-                links {
-                    url
-                    text
-                }
-            }
-            appealRights {
-                links {
-                    url
-                    text
-                }
-            }
-            membership {
-                links {
-                    url
-                    text
-                }
-            }
-            rulesAndRegulations {
-                links {
-                    url
-                    text
-                }
-            }
-        }
+        ${menuListItems.fragment}
     }
 `;
 
