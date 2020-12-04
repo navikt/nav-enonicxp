@@ -1,3 +1,5 @@
+const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
+
 const libs = {
     cache: require('/lib/cache'),
     event: require('/lib/xp/event'),
@@ -129,6 +131,8 @@ function wipeOnChange(path) {
     if (path.indexOf('/content/redirects/') !== -1) {
         wipe('redirects')();
     }
+
+    frontendCacheRevalidate(path);
 
     return true;
 }

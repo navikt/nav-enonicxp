@@ -25,7 +25,7 @@ const processHtmlWithPostProcessing = (html, type) => {
         log.error(`Html processing controller failed: ${e}`);
     }
 
-    return () => portalLib.processHtml({ value: html, type: type });
+    return portalLib.processHtml({ value: html, type: type });
 };
 
 // This controller should be mapped to respond to post-requests with ?processHtml=true
