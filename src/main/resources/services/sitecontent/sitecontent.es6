@@ -12,6 +12,7 @@ const internalLink = require('./fragments/internalLink');
 const transportPage = require('./fragments/transportPage');
 const externalLink = require('./fragments/externalLink');
 const pageList = require('./fragments/pageList');
+const melding = require('./fragments/melding');
 const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
 const officeInformation = require('./fragments/officeInformation');
@@ -32,6 +33,7 @@ const queryFragments = [
     largeTable.fragment,
     officeInformation.fragment,
     publishingCalendar.fragment,
+    melding.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
