@@ -1,13 +1,15 @@
 const contentLib = require('/lib/xp/content');
+const portalLib = require('/lib/xp/portal');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
+const { frontendOrigin } = require('../../url-origin');
 
 const menuListItemMapper = (ref) => {
     const content = contentLib.get({ key: ref });
-    const attachments = contentLib.getAttachments({ key: ref });
-    log.info(JSON.stringify(attachments));
+    const assetUrl = portalLib.attachmentUrl({ id: ref, type: 'absolute' });
+    const contentUrl = `${frontendOrigin}${content._path}`;
     return {
-        url: content._path,
+        url: assetUrl || contentUrl,
         text: content.displayName,
     };
 };
