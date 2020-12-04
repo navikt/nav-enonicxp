@@ -2,37 +2,9 @@ const contentLib = require('/lib/xp/content');
 const portalLib = require('/lib/xp/portal');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
-const { frontendOrigin } = require('../../url-origin');
 
-const menuListItemMapper = (ref) => {
-    const content = contentLib.get({ key: ref });
-    const assetUrl = portalLib.attachmentUrl({ id: ref, type: 'absolute' });
-    const contentUrl = `${frontendOrigin}${content._path}`;
-    return {
-        url: assetUrl || contentUrl,
-        text: content.displayName,
-    };
-};
-
-const menuListItemsGetContent = (refs) => {
-    if (Array.isArray(refs)) {
-        return refs.map((key) => menuListItemMapper(key));
-    }
-    return [menuListItemMapper(refs)];
-};
-
-const menuListItemsResolver = (menuListKey) => (env) => {
-    const key = Object.keys(env.source).filter(
-        (item) => generateCamelCase(item) === menuListKey
-    )[0];
-    const link = env.source[key]?.link;
-    const files = env.source[key]?.files;
-    const linksResolved = link ? menuListItemsGetContent(link) : [];
-    const filesResolved = files ? menuListItemsGetContent(files) : [];
-    return { links: [...linksResolved, ...filesResolved] };
-};
-
-const menuListItemsCallback = (context, params) => {
+const callback = (context, params) => {
+    // Create new types for mapped values
     if (!context.types.menuListLink) {
         context.types.menuListLink = graphQlLib.createObjectType(context, {
             name: context.uniqueName('MenuListLink'),
@@ -56,14 +28,46 @@ const menuListItemsCallback = (context, params) => {
         });
     }
 
+    // Create new types for mapped values
     Object.keys(params.fields).forEach((key) => {
         if (key !== '_selected') {
             params.fields[key] = {
-                resolve: menuListItemsResolver(key),
+                resolve: resolve(key),
                 type: context.types.menuListItem,
             };
         }
     });
 };
 
-module.exports = menuListItemsCallback;
+const resolve = (menuListKey) => (env) => {
+    // Fix mismatch between source key and graphQL key
+    const realKey = Object.keys(env.source).filter(
+        (el) => generateCamelCase(el) === menuListKey
+    )[0];
+
+    const link = env.source[realKey]?.link;
+    const files = env.source[realKey]?.files;
+    const linksResolved = link ? getContentFromRefs(link) : [];
+    const filesResolved = files ? getContentFromRefs(files) : [];
+    return { links: [...linksResolved, ...filesResolved] };
+};
+
+const getContentFromRefs = (refs) => {
+    // Refs can be arrays and strings
+    if (Array.isArray(refs)) {
+        return refs.map((key) => getContentFromRef(key));
+    }
+    return [getContentFromRef(refs)];
+};
+
+const getContentFromRef = (ref) => {
+    const content = contentLib.get({ key: ref });
+    const path = content._path;
+    return {
+        text: content.displayName,
+        url: content.type.startsWith('media:') ? getAttachmentUrl(ref) : path,
+    };
+};
+
+const getAttachmentUrl = (ref) => portalLib.attachmentUrl({ id: ref, type: 'absolute' });
+module.exports = callback;
