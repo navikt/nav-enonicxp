@@ -281,18 +281,6 @@ const largeTable = {
     },
 };
 
-const chatPage = {
-    type: 'page',
-    path: '/',
-    page: {
-        descriptor: 'no.nav.navno:chat-page',
-        customized: true,
-        config: {
-            'no-nav-navno': {},
-        },
-    },
-};
-
 const publishingCalendarPage = [
     {
         type: 'page',
@@ -464,19 +452,6 @@ const templates = [
             },
         },
         components: largeTable,
-    },
-    {
-        content: {
-            displayName: 'Page - Chat',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:chat-page',
-            },
-        },
-        components: chatPage,
     },
     {
         content: {
