@@ -28,4 +28,4 @@ const guillotineQuery = (query, params, branch = 'master') => {
     return data?.guillotine;
 };
 
-module.exports = guillotineQuery;
+module.exports = { guillotineQuery, guillotineSchema: schema };

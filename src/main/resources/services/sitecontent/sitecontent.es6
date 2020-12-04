@@ -1,4 +1,4 @@
-const guillotineQuery = require('/lib/headless/guillotine/guillotine-query');
+const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
 const { isValidBranch } = require('/lib/headless/run-in-context');
