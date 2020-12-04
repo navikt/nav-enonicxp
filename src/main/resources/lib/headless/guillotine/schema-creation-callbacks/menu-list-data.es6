@@ -63,9 +63,11 @@ const getContentFromRefs = (refs) => {
 const getContentFromRef = (ref) => {
     const content = contentLib.get({ key: ref });
     const path = content._path;
+    const name = content.displayName;
+    const type = content.type;
     return {
-        text: content.displayName,
-        url: content.type.startsWith('media:') ? getAttachmentUrl(ref) : path,
+        text: name,
+        url: type.startsWith('media:') ? getAttachmentUrl(ref) : path,
     };
 };
 
