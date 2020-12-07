@@ -25,6 +25,9 @@ const pageListShortFragment = `
     ...on no_nav_navno_PageList {
         data {
             ingress
+            hide_date
+            hideSectionContentsDate
+            orderSectionContentsByPublished
         }
     }
 `;
