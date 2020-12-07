@@ -5,23 +5,7 @@ const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 const menuListItems = require('./menuListItems');
 
-const pageListFragment = `
-    ...on no_nav_navno_PageList {
-        dataAsJson
-        data {
-            sectionContents {
-                ${globalFragment}
-                ${transportPage.shortFragment}
-                ${mainArticle.shortFragment}
-                ${internalLink.fragment}
-                ${externalLink.fragment}
-            }
-            ${menuListItems.shortcutsFragment}
-        }
-    }
-`;
-
-const pageListShortFragment = `
+export const shortFragment = `
     ...on no_nav_navno_PageList {
         data {
             ingress
@@ -32,4 +16,19 @@ const pageListShortFragment = `
     }
 `;
 
-module.exports = { fragment: pageListFragment, shortFragment: pageListShortFragment };
+export const fragment = `
+    ...on no_nav_navno_PageList {
+        dataAsJson
+        data {
+            sectionContents {
+                ${globalFragment}
+                ${transportPage.shortFragment}
+                ${mainArticle.shortFragment}
+                ${internalLink.fragment}
+                ${externalLink.fragment}
+                ${shortFragment}
+            }
+            ${menuListItems.shortcutsFragment}
+        }
+    }
+`;
