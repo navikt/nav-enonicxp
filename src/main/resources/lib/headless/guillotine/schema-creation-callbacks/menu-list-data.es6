@@ -68,5 +68,11 @@ const getContentFromRef = (ref) => {
     return { text, url: type.startsWith('media:') ? getAttachmentUrl(ref) : path };
 };
 
-const getAttachmentUrl = (ref) => portalLib.attachmentUrl({ id: ref, type: 'absolute' });
+const getAttachmentUrl = (ref) =>
+    portalLib.attachmentUrl({
+        id: ref,
+        type: 'absolute',
+        download: true,
+    });
+
 module.exports = callback;
