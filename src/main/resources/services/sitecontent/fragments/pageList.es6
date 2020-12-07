@@ -5,6 +5,17 @@ const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 const menuListItems = require('./menuListItems');
 
+const pageListShortFragment = `
+    ...on no_nav_navno_PageList {
+        data {
+            ingress
+            hide_date
+            hideSectionContentsDate
+            orderSectionContentsByPublished
+        }
+    }
+`;
+
 const pageListFragment = `
     ...on no_nav_navno_PageList {
         dataAsJson
@@ -15,19 +26,9 @@ const pageListFragment = `
                 ${mainArticle.shortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
+                ${pageListShortFragment}
             }
             ${menuListItems.shortcutsFragment}
-        }
-    }
-`;
-
-const pageListShortFragment = `
-    ...on no_nav_navno_PageList {
-        data {
-            ingress
-            hide_date
-            hideSectionContentsDate
-            orderSectionContentsByPublished
         }
     }
 `;
