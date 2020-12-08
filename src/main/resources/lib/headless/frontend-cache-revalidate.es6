@@ -1,4 +1,5 @@
 const httpClient = require('/lib/http-client');
+const { revalidatorProxyOrigin } = require('/lib/headless/url-origin');
 
 const frontendCacheRevalidate = (path) => {
     const pathSegments = path.split('/www.nav.no');
@@ -12,9 +13,6 @@ const frontendCacheRevalidate = (path) => {
 
     httpClient.request({
         url: `${revalidatorProxyOrigin}/revalidator-proxy?path=${relativePath}`,
-        headers: {
-            secret: app.config.serviceSecret,
-        },
         method: 'GET',
         contentType: 'application/json',
     });
