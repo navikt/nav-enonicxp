@@ -15,9 +15,9 @@ const xpOriginMap = {
 
 const revalidatorProxyOriginMap = {
     localhost: 'http://localhost:3002',
-    q6: 'https://nav-enonicxp-frontend-revalidator-proxy-q6.nais.oera-q.local',
-    q1: 'https://nav-enonicxp-frontend-revalidator-proxy-q1.nais.oera-q.local',
-    q0: 'https://nav-enonicxp-frontend-revalidator-proxy-q0.nais.oera-q.local',
+    q6: 'https://nav-enonicxp-frontend-revalidator-proxy-q6.dev.nav.no',
+    q1: 'https://nav-enonicxp-frontend-revalidator-proxy-q1.dev.nav.no',
+    q0: 'https://nav-enonicxp-frontend-revalidator-proxy-q0.dev.nav.no',
     p: 'https://nav-enonicxp-frontend-revalidator-proxy.nais.oera.no',
 };
 
