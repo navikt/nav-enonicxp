@@ -14,6 +14,9 @@ const frontendCacheRevalidate = (path) => {
             url: `${revalidatorProxyOrigin}/revalidator-proxy?path=${relativePath}`,
             method: 'GET',
             contentType: 'application/json',
+            headers: {
+                secret: app.config.serviceSecret,
+            },
         });
 
         log.info(`Sent revalidate request to frontend for ${relativePath}`);
