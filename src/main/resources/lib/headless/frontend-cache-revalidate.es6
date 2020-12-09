@@ -9,16 +9,16 @@ const frontendCacheRevalidate = (path) => {
         return;
     }
 
-    log.info(`sending revalidate request to frontend for ${relativePath}`);
-
     try {
         httpClient.request({
             url: `${revalidatorProxyOrigin}/revalidator-proxy?path=${relativePath}`,
             method: 'GET',
             contentType: 'application/json',
         });
+
+        log.info(`Sent revalidate request to frontend for ${relativePath}`);
     } catch (e) {
-        log.error(`Revalidation request to frontend failed: ${e}`);
+        log.error(`Revalidate request to frontend failed for ${relativePath} - ${e}`);
     }
 };
 
