@@ -162,7 +162,7 @@ function getSitecontent(idOrPath, branch, callback) {
     try {
         return caches['sitecontent'].get(getPath(idOrPath), callback);
     } catch (e) {
-        // cache functions throws if callback returns null?
+        // cache functions throws if callback returns null
         return null;
     }
 }

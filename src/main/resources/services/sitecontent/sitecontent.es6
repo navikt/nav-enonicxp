@@ -51,7 +51,7 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
-const getContent = (idOrPath, branch) => {
+const getContent = (idOrPath, branch = 'master') => {
     const response = guillotineQuery(
         queryGetContentByRef,
         {
@@ -105,7 +105,7 @@ const getRedirectContent = (idOrPath, branch = 'master') => {
 };
 
 const handleGet = (req) => {
-    // id can be a content UUID, or a content path, i.e. /www.nav.no/no/person
+    // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
     const { id: idOrPath, branch } = req.params;
     const { secret } = req.headers;
 
