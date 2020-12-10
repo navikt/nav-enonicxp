@@ -3,6 +3,7 @@ const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
 const { isValidBranch } = require('/lib/headless/run-in-context');
 const { searchForRedirect } = require('../../site/error/error');
+const cache = require('/lib/siteCache');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -50,11 +51,11 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
-const getContent = (contentId, branch) => {
+const getContent = (idOrPath, branch = 'master') => {
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: contentId,
+            ref: idOrPath,
         },
         branch
     );
@@ -74,8 +75,8 @@ const getContent = (contentId, branch) => {
     };
 };
 
-const getRedirectContent = (contentPath, branch = 'master') => {
-    const redirectContent = searchForRedirect(contentPath, { branch });
+const getRedirectContent = (idOrPath, branch = 'master') => {
+    const redirectContent = searchForRedirect(idOrPath, { branch });
     if (!redirectContent) {
         return null;
     }
@@ -104,7 +105,8 @@ const getRedirectContent = (contentPath, branch = 'master') => {
 };
 
 const handleGet = (req) => {
-    const { id, branch } = req.params;
+    // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
+    const { id: idOrPath, branch } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -117,11 +119,11 @@ const handleGet = (req) => {
         };
     }
 
-    if (!id) {
+    if (!idOrPath) {
         return {
             status: 400,
             body: {
-                message: 'No content id was provided',
+                message: 'No content id or path was provided',
             },
             contentType: 'application/json',
         };
@@ -137,10 +139,14 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getContent(id, branch) || getRedirectContent(id, branch);
+    const content = cache.getSitecontent(
+        idOrPath,
+        branch,
+        () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
+    );
 
     if (!content) {
-        log.info(`Content not found: ${id}`);
+        log.info(`Content not found: ${idOrPath}`);
         return {
             status: 404,
             body: {
