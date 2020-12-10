@@ -137,7 +137,7 @@ function wipeOnChange(path) {
         wipe('redirects')();
     }
 
-    // Headless
+    // For headless setup
     wipe('sitecontent')(getPath(path));
     frontendCacheRevalidate(path);
 
