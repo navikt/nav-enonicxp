@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const utils = require('/lib/nav-utils');
 
 const getLastUpdatedUnixTime = (content) =>
     new Date(content.modifiedTime.split('.')[0] || content.createdTime.split('.')[0]).getTime();
@@ -9,14 +10,9 @@ const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpda
 const contentListResolver = (contentListName, maxItemsName, sortFunc = undefined) => (env) => {
     const contentListId = env.source[contentListName];
     const maxItems = env.source[maxItemsName];
-
     const contentList = contentLib.get({ key: contentListId });
-    const sectionContentsRefs = contentList?.data?.sectionContents;
 
-    if (!Array.isArray(sectionContentsRefs)) {
-        return undefined;
-    }
-
+    const sectionContentsRefs = utils.forceArray(contentList?.data?.sectionContents);
     const sectionContents = sectionContentsRefs
         .map((item) => contentLib.get({ key: item }))
         .filter(Boolean)

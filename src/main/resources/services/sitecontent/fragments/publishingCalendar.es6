@@ -9,7 +9,7 @@ const publishingCalenderEntryFragment = `
 const publishingCalenderFragment = `
     ...on no_nav_navno_PublishingCalendar {
         dataAsJson
-        children {
+        children(first:1000) {
            ${globalFragment}
            ${publishingCalenderEntryFragment}
         }

@@ -1,7 +1,7 @@
 const globalFragment = require('./_global');
 
 const mediaContentFragment = `
-    mediaUrl(download:true, type:absolute)
+    mediaUrl(download:false, type:absolute)
 `;
 
 const mediaFragment = `

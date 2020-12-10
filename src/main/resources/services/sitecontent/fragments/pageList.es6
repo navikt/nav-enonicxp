@@ -3,6 +3,18 @@ const externalLink = require('./externalLink');
 const internalLink = require('./internalLink');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
+const menuListItems = require('./menuListItems');
+
+const pageListShortFragment = `
+    ...on no_nav_navno_PageList {
+        data {
+            ingress
+            hide_date
+            hideSectionContentsDate
+            orderSectionContentsByPublished
+        }
+    }
+`;
 
 const pageListFragment = `
     ...on no_nav_navno_PageList {
@@ -14,23 +26,9 @@ const pageListFragment = `
                 ${mainArticle.shortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
+                ${pageListShortFragment}
             }
-            menuListItems {
-                _selected
-                shortcuts {
-                    link {
-                        ${globalFragment}
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const pageListShortFragment = `
-    ...on no_nav_navno_PageList {
-        data {
-            ingress
+            ${menuListItems.shortcutsFragment}
         }
     }
 `;

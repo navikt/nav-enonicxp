@@ -25,8 +25,8 @@ exports.getBreadcrumbMenu = function (id) {
     // one JSON item node for each item. If on frontpage, skip the path-loop
     const arrVars = id.split('/');
     const arrLength = arrVars.length;
-    for (let i = 1; i < arrLength - 1; i++) {
-        // Skip first item - the site - since it is handled separately.
+    for (let i = 3; i < arrLength - 1; i++) {
+        // Skip three first items - the site, language, context - since it is handled separately.
         const lastVar = arrVars.pop();
         if (lastVar !== '') {
             const curItem = libs.content.get({
@@ -40,15 +40,13 @@ exports.getBreadcrumbMenu = function (id) {
                         path: curItem._path,
                     }),
                 };
-
                 if (typeFilter.some((type) => type === curItem.type)) {
                     breadcrumbs.push(item);
                 }
             }
         }
     }
-
-    return breadcrumbs.reverse().splice(1);
+    return breadcrumbs.reverse()
 };
 
 /**
