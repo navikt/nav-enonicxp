@@ -21,7 +21,6 @@ const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 
 const queryFragments = [
-    '_references {_path}',
     globalFragment,
     componentsFragment,
     contentList.fragment,

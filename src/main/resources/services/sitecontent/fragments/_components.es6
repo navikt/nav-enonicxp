@@ -35,6 +35,12 @@ const linkWithIngressMixinFragment = `
     }
 `;
 
+const contentListMixinFragment = `
+    target {
+        ${contentList.fragment}
+    }
+`;
+
 const dynamicPartsFragment = `
     config {
         no_nav_navno {
@@ -74,10 +80,7 @@ const dynamicPartsFragment = `
                 list {
                     _selected
                     contentList {
-                        numLinks
-                        target {
-                            ${contentList.fragment}
-                        }
+                        ${contentListMixinFragment}
                     }
                     linkList {
                         links {
@@ -95,10 +98,7 @@ const dynamicPartsFragment = `
             dynamic_news_list {
                 title
                 contentList {
-                    numLinks
-                    target {
-                        ${contentList.fragmentSortedDateDesc}
-                    }
+                    ${contentListMixinFragment}
                 }
                 moreNews {
                     url
