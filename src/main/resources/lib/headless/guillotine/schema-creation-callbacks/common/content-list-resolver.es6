@@ -5,7 +5,7 @@ const utils = require('/lib/nav-utils');
 const contentListResolver = (contentListKey, maxItemsKey, sortFunc = undefined) => (env) => {
     const contentListId = env.source[contentListKey];
     if (!contentListId) {
-        return {};
+        return null;
     }
 
     const maxItems = env.source[maxItemsKey];

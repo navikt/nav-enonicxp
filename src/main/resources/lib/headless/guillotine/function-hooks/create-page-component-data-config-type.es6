@@ -82,9 +82,9 @@ const createComponentConfigsType = (context, componentType) => {
                     resolve: (env) => env.source[namingLib.applicationConfigKey(app)],
                 },
             };
-        } else {
-            return appConfigs;
         }
+
+        return appConfigs;
     }, {});
 
     if (Object.keys(componentTypeAppConfigs).length > 0) {
