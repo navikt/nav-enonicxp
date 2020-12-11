@@ -76,6 +76,7 @@ function handleGet(req) {
 
         const decParams = [
             { key: 'language', value: utils.mapDecoratorLocale[content.language] || 'nb' },
+            { key: 'chatbot', value: true },
         ];
         if (context) {
             decParams.push({ key: 'context', value: context });
