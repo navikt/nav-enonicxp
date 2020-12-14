@@ -16,7 +16,7 @@ const frontendProxy = (req, fallbackController) => {
 
     const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.proxyFlag}=true`;
     try {
-        return libs.httpClient.request({
+        const response = libs.httpClient.request({
             url: frontendUrl,
             contentType: 'text/html',
             connectionTimeout: 1000,
@@ -24,11 +24,15 @@ const frontendProxy = (req, fallbackController) => {
                 secret: app.config.serviceSecret,
             },
         });
+
+        if (response.ok) {
+            return response;
+        }
     } catch (e) {
         log.info(`invalid response from external frontend. error: ${e}`);
     }
 
-    log.info(`failed to fetch html from external frontend, trying fallback...`);
+    log.info(`Failed to fetch html from external frontend, trying fallback`);
     return fallbackController(req);
 };
 
