@@ -4,6 +4,7 @@ const libs = {
     httpClient: require('/lib/http-client'),
 };
 const frontendLiveness = require('/lib/headless/frontend-liveness');
+const { setFrontendNotLive } = require('/lib/headless/frontend-liveness');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const frontendProxy = (req, fallbackController) => {
@@ -14,7 +15,7 @@ const frontendProxy = (req, fallbackController) => {
         (req.mode === 'edit' ? '/www.nav.no' : '') +
         req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
 
-    const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.proxyFlag}=true`;
+    const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.loopbackFlag}=true`;
     try {
         const response = libs.httpClient.request({
             url: frontendUrl,
@@ -25,14 +26,16 @@ const frontendProxy = (req, fallbackController) => {
             },
         });
 
-        if (response.ok) {
+        if (response?.ok) {
             return response;
         }
     } catch (e) {
-        log.info(`invalid response from external frontend. error: ${e}`);
+        log.info(`Frontend HTTP request error - ${e}`);
     }
 
+    setFrontendNotLive();
     log.info(`Failed to fetch html from external frontend, trying fallback`);
+
     return fallbackController(req);
 };
 

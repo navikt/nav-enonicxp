@@ -4,7 +4,7 @@ const frontendProxy = require('/lib/headless/controllers/frontend-proxy-controll
 
 const handleGet = (req) => {
     log.info(`req: ${JSON.stringify(req)}`);
-    if (!frontendLiveness.isLive(req)) {
+    if (!frontendLiveness.isFrontendLive(req)) {
         return mainPageLegacy(req);
     }
 

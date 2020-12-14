@@ -1,15 +1,19 @@
-const proxyFlag = 'fromProxy';
+const loopbackFlag = 'loopback';
 const livenessCheckPeriod = 10000;
-let livenessCheckRetryTime = 0;
+let livenessCheckTimestamp = 0;
 
-const isLive = (req) => {
-    // Checks if request to the new frontend looped back
-    if (req.params[proxyFlag]) {
-        livenessCheckRetryTime = Date.now() + livenessCheckPeriod;
-        delete req.params[proxyFlag];
-    }
-
-    return Date.now() > livenessCheckRetryTime;
+const setFrontendNotLive = () => {
+    livenessCheckTimestamp = Date.now();
 };
 
-module.exports = { isLive, proxyFlag };
+const isFrontendLive = (req) => {
+    // Checks if request to the new frontend looped back
+    if (req.params[loopbackFlag]) {
+        setFrontendNotLive();
+        delete req.params[loopbackFlag];
+    }
+
+    return Date.now() > livenessCheckTimestamp + livenessCheckPeriod;
+};
+
+module.exports = { isFrontendLive, loopbackFlag, setFrontendNotLive };
