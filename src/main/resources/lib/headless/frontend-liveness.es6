@@ -7,7 +7,8 @@ const setFrontendNotLive = (logentry) => {
     livenessCheckTimestamp = Date.now();
 };
 
-const isFrontendLive = (req) => {
+// Worst problem of 2020: finding good names for anything related to this function
+const shouldTryNewFrontend = (req) => {
     // Checks if request to the new frontend looped back
     if (req.params[loopbackFlag]) {
         setFrontendNotLive(`Frontend call looped back from ${req.url}`);
@@ -17,4 +18,4 @@ const isFrontendLive = (req) => {
     return Date.now() > livenessCheckTimestamp + livenessCheckPeriod;
 };
 
-module.exports = { isLive: isFrontendLive, loopbackFlag, setFrontendNotLive };
+module.exports = { shouldTryNewFrontend, loopbackFlag, setFrontendNotLive };
