@@ -33,8 +33,7 @@ const frontendProxy = (req, fallbackController) => {
         log.info(`Frontend HTTP request error - ${e}`);
     }
 
-    setFrontendNotLive();
-    log.info(`Failed to fetch html from external frontend, trying fallback`);
+    setFrontendNotLive(`Frontend call failed to ${frontendUrl}`);
 
     return fallbackController(req);
 };
