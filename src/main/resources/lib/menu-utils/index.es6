@@ -19,6 +19,7 @@ exports.getBreadcrumbMenu = function (id) {
         app.name + ':transport-page',
         app.name + ':generic-page',
         app.name + ':dynamic-page',
+        app.name + ':large-table',
     ];
 
     // Loop the entire path for current content based on the slashes. Generate
@@ -46,7 +47,7 @@ exports.getBreadcrumbMenu = function (id) {
             }
         }
     }
-    return breadcrumbs.reverse()
+    return breadcrumbs.reverse();
 };
 
 /**
