@@ -17,4 +17,4 @@ const isFrontendLive = (req) => {
     return Date.now() > livenessCheckTimestamp + livenessCheckPeriod;
 };
 
-module.exports = { isFrontendLive, loopbackFlag, setFrontendNotLive };
+module.exports = { isLive: isFrontendLive, loopbackFlag, setFrontendNotLive };
