@@ -1,0 +1,13 @@
+<layout>
+    <display-name>Dynamisk - fleksible kolonner</display-name>
+    <description>Flexbox kolonner</description>
+    <form>
+        <input type="Long" name="numCols">
+            <label>Antall kolonner</label>
+            <default>1</default>
+            <config>
+                <min>1</min>
+            </config>
+        </input>
+    </form>
+</layout>
