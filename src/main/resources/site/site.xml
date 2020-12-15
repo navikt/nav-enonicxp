@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-    <x-data name="cmsContent"/>
-    <x-data name="cmsMenu"/>
-    <x-data name="cmsStatus"/>
-    <x-data name="menu-item"/>
-    <x-data name="fasetter"/>
-    <x-data name="oldContentType"/>
-    <config>
-    </config>
+    <x-data name="cmsContent"  optional="true"/>
+    <x-data name="cmsMenu"  optional="true"/>
+    <x-data name="cmsStatus"  optional="true"/>
+    <x-data name="menu-item" optional="true"/>
+    <x-data name="fasetter" optional="true"/>
+    <x-data name="oldContentType" optional="true"/>
     <mappings>
+        <mapping controller="/lib/headless/controllers/html-processor.js">
+            <pattern>/.*\?processHtml=true.*</pattern>
+        </mapping>
         <mapping controller="/lib/enonic/url-redirect/index.js">
             <match>type:'no.nav.navno:url'</match>
+        </mapping>
+        <mapping controller="/site/pages/main-page/main-page.js">
+            <match>type:'portal:fragment'</match>
         </mapping>
     </mappings>
 </site>

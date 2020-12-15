@@ -1,3 +1,6 @@
+const { isUUID } = require('/lib/headless/uuid');
+const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
+
 const libs = {
     cache: require('/lib/cache'),
     event: require('/lib/xp/event'),
@@ -34,6 +37,10 @@ const caches = {
     }),
     redirects: libs.cache.newCache({
         size: 50,
+        expire: oneDay,
+    }),
+    sitecontent: libs.cache.newCache({
+        size: 5000,
         expire: oneDay,
     }),
 };
@@ -130,6 +137,10 @@ function wipeOnChange(path) {
         wipe('redirects')();
     }
 
+    // For headless setup
+    wipe('sitecontent')(getPath(path));
+    frontendCacheRevalidate(path);
+
     return true;
 }
 
@@ -141,6 +152,19 @@ function getSome(cacheStoreName) {
         }
         return f(params);
     };
+}
+
+function getSitecontent(idOrPath, branch, callback) {
+    // Do not cache draft branch or content id requests
+    if (branch === 'draft' || isUUID(idOrPath)) {
+        return callback();
+    }
+    try {
+        return caches['sitecontent'].get(getPath(idOrPath), callback);
+    } catch (e) {
+        // cache functions throws if callback returns null
+        return null;
+    }
 }
 
 function clearReferences(id, path, depth) {
@@ -246,6 +270,7 @@ module.exports = {
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
     getNotifications: getSome('notifications'),
+    getSitecontent,
     activateEventListener,
     stripPath: getPath,
     etag: getEtag,

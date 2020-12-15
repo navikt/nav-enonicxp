@@ -128,70 +128,6 @@ const mainArticlePage = [
     },
 ];
 
-const faqPage = [
-    {
-        type: 'page',
-        path: '/',
-        page: {
-            descriptor: 'no.nav.navno:main-page',
-            customized: true,
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/0',
-        part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/first/0',
-        part: {
-            descriptor: 'no.nav.navno:faq-page',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/second/0',
-        part: {
-            descriptor: 'no.nav.navno:main-article-linked-list',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/second/1',
-        part: {
-            descriptor: 'no.nav.navno:menu-list',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-];
-
 const transportPage = [
     {
         type: 'page',
@@ -298,6 +234,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // Hovedpaneler (bokser med seperator) f.eks. Logg inn på Ditt NAV
     {
         type: 'part',
         path: '/main/1/first/2',
@@ -308,6 +245,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // Lenkepaneler, f.eks. Hva er din situasjon?
     {
         type: 'part',
         path: '/main/1/first/3',
@@ -318,6 +256,7 @@ const hovedSeksjonPage = [
             },
         },
     },
+    // Lenkelister, f.eks. Nyttig og vite, nyheter og snareveier
     {
         type: 'part',
         path: '/main/1/first/4',
@@ -341,72 +280,6 @@ const largeTable = {
         },
     },
 };
-
-const chatPage = {
-    type: 'page',
-    path: '/',
-    page: {
-        descriptor: 'no.nav.navno:chat-page',
-        customized: true,
-        config: {
-            'no-nav-navno': {},
-        },
-    },
-};
-
-const searchResult = [
-    {
-        type: 'page',
-        path: '/',
-        page: {
-            descriptor: 'no.nav.navno:main-page',
-            customized: false,
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/0',
-        part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:search',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/searchbar/0',
-        part: {
-            descriptor: 'no.nav.navno:searchbar',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/result/0',
-        part: {
-            descriptor: 'no.nav.navno:searchresult',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-];
 
 const publishingCalendarPage = [
     {
@@ -452,43 +325,13 @@ const publishingCalendarPage = [
     },
 ];
 
-const genericPage = [
+const dynamicPage = [
     {
         type: 'page',
         path: '/',
         page: {
             descriptor: 'no.nav.navno:main-page',
             customized: true,
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/0',
-        part: {
-            descriptor: 'no.nav.navno:notifications',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'layout',
-        path: '/main/1',
-        layout: {
-            descriptor: 'no.nav.navno:main',
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-    {
-        type: 'part',
-        path: '/main/1/first/0',
-        part: {
-            descriptor: 'no.nav.navno:generic-page',
             config: {
                 'no-nav-navno': {},
             },
@@ -541,19 +384,6 @@ const officeInformationPage = [
 ];
 
 const templates = [
-    {
-        content: {
-            displayName: 'FAQ Side',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: ['no.nav.navno:faq-page'],
-            },
-        },
-        components: faqPage,
-    },
     {
         content: {
             displayName: 'Artikkel - Hovedartikkel',
@@ -625,32 +455,6 @@ const templates = [
     },
     {
         content: {
-            displayName: 'Page - Chat',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:chat-page',
-            },
-        },
-        components: chatPage,
-    },
-    {
-        content: {
-            displayName: 'Søkeresultat',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:searchresult',
-            },
-        },
-        components: searchResult,
-    },
-    {
-        content: {
             displayName: 'Publiseringskalender',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
@@ -664,16 +468,16 @@ const templates = [
     },
     {
         content: {
-            displayName: 'Generisk side',
+            displayName: 'Dynamisk side',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
             contentType: 'portal:page-template',
             branch: 'draft',
             data: {
-                supports: 'no.nav.navno:generic-page',
+                supports: 'no.nav.navno:dynamic-page',
             },
         },
-        components: genericPage,
+        components: dynamicPage,
     },
     {
         content: {

@@ -8,6 +8,50 @@ const libs = {
 
 /**
  * Returns the full breadcrumb menu path for the current content and site.
+ * @returns {Object} - The set of breadcrumb menu items (as array).
+ */
+exports.getBreadcrumbMenu = function (id) {
+    const breadcrumbs = []; // Stores each menu item
+    const typeFilter = [
+        app.name + ':main-article',
+        app.name + ':section-page',
+        app.name + ':page-list',
+        app.name + ':transport-page',
+        app.name + ':generic-page',
+        app.name + ':dynamic-page',
+        app.name + ':large-table',
+    ];
+
+    // Loop the entire path for current content based on the slashes. Generate
+    // one JSON item node for each item. If on frontpage, skip the path-loop
+    const arrVars = id.split('/');
+    const arrLength = arrVars.length;
+    for (let i = 3; i < arrLength - 1; i++) {
+        // Skip three first items - the site, language, context - since it is handled separately.
+        const lastVar = arrVars.pop();
+        if (lastVar !== '') {
+            const curItem = libs.content.get({
+                key: arrVars.join('/') + '/' + lastVar,
+            });
+            // Make sure item exists
+            if (curItem) {
+                const item = {
+                    title: curItem.displayName,
+                    url: libs.portal.pageUrl({
+                        path: curItem._path,
+                    }),
+                };
+                if (typeFilter.some((type) => type === curItem.type)) {
+                    breadcrumbs.push(item);
+                }
+            }
+        }
+    }
+    return breadcrumbs.reverse();
+};
+
+/**
+ * Returns the full breadcrumb menu path for the current content and site.
  * @param {Object} params - A JSON object containing the (optional) settings for the function.
  * @param {Boolean} [params.linkActiveItem=false] - Wrap the active (current
  * content) item with a link.
@@ -21,11 +65,12 @@ const libs = {
  *   for menu items, default is 'server', only other option is 'absolute'.
  * @returns {Object} - The set of breadcrumb menu items (as array) and needed settings.
  */
-exports.getBreadcrumbMenu = function (params, initialContent = false) {
+exports.getBreadcrumbMenuOld = function (params, initialContent = false) {
     let content = initialContent;
     if (!content) {
         content = libs.portal.getContent();
     }
+
     const site = libs.portal.getSite();
     const breadcrumbItems = []; // Stores each menu item
     const breadcrumbMenu = {}; // Stores the final JSON sent to Thymeleaf
@@ -119,7 +164,6 @@ exports.getBreadcrumbMenu = function (params, initialContent = false) {
                 el.type === app.name + ':section-page' ||
                 el.type === app.name + ':page-list' ||
                 el.type === app.name + ':transport-page' ||
-                el.type === app.name + ':searchresult' ||
                 el.type === app.name + ':generic-page'
         );
 

@@ -8,7 +8,7 @@
         "babel:watch": "babel src/main/resources --watch --extensions '.es6' --out-dir=build/resources/main",
         "build": "npm-run-all lint babel",
         "lint:watch": "onchange \"src/main/resources/**/*.es6\" -- npm run lint --silent",
-        "lint": "eslint --ext=js --ext=es6 ./src/main/resources",
+        "lint": "eslint --ext=js --ext=es6 ./src/main/resources --quiet",
         "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\"",
         "dev": "npm-run-all -p lint:watch babel:watch"
     },
@@ -26,8 +26,8 @@
         "@babel/cli": "^7.10.1",
         "@babel/core": "^7.10.2",
         "@babel/preset-env": "^7.10.2",
-        "core-js": "^3.6.5",
-        "eslint": "^7.2.0",
+        "core-js": "^3.8.0",
+        "eslint": "^7.7.0",
         "eslint-config-airbnb": "^18.1.0",
         "eslint-config-prettier": "^6.11.0",
         "eslint-config-standard": "^14.1.1",
@@ -44,6 +44,5 @@
         "prompt": "^1.0.0",
         "replace": "^1.2.0",
         "serve": "^11.3.2"
-    },
-    "dependencies": {}
+    }
 }

@@ -1,0 +1,47 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Lenkeliste</display-name>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+            <default>Lenker</default>
+        </input>
+        <option-set name="list">
+            <label>Lenker</label>
+            <occurrences minimum="1" maximum="1" />
+            <options minimum="1" maximum="1">
+                <option name="contentList">
+                    <label>Hent lenker fra innholdsliste</label>
+                    <items>
+                        <mixin name="content-list" />
+                    </items>
+                </option>
+                <option name="linkList">
+                    <label>Sett lenker direkte</label>
+                    <items>
+                        <option-set name="links">
+                            <label>Lenke</label>
+                            <occurrences minimum="0" maximum="0"/>
+                            <options minimum="1" maximum="1">
+                                <option name="internal">
+                                    <label>Intern lenke</label>
+                                    <help-text>Lenke til internt innhold</help-text>
+                                    <default>true</default>
+                                    <items>
+                                        <mixin name="link-internal" />
+                                    </items>
+                                </option>
+                                <option name="external">
+                                    <label>Ekstern lenke</label>
+                                    <help-text>Lenke til innhold utenfor CMS'et</help-text>
+                                    <items>
+                                        <mixin name="link-external" />
+                                    </items>
+                                </option>
+                            </options>
+                        </option-set>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</part>

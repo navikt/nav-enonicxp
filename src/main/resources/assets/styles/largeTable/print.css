@@ -12,9 +12,9 @@ h1 { font-size: 1.5em;}
 
 /* CSS2 browsers only, prints url for links */
 #NAVpageContainer #NAVrelevantContentContainer a:link:after, #NAVpageContainer #NAVrelevantContentContainer a:visited:after {
-   content: "( " attr(href) ")";
-   padding-left: 5px;
-   }
+    content: "( " attr(href) ")";
+    padding-left: 5px;
+}
 a { text-decoration: underline;}
 
 .NAVtbl td, .NAVnumTbl td { border-bottom: 1px solid #F4F3F1;}
@@ -61,7 +61,7 @@ body, label, a, a:visited, h1, h2, h3, h4, h5, strong, b, span, ul, ol,
 .NAVsearchResultRightContainer,
 .NAVShowHitsOfType,
 .NAVSearchNavigationTop,
-.NAVfastNavBordemBottom, 
+.NAVfastNavBordemBottom,
 .NAVsheetFlip { display: none!important;}
 
 /************************************
@@ -107,13 +107,13 @@ html,
 .NAVpageFooter,
 #NAVrelevantContentContainer .NAVavailability,
 h5,
-.NAVtbl th div, 
+.NAVtbl th div,
 .NAVnumTbl th div,
 #NAVrelevantContentContainer .NAVfastNavContainer,
 #NAVpageTitleContainer,
 #NAViconJobbOgArbeidsliv, #NAViconFamilieOgOmsorg, #NAViconPensjon, #NAViconHelsetjenester, #NAViconUtland, #NAViconTallOgAnalyse,
-#NAViconAkershus, #NAViconAustAgder, #NAViconBuskerud, #NAViconFinnmark, #NAViconHedmark, #NAViconHjelpemidler, #NAViconHordaland, 
-#NAViconMoreOgRomsdal, #NAViconNordland, #NAViconNordTrondelag, #NAViconOmNav, #NAViconOppland, #NAViconOslo, #NAViconOstfold, 
+#NAViconAkershus, #NAViconAustAgder, #NAViconBuskerud, #NAViconFinnmark, #NAViconHedmark, #NAViconHjelpemidler, #NAViconHordaland,
+#NAViconMoreOgRomsdal, #NAViconNordland, #NAViconNordTrondelag, #NAViconOmNav, #NAViconOppland, #NAViconOslo, #NAViconOstfold,
 #NAViconRogaland, #NAViconSognOgFjordane, #NAViconSorTrondelag, #NAViconTelemark, #NAViconTroms, #NAViconVestAgder, #NAViconVestfold, #NAViconEures,
 .NAVfastNavBordemBottom,
 .NAVfastNavborderBottomRight,
@@ -163,8 +163,8 @@ h5,
 *
 ************************************/
 #NAVrelevantContentContainer h5,
-#NAVheaderContainer, 
-#NAVcenterContainer, 
+#NAVheaderContainer,
+#NAVcenterContainer,
 #NAVborderBottomCenter,
 #NAVheaderContainer #NAVheaderContentContainer .NAVlogoContainer,
 #NAVrelevantContentContainer .NAVleftMargin ,

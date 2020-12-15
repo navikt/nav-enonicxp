@@ -48,7 +48,7 @@ samp { font-size: 1.3em; }
 /**********************************************
 *	SELFDEFINED GLOBAL ELEMENTS
 ***********************************************/
-/* Change fontsize [AAA] - see seperate stylesheets 
+/* Change fontsize [AAA] - see seperate stylesheets
 .NAVsmall { font-size: 1em; }
 .NAVmedium { font-size: 1.1em; }
 .NAVlarge { font-size: 1.2em; }*/
@@ -452,7 +452,7 @@ a.sitemapurl {color:#0074C2 !important;display:block;padding:5px 0 10px 35px;bac
 #newsListBox .mouseoverContent { display: none; }
 
 /*********************************************************
-* Innsendingsveileder 
+* Innsendingsveileder
 * ********************************************************/
 #NAVpageTitleContainer span.innsendingsveilederHeading { color: #FFFFFF; margin-left: 14px; padding-top: 17px; font-size: 3.2em; font-weight:bold;}
 #NAVpageTitleContainer span.innsendingsveilederHeading span { color: #FFFFFF; }
@@ -463,7 +463,7 @@ a.sitemapurl {color:#0074C2 !important;display:block;padding:5px 0 10px 35px;bac
 .form-details .NAVskjemaBakgrunn img.icon {float:left;margin-right:7px}
 .form-details .NAVskjemaIndre {background-color:#f6f6f4;color:#675C53;padding:15px;margin-top:3px;overflow:auto; }
 .form-details .NAVskjemaIndre.checked {background-color: #fff;}
-.form-details .main-form {padding-bottom: 2em;} 
+.form-details .main-form {padding-bottom: 2em;}
 .form-details .main-form p {margin:0;}
 .form-details .main-form p.default {margin-bottom:1.5em}
 
@@ -526,14 +526,14 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 #userDetails .sublabel {float:left;width:14%;}
 #userDetails .sublabel.ext {width:10em !important}
 
-#userDetails .addressinputbody .NAVpostnummer .sublabel, 
+#userDetails .addressinputbody .NAVpostnummer .sublabel,
 #enhetsSelectBox .sublabel,
 #userIdNumber .sublabel{width:10em !important}
 
 #userDetails div.inputfieldset {float:left;width:80%}
 #userDetails .addressinputbody {padding-left:28px;}
 #userDetails .addressinputbody .detail-inputs {width:65%;margin:0;}
-#userDetails .addressinputbody .detail-text {float:left;width:35%;margin-top:0 !important} 
+#userDetails .addressinputbody .detail-text {float:left;width:35%;margin-top:0 !important}
 #userDetails .addressinputbody .inputfieldset div { border:1px solid #E6E5E0;margin-bottom:5px;padding:3px;}
 #userDetails .addressinputbody .inputfieldset div.zip {float:left;width:47%;}
 #userDetails .addressinputbody .inputfieldset div.area {float:right;width:47%;}
@@ -541,13 +541,13 @@ a#mainFormPreview, a.attachmentpreview {margin-left:5px;}
 #userDetails .addressinputbody .inputfieldset div.area input {width:52%}
 #userDetails .addressinputbody .inputfieldset div.zip input {width:34%}
 #userDetails .addressinputbody .inputfieldset div label { display:inline-block;font-weight: normal;width:7.5em;background:transparent url(../bilder/vedleggsveileder/pil-hoyre.gif) no-repeat right 50%}
-#userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;} 
+#userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;}
 #userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top; } /*Fjernes!*/
 #userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group{background: none; }
 
 /*Folkereg i Norge*/
 #userDetails .addressinputbody .NAVpostnummer .detail-inputs,
-#userIdNumber .detail-inputs {width:19.5em;margin-right:1em} 
+#userIdNumber .detail-inputs {width:19.5em;margin-right:1em}
 #userDetails .addressinputbody .NAVpostnummer .detail-text,
 #userIdNumber .detail-text {width: 55%;float:left;}
 #enhetsSelectBox .detail-inputs {width:30em;margin-right:3em}
@@ -713,13 +713,13 @@ input#searchartist {border:1px solid #A69D97;margin:0 5px 0 0;width:70%}
 /*Grid*/
 .artist .navigateartist .navigate {float:left;width:32.5%;margin-right:1.2%;}
 .artist .resultsection ul li {float:left;width:32.5%;margin:0 1.2% 12px 0;}
-.artist .navigateartist .last, 
+.artist .navigateartist .last,
 .artist .resultsection ul li.last {margin-right:0 !important;}
-* html .artist .navigateartist .last, 
+* html .artist .navigateartist .last,
 * html .artist .resultsection ul li.last {width:auto;overflow:hidden}
 
 /*Navigation and result list*/
-.navigateartist h2, 
+.navigateartist h2,
 .searchmeta h2 {font-size:1.4em;font-weight:normal;color:#675C53}
 .navigateartist {margin-bottom:20px;}
 .artist .navigate {position:relative}
@@ -819,8 +819,8 @@ A.NAVknapp SPAN.knapp-m       { float: left; display: block; background: url( /_
 A.NAVknapp SPAN.knapp-m:hover { background: url( /_public/www.nav.no/bilder/dittnav/knapper/knapp-hover-m.png ) repeat-x 0 0; }
 A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_public/www.nav.no/bilder/dittnav/knapper/knapp-h.png ) no-repeat 0 0; width: 3px; }
 
-#NAVstatus A.NAVknapp SPAN.bord       { border: none; margin-top: 2px; background: none; }   
-#NAVstatus A.NAVknapp SPAN.bord:hover { border: none; background: none; }   
+#NAVstatus A.NAVknapp SPAN.bord       { border: none; margin-top: 2px; background: none; }
+#NAVstatus A.NAVknapp SPAN.bord:hover { border: none; background: none; }
 
 /************************************************************
 *       MINID/INNLOGGET STATUSLINJE 2011
@@ -860,15 +860,15 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 /* Skjema2011 */
 .skjema2011form-details .NAVskjemaIndre .group p
 {
-   clear:left;
-   font-weight:bold;
-   margin-bottom:0.5em;
-   margin-left:2.5em;
+    clear:left;
+    font-weight:bold;
+    margin-bottom:0.5em;
+    margin-left:2.5em;
 }
 
 #skjemaveilederContainer h1
 {
-    font-size: 18px; 
+    font-size: 18px;
     color:#C30000;
 }
 #skjemaveileder ul li.moreinfo a {padding-bottom:2px;padding-top:4px;background-image: none}
@@ -957,9 +957,9 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
     font-weight: bold;
     margin-bottom: 1em;
     padding: 5px 0;}
-	
-	
-	/* SLUTT MOD */
+
+
+/* SLUTT MOD */
 
 #skjema2011userDetails input.radiobutton {float:left;margin-right:10px}
 #skjema2011userDetails .labelcontainer {float:left;width:80%;}
@@ -974,7 +974,7 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 #NAVskjema2011DownloadContainer .NAVskjemaBakgrunn .shipping-guidelines {padding:20px 15px 30px 15px;background: #F6F6F4 url('../../img/navno/dashedhorizontal.gif') repeat-x left bottom !important;}
 #skjema2011userDetails .navUnitsSelectBox select#selectEnhet2 {width:20em; float: left}
 
-#skjema2011userDetails .addressinputbody .NAVpostnummer .sublabel, 
+#skjema2011userDetails .addressinputbody .NAVpostnummer .sublabel,
 #enhetsSelectBox .sublabel,
 #userIdNumber .sublabel{width:10em !important}
 
@@ -983,8 +983,8 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 #skjema2011userDetails .addressinputbody .detail-inputs {width:95%;margin:5px 0 0 0;}
 #skjema2011userDetails .addressinputbody .detail-inputs-address1 {width:35%;margin:5px 0 0 0; float: left}
 #skjema2011userDetails .addressinputbody .detail-inputs-address2 {width:35%;margin:5px 0 0 0; float: left}
-#skjema2011userDetails .addressinputbody .detail-text {float:left;width:35%;margin-top:0 !important} 
-#skjema2011userDetails .addressinputbody .help-text {font-weight:normal; margin-left: 5px; width:35%;margin-top:0 !important} 
+#skjema2011userDetails .addressinputbody .detail-text {float:left;width:35%;margin-top:0 !important}
+#skjema2011userDetails .addressinputbody .help-text {font-weight:normal; margin-left: 5px; width:35%;margin-top:0 !important}
 #skjema2011userDetails .addressinputbody .inputfieldset div { border:1px solid #E6E5E0;margin-bottom:5px;padding:3px;}
 #skjema2011userDetails .addressinputbody .inputfieldset div.zip {float:left;width:47%;}
 #skjema2011userDetails .addressinputbody .inputfieldset div.area {float:left;width:47%;}
@@ -992,14 +992,14 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 #skjema2011userDetails .addressinputbody .inputfieldset div.area input {width:50%; padding: 1px;}
 #skjema2011userDetails .addressinputbody .inputfieldset div.zip input {width:34%}
 #skjema2011userDetails .addressinputbody .inputfieldset div label { display:inline-block;font-weight: normal;width:7.5em;background:transparent url(../bilder/vedleggsveileder/pil-hoyre.gif) no-repeat right 50%}
-#skjema2011userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;} 
+#skjema2011userDetails .addressinputbody .inputfieldset div.area label {width:5.4em;}
 #skjema2011userDetails .addressinputbody .top-horizontal-separator.group{border-top: none; background:url('../../img/navno/dashedhorizontal.gif') repeat-x left top; }
 #skjema2011userDetails .addressinputbody .NAVpostnummer.top-horizontal-separator.group{background: none; }
 
 #skjema2011userDetails #navUnitOrgSelected {float:left}
 #skjema2011userDetails #navUnitMultipleSelected {width:40%}
 #skjema2011userDetails .addressinputbody .NAVpostnummer .detail-inputs,
-#userIdNumber .detail-inputs {width:19.5em;margin-right:1em} 
+#userIdNumber .detail-inputs {width:19.5em;margin-right:1em}
 #skjema2011userDetails .addressinputbody .NAVpostnummer .detail-text,
 #userIdNumber .detail-text {width: 55%;float:left;}
 #enhetsSelectBox .detail-inputs {width:30em;margin-right:3em}
@@ -1053,7 +1053,7 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 .skjema2011form-details .addressInfo {padding-top: 0px; padding-bottom: 0px;}
 .skjema2011form-details .addressInfo.private{padding: 25px 0px 15px 20px; display: block}
 .skjema2011form-details .addressInfo.secondoption.private{padding: 25px 0px 15px 20px; display: block}
-.skjema2011form-details .main-form {padding-bottom: 2em;} 
+.skjema2011form-details .main-form {padding-bottom: 2em;}
 .skjema2011form-details .main-form p {margin:0;}
 .skjema2011form-details .main-form p.default {margin-bottom:1.5em}
 .skjema2011form-details #senderChosen {margin-left: 12px}
@@ -1105,137 +1105,137 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 
 .skjema2011form-details .relationRadioOptions .relatedinputfieldset { width: 80%; float: left }
 
-.skjema2011form-details .nextStepButton { border: 1px solid #A69D97; padding: 0.1em 0.5em 0em 0.5em; float: right} 
-.skjema2011form-details .previousStepButton { background-color: transparent; border: 0; padding: 0.1em 0.5em 0em 0.5em; color: #0074C4; float: right; cursor: pointer;} 
+.skjema2011form-details .nextStepButton { border: 1px solid #A69D97; padding: 0.1em 0.5em 0em 0.5em; float: right}
+.skjema2011form-details .previousStepButton { background-color: transparent; border: 0; padding: 0.1em 0.5em 0em 0.5em; color: #0074C4; float: right; cursor: pointer;}
 .skjema2011form-details .NAVskjemaIndre .downloadFirstPage input#downloadFirstPage {background: transparent url('../bilder/vedleggsveileder/ikon-toppark-sml.gif') no-repeat left center; border: 0; color: #0074C4; font-weight: bold; cursor: pointer; padding: 3px 25px;}
 .skjema2011form-details .NAVskjemaIndre a#downloadComplaintForm { color: #0074C4; font-weight:bold; text-decoration: none;background: transparent url('../bilder/vedleggsveileder/ikon-skjema-sml.gif') no-repeat left center; padding: 2px 28px;}
 #skjema2011-schemaAndAttachments div.submit {visibility:visible;}
 .skjema2011form-details input.rightadjusted {float: right;}
 .btn-standard {
-  cursor: pointer;
-  float: left;
-  margin-right: 4px;
-  display: block;
-  color: #ffffff;
-  font-size: 1.2em;
-  font-weight: bold;
-  border: solid 1px #3a3733;
-  padding: 5px 10px 7px;
-  background: #3a3733;
-  background: -moz-linear-gradient(top center, #6f6962, #3a3733);
-  background: -webkit-gradient(linear, center top, center bottom, from(#6f6962), to(#3a3733));
-  -moz-box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
-  -webkit-box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
-  box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
-  text-shadow: 0 -1px 1px #000000;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -border-radius: 4px;
+    cursor: pointer;
+    float: left;
+    margin-right: 4px;
+    display: block;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px #3a3733;
+    padding: 5px 10px 7px;
+    background: #3a3733;
+    background: -moz-linear-gradient(top center, #6f6962, #3a3733);
+    background: -webkit-gradient(linear, center top, center bottom, from(#6f6962), to(#3a3733));
+    -moz-box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
+    -webkit-box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
+    box-shadow: inset 0 1px 0 #908b86, 0 1px 2px #9e9e9e;
+    text-shadow: 0 -1px 1px #000000;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -border-radius: 4px;
 }
 .btn-standard:hover {
-  text-decoration: none;
-  background: #5a554f;
-  background: -moz-linear-gradient(top center, #938b81, #4a4641);
-  background: -webkit-gradient(linear, center top, center bottom, from(#938b81), to(#4a4641));
-  -moz-box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
-  -webkit-box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
-  box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
+    text-decoration: none;
+    background: #5a554f;
+    background: -moz-linear-gradient(top center, #938b81, #4a4641);
+    background: -webkit-gradient(linear, center top, center bottom, from(#938b81), to(#4a4641));
+    -moz-box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
+    -webkit-box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
+    box-shadow: inset 0 1px 0 #b1aba4, 0 1px 2px #9e9e9e;
 }
 .btn-standard:active {
-  background: #3a3733;
-  background: #34312e;
-  background: -moz-linear-gradient(top center, #3a3733, #3a3733);
-  background: -webkit-gradient(linear, center top, center bottom, from(#3a3733), to(#3a3733));
-  -moz-box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
-  -webkit-box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
-  box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
+    background: #3a3733;
+    background: #34312e;
+    background: -moz-linear-gradient(top center, #3a3733, #3a3733);
+    background: -webkit-gradient(linear, center top, center bottom, from(#3a3733), to(#3a3733));
+    -moz-box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
+    -webkit-box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
+    box-shadow: inset 0 1px 0 #000000, 0 1px 1px #9e9e9e;
 
 }
 .btn-standard:visited { color: #ffffff; }
 .btn-action:visited { color: #ffffff; }
 .btn-action:hover { color: #ffffff; }
 .btn-action {
-  float: left;
-  margin-right: 4px;
-  display: block;
-  color: #ffffff;
-  font-size: 1.2em;
-  font-weight: bold;
-  border: solid 1px #8c9400;
-  padding: 5px 10px 7px;
-  background: #8c9400;
-  background: -moz-linear-gradient(top center, #b7c300, #8c9400);
-  background: -webkit-gradient(linear, center top, center bottom, from(#b7c300), to(#8c9400));
-  -moz-box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
-  -webkit-box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
-  box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
-  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.4);
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -border-radius: 4px;
+    float: left;
+    margin-right: 4px;
+    display: block;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px #8c9400;
+    padding: 5px 10px 7px;
+    background: #8c9400;
+    background: -moz-linear-gradient(top center, #b7c300, #8c9400);
+    background: -webkit-gradient(linear, center top, center bottom, from(#b7c300), to(#8c9400));
+    -moz-box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
+    -webkit-box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
+    box-shadow: inset 0 1px 0 #cfd759, 0 1px 2px #bdbdbd;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.4);
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -border-radius: 4px;
 }
 .btn-action:hover {
-  text-decoration: none;
-  background: #a2ad00;
-  background: -moz-linear-gradient(top center, #cfdd00, #939b00);
-  background: -webkit-gradient(linear, center top, center bottom, from(#cfdd00), to(#939b00));
+    text-decoration: none;
+    background: #a2ad00;
+    background: -moz-linear-gradient(top center, #cfdd00, #939b00);
+    background: -webkit-gradient(linear, center top, center bottom, from(#cfdd00), to(#939b00));
 }
 .btn-action:active {
-  background: #889400;
-  background: #858d00;
-  background: -moz-linear-gradient(top center, #8c9400, #8c9400);
-  background: -webkit-gradient(linear, center top, center bottom, from(#8c9400), to(#8c9400));
-  -moz-box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
-  -webkit-box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
-  box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
+    background: #889400;
+    background: #858d00;
+    background: -moz-linear-gradient(top center, #8c9400, #8c9400);
+    background: -webkit-gradient(linear, center top, center bottom, from(#8c9400), to(#8c9400));
+    -moz-box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
+    -webkit-box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
+    box-shadow: inset 0 1px 0 #707600, 0 1px 1px #bdbdbd;
 }
 .btn-alternativ {
-  float: left;
-  margin-right: 4px;
-  display: block;
-  color: #3a3733;
-  font-size: 1.2em;
-  font-weight: bold;
-  border: solid 1px #ceccc8;
-  padding: 6px 10px 6px;
-  background: #e0ded8;
-  background: -moz-linear-gradient(top center, #f9f8f7, #e0ded8);
-  background: -webkit-gradient(linear, center top, center bottom, from(#f9f8f7), to(#e0ded8));
-  -moz-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
-  -webkit-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
-  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
-  text-shadow: 0 1px 1px #ffffff;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -border-radius: 4px;
+    float: left;
+    margin-right: 4px;
+    display: block;
+    color: #3a3733;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px #ceccc8;
+    padding: 6px 10px 6px;
+    background: #e0ded8;
+    background: -moz-linear-gradient(top center, #f9f8f7, #e0ded8);
+    background: -webkit-gradient(linear, center top, center bottom, from(#f9f8f7), to(#e0ded8));
+    -moz-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+    -webkit-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+    box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+    text-shadow: 0 1px 1px #ffffff;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -border-radius: 4px;
 }
 .btn-alternativ:hover {
-  text-decoration: none;
-  background: #eceae4;
-  background: -moz-linear-gradient(top center, #ffffff, #e9e7e1);
-  background: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#e9e7e1));
-  -moz-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
-  -webkit-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
-  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+    text-decoration: none;
+    background: #eceae4;
+    background: -moz-linear-gradient(top center, #ffffff, #e9e7e1);
+    background: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#e9e7e1));
+    -moz-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+    -webkit-box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
+    box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #dbdbdb;
 }
 .btn-alternativ:active {
-  background: #889400;
-  background: #d6d4ce;
-  background: -moz-linear-gradient(top center, #e0ded8, #e0ded8);
-  background: -webkit-gradient(linear, center top, center bottom, from(#e0ded8), to(#e0ded8));
-  -moz-box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
-  -webkit-box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
-  box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
+    background: #889400;
+    background: #d6d4ce;
+    background: -moz-linear-gradient(top center, #e0ded8, #e0ded8);
+    background: -webkit-gradient(linear, center top, center bottom, from(#e0ded8), to(#e0ded8));
+    -moz-box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
+    -webkit-box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
+    box-shadow: inset 0px 1px 0px #d3d1cb, 0px 1px 1px #dbdbdb;
 }
 .btn-prosess {
-  float: right;
-  margin-left: 4px;
-  margin-right: 0;
+    float: right;
+    margin-left: 4px;
+    margin-right: 0;
 }
 .btn-posisjon2 { margin-left: 6px; }
 .btn-liten {
-  font-size: 1em;
-  padding: 1px 8px 2px;
+    font-size: 1em;
+    padding: 1px 8px 2px;
 }
 #chooseCategorySelectAdr
 {
@@ -1243,21 +1243,21 @@ A.NAVknapp SPAN.knapp-h       { float: left; display: block; background: url( /_
 }
 #NAVtwoColumnContainer h2.skjemasteg
 {
-font-size: 18px;
-color: #C30000;
-margin-bottom: 10px;
+    font-size: 18px;
+    color: #C30000;
+    margin-bottom: 10px;
 }
 #NAVvedleggsveilederContainer h2.skjemasteg
 {
-font-size: 18px;
-color: #C30000;
-margin-bottom: 10px;
+    font-size: 18px;
+    color: #C30000;
+    margin-bottom: 10px;
 }
 #skjemaveilederContainer h2.skjemasteg
 {
-font-size: 18px;
-color: #C30000;
-margin-bottom: 10px;
+    font-size: 18px;
+    color: #C30000;
+    margin-bottom: 10px;
 }
 /* end Skjema 2011*/
 
@@ -1306,7 +1306,7 @@ margin-bottom: 10px;
 #NAVrelevantContentContainer .NAVnewsImg p { padding: 10px 7px 10px 7px; color: #3E3832; }
 
 /************************************************
-* CONTRAST - Accessibility 
+* CONTRAST - Accessibility
 *************************************************/
 body.contrast select, input { font-size: 1em;}
 body.contrast,
@@ -1318,8 +1318,8 @@ body.contrast #NAVborderLeft,
 body.contrast #NAVborderRight,
 body.contrast .NAVsheetFlip,
 body.contrast #NAVsubmenuContainer .NAVfastNavContainer,
-body.contrast input.NAVbtn, 
-body.contrast .button, 
+body.contrast input.NAVbtn,
+body.contrast .button,
 body.contrast .loginButton,
 body.contrast #NAVpageImage .NAViconContainer,
 body.contrast #NAVheaderContainer #NAVheaderContentContainer,
@@ -1333,7 +1333,7 @@ body.contrast .NAVsearchResultRightContainer .NAVdrillDownOptionContainer,
 body.contrast #frameworkFrontpage #NAVmainQuicklinksContainerOuter,
 body.contrast #frameworkFrontpage #NAVmainQuicklinksContainer,
 body.contrast #frameworkFrontpage #newsListBoxOuter,
-body.contrast #frameworkFrontpage #aboutNAVOuter { background-image: none;} 
+body.contrast #frameworkFrontpage #aboutNAVOuter { background-image: none;}
 body.contrast .NAVdittnavCenterSkygge div { background: none; }
 
 body.contrast,
@@ -1349,13 +1349,13 @@ body.contrast #NAVrelevantContentContainer .NAVfastNavContainer,
 body.contrast #NAVrelevantContentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
 body.contrast #NAVrelevantContentContainer .NAVnewsImg,
 body.contrast .NAValfabet a,
-body.contrast .NAValfabet a:hover, 
+body.contrast .NAValfabet a:hover,
 body.contrast .NAValfabet .selected,
 body.contrast .NAVformBoxSearch,
 body.contrast #NAVcontentContainer .NAVfastNavContainer,
 body.contrast #NAVcontentContainer .NAVfastNavContainer .NAVfastNavPlaceHolder,
-body.contrast .loginContainerMain, 
-body.contrast .loginContainerMain DIV, 
+body.contrast .loginContainerMain,
+body.contrast .loginContainerMain DIV,
 body.contrast .NAVsearchResultRightContainer .NAVdrilldown,
 body.contrast .NAVsearchResultRightContainer .NAVdrillDownOptionContainer,
 body.contrast .threeColumnCampaign .header,
@@ -1366,22 +1366,22 @@ body.contrast #aboutNAV,
 body.contrast .NAVdittnavContent,
 body.contrast .infoboks,
 body.contrast #NAVwhiteContainer,
-body.contrast .NAVstep, 
+body.contrast .NAVstep,
 body.contrast .NAVstepSelectedBody,
 body.contrast .NAVskritt,
 body.contrast .stepFutureDisabled,
 body.contrast .NAValternateRow,
 body.contrast .gruppe_30-70,
-body.contrast .gruppe_15-85, 
+body.contrast .gruppe_15-85,
 body.contrast .gruppe,
-body.contrast .mal_100, 
+body.contrast .mal_100,
 body.contrast .standard-notis,
 body.contrast .standard_hoved ,
 body.contrast #molly.mouseoverBox,
 body.contrast .NAVformBoxSearchContainer,
 body.contrast .article-factsection{ background-color: #000000 !important;}
 
-body#frameworkFrontpage.contrast #NAVpageContainer, 
+body#frameworkFrontpage.contrast #NAVpageContainer,
 body.contrast .form-list .NAVtbl tr:nth-child(2n),
 body.contrast .form-list .NAVformBox{ background-color: #000000!important;}
 
@@ -1399,8 +1399,8 @@ body.contrast #NAVcenterContainer,body.contrast #NAVpageImage { background-color
 
 body.contrast #NAVrelevantContentContainer #NAValfabet a,
 body.contrast input.NAVbtn,
-body.contrast a.NAVbtn, 
-body.contrast .button, 
+body.contrast a.NAVbtn,
+body.contrast .button,
 body.contrast .loginButton,
 body.contrast .NAVbigCampaign,
 body.contrast #NAVrelevantContentContainer .NAVrelatedContentCampaign,
@@ -1414,7 +1414,7 @@ body.contrast img { border: 0px;}
 body.contrast #NAVquicklinksContainer #NAVmainQuicklinksContainer { border: 0px; }
 body.contrast .NAVstep, body.contrast .NAVskritt { border: 1px solid #fff; }
 
-body.contrast,  
+body.contrast,
 body.contrast label,
 body.contrast h1,
 body.contrast #NAVpageImage h1 span,
@@ -1430,7 +1430,7 @@ body.contrast #NAVrelevantContentContainer .NAVkeyNumbers strong,
 body.contrast #NAVrelevantContentContainer .NAVnewsImg p,
 body.contrast strong,
 body.contrast #NAVcontentContainer .NAVfastNavContainer .NAVsquareLinkList ul { color: #FFFFFF!important;}
-body.contrast .loginContainerMain, 
+body.contrast .loginContainerMain,
 
 body.contrast a,
 body.contrast a:hover,
@@ -1442,7 +1442,7 @@ body.contrast #NAVsubmenuContainer .NAVfastNavContainer a:visited,
 body.contrast .NAVsquareLinkList ul,
 body.contrast h2 a,
 body.contrast h2 a:visited,
-body.contrast .newsExtra h2 a, 
+body.contrast .newsExtra h2 a,
 body.contrast .newsExtra h2 a:visited,
 body.contrast #NAVrelevantContentContainer .NAVlnkAvailability,
 body.contrast #NAVrelevantContentContainer .NAVlnkAvailability:hover,
@@ -1455,13 +1455,13 @@ body.contrast #NAVrelevantContentContainer .NAVavailability .NAVsizeLinks,
 body.contrast #NAValfabet a:hover,
 body.contrast #topBannerAktuelt a,
 body.contrast #topBannerAktuelt h5,
-body.contrast .btn-action, 
+body.contrast .btn-action,
 body.contrast .btn-prosess { color: yellow!important;}
 
-body.contrast #NAVrelevantContentContainer #NAValfabet a, 
+body.contrast #NAVrelevantContentContainer #NAValfabet a,
 body.contrast #NAVrelevantContentContainer #NAValfabet a:hover,
 body.contrast .NAVbigCampaign h5,
-body.contrast .NAVbigCampaign h5 a, 
+body.contrast .NAVbigCampaign h5 a,
 body.contrast .NAVbigCampaign h5 a:visited,
 body.contrast .NAVbigCampaign h5 a:hover,
 body.contrast .NAVbigCampaign a,
@@ -1469,15 +1469,15 @@ body.contrast .NAVlnkBigCampaign:hover,
 body.contrast .NAVlnkBigCampaign:visited,
 body.contrast #NAVrelevantContentContainer .NAVrelatedContentCampaign h5,
 body.contrast .NAVerrorBox p,
-body.contrast .NAVtwoColumnBanner h5, 
-body.contrast .NAVtwoColumnBanner h5 a, 
+body.contrast .NAVtwoColumnBanner h5,
+body.contrast .NAVtwoColumnBanner h5 a,
 body.contrast .NAVtwoColumnBanner h5 a:visited,
 body.contrast .NAVtwoColumnBanner h5,
 body.contrast .NAVtwoColumnBanner a,
 body.contrast .NAVtwoColumnBanner a:visited,
 body.contrast .NAVrelatedContentCampaign a,
 body.contrast .NAVrelatedContentCampaign a:visited,
-body.contrast .NAVrelatedContentCampaign a:hover 
+body.contrast .NAVrelatedContentCampaign a:hover
 body.contrast .detaljer { color: #000000!important;}
 
 body.contrast #NAVsubmenuContainer .NAVlevelOne,
@@ -1488,18 +1488,18 @@ body.contrast .NAVerrorBox p { font-weight: bold;}
 body.contrast .NAVerrorBox { border: 1px solid white;}
 body.contrast .NAVEDITable td {  background-color: #000000!important; }
 
-body.contrast .navigateartist .navigate li.even, 
+body.contrast .navigateartist .navigate li.even,
 body.contrast .artist .searchartist,
 body.contrast .artist .hit,
 body.contrast .artist .pagination ul li.active {background-color:#000 !important;}
 
 /*contrast skjemaveileder*/
-body.contrast .outercontent, 
-body.contrast .NAVskjemaBakgrunn, 
-body.contrast .innercontent, 
-body.contrast .NAVskjemaIndre, 
-body.contrast .shipping-guidelines, 
-body.contrast .NAVskjemaIndre.dwnld-confirmation, 
+body.contrast .outercontent,
+body.contrast .NAVskjemaBakgrunn,
+body.contrast .innercontent,
+body.contrast .NAVskjemaIndre,
+body.contrast .shipping-guidelines,
+body.contrast .NAVskjemaIndre.dwnld-confirmation,
 body.contrast .NAVskjemaIndre.download,
 body.contrast #NAVvedleggsveilederDownloadContainer .NAVskjemaBakgrunn .shipping-guidelines,
 body.contrast #userDetails .moreaddressoptions ,
@@ -1507,11 +1507,11 @@ body.contrast #userDetails .moreaddressoptions  .addressInfo {background-color:#
 body.contrast .form-details #userDetails .NAVskjemaIndre{border-top:1px solid;overflow:visible}
 body.contrast .attachmentList .NAVskjemaIndre {border-top:1px solid;}
 
-body.contrast .form-details p.top, 
-body.contrast .form-details .quiet, 
-body.contrast .form-details .stor, 
-body.contrast .form-details .stor span, 
-body.contrast .form-details .dwnld-confirmation p, 
+body.contrast .form-details p.top,
+body.contrast .form-details .quiet,
+body.contrast .form-details .stor,
+body.contrast .form-details .stor span,
+body.contrast .form-details .dwnld-confirmation p,
 body.contrast .form-details .download .additional-info {color:#fff;}
 body.contrast .form-details .download ul.getresources li input.lastNedToppark,
 body.contrast .form-details .download ul.getresources li input.lastNedLenke {color:yellow}
@@ -1551,8 +1551,8 @@ div.tekstboks	.defaultText					{ color: #988F86; }
 *	Nettveiviser for Arbeidsinnvandring
 *****************************************************/
 .navigator {
-  display: inline-block;
-  margin: 0 0 36px 20px;
-  width: 90%;
+    display: inline-block;
+    margin: 0 0 36px 20px;
+    width: 90%;
 }
 /****************************************************/

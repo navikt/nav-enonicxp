@@ -1,0 +1,13 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Dynamisk veilederpanel</display-name>
+    <description>Innhold av HTML</description>
+    <form>
+        <input type="HtmlArea" name="content">
+            <label>Innhold</label>
+        </input>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <default>1rem 0 1rem 0</default>
+        </input>
+    </form>
+</part>
