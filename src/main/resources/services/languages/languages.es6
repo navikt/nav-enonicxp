@@ -11,7 +11,7 @@ const handleGet = (req) => {
     const languages = libs.utils.getLanguageVersions(content);
 
     return {
-        body: languages,
+        body: { languages, currentLanguage: content.language || 'no' },
         contentType: 'application/json',
     };
 };
