@@ -26,7 +26,7 @@ const frontendProxy = (req, fallbackController) => {
             },
         });
 
-        if (response?.ok) {
+        if (response?.status === 200) {
             return response;
         }
     } catch (e) {
