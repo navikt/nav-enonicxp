@@ -1,6 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const portalLib = require('/lib/xp/portal');
 const graphQlLib = require('/lib/guillotine/graphql.js');
+const utils = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
 
 const callback = (context, params) => {
@@ -54,14 +55,17 @@ const resolve = (menuListKey) => (env) => {
 
 const getContentFromRefs = (refs) => {
     // Refs can be arrays and strings
-    if (Array.isArray(refs)) {
-        return refs.map((key) => getContentFromRef(key));
-    }
-    return [getContentFromRef(refs)];
+    return utils
+        .forceArray(refs)
+        .map((key) => getContentFromRef(key))
+        .filter(Boolean);
 };
 
 const getContentFromRef = (ref) => {
     const content = contentLib.get({ key: ref });
+    if (!content) {
+        return null;
+    }
     const path = content._path;
     const text = content.displayName;
     const type = content.type;
