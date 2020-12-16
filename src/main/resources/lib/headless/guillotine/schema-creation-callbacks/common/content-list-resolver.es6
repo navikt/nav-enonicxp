@@ -8,10 +8,14 @@ const contentListResolver = (contentListKey, maxItemsKey, sortFunc = undefined) 
         return null;
     }
 
-    const maxItems = env.source[maxItemsKey];
-
     const contentList = contentLib.get({ key: contentListId });
+
+    if (!contentList) {
+        return null;
+    }
+
     const sectionContentsRefs = utils.forceArray(contentList?.data?.sectionContents);
+    const maxItems = env.source[maxItemsKey];
 
     const sectionContents = sectionContentsRefs
         .map((item) => contentLib.get({ key: item }))

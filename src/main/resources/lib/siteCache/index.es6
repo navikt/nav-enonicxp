@@ -119,16 +119,13 @@ function wipeOnChange(path) {
     w(getPath(path, 'page-large-table'));
     w(getPath(path, 'faq-page'));
     w(getPath(path, 'generic-page'));
-    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
-        log.info(`WIPED: [driftsmeldinger] (${caches.paths.getSize()} on [${myHash}])`);
     }
     if (path.indexOf('/publiseringskalender') !== -1) {
         w('publiseringskalender');
-        log.info(`WIPED: [publiseringskalender] (${caches.paths.getSize()} on [${myHash}])`);
     }
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
@@ -193,7 +190,6 @@ function clearReferences(id, path, depth) {
     // children and not reference
     const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
-        log.info('REMOVE PARENT CACHE');
         references.push(parent);
     }
 
