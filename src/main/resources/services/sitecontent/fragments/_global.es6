@@ -6,6 +6,10 @@ const globalFragment = `
     modifiedTime
     displayName
     language
+    publish {
+        first
+        from
+    }
 `;
 
 module.exports = globalFragment;
