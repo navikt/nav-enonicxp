@@ -5,6 +5,7 @@ const externalLink = require('./externalLink');
 const pageList = require('./pageList');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
+const { seoMixinFragment, linkPanelsMixinFragment } = require('./_mixins');
 
 const sectionPageShortFragment = `
     ...on no_nav_navno_SectionPage {
@@ -17,6 +18,7 @@ const sectionPageShortFragment = `
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
         data {
+            ingress
             moreNewsUrl
             tableContents {
                 ${globalFragment}
@@ -39,20 +41,8 @@ const sectionPageFragment = `
                 ${globalFragment}
                 ${contentList.fragment}
             }
-            panelsHeading
-            panelItems {
-                title
-                ingress
-                spanning
-                url {
-                    text
-                    ref {
-                        ${globalFragment}
-                        ${internalLink.fragment}
-                        ${externalLink.fragment}
-                    }
-                }
-            }
+            ${linkPanelsMixinFragment}
+            ${seoMixinFragment}
         }
     }
 `;

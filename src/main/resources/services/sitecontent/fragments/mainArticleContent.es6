@@ -1,5 +1,6 @@
 const globalFragment = require('./_global');
 const menuListItems = require('./menuListItems');
+const { seoMixinFragment } = require('./_mixins');
 
 const mainArticleContentFragment = `
     ${globalFragment}
@@ -23,6 +24,7 @@ const mainArticleContentFragment = `
             altText
         }
         ${menuListItems.fragment}
+        ${seoMixinFragment}
     }
 `;
 
