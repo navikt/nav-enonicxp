@@ -4,6 +4,7 @@ const internalLink = require('./internalLink');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 const menuListItems = require('./menuListItems');
+const { seoMixinFragment } = require('./_mixins');
 
 const pageListShortFragment = `
     ...on no_nav_navno_PageList {
@@ -12,6 +13,7 @@ const pageListShortFragment = `
             hide_date
             hideSectionContentsDate
             orderSectionContentsByPublished
+            ${seoMixinFragment}
         }
     }
 `;
