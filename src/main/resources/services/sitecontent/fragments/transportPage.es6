@@ -1,6 +1,12 @@
+const { linkPanelsMixinFragment, seoMixinFragment } = require('./_mixins');
+
 const transportPageFragment = `
     ...on no_nav_navno_TransportPage {
-        dataAsJson
+        data {
+            ingress
+            ${linkPanelsMixinFragment}
+            ${seoMixinFragment}
+        }
     }
 `;
 

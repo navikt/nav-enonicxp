@@ -1,5 +1,7 @@
-const globalFragment = require('./_global');
-const contentList = require('./contentList');
+const { linkInternalMixinFragment } = require('./_mixins');
+const { linkExternalMixinFragment } = require('./_mixins');
+const { linkWithIngressMixinFragment } = require('./_mixins');
+const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 
 const imageMediaUrlFragment = `
     ...on media_Vector {
@@ -7,37 +9,6 @@ const imageMediaUrlFragment = `
     }
     ...on media_Image {
         mediaUrl(download:false, type:absolute)
-    }
-`;
-
-const linkInternalMixinFragment = `
-    target {
-        ${globalFragment}
-    }
-    text
-`;
-
-const linkExternalMixinFragment = `
-    url
-    text
-`;
-
-const linkWithIngressMixinFragment = `
-    ingress
-    link {
-        _selected
-        internal {
-            ${linkInternalMixinFragment}
-        }
-        external {
-            ${linkExternalMixinFragment}
-        }
-    }
-`;
-
-const contentListMixinFragment = `
-    target {
-        ${contentList.fragment}
     }
 `;
 
