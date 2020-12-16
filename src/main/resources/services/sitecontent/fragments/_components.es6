@@ -1,7 +1,7 @@
 const { linkInternalMixinFragment } = require('./_mixins');
 const { linkExternalMixinFragment } = require('./_mixins');
-const { contentListMixinFragment } = require('./_mixins');
 const { linkWithIngressMixinFragment } = require('./_mixins');
+const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 
 const imageMediaUrlFragment = `
     ...on media_Vector {

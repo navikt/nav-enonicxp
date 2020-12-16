@@ -1,5 +1,4 @@
 const globalFragment = require('./_global');
-const contentList = require('./contentList');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
 
@@ -51,17 +50,10 @@ const linkWithIngressMixinFragment = `
     }
 `;
 
-const contentListMixinFragment = `
-    target {
-        ${contentList.fragment}
-    }
-`;
-
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
     linkInternalMixinFragment,
     linkExternalMixinFragment,
     linkWithIngressMixinFragment,
-    contentListMixinFragment,
 };
