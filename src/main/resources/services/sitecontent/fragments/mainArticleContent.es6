@@ -12,12 +12,14 @@ const mainArticleContentFragment = `
         social
         picture {
             target {
+                __typename
                 ...on media_Image {
-                     mediaUrl(download: false, type:absolute)
+                     imageUrl(scale:"$scale", type:absolute)
                 }
                 ...on media_Vector {
                      mediaUrl(download: false, type:absolute)
                 }
+
             }
             size
             caption
