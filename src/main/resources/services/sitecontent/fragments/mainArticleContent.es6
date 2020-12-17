@@ -13,7 +13,10 @@ const mainArticleContentFragment = `
         picture {
             target {
                 ...on media_Image {
-                     imageUrl(scale:"$scale", type:absolute)
+                     mediaUrl(download: false, type:absolute)
+                }
+                ...on media_Vector {
+                     mediaUrl(download: false, type:absolute)
                 }
             }
             size
