@@ -8,12 +8,15 @@ const { setFrontendNotLive } = require('/lib/headless/frontend-liveness');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const frontendProxy = (req, fallbackController) => {
+    const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
+    const contentPath = req.rawPath.replace('/www.nav.no', '').slice(pathStartIndex);
+
     const frontendPath =
         (req.branch === 'draft' ? '/draft' : '') +
         // Request-paths from content studio in edit-mode comes in the form of the UUID of the content-object.
         // Need to prepend /www.nav.no to get a valid url for legacy-frontend
         (req.mode === 'edit' ? '/www.nav.no' : '') +
-        req.rawPath.replace('/www.nav.no', '').split(req.branch).splice(1).join('/');
+        contentPath;
 
     const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.loopbackFlag}=true`;
     try {
