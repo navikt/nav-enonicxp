@@ -18,7 +18,7 @@ const processHtmlWithPostProcessing = (html, type) => {
             method: 'POST',
             body: JSON.stringify({
                 html,
-                ...(branch !== 'draft' && { type }),
+                type,
                 branch,
             }),
             contentType: 'application/json',
@@ -26,12 +26,6 @@ const processHtmlWithPostProcessing = (html, type) => {
         });
 
         if (processedHtmlResponse?.status === 200) {
-            if (branch === 'draft') {
-                return processedHtmlResponse.body.replace(
-                    /\/_\//g,
-                    '/admin/site/preview/default/draft/_/'
-                );
-            }
             return processedHtmlResponse.body;
         }
     } catch (e) {
@@ -52,14 +46,26 @@ const htmlProcessor = (req) => {
         };
     }
 
-    const processedHtml = runInBranchContext(
-        () =>
-            portalLib.processHtml({
-                value: html,
-                type: type,
-            }),
-        branch
-    );
+    if (branch === 'draft') {
+        const processedHtml = runInBranchContext(
+            () =>
+                portalLib.processHtml({
+                    value: html,
+                    type: 'server', // Always use server-relative urls for draft
+                }),
+            'draft'
+        ).replace(/\/_\//g, '/admin/site/preview/default/draft/_/'); // Insert draft preview prefix to asset paths
+
+        return {
+            contentType: 'text/html',
+            body: processedHtml,
+        };
+    }
+
+    const processedHtml = portalLib.processHtml({
+        value: html,
+        type: type,
+    });
 
     return {
         contentType: 'text/html',
