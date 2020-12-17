@@ -4,9 +4,6 @@ const { seoMixinFragment } = require('./_mixins');
 
 const mainArticleContentFragment = `
     ${globalFragment}
-    publish {
-       from
-    }
     data {
         ingress
         text(processHtml:{type:absolute})
