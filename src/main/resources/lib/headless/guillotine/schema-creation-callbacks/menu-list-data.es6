@@ -1,5 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const portalLib = require('/lib/xp/portal');
+const contextLib = require('/lib/xp/context');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 const utils = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
@@ -72,11 +73,24 @@ const getContentFromRef = (ref) => {
     return { text, url: type.startsWith('media:') ? getAttachmentUrl(ref) : path };
 };
 
-const getAttachmentUrl = (ref) =>
-    portalLib.attachmentUrl({
+const getAttachmentUrl = (ref) => {
+    const context = contextLib.get();
+
+    if (context.branch === 'draft') {
+        return portalLib
+            .attachmentUrl({
+                id: ref,
+                type: 'server',
+                download: true,
+            })
+            ?.replace(/\/_\//, '/admin/site/preview/default/draft/_/');
+    }
+
+    return portalLib.attachmentUrl({
         id: ref,
         type: 'absolute',
         download: true,
     });
+};
 
 module.exports = callback;
