@@ -3,7 +3,6 @@ const libs = {
     node: require('/lib/xp/node'),
     content: require('/lib/xp/content'),
     httpClient: require('/lib/http-client'),
-    task: require('/lib/xp/task'),
     cron: require('/lib/cron'),
     cluster: require('/lib/xp/cluster'),
 };
