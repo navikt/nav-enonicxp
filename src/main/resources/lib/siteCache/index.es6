@@ -138,7 +138,6 @@ function wipeOnChange(path) {
 
     // For headless setup
     wipe('sitecontent')(getPath(path));
-    frontendCacheRevalidate(path);
 
     if (libs.cluster.isMaster()) {
         libs.task.submit({
