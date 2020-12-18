@@ -4,6 +4,7 @@ const { revalidatorProxyOrigin } = require('/lib/headless/url-origin');
 const numRetries = 2;
 
 const requestRevalidate = (path, retriesLeft = numRetries) => {
+    path = encodeURI(path);
     try {
         httpClient.request({
             url: `${revalidatorProxyOrigin}/revalidator-proxy?path=${path}`,
