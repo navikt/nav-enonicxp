@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 const externalLink = require('./externalLink');
 const internalLink = require('./internalLink');
+const urlFragment = require('./url');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 const menuListItems = require('./menuListItems');
@@ -28,6 +29,7 @@ const pageListFragment = `
                 ${mainArticle.shortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
+                ${urlFragment.fragment}
                 ${pageListShortFragment}
             }
             ${menuListItems.shortcutsFragment}

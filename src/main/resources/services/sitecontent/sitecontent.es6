@@ -19,6 +19,7 @@ const mainArticleChapter = require('./fragments/mainArticleChapter');
 const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
+const urlFragment = require('./fragments/url');
 
 const queryFragments = [
     globalFragment,
@@ -26,6 +27,7 @@ const queryFragments = [
     contentList.fragment,
     externalLink.fragment,
     internalLink.fragment,
+    urlFragment.fragment,
     mainArticle.fragment,
     mainArticleChapter.fragment,
     pageList.fragment,
@@ -98,6 +100,13 @@ const getRedirectContent = (idOrPath, branch = 'master') => {
         return {
             ...redirectContent,
             __typename: 'no_nav_navno_ExternalLink',
+        };
+    }
+
+    if (redirectContent.type === 'no.nav.navno:url') {
+        return {
+            ...redirectContent,
+            __typename: 'no_nav_navno_Url',
         };
     }
 
