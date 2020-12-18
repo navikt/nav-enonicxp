@@ -7,6 +7,8 @@ const libs = {
     context: require('/lib/xp/context'),
     content: require('/lib/xp/content'),
     common: require('/lib/xp/common'),
+    cluster: require('/lib/xp/cluster'),
+    task: require('/lib/xp/task'),
 };
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
@@ -138,6 +140,14 @@ function wipeOnChange(path) {
     wipe('sitecontent')(getPath(path));
     frontendCacheRevalidate(path);
 
+    if (libs.cluster.isMaster()) {
+        libs.task.submit({
+            description: `send revalidate on ${path}`,
+            task: () => {
+                frontendCacheRevalidate(path);
+            },
+        });
+    }
     return true;
 }
 
