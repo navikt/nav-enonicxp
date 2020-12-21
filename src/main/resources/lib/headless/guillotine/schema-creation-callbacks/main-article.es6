@@ -14,7 +14,13 @@ const mainArticleCallback = (context, params) => {
             .hits.filter((child) => {
                 // filters out chapters which points to a non-existant (or unpublished) article
                 if (child.type === 'no.nav.navno:main-article-chapter') {
-                    return contentLib.exists({ key: child.data.article });
+                    const exists = contentLib.exists({ key: child.data.article });
+                    if (!exists) {
+                        log.error(
+                            `${child.data.article} - got a hit for a chapter which doesn't exist`
+                        );
+                    }
+                    return exists;
                 }
                 return true;
             });
