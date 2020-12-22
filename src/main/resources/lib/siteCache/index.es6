@@ -200,6 +200,15 @@ function clearReferences(id, path, depth) {
     const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
+        // If the parent has chapters we need to clear the cache of all other chapters as well
+        const chapters = libs.content
+            .getChildren({ key: parent._id })
+            .hits.filter((item) => item.type === `${app.name}:main-article-chapter`);
+        chapters.forEach((chapter) => {
+            if (chapter._id !== id) {
+                references.push(chapter);
+            }
+        });
     }
 
     const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
