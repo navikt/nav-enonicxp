@@ -146,6 +146,7 @@ function wipeOnChange(path) {
                 frontendCacheRevalidate(encodeURI(path));
             },
         });
+        log.info(`Revalidation done for: ${logPath}`);
     }
     return true;
 }
