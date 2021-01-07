@@ -1,8 +1,8 @@
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 
-const notification = require('../../services/sitecontent/fragments/notification');
-const globalFragment = require('../../services/sitecontent/fragments/_global');
+const notification = require('./fragments/notification');
+const globalFragment = require('./fragments/_global');
 
 const queryGetNotifications = `query {
     guillotine {
@@ -22,7 +22,7 @@ const getNotifications = (path) => {
 
     if (!notifications) {
         log.info('Notifications not found');
-        return null;
+        return undefined;
     }
 
     const parsedNotifications = deepJsonParser(notifications, ['data']);
