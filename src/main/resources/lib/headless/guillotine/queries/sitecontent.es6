@@ -3,8 +3,8 @@ const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
 const { searchForRedirect } = require('/site/error/error');
 const { runInBranchContext } = require('/lib/headless/run-in-context');
-const utilsLib = require('/lib/nav-utils');
-const menuLib = require('/lib/menu-utils');
+const menuUtils = require('/lib/menu-utils');
+const cache = require('/lib/siteCache');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -71,15 +71,13 @@ const getContent = (idOrPath, branch) => {
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
 
-    const breadcrumbs = runInBranchContext(() => menuLib.getBreadcrumbMenu(idOrPath), branch);
-    const languages = utilsLib.getLanguageVersions(content);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
     return {
         ...contentWithParsedData,
         page,
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
-        ...(languages && { languages }),
     };
 };
 
@@ -120,6 +118,10 @@ const getRedirectContent = (idOrPath, branch) => {
 };
 
 const getSiteContent = (idOrPath, branch = 'master') =>
-    getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch);
+    cache.getSitecontent(
+        idOrPath,
+        branch,
+        () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
+    );
 
 module.exports = { getSiteContent };

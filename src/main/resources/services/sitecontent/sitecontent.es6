@@ -1,4 +1,3 @@
-const cache = require('/lib/siteCache');
 const { isValidBranch } = require('/lib/headless/run-in-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
@@ -38,7 +37,7 @@ const handleGet = (req) => {
         };
     }
 
-    const content = cache.getSitecontent(idOrPath, branch, () => getSiteContent(idOrPath, branch));
+    const content = getSiteContent(idOrPath, branch);
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);
@@ -51,7 +50,7 @@ const handleGet = (req) => {
         };
     }
 
-    const notifications = cache.getNotifications(idOrPath, () => getNotifications(content.path));
+    const notifications = getNotifications(content.path);
 
     return {
         status: 200,

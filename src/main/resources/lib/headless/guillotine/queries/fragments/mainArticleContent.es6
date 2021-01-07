@@ -5,6 +5,10 @@ const { seoMixinFragment } = require('./_mixins');
 const mainArticleContentFragment = `
     ${globalFragment}
     data {
+        languages {
+            language
+            _path
+        }
         ingress
         text(processHtml:{type:absolute})
         hasTableOfContents
