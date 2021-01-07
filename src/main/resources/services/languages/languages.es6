@@ -5,6 +5,7 @@ const libs = {
     content: require('/lib/xp/content'),
 };
 
+// TODO: kan fjernes
 const handleGet = (req) => {
     const { id, branch } = req.params;
     const content = runInBranchContext(() => libs.content.get({ key: id }), branch || req.branch);
