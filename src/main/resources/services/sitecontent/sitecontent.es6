@@ -63,25 +63,18 @@ const getContent = (idOrPath, branch = 'master') => {
         branch
     );
 
-    const rawContent = response?.get;
-    if (!rawContent) {
+    const content = response?.get;
+    if (!content) {
         return null;
     }
 
-    const contentWithParsedData = deepJsonParser(rawContent, ['data', 'config', 'page']);
+    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
 
-    const content = {
+    return {
         ...contentWithParsedData,
         page,
         components: undefined,
-    };
-
-    const notifications = getNotifications(rawContent.path);
-
-    return {
-        content,
-        notifications,
     };
 };
 
@@ -173,9 +166,11 @@ const handleGet = (req) => {
         };
     }
 
+    const notifications = cache.getNotifications(idOrPath, () => getNotifications(content.path));
+
     return {
         status: 200,
-        body: content,
+        body: { content, notifications },
         contentType: 'application/json',
     };
 };

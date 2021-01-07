@@ -25,7 +25,7 @@ const myHash =
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
-    notifications: libs.cache.newCache({
+    notificationsLegacy: libs.cache.newCache({
         size: 500,
         expire: oneMinute,
     }),
@@ -43,6 +43,10 @@ const caches = {
     }),
     sitecontent: libs.cache.newCache({
         size: 5000,
+        expire: oneDay,
+    }),
+    notifications: libs.cache.newCache({
+        size: 500,
         expire: oneDay,
     }),
 };
@@ -137,7 +141,9 @@ function wipeOnChange(path) {
     }
 
     // For headless setup
-    wipe('sitecontent')(getPath(path));
+    const sitecontentCacheKey = getPath(path);
+    wipe('sitecontent')(sitecontentCacheKey);
+    wipe('notifications')(sitecontentCacheKey);
 
     if (libs.cluster.isMaster()) {
         libs.task.submit({
@@ -169,6 +175,17 @@ function getSitecontent(idOrPath, branch, callback) {
         return caches['sitecontent'].get(getPath(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
+        return null;
+    }
+}
+
+function getNotifications(idOrPath, callback) {
+    if (isUUID(idOrPath)) {
+        return callback();
+    }
+    try {
+        return caches['notifications'].get(getPath(idOrPath), callback);
+    } catch (e) {
         return null;
     }
 }
@@ -283,8 +300,9 @@ module.exports = {
     getDecorator: getSome('decorator'),
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
-    getNotifications: getSome('notifications'),
+    getNotificationsLegacy: getSome('notificationsLegacy'),
     getSitecontent,
+    getNotifications,
     activateEventListener,
     stripPath: getPath,
     etag: getEtag,
