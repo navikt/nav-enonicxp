@@ -55,7 +55,7 @@ const handleGet = (req) => {
 
     return {
         status: 200,
-        body: { content, notifications },
+        body: { ...content, ...(notifications && { notifications }) },
         contentType: 'application/json',
     };
 };

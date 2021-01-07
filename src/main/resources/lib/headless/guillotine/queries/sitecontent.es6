@@ -2,6 +2,9 @@ const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query')
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
 const { searchForRedirect } = require('/site/error/error');
+const { runInBranchContext } = require('/lib/headless/run-in-context');
+const utilsLib = require('/lib/nav-utils');
+const menuLib = require('/lib/menu-utils');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -68,10 +71,15 @@ const getContent = (idOrPath, branch) => {
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
 
+    const breadcrumbs = runInBranchContext(() => menuLib.getBreadcrumbMenu(idOrPath), branch);
+    const languages = utilsLib.getLanguageVersions(content);
+
     return {
         ...contentWithParsedData,
         page,
         components: undefined,
+        ...(breadcrumbs && { breadcrumbs }),
+        ...(languages && { languages }),
     };
 };
 
