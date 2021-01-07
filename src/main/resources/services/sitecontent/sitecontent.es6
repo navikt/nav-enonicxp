@@ -20,6 +20,7 @@ const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
+const { getNotifications } = require('/lib/headless/notifications');
 
 const queryFragments = [
     globalFragment,
@@ -62,18 +63,25 @@ const getContent = (idOrPath, branch = 'master') => {
         branch
     );
 
-    const content = response?.get;
-    if (!content) {
+    const rawContent = response?.get;
+    if (!rawContent) {
         return null;
     }
 
-    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
+    const contentWithParsedData = deepJsonParser(rawContent, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
 
-    return {
+    const content = {
         ...contentWithParsedData,
         page,
         components: undefined,
+    };
+
+    const notifications = getNotifications(rawContent.path);
+
+    return {
+        content,
+        notifications,
     };
 };
 
