@@ -37,9 +37,10 @@ function getSleepFor(prepublishOnNext, now) {
     prepublishOnNext.forEach((c) => {
         const content = masterRepo.get(c.id);
         const publishOn = new Date(content.publish.from);
-        if (publishOn - now < sleepFor) {
-            // Sleep until 2.5 sec before publish (time to get new page loaded in the frontend)
-            sleepFor = publishOn - now - 2500;
+        // Sleep until 2.5 sec before publish (time to get new page loaded in the frontend)
+        const timeToPublish = publishOn - now - 2500;
+        if (timeToPublish < sleepFor) {
+            sleepFor = timeToPublish;
         }
     });
     sleepFor += 10;
