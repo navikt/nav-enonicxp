@@ -10,11 +10,8 @@
         <mapping controller="/lib/headless/controllers/html-processor.js">
             <pattern>/.*\?processHtml=true.*</pattern>
         </mapping>
-        <mapping controller="/lib/enonic/url-redirect/index.js">
-            <match>type:'no.nav.navno:url'</match>
-        </mapping>
-        <mapping controller="/site/pages/main-page/main-page.js">
-            <match>type:'portal:fragment'</match>
+        <mapping controller="/lib/headless/controllers/frontend-proxy-controller.js">
+            <pattern>/.*</pattern>
         </mapping>
     </mappings>
 </site>

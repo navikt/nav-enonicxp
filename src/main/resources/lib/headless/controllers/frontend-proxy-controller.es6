@@ -1,13 +1,18 @@
-const libs = {
-    portal: require('/lib/xp/portal'),
-    thymeleaf: require('/lib/thymeleaf'),
-    httpClient: require('/lib/http-client'),
-};
-const frontendLiveness = require('/lib/headless/frontend-liveness');
-const { setFrontendNotLive } = require('/lib/headless/frontend-liveness');
+const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
-const frontendProxy = (req, fallbackController) => {
+const errorResponse = (url, status, message) => {
+    const msg = `Failed to fetch page from frontend: ${url} - ${status} ${message}`;
+
+    log.info(msg);
+
+    return {
+        contentType: 'text/html',
+        body: `<div>${msg}</div>`,
+    };
+};
+
+const frontendProxy = (req) => {
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.replace('/www.nav.no', '').slice(pathStartIndex);
 
@@ -18,27 +23,31 @@ const frontendProxy = (req, fallbackController) => {
         (req.mode === 'edit' ? '/www.nav.no' : '') +
         contentPath;
 
-    const frontendUrl = `${frontendOrigin}${frontendPath}?${frontendLiveness.loopbackFlag}=true`;
+    const frontendUrl = `${frontendOrigin}${frontendPath}`;
+
     try {
-        const response = libs.httpClient.request({
+        const response = httpClient.request({
             url: frontendUrl,
             contentType: 'text/html',
-            connectionTimeout: 1000,
+            connectionTimeout: 1,
             headers: {
                 secret: app.config.serviceSecret,
             },
         });
 
-        if (response?.status === 200) {
-            return response;
+        if (!response) {
+            return errorResponse(frontendUrl, 500, 'No response');
         }
+
+        if (response.status !== 200) {
+            return errorResponse(response.status, response.message);
+        }
+
+        return response;
     } catch (e) {
-        log.info(`Frontend HTTP request error - ${e}`);
+        return errorResponse(frontendUrl, 500, e);
     }
-
-    setFrontendNotLive(`Frontend call failed to ${frontendUrl}`);
-
-    return fallbackController(req);
 };
 
-module.exports = frontendProxy;
+exports.get = frontendProxy;
+exports.handleError = frontendProxy;
