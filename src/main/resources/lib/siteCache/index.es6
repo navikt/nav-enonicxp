@@ -146,6 +146,7 @@ function wipeOnChange(path) {
                 frontendCacheRevalidate(encodeURI(path));
             },
         });
+        log.info(`Revalidation done for: ${logPath}`);
     }
     return true;
 }
@@ -184,6 +185,8 @@ function clearReferences(id, path, depth) {
         count: 1000,
         query: `_references LIKE "${id}"`,
     }).hits;
+
+    log.info(`references: ${references.map((item) => item.displayName)}`);
 
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {
@@ -233,6 +236,7 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            log.info(`clearing ${node.path}`);
             wipeOnChange(node.path);
             libs.context.run(
                 {
