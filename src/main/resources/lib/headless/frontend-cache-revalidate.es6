@@ -14,7 +14,7 @@ const requestRevalidate = (path, retriesLeft = numRetries) => {
                 secret: app.config.serviceSecret,
             },
         });
-        log.info(`Sent revalidate request to frontend for ${path}`);
+        log.info(`Revalidate request to frontend acknowledged for ${path}`);
     } catch (e) {
         if (retriesLeft > 0) {
             requestRevalidate(path, retriesLeft - 1);
