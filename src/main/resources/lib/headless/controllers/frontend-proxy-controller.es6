@@ -3,7 +3,6 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const errorResponse = (url, status, message) => {
     const msg = `Failed to fetch page from frontend: ${url} - ${status} ${message}`;
-
     log.info(msg);
 
     return {
@@ -29,18 +28,14 @@ const frontendProxy = (req) => {
         const response = httpClient.request({
             url: frontendUrl,
             contentType: 'text/html',
-            connectionTimeout: 1,
+            connectionTimeout: 5000,
             headers: {
                 secret: app.config.serviceSecret,
             },
         });
 
         if (!response) {
-            return errorResponse(frontendUrl, 500, 'No response');
-        }
-
-        if (response.status !== 200) {
-            return errorResponse(response.status, response.message);
+            return errorResponse(frontendUrl, 500, 'Internal HTTP client error');
         }
 
         return response;

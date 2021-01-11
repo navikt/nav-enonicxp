@@ -7,10 +7,10 @@
     <x-data name="fasetter" optional="true"/>
     <x-data name="oldContentType" optional="true"/>
     <mappings>
-        <mapping controller="/lib/headless/controllers/html-processor.js">
+        <mapping controller="/lib/headless/controllers/html-processor.js" order="1">
             <pattern>/.*\?processHtml=true.*</pattern>
         </mapping>
-        <mapping controller="/lib/headless/controllers/frontend-proxy-controller.js">
+        <mapping controller="/lib/headless/controllers/frontend-proxy-controller.js" order="2">
             <pattern>/.*</pattern>
         </mapping>
     </mappings>

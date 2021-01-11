@@ -3,9 +3,7 @@
 exports.get = () => {
     return {
         status: 200,
-        body: '<div>oh noes!</div>',
+        body: "<div>oh noes, this shouldn't happen!</div>",
         contentType: 'text/html',
     };
 };
-
-// frontendProxy;
