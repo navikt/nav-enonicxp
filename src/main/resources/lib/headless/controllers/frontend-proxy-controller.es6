@@ -2,7 +2,7 @@ const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const errorResponse = (url, status, message) => {
-    const msg = `Failed to fetch page from frontend: ${url} - ${status} ${message}`;
+    const msg = `Failed to fetch page from frontend: ${url} - ${status}: ${message}`;
     log.info(msg);
 
     return {
@@ -35,12 +35,12 @@ const frontendProxy = (req) => {
         });
 
         if (!response) {
-            return errorResponse(frontendUrl, 500, 'Internal HTTP client error');
+            return errorResponse(frontendUrl, 500, 'No response from HTTP client');
         }
 
         return response;
     } catch (e) {
-        return errorResponse(frontendUrl, 500, e);
+        return errorResponse(frontendUrl, 500, `Exception caught: ${e}`);
     }
 };
 
