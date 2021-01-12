@@ -40,7 +40,9 @@ const adminFrontendProxy = (req) => {
         }
 
         if (response.status !== 200) {
-            log.info(`Unexpected response from frontend: ${response.status} - ${response.message}`);
+            log.info(
+                `Unexpected response from frontend for ${frontendUrl}: ${response.status} - ${response.message}`
+            );
         }
 
         return response;
