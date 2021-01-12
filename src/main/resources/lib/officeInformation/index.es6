@@ -269,10 +269,23 @@ function checkForRefresh(oneTimeRun = false) {
 }
 
 exports.runOneTimeJob = () => {
-    const timerStart = Date.now();
-    checkForRefresh(true);
-    const mills = Date.now() - timerStart;
-    log.info(`NORG: time elapsed: ${mills / 1000}s`);
+    libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        () => {
+            const timerStart = Date.now();
+            checkForRefresh(true);
+            const mills = Date.now() - timerStart;
+            log.info(`NORG: time elapsed: ${mills / 1000}s`);
+        }
+    );
 };
 
 exports.startCronJob = () => {
