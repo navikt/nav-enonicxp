@@ -8,10 +8,11 @@ const errorResponse = (url, status, message) => {
     return {
         contentType: 'text/html',
         body: `<div>${msg}</div>`,
+        status,
     };
 };
 
-const frontendProxy = (req) => {
+const adminFrontendProxy = (req) => {
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.replace('/www.nav.no', '').slice(pathStartIndex);
 
@@ -38,11 +39,15 @@ const frontendProxy = (req) => {
             return errorResponse(frontendUrl, 500, 'No response from HTTP client');
         }
 
+        if (response.status !== 200) {
+            log.info(`Unexpected response from frontend: ${response.status} - ${response.message}`);
+        }
+
         return response;
     } catch (e) {
         return errorResponse(frontendUrl, 500, `Exception caught: ${e}`);
     }
 };
 
-exports.get = frontendProxy;
-exports.handleError = frontendProxy;
+exports.get = adminFrontendProxy;
+exports.handleError = adminFrontendProxy;
