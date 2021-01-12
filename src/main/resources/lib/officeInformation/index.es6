@@ -5,6 +5,7 @@ const libs = {
     httpClient: require('/lib/http-client'),
     cron: require('/lib/cron'),
     cluster: require('/lib/xp/cluster'),
+    context: require('/lib/xp/context'),
 };
 
 function setIsRefreshing(navRepo, isRefreshing, failed) {
@@ -46,7 +47,7 @@ const removeNullProperties = (obj) => {
             if (!Array.isArray(value) && Object.keys(value).length > 0) {
                 acc[key] = removeNullProperties(value);
             }
-            if (Array.isArray(value)) {
+            if (Array.isArray(value) && value.length > 0) {
                 const moddedList = value.map((item) => {
                     if (typeof item === 'object') {
                         return removeNullProperties(item);
