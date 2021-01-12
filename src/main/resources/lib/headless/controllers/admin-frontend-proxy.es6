@@ -2,8 +2,8 @@ const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const errorResponse = (url, status, message) => {
-    const msg = `Failed to fetch page from frontend: ${url} - ${status}: ${message}`;
-    log.info(msg);
+    const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
+    log.error(msg);
 
     return {
         contentType: 'text/html',
