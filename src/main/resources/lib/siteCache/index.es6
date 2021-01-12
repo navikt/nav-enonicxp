@@ -152,6 +152,7 @@ function wipeOnChange(path) {
                 frontendCacheRevalidate(encodeURI(path));
             },
         });
+        log.info(`Revalidation done for: ${logPath}`);
     }
     return true;
 }
@@ -202,6 +203,8 @@ function clearReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
+    log.info(`references: ${references.map((item) => item.displayName)}`);
+
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {
         newPath = path.replace('/content', '');
@@ -214,7 +217,11 @@ function clearReferences(id, path, depth) {
 
     // remove parents cache if its of a type that autogenerates content based on
     // children and not reference
-    const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
+    const parentTypesToClear = [
+        `${app.name}:page-list`,
+        `${app.name}:main-article`,
+        `${app.name}:publishing-calendar`,
+    ];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
         // If the parent has chapters we need to clear the cache of all other chapters as well
@@ -246,6 +253,7 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            log.info(`clearing ${node.path}`);
             wipeOnChange(node.path);
             libs.context.run(
                 {
