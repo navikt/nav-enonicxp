@@ -160,7 +160,9 @@ function refreshOfficeInformation(officeInformationList) {
         `NORG - Updated: ${updated.length} New: ${newOffices.length} Deleted: ${deleted.length}`
     );
     // extra logging
-    log.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
+    if (updated.length > 0) {
+        log.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
+    }
 }
 
 function checkForRefresh(oneTimeRun = false) {
