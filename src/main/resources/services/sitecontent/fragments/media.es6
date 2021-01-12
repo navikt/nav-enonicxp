@@ -47,6 +47,18 @@ const mediaFragment = `
     }
 `;
 
+const imageMediaFragment = `
+    __typename
+    ...on media_Vector {
+        ${mediaContentFragment}
+    }
+    ...on media_Image {
+        ${mediaContentFragment}
+        imageUrl(scale:"$scale", type:absolute)
+    }
+`;
+
 module.exports = {
     fragment: mediaFragment,
+    imageFragment: imageMediaFragment,
 };
