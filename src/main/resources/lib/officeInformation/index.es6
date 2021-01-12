@@ -5,6 +5,7 @@ const libs = {
     httpClient: require('/lib/http-client'),
     cron: require('/lib/cron'),
     cluster: require('/lib/xp/cluster'),
+    context: require('/lib/xp/context'),
 };
 
 function setIsRefreshing(navRepo, isRefreshing, failed) {
@@ -26,6 +27,48 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
     });
 }
 
+const hashCode = (str) => {
+    let hash = 0;
+    if (str.length === 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        // eslint-disable-next-line
+        hash = (hash << 5) - hash + char;
+        // eslint-disable-next-line
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+};
+
+const removeNullProperties = (obj) => {
+    return Object.keys(obj).reduce((acc, key) => {
+        const value = obj[key];
+        if (typeof value === 'object' && value !== null) {
+            if (!Array.isArray(value) && Object.keys(value).length > 0) {
+                acc[key] = removeNullProperties(value);
+            }
+            if (Array.isArray(value) && value.length > 0) {
+                const moddedList = value.map((item) => {
+                    if (typeof item === 'object') {
+                        return removeNullProperties(item);
+                    }
+                    return typeof value === 'string' ? value : `${value}`;
+                });
+                acc[key] = moddedList.length === 1 ? moddedList[0] : moddedList;
+            }
+        } else if (value !== null) {
+            acc[key] = typeof value === 'string' ? value : `${value}`;
+        }
+        return acc;
+    }, {});
+};
+
+const createObjectChecksum = (obj) => {
+    const cleanObj = removeNullProperties(obj);
+    const serializedObj = JSON.stringify(cleanObj).split('').sort().join();
+    return hashCode(serializedObj);
+};
+
 function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
     const officeFolder = libs.content.get({
@@ -41,9 +84,9 @@ function refreshOfficeInformation(officeInformationList) {
         // map over offices in norg2, so we can delete old offices
     };
 
-    let numNew = 0;
-    let numUpdated = 0;
-    let numDeleted = 0;
+    const newOffices = [];
+    const updated = [];
+    const deleted = [];
     // update office information or create new
     officeInformationList.forEach((officeInformation) => {
         // ignore closed offices and include only selected types
@@ -66,25 +109,28 @@ function refreshOfficeInformation(officeInformationList) {
         ) {
             // check if the office already exists
             const existingOffice = existingOffices.filter((o) => {
-                if (o.data && o.data.enhet && o.data.enhet.enhetId) {
-                    return o.data.enhet.enhetId === officeInformation.enhet.enhetId;
-                }
-                return false;
+                return o.data && o.data.enhet && o.data.enhet.enhetId
+                    ? o.data.enhet.enhetId === officeInformation.enhet.enhetId
+                    : false;
             })[0];
             if (existingOffice) {
-                numUpdated++;
-                libs.content.modify({
-                    key: existingOffice._id,
-                    editor: (o) => ({ ...o, data: officeInformation }),
-                });
+                const existing = createObjectChecksum(existingOffice.data);
+                const fetched = createObjectChecksum(officeInformation);
+                if (existing !== fetched) {
+                    updated.push(existingOffice._path);
+                    libs.content.modify({
+                        key: existingOffice._id,
+                        editor: (o) => ({ ...o, data: officeInformation }),
+                    });
+                }
             } else {
-                numNew++;
-                libs.content.create({
+                const result = libs.content.create({
                     parentPath: officeFolder._path,
                     displayName: officeInformation.enhet.navn,
                     contentType: app.name + ':office-information',
                     data: officeInformation,
                 });
+                newOffices.push(result._path);
             }
             officesInNorg[officeInformation.enhet.enhetId] = true;
         }
@@ -102,7 +148,7 @@ function refreshOfficeInformation(officeInformationList) {
             enhetId = existingOffice.data.enhet.enhetId;
         }
         if (!officesInNorg[enhetId]) {
-            numDeleted++;
+            deleted.push(existingOffice._path);
             libs.content.delete({
                 key: existingOffice._id,
             });
@@ -110,7 +156,13 @@ function refreshOfficeInformation(officeInformationList) {
     });
 
     // log info
-    log.info(`NORG - Updated: ${numUpdated} New: ${numNew} Deleted: ${numDeleted}`);
+    log.info(
+        `NORG - Updated: ${updated.length} New: ${newOffices.length} Deleted: ${deleted.length}`
+    );
+    // extra logging
+    if (updated.length > 0) {
+        log.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
+    }
 }
 
 function checkForRefresh(oneTimeRun = false) {
@@ -220,7 +272,23 @@ function checkForRefresh(oneTimeRun = false) {
 }
 
 exports.runOneTimeJob = () => {
-    checkForRefresh(true);
+    libs.context.run(
+        {
+            repository: 'com.enonic.cms.default',
+            branch: 'draft',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        () => {
+            const timerStart = Date.now();
+            checkForRefresh(true);
+            const mills = Date.now() - timerStart;
+            log.info(`NORG: time elapsed: ${mills / 1000}s`);
+        }
+    );
 };
 
 exports.startCronJob = () => {
@@ -231,8 +299,8 @@ exports.startCronJob = () => {
         name: 'office_info_norg2_hourly',
     });
     libs.cron.schedule({
-        name: 'office_info_norg2_daily',
-        cron: '10 4 * * *',
+        name: 'office_info_norg2_hourly',
+        cron: '15 * * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'draft',
