@@ -50,7 +50,9 @@ const handleGet = (req) => {
     const globalNotifications = notifications.filter(
         (item) =>
             item._path.startsWith('/www.nav.no/global-notifications') &&
-            !localNotifications.some((local) => local.data?.notificationToReplaceId === item._id)
+            !localNotifications.some(
+                (local) => local.data?.notificationToReplaceId?._id === item._id
+            )
     );
 
     return {

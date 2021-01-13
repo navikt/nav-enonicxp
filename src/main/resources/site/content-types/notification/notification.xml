@@ -6,13 +6,13 @@
         <field-set>
             <label>Varsel</label>
             <items>
-                <input name="type" type="RadioButton">
-                    <label>Type</label>
+                <input name="icon" type="ImageSelector">
+                    <label>Ikon</label>
                     <config>
-                        <option value="warning">Kritisk informasjon (!)</option>
-                        <option value="info">Viktig informasjon (i)</option>
+                        <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                        <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                        <allowPath>./*</allowPath>
                     </config>
-                    <default>warning</default>
                 </input>
                 <input name="title" type="TextLine">
                     <label>Tittel (overstyrer sidetittel fra valgt innhold)</label>
@@ -46,6 +46,7 @@
                         <allowContentType>${app}:page-list</allowContentType>
                         <allowContentType>${app}:section-page</allowContentType>
                         <allowContentType>${app}:transport-page</allowContentType>
+                        <allowContentType>${app}:dynamic-page</allowContentType>
                         <allowContentType>media:video</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
@@ -58,6 +59,13 @@
                         <allowPath>${site}/global-notifications</allowPath>
                         <allowContentType>${app}:notification</allowContentType>
                         <showStatus>true</showStatus>
+                    </config>
+                </input>
+                <input name="type" type="RadioButton">
+                    <label>Ikon-type (deprecated, overstyres dersom ikon er valgt ovenfor)</label>
+                    <config>
+                        <option value="warning">Kritisk informasjon (virus-ikon/korona)</option>
+                        <option value="info">Viktig informasjon (info-ikon)</option>
                     </config>
                 </input>
             </items>
