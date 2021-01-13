@@ -23,7 +23,6 @@ const mainArticleContentFragment = `
                 ...on media_Vector {
                      mediaUrl(download: false, type:absolute)
                 }
-
             }
             size
             caption
