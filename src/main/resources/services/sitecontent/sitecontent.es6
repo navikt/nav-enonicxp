@@ -1,6 +1,5 @@
 const { isValidBranch } = require('/lib/headless/run-in-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
-const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 
 const handleGet = (req) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
@@ -50,11 +49,9 @@ const handleGet = (req) => {
         };
     }
 
-    const notifications = getNotifications(content._path);
-
     return {
         status: 200,
-        body: { ...content, ...(notifications && { notifications }) },
+        body: content,
         contentType: 'application/json',
     };
 };

@@ -5,6 +5,7 @@ const { searchForRedirect } = require('/site/error/error');
 const { runInBranchContext } = require('/lib/headless/run-in-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
+const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -117,11 +118,20 @@ const getRedirectContent = (idOrPath, branch) => {
     return null;
 };
 
-const getSiteContent = (idOrPath, branch = 'master') =>
-    cache.getSitecontent(
+const getSiteContent = (idOrPath, branch = 'master') => {
+    const content = cache.getSitecontent(
         idOrPath,
         branch,
         () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
     );
+
+    if (!content) {
+        return null;
+    }
+
+    const notifications = getNotifications(content._path);
+
+    return { ...content, ...(notifications && { notifications }) };
+};
 
 module.exports = { getSiteContent };
