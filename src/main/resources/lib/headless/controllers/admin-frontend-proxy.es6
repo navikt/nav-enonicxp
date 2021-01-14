@@ -14,7 +14,7 @@ const errorResponse = (url, status, message) => {
 
 const adminFrontendProxy = (req) => {
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
-    const contentPath = req.rawPath.replace('/www.nav.no', '').slice(pathStartIndex);
+    const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
 
     const frontendPath = req.branch === 'draft' ? `${contentPath}/draft` : contentPath;
     const frontendUrl = `${frontendOrigin}${frontendPath}`;
@@ -41,7 +41,7 @@ const adminFrontendProxy = (req) => {
 
         return response;
     } catch (e) {
-        return errorResponse(frontendUrl, 500, `Exception caught: ${e}`);
+        return errorResponse(frontendUrl, 500, `Exception: ${e}`);
     }
 };
 
