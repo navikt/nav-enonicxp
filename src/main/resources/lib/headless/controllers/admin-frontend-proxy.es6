@@ -16,7 +16,7 @@ const adminFrontendProxy = (req) => {
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
 
-    const frontendPath = req.branch === 'draft' ? `${contentPath}/draft` : contentPath;
+    const frontendPath = req.branch === 'draft' ? `/draft${contentPath}` : contentPath;
     const frontendUrl = `${frontendOrigin}${frontendPath}`;
 
     try {
