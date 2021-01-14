@@ -1,8 +1,9 @@
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
+const cache = require('/lib/siteCache');
 
-const notification = require('../sitecontent/fragments/notification');
-const globalFragment = require('../sitecontent/fragments/_global');
+const notification = require('/lib/headless/guillotine/queries/fragments/notification');
+const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');
 
 const queryGetNotifications = `query {
     guillotine {
@@ -13,8 +14,7 @@ const queryGetNotifications = `query {
     }
 }`;
 
-// TODO: kan fjernes
-const getNotifications = () => {
+const getNotifications = (path) => {
     // Notifications should always be fetched from master, we don't want unpublished notifications
     // to be displayed in content studio
     const queryResponse = guillotineQuery(queryGetNotifications, undefined, 'master');
@@ -26,29 +26,15 @@ const getNotifications = () => {
         return null;
     }
 
-    return deepJsonParser(notifications, ['data']);
-};
-
-const handleGet = (req) => {
-    const { path } = req.params;
-
-    const notifications = getNotifications();
-
-    if (!notifications || !Array.isArray(notifications)) {
-        return {
-            status: 500,
-            body: {
-                message: 'Invalid response',
-            },
-            contentType: 'application/json',
-        };
-    }
+    const parsedNotifications = deepJsonParser(notifications, ['data']);
 
     const localNotifications = path
-        ? notifications.filter((item) => item._path?.split('/').slice(0, -1).join('/') === path)
+        ? parsedNotifications.filter(
+              (item) => item._path?.split('/').slice(0, -1).join('/') === path
+          )
         : [];
 
-    const globalNotifications = notifications.filter(
+    const globalNotifications = parsedNotifications.filter(
         (item) =>
             item._path.startsWith('/www.nav.no/global-notifications') &&
             !localNotifications.some(
@@ -56,11 +42,9 @@ const handleGet = (req) => {
             )
     );
 
-    return {
-        status: 200,
-        body: [...globalNotifications, ...localNotifications],
-        contentType: 'application/json',
-    };
+    return [...globalNotifications, ...localNotifications];
 };
 
-exports.get = handleGet;
+const getFromCache = (path) => cache.getNotifications(path, () => getNotifications(path));
+
+module.exports = { getNotifications: getFromCache };

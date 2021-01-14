@@ -23,6 +23,10 @@ const pageListFragment = `
     ...on no_nav_navno_PageList {
         dataAsJson
         data {
+            languages {
+                language
+                _path
+            }
             sectionContents {
                 ${globalFragment}
                 ${transportPage.shortFragment}
