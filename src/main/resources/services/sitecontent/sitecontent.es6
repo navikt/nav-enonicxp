@@ -50,7 +50,7 @@ const handleGet = (req) => {
         };
     }
 
-    const notifications = getNotifications(content.path);
+    const notifications = getNotifications(content._path);
 
     return {
         status: 200,

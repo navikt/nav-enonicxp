@@ -37,7 +37,9 @@ const getNotifications = (path) => {
     const globalNotifications = parsedNotifications.filter(
         (item) =>
             item._path.startsWith('/www.nav.no/global-notifications') &&
-            !localNotifications.some((local) => local.data?.notificationToReplaceId === item._id)
+            !localNotifications.some(
+                (local) => local.data?.notificationToReplaceId?._id === item._id
+            )
     );
 
     return [...globalNotifications, ...localNotifications];
