@@ -1,7 +1,6 @@
 const htmlCleanUp = (htmlField) => {
-    const theWolf = __.newBean('tools.HtmlCleaner');
-    const cleanHtml = __.toNativeObject(theWolf.clean(htmlField));
-    log.info(cleanHtml);
+    const cleaner = __.newBean('tools.HtmlCleaner');
+    const cleanHtml = __.toNativeObject(cleaner.clean(htmlField));
     return cleanHtml;
 };
 
