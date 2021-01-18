@@ -37,7 +37,7 @@ public final class HtmlCleaner {
         String[] hTags = {"h1", "h2", "h3", "h4"};
         String[] ignoredElements = {"body", "br"};
         for (Element elem: allTags) {
-            if (Arrays.stream(ignoredElements).anyMatch(elem.tagName()::equals) {
+            if (Arrays.stream(ignoredElements).anyMatch(elem.tagName()::equals)) {
                 continue;
             }
             // convert empty h-tags to p
