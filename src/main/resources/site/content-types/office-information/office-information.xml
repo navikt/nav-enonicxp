@@ -109,13 +109,26 @@
                     <label>Faksnummer</label>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-                <input type="TextLine" name="epost">
-                    <label>Epost</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
+                <item-set name="epost">
+                    <label>E-post</label>
+                    <items>
+                        <input type="TextLine" name="adresse">
+                            <label>Adresse</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="kommentar">
+                            <label>Kommentar</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input type="TextLine" name="kunIntern">
+                            <label>kunIntern</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                </item-set>
                 <item-set name="postadresse">
                     <label>Postadresse</label>
-                    <occurrences minimum="0" maximum="1"/>
+                        <occurrences minimum="0" maximum="1"/>
                     <items>
                         <input type="TextLine" name="type">
                             <label>Type</label>

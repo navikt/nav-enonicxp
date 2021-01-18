@@ -2,15 +2,7 @@ const { linkInternalMixinFragment } = require('./_mixins');
 const { linkExternalMixinFragment } = require('./_mixins');
 const { linkWithIngressMixinFragment } = require('./_mixins');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
-
-const imageMediaUrlFragment = `
-    ...on media_Vector {
-        mediaUrl(download:false, type:absolute)
-    }
-    ...on media_Image {
-        mediaUrl(download:false, type:absolute)
-    }
-`;
+const { imageFragment } = require('./media');
 
 const dynamicPartsFragment = `
     config {
@@ -24,10 +16,10 @@ const dynamicPartsFragment = `
                 ${linkWithIngressMixinFragment}
                 vertical
                 icon {
-                    ${imageMediaUrlFragment}
+                    ${imageFragment}
                 }
                 background {
-                    ${imageMediaUrlFragment}
+                    ${imageFragment}
                 }
             }
             dynamic_supervisor_panel {

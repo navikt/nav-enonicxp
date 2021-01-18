@@ -25,7 +25,7 @@ const myHash =
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
-    notifications: libs.cache.newCache({
+    notificationsLegacy: libs.cache.newCache({
         size: 500,
         expire: oneMinute,
     }),
@@ -43,6 +43,10 @@ const caches = {
     }),
     sitecontent: libs.cache.newCache({
         size: 5000,
+        expire: oneDay,
+    }),
+    notifications: libs.cache.newCache({
+        size: 500,
         expire: oneDay,
     }),
 };
@@ -137,7 +141,9 @@ function wipeOnChange(path) {
     }
 
     // For headless setup
-    wipe('sitecontent')(getPath(path));
+    const sitecontentCacheKey = getPath(path);
+    wipe('sitecontent')(sitecontentCacheKey);
+    wipe('notifications')(sitecontentCacheKey);
 
     if (libs.cluster.isMaster()) {
         libs.task.submit({
@@ -146,6 +152,7 @@ function wipeOnChange(path) {
                 frontendCacheRevalidate(encodeURI(path));
             },
         });
+        log.info(`Revalidation done for: ${logPath}`);
     }
     return true;
 }
@@ -173,6 +180,17 @@ function getSitecontent(idOrPath, branch, callback) {
     }
 }
 
+function getNotifications(idOrPath, callback) {
+    if (isUUID(idOrPath)) {
+        return callback();
+    }
+    try {
+        return caches['notifications'].get(getPath(idOrPath), callback);
+    } catch (e) {
+        return null;
+    }
+}
+
 function clearReferences(id, path, depth) {
     let newPath = path;
     if (depth > 10) {
@@ -184,6 +202,8 @@ function clearReferences(id, path, depth) {
         count: 1000,
         query: `_references LIKE "${id}"`,
     }).hits;
+
+    log.info(`references: ${references.map((item) => item.displayName)}`);
 
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {
@@ -197,7 +217,11 @@ function clearReferences(id, path, depth) {
 
     // remove parents cache if its of a type that autogenerates content based on
     // children and not reference
-    const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
+    const parentTypesToClear = [
+        `${app.name}:page-list`,
+        `${app.name}:main-article`,
+        `${app.name}:publishing-calendar`,
+    ];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
         // If the parent has chapters we need to clear the cache of all other chapters as well
@@ -229,6 +253,7 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            log.info(`clearing ${node.path}`);
             wipeOnChange(node.path);
             libs.context.run(
                 {
@@ -283,8 +308,9 @@ module.exports = {
     getDecorator: getSome('decorator'),
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
-    getNotifications: getSome('notifications'),
+    getNotificationsLegacy: getSome('notificationsLegacy'),
     getSitecontent,
+    getNotifications,
     activateEventListener,
     stripPath: getPath,
     etag: getEtag,
