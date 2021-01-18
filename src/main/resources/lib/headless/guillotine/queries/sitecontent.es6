@@ -22,6 +22,7 @@ const officeInformation = require('./fragments/officeInformation');
 const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
+const dynamicPage = require('./fragments/dynamicPage');
 
 const queryFragments = [
     globalFragment,
@@ -39,6 +40,7 @@ const queryFragments = [
     officeInformation.fragment,
     publishingCalendar.fragment,
     melding.fragment,
+    dynamicPage.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
