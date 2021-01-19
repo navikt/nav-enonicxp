@@ -18,8 +18,7 @@ public final class HtmlCleaner {
         Elements ulTags = doc.body().select("ul");
         for (Element elem: ulTags) {
             for(Element child: elem.children()){
-                String content = child.text();
-                if (content.equals("nbsp;") || content.isEmpty()){
+                if (this.isEmpty(child)){
                     child.remove();
                 }
             }
@@ -40,8 +39,7 @@ public final class HtmlCleaner {
         // Remove empty div-tags (to avoid unnecessary spacing largeTable)
         Elements divTags = doc.body().select("div");
         for (Element elem: divTags) {
-            String content = elem.text();
-            if (content.equals("nbsp;") || content.isEmpty()){
+            if (this.isEmpty(elem)){
                 elem.remove();
             }
         }
