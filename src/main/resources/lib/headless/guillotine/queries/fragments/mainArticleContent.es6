@@ -5,6 +5,10 @@ const { seoMixinFragment } = require('./_mixins');
 const mainArticleContentFragment = `
     ${globalFragment}
     data {
+        languages {
+            language
+            _path
+        }
         ingress
         text(processHtml:{type:absolute})
         hasTableOfContents
@@ -19,7 +23,6 @@ const mainArticleContentFragment = `
                 ...on media_Vector {
                      mediaUrl(download: false, type:absolute)
                 }
-
             }
             size
             caption

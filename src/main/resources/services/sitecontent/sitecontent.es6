@@ -1,10 +1,6 @@
-const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
-const deepJsonParser = require('/lib/headless/deep-json-parser');
-const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
 const { isValidBranch } = require('/lib/headless/run-in-context');
 const { runInBranchContext } = require('/lib/headless/run-in-context');
 const contentLib = require('/lib/xp/content');
-const cache = require('/lib/siteCache');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -122,6 +118,7 @@ const getRedirectContent = (idOrPath, branch = 'master') => {
 
     return null;
 };
+const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
 const handleGet = (req) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
@@ -158,11 +155,7 @@ const handleGet = (req) => {
         };
     }
 
-    const content = cache.getSitecontent(
-        idOrPath,
-        branch,
-        () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
-    );
+    const content = getSiteContent(idOrPath, branch);
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);
