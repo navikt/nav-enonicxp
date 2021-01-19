@@ -1,14 +1,10 @@
 package tools;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.*;
-import java.util.stream.*;
+import java.util.Arrays;
 
 public final class HtmlCleaner {
     private Boolean isEmpty(Element current) {
@@ -19,7 +15,7 @@ public final class HtmlCleaner {
     public String clean(String htmlString) {
         Document doc = Jsoup.parse(htmlString);
 
-        // Remove empty ul- & li-tags
+        // Remove empty ul- & li-tags to ensure WCAG-rules
         Elements uls = doc.select("ul");
         for (Element elem: uls) {
             for(Element child: elem.children()){
@@ -34,26 +30,25 @@ public final class HtmlCleaner {
         }
 
         Elements allTags = doc.body().select("*");
-        String[] hTags = {"h1", "h2", "h3", "h4"};
+        String[] hTags = {"h1", "h2", "h3", "h4", "h5", "h6"};
         String[] ignoredElements = {"body", "br"};
         for (Element elem: allTags) {
-            if (Arrays.stream(ignoredElements).anyMatch(elem.tagName()::equals)) {
+            if (Arrays.asList(ignoredElements).contains(elem.tagName())) {
                 continue;
             }
-            // convert empty h-tags to p
-            if (Arrays.stream(hTags).anyMatch(elem.tagName()::equals) && this.isEmpty(elem )) {
+            // convert empty h-tags to p to ensure WCAG-rules
+            if (Arrays.asList(hTags).contains(elem.tagName()) && this.isEmpty(elem )) {
                 elem.tagName("p");
-                elem.text("");
+                elem.html("&nbsp;"); // To ensure p gets height
             }
             // strip formatting chars
             if (!elem.text().equals("")) {
                 String content = elem.text();
-                String cleanContent = content.trim().replace("\n", " ").replace("\r", "").replace("\t", "");
+                String cleanContent = content.trim()
+                    .replace("\n", " ")
+                    .replace("\r", "")
+                    .replace("\t", "");
                 elem.text(cleanContent);
-            }
-            // remove any empty tags
-            if (!elem.tagName().equals("p") && elem.childrenSize() == 0 && (!elem.hasText() || this.isEmpty(elem))) {
-                elem.remove();
             }
         }
         return doc.body().html();
