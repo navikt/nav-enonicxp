@@ -44,6 +44,8 @@ public final class HtmlCleaner {
             }
         }
 
-        return doc.body().html();
+        // Replace narrow no-break-space with space because it doesn't work on Safari
+        // U+202F	NARROW NO-BREAK SPACE
+        return doc.body().html().replace("\u202F", "&nbsp;");
     }
 }

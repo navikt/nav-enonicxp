@@ -1,7 +1,6 @@
 const htmlCleanUp = (htmlField) => {
     const cleaner = __.newBean('tools.HtmlCleaner');
-    const cleanHtml = __.toNativeObject(cleaner.clean(htmlField));
-    return cleanHtml;
+    return __.toNativeObject(cleaner.clean(htmlField));
 };
 
 module.exports = { htmlCleanUp };
