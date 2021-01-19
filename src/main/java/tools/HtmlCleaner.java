@@ -37,6 +37,15 @@ public final class HtmlCleaner {
             }
         }
 
+        // Remove empty div-tags (to avoid unnecessary spacing largeTable)
+        Elements divTags = doc.body().select("div");
+        for (Element elem: divTags) {
+            String content = elem.text();
+            if (content.equals("nbsp;") || content.isEmpty()){
+                elem.remove();
+            }
+        }
+
         return doc.body().html();
     }
 }
