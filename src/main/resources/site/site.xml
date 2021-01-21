@@ -7,14 +7,11 @@
     <x-data name="fasetter" optional="true"/>
     <x-data name="oldContentType" optional="true"/>
     <mappings>
-        <mapping controller="/lib/headless/controllers/html-processor.js">
+        <mapping controller="/lib/headless/controllers/html-processor.js" order="1">
             <pattern>/.*\?processHtml=true.*</pattern>
         </mapping>
-        <mapping controller="/lib/enonic/url-redirect/index.js">
-            <match>type:'no.nav.navno:url'</match>
-        </mapping>
-        <mapping controller="/site/pages/main-page/main-page.js">
-            <match>type:'portal:fragment'</match>
+        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js" order="2">
+            <pattern>/.*</pattern>
         </mapping>
     </mappings>
 </site>
