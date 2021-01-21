@@ -63,6 +63,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-common:${xpVersion}"
     include "com.enonic.xp:lib-event:${xpVersion}"
+    include "com.enonic.xp:lib-auditlog:${xpVersion}"
     include "com.enonic.lib:lib-thymeleaf:2.0.0"
     include "com.enonic.xp:lib-i18n:${xpVersion}"
     include "com.enonic.lib:lib-mustache:2.0.0"

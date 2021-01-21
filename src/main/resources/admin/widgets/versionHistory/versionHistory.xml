@@ -1,0 +1,10 @@
+<widget>
+    <display-name>versionHistory</display-name>
+    <description>Show version history</description>
+    <interfaces>
+        <interface>contentstudio.contextpanel</interface>
+    </interfaces>
+    <allow>
+        <principal>role:system.admin</principal>
+    </allow>
+</widget>
