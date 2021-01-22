@@ -57,6 +57,7 @@ repositories {
 }
 
 dependencies {
+    compile 'com.spotify:logging:2.2.7'
     compile "com.enonic.xp:core-api:${xpVersion}"
     compile "com.enonic.xp:portal-api:${xpVersion}"
     include "com.enonic.xp:lib-content:${xpVersion}"
