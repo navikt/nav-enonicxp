@@ -35,16 +35,17 @@ const mainArticleChapterCallback = (context, params) => {
 
         const languages = articleLanguageTargets.reduce((languagesAcc, articleTarget) => {
             // Get the matching alternative language version of the chapter parent
-            const parentAltLanguage = parentLanguageTargets.filter(
+            const parentAltLanguageTarget = parentLanguageTargets.filter(
                 (parentTarget) => parentTarget.language === articleTarget.language
             )[0];
-            if (!parentAltLanguage) {
+            if (!parentAltLanguageTarget) {
                 return languagesAcc;
             }
 
+            // Get all chapters for the alterative language
             const altLanguageChapters = contentLib
                 .getChildren({
-                    key: parentAltLanguage._id,
+                    key: parentAltLanguageTarget._id,
                     count: 1000,
                 })
                 ?.hits?.filter((cTarget) => cTarget.type === 'no.nav.navno:main-article-chapter');
@@ -54,14 +55,14 @@ const mainArticleChapterCallback = (context, params) => {
 
             // If there is a chapter whose article matches the one we're looking
             // for, add it to the languages list
-            const targetChapter = altLanguageChapters.filter(
+            const chapterTarget = altLanguageChapters.filter(
                 (cTarget) => cTarget.data.article === articleTarget._id
             )[0];
-            if (!targetChapter) {
+            if (!chapterTarget) {
                 return languagesAcc;
             }
 
-            return [...languagesAcc, targetChapter];
+            return [...languagesAcc, chapterTarget];
         }, []);
 
         return { ...data, languages };
