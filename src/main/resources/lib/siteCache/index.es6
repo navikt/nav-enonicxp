@@ -146,7 +146,7 @@ function wipeOnChange(path) {
     const sitecontentCacheKey = getPath(path);
     wipe('sitecontent')(sitecontentCacheKey);
     wipe('notifications')(sitecontentCacheKey);
-    if ( path.indexOf('/global-notifications/') !== -1) {
+    if (path.indexOf('/global-notifications/') !== -1) {
         // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
         wipe('notifications')();
     }
@@ -225,6 +225,7 @@ function clearReferences(id, path, depth) {
         `${app.name}:page-list`,
         `${app.name}:main-article`,
         `${app.name}:publishing-calendar`,
+        `${app.name}:dynamic-page`,
     ];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
