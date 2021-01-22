@@ -3,6 +3,7 @@ const portalLib = require('/lib/xp/portal');
 const contextLib = require('/lib/xp/context');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 const utils = require('/lib/nav-utils');
+const { arrayFind } = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
 
 const callback = (context, params) => {
@@ -43,9 +44,10 @@ const callback = (context, params) => {
 
 const resolve = (menuListKey) => (env) => {
     // Fix mismatch between source key and graphQL key
-    const realKey = Object.keys(env.source).filter(
+    const realKey = arrayFind(
+        Object.keys(env.source),
         (el) => generateCamelCase(el) === menuListKey
-    )[0];
+    );
 
     const link = env.source[realKey]?.link;
     const files = env.source[realKey]?.files;

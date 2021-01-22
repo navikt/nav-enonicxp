@@ -1,3 +1,5 @@
+const { arrayFind } = require('/lib/nav-utils');
+
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
@@ -54,7 +56,7 @@ function getContentLists(content, contentType, max, doSort) {
                 if (!doSort) {
                     // make sure the table elements are in the correct order
                     sectionContents = sectionContentIds
-                        .map((id) => sectionContents.filter((el) => el._id === id)[0])
+                        .map((id) => arrayFind(sectionContents, (el) => el._id === id))
                         .filter((el) => !!el);
                 }
             }
