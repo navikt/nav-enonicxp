@@ -104,6 +104,8 @@ function wipeOnChange(path) {
     // Log path without leading /www.nav.no or leading /content/www.nav.no
     const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
 
+    log.info(`Clearing: ${logPath}`);
+
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
@@ -144,7 +146,10 @@ function wipeOnChange(path) {
     const sitecontentCacheKey = getPath(path);
     wipe('sitecontent')(sitecontentCacheKey);
     wipe('notifications')(sitecontentCacheKey);
-
+    if (path.indexOf('/global-notifications/') !== -1) {
+        // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
+        wipe('notifications')();
+    }
     if (libs.cluster.isMaster()) {
         libs.task.submit({
             description: `send revalidate on ${path}`,
@@ -154,6 +159,7 @@ function wipeOnChange(path) {
         });
         log.info(`Revalidation done for: ${logPath}`);
     }
+
     return true;
 }
 
@@ -203,8 +209,6 @@ function clearReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
-    log.info(`references: ${references.map((item) => item.displayName)}`);
-
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {
         newPath = path.replace('/content', '');
@@ -221,6 +225,7 @@ function clearReferences(id, path, depth) {
         `${app.name}:page-list`,
         `${app.name}:main-article`,
         `${app.name}:publishing-calendar`,
+        `${app.name}:dynamic-page`,
     ];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
@@ -233,6 +238,10 @@ function clearReferences(id, path, depth) {
                 references.push(chapter);
             }
         });
+    }
+
+    if (references && references.length > 0) {
+        log.info(`Clear references: ${references.map((item) => item._path)}`);
     }
 
     const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
@@ -253,7 +262,6 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            log.info(`clearing ${node.path}`);
             wipeOnChange(node.path);
             libs.context.run(
                 {
