@@ -1,3 +1,5 @@
+const { arrayFind } = require('/lib/nav-utils');
+
 const libs = {
     repo: require('/lib/xp/repo'),
     node: require('/lib/xp/node'),
@@ -108,11 +110,11 @@ function refreshOfficeInformation(officeInformationList) {
                 officeInformation.enhet.type === 'OPPFUTLAND')
         ) {
             // check if the office already exists
-            const existingOffice = existingOffices.filter((o) => {
+            const existingOffice = arrayFind(existingOffices, (o) => {
                 return o.data && o.data.enhet && o.data.enhet.enhetId
                     ? o.data.enhet.enhetId === officeInformation.enhet.enhetId
                     : false;
-            })[0];
+            });
             if (existingOffice) {
                 const existing = createObjectChecksum(existingOffice.data);
                 const fetched = createObjectChecksum(officeInformation);

@@ -388,6 +388,27 @@ function getSocialRef(el, content, req) {
     }
 }
 
+const arrayFind = (array, predicate) => {
+    if (!array) {
+        return null;
+    }
+    if (typeof predicate !== 'function') {
+        throw new TypeError('Predicate must be a function');
+    }
+    if (!Array.isArray(array)) {
+        throw new TypeError('Array must be an array');
+    }
+
+    for (let i = 0; i < array.length; i++) {
+        const element = array[i];
+        if (predicate(element, i, array)) {
+            return element;
+        }
+    }
+
+    return null;
+};
+
 module.exports = {
     getExtensionForImage,
     getImageUrl,
@@ -410,4 +431,5 @@ module.exports = {
     getUrl,
     getSrc,
     getSocialRef,
+    arrayFind,
 };
