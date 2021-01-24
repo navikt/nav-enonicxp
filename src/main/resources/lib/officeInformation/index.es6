@@ -1,5 +1,3 @@
-const { arrayFind } = require('/lib/nav-utils');
-
 const libs = {
     repo: require('/lib/xp/repo'),
     node: require('/lib/xp/node'),
@@ -110,7 +108,7 @@ function refreshOfficeInformation(officeInformationList) {
                 officeInformation.enhet.type === 'OPPFUTLAND')
         ) {
             // check if the office already exists
-            const existingOffice = arrayFind(existingOffices, (o) => {
+            const existingOffice = existingOffices.find((o) => {
                 return o.data && o.data.enhet && o.data.enhet.enhetId
                     ? o.data.enhet.enhetId === officeInformation.enhet.enhetId
                     : false;
