@@ -2,9 +2,11 @@ const globalFragment = require('./_global');
 const contentList = require('./contentList');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
+const urlFragment = require('./url');
 const pageList = require('./pageList');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
+const { seoMixinFragment, linkPanelsMixinFragment } = require('./_mixins');
 
 const sectionPageShortFragment = `
     ...on no_nav_navno_SectionPage {
@@ -17,12 +19,14 @@ const sectionPageShortFragment = `
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
         data {
+            ingress
             moreNewsUrl
             tableContents {
                 ${globalFragment}
                 ${sectionPageShortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
+                ${urlFragment.fragment}
                 ${pageList.shortFragment}
                 ${transportPage.shortFragment}
                 ${mainArticle.shortFragment}
@@ -39,20 +43,8 @@ const sectionPageFragment = `
                 ${globalFragment}
                 ${contentList.fragment}
             }
-            panelsHeading
-            panelItems {
-                title
-                ingress
-                spanning
-                url {
-                    text
-                    ref {
-                        ${globalFragment}
-                        ${internalLink.fragment}
-                        ${externalLink.fragment}
-                    }
-                }
-            }
+            ${linkPanelsMixinFragment}
+            ${seoMixinFragment}
         }
     }
 `;

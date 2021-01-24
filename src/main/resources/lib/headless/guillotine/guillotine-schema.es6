@@ -12,8 +12,10 @@ const hookCreatePageComponentDataConfigType = require('./function-hooks/create-p
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const menuListDataCallback = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
+const mainArticleCallback = require('./schema-creation-callbacks/main-article');
+const largeTableCallback = require('./schema-creation-callbacks/large-table');
 
-const { sortByLastModifiedDesc } = require('/lib/headless/sort');
+const { sortByPublishedDesc } = require('/lib/headless/sort');
 
 const hookGuillotineFunctions = () => {
     hookGenerateFormItemArguments();
@@ -23,12 +25,12 @@ const hookGuillotineFunctions = () => {
 
 const schemaContextOptions = {
     creationCallbacks: {
+        no_nav_navno_MainArticle: mainArticleCallback,
+        no_nav_navno_LargeTable: largeTableCallback,
         no_nav_navno_SectionPage_Data: sectionPageDataCallback,
         no_nav_navno_MainArticle_InnholdIHYremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
-        PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback(
-            sortByLastModifiedDesc
-        ),
+        PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback(sortByPublishedDesc),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
     },
 };

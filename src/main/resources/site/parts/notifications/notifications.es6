@@ -164,7 +164,7 @@ const handleGet = (req) => {
         },
         () => {
             const content = libs.portal.getContent();
-            return libs.cache.getNotifications(
+            return libs.cache.getNotificationsLegacy(
                 content._path,
                 'notifications',
                 'master',

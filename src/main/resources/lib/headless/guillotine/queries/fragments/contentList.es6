@@ -4,6 +4,7 @@ const transportPage = require('./transportPage');
 const mainArticle = require('./mainArticle');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
+const urlFragment = require('./url');
 
 const contentListFragment = (sort) => `
     ...on no_nav_navno_ContentList {
@@ -15,6 +16,7 @@ const contentListFragment = (sort) => `
                 ${mainArticle.shortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
+                ${urlFragment.fragment}
             }
         }
     }

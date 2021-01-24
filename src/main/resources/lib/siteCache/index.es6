@@ -7,6 +7,8 @@ const libs = {
     context: require('/lib/xp/context'),
     content: require('/lib/xp/content'),
     common: require('/lib/xp/common'),
+    cluster: require('/lib/xp/cluster'),
+    task: require('/lib/xp/task'),
 };
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
@@ -23,7 +25,7 @@ const myHash =
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
-    notifications: libs.cache.newCache({
+    notificationsLegacy: libs.cache.newCache({
         size: 500,
         expire: oneMinute,
     }),
@@ -41,6 +43,10 @@ const caches = {
     }),
     sitecontent: libs.cache.newCache({
         size: 5000,
+        expire: oneDay,
+    }),
+    notifications: libs.cache.newCache({
+        size: 500,
         expire: oneDay,
     }),
 };
@@ -98,6 +104,8 @@ function wipeOnChange(path) {
     // Log path without leading /www.nav.no or leading /content/www.nav.no
     const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
 
+    log.info(`Clearing: ${logPath}`);
+
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
@@ -119,16 +127,13 @@ function wipeOnChange(path) {
     w(getPath(path, 'page-large-table'));
     w(getPath(path, 'faq-page'));
     w(getPath(path, 'generic-page'));
-    log.info(`WIPED: [${logPath}] (${caches.paths.getSize()} on [${myHash}])`);
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
-        log.info(`WIPED: [driftsmeldinger] (${caches.paths.getSize()} on [${myHash}])`);
     }
     if (path.indexOf('/publiseringskalender') !== -1) {
         w('publiseringskalender');
-        log.info(`WIPED: [publiseringskalender] (${caches.paths.getSize()} on [${myHash}])`);
     }
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
@@ -138,8 +143,22 @@ function wipeOnChange(path) {
     }
 
     // For headless setup
-    wipe('sitecontent')(getPath(path));
-    frontendCacheRevalidate(path);
+    const sitecontentCacheKey = getPath(path);
+    wipe('sitecontent')(sitecontentCacheKey);
+    wipe('notifications')(sitecontentCacheKey);
+    if (path.indexOf('/global-notifications/') !== -1) {
+        // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
+        wipe('notifications')();
+    }
+    if (libs.cluster.isMaster()) {
+        libs.task.submit({
+            description: `send revalidate on ${path}`,
+            task: () => {
+                frontendCacheRevalidate(encodeURI(path));
+            },
+        });
+        log.info(`Revalidation done for: ${logPath}`);
+    }
 
     return true;
 }
@@ -163,6 +182,17 @@ function getSitecontent(idOrPath, branch, callback) {
         return caches['sitecontent'].get(getPath(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
+        return null;
+    }
+}
+
+function getNotifications(idOrPath, callback) {
+    if (isUUID(idOrPath)) {
+        return callback();
+    }
+    try {
+        return caches['notifications'].get(getPath(idOrPath), callback);
+    } catch (e) {
         return null;
     }
 }
@@ -191,10 +221,27 @@ function clearReferences(id, path, depth) {
 
     // remove parents cache if its of a type that autogenerates content based on
     // children and not reference
-    const parentTypesToClear = [`${app.name}:page-list`, `${app.name}:main-article`];
+    const parentTypesToClear = [
+        `${app.name}:page-list`,
+        `${app.name}:main-article`,
+        `${app.name}:publishing-calendar`,
+        `${app.name}:dynamic-page`,
+    ];
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
-        log.info('REMOVE PARENT CACHE');
         references.push(parent);
+        // If the parent has chapters we need to clear the cache of all other chapters as well
+        const chapters = libs.content
+            .getChildren({ key: parent._id })
+            .hits.filter((item) => item.type === `${app.name}:main-article-chapter`);
+        chapters.forEach((chapter) => {
+            if (chapter._id !== id) {
+                references.push(chapter);
+            }
+        });
+    }
+
+    if (references && references.length > 0) {
+        log.info(`Clear references: ${references.map((item) => item._path)}`);
     }
 
     const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
@@ -269,8 +316,9 @@ module.exports = {
     getDecorator: getSome('decorator'),
     getPaths: getSome('paths'),
     getRedirects: getSome('redirects'),
-    getNotifications: getSome('notifications'),
+    getNotificationsLegacy: getSome('notificationsLegacy'),
     getSitecontent,
+    getNotifications,
     activateEventListener,
     stripPath: getPath,
     etag: getEtag,
