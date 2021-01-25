@@ -1,6 +1,5 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
-const { arrayFind } = require('/lib/nav-utils');
 const { forceArray } = require('/lib/nav-utils');
 
 const mainArticleChapterDataCallback = (context, params) => {
@@ -36,8 +35,7 @@ const mainArticleChapterCallback = (context, params) => {
 
         const languages = articleLanguageTargets.reduce((languagesAcc, articleTarget) => {
             // Get the matching alternative language version of the chapter parent
-            const parentAltLanguageTarget = arrayFind(
-                parentLanguageTargets,
+            const parentAltLanguageTarget = parentLanguageTargets.find(
                 (parentTarget) => parentTarget.language === articleTarget.language
             );
             if (!parentAltLanguageTarget) {
@@ -57,8 +55,7 @@ const mainArticleChapterCallback = (context, params) => {
 
             // If there is a chapter whose article matches the one we're looking
             // for, add it to the languages list
-            const chapterTarget = arrayFind(
-                altLanguageChapters,
+            const chapterTarget = altLanguageChapters.find(
                 (cTarget) => cTarget.data.article === articleTarget._id
             );
             if (!chapterTarget) {
