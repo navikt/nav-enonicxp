@@ -38,7 +38,7 @@ function getTableElements(content, contentType) {
 
     // make sure the table elements are in the correct order
     tableElements = tableElementIds
-        .map((id) => tableElements.filter((el) => el._id === id)[0])
+        .map((id) => tableElements.find((el) => el._id === id))
         .filter((el) => !!el);
 
     return tableElements.map(mapElements);

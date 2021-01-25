@@ -1,5 +1,6 @@
 // Component config in the components-array is stored in a <app-name>.<region-name> sub-object
 // Move this data down to the base config object, to match the XP page-object structure
+
 const destructureConfig = (component) => {
     const { descriptor, config } = component;
 
@@ -49,9 +50,9 @@ const destructureComponent = (component) => {
 // Data from the components array should take precedence, as this has resolved content refs
 const mergeComponents = (componentsFromPage, componentsArray) =>
     componentsFromPage.map((pageComponent) => {
-        const foundComponent = componentsArray.filter(
+        const foundComponent = componentsArray.find(
             (arrayComponent) => arrayComponent.path === pageComponent.path
-        )[0];
+        );
 
         if (!foundComponent) {
             return insertComponents(pageComponent, componentsArray);
@@ -75,9 +76,7 @@ const insertComponents = (obj, componentsArray) => {
         return obj;
     }
 
-    return Object.keys(obj).reduce((accObj, key) => {
-        const value = obj[key];
-
+    return Object.entries(obj).reduce((accObj, [key, value]) => {
         if (Array.isArray(value)) {
             if (key === 'components') {
                 return { ...accObj, components: mergeComponents(value, componentsArray) };
