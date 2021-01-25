@@ -1,5 +1,3 @@
-const { arrayFind } = require('/lib/nav-utils');
-
 const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
@@ -98,7 +96,7 @@ function getIdFromUrl(urlParam, skipNavRepo = false) {
             const navRepo = getNavRepo();
             const links = navRepo.get('/links');
             if (links) {
-                const match = arrayFind(links.data.links, (l) => l.url.toLowerCase() === url);
+                const match = links.data.links.find((l) => l.url.toLowerCase() === url);
                 if (match) {
                     // check if the new path is an internal path or a replacement for an external url
                     if (match.newPath.indexOf('http') === 0) {

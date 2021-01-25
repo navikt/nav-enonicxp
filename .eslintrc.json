@@ -19,7 +19,8 @@
         "func-names": "off",
         "no-use-before-define": "off",
         "dot-notation": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "no-extend-native": "off"
     },
     "globals": {
         "require": true,

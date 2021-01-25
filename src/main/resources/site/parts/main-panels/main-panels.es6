@@ -1,5 +1,3 @@
-const { arrayFind } = require('/lib/nav-utils');
-
 const libs = {
     thymeleaf: require('/lib/thymeleaf'),
     portal: require('/lib/xp/portal'),
@@ -40,7 +38,7 @@ function getTableElements(content, contentType) {
 
     // make sure the table elements are in the correct order
     tableElements = tableElementIds
-        .map((id) => arrayFind(tableElements, (el) => el._id === id))
+        .map((id) => tableElements.find((el) => el._id === id))
         .filter((el) => !!el);
 
     return tableElements.map(mapElements);
