@@ -1,13 +1,28 @@
 <layout>
     <display-name>Dynamisk - fleksible kolonner</display-name>
-    <description>Flexbox kolonner</description>
+    <description>Responsive flexbox-kolonner</description>
     <form>
         <input type="Long" name="numCols">
-            <label>Antall kolonner</label>
+            <label>Antall kolonner ved full skjermbredde (>=1440px)</label>
             <default>1</default>
             <config>
                 <min>1</min>
+                <max>4</max>
             </config>
         </input>
+        <input type="ComboBox" name="bgColor">
+            <label>Bakgrunnsfarge</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <option value="#ffffff">Hvit</option>
+                <option value="#f1f1f1">Grå</option>
+            </config>
+        </input>
+        <input type="CheckBox" name="bgFullWidth">
+            <label>Bakgrunnsfarge for hele skjermbredden</label>
+        </input>
     </form>
+    <regions>
+        <region name="flexcols"/>
+    </regions>
 </layout>
