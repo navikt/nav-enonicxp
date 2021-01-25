@@ -2,7 +2,6 @@ const libs = {
     content: require('/lib/xp/content'),
     context: require('/lib/xp/context'),
     value: require('/lib/xp/value'),
-    navUtils: require('/lib/nav-utils'),
     node: require('/lib/xp/node'),
     repo: require('/lib/xp/repo'),
 };
