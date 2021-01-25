@@ -1,7 +1,7 @@
 const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
-const componentsFragment = require('../../../services/sitecontent/fragments/_components');
+const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const { destructureComponent } = require('/lib/headless/unflatten-components');
 
@@ -30,9 +30,9 @@ const componentPreviewController = (req) => {
         req.branch
     );
 
-    const componentFromGuillotine = response?.get?.components?.filter(
+    const componentFromGuillotine = response?.get?.components.find(
         (item) => item.path === component.path
-    )[0];
+    );
 
     if (!componentFromGuillotine) {
         log.info('Failed to get component props from guillotine query');

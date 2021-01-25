@@ -1,6 +1,7 @@
-import { getTableFromFile } from '/lib/menu-utils/url-lookup-table.es6';
-
 log.info('Started running main');
+
+require('/lib/polyfills');
+const { getTableFromFile } = require('/lib/menu-utils/url-lookup-table.es6');
 const cache = require('/lib/siteCache');
 const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
