@@ -30,9 +30,9 @@ const componentPreviewController = (req) => {
         req.branch
     );
 
-    const componentFromGuillotine = response?.get?.components?.filter(
+    const componentFromGuillotine = response?.get?.components.find(
         (item) => item.path === component.path
-    )[0];
+    );
 
     if (!componentFromGuillotine) {
         log.info('Failed to get component props from guillotine query');
