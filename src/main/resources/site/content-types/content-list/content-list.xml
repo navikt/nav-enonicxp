@@ -16,6 +16,7 @@
                         <allowContentType>${app}:main-article</allowContentType>
                         <allowContentType>${app}:internal-link</allowContentType>
                         <allowContentType>${app}:external-link</allowContentType>
+                        <allowContentType>${app}:page-list</allowContentType>
                     </config>
                 </input>
             </items>
