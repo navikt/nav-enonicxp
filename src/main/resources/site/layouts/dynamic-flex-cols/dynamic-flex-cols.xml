@@ -3,7 +3,7 @@
     <description>Responsive flexbox-kolonner</description>
     <form>
         <input type="Long" name="numCols">
-            <label>Antall kolonner ved full skjermbredde (>=1440px)</label>
+            <label>Antall kolonner ved full skjermbredde</label>
             <default>1</default>
             <config>
                 <min>1</min>
