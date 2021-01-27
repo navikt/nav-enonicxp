@@ -4,6 +4,7 @@ const transportPageFragment = `
     ...on no_nav_navno_TransportPage {
         data {
             ingress
+            feedbackToggle
             ${linkPanelsMixinFragment}
             ${seoMixinFragment}
         }

@@ -43,6 +43,7 @@ const sectionPageFragment = `
                 ${globalFragment}
                 ${contentList.fragment}
             }
+            feedbackToggle
             ${linkPanelsMixinFragment}
             ${seoMixinFragment}
         }

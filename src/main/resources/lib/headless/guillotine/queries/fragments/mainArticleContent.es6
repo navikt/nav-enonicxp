@@ -29,6 +29,7 @@ const mainArticleContentFragment = `
             caption
             altText
         }
+        feedbackToggle
         ${menuListItems.fragment}
         ${seoMixinFragment}
     }
