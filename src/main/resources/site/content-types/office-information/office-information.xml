@@ -290,5 +290,6 @@
                 </item-set>
             </items>
         </item-set>
+        <mixin name="feedback-toggle"/>
     </form>
 </content-type>
