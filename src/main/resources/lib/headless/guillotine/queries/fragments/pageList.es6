@@ -14,6 +14,7 @@ const pageListShortFragment = `
             hide_date
             hideSectionContentsDate
             orderSectionContentsByPublished
+            feedbackToggle
             ${seoMixinFragment}
         }
     }

@@ -15,7 +15,7 @@
                 </input>
                 <input name="canonicalUrl" type="TextLine">
                     <label>
-                        Canonical url - NB! Skal bare legges inn av hovedreaktør/administrator
+                        Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
                     </label>
                     <help-text>
                         Legg url på formen https://*.nav.no/* til nytt innhold som skal erstatte siden.
@@ -31,7 +31,7 @@
                 </input>
                 <input name="noindex" type="CheckBox">
                     <label>
-                        Skal ikke vises i eksternt søk - NB! Skal bare legges inn av hovedreaktør/administrator
+                        Skal ikke vises i eksternt søk - NB! Skal bare legges inn av hovedredaktør/administrator
                     </label>
                     <help-text>
                         Med eksternt søk menes Google, Bing mv.
