@@ -8,6 +8,7 @@ const mainArticleContentFragment = `
         languages {
             language
             _path
+            _id
         }
         ingress
         text(processHtml:{type:absolute})
@@ -28,6 +29,7 @@ const mainArticleContentFragment = `
             caption
             altText
         }
+        feedbackToggle
         ${menuListItems.fragment}
         ${seoMixinFragment}
     }

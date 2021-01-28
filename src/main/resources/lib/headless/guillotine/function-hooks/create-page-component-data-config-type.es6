@@ -19,7 +19,7 @@ const getDescriptors = (componentType, applicationKey) => {
 const createDescriptorTypes = (descriptors, context, componentType) =>
     descriptors
         .filter((item) => item.form && item.form.length > 0)
-        .reduce((acc, descriptor) => {
+        .reduce((types, descriptor) => {
             const descriptorConfigTypeName = generateDescriptorConfigTypeName(
                 componentType,
                 descriptor.name
@@ -51,7 +51,7 @@ const createDescriptorTypes = (descriptors, context, componentType) =>
 
             const descriptorKey = namingLib.sanitizeText(descriptor.name);
             return {
-                ...acc,
+                ...types,
                 [descriptorKey]: {
                     type: descriptorConfigType,
                     resolve: (env) => env.source[descriptor.name],

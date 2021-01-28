@@ -1,10 +1,10 @@
-import { getTableFromFile } from '/lib/menu-utils/url-lookup-table.es6';
-
 log.info('Started running main');
+
+require('/lib/polyfills');
+const { getTableFromFile } = require('/lib/menu-utils/url-lookup-table.es6');
 const cache = require('/lib/siteCache');
 const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
-const textCleaner = require('/lib/textCleaner');
 const clusterLib = require('/lib/xp/cluster');
 
 let appIsRunning = true;
@@ -13,8 +13,6 @@ let appIsRunning = true;
 officeInformation.startCronJob();
 // start cache invalidator
 cache.activateEventListener();
-// start text cleaner
-textCleaner.activateEventListener();
 
 // init url lookup table
 if (app.config.env !== 'p') {

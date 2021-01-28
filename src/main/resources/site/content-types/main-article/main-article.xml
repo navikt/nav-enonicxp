@@ -16,7 +16,9 @@
                     <help-text>Artikler/nyheter skal som hovedregel være på maks 2 500 tegn.</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
-                        <include>Undo | Redo</include>
+                        <include>Undo Redo</include>
+                        <exclude>JustifyBlock Underline</exclude>
+                        <allowHeadings>h3 normal</allowHeadings>
                     </config>
                 </input>
                 <input type="RadioButton" name="contentType">
@@ -48,6 +50,11 @@
                     <label>Faktaboksen vises under brødteksten</label>
                     <help-text>Bruk maks 500 tegn.</help-text>
                     <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <include>Undo Redo</include>
+                        <exclude>JustifyBlock Underline</exclude>
+                        <allowHeadings>h3 normal</allowHeadings>
+                    </config>
                 </input>
             </items>
         </field-set>
@@ -112,6 +119,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="feedback-toggle"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>
     </form>

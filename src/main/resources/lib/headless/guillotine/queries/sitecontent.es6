@@ -1,11 +1,11 @@
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
-const { searchForRedirect } = require('/site/error/error');
 const { runInBranchContext } = require('/lib/headless/run-in-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
+const contentLib = require('/lib/xp/content');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -85,36 +85,45 @@ const getContent = (idOrPath, branch) => {
 };
 
 const getRedirectContent = (idOrPath, branch) => {
-    const redirectContent = searchForRedirect(idOrPath, { branch });
-    if (!redirectContent) {
-        return null;
-    }
+    const pathSegments = idOrPath.split('/');
+    const redirect = pathSegments.length === 3 && pathSegments[2];
 
-    if (redirectContent.type === 'no.nav.navno:internal-link') {
-        const target = getContent(redirectContent.data?.target);
-        if (!target) {
+    if (redirect) {
+        const redirectContent = runInBranchContext(
+            () => contentLib.get({ key: `/redirects/${redirect}` }),
+            branch
+        );
+
+        if (!redirectContent) {
             return null;
         }
 
-        return {
-            ...redirectContent,
-            data: { target: { _path: target._path } },
-            __typename: 'no_nav_navno_InternalLink',
-        };
-    }
+        if (redirectContent?.type === 'no.nav.navno:internal-link') {
+            const target = getContent(redirectContent.data?.target);
+            if (!target) {
+                return null;
+            }
 
-    if (redirectContent.type === 'no.nav.navno:external-link') {
-        return {
-            ...redirectContent,
-            __typename: 'no_nav_navno_ExternalLink',
-        };
-    }
+            return {
+                ...redirectContent,
+                data: { target: { _path: target._path } },
+                __typename: 'no_nav_navno_InternalLink',
+            };
+        }
 
-    if (redirectContent.type === 'no.nav.navno:url') {
-        return {
-            ...redirectContent,
-            __typename: 'no_nav_navno_Url',
-        };
+        if (redirectContent?.type === 'no.nav.navno:external-link') {
+            return {
+                ...redirectContent,
+                __typename: 'no_nav_navno_ExternalLink',
+            };
+        }
+
+        if (redirectContent?.type === 'no.nav.navno:url') {
+            return {
+                ...redirectContent,
+                __typename: 'no_nav_navno_Url',
+            };
+        }
     }
 
     return null;

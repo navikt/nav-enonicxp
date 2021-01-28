@@ -43,9 +43,7 @@ const callback = (context, params) => {
 
 const resolve = (menuListKey) => (env) => {
     // Fix mismatch between source key and graphQL key
-    const realKey = Object.keys(env.source).filter(
-        (el) => generateCamelCase(el) === menuListKey
-    )[0];
+    const realKey = Object.keys(env.source).find((el) => generateCamelCase(el) === menuListKey);
 
     const link = env.source[realKey]?.link;
     const files = env.source[realKey]?.files;
