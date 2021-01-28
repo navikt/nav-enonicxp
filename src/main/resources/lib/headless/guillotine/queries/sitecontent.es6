@@ -84,13 +84,25 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
+const sanitizePath = (path) =>
+    path
+        .toLowerCase()
+        .replace(/ - /g, '-')
+        .replace(/\+/g, '-')
+        .replace(/ /g, '-')
+        .replace(/ø/g, 'o')
+        .replace(/æ/g, 'ae')
+        .replace(/å/g, 'a');
+
 const getRedirectContent = (idOrPath, branch) => {
     const pathSegments = idOrPath.split('/');
     const redirect = pathSegments.length === 3 && pathSegments[2];
 
     if (redirect) {
         const redirectContent = runInBranchContext(
-            () => contentLib.get({ key: `/redirects/${redirect}` }),
+            () =>
+                contentLib.get({ key: `/redirects/${redirect}` }) ||
+                contentLib.get({ key: `/redirects/${sanitizePath(redirect)}` }),
             branch
         );
 
