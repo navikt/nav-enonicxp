@@ -4,7 +4,7 @@
     <form>
         <input type="Long" name="numCols">
             <label>Antall kolonner ved full skjermbredde</label>
-            <default>1</default>
+            <default>3</default>
             <config>
                 <min>1</min>
                 <max>4</max>
