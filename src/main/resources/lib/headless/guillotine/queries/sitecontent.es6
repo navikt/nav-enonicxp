@@ -6,6 +6,7 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
+const { sanitize } = require('/lib/xp/common');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -84,16 +85,6 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
-const sanitizePath = (path) =>
-    path
-        .toLowerCase()
-        .replace(/ - /g, '-')
-        .replace(/\+/g, '-')
-        .replace(/ /g, '-')
-        .replace(/ø/g, 'o')
-        .replace(/æ/g, 'ae')
-        .replace(/å/g, 'a');
-
 const getRedirectContent = (idOrPath, branch) => {
     const pathSegments = idOrPath.split('/');
     const redirect = pathSegments.length === 3 && pathSegments[2];
@@ -102,7 +93,7 @@ const getRedirectContent = (idOrPath, branch) => {
         const redirectContent = runInBranchContext(
             () =>
                 contentLib.get({ key: `/redirects/${redirect}` }) ||
-                contentLib.get({ key: `/redirects/${sanitizePath(redirect)}` }),
+                contentLib.get({ key: `/redirects/${sanitize(redirect)}` }),
             branch
         );
 
