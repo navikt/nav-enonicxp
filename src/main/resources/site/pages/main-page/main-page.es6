@@ -1,7 +1,3 @@
-exports.get = () => {
-    return {
-        status: 500,
-        body: '<div>Internal routing error</div>',
-        contentType: 'text/html',
-    };
-};
+const controller = require('/lib/headless/controllers/admin-frontend-proxy');
+
+module.exports = controller;
