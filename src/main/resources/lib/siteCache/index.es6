@@ -13,6 +13,7 @@ const libs = {
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
 const sitePath = '/www.nav.no/';
+const redirectPath = '/content/redirects/';
 
 const oneDay = 3600 * 24;
 const oneMinute = 60;
@@ -138,12 +139,13 @@ function wipeOnChange(path) {
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
     }
-    if (path.indexOf('/content/redirects/') !== -1) {
+    if (path.indexOf(redirectPath) !== -1) {
         wipe('redirects')();
     }
 
     // For headless setup
-    const sitecontentCacheKey = getPath(path);
+    const sitecontentCacheKey = getSitecontentCacheKey(path);
+    log.info(`clearing cache: ${sitecontentCacheKey}`);
     wipe('sitecontent')(sitecontentCacheKey);
     wipe('notifications')(sitecontentCacheKey);
     if (path.indexOf('/global-notifications/') !== -1) {
@@ -151,13 +153,14 @@ function wipeOnChange(path) {
         wipe('notifications')();
     }
     if (libs.cluster.isMaster()) {
+        const frontendPath = path.replace(redirectPath, sitePath);
         libs.task.submit({
-            description: `send revalidate on ${path}`,
+            description: `send revalidate on ${frontendPath}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(path));
+                frontendCacheRevalidate(encodeURI(frontendPath));
             },
         });
-        log.info(`Revalidation done for: ${logPath}`);
+        log.info(`Revalidation done for: ${frontendPath}`);
     }
 
     return true;
@@ -173,13 +176,17 @@ function getSome(cacheStoreName) {
     };
 }
 
+function getSitecontentCacheKey(idOrPath) {
+    return getPath(idOrPath.replace(redirectPath, ''));
+}
+
 function getSitecontent(idOrPath, branch, callback) {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
     }
     try {
-        return caches['sitecontent'].get(getPath(idOrPath), callback);
+        return caches['sitecontent'].get(getSitecontentCacheKey(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
@@ -191,7 +198,7 @@ function getNotifications(idOrPath, callback) {
         return callback();
     }
     try {
-        return caches['notifications'].get(getPath(idOrPath), callback);
+        return caches['notifications'].get(getSitecontentCacheKey(idOrPath), callback);
     } catch (e) {
         return null;
     }
