@@ -15,8 +15,8 @@ const libs = {
 const sitePath = '/www.nav.no/';
 const redirectPath = '/redirects/';
 
-// Path without leading [/content]/www.nav.no or [/content]/redirects
-const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})?`);
+// Matches [/content]/www.nav.no/* and [/content]/redirects/*
+const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const oneDay = 3600 * 24;
 const oneMinute = 60;
@@ -153,6 +153,7 @@ function wipeOnChange(path) {
 
     // For headless setup
     const sitecontentCacheKey = getSitecontentCacheKey(path);
+    log.info(`Wiping cache with key ${sitecontentCacheKey}`);
     wipe('sitecontent')(sitecontentCacheKey);
     wipe('notifications')(sitecontentCacheKey);
     if (path.indexOf('/global-notifications/') !== -1) {
@@ -192,7 +193,9 @@ function getSitecontent(idOrPath, branch, callback) {
         return callback();
     }
     try {
-        return caches['sitecontent'].get(getSitecontentCacheKey(idOrPath), callback);
+        const key = getSitecontentCacheKey(idOrPath);
+        log.info(`Caching path "${idOrPath}" with key ${key}`);
+        return caches['sitecontent'].get(key, callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
