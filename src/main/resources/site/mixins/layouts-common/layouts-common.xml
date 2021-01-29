@@ -1,10 +1,14 @@
 <mixin>
     <form>
-        <input type="TextArea" name="margin">
-            <label>Margin på containeren</label>
-            <default>1rem 0 1rem 0</default>
+        <input type="Long" name="marginTop">
+            <label>Topp-margin (rem-enheter)</label>
+            <default>1</default>
         </input>
-        <input type="TextLine" name="bgColor">
+        <input type="Long" name="marginBottom">
+            <label>Bunn-margin (rem-enheter)</label>
+            <default>1</default>
+        </input>
+        <input type="TextLine" name="backgroundColor">
             <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #f1f1f1)</label>
             <occurrences minimum="0" maximum="1"/>
             <config>
@@ -13,7 +17,7 @@
             </config>
         </input>
         <input type="CheckBox" name="bgFullWidth">
-            <label>Bakgrunnsfarge for hele skjermbredden</label>
+            <label>Bakgrunnsfarge skal dekke hele skjermbredden</label>
         </input>
     </form>
 </mixin>
