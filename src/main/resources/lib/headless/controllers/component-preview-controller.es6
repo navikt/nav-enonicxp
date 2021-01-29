@@ -9,7 +9,6 @@ const { destructureComponent } = require('/lib/headless/unflatten-components');
 const queryGetComponents = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
-            pageAsJson(resolveTemplate: true)
             ${componentsFragment}
         }
     }
@@ -20,33 +19,54 @@ const fallbackResponse = {
     body: `<div>'Mark as ready for preview'</div>`,
 };
 
-const componentPreviewController = (req) => {
-    log.info(JSON.stringify(req));
+const getLayoutComponentProps = (contentId, path) => {
+    const pageRegions = getContent(contentId, 'draft')?.page?.regions;
+
+    if (!pageRegions) {
+        return null;
+    }
+
+    const components = Object.values(pageRegions).reduce((components, region) => {
+        return [...components, ...region.components];
+    }, []);
+
+    return components.find((component) => component.type === 'layout' && component.path === path);
+};
+
+const getComponentProps = () => {
     const content = portalLib.getContent();
     const component = portalLib.getComponent();
-    log.info(`component: ${JSON.stringify(component)}`);
+
+    if (component.type === 'layout') {
+        return getLayoutComponentProps(content._id, component.path);
+    }
 
     const response = guillotineQuery(
         queryGetComponents,
         {
             ref: content._id,
         },
-        req.branch
+        'draft'
     );
-
-    // const content2 = getContent(content._id);
-
 
     const componentFromGuillotine = response?.get?.components.find(
         (item) => item.path === component.path
     );
 
     if (!componentFromGuillotine) {
-        log.info('Failed to get component props from guillotine query');
-        return fallbackResponse;
+        return null;
     }
 
-    const componentProps = { ...component, ...destructureComponent(componentFromGuillotine) };
+    return { ...component, ...destructureComponent(componentFromGuillotine) };
+};
+
+const componentPreviewController = () => {
+    const componentProps = getComponentProps();
+
+    if (!componentProps) {
+        log.info('Failed to get component props');
+        return fallbackResponse;
+    }
 
     try {
         const componentHtml = httpClient.request({
@@ -59,14 +79,14 @@ const componentPreviewController = (req) => {
         if (componentHtml?.body) {
             return {
                 contentType: 'text/html',
-                body: `<div>${componentHtml.body}</div>`,
+                body: componentHtml.body,
             };
         }
     } catch (e) {
-        log.info(`Failed to fetch component preview: ${e}`);
+        log.info(`component-preview error: ${e}`);
     }
 
-    log.info('Failed to fetch component from frontend');
+    log.info('Failed to fetch component HTML from frontend');
     return fallbackResponse;
 };
 
