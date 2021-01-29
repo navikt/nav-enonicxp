@@ -13,7 +13,10 @@ const libs = {
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
 const sitePath = '/www.nav.no/';
-const redirectPath = '/content/redirects/';
+const redirectPath = '/redirects/';
+
+// Path without leading [/content]/www.nav.no or [/content]/redirects
+const pathnameFilter = new RegExp(`^(\/content)?(${redirectPath}|${sitePath})?`);
 
 const oneDay = 3600 * 24;
 const oneMinute = 60;
@@ -98,19 +101,24 @@ function wipeAll() {
     Object.keys(caches).forEach((name) => wipe(name)());
 }
 
+function getPathname(path) {
+    return path.replace(pathnameFilter, '/');
+}
+
 function wipeOnChange(path) {
     if (!path) {
         return false;
     }
-    // Log path without leading /www.nav.no or leading /content/www.nav.no
-    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
 
-    log.info(`Clearing: ${logPath}`);
+    const pathname = getPathname(path);
+    log.info(`Clearing: ${pathname}`);
 
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
-        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template on [${myHash}]`);
+        log.info(
+            `WIPED: [${pathname}] - All caches cleared due to updated template on [${myHash}]`
+        );
         return true;
     }
     const w = wipe('paths');
@@ -145,7 +153,6 @@ function wipeOnChange(path) {
 
     // For headless setup
     const sitecontentCacheKey = getSitecontentCacheKey(path);
-    log.info(`clearing cache: ${sitecontentCacheKey}`);
     wipe('sitecontent')(sitecontentCacheKey);
     wipe('notifications')(sitecontentCacheKey);
     if (path.indexOf('/global-notifications/') !== -1) {
@@ -153,14 +160,13 @@ function wipeOnChange(path) {
         wipe('notifications')();
     }
     if (libs.cluster.isMaster()) {
-        const frontendPath = path.replace(redirectPath, sitePath);
         libs.task.submit({
-            description: `send revalidate on ${frontendPath}`,
+            description: `send revalidate on ${pathname}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(frontendPath));
+                frontendCacheRevalidate(encodeURI(pathname));
             },
         });
-        log.info(`Revalidation done for: ${frontendPath}`);
+        log.info(`Revalidation done for: ${pathname}`);
     }
 
     return true;
@@ -177,7 +183,7 @@ function getSome(cacheStoreName) {
 }
 
 function getSitecontentCacheKey(idOrPath) {
-    return getPath(idOrPath.replace(redirectPath, ''));
+    return getPath(getPathname(idOrPath));
 }
 
 function getSitecontent(idOrPath, branch, callback) {
