@@ -6,6 +6,7 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
+const { sanitize } = require('/lib/xp/common');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -90,7 +91,9 @@ const getRedirectContent = (idOrPath, branch) => {
 
     if (redirect) {
         const redirectContent = runInBranchContext(
-            () => contentLib.get({ key: `/redirects/${redirect}` }),
+            () =>
+                contentLib.get({ key: `/redirects/${redirect}` }) ||
+                contentLib.get({ key: `/redirects/${sanitize(redirect)}` }),
             branch
         );
 
