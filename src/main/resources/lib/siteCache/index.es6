@@ -16,7 +16,7 @@ const sitePath = '/www.nav.no/';
 const redirectPath = '/redirects/';
 
 // Path without leading [/content]/www.nav.no or [/content]/redirects
-const pathnameFilter = new RegExp(`^(\/content)?(${redirectPath}|${sitePath})?`);
+const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})?`);
 
 const oneDay = 3600 * 24;
 const oneMinute = 60;
@@ -183,7 +183,7 @@ function getSome(cacheStoreName) {
 }
 
 function getSitecontentCacheKey(idOrPath) {
-    return getPath(getPathname(idOrPath));
+    return libs.common.sanitize(getPathname(idOrPath));
 }
 
 function getSitecontent(idOrPath, branch, callback) {
