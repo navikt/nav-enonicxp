@@ -1,0 +1,19 @@
+<mixin>
+    <form>
+        <input type="TextArea" name="margin">
+            <label>Margin på containeren</label>
+            <default>1rem 0 1rem 0</default>
+        </input>
+        <input type="TextLine" name="bgColor">
+            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #f1f1f1)</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <max-length>7</max-length>
+                <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+            </config>
+        </input>
+        <input type="CheckBox" name="bgFullWidth">
+            <label>Bakgrunnsfarge for hele skjermbredden</label>
+        </input>
+    </form>
+</mixin>

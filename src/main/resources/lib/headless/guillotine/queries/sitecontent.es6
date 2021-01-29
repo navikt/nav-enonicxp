@@ -148,4 +148,4 @@ const getSiteContent = (idOrPath, branch = 'master') => {
     return { ...content, ...(notifications && { notifications }) };
 };
 
-module.exports = { getSiteContent };
+module.exports = { getSiteContent, getContent };

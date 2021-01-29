@@ -2,12 +2,14 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
+const { getContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const { destructureComponent } = require('/lib/headless/unflatten-components');
 
 const queryGetComponents = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
+            pageAsJson(resolveTemplate: true)
             ${componentsFragment}
         }
     }
@@ -19,8 +21,10 @@ const fallbackResponse = {
 };
 
 const componentPreviewController = (req) => {
+    log.info(JSON.stringify(req));
     const content = portalLib.getContent();
     const component = portalLib.getComponent();
+    log.info(`component: ${JSON.stringify(component)}`);
 
     const response = guillotineQuery(
         queryGetComponents,
@@ -29,6 +33,9 @@ const componentPreviewController = (req) => {
         },
         req.branch
     );
+
+    // const content2 = getContent(content._id);
+
 
     const componentFromGuillotine = response?.get?.components.find(
         (item) => item.path === component.path

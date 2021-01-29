@@ -1,15 +1,12 @@
 <layout>
-    <display-name>Dynamisk - 3 kolonner</display-name>
-    <description>Tre kolonner med valgfri bredde for dynamiske komponenter</description>
+    <display-name>Fast kolonne-layout - 3 kolonner</display-name>
+    <description>Tre faste kolonner med valgfri bredde-fordeling</description>
     <form>
         <input type="TextArea" name="distribution">
-            <label>Fordeling</label>
+            <label>Bredde-fordeling</label>
             <default>33-33-33</default>
         </input>
-        <input type="TextArea" name="margin">
-            <label>Margin på containeren</label>
-            <default>1rem 0 1rem 0</default>
-        </input>
+        <mixin name="layouts-common"/>
     </form>
     <regions>
         <region name="dynamic-1"/>
