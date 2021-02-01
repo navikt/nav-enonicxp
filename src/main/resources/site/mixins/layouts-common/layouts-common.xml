@@ -1,10 +1,10 @@
 <mixin>
     <form>
-        <input type="Long" name="marginTop">
+        <input type="Double" name="marginTop">
             <label>Topp-margin (rem-enheter)</label>
             <default>1</default>
         </input>
-        <input type="Long" name="marginBottom">
+        <input type="Double" name="marginBottom">
             <label>Bunn-margin (rem-enheter)</label>
             <default>1</default>
         </input>
