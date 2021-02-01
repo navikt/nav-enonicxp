@@ -19,8 +19,8 @@ const fallbackResponse = {
     body: `<div>'Mark as ready for preview'</div>`,
 };
 
-// For layout-previews, we need to retrieve the regions of the layout with the
-// contained components for a complete preview
+// For layout-previews, we need the complete props-tree of the layout, including
+// components in the layout regions
 const getLayoutComponentProps = (contentId, path) => {
     const pageRegions = getContent(contentId, 'draft')?.page?.regions;
 
@@ -90,7 +90,7 @@ const componentPreviewController = () => {
         log.info(`component-preview error: ${e}`);
     }
 
-    log.info('Failed to fetch component HTML from frontend');
+    log.info(`Failed to fetch HTML-preview for component ${componentProps.descriptor}`);
     return fallbackResponse;
 };
 
