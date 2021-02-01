@@ -9,7 +9,7 @@
             <default>1</default>
         </input>
         <input type="TextLine" name="backgroundColor">
-            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #f1f1f1)</label>
+            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
             <occurrences minimum="0" maximum="1"/>
             <config>
                 <max-length>7</max-length>

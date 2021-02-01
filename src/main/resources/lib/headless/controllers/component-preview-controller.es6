@@ -19,6 +19,8 @@ const fallbackResponse = {
     body: `<div>'Mark as ready for preview'</div>`,
 };
 
+// For layout-previews, we need to retrieve the regions of the layout with the
+// contained components for a complete preview
 const getLayoutComponentProps = (contentId, path) => {
     const pageRegions = getContent(contentId, 'draft')?.page?.regions;
 
@@ -60,6 +62,8 @@ const getComponentProps = () => {
     return { ...component, ...destructureComponent(componentFromGuillotine) };
 };
 
+// This controller fetches component-HTML from the frontend rendered with the
+// supplied props. Used by the content-studio editor.
 const componentPreviewController = () => {
     const componentProps = getComponentProps();
 
