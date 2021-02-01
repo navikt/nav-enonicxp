@@ -2,9 +2,12 @@
     <display-name>Fast kolonne-layout - 2 kolonner</display-name>
     <description>To faste kolonner med valgfri bredde-fordeling</description>
     <form>
-        <input type="TextArea" name="distribution">
-            <label>Bredde-fordeling</label>
+        <input type="TextLine" name="distribution">
+            <label>Bredde-fordeling (xx-xx)</label>
             <default>50-50</default>
+            <config>
+                <regexp>^\d+-\d+$</regexp>
+            </config>
         </input>
         <mixin name="layouts-common"/>
     </form>
