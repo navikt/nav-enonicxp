@@ -28,8 +28,8 @@ const getLayoutComponentProps = (contentId, path) => {
         return null;
     }
 
-    const components = Object.values(pageRegions).reduce((components, region) => {
-        return [...components, ...region.components];
+    const components = Object.values(pageRegions).reduce((componentsAcc, region) => {
+        return [...componentsAcc, ...region.components];
     }, []);
 
     return components.find((component) => component.type === 'layout' && component.path === path);
