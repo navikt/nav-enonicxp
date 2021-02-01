@@ -209,6 +209,13 @@ function clearReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
+    // if the content has a chapter reference we need the adjacent chapter to be invalidated as well
+    references.forEach((ref) => {
+        if (ref?.type === `${app.name}:main-article-chapter`) {
+            clearReferences(ref._id, ref._path, 0);
+        }
+    });
+
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {
         newPath = path.replace('/content', '');
