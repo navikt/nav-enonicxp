@@ -153,7 +153,6 @@ function wipeOnChange(path) {
 
     // For headless setup
     const sitecontentCacheKey = getSitecontentCacheKey(path);
-    log.info(`Wiping cache with key ${sitecontentCacheKey}`);
     wipe('sitecontent')(sitecontentCacheKey);
     wipe('notifications')(sitecontentCacheKey);
     if (path.indexOf('/global-notifications/') !== -1) {
@@ -167,7 +166,6 @@ function wipeOnChange(path) {
                 frontendCacheRevalidate(encodeURI(pathname));
             },
         });
-        log.info(`Revalidation done for: ${pathname}`);
     }
 
     return true;
@@ -194,7 +192,6 @@ function getSitecontent(idOrPath, branch, callback) {
     }
     try {
         const key = getSitecontentCacheKey(idOrPath);
-        log.info(`Caching path "${idOrPath}" with key ${key}`);
         return caches['sitecontent'].get(key, callback);
     } catch (e) {
         // cache functions throws if callback returns null
