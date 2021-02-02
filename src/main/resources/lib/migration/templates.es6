@@ -339,6 +339,20 @@ const dynamicPage = [
     },
 ];
 
+const pageWithSideMenus = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:page-with-side-menus',
+            customized: true,
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
+
 const officeInformationPage = [
     {
         type: 'page',
@@ -478,6 +492,19 @@ const templates = [
             },
         },
         components: dynamicPage,
+    },
+    {
+        content: {
+            displayName: 'Innholdsside med sidemenyer',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:dynamic-page',
+            },
+        },
+        components: pageWithSideMenus,
     },
     {
         content: {

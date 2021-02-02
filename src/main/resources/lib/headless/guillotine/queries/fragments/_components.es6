@@ -68,6 +68,9 @@ const dynamicPartsFragment = `
                     text
                 }
             }
+            html_area {
+                html(processHtml:{type:absolute})
+            }
         }
     }
 `;

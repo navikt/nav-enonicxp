@@ -1,0 +1,20 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Sidemeny for intern-navigasjon</display-name>
+    <form>
+        <item-set name="anchorLinks">
+            <label>Anker-lenke</label>
+            <help-text>Lenker til anker-id'er på denne siden</help-text>
+            <occurrences minimum="0" maximum="0" />
+            <items>
+                <input type="TextLine" name="anchor">
+                    <label>Anker det skal navigeres til</label>
+                    <occurrences minimum="1" maximum="1" />
+                </input>
+                <input type="TextLine" name="linkText">
+                    <label>Lenketekst</label>
+                    <occurrences minimum="1" maximum="1" />
+                </input>
+            </items>
+        </item-set>
+    </form>
+</part>

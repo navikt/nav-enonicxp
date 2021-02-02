@@ -3,7 +3,7 @@
     <description>Sidetype med menyer på høyre og/eller venstre side</description>
     <form>
         <field-set>
-            <label>Venstre-meny</label>
+            <label>Venstre meny</label>
             <items>
                 <input type="CheckBox" name="leftMenuToggle">
                     <label>Vis denne menyen</label>
@@ -24,7 +24,7 @@
             </items>
         </field-set>
         <field-set>
-            <label>Høyre-meny</label>
+            <label>Høyre meny</label>
             <items>
                 <input type="CheckBox" name="rightMenuToggle">
                     <label>Vis denne menyen</label>
