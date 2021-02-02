@@ -1,0 +1,53 @@
+<page>
+    <display-name>Innholdsside med sidemenyer</display-name>
+    <description>Sidetype med menyer på høyre og/eller venstre side</description>
+    <form>
+        <field-set>
+            <label>Venstre-meny</label>
+            <items>
+                <input type="CheckBox" name="leftMenuToggle">
+                    <label>Vis denne menyen</label>
+                    <default>checked</default>
+                </input>
+                <input type="CheckBox" name="leftMenuStickyToggle">
+                    <label>Sticky-meny</label>
+                    <default>checked</default>
+                </input>
+                <input type="Double" name="leftMenuWidth">
+                    <label>Bredde (rem-enheter)</label>
+                    <default>10</default>
+                    <config>
+                        <min>5</min>
+                        <max>15</max>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Høyre-meny</label>
+            <items>
+                <input type="CheckBox" name="rightMenuToggle">
+                    <label>Vis denne menyen</label>
+                    <default>unchecked</default>
+                </input>
+                <input type="CheckBox" name="rightMenuStickyToggle">
+                    <label>Sticky-meny</label>
+                    <default>checked</default>
+                </input>
+                <input type="Double" name="rightMenuWidth">
+                    <label>Bredde (rem-enheter)</label>
+                    <default>10</default>
+                    <config>
+                        <min>5</min>
+                        <max>15</max>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+    <regions>
+        <region name="leftMenu"/>
+        <region name="pageContent"/>
+        <region name="rightMenu"/>
+    </regions>
+</page>
