@@ -25,14 +25,11 @@ const requestRevalidate = (path, retriesLeft = numRetries) => {
 };
 
 const frontendCacheRevalidate = (path) => {
-    const pathSegments = path.split('/www.nav.no');
-    const relativePath = pathSegments[1] || pathSegments[0];
-
-    if (!relativePath) {
+    if (!path) {
         return;
     }
 
-    requestRevalidate(relativePath);
+    requestRevalidate(path);
 };
 
 module.exports = { frontendCacheRevalidate };
