@@ -1,12 +1,12 @@
 # NAV.no - Enonic XP
 NAVs content management system powered by Enonic XP, an open source project.
 
-![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20prod/badge.svg)
-![Deploy to prod](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20prod/badge.svg) <br>
-![Build to Q1](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q1/badge.svg)
-![Deploy to Q1](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q1/badge.svg) |
-![Build to Q6](https://github.com/navikt/nav-enonicxp/workflows/Build%20to%20Q6/badge.svg)
-![Deploy to Q6](https://github.com/navikt/nav-enonicxp/workflows/Deploy%20to%20Q6/badge.svg)
+![Build to prod](https://github.com/navikt/nav-enonicxp/workflows/Build-to-prod/badge.svg)
+![Deploy to prod](https://github.com/navikt/nav-enonicxp/workflows/Deploy-to-prod/badge.svg) <br>
+![Build to dev](https://github.com/navikt/nav-enonicxp/workflows/Build-to-dev/badge.svg)
+![Deploy to dev](https://github.com/navikt/nav-enonicxp/workflows/Deploy-to-dev/badge.svg) |
+![Build to Q6](https://github.com/navikt/nav-enonicxp/workflows/Build-to-Q6/badge.svg)
+![Deploy to Q6](https://github.com/navikt/nav-enonicxp/workflows/Deploy-to-Q6/badge.svg)
 
 Deployed by [nav-enonicxp-actions-runner
 ](https://github.com/navikt/nav-enonicxp-actions-runner)

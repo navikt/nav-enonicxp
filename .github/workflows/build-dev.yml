@@ -1,4 +1,4 @@
-name: Build to Q1
+name: Build to dev
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: dev-sbs:personbruker
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
@@ -24,7 +25,7 @@ jobs:
             -o url-lookup-table.json \
             -H "Authorization: Bearer ${{ secrets.GITHUB_PAT }}" \
             -H "Accept: application/vnd.github.v3.raw" \
-            -L "https://api.github.com/repos/navikt/nav-enonicxp-iac/contents/url-lookup-tables/q1.json"
+            -L "https://api.github.com/repos/navikt/nav-enonicxp-iac/contents/url-lookup-tables/dev.json"
           mkdir -p src/main/resources/assets/iac && cp url-lookup-table.json "$_"
           echo "$(cat url-lookup-table.json)"
       - uses: actions/setup-java@v1
@@ -68,6 +69,6 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
         with:
-          event-type: deploy-to-q1
+          event-type: deploy-to-dev
           token: ${{ secrets.GITHUB_PAT }}
           client-payload: '{"RUN_ID": "${{ steps.vars.outputs.RUN_ID }}"}'
