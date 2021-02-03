@@ -10,5 +10,8 @@
         <mapping controller="/lib/headless/controllers/html-processor.js" order="1">
             <pattern>/.*\?processHtml=true.*</pattern>
         </mapping>
+        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js" order="2">
+            <pattern invert="true">(/sitemap.xml|/no/rss)</pattern>
+        </mapping>
     </mappings>
 </site>
