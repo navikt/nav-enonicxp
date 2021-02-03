@@ -71,6 +71,12 @@ const dynamicPartsFragment = `
             html_area {
                 html(processHtml:{type:absolute})
             }
+            page_navigation_menu {
+                anchorLinks(contentId:$ref) {
+                    anchorId
+                    linkText
+                }
+            }
         }
     }
 `;

@@ -15,6 +15,9 @@ const contentListCallback = require('./schema-creation-callbacks/content-list-ca
 const mainArticleCallback = require('./schema-creation-callbacks/main-article');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
+    pageNavigationMenuCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/page-navigation-menu');
+const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
 } = require('./schema-creation-callbacks/main-article-chapter');
@@ -38,6 +41,7 @@ const schemaContextOptions = {
         no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
         PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback(sortByPublishedDesc),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
+        PartConfigPageNavigationMenu: pageNavigationMenuCallback,
     },
 };
 

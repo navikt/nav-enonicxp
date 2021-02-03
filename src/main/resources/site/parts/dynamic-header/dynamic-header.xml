@@ -8,10 +8,11 @@
             <default>Tittel</default>
         </input>
         <input name="anchorId" type="TextLine">
-            <label>Anker</label>
+            <label>Anker-id</label>
             <help-text>
                 Sett et anker-id for å kunne lenke til denne delen av siden
                 Eks: https://www.nav.no/no/min-side#mitt-anker
+                Dette feltet benyttes også av komponenten for intern-navigasjon på siden
             </help-text>
             <occurrences minimum="0" maximum="1" />
         </input>

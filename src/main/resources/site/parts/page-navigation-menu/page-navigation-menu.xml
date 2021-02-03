@@ -2,12 +2,11 @@
     <display-name>Sidemeny for intern-navigasjon</display-name>
     <form>
         <item-set name="anchorLinks">
-            <label>Anker-lenke</label>
-            <help-text>Lenker til anker-id'er på denne siden</help-text>
+            <label>Overstyr lenketekst</label>
             <occurrences minimum="0" maximum="0" />
             <items>
-                <input type="TextLine" name="anchor">
-                    <label>Anker det skal navigeres til</label>
+                <input type="TextLine" name="anchorId">
+                    <label>Anker-id</label>
                     <occurrences minimum="1" maximum="1" />
                 </input>
                 <input type="TextLine" name="linkText">
@@ -16,5 +15,13 @@
                 </input>
             </items>
         </item-set>
+        <input type="RadioButton" name="dummyInputToPreventEmptyPartConfigDoNotRemove">
+            <label>Lenketekst for intern-navigasjonen kan overstyres med valget over</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="dummy"> </option>
+            </config>
+            <default>dummy</default>
+        </input>
     </form>
 </part>
