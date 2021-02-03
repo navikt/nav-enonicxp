@@ -6,6 +6,7 @@ const cache = require('/lib/siteCache');
 const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const clusterLib = require('/lib/xp/cluster');
+const facetLib = require('/lib/facets');
 
 let appIsRunning = true;
 
@@ -13,6 +14,7 @@ let appIsRunning = true;
 officeInformation.startCronJob();
 // start cache invalidator
 cache.activateEventListener();
+facetLib.activateEventListener();
 
 // init url lookup table
 if (app.config.env !== 'p') {
@@ -23,6 +25,12 @@ if (app.config.env !== 'p') {
 if (clusterLib.isMaster()) {
     // make sure the lock is released on startup
     invalidator.releaseInvalidatorLock();
+
+    // make sure the updateAll lock is released on startup
+    const facetValidation = facetLib.getFacetValidation();
+    if (facetValidation) {
+        facetLib.setUpdateAll(false);
+    }
 }
 
 invalidator.start(appIsRunning);
