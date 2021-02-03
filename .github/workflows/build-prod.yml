@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: prod-sbs:default
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
