@@ -7,7 +7,7 @@
             <occurrences minimum="1" maximum="1" />
             <default>Tittel</default>
         </input>
-        <input name="anchor" type="TextLine">
+        <input name="anchorId" type="TextLine">
             <label>Anker</label>
             <help-text>
                 Sett et anker-id for å kunne lenke til denne delen av siden
@@ -24,7 +24,7 @@
                 <option value="systemtittel">Systemtittel</option>
                 <option value="undertittel">Undertittel</option>
             </config>
-            <default>innholdstittel</default>
+            <default>Systemtittel</default>
         </input>
         <input name="titleTag" type="RadioButton">
             <label>Heading tag</label>
@@ -37,7 +37,7 @@
                 <option value="h5">H5</option>
                 <option value="h6">H6</option>
             </config>
-            <default>h1</default>
+            <default>h3</default>
         </input>
         <input name="ingress" type="TextArea">
             <label>Ingress</label>

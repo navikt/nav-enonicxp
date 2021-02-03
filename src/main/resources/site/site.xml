@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-    <x-data name="cmsContent"  optional="true"/>
-    <x-data name="cmsMenu"  optional="true"/>
-    <x-data name="cmsStatus"  optional="true"/>
+    <x-data name="cmsContent" optional="true"/>
+    <x-data name="cmsMenu" optional="true"/>
+    <x-data name="cmsStatus" optional="true"/>
     <x-data name="menu-item" optional="true"/>
     <x-data name="fasetter" optional="true"/>
     <x-data name="oldContentType" optional="true"/>
