@@ -2,7 +2,7 @@ const meldingFragment = `
     ...on no_nav_navno_Melding {
         dataAsJson
         data {
-            text(processHtml:{type:absolute})
+            text(processHtml:{type:server})
         }
     }
 `;
