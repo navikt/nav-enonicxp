@@ -14,7 +14,6 @@ let appIsRunning = true;
 officeInformation.startCronJob();
 // start cache invalidator
 cache.activateEventListener();
-facetLib.activateEventListener();
 
 // init url lookup table
 if (app.config.env !== 'p') {
@@ -34,6 +33,7 @@ if (clusterLib.isMaster()) {
 }
 
 invalidator.start(appIsRunning);
+facetLib.activateEventListener();
 
 log.info('Finished running main');
 

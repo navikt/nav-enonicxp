@@ -1,5 +1,6 @@
 const libs = {
     content: require('/lib/xp/content'),
+    node: require('/lib/xp/node'),
 };
 
 /**
@@ -41,7 +42,51 @@ function forceArray(content) {
     return [];
 }
 
+/**
+ * Pushes nodes from draft to master, checking if theire already live
+ * @param {*} targetIds ids of content to be pushed to master
+ * @returns {Object} PushNodeResult
+ */
+function pushLiveElements(targetIds) {
+    // publish changes
+    const targets = targetIds.filter((elem) => {
+        return !!elem;
+    });
+
+    const repoDraft = libs.node.connect({
+        repoId: 'com.enonic.cms.default',
+        branch: 'draft',
+        principals: ['role:system.admin'],
+    });
+    const repoMaster = libs.node.connect({
+        repoId: 'com.enonic.cms.default',
+        branch: 'master',
+        principals: ['role:system.admin'],
+    });
+    const masterHits = repoMaster.query({
+        count: targets.length,
+        filters: {
+            ids: {
+                values: targets,
+            },
+        },
+    }).hits;
+    const masterIds = masterHits.map((el) => el.id);
+
+    // important that we use resolve false when pushing objects to master, else we can get objects
+    // which were unpublished back to master without a published.from property
+    const pushResult = repoDraft.push({
+        keys: masterIds,
+        resolve: false,
+        target: 'master',
+    });
+
+    log.info(`Pushed ${masterIds.length} elements to master`);
+    log.info(JSON.stringify(pushResult, null, 4));
+    return pushResult;
+}
 module.exports = {
     forceArray,
     getAllChildren,
+    pushLiveElements,
 };

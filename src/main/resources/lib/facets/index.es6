@@ -120,7 +120,7 @@ const getJustValidatedNodes = () => {
         : [];
 };
 
-const newAgg = (fasetter, ids) => {
+const updateFacets = (fasetter, ids) => {
     // create queries for each facet and subfacet
     const resolver = fasetter.reduce((t, el) => {
         const underfasett = navUtils.forceArray(el.underfasetter);
@@ -193,11 +193,10 @@ const newAgg = (fasetter, ids) => {
         }
 
         addValidatedNodes(hits.map((c) => c.id));
-
-        hits.forEach((hit) => {
+        const modifiedContent = hits.map((hit) => {
             log.info(`adding ${fasett.fasett} and ${fasett.underfasett} to ${hit.id}`);
 
-            repo.modify({
+            const modifiedNode = repo.modify({
                 key: hit.id,
                 editor: (elem) => {
                     const n = elem;
@@ -207,13 +206,11 @@ const newAgg = (fasetter, ids) => {
                     return n;
                 },
             });
-
-            // republish objects which have been updated with facets
-            repo.push({
-                key: hit.id,
-                target: 'master',
-            });
+            return modifiedNode ? modifiedNode._id : undefined;
         });
+        if (modifiedContent) {
+            navUtils.pushLiveElements(modifiedContent);
+        }
     });
 
     if (!ids) {
@@ -222,14 +219,25 @@ const newAgg = (fasetter, ids) => {
     }
 };
 
-const tagAll = (facetConfig, ids) => {
+const bulkUpdateFacets = (facetConfig, ids) => {
     if (!ids) {
         log.info('TAG ALL FACETS');
         // block facet updates
         setUpdateAll(true);
     }
     const fasetter = navUtils.forceArray(facetConfig.data.fasetter);
-    newAgg(fasetter, ids);
+    updateFacets(fasetter, ids);
+};
+
+const getFacetConfig = () => {
+    // get facet config
+    // TODO: maybe create a better type for this
+    const hits = repo.query({
+        start: 0,
+        count: 1,
+        query: 'type = "navno.nav.no.search:search-config2"',
+    }).hits;
+    return hits.length > 0 ? repo.get(hits[0].id) : null;
 };
 
 const checkIfUpdateNeeded = (nodeIds) => {
@@ -239,28 +247,21 @@ const checkIfUpdateNeeded = (nodeIds) => {
         return;
     }
 
-    // get facet config
-    // TODO: maybe create a better type for this
-    const hits = repo.query({
-        start: 0,
-        count: 1,
-        query: 'type = "navno.nav.no.search:search-config2"',
-    }).hits;
-    const facetConfig = hits.length > 0 ? repo.get(hits[0].id) : null;
-
-    // run tagAll if the facet config is part of the nodes to update
-    const IsFacetConfigPartOfUpdate =
-        nodeIds.filter((nodeId) => {
-            return nodeId === facetConfig._id;
-        }).length > 0;
-
-    if (IsFacetConfigPartOfUpdate) {
-        tagAll(facetConfig);
-        return;
-    }
+    const facetConfig = getFacetConfig();
 
     // update nodes that is not in the just validated nodes list
     if (facetConfig) {
+        // run bulkUpdateFacets if the facet config is part of the nodes to update
+        const isFacetConfigPartOfUpdate =
+            nodeIds.filter((nodeId) => {
+                return nodeId === facetConfig._id;
+            }).length > 0;
+
+        if (isFacetConfigPartOfUpdate) {
+            bulkUpdateFacets(facetConfig);
+            return;
+        }
+
         // get list of just validated nodes
         const justValidatedNodes = getJustValidatedNodes();
 
@@ -286,7 +287,7 @@ const checkIfUpdateNeeded = (nodeIds) => {
 
         // update nodes that is not in just validated
         if (nodeInfo.update.length > 0) {
-            tagAll(facetConfig, nodeInfo.update);
+            bulkUpdateFacets(facetConfig, nodeInfo.update);
         }
     } else {
         log.error('no facetconfig');
@@ -361,4 +362,5 @@ const activateEventListener = () => {
 };
 module.exports = {
     activateEventListener,
+    checkIfUpdateNeeded,
 };
