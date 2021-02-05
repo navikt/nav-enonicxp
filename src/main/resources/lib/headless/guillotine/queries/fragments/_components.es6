@@ -81,21 +81,36 @@ const dynamicPartsFragment = `
     }
 `;
 
-const componentsFragment = `
-    components(resolveTemplate: true, resolveFragment: true) {
-        type
-        path
-        part {
-            descriptor
-            ${dynamicPartsFragment}
-        }
-        layout {
-            descriptor
-            configAsJson
-        }
+const componentsContent = `
+    type
+    path
+    part {
+        descriptor
+        ${dynamicPartsFragment}
+    }
+    layout {
+        descriptor
+        configAsJson
+    }
+    image {
         image {
-            image {
-                imageUrl(scale: "$scale", type: absolute)
+            imageUrl(scale: "$scale", type: absolute)
+        }
+    }
+`;
+
+// We have to resolve and handle fragments ourselves, as using resolveFragment: true
+// crashes the content studio editor...
+// ("fragment" is an overloaded term here, the "fragment" fields inside this query-fragment
+// refers to the fragment component type)
+const componentsFragment = `
+    components(resolveTemplate: true, resolveFragment: false) {
+        ${componentsContent}
+        fragment {
+            fragment {
+                components(resolveTemplate: true, resolveFragment: false){
+                    ${componentsContent}
+                }
             }
         }
     }

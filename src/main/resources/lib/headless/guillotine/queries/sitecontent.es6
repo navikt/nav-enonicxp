@@ -48,7 +48,7 @@ const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${queryFragments}
-            pageAsJson(resolveTemplate: true, resolveFragment: true)
+            pageAsJson(resolveTemplate: true, resolveFragment: false)
             ...on base_Folder {
                 children(first:1000) {
                     ${queryFragments}

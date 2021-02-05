@@ -22,10 +22,55 @@ const destructureConfig = (component) => {
     };
 };
 
+const buildFragmentStructure = (fragmentComponent) => {
+    const components = fragmentComponent.fragment?.components;
+    if (!components) {
+        return null;
+    }
+
+    const rootComponent = components.find((component) => component.path === '/');
+    if (rootComponent.type !== 'layout') {
+        return {
+            ...fragmentComponent,
+            fragment: {
+                ...destructureComponent(rootComponent),
+            },
+        };
+    }
+
+    const regions = components.reduce((regionsAcc, component) => {
+        const regionName = component.path.split('/')[1];
+        if (!regionName) {
+            return regionsAcc;
+        }
+
+        const region = regionsAcc[regionName] || { components: [], name: regionName };
+        region.components.push(destructureComponent(component));
+
+        return { ...regionsAcc, [regionName]: region };
+    }, {});
+
+    const newFragment = {
+        ...fragmentComponent,
+        fragment: {
+            ...destructureComponent(rootComponent),
+            regions,
+        },
+    };
+
+    log.info(`New fragment: ${JSON.stringify(newFragment)}`);
+
+    return newFragment;
+};
+
 // Component data in the components-array is stored in type-specific sub-objects
 // Move this data down to the base object, to match the XP page-object structure
 const destructureComponent = (component) => {
     const { page, part, layout, image, text, fragment, ...rest } = component;
+
+    if (fragment) {
+        log.info(`fragment: ${JSON.stringify(fragment)}`);
+    }
 
     const destructured = {
         ...page,
@@ -33,7 +78,7 @@ const destructureComponent = (component) => {
         ...layout,
         ...image,
         ...text,
-        ...fragment,
+        ...(fragment && buildFragmentStructure(fragment)),
         ...rest,
     };
 
@@ -95,23 +140,17 @@ const insertComponents = (obj, componentsArray) => {
     }, obj);
 };
 
-const buildFragmentPage = (rootComponent, componentsArray) => {
-    log.info(`components: ${componentsArray}`);
-    return {};
-};
-
 const mergeComponentsIntoPage = (content) => {
     const { page, components, __typename } = content;
 
-    // portal_Fragment is a special case where the root component is not necessarily a page
-    if (__typename === 'portal_Fragment') {
-        const rootComponent = components?.find((component) => (component.path = '/'));
-        if (!rootComponent) {
-            return {};
-        }
-
-        return buildFragmentPage(rootComponent, components);
-    }
+    // if (__typename === 'portal_Fragment') {
+    //     const rootComponent = components?.find((component) => (component.path = '/'));
+    //     if (!rootComponent) {
+    //         return {};
+    //     }
+    //
+    //     return buildFragmentStructure(rootComponent, components);
+    // }
 
     if (!page) {
         return {};
