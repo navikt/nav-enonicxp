@@ -2,11 +2,9 @@
     <form>
         <input type="Double" name="marginTop">
             <label>Topp-margin (rem-enheter)</label>
-            <default>1</default>
         </input>
         <input type="Double" name="marginBottom">
             <label>Bunn-margin (rem-enheter)</label>
-            <default>1</default>
         </input>
         <input type="TextLine" name="backgroundColor">
             <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>

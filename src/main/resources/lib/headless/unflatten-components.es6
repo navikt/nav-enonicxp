@@ -1,6 +1,5 @@
 // Component config in the components-array is stored in a <app-name>.<region-name> sub-object
 // Move this data down to the base config object, to match the XP page-object structure
-
 const destructureConfig = (component) => {
     const { descriptor, config } = component;
 
@@ -96,8 +95,23 @@ const insertComponents = (obj, componentsArray) => {
     }, obj);
 };
 
+const buildFragmentPage = (rootComponent, componentsArray) => {
+    log.info(`components: ${componentsArray}`);
+    return {};
+};
+
 const mergeComponentsIntoPage = (content) => {
-    const { page, components } = content;
+    const { page, components, __typename } = content;
+
+    // portal_Fragment is a special case where the root component is not necessarily a page
+    if (__typename === 'portal_Fragment') {
+        const rootComponent = components?.find((component) => (component.path = '/'));
+        if (!rootComponent) {
+            return {};
+        }
+
+        return buildFragmentPage(rootComponent, components);
+    }
 
     if (!page) {
         return {};

@@ -48,7 +48,7 @@ const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${queryFragments}
-            pageAsJson(resolveTemplate: true)
+            pageAsJson(resolveTemplate: true, resolveFragment: true)
             ...on base_Folder {
                 children(first:1000) {
                     ${queryFragments}
@@ -70,6 +70,11 @@ const getContent = (idOrPath, branch) => {
     const content = response?.get;
     if (!content) {
         return null;
+    }
+
+    if (content.__typename === 'portal_Fragment') {
+        const testContent = contentLib.get({ key: content._id });
+        log.info(JSON.stringify(testContent));
     }
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);

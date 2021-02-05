@@ -69,7 +69,7 @@ const dynamicPartsFragment = `
                 }
             }
             html_area {
-                html(processHtml:{type:absolute})
+                html(processHtml:{type: absolute})
             }
             page_navigation_menu {
                 anchorLinks(contentId:$ref) {
@@ -82,16 +82,20 @@ const dynamicPartsFragment = `
 `;
 
 const componentsFragment = `
-    components(resolveTemplate:true) {
+    components(resolveTemplate: true, resolveFragment: true) {
         type
         path
         part {
             descriptor
             ${dynamicPartsFragment}
         }
+        layout {
+            descriptor
+            configAsJson
+        }
         image {
             image {
-                imageUrl(scale:"$scale", type:absolute)
+                imageUrl(scale: "$scale", type: absolute)
             }
         }
     }
