@@ -1,5 +1,3 @@
-import { getUrlFromTable } from './url-lookup-table.es6';
-
 const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
@@ -81,7 +79,7 @@ const getMegaMenu = ({ content, levels }) => {
 
         return {
             displayName: menuContent.displayName,
-            path: app.config.env === 'p' ? path : getUrlFromTable(path),
+            path: path,
             displayLock: menuContent.data.displayLock,
             id: menuContent._id,
             hasChildren: subMenus.length > 0,
