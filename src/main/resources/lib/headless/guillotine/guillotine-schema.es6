@@ -15,9 +15,6 @@ const contentListCallback = require('./schema-creation-callbacks/content-list-ca
 const mainArticleCallback = require('./schema-creation-callbacks/main-article');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
-    portalFragmentCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/portal-fragment');
-const {
     pageNavigationMenuCallback,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/page-navigation-menu');
 const {
@@ -45,7 +42,6 @@ const schemaContextOptions = {
         PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback(sortByPublishedDesc),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
         PartConfigPageNavigationMenu: pageNavigationMenuCallback,
-        portal_Fragment: portalFragmentCallback,
     },
 };
 

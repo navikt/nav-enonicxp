@@ -22,8 +22,7 @@ const destructureConfig = (component) => {
     };
 };
 
-const buildFragmentStructure = (fragmentComponent) => {
-    const components = fragmentComponent.fragment?.components;
+const buildFragmentStructure = (fragmentComponent, components) => {
     if (!components) {
         return null;
     }
@@ -50,17 +49,13 @@ const buildFragmentStructure = (fragmentComponent) => {
         return { ...regionsAcc, [regionName]: region };
     }, {});
 
-    const newFragment = {
+    return {
         ...fragmentComponent,
         fragment: {
             ...destructureComponent(rootComponent),
             regions,
         },
     };
-
-    log.info(`New fragment: ${JSON.stringify(newFragment)}`);
-
-    return newFragment;
 };
 
 // Component data in the components-array is stored in type-specific sub-objects
@@ -68,17 +63,13 @@ const buildFragmentStructure = (fragmentComponent) => {
 const destructureComponent = (component) => {
     const { page, part, layout, image, text, fragment, ...rest } = component;
 
-    if (fragment) {
-        log.info(`fragment: ${JSON.stringify(fragment)}`);
-    }
-
     const destructured = {
         ...page,
         ...part,
         ...layout,
         ...image,
         ...text,
-        ...(fragment && buildFragmentStructure(fragment)),
+        ...(fragment && buildFragmentStructure(fragment, fragment.fragment?.components)),
         ...rest,
     };
 
@@ -143,14 +134,15 @@ const insertComponents = (obj, componentsArray) => {
 const mergeComponentsIntoPage = (content) => {
     const { page, components, __typename } = content;
 
-    // if (__typename === 'portal_Fragment') {
-    //     const rootComponent = components?.find((component) => (component.path = '/'));
-    //     if (!rootComponent) {
-    //         return {};
-    //     }
-    //
-    //     return buildFragmentStructure(rootComponent, components);
-    // }
+    // Portal_Fragment is a special case where the root component is not a page
+    if (__typename === 'portal_Fragment') {
+        const rootComponent = components?.find((component) => (component.path = '/'));
+        if (!rootComponent) {
+            return {};
+        }
+
+        return { ...buildFragmentStructure(rootComponent, components).fragment };
+    }
 
     if (!page) {
         return {};

@@ -72,14 +72,8 @@ const getContent = (idOrPath, branch) => {
         return null;
     }
 
-    if (content.__typename === 'portal_Fragment') {
-        const testContent = contentLib.get({ key: content._id });
-        log.info(JSON.stringify(testContent));
-    }
-
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
-
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
     return {
