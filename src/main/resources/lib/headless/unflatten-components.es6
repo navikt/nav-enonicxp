@@ -22,7 +22,7 @@ const destructureConfig = (component) => {
     };
 };
 
-const buildFragmentStructure = (fragmentComponent, components) => {
+const makeFragment = (fragmentComponent, components) => {
     if (!components) {
         return null;
     }
@@ -69,7 +69,7 @@ const destructureComponent = (component) => {
         ...layout,
         ...image,
         ...text,
-        ...(fragment && buildFragmentStructure(fragment, fragment.fragment?.components)),
+        ...(fragment && makeFragment(fragment, fragment.fragment?.components)),
         ...rest,
     };
 
@@ -132,17 +132,7 @@ const insertComponents = (obj, componentsArray) => {
 };
 
 const mergeComponentsIntoPage = (content) => {
-    const { page, components, __typename } = content;
-
-    // Portal_Fragment is a special case where the root component is not a page
-    if (__typename === 'portal_Fragment') {
-        const rootComponent = components?.find((component) => (component.path = '/'));
-        if (!rootComponent) {
-            return {};
-        }
-
-        return { ...buildFragmentStructure(rootComponent, components).fragment };
-    }
+    const { page, components } = content;
 
     if (!page) {
         return {};
@@ -155,4 +145,15 @@ const mergeComponentsIntoPage = (content) => {
     return insertComponents(page, components);
 };
 
-module.exports = { mergeComponentsIntoPage, destructureComponent };
+const mergeComponentsIntoFragment = (content) => {
+    const { components } = content;
+
+    const rootComponent = components?.find((component) => (component.path = '/'));
+    if (!rootComponent) {
+        return {};
+    }
+
+    return { ...makeFragment(rootComponent, components).fragment };
+};
+
+module.exports = { mergeComponentsIntoPage, destructureComponent, mergeComponentsIntoFragment };

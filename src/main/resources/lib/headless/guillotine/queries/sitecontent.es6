@@ -1,6 +1,7 @@
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
+const { mergeComponentsIntoFragment } = require('/lib/headless/unflatten-components');
 const { runInBranchContext } = require('/lib/headless/run-in-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
@@ -73,6 +74,17 @@ const getContent = (idOrPath, branch) => {
     }
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
+
+    if (content.__typename === 'portal_Fragment') {
+        const fragment = mergeComponentsIntoFragment(contentWithParsedData);
+
+        return {
+            ...contentWithParsedData,
+            fragment,
+            components: undefined,
+        };
+    }
+
     const page = mergeComponentsIntoPage(contentWithParsedData);
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
