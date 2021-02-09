@@ -69,7 +69,7 @@ const dynamicPartsFragment = `
                 }
             }
             html_area {
-                html(processHtml:{type: absolute})
+                html(processHtml:{type: server})
             }
             page_navigation_menu {
                 anchorLinks(contentId:$ref) {
@@ -86,6 +86,7 @@ const componentsContent = `
     path
     part {
         descriptor
+        configAsJson
         ${dynamicPartsFragment}
     }
     layout {

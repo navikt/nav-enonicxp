@@ -2,6 +2,7 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
+const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { getContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const { destructureComponent } = require('/lib/headless/unflatten-components');
@@ -59,7 +60,10 @@ const getComponentProps = () => {
         return null;
     }
 
-    return { ...component, ...destructureComponent(componentFromGuillotine) };
+    return {
+        ...component,
+        ...destructureComponent(deepJsonParser(componentFromGuillotine, ['config'])),
+    };
 };
 
 // This controller fetches component-HTML from the frontend rendered with the

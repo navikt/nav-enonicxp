@@ -1,6 +1,10 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Sidemeny for intern-navigasjon</display-name>
     <form>
+        <input type="TextLine" name="header">
+            <label>Tittel</label>
+            <default>Navigasjon</default>
+        </input>
         <item-set name="anchorLinks">
             <label>Overstyr lenketekst</label>
             <occurrences minimum="0" maximum="0" />

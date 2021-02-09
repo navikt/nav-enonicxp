@@ -16,6 +16,16 @@
             </help-text>
             <occurrences minimum="0" maximum="1" />
         </input>
+        <input name="justify" type="RadioButton">
+            <label>Justering</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="left">Venstre</option>
+                <option value="center">Sentrert</option>
+                <option value="right">Høyre</option>
+            </config>
+            <default>center</default>
+        </input>
         <input name="titleTypo" type="RadioButton">
             <label>Typografi</label>
             <occurrences minimum="1" maximum="1" />

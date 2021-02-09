@@ -15,10 +15,10 @@
                 </input>
                 <input type="Double" name="leftMenuWidth">
                     <label>Bredde (rem-enheter)</label>
-                    <default>10</default>
+                    <default>15</default>
                     <config>
-                        <min>5</min>
-                        <max>15</max>
+                        <min>10</min>
+                        <max>20</max>
                     </config>
                 </input>
             </items>
@@ -36,10 +36,10 @@
                 </input>
                 <input type="Double" name="rightMenuWidth">
                     <label>Bredde (rem-enheter)</label>
-                    <default>10</default>
+                    <default>15</default>
                     <config>
-                        <min>5</min>
-                        <max>15</max>
+                        <min>10</min>
+                        <max>20</max>
                     </config>
                 </input>
             </items>
