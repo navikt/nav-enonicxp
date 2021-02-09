@@ -42,6 +42,7 @@ const schemaContextOptions = {
         PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback(sortByPublishedDesc),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
         PartConfigPageNavigationMenu: pageNavigationMenuCallback,
+        PageConfigPageWithSideMenus: pageNavigationMenuCallback,
     },
 };
 

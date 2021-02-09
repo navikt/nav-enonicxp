@@ -2,9 +2,12 @@ const { linkInternalMixinFragment } = require('./_mixins');
 const { linkExternalMixinFragment } = require('./_mixins');
 const { linkWithIngressMixinFragment } = require('./_mixins');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const {
+    pageNavigationMenuMixinFragment,
+} = require('/lib/headless/guillotine/queries/fragments/_mixins');
 const { imageFragment } = require('./media');
 
-const dynamicPartsFragment = `
+const partsFragment = `
     config {
         no_nav_navno {
             dynamic_header {
@@ -81,17 +84,32 @@ const dynamicPartsFragment = `
     }
 `;
 
+const pagesFragment = `
+    config {
+        no_nav_navno {
+            page_with_side_menus {
+               ${pageNavigationMenuMixinFragment}
+            }
+        }
+    }
+`;
+
 const componentsContent = `
     type
     path
-    part {
+    page {
         descriptor
         configAsJson
-        ${dynamicPartsFragment}
+        ${pagesFragment}
     }
     layout {
         descriptor
         configAsJson
+    }
+    part {
+        descriptor
+        configAsJson
+        ${partsFragment}
     }
     image {
         image {

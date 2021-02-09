@@ -142,7 +142,12 @@ const mergeComponentsIntoPage = (content) => {
         return page;
     }
 
-    return insertComponents(page, components);
+    const pageComponent = destructureComponent(
+        components.find((component) => component.type === 'page')
+    );
+    const pageWithPageComponent = { ...page, ...pageComponent };
+
+    return insertComponents(pageWithPageComponent, components);
 };
 
 const mergeComponentsIntoFragment = (content) => {

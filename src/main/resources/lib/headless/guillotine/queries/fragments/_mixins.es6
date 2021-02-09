@@ -50,10 +50,18 @@ const linkWithIngressMixinFragment = `
     }
 `;
 
+const pageNavigationMenuMixinFragment = `
+   anchorLinks(contentId:$ref) {
+        anchorId
+        linkText
+    }
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
     linkInternalMixinFragment,
     linkExternalMixinFragment,
     linkWithIngressMixinFragment,
+    pageNavigationMenuMixinFragment,
 };

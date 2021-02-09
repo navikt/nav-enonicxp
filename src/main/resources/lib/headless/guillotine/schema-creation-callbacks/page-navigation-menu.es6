@@ -22,9 +22,8 @@ const pageNavigationMenuCallback = (context, params) => {
     params.fields.anchorLinks.args = { contentId: graphQlLib.GraphQLID };
     params.fields.anchorLinks.resolve = (env) => {
         const { contentId } = env.args;
-
         if (!contentId) {
-            log.warn(
+            log.warning(
                 'Attempted to resolve a page navigation menu without providing a content id for the page'
             );
             return null;
@@ -52,6 +51,7 @@ const pageNavigationMenuCallback = (context, params) => {
 
             return linksAcc;
         }, []);
+        log.info(JSON.stringify(anchorLinksResolved));
 
         return anchorLinksResolved;
     };
