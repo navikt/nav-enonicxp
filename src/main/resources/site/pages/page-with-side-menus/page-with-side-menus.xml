@@ -3,13 +3,22 @@
     <description>Sidetype med menyer på høyre og/eller venstre side</description>
     <form>
         <field-set>
-            <label>Intern-navigasjon for siden (venstre meny)</label>
+            <items>
+                <mixin name="page-header"/>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Venstre meny</label>
             <items>
                 <input type="CheckBox" name="leftMenuToggle">
                     <label>Vis denne menyen</label>
                     <default>checked</default>
                 </input>
-                <input type="CheckBox" name="leftMenuStickyToggle">
+                <input type="CheckBox" name="showInternalNav">
+                    <label>Vis intern-navigasjon</label>
+                    <default>checked</default>
+                </input>
+                <input type="CheckBox" name="leftMenuSticky">
                     <label>Sticky-meny</label>
                     <default>checked</default>
                 </input>
@@ -27,7 +36,7 @@
                     <label>Vis denne menyen</label>
                     <default>unchecked</default>
                 </input>
-                <input type="CheckBox" name="rightMenuStickyToggle">
+                <input type="CheckBox" name="rightMenuSticky">
                     <label>Sticky-meny</label>
                     <default>unchecked</default>
                 </input>

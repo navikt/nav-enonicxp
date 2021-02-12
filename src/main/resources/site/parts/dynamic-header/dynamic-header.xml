@@ -1,6 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Header</display-name>
-    <description>Tittel for side eller avsnitt med valgfri ingress</description>
+    <display-name>Avsnitt-header</display-name>
+    <description>Tittel med valgfri ingress</description>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
@@ -41,7 +41,6 @@
             <label>Heading tag</label>
             <occurrences minimum="1" maximum="1" />
             <config>
-                <option value="h1">H1</option>
                 <option value="h2">H2</option>
                 <option value="h3">H3</option>
                 <option value="h4">H4</option>

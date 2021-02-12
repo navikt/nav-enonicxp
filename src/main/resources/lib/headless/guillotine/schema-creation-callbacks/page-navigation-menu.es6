@@ -51,7 +51,6 @@ const pageNavigationMenuCallback = (context, params) => {
 
             return linksAcc;
         }, []);
-        log.info(JSON.stringify(anchorLinksResolved));
 
         return anchorLinksResolved;
     };

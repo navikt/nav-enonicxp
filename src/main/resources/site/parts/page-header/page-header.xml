@@ -1,0 +1,7 @@
+<part>
+    <display-name>Header for siden</display-name>
+    <description>Skal kun benyttes som side-tittel, en på hver side</description>
+    <form>
+        <mixin name="page-header"/>
+    </form>
+</part>
