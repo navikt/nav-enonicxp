@@ -127,7 +127,7 @@ function convertImages(socket) {
     return targetIds;
 }
 
-function facetifier(socket) {
+function facetifier() {
     const query = {
         query:
             '(type LIKE "no.nav.navno:*" OR type LIKE "media:*") AND publish.from > dateTime("2020-01-01T00:00:00Z")',
@@ -142,13 +142,16 @@ function facetifier(socket) {
     let { count } = contentWithoutFacets;
     const { total } = contentWithoutFacets;
     let totalResult = contentWithoutFacets.hits;
-
+    // make sure we get all the hits
     while (totalResult.length < total) {
         contentWithoutFacets = libs.content.query({ ...query, start: count });
         totalResult = totalResult.concat(contentWithoutFacets.hits);
         count += contentWithoutFacets.count;
     }
     log.info(`total: ${total}  -  ${totalResult.length}`);
+    totalResult.forEach((item) => {
+        log.info(`${item._path} - ${item._name}`);
+    });
     libs.facets.checkIfUpdateNeeded(totalResult.map((node) => node._id));
 }
 
@@ -217,4 +220,10 @@ function convert(socket) {
     libs.navUtils.pushLiveElements(targetIds);
 }
 
-module.exports = { handle: convert, handleImages, handleUnpublish, handleMissingFacets };
+module.exports = {
+    handle: convert,
+    handleImages,
+    handleUnpublish,
+    handleMissingFacets,
+    facetifier,
+};

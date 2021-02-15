@@ -75,15 +75,19 @@ function pushLiveElements(targetIds) {
 
     // important that we use resolve false when pushing objects to master, else we can get objects
     // which were unpublished back to master without a published.from property
-    const pushResult = repoDraft.push({
-        keys: masterIds,
-        resolve: false,
-        target: 'master',
-    });
+    if (masterIds.length > 0) {
+        const pushResult = repoDraft.push({
+            keys: masterIds,
+            resolve: false,
+            target: 'master',
+        });
 
-    log.info(`Pushed ${masterIds.length} elements to master`);
-    log.info(JSON.stringify(pushResult, null, 4));
-    return pushResult;
+        log.info(`Pushed ${masterIds.length} elements to master`);
+        log.info(JSON.stringify(pushResult, null, 4));
+        return pushResult;
+    }
+    log.info('No content was updated in master');
+    return [];
 }
 module.exports = {
     forceArray,

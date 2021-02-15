@@ -7,7 +7,7 @@ const libs = {
 };
 
 /**
- * @description run a function in admin context on the draft branch
+ * @description run a function in admin context on the master branch
  * @param socket socket to pass into func as a param
  * @param func the function to run
  */
