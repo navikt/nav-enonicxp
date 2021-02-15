@@ -31,7 +31,15 @@
                 </input>
                 <input name="noindex" type="CheckBox">
                     <label>
-                        Skal ikke vises i eksternt søk - NB! Skal bare legges inn av hovedredaktør/administrator
+                        Skal ikke vises i eksternt søk (noindex) - NB! Skal bare legges inn av hovedredaktør/administrator
+                    </label>
+                    <help-text>
+                        Med eksternt søk menes Google, Bing mv.
+                    </help-text>
+                </input>
+                <input name="nofollow" type="CheckBox">
+                    <label>
+                        Lenker skal ikke crawles av eksternt søk (nofollow) - NB! Skal bare legges inn av hovedredaktør/administrator
                     </label>
                     <help-text>
                         Med eksternt søk menes Google, Bing mv.

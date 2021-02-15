@@ -23,6 +23,7 @@ const seoMixinFragment = `
     metaDescription
     canonicalUrl
     noindex
+    nofollow
 `;
 
 const linkInternalMixinFragment = `
