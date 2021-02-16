@@ -12,6 +12,8 @@ const errorResponse = (url, status, message) => {
     };
 };
 
+// This proxies requests made directly to XP to the frontend. Normally this will
+// only be used in the portal-admin content studio previews
 const adminFrontendProxy = (req) => {
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
