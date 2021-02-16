@@ -85,15 +85,48 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
-const getRedirectContent = (idOrPath, branch) => {
-    const pathSegments = idOrPath.split('/');
-    const redirect = pathSegments.length === 3 && pathSegments[2];
+const getContentFromOldCmsPath = (idOrPath, branch) => {
+    const oldCmsKeySearch = /\d+(?=\.cms$)/.exec(idOrPath);
+    if (!oldCmsKeySearch) {
+        return null;
+    }
 
-    if (redirect) {
+    const oldCmsKey = oldCmsKeySearch[0];
+
+    log.info(`Found old CMS key: ${oldCmsKey}`);
+
+    const queryRes = runInBranchContext(
+        () =>
+            contentLib.query({
+                query: `x.no-nav-navno.cmsContent.contentKey LIKE "${oldCmsKey}"`,
+            }),
+        branch
+    );
+
+    log.info(`Content found for old CMS key? ${queryRes?.hits?.length > 0}`);
+
+    return queryRes?.hits?.[0];
+};
+
+const getRedirectContent = (idOrPath, branch) => {
+    const oldCmsPathTarget = getContentFromOldCmsPath(idOrPath, branch);
+
+    if (oldCmsPathTarget) {
+        return {
+            ...oldCmsPathTarget,
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: oldCmsPathTarget._path } },
+        };
+    }
+
+    const pathSegments = idOrPath.split('/');
+    const shortUrlRedirect = pathSegments.length === 3 && pathSegments[2];
+
+    if (shortUrlRedirect) {
         const redirectContent = runInBranchContext(
             () =>
-                contentLib.get({ key: `/redirects/${redirect}` }) ||
-                contentLib.get({ key: `/redirects/${sanitize(redirect)}` }),
+                contentLib.get({ key: `/redirects/${shortUrlRedirect}` }) ||
+                contentLib.get({ key: `/redirects/${sanitize(shortUrlRedirect)}` }),
             branch
         );
 
@@ -109,8 +142,8 @@ const getRedirectContent = (idOrPath, branch) => {
 
             return {
                 ...redirectContent,
-                data: { target: { _path: target._path } },
                 __typename: 'no_nav_navno_InternalLink',
+                data: { target: { _path: target._path } },
             };
         }
 
