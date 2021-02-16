@@ -120,43 +120,43 @@ const getRedirectContent = (idOrPath, branch) => {
     }
 
     const pathSegments = idOrPath.split('/');
-    const shortUrlRedirect = pathSegments.length === 3 && pathSegments[2];
+    const shortUrlPath = pathSegments.length === 3 && pathSegments[2];
 
-    if (shortUrlRedirect) {
-        const redirectContent = runInBranchContext(
+    if (shortUrlPath) {
+        const shortUrlTarget = runInBranchContext(
             () =>
-                contentLib.get({ key: `/redirects/${shortUrlRedirect}` }) ||
-                contentLib.get({ key: `/redirects/${sanitize(shortUrlRedirect)}` }),
+                contentLib.get({ key: `/redirects/${shortUrlPath}` }) ||
+                contentLib.get({ key: `/redirects/${sanitize(shortUrlPath)}` }),
             branch
         );
 
-        if (!redirectContent) {
+        if (!shortUrlTarget) {
             return null;
         }
 
-        if (redirectContent?.type === 'no.nav.navno:internal-link') {
-            const target = getContent(redirectContent.data?.target);
+        if (shortUrlTarget?.type === 'no.nav.navno:internal-link') {
+            const target = getContent(shortUrlTarget.data?.target);
             if (!target) {
                 return null;
             }
 
             return {
-                ...redirectContent,
+                ...shortUrlTarget,
                 __typename: 'no_nav_navno_InternalLink',
                 data: { target: { _path: target._path } },
             };
         }
 
-        if (redirectContent?.type === 'no.nav.navno:external-link') {
+        if (shortUrlTarget?.type === 'no.nav.navno:external-link') {
             return {
-                ...redirectContent,
+                ...shortUrlTarget,
                 __typename: 'no_nav_navno_ExternalLink',
             };
         }
 
-        if (redirectContent?.type === 'no.nav.navno:url') {
+        if (shortUrlTarget?.type === 'no.nav.navno:url') {
             return {
-                ...redirectContent,
+                ...shortUrlTarget,
                 __typename: 'no_nav_navno_Url',
             };
         }
