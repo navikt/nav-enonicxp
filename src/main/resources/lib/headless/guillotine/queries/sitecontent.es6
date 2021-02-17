@@ -85,8 +85,8 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
-const getOldCmsContent = (idOrPath, branch) => {
-    const oldCmsKeyMatch = /\d+(?=\.cms$)/.exec(idOrPath);
+const getOldCmsContent = (path) => {
+    const oldCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
     if (!oldCmsKeyMatch) {
         return null;
     }
@@ -95,13 +95,9 @@ const getOldCmsContent = (idOrPath, branch) => {
 
     log.info(`Found old CMS key: ${oldCmsKey}`);
 
-    const queryRes = runInBranchContext(
-        () =>
-            contentLib.query({
-                query: `x.no-nav-navno.cmsContent.contentKey LIKE "${oldCmsKey}"`,
-            }),
-        branch
-    );
+    const queryRes = contentLib.query({
+        query: `x.no-nav-navno.cmsContent.contentKey LIKE "${oldCmsKey}"`,
+    });
 
     log.info(`Content found for old CMS key? ${queryRes?.hits?.length > 0}`);
 
@@ -109,8 +105,7 @@ const getOldCmsContent = (idOrPath, branch) => {
 };
 
 const getRedirectContent = (idOrPath, branch) => {
-    const oldCmsPathTarget = getOldCmsContent(idOrPath, branch);
-
+    const oldCmsPathTarget = runInBranchContext(() => getOldCmsContent(idOrPath), branch);
     if (oldCmsPathTarget) {
         return {
             ...oldCmsPathTarget,
