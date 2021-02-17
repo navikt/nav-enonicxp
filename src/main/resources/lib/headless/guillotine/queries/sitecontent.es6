@@ -85,13 +85,13 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
-const getContentFromOldCmsPath = (idOrPath, branch) => {
-    const oldCmsKeySearch = /\d+(?=\.cms$)/.exec(idOrPath);
-    if (!oldCmsKeySearch) {
+const getOldCmsContent = (idOrPath, branch) => {
+    const oldCmsKeyMatch = /\d+(?=\.cms$)/.exec(idOrPath);
+    if (!oldCmsKeyMatch) {
         return null;
     }
 
-    const oldCmsKey = oldCmsKeySearch[0];
+    const oldCmsKey = oldCmsKeyMatch[0];
 
     log.info(`Found old CMS key: ${oldCmsKey}`);
 
@@ -109,7 +109,7 @@ const getContentFromOldCmsPath = (idOrPath, branch) => {
 };
 
 const getRedirectContent = (idOrPath, branch) => {
-    const oldCmsPathTarget = getContentFromOldCmsPath(idOrPath, branch);
+    const oldCmsPathTarget = getOldCmsContent(idOrPath, branch);
 
     if (oldCmsPathTarget) {
         return {
