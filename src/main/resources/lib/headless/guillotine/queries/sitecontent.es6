@@ -134,7 +134,7 @@ const getRedirectContent = (idOrPath, branch) => {
             return null;
         }
 
-        if (shortUrlTarget?.type === 'no.nav.navno:internal-link') {
+        if (shortUrlTarget.type === 'no.nav.navno:internal-link') {
             const target = getContent(shortUrlTarget.data?.target);
             if (!target) {
                 return null;
@@ -147,14 +147,14 @@ const getRedirectContent = (idOrPath, branch) => {
             };
         }
 
-        if (shortUrlTarget?.type === 'no.nav.navno:external-link') {
+        if (shortUrlTarget.type === 'no.nav.navno:external-link') {
             return {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_ExternalLink',
             };
         }
 
-        if (shortUrlTarget?.type === 'no.nav.navno:url') {
+        if (shortUrlTarget.type === 'no.nav.navno:url') {
             return {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_Url',
