@@ -186,7 +186,7 @@ function getSitecontent(idOrPath, branch, callback) {
         return callback();
     }
     try {
-        return caches['sitecontent'].get(idOrPath, callback);
+        return caches['sitecontent'].get(getPathname(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
@@ -198,7 +198,7 @@ function getNotifications(idOrPath, callback) {
         return callback();
     }
     try {
-        return caches['notifications'].get(idOrPath, callback);
+        return caches['notifications'].get(getPathname(idOrPath), callback);
     } catch (e) {
         return null;
     }
