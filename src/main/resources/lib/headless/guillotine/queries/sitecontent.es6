@@ -85,18 +85,18 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
-const getOldCmsContent = (path) => {
-    const oldCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
-    if (!oldCmsKeyMatch) {
+const getContentFromLegacyPath = (path) => {
+    const legacyCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
+    if (!legacyCmsKeyMatch) {
         return null;
     }
 
-    const oldCmsKey = oldCmsKeyMatch[0];
+    const legacyCmsKey = legacyCmsKeyMatch[0];
 
-    log.info(`Found old CMS key: ${oldCmsKey}`);
+    log.info(`Found old CMS key: ${legacyCmsKey}`);
 
     const queryRes = contentLib.query({
-        query: `x.no-nav-navno.cmsContent.contentKey LIKE "${oldCmsKey}"`,
+        query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
     });
 
     log.info(`Content found for old CMS key? ${queryRes?.hits?.length > 0}`);
@@ -105,12 +105,12 @@ const getOldCmsContent = (path) => {
 };
 
 const getRedirectContent = (idOrPath, branch) => {
-    const oldCmsPathTarget = runInBranchContext(() => getOldCmsContent(idOrPath), branch);
-    if (oldCmsPathTarget) {
+    const legacyPathTarget = runInBranchContext(() => getContentFromLegacyPath(idOrPath), branch);
+    if (legacyPathTarget) {
         return {
-            ...oldCmsPathTarget,
+            ...legacyPathTarget,
             __typename: 'no_nav_navno_InternalLink',
-            data: { target: { _path: oldCmsPathTarget._path } },
+            data: { target: { _path: legacyPathTarget._path } },
         };
     }
 
