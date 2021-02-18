@@ -93,13 +93,9 @@ const getContentFromLegacyPath = (path) => {
 
     const legacyCmsKey = legacyCmsKeyMatch[0];
 
-    log.info(`Found old CMS key: ${legacyCmsKey}`);
-
     const queryRes = contentLib.query({
         query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
     });
-
-    log.info(`Content found for old CMS key? ${queryRes?.hits?.length > 0}`);
 
     return queryRes?.hits?.[0];
 };
