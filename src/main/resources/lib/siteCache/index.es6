@@ -152,9 +152,8 @@ function wipeOnChange(path) {
     }
 
     // For headless setup
-    const sitecontentCacheKey = getSitecontentCacheKey(path);
-    wipe('sitecontent')(sitecontentCacheKey);
-    wipe('notifications')(sitecontentCacheKey);
+    wipe('sitecontent')(pathname);
+    wipe('notifications')(pathname);
     if (path.indexOf('/global-notifications/') !== -1) {
         // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
         wipe('notifications')();
@@ -181,18 +180,13 @@ function getSome(cacheStoreName) {
     };
 }
 
-function getSitecontentCacheKey(idOrPath) {
-    return libs.common.sanitize(getPathname(idOrPath));
-}
-
 function getSitecontent(idOrPath, branch, callback) {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
     }
     try {
-        const key = getSitecontentCacheKey(idOrPath);
-        return caches['sitecontent'].get(key, callback);
+        return caches['sitecontent'].get(getPathname(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
@@ -204,7 +198,7 @@ function getNotifications(idOrPath, callback) {
         return callback();
     }
     try {
-        return caches['notifications'].get(getSitecontentCacheKey(idOrPath), callback);
+        return caches['notifications'].get(getPathname(idOrPath), callback);
     } catch (e) {
         return null;
     }
