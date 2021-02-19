@@ -1,11 +1,11 @@
 <mixin>
     <form>
         <item-set name="anchorLinks">
-            <label>Overstyr lenketekst</label>
+            <label>Overstyr lenketekster</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
                 <input type="TextLine" name="anchorId">
-                    <label>Anker-id (må være unik på siden)</label>
+                    <label>Anker-id</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextLine" name="linkText">

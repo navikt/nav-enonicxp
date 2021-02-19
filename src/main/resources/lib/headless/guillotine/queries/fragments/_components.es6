@@ -1,11 +1,10 @@
-const { linkInternalMixinFragment } = require('./_mixins');
-const { linkExternalMixinFragment } = require('./_mixins');
-const { linkWithIngressMixinFragment } = require('./_mixins');
-const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 const {
+    linkWithIngressMixinFragment,
+    linkSelectableMixin,
     pageNavigationMenuMixinFragment,
-} = require('/lib/headless/guillotine/queries/fragments/_mixins');
+} = require('./_mixins');
 const { imageFragment } = require('./media');
+const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 
 const partsFragment = `
     config {
@@ -50,13 +49,7 @@ const partsFragment = `
                     }
                     linkList {
                         links {
-                            _selected
-                            external {
-                                ${linkExternalMixinFragment}
-                            }
-                            internal {
-                                ${linkInternalMixinFragment}
-                            }
+                            ${linkSelectableMixin}
                         }
                     }
                 }
@@ -73,6 +66,17 @@ const partsFragment = `
             }
             html_area {
                 html(processHtml:{type: server})
+            }
+            page_header {
+                pageHeader
+            }
+            button {
+                icon {
+                    ${imageFragment}
+                }
+                link {
+                    ${linkSelectableMixin}
+                }
             }
             page_navigation_menu {
                 anchorLinks(contentId:$ref) {

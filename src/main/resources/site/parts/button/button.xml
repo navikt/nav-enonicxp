@@ -1,0 +1,38 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Knapp</display-name>
+    <form>
+        <mixin name="link"/>
+        <input name="type" type="RadioButton">
+            <label>Type</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="standard">Normal</option>
+                <option value="hoved">Hoved</option>
+                <option value="fare">Fare</option>
+                <option value="flat">Flat</option>
+            </config>
+            <default>standard</default>
+        </input>
+        <input name="size" type="RadioButton">
+            <label>Størrelse</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="normal">Normal</option>
+                <option value="kompakt">Kompakt</option>
+                <option value="mini">Mini</option>
+            </config>
+            <default>normal</default>
+        </input>
+        <input name="fullwidth" type="CheckBox">
+            <label>Full bredde</label>
+        </input>
+        <input name="icon" type="ImageSelector">
+            <label>Ikon (valgfritt)</label>
+            <config>
+                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                <allowPath>./*</allowPath>
+            </config>
+        </input>
+    </form>
+</part>
