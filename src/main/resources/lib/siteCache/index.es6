@@ -205,6 +205,7 @@ function getNotifications(idOrPath, callback) {
 }
 
 function clearReferences(id, path, depth) {
+    log.info(`Find references for: ${path}`);
     let newPath = path;
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
@@ -216,10 +217,14 @@ function clearReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
-    // if the content has a chapter reference we need the adjacent chapter to be invalidated as well
+    // if there are references which have indirect references we need to invalidate their
+    // references as well
     references.forEach((ref) => {
-        if (ref?.type === `${app.name}:main-article-chapter`) {
-            clearReferences(ref._id, ref._path, 0);
+        if (
+            ref?.type === `${app.name}:main-article-chapter` ||
+            ref?.type === `${app.name}:notification`
+        ) {
+            clearReferences(ref._id, ref._path, depth + 1);
         }
     });
 
