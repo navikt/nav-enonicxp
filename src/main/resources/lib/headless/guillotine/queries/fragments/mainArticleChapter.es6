@@ -1,14 +1,16 @@
 const globalFragment = require('./_global');
-const mainArticleContent = require('./mainArticleContent');
+const mainArticle = require('./mainArticle');
 
 const mainArticleChapterFragment = `
     ...on no_nav_navno_MainArticleChapter {
         ${globalFragment}
         parent {
-            ${globalFragment}
-            children(first:1000) {
-                ...on no_nav_navno_MainArticleChapter {
-                    ${globalFragment}
+            ...on no_nav_navno_MainArticle {
+                ${globalFragment}
+                data {
+                    chapters {
+                        ${globalFragment}
+                    }
                 }
             }
         }
@@ -19,9 +21,7 @@ const mainArticleChapterFragment = `
                 _id
             }
             article {
-               ...on no_nav_navno_MainArticle {
-                   ${mainArticleContent.fragment}
-               }
+               ${mainArticle.fragment}
             }
         }
     }
