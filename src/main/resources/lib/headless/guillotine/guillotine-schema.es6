@@ -10,7 +10,7 @@ const hookGenerateFormItemResolver = require('./function-hooks/generate-form-ite
 const hookCreatePageComponentDataConfigType = require('./function-hooks/create-page-component-data-config-type');
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
-const menuListDataCallback = require('./schema-creation-callbacks/menu-list-data');
+const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {

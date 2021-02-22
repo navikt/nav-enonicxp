@@ -7,9 +7,18 @@ const mainArticleDataCallback = (context, params) => {
         type: graphQlLib.list(graphQlLib.reference('Content')),
     };
 
+    const textResolverOld = params.fields.text.resolve;
+    const factResolverOld = params.fields.fact.resolve;
+
     // Resolve html-fields in data-object
-    params.fields.text.resolve = (env) => (env.source.text ? htmlCleanUp(env.source.text) : '');
-    params.fields.fact.resolve = (env) => (env.source.fact ? htmlCleanUp(env.source.fact) : '');
+    params.fields.text.resolve = (env) => {
+        const result = textResolverOld(env);
+        return result ? htmlCleanUp(result) : '';
+    };
+    params.fields.fact.resolve = (env) => {
+        const result = factResolverOld(env);
+        return result ? htmlCleanUp(result) : '';
+    };
 };
 
 const mainArticleCallback = (context, params) => {

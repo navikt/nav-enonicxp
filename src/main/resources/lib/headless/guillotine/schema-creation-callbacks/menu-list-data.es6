@@ -5,7 +5,7 @@ const graphQlLib = require('/lib/guillotine/graphql.js');
 const { forceArray } = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
 
-const callback = (context, params) => {
+const menuListDataCallback = (context, params) => {
     // Create new types for mapped values
     if (!context.types.menuListLink) {
         context.types.menuListLink = graphQlLib.createObjectType(context, {
@@ -59,19 +59,17 @@ const getContentFromRefs = (refs) => {
     return contentLib
         .query({
             start: 0,
-            count: 1000,
+            count: refs.length,
             filters: {
                 ids: {
                     values: refs,
                 },
             },
         })
-        .hits.map((item) => {
-            return {
-                text: item.displayName,
-                url: item.type.startsWith('media:') ? getAttachmentUrl(item._id) : item._path,
-            };
-        });
+        .hits.map((item) => ({
+            text: item.displayName,
+            url: item.type.startsWith('media:') ? getAttachmentUrl(item._id) : item._path,
+        }));
 };
 
 const getAttachmentUrl = (ref) => {
@@ -94,4 +92,4 @@ const getAttachmentUrl = (ref) => {
     });
 };
 
-module.exports = callback;
+module.exports = { menuListDataCallback };
