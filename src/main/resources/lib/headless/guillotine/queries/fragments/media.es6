@@ -1,64 +1,65 @@
-const globalFragment = require('./_global');
+const mediaUrlAttachment = `
+    mediaUrl(download:true, type:absolute)
+`;
 
-const mediaContentFragment = `
+const mediaUrlInline = `
     mediaUrl(download:false, type:absolute)
 `;
 
-const mediaFragment = `
-    ${globalFragment}
+const mediaDownloadFragment = `
     ...on media_Document {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Image {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Archive {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Audio {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Code {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Data {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Executable {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Presentation {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Spreadsheet {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Text {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Unknown {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Vector {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
     ...on media_Video {
-        ${mediaContentFragment}
+        ${mediaUrlAttachment}
     }
 `;
 
-const imageMediaFragment = `
+const imageFragment = `
     __typename
     ...on media_Vector {
-        ${mediaContentFragment}
+        ${mediaUrlInline}
     }
     ...on media_Image {
-        ${mediaContentFragment}
+        ${mediaUrlInline}
         imageUrl(scale:"$scale", type:absolute)
     }
 `;
 
 module.exports = {
-    fragment: mediaFragment,
-    imageFragment: imageMediaFragment,
+    mediaDownloadFragment,
+    imageFragment,
 };

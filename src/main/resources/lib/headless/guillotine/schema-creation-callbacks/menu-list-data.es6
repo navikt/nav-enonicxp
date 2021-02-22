@@ -1,6 +1,4 @@
 const contentLib = require('/lib/xp/content');
-const portalLib = require('/lib/xp/portal');
-const contextLib = require('/lib/xp/context');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 const { forceArray } = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
@@ -56,40 +54,20 @@ const getContentFromRefs = (refs) => {
         return null;
     }
 
-    return contentLib
-        .query({
-            start: 0,
-            count: refs.length,
-            filters: {
-                ids: {
-                    values: refs,
-                },
+    return refs.reduce((acc, ref) => {
+        const content = contentLib.get({ key: ref });
+        if (!content) {
+            return acc;
+        }
+
+        return [
+            ...acc,
+            {
+                text: content.displayName,
+                url: content._path,
             },
-        })
-        .hits.map((item) => ({
-            text: item.displayName,
-            url: item.type.startsWith('media:') ? getAttachmentUrl(item._id) : item._path,
-        }));
-};
-
-const getAttachmentUrl = (ref) => {
-    const context = contextLib.get();
-
-    if (context.branch === 'draft') {
-        return portalLib
-            .attachmentUrl({
-                id: ref,
-                type: 'server',
-                download: true,
-            })
-            ?.replace(/\/_\//, '/admin/site/preview/default/draft/_/');
-    }
-
-    return portalLib.attachmentUrl({
-        id: ref,
-        type: 'absolute',
-        download: true,
-    });
+        ];
+    }, []);
 };
 
 module.exports = { menuListDataCallback };
