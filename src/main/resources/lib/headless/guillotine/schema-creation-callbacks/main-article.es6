@@ -6,23 +6,16 @@ const mainArticleDataCallback = (context, params) => {
     params.fields.chapters = {
         type: graphQlLib.list(graphQlLib.reference('Content')),
     };
-
-    const textResolverOld = params.fields.text.resolve;
-    const factResolverOld = params.fields.fact.resolve;
-
-    // Resolve html-fields in data-object
-    params.fields.text.resolve = (env) => {
-        const result = textResolverOld(env);
-        return result ? htmlCleanUp(result) : '';
-    };
-    params.fields.fact.resolve = (env) => {
-        const result = factResolverOld(env);
-        return result ? htmlCleanUp(result) : '';
-    };
 };
 
 const mainArticleCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
+        // Resolve html-fields in data-object
+        const data = env.source?.data;
+        const text = data?.text ? htmlCleanUp(data.text) : '';
+        const fact = data?.fact ? htmlCleanUp(data.fact) : '';
+
+        // Resolve chapters
         const chapters = contentLib.query({
             query: `_parentPath = '/content${env.source._path}'`,
             start: 0,
@@ -44,6 +37,8 @@ const mainArticleCallback = (context, params) => {
         return {
             ...env.source.data,
             ...(chapters.length > 0 && { chapters }),
+            text,
+            fact,
         };
     };
 };
