@@ -12,9 +12,9 @@ const mainArticleFragment = `
                 _id
             }
             ingress
-            text(processHtml:{type:absolute})
+            text(processHtml:{type:server})
             hasTableOfContents
-            fact(processHtml:{type:absolute})
+            fact(processHtml:{type:server})
             social
             picture {
                 target {
@@ -33,6 +33,7 @@ const mainArticleFragment = `
             chapters {
                 ${globalFragment}
             }
+            feedbackToggle
             ${menuListItems.fragment}
             ${seoMixinFragment}
         }
