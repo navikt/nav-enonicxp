@@ -1,64 +1,65 @@
-const globalFragment = require('./_global');
+const mediaUrlDownload = `
+    mediaUrl(download:true, type:absolute)
+`;
 
-const mediaContentFragment = `
+const mediaUrl = `
     mediaUrl(download:false, type:absolute)
 `;
 
-const mediaFragment = `
-    ${globalFragment}
+const mediaAttachmentFragment = `
     ...on media_Document {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Image {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Archive {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Audio {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Code {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Data {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Executable {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Presentation {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Spreadsheet {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Text {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Unknown {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Vector {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
     ...on media_Video {
-        ${mediaContentFragment}
+        ${mediaUrlDownload}
     }
 `;
 
-const imageMediaFragment = `
+const imageFragment = `
     __typename
     ...on media_Vector {
-        ${mediaContentFragment}
+        ${mediaUrl}
     }
     ...on media_Image {
-        ${mediaContentFragment}
+        ${mediaUrl}
         imageUrl(scale:"$scale", type:absolute)
     }
 `;
 
 module.exports = {
-    fragment: mediaFragment,
-    imageFragment: imageMediaFragment,
+    mediaAttachmentFragment,
+    imageFragment,
 };

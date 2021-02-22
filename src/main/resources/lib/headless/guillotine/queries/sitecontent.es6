@@ -23,6 +23,7 @@ const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
+const media = require('./fragments/media');
 
 const queryFragments = [
     globalFragment,
@@ -41,6 +42,7 @@ const queryFragments = [
     publishingCalendar.fragment,
     melding.fragment,
     dynamicPage.fragment,
+    media.mediaAttachmentFragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
@@ -57,6 +59,8 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
+const isMedia = (content) => content.__typename?.startsWith('media_');
+
 const getContent = (idOrPath, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
@@ -69,6 +73,10 @@ const getContent = (idOrPath, branch) => {
     const content = response?.get;
     if (!content) {
         return null;
+    }
+
+    if (isMedia(content)) {
+        return content;
     }
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
@@ -162,6 +170,10 @@ const getSiteContent = (idOrPath, branch = 'master') => {
 
     if (!content) {
         return null;
+    }
+
+    if (isMedia(content)) {
+        return content;
     }
 
     const notifications = getNotifications(content._path);
