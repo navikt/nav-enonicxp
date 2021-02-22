@@ -33,3 +33,4 @@ const contentListResolver = (contentListKey, maxItemsKey, sortFunc = undefined) 
 };
 
 module.exports = { contentListResolver };
+//
