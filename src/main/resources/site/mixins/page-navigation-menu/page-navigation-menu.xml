@@ -7,6 +7,9 @@
                 <input type="TextLine" name="anchorId">
                     <label>Anker-id</label>
                     <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <regexp>^[0-9a-zA-Z-_]*$</regexp>
+                    </config>
                 </input>
                 <input type="TextLine" name="linkText">
                     <label>Lenketekst</label>

@@ -15,6 +15,9 @@
                 Dette feltet benyttes også av komponenten for intern-navigasjon på siden
             </help-text>
             <occurrences minimum="0" maximum="1" />
+            <config>
+                <regexp>^[0-9a-zA-Z-_]*$</regexp>
+            </config>
         </input>
         <input name="justify" type="RadioButton">
             <label>Justering</label>

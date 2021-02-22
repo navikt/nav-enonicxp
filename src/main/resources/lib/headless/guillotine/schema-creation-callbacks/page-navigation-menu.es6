@@ -37,6 +37,10 @@ const pageNavigationMenuCallback = (context, params) => {
 
             if (dynamicHeader?.anchorId) {
                 const { anchorId, title } = dynamicHeader;
+                if (linksAcc.find((link) => link.anchorId === anchorId)) {
+                    return linksAcc;
+                }
+
                 const linkOverride = anchorLinkOverrides.find(
                     (linkOverride) => linkOverride.anchorId === anchorId
                 );
