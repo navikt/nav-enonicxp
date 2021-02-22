@@ -3,7 +3,7 @@ const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
 const { runInBranchContext } = require('/lib/headless/run-in-context');
 const menuUtils = require('/lib/menu-utils');
-const cache = require('/lib/siteCache');
+// const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
 
@@ -154,11 +154,13 @@ const getRedirectContent = (idOrPath, branch) => {
 };
 
 const getSiteContent = (idOrPath, branch = 'master') => {
-    const content = cache.getSitecontent(
-        idOrPath,
-        branch,
-        () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
-    );
+    // const content = cache.getSitecontent(
+    //     idOrPath,
+    //     branch,
+    //     () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
+    // );
+
+    const content = getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch);
 
     if (!content) {
         return null;
