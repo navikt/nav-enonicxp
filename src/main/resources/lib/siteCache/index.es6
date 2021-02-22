@@ -240,7 +240,9 @@ function clearReferences(id, path, depth) {
         `${app.name}:main-article`,
         `${app.name}:publishing-calendar`,
         `${app.name}:dynamic-page`,
+        `${app.name}:section-page`,
     ];
+
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
         // If the parent has chapters we need to clear the cache of all other chapters as well
