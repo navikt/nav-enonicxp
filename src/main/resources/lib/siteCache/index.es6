@@ -13,6 +13,10 @@ const libs = {
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
 const sitePath = '/www.nav.no/';
+const redirectPath = '/redirects/';
+
+// Matches [/content]/www.nav.no/* and [/content]/redirects/*
+const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const oneDay = 3600 * 24;
 const oneMinute = 60;
@@ -97,19 +101,24 @@ function wipeAll() {
     Object.keys(caches).forEach((name) => wipe(name)());
 }
 
+function getPathname(path) {
+    return path.replace(pathnameFilter, '/');
+}
+
 function wipeOnChange(path) {
     if (!path) {
         return false;
     }
-    // Log path without leading /www.nav.no or leading /content/www.nav.no
-    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
 
-    log.info(`Clearing: ${logPath}`);
+    const pathname = getPathname(path);
+    log.info(`Clearing: ${pathname}`);
 
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
-        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template on [${myHash}]`);
+        log.info(
+            `WIPED: [${pathname}] - All caches cleared due to updated template on [${myHash}]`
+        );
         return true;
     }
     const w = wipe('paths');
@@ -138,26 +147,24 @@ function wipeOnChange(path) {
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
     }
-    if (path.indexOf('/content/redirects/') !== -1) {
+    if (path.indexOf(redirectPath) !== -1) {
         wipe('redirects')();
     }
 
     // For headless setup
-    const sitecontentCacheKey = getPath(path);
-    wipe('sitecontent')(sitecontentCacheKey);
-    wipe('notifications')(sitecontentCacheKey);
+    wipe('sitecontent')(pathname);
+    wipe('notifications')(pathname);
     if (path.indexOf('/global-notifications/') !== -1) {
         // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
         wipe('notifications')();
     }
     if (libs.cluster.isMaster()) {
         libs.task.submit({
-            description: `send revalidate on ${path}`,
+            description: `send revalidate on ${pathname}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(path));
+                frontendCacheRevalidate(encodeURI(pathname));
             },
         });
-        log.info(`Revalidation done for: ${logPath}`);
     }
 
     return true;
@@ -179,7 +186,7 @@ function getSitecontent(idOrPath, branch, callback) {
         return callback();
     }
     try {
-        return caches['sitecontent'].get(getPath(idOrPath), callback);
+        return caches['sitecontent'].get(getPathname(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
@@ -191,7 +198,7 @@ function getNotifications(idOrPath, callback) {
         return callback();
     }
     try {
-        return caches['notifications'].get(getPath(idOrPath), callback);
+        return caches['notifications'].get(getPathname(idOrPath), callback);
     } catch (e) {
         return null;
     }
@@ -208,6 +215,13 @@ function clearReferences(id, path, depth) {
         count: 1000,
         query: `_references LIKE "${id}"`,
     }).hits;
+
+    // if the content has a chapter reference we need the adjacent chapter to be invalidated as well
+    references.forEach((ref) => {
+        if (ref?.type === `${app.name}:main-article-chapter`) {
+            clearReferences(ref._id, ref._path, 0);
+        }
+    });
 
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {

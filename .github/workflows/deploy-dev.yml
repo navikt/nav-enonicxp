@@ -1,12 +1,13 @@
-name: Deploy to Q1
+name: Deploy to dev
 
 on:
   repository_dispatch:
-    types: deploy-to-q1
+    types: deploy-to-dev
 
 jobs:
   deploy:
     runs-on: self-hosted
+    environment: dev-sbs:personbruker
     steps:
       - name: Cleanup
         run: rm -rf $(ls navno-*.jar)
@@ -29,9 +30,9 @@ jobs:
           unzip -o app.zip
       - name: Deploy application
         env:
-          ENONIC_CLI_REMOTE_URL: ${{ secrets.Q1_ENONIC_CLI_REMOTE_URL }}
-          ENONIC_CLI_REMOTE_USER: ${{ secrets.Q1_ENONIC_CLI_REMOTE_USER }}
-          ENONIC_CLI_REMOTE_PASS: ${{ secrets.Q1_ENONIC_CLI_REMOTE_PASS }}
+          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
+          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
+          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
         run: |
           echo Deploying $(ls navno-*.jar)
           curl \

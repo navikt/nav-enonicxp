@@ -80,6 +80,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="feedback-toggle"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>
     </form>

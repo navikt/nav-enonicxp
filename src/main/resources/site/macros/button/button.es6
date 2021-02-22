@@ -1,4 +1,4 @@
-import { getUrlOrPage } from '/lib/menu-utils/url-lookup-table.es6';
+import { getUrlOrPage } from '/lib/menu-utils/link-utils.es6';
 
 exports.macro = function (context) {
     const text = context.params.text;

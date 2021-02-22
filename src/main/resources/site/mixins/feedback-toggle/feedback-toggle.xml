@@ -1,0 +1,13 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Spørreundersøkelse</label>
+            <items>
+                <input type="CheckBox" name="feedbackToggle">
+                    <label>Fant du det du lette etter? - NB! Skal bare legges inn av hovedredaktør/administrator</label>
+                    <default>unchecked</default>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
