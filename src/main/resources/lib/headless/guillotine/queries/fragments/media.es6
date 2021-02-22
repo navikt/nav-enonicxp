@@ -2,7 +2,7 @@ const mediaUrlDownload = `
     mediaUrl(download:true, type:server)
 `;
 
-const mediaUrl = `
+const mediaUrlInline = `
     mediaUrl(download:false, type:server)
 `;
 
@@ -51,10 +51,10 @@ const mediaAttachmentFragment = `
 const imageFragment = `
     __typename
     ...on media_Vector {
-        ${mediaUrl}
+        ${mediaUrlInline}
     }
     ...on media_Image {
-        ${mediaUrl}
+        ${mediaUrlInline}
         imageUrl(scale:"$scale", type:server)
     }
 `;
