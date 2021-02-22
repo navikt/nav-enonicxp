@@ -82,7 +82,7 @@ const componentsFragment = `
         }
         image {
             image {
-                imageUrl(scale:"$scale", type:absolute)
+                imageUrl(scale:"$scale", type:server)
             }
         }
     }

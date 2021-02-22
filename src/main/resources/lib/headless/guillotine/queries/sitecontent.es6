@@ -76,7 +76,13 @@ const getContent = (idOrPath, branch) => {
     }
 
     if (isMedia(content)) {
-        return content;
+        return {
+            ...content,
+            mediaUrl:
+                branch === 'draft'
+                    ? content.mediaUrl?.replace('/_/', '/admin/site/preview/default/draft/_/')
+                    : content.mediaUrl,
+        };
     }
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);

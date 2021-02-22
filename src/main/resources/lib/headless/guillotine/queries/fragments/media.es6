@@ -1,9 +1,9 @@
 const mediaUrlDownload = `
-    mediaUrl(download:true, type:absolute)
+    mediaUrl(download:true, type:server)
 `;
 
 const mediaUrl = `
-    mediaUrl(download:false, type:absolute)
+    mediaUrl(download:false, type:server)
 `;
 
 const mediaAttachmentFragment = `
@@ -55,7 +55,7 @@ const imageFragment = `
     }
     ...on media_Image {
         ${mediaUrl}
-        imageUrl(scale:"$scale", type:absolute)
+        imageUrl(scale:"$scale", type:server)
     }
 `;
 
