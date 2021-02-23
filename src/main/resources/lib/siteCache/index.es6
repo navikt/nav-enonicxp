@@ -152,9 +152,8 @@ function wipeOnChange(path) {
     }
 
     // For headless setup
-    const sitecontentCacheKey = getSitecontentCacheKey(path);
-    wipe('sitecontent')(sitecontentCacheKey);
-    wipe('notifications')(sitecontentCacheKey);
+    wipe('sitecontent')(pathname);
+    wipe('notifications')(pathname);
     if (path.indexOf('/global-notifications/') !== -1) {
         // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
         wipe('notifications')();
@@ -181,18 +180,13 @@ function getSome(cacheStoreName) {
     };
 }
 
-function getSitecontentCacheKey(idOrPath) {
-    return libs.common.sanitize(getPathname(idOrPath));
-}
-
 function getSitecontent(idOrPath, branch, callback) {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
     }
     try {
-        const key = getSitecontentCacheKey(idOrPath);
-        return caches['sitecontent'].get(key, callback);
+        return caches['sitecontent'].get(getPathname(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
@@ -204,13 +198,14 @@ function getNotifications(idOrPath, callback) {
         return callback();
     }
     try {
-        return caches['notifications'].get(getSitecontentCacheKey(idOrPath), callback);
+        return caches['notifications'].get(getPathname(idOrPath), callback);
     } catch (e) {
         return null;
     }
 }
 
 function clearReferences(id, path, depth) {
+    log.info(`Find references for: ${path}`);
     let newPath = path;
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
@@ -222,10 +217,14 @@ function clearReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
-    // if the content has a chapter reference we need the adjacent chapter to be invalidated as well
+    // if there are references which have indirect references we need to invalidate their
+    // references as well
     references.forEach((ref) => {
-        if (ref?.type === `${app.name}:main-article-chapter`) {
-            clearReferences(ref._id, ref._path, 0);
+        if (
+            ref?.type === `${app.name}:main-article-chapter` ||
+            ref?.type === `${app.name}:notification`
+        ) {
+            clearReferences(ref._id, ref._path, depth + 1);
         }
     });
 
@@ -246,7 +245,9 @@ function clearReferences(id, path, depth) {
         `${app.name}:main-article`,
         `${app.name}:publishing-calendar`,
         `${app.name}:dynamic-page`,
+        `${app.name}:section-page`,
     ];
+
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
         // If the parent has chapters we need to clear the cache of all other chapters as well
