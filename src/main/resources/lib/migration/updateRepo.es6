@@ -3,6 +3,7 @@ const libs = {
     node: require('/lib/xp/node'),
     tools: require('/lib/migration/tools'),
     navUtils: require('/lib/nav-utils'),
+    facets: require('/lib/facets'),
 };
 
 const repoDraft = libs.node.connect({
@@ -16,7 +17,7 @@ const repoMaster = libs.node.connect({
     principals: ['role:system.admin'],
 });
 
-function createDialog(header, action) {
+function createDialog(header, action, button = 'Start oppdatering') {
     return {
         isNew: true,
         head: `${header}`,
@@ -28,7 +29,7 @@ function createDialog(header, action) {
                     elements: [
                         {
                             tag: 'button',
-                            text: 'Start oppdatering',
+                            text: button,
                             action: `${action}`,
                             id: 'testid',
                             tagClass: ['button', 'is-info'],
@@ -43,33 +44,11 @@ function createDialog(header, action) {
         },
     };
 }
-function republishLiveElements(targetIds) {
-    const masterHits = repoMaster.query({
-        count: targetIds.length,
-        filters: {
-            ids: {
-                values: targetIds,
-            },
-        },
-    }).hits;
-    const masterIds = masterHits.map((el) => el.id);
-
-    // important that we use resolve false when pushing objects to master, else we can get objects
-    // which were unpublished back to master without a published.from property
-    const pushResult = repoDraft.push({
-        keys: masterIds,
-        resolve: false,
-        target: 'master',
-    });
-
-    log.info(`Pushed ${masterIds.length} elements to master`);
-    log.info(JSON.stringify(pushResult, null, 4));
-}
 
 function unpublisher(socket) {
     const masterHits = repoMaster.query({
         count: 10000,
-        query: 'publish.from NOT LIKE "*" AND (type LIKE "no.nav.navno:*" OR type LIKE "media:*")',
+        query: 'publish.from NOT LIKE "*" AND (type LIKE "no.nav.navno:*" OR type LIKE "media:*") ',
     }).hits;
 
     socket.emit('unpublish-nodes-max', masterHits.length);
@@ -110,7 +89,7 @@ function convertImages(socket) {
     }).hits;
 
     socket.emit('convert-nodes-max', draftHits.length);
-    let targetIds = draftHits.map((elem, ix) => {
+    const targetIds = draftHits.map((elem, ix) => {
         socket.emit('convert-nodes-value', ix + 1);
         const data = elem.data;
         const { caption, imagesize } = data;
@@ -144,13 +123,36 @@ function convertImages(socket) {
         return modifiedContent ? modifiedContent._id : undefined;
     });
 
-    // publish changes
-    targetIds = targetIds.filter((elem) => {
-        return !!elem;
-    });
-
-    republishLiveElements(targetIds);
+    libs.navUtils.pushLiveElements(targetIds);
     return targetIds;
+}
+
+function facetifier() {
+    const query = {
+        query:
+            '(type LIKE "no.nav.navno:*" OR type LIKE "media:*") AND publish.from > dateTime("2020-01-01T00:00:00Z")',
+        filters: {
+            notExists: { field: 'x.no-nav-navno.fasetter' },
+        },
+        count: 100,
+        start: 0,
+    };
+
+    let contentWithoutFacets = libs.content.query(query);
+    let { count } = contentWithoutFacets;
+    const { total } = contentWithoutFacets;
+    let totalResult = contentWithoutFacets.hits;
+    // make sure we get all the hits
+    while (totalResult.length < total) {
+        contentWithoutFacets = libs.content.query({ ...query, start: count });
+        totalResult = totalResult.concat(contentWithoutFacets.hits);
+        count += contentWithoutFacets.count;
+    }
+    log.info(`total: ${total}  -  ${totalResult.length}`);
+    totalResult.forEach((item) => {
+        log.info(`${item._path} - ${item._name}`);
+    });
+    libs.facets.checkIfUpdateNeeded(totalResult.map((node) => node._id));
 }
 
 function handleUnpublish(socket) {
@@ -159,6 +161,15 @@ function handleUnpublish(socket) {
     socket.emit('newTask', elements);
     socket.on(action, () => {
         libs.tools.runInContext(socket, unpublisher);
+    });
+}
+
+function handleMissingFacets(socket) {
+    const action = 'facetify';
+    const elements = createDialog('Sett fasetter', action, 'Start fasettjobb');
+    socket.emit('newTask', elements);
+    socket.on(action, () => {
+        libs.tools.runInContext(socket, facetifier);
     });
 }
 
@@ -206,7 +217,13 @@ function convert(socket) {
         targetIds.push(element._id);
     });
     log.info(`Modified ${draftHits.length} elements in draft`);
-    republishLiveElements(targetIds);
+    libs.navUtils.pushLiveElements(targetIds);
 }
 
-module.exports = { handle: convert, handleImages, handleUnpublish };
+module.exports = {
+    handle: convert,
+    handleImages,
+    handleUnpublish,
+    handleMissingFacets,
+    facetifier,
+};
