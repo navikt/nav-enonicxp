@@ -61,6 +61,16 @@ const pageNavigationMenuMixinFragment = `
     }
 `;
 
+const headerCommonMixin = `
+    justify
+    typo {
+        _selected
+        custom {
+            typo
+        }
+    }
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
@@ -69,4 +79,5 @@ module.exports = {
     linkWithIngressMixinFragment,
     pageNavigationMenuMixinFragment,
     linkSelectableMixin,
+    headerCommonMixin,
 };

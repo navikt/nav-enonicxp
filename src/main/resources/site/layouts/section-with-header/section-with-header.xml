@@ -1,0 +1,10 @@
+<layout>
+    <display-name>Innholdsseksjon</display-name>
+    <description>Seksjon med header og en kolonne</description>
+    <form>
+        <mixin name="section-header"/>
+    </form>
+    <regions>
+        <region name="content"/>
+    </regions>
+</layout>

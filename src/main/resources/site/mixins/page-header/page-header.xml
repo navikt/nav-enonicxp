@@ -1,6 +1,6 @@
 <mixin>
     <form>
-        <input type="TextLine" name="pageHeader">
+        <input type="TextLine" name="title">
             <label>H1 header for siden</label>
             <occurrences minimum="1" maximum="1"/>
             <default>Side-tittel</default>

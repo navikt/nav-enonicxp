@@ -5,14 +5,15 @@ const {
 } = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const { headerCommonMixin } = require('/lib/headless/guillotine/queries/fragments/_mixins');
 
 const partsFragment = `
     config {
         no_nav_navno {
             dynamic_header {
                 title
-                ingress
-                titleTypo
+                anchorId
+                ${headerCommonMixin}
             }
             dynamic_link_panel {
                 ${linkWithIngressMixinFragment}
@@ -68,7 +69,12 @@ const partsFragment = `
                 html(processHtml:{type: server})
             }
             page_header {
-                pageHeader
+                title
+            }
+            section_header {
+                title
+                anchorId
+                ${headerCommonMixin}
             }
             button {
                 icon {

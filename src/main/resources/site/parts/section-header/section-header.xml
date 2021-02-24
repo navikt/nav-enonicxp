@@ -1,0 +1,6 @@
+<part>
+    <display-name>Header for seksjon (H2)</display-name>
+    <form>
+        <mixin name="section-header"/>
+    </form>
+</part>
