@@ -3,6 +3,13 @@
     <description>Seksjon med header og en kolonne</description>
     <form>
         <mixin name="section-header"/>
+        <input type="TextLine" name="backgroundColor">
+            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
+            <config>
+                <max-length>7</max-length>
+                <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+            </config>
+        </input>
     </form>
     <regions>
         <region name="content"/>
