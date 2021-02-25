@@ -28,6 +28,43 @@ function createNewElements() {
                     elements: [
                         {
                             tag: 'p',
+                            text: 'Sett fasetter på alle elementer som mangler',
+                        },
+                        {
+                            tag: 'progress',
+                            tagClass: ['progress', 'is-info'],
+                            id: 'lprog',
+                            progress: {
+                                value: 'd-Value',
+                                max: 'dl-childCount',
+                            },
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatusTree',
+                        },
+                        {
+                            tag: 'p',
+                            status: 'dlStatus',
+                        },
+                        {
+                            tag: 'button',
+                            tagClass: ['button', 'is-primary'],
+                            action: 'facetify',
+                            text: 'Åpne dialog',
+                        },
+                        {
+                            tag: 'li',
+                            tagClass: ['navbar-divider'],
+                        },
+                    ],
+                },
+                {
+                    tag: 'div',
+                    tagClass: ['row'],
+                    elements: [
+                        {
+                            tag: 'p',
                             text: 'Importer nye data fra NORG',
                         },
                         {
@@ -543,6 +580,15 @@ exports.handle = (s) => {
             description: 'Avpubliser feil i master',
             task: () => {
                 libs.tools.runInContext(socket, libs.updateRepo.handleUnpublish);
+            },
+        });
+    });
+
+    socket.on('facetify', () => {
+        libs.task.submit({
+            description: 'Legg til fasetter til innehold som ikke har',
+            task: () => {
+                libs.tools.runInContext(socket, libs.updateRepo.handleMissingFacets);
             },
         });
     });
