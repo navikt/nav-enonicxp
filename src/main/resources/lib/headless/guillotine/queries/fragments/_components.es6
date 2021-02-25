@@ -89,6 +89,16 @@ const partsFragment = `
     }
 `;
 
+const layoutsFragment = `
+    config {
+        no_nav_navno {
+            section_with_header {
+               anchorId
+            }
+        }
+    }
+`;
+
 const pagesFragment = `
     config {
         no_nav_navno {
@@ -110,6 +120,7 @@ const componentsContent = `
     layout {
         descriptor
         configAsJson
+        ${layoutsFragment}
     }
     part {
         descriptor
