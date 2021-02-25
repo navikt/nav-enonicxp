@@ -15,6 +15,9 @@ const contentListCallback = require('./schema-creation-callbacks/content-list-ca
 const mainArticleCallback = require('./schema-creation-callbacks/main-article');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
+    htmlAreaPartConfigCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/html-area-part-config');
+const {
     pageNavigationMenuCallback,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/page-navigation-menu');
 const {
@@ -43,6 +46,7 @@ const schemaContextOptions = {
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
         PartConfigPageNavigationMenu: pageNavigationMenuCallback,
         PageConfigPageWithSideMenus: pageNavigationMenuCallback,
+        PartConfigHtmlArea: htmlAreaPartConfigCallback,
     },
 };
 
