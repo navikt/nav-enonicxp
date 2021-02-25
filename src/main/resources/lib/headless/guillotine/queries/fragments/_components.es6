@@ -71,11 +71,6 @@ const partsFragment = `
             page_header {
                 title
             }
-            section_header {
-                title
-                anchorId
-                ${headerCommonMixin}
-            }
             button {
                 icon {
                     ${imageFragment}

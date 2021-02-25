@@ -33,7 +33,9 @@ const pageNavigationMenuCallback = (context, params) => {
         const components = getComponentsOnPage(contentId);
 
         const anchorLinksResolved = components.reduce((linksAcc, component) => {
-            const dynamicHeader = component.part?.config?.['no-nav-navno']?.['dynamic-header'];
+            const dynamicHeader =
+                component.part?.config?.['no-nav-navno']?.['dynamic-header'] ||
+                component.layout?.config?.['no-nav-navno']?.['section-with-header'];
 
             if (dynamicHeader?.anchorId) {
                 const { anchorId, title } = dynamicHeader;
