@@ -84,43 +84,67 @@ const getContent = (idOrPath, branch) => {
     };
 };
 
-const getRedirectContent = (idOrPath, branch) => {
-    const pathSegments = idOrPath.split('/');
-    const redirect = pathSegments.length === 3 && pathSegments[2];
+const getContentFromLegacyPath = (path) => {
+    const legacyCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
+    if (!legacyCmsKeyMatch) {
+        return null;
+    }
 
-    if (redirect) {
-        const redirectContent = runInBranchContext(
-            () => contentLib.get({ key: `/redirects/${redirect}` }),
+    const legacyCmsKey = legacyCmsKeyMatch[0];
+
+    const queryRes = contentLib.query({
+        query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
+    });
+
+    return queryRes?.hits?.[0];
+};
+
+const getRedirectContent = (idOrPath, branch) => {
+    const legacyPathTarget = runInBranchContext(() => getContentFromLegacyPath(idOrPath), branch);
+    if (legacyPathTarget) {
+        return {
+            ...legacyPathTarget,
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: legacyPathTarget._path } },
+        };
+    }
+
+    const pathSegments = idOrPath.split('/');
+    const shortUrlPath = pathSegments.length === 3 && pathSegments[2];
+
+    if (shortUrlPath) {
+        const shortUrlTarget = runInBranchContext(
+            () => contentLib.get({ key: `/redirects/${shortUrlPath}` }),
             branch
         );
 
-        if (!redirectContent) {
+        if (!shortUrlTarget) {
             return null;
         }
 
-        if (redirectContent?.type === 'no.nav.navno:internal-link') {
-            const target = getContent(redirectContent.data?.target);
+        if (shortUrlTarget.type === 'no.nav.navno:internal-link') {
+            const target = getContent(shortUrlTarget.data?.target);
             if (!target) {
                 return null;
             }
 
             return {
-                ...redirectContent,
-                data: { target: { _path: target._path } },
+                ...shortUrlTarget,
                 __typename: 'no_nav_navno_InternalLink',
+                data: { target: { _path: target._path } },
             };
         }
 
-        if (redirectContent?.type === 'no.nav.navno:external-link') {
+        if (shortUrlTarget.type === 'no.nav.navno:external-link') {
             return {
-                ...redirectContent,
+                ...shortUrlTarget,
                 __typename: 'no_nav_navno_ExternalLink',
             };
         }
 
-        if (redirectContent?.type === 'no.nav.navno:url') {
+        if (shortUrlTarget.type === 'no.nav.navno:url') {
             return {
-                ...redirectContent,
+                ...shortUrlTarget,
                 __typename: 'no_nav_navno_Url',
             };
         }

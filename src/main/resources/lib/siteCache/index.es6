@@ -13,6 +13,10 @@ const libs = {
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
 const sitePath = '/www.nav.no/';
+const redirectPath = '/redirects/';
+
+// Matches [/content]/www.nav.no/* and [/content]/redirects/*
+const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const oneDay = 3600 * 24;
 const oneMinute = 60;
@@ -97,19 +101,24 @@ function wipeAll() {
     Object.keys(caches).forEach((name) => wipe(name)());
 }
 
+function getPathname(path) {
+    return path.replace(pathnameFilter, '/');
+}
+
 function wipeOnChange(path) {
     if (!path) {
         return false;
     }
-    // Log path without leading /www.nav.no or leading /content/www.nav.no
-    const logPath = path.substring(path.indexOf(sitePath) + sitePath.length);
 
-    log.info(`Clearing: ${logPath}`);
+    const pathname = getPathname(path);
+    log.info(`Clearing: ${pathname}`);
 
     // When a template is updated we need to wipe all caches
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
-        log.info(`WIPED: [${logPath}] - All caches cleared due to updated template on [${myHash}]`);
+        log.info(
+            `WIPED: [${pathname}] - All caches cleared due to updated template on [${myHash}]`
+        );
         return true;
     }
     const w = wipe('paths');
@@ -138,26 +147,24 @@ function wipeOnChange(path) {
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
     }
-    if (path.indexOf('/content/redirects/') !== -1) {
+    if (path.indexOf(redirectPath) !== -1) {
         wipe('redirects')();
     }
 
     // For headless setup
-    const sitecontentCacheKey = getPath(path);
-    wipe('sitecontent')(sitecontentCacheKey);
-    wipe('notifications')(sitecontentCacheKey);
-    if ( path.indexOf('/global-notifications/') !== -1) {
+    wipe('sitecontent')(pathname);
+    wipe('notifications')(pathname);
+    if (path.indexOf('/global-notifications/') !== -1) {
         // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
         wipe('notifications')();
     }
     if (libs.cluster.isMaster()) {
         libs.task.submit({
-            description: `send revalidate on ${path}`,
+            description: `send revalidate on ${pathname}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(path));
+                frontendCacheRevalidate(encodeURI(pathname));
             },
         });
-        log.info(`Revalidation done for: ${logPath}`);
     }
 
     return true;
@@ -179,7 +186,7 @@ function getSitecontent(idOrPath, branch, callback) {
         return callback();
     }
     try {
-        return caches['sitecontent'].get(getPath(idOrPath), callback);
+        return caches['sitecontent'].get(getPathname(idOrPath), callback);
     } catch (e) {
         // cache functions throws if callback returns null
         return null;
@@ -191,23 +198,41 @@ function getNotifications(idOrPath, callback) {
         return callback();
     }
     try {
-        return caches['notifications'].get(getPath(idOrPath), callback);
+        return caches['notifications'].get(getPathname(idOrPath), callback);
     } catch (e) {
         return null;
     }
 }
 
-function clearReferences(id, path, depth) {
+function findReferences(id, path, depth) {
+    log.info(`Find references for: ${path}`);
     let newPath = path;
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
-        return;
+        return [];
     }
-    const references = libs.content.query({
+    let references = libs.content.query({
         start: 0,
         count: 1000,
         query: `_references LIKE "${id}"`,
     }).hits;
+
+    // if there are references which have indirect references we need to invalidate their
+    // references as well
+    const deepTypes = [
+        `${app.name}:notification`,
+        `${app.name}:main-article-chapter`,
+        `${app.name}:content-list`,
+        `${app.name}:breaking-news`,
+    ];
+
+    const deepReferences = references.reduce((acc, ref) => {
+        if (ref?.type && deepTypes.indexOf(ref.type) !== -1) {
+            return [...acc, ...findReferences(ref._id, ref._path, depth + 1)];
+        }
+        return acc;
+    }, []);
+    references = [references, ...deepReferences];
 
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {
@@ -225,7 +250,10 @@ function clearReferences(id, path, depth) {
         `${app.name}:page-list`,
         `${app.name}:main-article`,
         `${app.name}:publishing-calendar`,
+        `${app.name}:dynamic-page`,
+        `${app.name}:section-page`,
     ];
+
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
         // If the parent has chapters we need to clear the cache of all other chapters as well
@@ -239,16 +267,25 @@ function clearReferences(id, path, depth) {
         });
     }
 
+    // remove duplicates and return all references
+    const refPaths = references.map((i) => i._path);
+    return references.filter((v, i, a) => !!v._path && refPaths.indexOf(v._path) === i);
+}
+
+function clearReferences(id, path, depth) {
+    const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
-        log.info(`Clear references: ${references.map((item) => item._path)}`);
+        log.info(
+            `Clear references: ${JSON.stringify(
+                references.map((item) => item._path),
+                null,
+                4
+            )}`
+        );
     }
 
-    const deepTypes = [`${app.name}:content-list`, `${app.name}:breaking-news`];
     references.forEach((el) => {
         wipeOnChange(el._path);
-        if (deepTypes.indexOf(el.type) !== -1) {
-            clearReferences(el._id, el._path, depth + 1);
-        }
     });
 }
 

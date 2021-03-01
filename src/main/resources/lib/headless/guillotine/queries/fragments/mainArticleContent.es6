@@ -8,11 +8,12 @@ const mainArticleContentFragment = `
         languages {
             language
             _path
+            _id
         }
         ingress
-        text(processHtml:{type:absolute})
+        text(processHtml:{type:server})
         hasTableOfContents
-        fact(processHtml:{type:absolute})
+        fact(processHtml:{type:server})
         social
         picture {
             target {
@@ -28,6 +29,7 @@ const mainArticleContentFragment = `
             caption
             altText
         }
+        feedbackToggle
         ${menuListItems.fragment}
         ${seoMixinFragment}
     }

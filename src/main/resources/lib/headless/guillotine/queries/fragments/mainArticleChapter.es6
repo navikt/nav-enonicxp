@@ -4,13 +4,20 @@ const mainArticleContent = require('./mainArticleContent');
 const mainArticleChapterFragment = `
     ...on no_nav_navno_MainArticleChapter {
         ${globalFragment}
-        parent{
+        parent {
             ${globalFragment}
             children(first:1000) {
-                ${globalFragment}
+                ...on no_nav_navno_MainArticleChapter {
+                    ${globalFragment}
+                }
             }
         }
         data {
+            languages {
+                language
+                _path
+                _id
+            }
             article {
                ...on no_nav_navno_MainArticle {
                    ${mainArticleContent.fragment}
