@@ -232,7 +232,7 @@ function findReferences(id, path, depth) {
         }
         return acc;
     }, []);
-    references = [references, ...deepReferences];
+    references = [...references, ...deepReferences];
 
     // fix path before getting parent
     if (path.indexOf('/content/') === 0) {

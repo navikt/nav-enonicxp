@@ -208,7 +208,7 @@ const updateFacets = (fasetter, ids) => {
             });
             return modifiedNode ? modifiedNode._id : undefined;
         });
-        if (modifiedContent) {
+        if (modifiedContent.length > 0) {
             navUtils.pushLiveElements(modifiedContent);
         }
     });
