@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Knapp</display-name>
+    <display-name>_Knapp</display-name>
     <form>
         <mixin name="link"/>
         <input name="type" type="RadioButton">

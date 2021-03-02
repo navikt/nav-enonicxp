@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Sidemeny for intern-navigasjon</display-name>
+    <display-name>_Sidemeny for intern-navigasjon</display-name>
     <form>
         <mixin name="page-navigation-menu"/>
         <input type="RadioButton" name="dummyInputToPreventEmptyPartConfigDoNotRemove">

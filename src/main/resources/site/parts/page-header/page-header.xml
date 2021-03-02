@@ -1,6 +1,6 @@
 <part>
-    <display-name>Header for side (H1)</display-name>
-    <description>Skal kun benyttes som side-tittel, en på hver side</description>
+    <display-name>_Header for side (H1)</display-name>
+    <description>Skal kun benyttes som side-tittel</description>
     <form>
         <mixin name="page-header"/>
     </form>
