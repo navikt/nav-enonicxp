@@ -1,0 +1,12 @@
+<content-type>
+    <display-name>Kjerneside med sidemenyer</display-name>
+    <description>Side med venstremeny og masse innhold!</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="feedback-toggle"/>
+        <mixin name="seo"/>
+    </form>
+</content-type>

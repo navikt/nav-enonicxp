@@ -339,20 +339,6 @@ const dynamicPage = [
     },
 ];
 
-const pageWithSideMenus = [
-    {
-        type: 'page',
-        path: '/',
-        page: {
-            descriptor: 'no.nav.navno:page-with-side-menus',
-            customized: true,
-            config: {
-                'no-nav-navno': {},
-            },
-        },
-    },
-];
-
 const officeInformationPage = [
     {
         type: 'page',
@@ -390,6 +376,20 @@ const officeInformationPage = [
         path: '/main/1/first/0',
         part: {
             descriptor: 'no.nav.navno:office-information',
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
+
+const pageWithSideMenus = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:page-with-side-menus',
+            customized: true,
             config: {
                 'no-nav-navno': {},
             },
@@ -495,19 +495,6 @@ const templates = [
     },
     {
         content: {
-            displayName: 'Innholdsside med sidemenyer',
-            parentPath: '/www.nav.no/_templates/',
-            requireValid: true,
-            contentType: 'portal:page-template',
-            branch: 'draft',
-            data: {
-                supports: 'no.nav.navno:dynamic-page',
-            },
-        },
-        components: pageWithSideMenus,
-    },
-    {
-        content: {
             displayName: 'Enhetsinformasjon',
             parentPath: '/www.nav.no/_templates/',
             requireValid: true,
@@ -518,6 +505,19 @@ const templates = [
             },
         },
         components: officeInformationPage,
+    },
+    {
+        content: {
+            displayName: 'Kjerneside med sidemenyer',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:content-page-with-sidemenus',
+            },
+        },
+        components: pageWithSideMenus,
     },
 ];
 
