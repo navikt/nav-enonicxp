@@ -12,11 +12,14 @@ const hookCreatePageComponentDataConfigType = require('./function-hooks/create-p
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const menuListDataCallback = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const mainArticleCallback = require('./schema-creation-callbacks/main-article');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const { sectionWithHeaderCallback } = require('./schema-creation-callbacks/section-with-header');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
+const {
+    mainArticleDataCallback,
+    mainArticleCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/main-article');
 const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
@@ -33,6 +36,7 @@ const hookGuillotineFunctions = () => {
 const schemaContextOptions = {
     creationCallbacks: {
         no_nav_navno_MainArticle: mainArticleCallback,
+        no_nav_navno_MainArticle_Data: mainArticleDataCallback,
         no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
         no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
         no_nav_navno_LargeTable: largeTableCallback,
