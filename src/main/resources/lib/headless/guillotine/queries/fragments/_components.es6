@@ -129,7 +129,7 @@ const componentsContent = `
     }
     image {
         image {
-            imageUrl(scale: "$scale", type: absolute)
+            imageUrl(scale: "$scale", type: server)
         }
     }
 `;

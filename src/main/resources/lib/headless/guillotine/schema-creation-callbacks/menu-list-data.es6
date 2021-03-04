@@ -1,11 +1,10 @@
 const contentLib = require('/lib/xp/content');
-const portalLib = require('/lib/xp/portal');
-const contextLib = require('/lib/xp/context');
 const graphQlLib = require('/lib/guillotine/graphql.js');
-const utils = require('/lib/nav-utils');
+const { forceArray } = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
+const contextLib = require('/lib/xp/context');
 
-const callback = (context, params) => {
+const menuListDataCallback = (context, params) => {
     // Create new types for mapped values
     if (!context.types.menuListLink) {
         context.types.menuListLink = graphQlLib.createObjectType(context, {
@@ -45,50 +44,37 @@ const resolve = (menuListKey) => (env) => {
     // Fix mismatch between source key and graphQL key
     const realKey = Object.keys(env.source).find((el) => generateCamelCase(el) === menuListKey);
 
-    const link = env.source[realKey]?.link;
-    const files = env.source[realKey]?.files;
-    const linksResolved = link ? getContentFromRefs(link) : [];
-    const filesResolved = files ? getContentFromRefs(files) : [];
-    return { links: [...linksResolved, ...filesResolved] };
+    const link = forceArray(env.source[realKey]?.link);
+    const files = forceArray(env.source[realKey]?.files);
+    const contentResolved = getContentFromRefs([...link, ...files]);
+    return { links: contentResolved };
+};
+
+const xpPathToFrontendPath = (path) => {
+    const { branch } = contextLib.get();
+
+    return path.replace(/^\/www.nav.no/, branch === 'draft' ? '/draft' : '');
 };
 
 const getContentFromRefs = (refs) => {
-    // Refs can be arrays and strings
-    return utils
-        .forceArray(refs)
-        .map((key) => getContentFromRef(key))
-        .filter(Boolean);
-};
-
-const getContentFromRef = (ref) => {
-    const content = contentLib.get({ key: ref });
-    if (!content) {
+    if (refs.length === 0) {
         return null;
     }
-    const path = content._path;
-    const text = content.displayName;
-    const type = content.type;
-    return { text, url: type.startsWith('media:') ? getAttachmentUrl(ref) : path };
+
+    return refs.reduce((acc, ref) => {
+        const content = contentLib.get({ key: ref });
+        if (!content) {
+            return acc;
+        }
+
+        return [
+            ...acc,
+            {
+                text: content.displayName,
+                url: xpPathToFrontendPath(content._path),
+            },
+        ];
+    }, []);
 };
 
-const getAttachmentUrl = (ref) => {
-    const context = contextLib.get();
-
-    if (context.branch === 'draft') {
-        return portalLib
-            .attachmentUrl({
-                id: ref,
-                type: 'server',
-                download: true,
-            })
-            ?.replace(/\/_\//, '/admin/site/preview/default/draft/_/');
-    }
-
-    return portalLib.attachmentUrl({
-        id: ref,
-        type: 'absolute',
-        download: true,
-    });
-};
-
-module.exports = callback;
+module.exports = { menuListDataCallback };
