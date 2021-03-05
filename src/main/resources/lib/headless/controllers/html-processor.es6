@@ -46,26 +46,14 @@ const htmlProcessor = (req) => {
         };
     }
 
-    if (branch === 'draft') {
-        const processedHtml = runInBranchContext(
-            () =>
-                portalLib.processHtml({
-                    value: html,
-                    type: 'server', // Always use server-relative urls for draft
-                }),
-            'draft'
-        );
-
-        return {
-            contentType: 'text/html',
-            body: processedHtml,
-        };
-    }
-
-    const processedHtml = portalLib.processHtml({
-        value: html,
-        type: type,
-    });
+    const processedHtml = runInBranchContext(
+        () =>
+            portalLib.processHtml({
+                value: html,
+                type: branch === 'draft' ? 'server' : type, // Always use server-relative urls for draft
+            }),
+        branch
+    );
 
     return {
         contentType: 'text/html',
