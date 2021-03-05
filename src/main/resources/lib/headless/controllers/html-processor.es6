@@ -54,7 +54,9 @@ const htmlProcessor = (req) => {
                     type: 'server', // Always use server-relative urls for draft
                 }),
             'draft'
-        ).replace(/\/_\//g, '/admin/site/preview/default/draft/_/'); // Insert draft preview prefix to asset paths
+        );
+        // .replace(/\/_\//g, '/admin/site/preview/default/draft/_/');
+        // Insert draft preview prefix to asset paths
 
         return {
             contentType: 'text/html',

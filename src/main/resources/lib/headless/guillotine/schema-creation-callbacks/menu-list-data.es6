@@ -75,13 +75,12 @@ const getAttachmentUrl = (ref) => {
     const context = contextLib.get();
 
     if (context.branch === 'draft') {
-        return portalLib
-            .attachmentUrl({
-                id: ref,
-                type: 'server',
-                download: true,
-            })
-            ?.replace(/\/_\//, '/admin/site/preview/default/draft/_/');
+        return portalLib.attachmentUrl({
+            id: ref,
+            type: 'server',
+            download: true,
+        });
+        // ?.replace(/\/_\//, '/admin/site/preview/default/draft/_/');
     }
 
     return portalLib.attachmentUrl({
