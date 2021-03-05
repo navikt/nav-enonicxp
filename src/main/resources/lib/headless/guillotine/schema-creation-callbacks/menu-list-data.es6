@@ -80,12 +80,11 @@ const getAttachmentUrl = (ref) => {
             type: 'server',
             download: true,
         });
-        // ?.replace(/\/_\//, '/admin/site/preview/default/draft/_/');
     }
 
     return portalLib.attachmentUrl({
         id: ref,
-        type: 'absolute',
+        type: 'server',
         download: true,
     });
 };

@@ -55,8 +55,6 @@ const htmlProcessor = (req) => {
                 }),
             'draft'
         );
-        // .replace(/\/_\//g, '/admin/site/preview/default/draft/_/');
-        // Insert draft preview prefix to asset paths
 
         return {
             contentType: 'text/html',

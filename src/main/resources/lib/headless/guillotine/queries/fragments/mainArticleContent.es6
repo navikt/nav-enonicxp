@@ -19,10 +19,10 @@ const mainArticleContentFragment = `
             target {
                 __typename
                 ...on media_Image {
-                     imageUrl(scale:"$scale", type:absolute)
+                     imageUrl(scale:"$scale", type:server)
                 }
                 ...on media_Vector {
-                     mediaUrl(download: false, type:absolute)
+                     mediaUrl(download: false, type:server)
                 }
             }
             size

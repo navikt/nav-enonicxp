@@ -1,7 +1,7 @@
 const globalFragment = require('./_global');
 
 const mediaContentFragment = `
-    mediaUrl(download:false, type:absolute)
+    mediaUrl(download:false, type:server)
 `;
 
 const mediaFragment = `
@@ -54,7 +54,7 @@ const imageMediaFragment = `
     }
     ...on media_Image {
         ${mediaContentFragment}
-        imageUrl(scale:"$scale", type:absolute)
+        imageUrl(scale:"$scale", type:server)
     }
 `;
 
