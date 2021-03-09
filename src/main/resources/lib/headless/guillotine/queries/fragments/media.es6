@@ -1,5 +1,3 @@
-const globalFragment = require('./_global');
-
 const mediaUrlDownload = `
     mediaUrl(download:true, type:server)
 `;
