@@ -35,10 +35,10 @@ const mainArticleCallback = (context, params) => {
         }).hits;
 
         return {
-            ...env.source.data,
-            ...(chapters.length > 0 && { chapters }),
+            ...data,
             text,
             fact,
+            ...(chapters.length > 0 && { chapters }),
         };
     };
 };
