@@ -5,7 +5,7 @@ exports.macro = function (context) {
     const text = context.params.infoBoks;
     const imageUrl = libs.portal.assetUrl({
         path: 'img/navno/alertstripe__ikon_info.svg ',
-        type: 'absolute',
+        type: 'server',
     });
     const body =
         '<div class="macroInfoBoks alertstripe alertstripe--info">' +
