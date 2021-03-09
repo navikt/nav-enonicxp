@@ -5,7 +5,7 @@ exports.macro = function (context) {
     const text = context.params.varselBoks;
     const imageUrl = libs.portal.assetUrl({
         path: 'img/navno/alertstripe__ikon_advarsel.svg',
-        type: 'absolute',
+        type: 'server',
     });
     const body =
         '<div class="macroVarselBoks alertstripe alertstripe--advarsel">' +
