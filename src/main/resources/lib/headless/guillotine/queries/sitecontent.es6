@@ -76,18 +76,11 @@ const getContent = (idOrPath, branch) => {
     }
 
     if (isMedia(content)) {
-        return {
-            ...content,
-            mediaUrl:
-                branch === 'draft'
-                    ? content.mediaUrl?.replace('/_/', '/admin/site/preview/default/draft/_/')
-                    : content.mediaUrl,
-        };
+        return content;
     }
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
-
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
     return {
