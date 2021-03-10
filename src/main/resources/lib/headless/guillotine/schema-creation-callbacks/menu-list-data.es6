@@ -2,7 +2,6 @@ const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 const { forceArray } = require('/lib/nav-utils');
 const { generateCamelCase } = require('/lib/guillotine/util/naming');
-const contextLib = require('/lib/xp/context');
 
 const menuListDataCallback = (context, params) => {
     // Create new types for mapped values
@@ -50,12 +49,6 @@ const resolve = (menuListKey) => (env) => {
     return { links: contentResolved };
 };
 
-const xpPathToFrontendPath = (path) => {
-    const { branch } = contextLib.get();
-
-    return path.replace(/^\/www.nav.no/, branch === 'draft' ? '/draft' : '');
-};
-
 const getContentFromRefs = (refs) => {
     if (refs.length === 0) {
         return null;
@@ -71,7 +64,7 @@ const getContentFromRefs = (refs) => {
             ...acc,
             {
                 text: content.displayName,
-                url: xpPathToFrontendPath(content._path),
+                url: content._path,
             },
         ];
     }, []);

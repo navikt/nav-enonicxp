@@ -21,6 +21,7 @@ const mainArticleCallback = (context, params) => {
             start: 0,
             count: 100,
             contentTypes: ['no.nav.navno:main-article-chapter'],
+            sort: env.source.childOrder || 'displayname ASC',
             filters: {
                 boolean: {
                     must: [
