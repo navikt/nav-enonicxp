@@ -142,15 +142,20 @@ const getRedirectContent = (idOrPath, branch) => {
         }
 
         if (shortUrlTarget.type === 'no.nav.navno:internal-link') {
-            const target = getContent(shortUrlTarget.data?.target);
+            const target = shortUrlTarget.data?.target;
             if (!target) {
+                return null;
+            }
+
+            const targetContent = getContent(target);
+            if (!targetContent) {
                 return null;
             }
 
             return {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_InternalLink',
-                data: { target: { _path: target._path } },
+                data: { target: { _path: targetContent._path } },
             };
         }
 
