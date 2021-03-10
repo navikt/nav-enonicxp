@@ -41,15 +41,16 @@ const adminFrontendProxy = (req) => {
             headers: {
                 secret: app.config.serviceSecret,
             },
+            followRedirects: false,
         });
 
         if (!response) {
             return errorResponse(frontendUrl, 500, 'No response from HTTP client');
         }
 
-        if (response.status !== 200) {
+        if (response.status >= 400) {
             log.info(
-                `Unexpected response from frontend for ${frontendUrl}: ${response.status} - ${response.message}`
+                `Error response from frontend for ${frontendUrl}: ${response.status} - ${response.message}`
             );
         }
 
