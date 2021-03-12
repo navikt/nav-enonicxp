@@ -40,6 +40,10 @@
                 <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
             </config>
         </input>
+        <input type="CheckBox" name="highlight">
+            <label>Fremhevet</label>
+            <default>unchecked</default>
+        </input>
     </form>
     <regions>
         <region name="content"/>
