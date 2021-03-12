@@ -25,6 +25,14 @@
                 <mixin name="header-common"/>
             </items>
         </field-set>
+        <input name="icon" type="ImageSelector">
+            <label>Ikon</label>
+            <config>
+                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                <allowPath>./*</allowPath>
+            </config>
+        </input>
         <input type="TextLine" name="backgroundColor">
             <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
             <config>
