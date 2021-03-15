@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const includedContentTypes = [
@@ -16,11 +17,35 @@ const includedMediaTypes = ['text'].map((mediaType) => `media:${mediaType}`);
 
 const includedTypes = [...includedContentTypes, ...includedMediaTypes];
 
-const getSitemapEntryData = (hit) => ({
-    url: hit.data?.canonicalUrl || hit._path.replace('/www.nav.no', frontendOrigin),
-    modifiedTime: hit.modifiedTime,
-    language: hit.language,
-});
+const getUrl = (content) =>
+    content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
+
+const getAlternativeLanguageVersions = (content) =>
+    content.data?.languages &&
+    forceArray(content.data.languages).reduce((acc, id) => {
+        const altContent = contentLib.get({ key: id });
+
+        return altContent
+            ? [
+                  ...acc,
+                  {
+                      language: altContent.language,
+                      url: getUrl(altContent),
+                  },
+              ]
+            : acc;
+    }, []);
+
+const getSitemapEntryData = (content) => {
+    const languageVersions = getAlternativeLanguageVersions(content);
+
+    return {
+        url: getUrl(content),
+        modifiedTime: content.modifiedTime,
+        language: content.language,
+        ...(languageVersions?.length > 0 && { languageVersions }),
+    };
+};
 
 const handleGet = (req) => {
     const { secret } = req.headers;
