@@ -40,6 +40,7 @@ const handleGet = (req) => {
             start: 0,
             count: 20000,
             contentTypes: includedTypes,
+            query: '_path LIKE "/content/www.nav.no/*"',
             filters: {
                 boolean: {
                     mustNot: {
