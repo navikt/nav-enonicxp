@@ -2,7 +2,7 @@ const { getBranchFromMacroContext } = require('/lib/headless/branch-context');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
 const libs = {
-    portal: require('/lib/xp/content'),
+    portal: require('/lib/xp/portal'),
     utils: require('/lib/nav-utils'),
 };
 
@@ -21,7 +21,6 @@ exports.macro = function (context) {
                 branch
             );
             const fileExt = link.split('.').pop();
-
             return `<a href="${link}" aria-label="${text} ${fileExt}">[${fileExt}]</a>`;
         })
         .join('&nbsp;');
