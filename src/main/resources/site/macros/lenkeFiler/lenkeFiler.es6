@@ -1,5 +1,6 @@
 const { getBranchFromMacroContext } = require('/lib/headless/branch-context');
 const { runInBranchContext } = require('/lib/headless/branch-context');
+
 const libs = {
     content: require('/lib/xp/content'),
     utils: require('/lib/nav-utils'),
