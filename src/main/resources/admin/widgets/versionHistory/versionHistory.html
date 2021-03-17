@@ -11,7 +11,7 @@
         <header data-th-classappend="${!driftsMelding}? 'article-head'">
             <h1>[[${displayName}]]</h1>
             <time class="pubdate muted" data-th-datetime="${publishedFrom}">
-                [[${published}]]
+                [[${publishedFrom}]]
             </time>
             <p class="preface" data-th-if="${ingress && ingress != ''}">
                 [[${ingress}]]
@@ -19,7 +19,7 @@
             <div data-th-if="${hasTableOfContents}" data-th-remove="tag">
                 <nav class="table-of-contents" data-selected-id>
                     <h2 class="visuallyhidden" role="heading" aria-level="2">
-                        [[${langBundle.tableOfContents}]]
+                        table of content
                     </h2>
                     <ol>
                         <li data-th-each="tocEntry,i : ${toc}">
@@ -37,7 +37,7 @@
         </div>
 
         <div class="well article-facts" data-th-if="${hasFact}">
-            <h3 class="h4 decorated">[[${langBundle.facts}]]</h3>
+            <h3 class="h4 decorated">facts</h3>
             <div data-th-utext="${htmlFact}"></div>
         </div>
 

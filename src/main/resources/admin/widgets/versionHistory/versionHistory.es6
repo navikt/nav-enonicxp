@@ -5,19 +5,15 @@ const libs = {
     portal: require('/lib/xp/portal'),
     content: require('/lib/xp/content'),
     utils: require('/lib/nav-utils'),
-    lang: require('/lib/i18nUtil'),
-    cache: require('/lib/siteCache'),
     audit: require('/lib/xp/auditlog'),
 };
-const view = resolve('versionHistory.html');
-
+const view = resolve('versionHistorySimpleView.html');
 const renderPage = (req, content) => {
     if (content.type === app.name + ':main-article-chapter') {
         content = libs.content.get({
             key: content.data.article,
         });
     }
-    const langBundle = libs.lang.parseBundle(content.language).main_article;
     const data = content.data;
     const hasFact = !!data.fact;
     let htmlText = data.text;
@@ -99,7 +95,6 @@ const renderPage = (req, content) => {
     // Definer model og kall rendring (view)
     return {
         displayName: content.displayName,
-        published: libs.utils.dateTimePublished(content, content.language || 'no'),
         publishedFrom: content.publish.from,
         ingress: data.ingress,
         hasTableOfContents: toc.length > 0,
@@ -109,9 +104,9 @@ const renderPage = (req, content) => {
         htmlFact,
         imageObj,
         socials,
-        langBundle,
     };
 };
+// const renderContent = (req, content) => {};
 exports.get = (req) => {
     const contentId = req.params.contentId;
     // const currentComponent = libs.portal.getComponent();
@@ -136,21 +131,26 @@ exports.get = (req) => {
         },
         pricipals: ['role:system.admin'],
     });
+    const versionFinder = __.newBean('tools.PublishedVersions');
+    const versionTimestamps = JSON.parse(versionFinder.getLiveVersions(contentId));
+    log.info(`number of versions: ${Object.keys(versionTimestamps)?.length}`);
+    log.info(JSON.stringify(versionTimestamps, null, 4));
+
     const allVersions = navRepo.findVersions({ key: contentId, count: 1000 });
-    // log.info(JSON.stringify(allVersions, null, 4));
-    // const versions = allVersions.hits.reduce((acc, version) => {
-    //     acc.push({});
-    //     return acc;
-    // }, []);
     const articles = allVersions.hits
         .filter((version) => 'commitId' in version)
         .map((version) => {
             const article = navRepo.get({ key: contentId, versionId: version.versionId });
             const auditLog = libs.audit.find({ ids: [contentId], count: 100 });
-            return { auditLog, version, article };
+            const timestamp = versionTimestamps[version.versionId] ?? '';
+            return { auditLog, version, article, timestamp };
         })
-        .filter((item) => {
-            return item.article.workflow && item.article.workflow.state !== 'IN_PROGRESS';
+        .filter(({ article }) => {
+            return (
+                article.workflow &&
+                article.workflow.state !== 'IN_PROGRESS' &&
+                article.publish?.from
+            );
             // return !item.article.workflow;
         })
         .sort((a, b) => {
@@ -167,13 +167,8 @@ exports.get = (req) => {
         });
 
     articles.forEach((item, ix) => {
-        const { version, article } = item;
-        // if (ix === 0) {
-        //     delete article._indexConfig;
-        //     log.info(JSON.stringify(article, null, 4));
-        // }
-        // log.info(`${version.versionId} - ${JSON.stringify(article.publish, null, 4)}`);
-        log.info(`${version.timestamp} - ${article.workflow.state} - ${article.publish.from}`);
+        const { version, article, timestamp } = item;
+        log.info(`${version.timestamp} - ${timestamp} - ${article.publish.from}`);
         if (ix === 0) {
             log.info(JSON.stringify(item.auditLog, null, 4));
         }
@@ -185,7 +180,7 @@ exports.get = (req) => {
     log.info(`number of actual versions: ${articles.length} vs ${allVersions.hits.length}`);
     // log.info(JSON.stringify(articles[0], null, 4));
 
-    const model = renderPage(req, articles[5].article);
+    const model = renderPage(req, articles[articles.length - 1].article);
     // log.info(JSON.stringify(model, null, 4));
 
     return {

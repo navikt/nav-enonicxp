@@ -1,0 +1,17 @@
+<widget>
+    <html>
+        <body>
+            <h1>[[${displayName}]]</h1>
+            <time class="pubdate muted" data-th-datetime="${publishedFrom}">
+                [[${publishedFrom}]]
+            </time>
+            <p class="preface" data-th-if="${ingress && ingress != ''}">
+                [[${ingress}]]
+            </p>
+
+            <div class="article-body">
+                <div data-th-utext="${htmlText}" data-th-remove="tag"></div>
+            </div>
+        </body>
+    </html>
+</widget>
