@@ -2,7 +2,7 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { xpOrigin } = require('/lib/headless/url-origin');
 const contextLib = require('/lib/xp/context');
-const { runInBranchContext } = require('/lib/headless/run-in-context');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 
 // Runs the processHtml result through the site-engine HTTP pipeline, which
 // ensures post-processing instructions for macros/components/etc are handled
@@ -14,7 +14,7 @@ const processHtmlWithPostProcessing = (html, type) => {
 
     try {
         const processedHtmlResponse = httpClient.request({
-            url: `${xpOrigin}/_/?processHtml=true}`,
+            url: `${xpOrigin}/_/?processHtml=true`,
             method: 'POST',
             body: JSON.stringify({
                 html,

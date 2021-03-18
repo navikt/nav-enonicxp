@@ -3,8 +3,7 @@ const getLastUpdatedUnixTime = (content) =>
 
 const getPublishedUnixTime = (content) =>
     new Date(
-        content.publish?.from?.split('.')[0] ||
-            content.publish?.first?.split('.')[0] ||
+        content.publish?.first?.split('.')[0] ||
             content.createdTime?.split('.')[0]
     ).getTime();
 
