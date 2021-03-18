@@ -36,7 +36,7 @@ const getAlternativeLanguageVersions = (content) =>
             : acc;
     }, []);
 
-const getSitemapEntryData = (content) => {
+const getSitemapDataForContent = (content) => {
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
@@ -77,7 +77,7 @@ const handleGet = (req) => {
                 },
             },
         })
-        .hits.map(getSitemapEntryData);
+        .hits.map(getSitemapDataForContent);
 
     return {
         status: 200,
