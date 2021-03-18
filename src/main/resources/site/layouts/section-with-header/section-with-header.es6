@@ -1,51 +1,76 @@
 const portalLib = require('/lib/xp/portal');
-const contentLib = require('/lib/xp/content');
+const nodeLib = require('/lib/xp/node');
+const contextLib = require('/lib/xp/context');
+const { sanitize } = require('/lib/xp/common');
 const controller = require('/lib/headless/controllers/component-preview-controller');
-const {
-    createSectionHeaderId,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/section-with-header');
 
-const getComponentFromPath = (component, path) => {
-    const pathSegments = path.split('/');
+const getUniqueAnchorId = (prefix, components, suffix = 0) => {
+    const id = `${sanitize(prefix)}${suffix ? `-${suffix}` : ''}`;
+    const idExists = components.some((component) => getComponentConfig(component)?.anchorId === id);
 
-    const [region, index] = pathSegments[0] === '' ? pathSegments.slice(1) : pathSegments;
-
-    if (!region) {
-        log.info('Region not found!');
-        return component;
+    if (idExists) {
+        return getUniqueAnchorId(prefix, components, suffix + 1);
     }
 
-    const nextComponent = component.regions?.[region]?.components?.[index];
-
-    if (!nextComponent) {
-        log.info('Next component not found!');
-        return component;
-    }
-
-    return getComponentFromPath(nextComponent, pathSegments.slice(3).join('/'));
+    return id;
 };
 
-const insertAnchorId = (component) => (content) => {
-    const contentComponent = getComponentFromPath(content.page, component.path);
-    contentComponent.config.anchorId = createSectionHeaderId(contentComponent.config);
-    content.page.config.title = 'lol wut';
-    content.displayName = 'my name is not my name';
-    log.info(`new content: ${JSON.stringify(content)}`);
+const getComponentConfig = (component) =>
+    component?.layout?.config?.['no-nav-navno']?.['section-with-header'];
+
+const getComponentConfigByPath = (path, components) => {
+    const component = components.find((component) => component.path === path);
+    return getComponentConfig(component);
+};
+
+const generateAnchorIdFromTitle = (componentPath) => (content) => {
+    const { components } = content;
+
+    const config = getComponentConfigByPath(componentPath, components);
+
+    if (config?.title) {
+        config.anchorId = getUniqueAnchorId(config.title, components);
+    }
+
     return content;
+};
+
+const componentHasUniqueAnchorId = (content, currentComponent) => {
+    const currentAnchorId = currentComponent?.config?.anchorId;
+    if (!currentAnchorId) {
+        return false;
+    }
+
+    const { components } = content;
+
+    const isDuplicate = components.some((component) => {
+        const config = getComponentConfig(component);
+        if (config?.anchorId === currentAnchorId && component.path !== currentComponent.path) {
+            return true;
+        }
+    });
+
+    return !isDuplicate;
 };
 
 exports.get = (req) => {
     if (req.mode === 'edit') {
+        const context = contextLib.get();
+        const contentId = req.path.split('/')[6];
         const component = portalLib.getComponent();
-        if (!component.config.anchorId) {
-            log.info(`no anchor id set for ${component.path}`);
 
-            const content = portalLib.getContent();
-            const newContent = contentLib.modify({
-                key: content._id,
-                editor: insertAnchorId(component),
+        const repo = nodeLib.connect({
+            repoId: context.repository,
+            branch: context.branch,
+        });
+
+        const content = repo.get(contentId);
+
+        if (!componentHasUniqueAnchorId(content, component)) {
+            repo.modify({
+                key: contentId,
+                editor: generateAnchorIdFromTitle(component.path),
             });
-            log.info(`modified content: ${JSON.stringify(newContent)}`);
         }
     }
 

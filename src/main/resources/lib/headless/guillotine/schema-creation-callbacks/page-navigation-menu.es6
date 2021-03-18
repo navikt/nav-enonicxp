@@ -2,7 +2,6 @@ const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
 const nodeLib = require('/lib/xp/node');
 const graphQlLib = require('/lib/guillotine/graphql');
-const { createSectionHeaderId } = require('./section-with-header');
 const { forceArray } = require('/lib/nav-utils');
 
 const getComponentsOnPage = (contentId) => {
@@ -26,11 +25,10 @@ const getComponentAnchorLink = (component) => {
         return anchorId && { anchorId, linkText: title };
     }
 
-    // Section headers will always have an anchor id, even if it's not yet defined here
     const sectionWithHeader = component.layout?.config?.['no-nav-navno']?.['section-with-header'];
     if (sectionWithHeader) {
         const { anchorId, title } = sectionWithHeader;
-        return { anchorId: anchorId || createSectionHeaderId(sectionWithHeader), linkText: title };
+        return anchorId && { anchorId, linkText: title };
     }
 };
 
