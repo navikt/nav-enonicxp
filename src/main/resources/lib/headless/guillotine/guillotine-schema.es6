@@ -10,10 +10,13 @@ const hookGenerateFormItemResolver = require('./function-hooks/generate-form-ite
 const hookCreatePageComponentDataConfigType = require('./function-hooks/create-page-component-data-config-type');
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
-const menuListDataCallback = require('./schema-creation-callbacks/menu-list-data');
+const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const mainArticleCallback = require('./schema-creation-callbacks/main-article');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
+const {
+    mainArticleDataCallback,
+    mainArticleCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/main-article');
 const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
@@ -30,6 +33,7 @@ const hookGuillotineFunctions = () => {
 const schemaContextOptions = {
     creationCallbacks: {
         no_nav_navno_MainArticle: mainArticleCallback,
+        no_nav_navno_MainArticle_Data: mainArticleDataCallback,
         no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
         no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
         no_nav_navno_LargeTable: largeTableCallback,

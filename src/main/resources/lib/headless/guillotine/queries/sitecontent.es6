@@ -1,7 +1,7 @@
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
-const { runInBranchContext } = require('/lib/headless/run-in-context');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
@@ -23,6 +23,7 @@ const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
+const media = require('./fragments/media');
 
 const queryFragments = [
     globalFragment,
@@ -41,6 +42,7 @@ const queryFragments = [
     publishingCalendar.fragment,
     melding.fragment,
     dynamicPage.fragment,
+    media.mediaAttachmentFragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
@@ -57,6 +59,8 @@ const queryGetContentByRef = `query($ref:ID!){
     }
 }`;
 
+const isMedia = (content) => content.__typename?.startsWith('media_');
+
 const getContent = (idOrPath, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
@@ -71,9 +75,12 @@ const getContent = (idOrPath, branch) => {
         return null;
     }
 
+    if (isMedia(content)) {
+        return content;
+    }
+
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
     const page = mergeComponentsIntoPage(contentWithParsedData);
-
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
     return {
@@ -123,15 +130,20 @@ const getRedirectContent = (idOrPath, branch) => {
         }
 
         if (shortUrlTarget.type === 'no.nav.navno:internal-link') {
-            const target = getContent(shortUrlTarget.data?.target);
+            const target = shortUrlTarget.data?.target;
             if (!target) {
+                return null;
+            }
+
+            const targetContent = getContent(target);
+            if (!targetContent) {
                 return null;
             }
 
             return {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_InternalLink',
-                data: { target: { _path: target._path } },
+                data: { target: { _path: targetContent._path } },
             };
         }
 
@@ -162,6 +174,10 @@ const getSiteContent = (idOrPath, branch = 'master') => {
 
     if (!content) {
         return null;
+    }
+
+    if (isMedia(content)) {
+        return content;
     }
 
     const notifications = getNotifications(content._path);

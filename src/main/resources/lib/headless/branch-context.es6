@@ -26,4 +26,13 @@ const runInBranchContext = (func, branch = 'master') => {
     );
 };
 
-module.exports = { runInBranchContext, isValidBranch };
+const getBranchFromMacroContext = (context) => {
+    const body = context.request?.body;
+    if (body) {
+        return JSON.parse(body).branch || context.request.branch;
+    }
+
+    return context.request?.branch;
+};
+
+module.exports = { runInBranchContext, isValidBranch, getBranchFromMacroContext };
