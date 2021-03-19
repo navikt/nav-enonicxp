@@ -14,6 +14,9 @@ const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
+    contentListDataCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/content-list-data');
+const {
     mainArticleDataCallback,
     mainArticleCallback,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/main-article');
@@ -21,8 +24,6 @@ const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
 } = require('./schema-creation-callbacks/main-article-chapter');
-
-const { sortByPublishedDesc } = require('/lib/headless/sort');
 
 const hookGuillotineFunctions = () => {
     hookGenerateFormItemArguments();
@@ -38,9 +39,10 @@ const schemaContextOptions = {
         no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
         no_nav_navno_LargeTable: largeTableCallback,
         no_nav_navno_SectionPage_Data: sectionPageDataCallback,
+        no_nav_navno_ContentList_Data: contentListDataCallback,
         no_nav_navno_MainArticle_InnholdIHYremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
-        PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback(sortByPublishedDesc),
+        PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback('publish.first'),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
     },
 };
