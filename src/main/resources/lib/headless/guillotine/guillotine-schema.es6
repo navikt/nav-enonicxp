@@ -13,13 +13,11 @@ const sectionPageDataCallback = require('./schema-creation-callbacks/section-pag
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
-const {
-    contentListDataCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/content-list-data');
+const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const {
     mainArticleDataCallback,
     mainArticleCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/main-article');
+} = require('./schema-creation-callbacks/main-article');
 const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
