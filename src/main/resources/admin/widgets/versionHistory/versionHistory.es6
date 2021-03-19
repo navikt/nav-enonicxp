@@ -133,8 +133,6 @@ exports.get = (req) => {
     });
     const versionFinder = __.newBean('tools.PublishedVersions');
     const versionTimestamps = JSON.parse(versionFinder.getLiveVersions(contentId));
-    log.info(`number of versions: ${Object.keys(versionTimestamps)?.length}`);
-    log.info(JSON.stringify(versionTimestamps, null, 4));
 
     const allVersions = navRepo.findVersions({ key: contentId, count: 1000 });
     const articles = allVersions.hits
@@ -146,12 +144,7 @@ exports.get = (req) => {
             return { auditLog, version, article, timestamp };
         })
         .filter(({ article }) => {
-            return (
-                article.workflow &&
-                article.workflow.state !== 'IN_PROGRESS' &&
-                article.publish?.from
-            );
-            // return !item.article.workflow;
+            return article.workflow?.state !== 'IN_PROGRESS';
         })
         .sort((a, b) => {
             const aDate = a.article.modifiedTime;
@@ -166,23 +159,25 @@ exports.get = (req) => {
             return 0;
         });
 
-    articles.forEach((item, ix) => {
-        const { version, article, timestamp } = item;
-        log.info(`${version.timestamp} - ${timestamp} - ${article.publish.from}`);
-        if (ix === 0) {
-            log.info(JSON.stringify(item.auditLog, null, 4));
+    const timeline = articles.reverse().reduce((acc, content, ix) => {
+        const previousContent = articles[ix - 1];
+        if (
+            previousContent?.article?.publish?.from ||
+            (ix === articles.length - 1 && !content.article?.publish?.from)
+        ) {
+            acc.push(
+                `${libs.utils.formatDateTime(
+                    previousContent.timestamp
+                )} -- ${libs.utils.formatDateTime(content.timestamp)} ${
+                    content.article.displayName
+                }`
+            );
         }
-    });
-    // const params = {
-    //     contentId,
-    //     titles,
-    // };
-    log.info(`number of actual versions: ${articles.length} vs ${allVersions.hits.length}`);
-    // log.info(JSON.stringify(articles[0], null, 4));
+        return acc;
+    }, []);
+    log.info(JSON.stringify(timeline, null, 4));
 
     const model = renderPage(req, articles[articles.length - 1].article);
-    // log.info(JSON.stringify(model, null, 4));
-
     return {
         contentType: 'text/html',
         body: thymeleaf.render(view, model),

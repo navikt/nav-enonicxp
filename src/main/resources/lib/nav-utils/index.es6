@@ -1,7 +1,28 @@
 const libs = {
     content: require('/lib/xp/content'),
     node: require('/lib/xp/node'),
+    moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
 };
+
+/**
+ * @description Date formats on content created in XP7 is not necessarily
+ * supported in the Date wrapper in XP7 (but it does work in browsers)
+ * @param {string} date Date
+ * @returns {string} Correctly formated date
+ */
+function fixDateFormat(date) {
+    if (date.indexOf('.') !== -1) {
+        return date.split('.')[0] + 'Z';
+    }
+    return date;
+}
+function formatDateTime(date, language = 'nb') {
+    // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
+    return libs
+        .moment(fixDateFormat(date))
+        .locale(language === 'en' ? 'en-gb' : 'nb')
+        .format('LLL');
+}
 
 /**
  * @description get all children of content
@@ -93,4 +114,5 @@ module.exports = {
     forceArray,
     getAllChildren,
     pushLiveElements,
+    formatDateTime,
 };
