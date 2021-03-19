@@ -4,19 +4,11 @@ const contextLib = require('/lib/xp/context');
 const { sanitize } = require('/lib/xp/common');
 const controller = require('/lib/headless/controllers/component-preview-controller');
 
-const getUniqueAnchorId = (prefix, components, suffix = 0) => {
-    const id = `${sanitize(prefix)}${suffix ? `-${suffix}` : ''}`;
-    const idExists = components.some((component) => getComponentConfig(component)?.anchorId === id);
-
-    if (idExists) {
-        return getUniqueAnchorId(prefix, components, suffix + 1);
-    }
-
-    return id;
-};
+const componentName = __FILE__.split('/').slice(-2, -1)[0];
+const defaultTitle = 'Seksjonstittel';
 
 const getComponentConfig = (component) =>
-    component?.layout?.config?.['no-nav-navno']?.['section-with-header'];
+    component?.layout?.config?.['no-nav-navno']?.[componentName];
 
 const getComponentConfigByPath = (path, components) => {
     const component = components.find((component) => component.path === path);
@@ -28,8 +20,26 @@ const generateAnchorIdFromTitle = (componentPath) => (content) => {
 
     const config = getComponentConfigByPath(componentPath, components);
 
-    if (config?.title) {
-        config.anchorId = getUniqueAnchorId(config.title, components);
+    if (!config) {
+        return content;
+    }
+
+    const { title } = config;
+
+    if (!title) {
+        config.title = defaultTitle;
+    }
+
+    if (title !== defaultTitle) {
+        const id = sanitize(title);
+        const idExists = components.some(
+            (component) => getComponentConfig(component)?.anchorId === id
+        );
+        if (idExists) {
+            config.anchorId = undefined;
+        } else {
+            config.anchorId = id;
+        }
     }
 
     return content;
@@ -56,7 +66,7 @@ const componentHasUniqueAnchorId = (content, currentComponent) => {
 exports.get = (req) => {
     if (req.mode === 'edit') {
         const context = contextLib.get();
-        const contentId = req.path.split('/')[6];
+        const contentId = portalLib.getContent()._id;
         const component = portalLib.getComponent();
 
         const repo = nodeLib.connect({
