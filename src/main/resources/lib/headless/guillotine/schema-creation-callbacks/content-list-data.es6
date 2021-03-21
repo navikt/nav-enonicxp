@@ -1,7 +1,7 @@
 const graphQlLib = require('/lib/guillotine/graphql');
 
 const contentListDataCallback = (context, params) => {
-    params.fields.dateLabelKey = {
+    params.fields.sortedBy = {
         type: graphQlLib.GraphQLString,
     };
 };
