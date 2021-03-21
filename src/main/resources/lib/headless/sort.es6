@@ -1,11 +1,10 @@
 const { getNestedValue } = require('/lib/nav-utils');
 
-const getTimeFromField = (content, field) =>
+const getTimeFromField = (content, key) =>
     new Date(
-        getNestedValue(content, field)?.split('.')[0] || content.createdTime?.split('.')[0]
+        getNestedValue(content, key)?.split('.')[0] || content.createdTime?.split('.')[0]
     ).getTime();
 
-const sortByDateTimeField = (dateField) => (a, b) =>
-    getTimeFromField(b, dateField) - getTimeFromField(a, dateField);
+const sortByDateTimeField = (key) => (a, b) => getTimeFromField(b, key) - getTimeFromField(a, key);
 
 module.exports = { sortByDateTimeField };

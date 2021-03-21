@@ -9,7 +9,7 @@ const urlFragment = require('./url');
 const contentListFragment = (sort) => `
     ...on no_nav_navno_ContentList {
         data {
-            dateLabelKey
+            sortedBy
             sectionContents${sort ? `(sort:"${sort}")` : ''} {
                 ${globalFragment}
                 ${pageList.shortFragment}
