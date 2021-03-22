@@ -1,11 +1,10 @@
-const { sortByPublishedDesc } = require('/lib/headless/sort');
 const { contentListResolver } = require('./common/content-list-resolver');
 
 const sectionPageDataCallback = (context, params) => {
     params.fields.newsContents.resolve = contentListResolver(
         'newsContents',
         'nrNews',
-        sortByPublishedDesc
+        'publish.first'
     );
     params.fields.ntkContents.resolve = contentListResolver('ntkContents', 'nrNTK');
     params.fields.scContents.resolve = contentListResolver('scContents', 'nrSC');
