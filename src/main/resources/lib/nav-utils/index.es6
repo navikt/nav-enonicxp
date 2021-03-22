@@ -89,8 +89,31 @@ function pushLiveElements(targetIds) {
     log.info('No content was updated in master');
     return [];
 }
+
+// Get a nested object value from an array of keys
+const getNestedValueFromKeyArray = (obj, keys) => {
+    if (!keys || keys.length === 0 || !obj || typeof obj !== 'object') {
+        return null;
+    }
+
+    const [currentKey, ...rest] = keys;
+    const currentValue = obj[currentKey];
+
+    if (rest.length === 0) {
+        return currentValue;
+    }
+
+    return getNestedValueFromKeyArray(currentValue, rest);
+};
+
+// Get a nested object value from a dot-delimited string of keys
+const getNestedValue = (obj, keysString) => {
+    return getNestedValueFromKeyArray(obj, keysString?.split('.'));
+};
+
 module.exports = {
     forceArray,
     getAllChildren,
     pushLiveElements,
+    getNestedValue,
 };
