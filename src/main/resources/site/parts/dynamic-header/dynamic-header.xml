@@ -19,17 +19,17 @@
                 <regexp>^[0-9a-zA-Z-_]*$</regexp>
             </config>
         </input>
-        <input name="tag" type="RadioButton">
+        <input name="titleTag" type="RadioButton">
             <label>Heading tag</label>
             <occurrences minimum="1" maximum="1" />
             <config>
-                <option value="h3">H2</option>
+                <option value="h2">H2</option>
                 <option value="h3">H3</option>
                 <option value="h4">H4</option>
                 <option value="h5">H5</option>
                 <option value="h6">H6</option>
             </config>
-            <default>h3</default>
+            <default>h2</default>
         </input>
         <mixin name="header-common"/>
     </form>
