@@ -25,7 +25,7 @@ const getAlternativeLanguageVersions = (content) =>
     forceArray(content.data.languages).reduce((acc, id) => {
         const altContent = contentLib.get({ key: id });
 
-        return altContent
+        return altContent?.language
             ? [
                   ...acc,
                   {
