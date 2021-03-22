@@ -1,11 +1,18 @@
 const contentLib = require('/lib/xp/content');
 const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
+const cacheLib = require('/lib/cache');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
-let sitemapDataCache = null;
+const cacheKey = 'sitemap';
 const tenMinutesInMs = 60 * 10 * 1000;
+const oneHourInSeconds = 3600;
+
+const cache = cacheLib.newCache({
+    size: 1,
+    expire: oneHourInSeconds,
+});
 
 const includedContentTypes = [
     'dynamic-page',
@@ -41,7 +48,7 @@ const getAlternativeLanguageVersions = (content) =>
             : acc;
     }, []);
 
-const getSitemapDataForContent = (content) => {
+const getSitemapEntry = (content) => {
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
@@ -55,7 +62,7 @@ const getSitemapDataForContent = (content) => {
 const generateSitemapData = () => {
     log.info('Generating sitemap...');
 
-    sitemapDataCache = contentLib
+    const sitemapData = contentLib
         .query({
             start: 0,
             count: 20000,
@@ -72,28 +79,31 @@ const generateSitemapData = () => {
                 },
             },
         })
-        .hits.map(getSitemapDataForContent);
+        .hits.map(getSitemapEntry);
 
     log.info('Finished generating sitemap');
+
+    return sitemapData;
 };
 
-const getSitemapData = () => {
-    if (!sitemapDataCache) {
-        generateSitemapData();
-    }
+const getSitemapData = () => cache.get(cacheKey, generateSitemapData);
 
-    return sitemapDataCache;
+const regenerateCache = () => {
+    const sitemapData = generateSitemapData();
+    cache.remove(cacheKey);
+    cache.get(cacheKey, () => sitemapData);
 };
 
-const startSitemapGeneratorSchedule = () => {
+const startRegeneratingSchedule = () => {
     cronLib.schedule({
         name: 'sitemap-generator-schedule',
         fixedDelay: tenMinutesInMs,
-        callback: taskLib.submit({
-            description: 'sitemap-generator-task',
-            task: generateSitemapData,
-        }),
+        callback: () =>
+            taskLib.submit({
+                description: 'sitemap-generator-task',
+                task: regenerateCache,
+            }),
     });
 };
 
-module.exports = { getSitemapData, startSitemapGeneratorSchedule };
+module.exports = { getSitemapData, startRegeneratingSchedule };
