@@ -30,6 +30,8 @@ const getComponentAnchorLink = (component) => {
         const { anchorId, title } = sectionWithHeader;
         return anchorId && { anchorId, linkText: title };
     }
+
+    return null;
 };
 
 const pageNavigationMenuCallback = (context, params) => {
@@ -60,9 +62,7 @@ const pageNavigationMenuCallback = (context, params) => {
                 return acc;
             }
 
-            const linkOverride = anchorLinkOverrides.find(
-                (linkOverride) => linkOverride.anchorId === anchorId
-            );
+            const linkOverride = anchorLinkOverrides.find((link) => link.anchorId === anchorId);
 
             return [
                 ...acc,

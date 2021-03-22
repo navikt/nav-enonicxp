@@ -22,7 +22,32 @@ const destructureConfig = (component) => {
     };
 };
 
-const makeFragment = (fragmentComponent, components) => {
+// Component data in the components-array is stored in type-specific sub-objects
+// Move this data down to the base object, to match the XP page-object structure
+const destructureComponent = (component) => {
+    const { page, part, layout, image, text, fragment, ...rest } = component;
+
+    const destructured = {
+        ...page,
+        ...part,
+        ...layout,
+        ...image,
+        ...text,
+        ...(fragment && buildFragmentStructure(fragment, fragment.fragment?.components)),
+        ...rest,
+    };
+
+    const config = destructureConfig(destructured);
+
+    return {
+        ...destructured,
+        ...(config && { config }),
+    };
+};
+
+// Takes a fragment-component from a Guillotine query and transforms the
+// data structure into what content studio expects
+const buildFragmentStructure = (fragmentComponent, components) => {
     if (!components) {
         return null;
     }
@@ -55,29 +80,6 @@ const makeFragment = (fragmentComponent, components) => {
             ...destructureComponent(rootComponent),
             regions,
         },
-    };
-};
-
-// Component data in the components-array is stored in type-specific sub-objects
-// Move this data down to the base object, to match the XP page-object structure
-const destructureComponent = (component) => {
-    const { page, part, layout, image, text, fragment, ...rest } = component;
-
-    const destructured = {
-        ...page,
-        ...part,
-        ...layout,
-        ...image,
-        ...text,
-        ...(fragment && makeFragment(fragment, fragment.fragment?.components)),
-        ...rest,
-    };
-
-    const config = destructureConfig(destructured);
-
-    return {
-        ...destructured,
-        ...(config && { config }),
     };
 };
 
@@ -153,12 +155,12 @@ const mergeComponentsIntoPage = (content) => {
 const mergeComponentsIntoFragment = (content) => {
     const { components } = content;
 
-    const rootComponent = components?.find((component) => (component.path = '/'));
+    const rootComponent = components?.find((component) => component.path === '/');
     if (!rootComponent) {
         return {};
     }
 
-    return { ...makeFragment(rootComponent, components).fragment };
+    return { ...buildFragmentStructure(rootComponent, components).fragment };
 };
 
 module.exports = { mergeComponentsIntoPage, destructureComponent, mergeComponentsIntoFragment };

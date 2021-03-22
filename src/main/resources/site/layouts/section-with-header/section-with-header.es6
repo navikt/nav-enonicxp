@@ -11,8 +11,8 @@ const getComponentConfig = (component) =>
     component?.layout?.config?.['no-nav-navno']?.[componentName];
 
 const getComponentConfigByPath = (path, components) => {
-    const component = components.find((component) => component.path === path);
-    return getComponentConfig(component);
+    const foundComponent = components.find((component) => component.path === path);
+    return getComponentConfig(foundComponent);
 };
 
 const generateAnchorIdFromTitle = (componentPath) => (content) => {
@@ -55,9 +55,7 @@ const componentHasUniqueAnchorId = (content, currentComponent) => {
 
     const isDuplicate = components.some((component) => {
         const config = getComponentConfig(component);
-        if (config?.anchorId === currentAnchorId && component.path !== currentComponent.path) {
-            return true;
-        }
+        return config?.anchorId === currentAnchorId && component.path !== currentComponent.path;
     });
 
     return !isDuplicate;
