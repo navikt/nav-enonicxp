@@ -29,8 +29,18 @@ const includedMediaTypes = ['text'].map((mediaType) => `media:${mediaType}`);
 
 const includedTypes = [...includedContentTypes, ...includedMediaTypes];
 
-const getUrl = (content) =>
-    content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
+const navUrlPattern = new RegExp('^https:\\/\\/([a-z0-9_.-]+\\.)?nav\\.no', 'i');
+
+const isNavUrl = (url) => navUrlPattern.test(url);
+
+const getUrl = (content) => {
+    if (content.type.endsWith('external-link')) {
+        const url = content.data?.url;
+        return isNavUrl(url) ? url : null;
+    }
+
+    return content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
+};
 
 const getAlternativeLanguageVersions = (content) =>
     content.data?.languages &&
@@ -49,10 +59,16 @@ const getAlternativeLanguageVersions = (content) =>
     }, []);
 
 const getSitemapEntry = (content) => {
+    const url = getUrl(content);
+
+    if (!url) {
+        return null;
+    }
+
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
-        url: getUrl(content),
+        url,
         modifiedTime: content.modifiedTime,
         language: content.language,
         ...(languageVersions?.length > 0 && { languageVersions }),
@@ -79,7 +95,10 @@ const generateSitemapData = () => {
                 },
             },
         })
-        .hits.map(getSitemapEntry);
+        .hits.reduce((acc, content) => {
+            const entry = getSitemapEntry(content);
+            return entry ? [...acc, entry] : acc;
+        }, []);
 
     log.info('Finished generating sitemap');
 
