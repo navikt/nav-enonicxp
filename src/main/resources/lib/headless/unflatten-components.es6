@@ -33,7 +33,7 @@ const destructureComponent = (component) => {
         ...layout,
         ...image,
         ...text,
-        ...(fragment && buildFragmentStructure(fragment, fragment.fragment?.components)),
+        ...(fragment && insertComponentsIntoFragment(fragment, fragment.fragment?.components)),
         ...rest,
     };
 
@@ -47,7 +47,7 @@ const destructureComponent = (component) => {
 
 // Takes a fragment-component from a Guillotine query and transforms the
 // data structure into what content studio expects
-const buildFragmentStructure = (fragmentComponent, components) => {
+const insertComponentsIntoFragment = (fragment, components) => {
     if (!components) {
         return null;
     }
@@ -55,13 +55,14 @@ const buildFragmentStructure = (fragmentComponent, components) => {
     const rootComponent = components.find((component) => component.path === '/');
     if (rootComponent.type !== 'layout') {
         return {
-            ...fragmentComponent,
+            ...fragment,
             fragment: {
                 ...destructureComponent(rootComponent),
             },
         };
     }
 
+    // Layouts can contain multiple components in regions, which need special treatment
     const regions = components.reduce((regionsAcc, component) => {
         const regionName = component.path.split('/')[1];
         if (!regionName) {
@@ -75,7 +76,7 @@ const buildFragmentStructure = (fragmentComponent, components) => {
     }, {});
 
     return {
-        ...fragmentComponent,
+        ...fragment,
         fragment: {
             ...destructureComponent(rootComponent),
             regions,
@@ -160,7 +161,7 @@ const mergeComponentsIntoFragment = (content) => {
         return {};
     }
 
-    return { ...buildFragmentStructure(rootComponent, components).fragment };
+    return { ...insertComponentsIntoFragment(rootComponent, components).fragment };
 };
 
 module.exports = { mergeComponentsIntoPage, destructureComponent, mergeComponentsIntoFragment };
