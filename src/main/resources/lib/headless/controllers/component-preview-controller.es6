@@ -5,7 +5,7 @@ const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { getContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
-const { destructureComponent } = require('/lib/headless/unflatten-components');
+const { destructureComponent } = require('/lib/headless/process-components');
 
 const queryGetComponents = `query($ref:ID!){
     guillotine {

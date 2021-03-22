@@ -153,15 +153,19 @@ const mergeComponentsIntoPage = (content) => {
     return insertComponents(pageWithPageComponent, components);
 };
 
-const mergeComponentsIntoFragment = (content) => {
+const getPortalFragmentContent = (content) => {
     const { components } = content;
 
     const rootComponent = components?.find((component) => component.path === '/');
     if (!rootComponent) {
-        return {};
+        return content;
     }
 
-    return { ...insertComponentsIntoFragment(rootComponent, components).fragment };
+    return {
+        ...content,
+        fragment: { ...insertComponentsIntoFragment(rootComponent, components).fragment },
+        components: undefined,
+    };
 };
 
-module.exports = { mergeComponentsIntoPage, destructureComponent, mergeComponentsIntoFragment };
+module.exports = { mergeComponentsIntoPage, destructureComponent, getPortalFragmentContent };
