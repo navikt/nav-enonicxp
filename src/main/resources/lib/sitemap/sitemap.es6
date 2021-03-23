@@ -22,21 +22,10 @@ const includedContentTypes = [
     'transport-page',
     'office-information',
     'publishing-calendar',
-    'external-link',
 ].map((contentType) => `${app.name}:${contentType}`);
 
-const navUrlPattern = new RegExp('^https:\\/\\/((www(\\.dev|-q[0-9])?)+\\.)?nav\\.no', 'i');
-
-const isNavUrl = (url) => navUrlPattern.test(url);
-
-const getUrl = (content) => {
-    if (content.type.endsWith('external-link')) {
-        const url = content.data?.url;
-        return isNavUrl(url) ? url : null;
-    }
-
-    return content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
-};
+const getUrl = (content) =>
+    content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
 
 const getAlternativeLanguageVersions = (content) =>
     content.data?.languages &&
@@ -55,16 +44,10 @@ const getAlternativeLanguageVersions = (content) =>
     }, []);
 
 const getSitemapEntry = (content) => {
-    const url = getUrl(content);
-
-    if (!url) {
-        return null;
-    }
-
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
-        url,
+        url: getUrl(content),
         modifiedTime: content.modifiedTime,
         language: content.language,
         ...(languageVersions?.length > 0 && { languageVersions }),
@@ -77,7 +60,7 @@ const generateSitemapData = () => {
     const sitemapData = contentLib
         .query({
             start: 0,
-            count: 20000,
+            count: 50000,
             contentTypes: includedContentTypes,
             query: '_path LIKE "/content/www.nav.no/*"',
             filters: {
@@ -91,10 +74,7 @@ const generateSitemapData = () => {
                 },
             },
         })
-        .hits.reduce((acc, content) => {
-            const entry = getSitemapEntry(content);
-            return entry ? [...acc, entry] : acc;
-        }, []);
+        .hits.map(getSitemapEntry);
 
     log.info('Finished generating sitemap');
 
