@@ -22,6 +22,7 @@ const includedContentTypes = [
     'transport-page',
     'office-information',
     'publishing-calendar',
+    'large-table',
 ].map((contentType) => `${app.name}:${contentType}`);
 
 const getUrl = (content) =>
