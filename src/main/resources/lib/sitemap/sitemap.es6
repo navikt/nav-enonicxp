@@ -25,11 +25,7 @@ const includedContentTypes = [
     'external-link',
 ].map((contentType) => `${app.name}:${contentType}`);
 
-const includedMediaTypes = ['text'].map((mediaType) => `media:${mediaType}`);
-
-const includedTypes = [...includedContentTypes, ...includedMediaTypes];
-
-const navUrlPattern = new RegExp('^https:\\/\\/([a-z0-9_.-]+\\.)?nav\\.no', 'i');
+const navUrlPattern = new RegExp('^https:\\/\\/((www(\\.dev|-q[0-9])?)+\\.)?nav\\.no', 'i');
 
 const isNavUrl = (url) => navUrlPattern.test(url);
 
@@ -82,7 +78,7 @@ const generateSitemapData = () => {
         .query({
             start: 0,
             count: 20000,
-            contentTypes: includedTypes,
+            contentTypes: includedContentTypes,
             query: '_path LIKE "/content/www.nav.no/*"',
             filters: {
                 boolean: {
