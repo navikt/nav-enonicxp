@@ -93,6 +93,15 @@ const startRegeneratingSchedule = () => {
     cronLib.schedule({
         name: 'sitemap-generator-schedule',
         fixedDelay: tenMinutesInMs,
+        context: {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
         callback: () =>
             taskLib.submit({
                 description: 'sitemap-generator-task',
