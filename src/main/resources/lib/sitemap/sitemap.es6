@@ -82,46 +82,36 @@ const updateSitemapEntry = (pathname) => {
     }
 };
 
-const getSitemapEntries = (_start = 0, previousEntries = []) => {
-    const entries = [];
-    let batchLength = 0;
-    let start = 0;
+const getSitemapEntries = (start = 0, previousEntries = []) => {
+    const startTime = Date.now();
 
-    do {
-        const startTime = Date.now();
-        const batch = contentLib
-            .query({
-                start,
-                count: batchCount,
-                contentTypes: includedContentTypes,
-                filters: {
-                    boolean: {
-                        mustNot: {
-                            hasValue: {
-                                field: 'data.noindex',
-                                values: ['true'],
-                            },
+    const entriesBatch = contentLib
+        .query({
+            start,
+            count: batchCount,
+            contentTypes: includedContentTypes,
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'data.noindex',
+                            values: ['true'],
                         },
                     },
                 },
-            })
-            .hits.map(getSitemapEntry);
-        entries.concat(batch);
-        batchLength = batch.length;
-        start += batchCount;
-        log.info(`Batch starting at ${start} finished after ${Date.now() - startTime}ms`);
-    } while (batchLength === batchCount);
+            },
+        })
+        .hits.map(getSitemapEntry);
 
-    return entries;
+    log.info(`Batch starting at ${start} finished after ${Date.now() - startTime}ms`);
 
-    // const currentEntries = [...entries, ...previousEntries];
+    const currentEntries = [...entriesBatch, ...previousEntries];
 
-    //     if (entries.length < batchCount) {
-    //         return currentEntries;
-    //     }
-    //
-    //     return getSitemapEntries(start + batchCount, currentEntries);
-    // };
+    if (entriesBatch.length < batchCount) {
+        return currentEntries;
+    }
+
+    return getSitemapEntries(start + batchCount, currentEntries);
 };
 
 const getAllSitemapEntries = () => {
