@@ -36,7 +36,7 @@ const includedContentTypes = [
     'transport-page',
     'office-information',
     'publishing-calendar',
-    'large-table',
+    // 'large-table',
 ].map((contentType) => `${app.name}:${contentType}`);
 
 const isIncludedType = (type) =>
