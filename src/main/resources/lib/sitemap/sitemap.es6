@@ -90,7 +90,7 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
             start,
             count: batchCount,
             contentTypes: includedContentTypes,
-            query: '_path LIKE "/content/www.nav.no/*"',
+            // query: '_path LIKE "/content/www.nav.no/*"',
             filters: {
                 boolean: {
                     mustNot: {
