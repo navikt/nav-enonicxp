@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
@@ -81,7 +82,7 @@ const updateSitemapEntry = (pathname) => {
     }
 };
 
-const getSitemapEntries = (start = 0) => {
+const getSitemapEntries = (start = 0, previousEntries = []) => {
     const entriesBatch = contentLib
         .query({
             start,
@@ -101,38 +102,44 @@ const getSitemapEntries = (start = 0) => {
         })
         .hits.map(getSitemapEntry);
 
-    if (entriesBatch.length === batchCount) {
-        return [...entriesBatch, ...getSitemapEntries(start + batchCount)];
+    const currentEntries = [...entriesBatch, ...previousEntries];
+
+    if (entriesBatch.length < batchCount) {
+        return currentEntries;
     }
 
-    return entriesBatch;
+    return getSitemapEntries(start + batchCount, currentEntries);
 };
 
 const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateSitemapData = () => {
-    log.info('Started generating sitemap data');
+const generateSitemapData = () =>
+    taskLib.submit({
+        description: 'sitemap-generator-task',
+        task: () => {
+            log.info('Started generating sitemap data');
 
-    const startTime = Date.now();
-    const sitemapEntries = getSitemapEntries();
-    sitemapData.clear();
+            const startTime = Date.now();
+            const sitemapEntries = getSitemapEntries();
+            sitemapData.clear();
 
-    sitemapEntries.forEach((entry) => {
-        sitemapData.set(entry.url, entry);
+            sitemapEntries.forEach((entry) => {
+                sitemapData.set(entry.url, entry);
+            });
+
+            log.info(
+                `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                    Date.now() - startTime
+                }ms`
+            );
+
+            if (sitemapEntries.length > maxCount) {
+                log.warning(`Sitemap entries count exceeds recommended maximum`);
+            }
+        },
     });
-
-    log.info(
-        `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-            Date.now() - startTime
-        }ms`
-    );
-
-    if (sitemapEntries.length > maxCount) {
-        log.warning(`Sitemap entries count exceeds recommended maximum`);
-    }
-};
 
 const generateSitemapDataAndScheduleRegeneration = () => {
     runInBranchContext(generateSitemapData, 'master');
