@@ -1,11 +1,10 @@
 const contentLib = require('/lib/xp/content');
-const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
-const batchCount = 500;
+const batchCount = 1000;
 const maxCount = 50000;
 const pathPrefix = '/www.nav.no';
 
@@ -113,31 +112,27 @@ const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateSitemapData = () =>
-    taskLib.submit({
-        description: 'sitemap-generator-task',
-        task: () => {
-            log.info('Started generating sitemap data');
+const generateSitemapData = () => {
+    log.info('Started generating sitemap data');
 
-            const startTime = Date.now();
-            const sitemapEntries = getSitemapEntries();
-            sitemapData.clear();
+    const startTime = Date.now();
+    const sitemapEntries = getSitemapEntries();
+    sitemapData.clear();
 
-            sitemapEntries.forEach((entry) => {
-                sitemapData.set(entry.url, entry);
-            });
-
-            log.info(
-                `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-                    Date.now() - startTime
-                }ms`
-            );
-
-            if (sitemapEntries.length > maxCount) {
-                log.warning(`Sitemap entries count exceeds recommended maximum`);
-            }
-        },
+    sitemapEntries.forEach((entry) => {
+        sitemapData.set(entry.url, entry);
     });
+
+    log.info(
+        `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+            Date.now() - startTime
+        }ms`
+    );
+
+    if (sitemapEntries.length > maxCount) {
+        log.warning(`Sitemap entries count exceeds recommended maximum`);
+    }
+};
 
 const generateSitemapDataAndScheduleRegeneration = () => {
     runInBranchContext(generateSitemapData, 'master');
