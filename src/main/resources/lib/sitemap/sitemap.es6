@@ -75,10 +75,8 @@ const updateSitemapEntry = (pathname) => {
     const path = `${pathPrefix}${pathname}`;
     const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
     if (content && isIncludedType(content.type)) {
-        log.info(`updating sitemap entry for ${content._path}`);
         sitemapData.set(path, getSitemapEntry(content));
     } else if (sitemapData.get(path)) {
-        log.info(`deleting sitemap entry for ${path}`);
         sitemapData.remove(path);
     }
 };
