@@ -1,19 +1,31 @@
 const contentLib = require('/lib/xp/content');
 const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
-const cacheLib = require('/lib/cache');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
-const cacheKey = 'sitemap';
-const tenMinutesInMs = 60 * 10 * 1000;
-const oneHourInSeconds = 3600;
 const batchCount = 50000;
+const pathPrefix = '/www.nav.no';
 
-const cache = cacheLib.newCache({
-    size: 1,
-    expire: oneHourInSeconds,
-});
+const sitemapData = {
+    entries: {},
+    clear: function () {
+        this.entries = {};
+    },
+    get: function (key) {
+        return this.entries[key];
+    },
+    set: function (key, value) {
+        this.entries[key] = value;
+    },
+    remove: function (key) {
+        delete this.entries[key];
+    },
+    getEntries: function () {
+        return Object.values(this.entries);
+    },
+};
 
 const includedContentTypes = [
     'dynamic-page',
@@ -26,8 +38,11 @@ const includedContentTypes = [
     'large-table',
 ].map((contentType) => `${app.name}:${contentType}`);
 
+const isIncludedType = (type) =>
+    !!includedContentTypes.find((includedType) => includedType === type);
+
 const getUrl = (content) =>
-    content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
+    content.data?.canonicalUrl || content._path.replace(pathPrefix, frontendOrigin);
 
 const getAlternativeLanguageVersions = (content) =>
     content.data?.languages &&
@@ -56,7 +71,17 @@ const getSitemapEntry = (content) => {
     };
 };
 
-const generateSitemapData = (start = 0) => {
+const updateSitemapEntry = (pathname) => {
+    const path = `${pathPrefix}${pathname}`;
+    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
+    if (content && isIncludedType(content.type)) {
+        sitemapData.set(path, getSitemapEntry(content));
+    } else if (sitemapData.get(path)) {
+        sitemapData.remove(path);
+    }
+};
+
+const getSitemapContent = (start = 0) => {
     const queryHits = contentLib.query({
         start,
         count: batchCount,
@@ -74,30 +99,47 @@ const generateSitemapData = (start = 0) => {
         },
     }).hits;
 
-    const sitemapData = queryHits.map(getSitemapEntry);
-
     if (queryHits.length === batchCount) {
         log.info(`Additional query iterations needed after ${start + batchCount} hits`);
-        return [...sitemapData, ...generateSitemapData(start + batchCount)];
+        return [...queryHits, ...getSitemapContent(start + batchCount)];
     }
 
-    return sitemapData;
+    return queryHits;
 };
 
-const getSitemapData = () => cache.get(cacheKey, generateSitemapData);
-
-const regenerateCache = () => {
-    log.info('Started regenerating sitemap data');
-    const sitemapData = generateSitemapData();
-    cache.remove(cacheKey);
-    cache.get(cacheKey, () => sitemapData);
-    log.info(`Finished regenerating sitemap data with ${sitemapData.length} entries`);
+const getAllSitemapEntries = () => {
+    return sitemapData.getEntries();
 };
 
-const startRegeneratingSchedule = () => {
+const generateSitemapData = () =>
+    taskLib.submit({
+        description: 'sitemap-generator-task',
+        task: () => {
+            log.info('Started generating sitemap data');
+
+            const startTime = Date.now();
+            const sitemapContent = getSitemapContent();
+            sitemapData.clear();
+
+            sitemapContent.forEach((content) => {
+                sitemapData.set(content._path, getSitemapEntry(content));
+            });
+
+            log.info(
+                `Finished generating sitemap data with ${sitemapContent.length} entries after ${
+                    Date.now() - startTime
+                }ms`
+            );
+        },
+    });
+
+const generateSitemapDataAndScheduleRegeneration = () => {
+    runInBranchContext(generateSitemapData, 'master');
+
+    // Regenerate sitemap from scratch at 23:00 daily
     cronLib.schedule({
         name: 'sitemap-generator-schedule',
-        fixedDelay: tenMinutesInMs,
+        cron: '0 23 * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'master',
@@ -107,12 +149,12 @@ const startRegeneratingSchedule = () => {
             },
             principals: ['role:system.admin'],
         },
-        callback: () =>
-            taskLib.submit({
-                description: 'sitemap-generator-task',
-                task: regenerateCache,
-            }),
+        callback: generateSitemapData,
     });
 };
 
-module.exports = { getSitemapData, startRegeneratingSchedule };
+module.exports = {
+    getAllSitemapEntries,
+    generateSitemapDataAndScheduleRegeneration,
+    updateSitemapEntry,
+};
