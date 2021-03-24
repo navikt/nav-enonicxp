@@ -13,8 +13,8 @@ let appIsRunning = true;
 // start pull from NORG
 officeInformation.startCronJob();
 
-// start periodic sitemap generation
-sitemap.startRegeneratingSchedule();
+// generate initial sitemap data and start periodic regeneration
+sitemap.generateSitemapDataAndScheduleRegeneration();
 
 // start cache invalidator
 cache.activateEventListener();
