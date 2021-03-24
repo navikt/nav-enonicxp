@@ -5,7 +5,8 @@ const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
-const batchCount = 50000;
+const batchCount = 500;
+const maxCount = 50000;
 const pathPrefix = '/www.nav.no';
 
 const sitemapData = {
@@ -72,39 +73,40 @@ const getSitemapEntry = (content) => {
 };
 
 const updateSitemapEntry = (pathname) => {
-    const path = `${pathPrefix}${pathname}`;
-    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
+    const url = `${frontendOrigin}${pathname}`;
+    const content = runInBranchContext(() => contentLib.get({ key: url }), 'master');
     if (content && isIncludedType(content.type)) {
-        sitemapData.set(path, getSitemapEntry(content));
-    } else if (sitemapData.get(path)) {
-        sitemapData.remove(path);
+        sitemapData.set(url, getSitemapEntry(content));
+    } else if (sitemapData.get(url)) {
+        sitemapData.remove(url);
     }
 };
 
-const getSitemapContent = (start = 0) => {
-    const queryHits = contentLib.query({
-        start,
-        count: batchCount,
-        contentTypes: includedContentTypes,
-        query: '_path LIKE "/content/www.nav.no/*"',
-        filters: {
-            boolean: {
-                mustNot: {
-                    hasValue: {
-                        field: 'data.noindex',
-                        values: ['true'],
+const getSitemapEntries = (start = 0) => {
+    const entriesBatch = contentLib
+        .query({
+            start,
+            count: batchCount,
+            contentTypes: includedContentTypes,
+            query: '_path LIKE "/content/www.nav.no/*"',
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'data.noindex',
+                            values: ['true'],
+                        },
                     },
                 },
             },
-        },
-    }).hits;
+        })
+        .hits.map(getSitemapEntry);
 
-    if (queryHits.length === batchCount) {
-        log.info(`Additional query iterations needed after ${start + batchCount} hits`);
-        return [...queryHits, ...getSitemapContent(start + batchCount)];
+    if (entriesBatch.length === batchCount) {
+        return [...entriesBatch, ...getSitemapEntries(start + batchCount)];
     }
 
-    return queryHits;
+    return entriesBatch;
 };
 
 const getAllSitemapEntries = () => {
@@ -118,18 +120,22 @@ const generateSitemapData = () =>
             log.info('Started generating sitemap data');
 
             const startTime = Date.now();
-            const sitemapContent = getSitemapContent();
+            const sitemapEntries = getSitemapEntries();
             sitemapData.clear();
 
-            sitemapContent.forEach((content) => {
-                sitemapData.set(content._path, getSitemapEntry(content));
+            sitemapEntries.forEach((entry) => {
+                sitemapData.set(entry.url, entry);
             });
 
             log.info(
-                `Finished generating sitemap data with ${sitemapContent.length} entries after ${
+                `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
                     Date.now() - startTime
                 }ms`
             );
+
+            if (sitemapEntries.length > maxCount) {
+                log.warning(`Sitemap entries count exceeds recommended maximum`);
+            }
         },
     });
 
