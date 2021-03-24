@@ -83,6 +83,8 @@ const updateSitemapEntry = (pathname) => {
 };
 
 const getSitemapEntries = (start = 0, previousEntries = []) => {
+    const startTime = Date.now();
+
     const entriesBatch = contentLib
         .query({
             start,
@@ -101,6 +103,8 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
             },
         })
         .hits.map(getSitemapEntry);
+
+    log.info(`Batch starting at ${start} finished after ${Date.now() - startTime}ms`);
 
     const currentEntries = [...entriesBatch, ...previousEntries];
 
@@ -123,6 +127,9 @@ const generateSitemapData = () =>
 
             const startTime = Date.now();
             const sitemapEntries = getSitemapEntries();
+
+            log.info(`Batched query finished after ${Date.now() - startTime}ms`);
+
             sitemapData.clear();
 
             sitemapEntries.forEach((entry) => {
