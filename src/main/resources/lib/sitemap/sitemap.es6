@@ -74,9 +74,9 @@ const getSitemapEntry = (content) => {
 
 const updateSitemapEntry = (pathname) => {
     const url = `${frontendOrigin}${pathname}`;
-    const _path = `${pathPrefix}${pathname}`;
+    const path = `${pathPrefix}${pathname}`;
+    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
 
-    const content = runInBranchContext(() => contentLib.get({ key: _path }), 'master');
     if (content && isIncludedType(content.type)) {
         sitemapData.set(url, getSitemapEntry(content));
     } else if (sitemapData.get(url)) {
