@@ -8,6 +8,7 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 const cacheKey = 'sitemap';
 const tenMinutesInMs = 60 * 10 * 1000;
 const oneHourInSeconds = 3600;
+const batchCount = 50000;
 
 const cache = cacheLib.newCache({
     size: 1,
@@ -55,29 +56,30 @@ const getSitemapEntry = (content) => {
     };
 };
 
-const generateSitemapData = () => {
-    log.info('Generating sitemap...');
-
-    const sitemapData = contentLib
-        .query({
-            start: 0,
-            count: 50000,
-            contentTypes: includedContentTypes,
-            query: '_path LIKE "/content/www.nav.no/*"',
-            filters: {
-                boolean: {
-                    mustNot: {
-                        hasValue: {
-                            field: 'data.noindex',
-                            values: ['true'],
-                        },
+const generateSitemapData = (start = 0) => {
+    const queryHits = contentLib.query({
+        start,
+        count: batchCount,
+        contentTypes: includedContentTypes,
+        query: '_path LIKE "/content/www.nav.no/*"',
+        filters: {
+            boolean: {
+                mustNot: {
+                    hasValue: {
+                        field: 'data.noindex',
+                        values: ['true'],
                     },
                 },
             },
-        })
-        .hits.map(getSitemapEntry);
+        },
+    }).hits;
 
-    log.info('Finished generating sitemap');
+    const sitemapData = queryHits.map(getSitemapEntry);
+
+    if (queryHits.length === batchCount) {
+        log.info(`Additional query iterations needed after ${start + batchCount} hits`);
+        return [...sitemapData, ...generateSitemapData(start + batchCount)];
+    }
 
     return sitemapData;
 };
@@ -85,9 +87,11 @@ const generateSitemapData = () => {
 const getSitemapData = () => cache.get(cacheKey, generateSitemapData);
 
 const regenerateCache = () => {
+    log.info('Started regenerating sitemap data');
     const sitemapData = generateSitemapData();
     cache.remove(cacheKey);
     cache.get(cacheKey, () => sitemapData);
+    log.info(`Finished regenerating sitemap data with ${sitemapData.length} entries`);
 };
 
 const startRegeneratingSchedule = () => {
