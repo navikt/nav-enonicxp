@@ -6,11 +6,16 @@ const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const clusterLib = require('/lib/xp/cluster');
 const facetLib = require('/lib/facets');
+const sitemap = require('/lib/sitemap/sitemap');
 
 let appIsRunning = true;
 
 // start pull from NORG
 officeInformation.startCronJob();
+
+// start periodic sitemap generation
+sitemap.startRegeneratingSchedule();
+
 // start cache invalidator
 cache.activateEventListener();
 
