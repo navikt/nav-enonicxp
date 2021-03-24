@@ -1,0 +1,118 @@
+const contentLib = require('/lib/xp/content');
+const taskLib = require('/lib/xp/task');
+const cronLib = require('/lib/cron');
+const cacheLib = require('/lib/cache');
+const { forceArray } = require('/lib/nav-utils');
+const { frontendOrigin } = require('/lib/headless/url-origin');
+
+const cacheKey = 'sitemap';
+const tenMinutesInMs = 60 * 10 * 1000;
+const oneHourInSeconds = 3600;
+const batchCount = 50000;
+
+const cache = cacheLib.newCache({
+    size: 1,
+    expire: oneHourInSeconds,
+});
+
+const includedContentTypes = [
+    'dynamic-page',
+    'main-article',
+    'section-page',
+    'page-list',
+    'transport-page',
+    'office-information',
+    'publishing-calendar',
+    'large-table',
+].map((contentType) => `${app.name}:${contentType}`);
+
+const getUrl = (content) =>
+    content.data?.canonicalUrl || content._path.replace('/www.nav.no', frontendOrigin);
+
+const getAlternativeLanguageVersions = (content) =>
+    content.data?.languages &&
+    forceArray(content.data.languages).reduce((acc, id) => {
+        const altContent = contentLib.get({ key: id });
+
+        return altContent?.language
+            ? [
+                  ...acc,
+                  {
+                      language: altContent.language,
+                      url: getUrl(altContent),
+                  },
+              ]
+            : acc;
+    }, []);
+
+const getSitemapEntry = (content) => {
+    const languageVersions = getAlternativeLanguageVersions(content);
+
+    return {
+        url: getUrl(content),
+        modifiedTime: content.modifiedTime,
+        language: content.language,
+        ...(languageVersions?.length > 0 && { languageVersions }),
+    };
+};
+
+const generateSitemapData = (start = 0) => {
+    const queryHits = contentLib.query({
+        start,
+        count: batchCount,
+        contentTypes: includedContentTypes,
+        query: '_path LIKE "/content/www.nav.no/*"',
+        filters: {
+            boolean: {
+                mustNot: {
+                    hasValue: {
+                        field: 'data.noindex',
+                        values: ['true'],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    const sitemapData = queryHits.map(getSitemapEntry);
+
+    if (queryHits.length === batchCount) {
+        log.info(`Additional query iterations needed after ${start + batchCount} hits`);
+        return [...sitemapData, ...generateSitemapData(start + batchCount)];
+    }
+
+    return sitemapData;
+};
+
+const getSitemapData = () => cache.get(cacheKey, generateSitemapData);
+
+const regenerateCache = () => {
+    log.info('Started regenerating sitemap data');
+    const sitemapData = generateSitemapData();
+    cache.remove(cacheKey);
+    cache.get(cacheKey, () => sitemapData);
+    log.info(`Finished regenerating sitemap data with ${sitemapData.length} entries`);
+};
+
+const startRegeneratingSchedule = () => {
+    cronLib.schedule({
+        name: 'sitemap-generator-schedule',
+        fixedDelay: tenMinutesInMs,
+        context: {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        callback: () =>
+            taskLib.submit({
+                description: 'sitemap-generator-task',
+                task: regenerateCache,
+            }),
+    });
+};
+
+module.exports = { getSitemapData, startRegeneratingSchedule };
