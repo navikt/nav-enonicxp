@@ -29,3 +29,13 @@ Object.entries = function (obj) {
 
     return Object.keys(_obj).map((key) => [key, _obj[key]]);
 };
+
+Object.values = function (obj) {
+    if (obj === null || obj === undefined) {
+        throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    const _obj = Object(obj);
+
+    return Object.keys(_obj).map((key) => _obj[key]);
+};

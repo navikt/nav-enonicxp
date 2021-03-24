@@ -1,3 +1,4 @@
+const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
 
@@ -166,6 +167,8 @@ function wipeOnChange(path) {
             },
         });
     }
+
+    updateSitemapEntry(pathname);
 
     return true;
 }
