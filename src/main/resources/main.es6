@@ -19,6 +19,9 @@ cache.activateEventListener();
 // listen for updated sitemap-data from master
 sitemap.activateDataUpdateEventListener();
 
+// generate initial sitemap data and start periodic regeneration
+sitemap.generateSitemapDataAndScheduleRegeneration();
+
 // start task for handling caching of expired and prepublished content
 if (clusterLib.isMaster()) {
     // make sure the lock is released on startup
@@ -29,9 +32,6 @@ if (clusterLib.isMaster()) {
     if (facetValidation) {
         facetLib.setUpdateAll(false);
     }
-
-    // generate initial sitemap data and start periodic regeneration
-    sitemap.generateSitemapDataAndScheduleRegeneration();
 }
 
 invalidator.start(appIsRunning);
