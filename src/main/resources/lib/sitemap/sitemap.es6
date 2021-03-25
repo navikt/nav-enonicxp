@@ -149,7 +149,7 @@ const generateSitemapDataAndScheduleRegeneration = () => {
     // Regenerate sitemap from scratch at 23:00 daily
     cronLib.schedule({
         name: 'sitemap-generator-schedule',
-        cron: '0 23 * * *',
+        cron: '0 6 * * *',
         context: {
             repository: 'com.enonic.cms.default',
             branch: 'master',
