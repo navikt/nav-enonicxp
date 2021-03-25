@@ -13,11 +13,11 @@ let appIsRunning = true;
 // start pull from NORG
 officeInformation.startCronJob();
 
-// generate initial sitemap data and start periodic regeneration
-sitemap.generateSitemapDataAndScheduleRegeneration();
-
 // start cache invalidator
 cache.activateEventListener();
+
+// listen for updated sitemap-data from master
+sitemap.activateDataUpdateEventListener();
 
 // start task for handling caching of expired and prepublished content
 if (clusterLib.isMaster()) {
@@ -29,6 +29,9 @@ if (clusterLib.isMaster()) {
     if (facetValidation) {
         facetLib.setUpdateAll(false);
     }
+
+    // generate initial sitemap data and start periodic regeneration
+    sitemap.generateSitemapDataAndScheduleRegeneration();
 }
 
 invalidator.start(appIsRunning);

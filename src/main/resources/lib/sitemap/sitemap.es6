@@ -1,6 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
+const eventLib = require('/lib/xp/event');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
@@ -8,6 +9,7 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 const batchCount = 1000;
 const maxCount = 50000;
 const pathPrefix = '/www.nav.no';
+const eventType = 'sitemap-generated';
 
 const sitemapData = {
     entries: {},
@@ -125,10 +127,10 @@ const generateSitemapData = () =>
             const startTime = Date.now();
             const sitemapEntries = getSitemapEntries();
 
-            sitemapData.clear();
-
-            sitemapEntries.forEach((entry) => {
-                sitemapData.set(entry.url, entry);
+            eventLib.send({
+                type: eventType,
+                distributed: true,
+                data: { entries: sitemapEntries },
             });
 
             log.info(
@@ -163,8 +165,32 @@ const generateSitemapDataAndScheduleRegeneration = () => {
     });
 };
 
+const updateSitemapData = (entries) => {
+    if (!entries || !Array.isArray(entries) || entries.length === 0) {
+        log.info('Attempted to update sitemap with invalid data');
+        return;
+    }
+
+    sitemapData.clear();
+
+    entries.forEach((entry) => {
+        sitemapData.set(entry.url, entry);
+    });
+};
+
+const activateDataUpdateEventListener = () => {
+    eventLib.listener({
+        type: `custom.${eventType}`,
+        callback: (event) => {
+            log.info('Received sitemap update event from master');
+            updateSitemapData(event.data.entries);
+        },
+    });
+};
+
 module.exports = {
     getAllSitemapEntries,
     generateSitemapDataAndScheduleRegeneration,
     updateSitemapEntry,
+    activateDataUpdateEventListener,
 };
