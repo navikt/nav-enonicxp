@@ -20,7 +20,7 @@ cache.activateEventListener();
 sitemap.activateDataUpdateEventListener();
 
 // generate initial sitemap data and start periodic regeneration
-sitemap.generateSitemapDataAndScheduleRegeneration();
+sitemap.generateDataAndActivateSchedule();
 
 // start task for handling caching of expired and prepublished content
 if (clusterLib.isMaster()) {

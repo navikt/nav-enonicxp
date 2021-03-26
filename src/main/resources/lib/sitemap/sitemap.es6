@@ -150,10 +150,10 @@ const generateSitemapData = () =>
         },
     });
 
-const generateSitemapDataAndScheduleRegeneration = () => {
+const generateDataAndActivateSchedule = () => {
     runInBranchContext(generateSitemapData, 'master');
 
-    // Regenerate sitemap from scratch at 23:00 daily
+    // Regenerate sitemap from scratch at 06:00 daily
     cronLib.schedule({
         name: 'sitemap-generator-schedule',
         cron: '0 6 * * 1,2,3,4,5',
@@ -195,7 +195,7 @@ const activateDataUpdateEventListener = () => {
 
 module.exports = {
     getAllSitemapEntries,
-    generateSitemapDataAndScheduleRegeneration,
+    generateDataAndActivateSchedule,
     updateSitemapEntry,
     activateDataUpdateEventListener,
 };
