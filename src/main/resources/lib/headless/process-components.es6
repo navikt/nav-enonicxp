@@ -22,7 +22,32 @@ const destructureConfig = (component) => {
     };
 };
 
-const makeFragment = (fragmentComponent, components) => {
+// Component data in the components-array is stored in type-specific sub-objects
+// Move this data down to the base object, to match the XP page-object structure
+const destructureComponent = (component) => {
+    const { page, part, layout, image, text, fragment, ...rest } = component;
+
+    const destructured = {
+        ...page,
+        ...part,
+        ...layout,
+        ...image,
+        ...text,
+        ...(fragment && insertComponentsIntoFragment(fragment, fragment.fragment?.components)),
+        ...rest,
+    };
+
+    const config = destructureConfig(destructured);
+
+    return {
+        ...destructured,
+        ...(config && { config }),
+    };
+};
+
+// Takes a fragment-component from a Guillotine query and transforms the
+// data structure into what content studio expects
+const insertComponentsIntoFragment = (fragment, components) => {
     if (!components) {
         return null;
     }
@@ -30,13 +55,14 @@ const makeFragment = (fragmentComponent, components) => {
     const rootComponent = components.find((component) => component.path === '/');
     if (rootComponent.type !== 'layout') {
         return {
-            ...fragmentComponent,
+            ...fragment,
             fragment: {
                 ...destructureComponent(rootComponent),
             },
         };
     }
 
+    // Layouts can contain multiple components in regions, which need special treatment
     const regions = components.reduce((regionsAcc, component) => {
         const regionName = component.path.split('/')[1];
         if (!regionName) {
@@ -50,34 +76,11 @@ const makeFragment = (fragmentComponent, components) => {
     }, {});
 
     return {
-        ...fragmentComponent,
+        ...fragment,
         fragment: {
             ...destructureComponent(rootComponent),
             regions,
         },
-    };
-};
-
-// Component data in the components-array is stored in type-specific sub-objects
-// Move this data down to the base object, to match the XP page-object structure
-const destructureComponent = (component) => {
-    const { page, part, layout, image, text, fragment, ...rest } = component;
-
-    const destructured = {
-        ...page,
-        ...part,
-        ...layout,
-        ...image,
-        ...text,
-        ...(fragment && makeFragment(fragment, fragment.fragment?.components)),
-        ...rest,
-    };
-
-    const config = destructureConfig(destructured);
-
-    return {
-        ...destructured,
-        ...(config && { config }),
     };
 };
 
@@ -150,15 +153,19 @@ const mergeComponentsIntoPage = (content) => {
     return insertComponents(pageWithPageComponent, components);
 };
 
-const mergeComponentsIntoFragment = (content) => {
+const getPortalFragmentContent = (content) => {
     const { components } = content;
 
-    const rootComponent = components?.find((component) => (component.path = '/'));
+    const rootComponent = components?.find((component) => component.path === '/');
     if (!rootComponent) {
-        return {};
+        return content;
     }
 
-    return { ...makeFragment(rootComponent, components).fragment };
+    return {
+        ...content,
+        fragment: { ...insertComponentsIntoFragment(rootComponent, components).fragment },
+        components: undefined,
+    };
 };
 
-module.exports = { mergeComponentsIntoPage, destructureComponent, mergeComponentsIntoFragment };
+module.exports = { mergeComponentsIntoPage, destructureComponent, getPortalFragmentContent };
