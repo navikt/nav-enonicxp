@@ -119,36 +119,35 @@ const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateSitemapData = () =>
-    taskLib.submit({
-        description: 'sitemap-generator-task',
-        task: () => {
-            if (!clusterLib.isMaster()) {
-                return;
-            }
+const generateSitemapData = () => {
+    if (clusterLib.isMaster()) {
+        taskLib.submit({
+            description: 'sitemap-generator-task',
+            task: () => {
+                log.info('Started generating sitemap data');
 
-            log.info('Started generating sitemap data');
+                const startTime = Date.now();
+                const sitemapEntries = getSitemapEntries();
 
-            const startTime = Date.now();
-            const sitemapEntries = getSitemapEntries();
+                eventLib.send({
+                    type: eventType,
+                    distributed: true,
+                    data: { entries: sitemapEntries },
+                });
 
-            eventLib.send({
-                type: eventType,
-                distributed: true,
-                data: { entries: sitemapEntries },
-            });
+                log.info(
+                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                        Date.now() - startTime
+                    }ms`
+                );
 
-            log.info(
-                `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-                    Date.now() - startTime
-                }ms`
-            );
-
-            if (sitemapEntries.length > maxCount) {
-                log.warning(`Sitemap entries count exceeds recommended maximum`);
-            }
-        },
-    });
+                if (sitemapEntries.length > maxCount) {
+                    log.warning(`Sitemap entries count exceeds recommended maximum`);
+                }
+            },
+        });
+    }
+};
 
 const generateDataAndActivateSchedule = () => {
     runInBranchContext(generateSitemapData, 'master');
