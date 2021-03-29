@@ -1,13 +1,36 @@
 const globalFragment = require('./_global');
-const mainArticleContent = require('./mainArticleContent');
+const menuListItems = require('./menuListItems');
+const { imageFragment } = require('./media');
+const { seoMixinFragment } = require('./_mixins');
 
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
-        ${mainArticleContent.fragment}
-        children(first:1000) {
-            ...on no_nav_navno_MainArticleChapter {
+        ${globalFragment}
+        data {
+            languages {
+                language
+                _path
+                _id
+            }
+            ingress
+            text(processHtml:{type:server})
+            hasTableOfContents
+            fact(processHtml:{type:server})
+            social
+            picture {
+                target {
+                    ${imageFragment}
+                }
+                size
+                caption
+                altText
+            }
+            chapters {
                 ${globalFragment}
             }
+            feedbackToggle
+            ${menuListItems.fragment}
+            ${seoMixinFragment}
         }
     }
 `;

@@ -1,15 +1,10 @@
-const getLastUpdatedUnixTime = (content) =>
-    new Date(content.modifiedTime?.split('.')[0] || content.createdTime?.split('.')[0]).getTime();
+const { getNestedValue } = require('/lib/nav-utils');
 
-const getPublishedUnixTime = (content) =>
+const getTimeFromField = (content, key) =>
     new Date(
-        content.publish?.from?.split('.')[0] ||
-            content.publish?.first?.split('.')[0] ||
-            content.createdTime?.split('.')[0]
+        getNestedValue(content, key)?.split('.')[0] || content.createdTime?.split('.')[0]
     ).getTime();
 
-const sortByLastModifiedDesc = (a, b) => getLastUpdatedUnixTime(b) - getLastUpdatedUnixTime(a);
+const sortByDateTimeField = (key) => (a, b) => getTimeFromField(b, key) - getTimeFromField(a, key);
 
-const sortByPublishedDesc = (a, b) => getPublishedUnixTime(b) - getPublishedUnixTime(a);
-
-module.exports = { sortByLastModifiedDesc, sortByPublishedDesc };
+module.exports = { sortByDateTimeField };

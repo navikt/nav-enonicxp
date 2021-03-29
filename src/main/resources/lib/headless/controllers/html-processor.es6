@@ -2,7 +2,7 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { xpOrigin } = require('/lib/headless/url-origin');
 const contextLib = require('/lib/xp/context');
-const { runInBranchContext } = require('/lib/headless/run-in-context');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 
 // Runs the processHtml result through the site-engine HTTP pipeline, which
 // ensures post-processing instructions for macros/components/etc are handled
@@ -14,7 +14,7 @@ const processHtmlWithPostProcessing = (html, type) => {
 
     try {
         const processedHtmlResponse = httpClient.request({
-            url: `${xpOrigin}/_/?processHtml=true}`,
+            url: `${xpOrigin}/_/?processHtml=true`,
             method: 'POST',
             body: JSON.stringify({
                 html,
@@ -46,26 +46,14 @@ const htmlProcessor = (req) => {
         };
     }
 
-    if (branch === 'draft') {
-        const processedHtml = runInBranchContext(
-            () =>
-                portalLib.processHtml({
-                    value: html,
-                    type: 'server', // Always use server-relative urls for draft
-                }),
-            'draft'
-        ).replace(/\/_\//g, '/admin/site/preview/default/draft/_/'); // Insert draft preview prefix to asset paths
-
-        return {
-            contentType: 'text/html',
-            body: processedHtml,
-        };
-    }
-
-    const processedHtml = portalLib.processHtml({
-        value: html,
-        type: type,
-    });
+    const processedHtml = runInBranchContext(
+        () =>
+            portalLib.processHtml({
+                value: html,
+                type: branch === 'draft' ? 'server' : type, // Always use server-relative urls for draft
+            }),
+        branch
+    );
 
     return {
         contentType: 'text/html',
