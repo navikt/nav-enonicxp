@@ -160,8 +160,7 @@ exports.get = (req) => {
         };
     }
     const timeline = getTimeline(contentId);
-    log.info(JSON.stringify(timeline, null, 4));
-    const models = timeline.map((version) => renderPage(version));
+    const models = timeline.map((version) => renderPage(version)).reverse();
     const widgetScriptUrl = libs.portal.assetUrl({ path: 'js/versionHistory.js' });
     return {
         contentType: 'text/html',
