@@ -3,16 +3,12 @@ package tools;
 import java.util.HashMap;
 import java.util.Map;
 
-// import com.enonic.xp.content.Content;
 import com.enonic.xp.content.ContentId;
 import com.enonic.xp.content.ContentService;
 import com.enonic.xp.content.ContentVersion;
-// import com.google.gson.GsonBuilder;
-// import com.google.gson.Gson;
 import com.enonic.xp.content.ContentVersionId;
 import com.enonic.xp.content.ContentVersionPublishInfo;
 import com.enonic.xp.content.FindContentVersionsParams;
-import com.enonic.xp.content.FindContentVersionsResult;
 import com.enonic.xp.content.WorkflowState;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
@@ -43,7 +39,6 @@ public class PublishedVersions implements ScriptBean {
             ContentVersionId id = contentVersion.getId();
             WorkflowState workflowState = contentVersion.getWorkflowInfo().getState();
             ContentVersionPublishInfo publishInfo = contentVersion.getPublishInfo();
-            String name = contentVersion.getDisplayName();
 
             if (publishInfo != null & workflowState == WorkflowState.READY) {
                 map.put(id.toString(), publishInfo.getTimestamp().toString());
@@ -54,7 +49,4 @@ public class PublishedVersions implements ScriptBean {
         String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
         return jsonResult;
     }
-    // public Map<String, Object> getVersions(String contentId){
-
-    // }
 }

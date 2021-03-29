@@ -1,17 +1,31 @@
 <widget>
-    <html>
-        <body>
-            <h1>[[${displayName}]]</h1>
-            <time class="pubdate muted" data-th-datetime="${publishedFrom}">
-                [[${publishedFrom}]]
-            </time>
-            <p class="preface" data-th-if="${ingress && ingress != ''}">
-                [[${ingress}]]
-            </p>
+    <div style="min-height: 600px">
+        <link rel="stylesheet" href="../../assets/css/versionHistory.css" data-th-href="${portal.assetUrl({'_path=css/versionHistory.css'})}" type="text/css" media="all">
 
-            <div class="article-body">
-                <div data-th-utext="${htmlText}" data-th-remove="tag"></div>
-            </div>
-        </body>
-    </html>
+        <div class="timeMachine">
+            <ul data-th-each="version: ${versions}" data-th-remove="tag">
+                <li class="version ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" id="version.versionId">
+                    <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">
+                        <div class="ekspanderbartPanel__flex-wrapper">
+                            <span class="ekspanderbartPanel__tittel">[[${version.from}]] til [[${version.to}]]</span>
+                            <span class="ekspanderbartPanel__indikator"></span>
+                        </div>
+                    </button>
+                    <div class="ekspanderbartPanel__innhold">
+                        <h1>[[${version.displayName}]]</h1>
+                        <time class="pubdate muted" data-th-datetime="${version.publishedFrom}">
+                            [[${version.publishedFrom}]]
+                        </time>
+                        <p class="preface" data-th-if="${version.ingress && version.ingress != ''}">
+                            [[${version.ingress}]]
+                        </p>
+
+                        <div class="article-body">
+                            <div data-th-utext="${version.htmlText}" data-th-remove="tag"></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <script data-th-src="${widgetScriptUrl}" async></script>
 </widget>

@@ -8,7 +8,11 @@ const libs = {
     audit: require('/lib/xp/auditlog'),
 };
 const view = resolve('versionHistorySimpleView.html');
-const renderPage = (req, content) => {
+const renderPage = (version) => {
+    if (!version) {
+        log.info('version is off');
+    }
+    let content = version.content;
     if (content.type === app.name + ':main-article-chapter') {
         content = libs.content.get({
             key: content.data.article,
@@ -42,29 +46,6 @@ const renderPage = (req, content) => {
         }
     }
 
-    // Sosiale medier
-    let socials = false;
-    if (data.social) {
-        socials = Array.isArray(data.social) ? data.social : [data.social];
-    }
-    socials = socials
-        ? socials.map((el) => {
-              let tmpText = 'Del på ';
-              if (el === 'linkedin') {
-                  tmpText += 'LinkedIn';
-              } else if (el === 'facebook') {
-                  tmpText += 'Facebook';
-              } else {
-                  tmpText += 'Twitter';
-              }
-              return {
-                  type: el,
-                  text: tmpText,
-                  href: libs.utils.getSocialRef(el, content, req),
-              };
-          })
-        : false;
-
     // Prosessering av HTML-felter (håndtere url-er inne i html-en) og image-urls
     htmlText = libs.portal.processHtml({
         value: htmlText,
@@ -92,37 +73,25 @@ const renderPage = (req, content) => {
             altText,
         };
     }
-    // Definer model og kall rendring (view)
+    // current model
     return {
+        description: version.description,
+        versionId: version.versionId,
         displayName: content.displayName,
-        publishedFrom: content.publish.from,
-        ingress: data.ingress,
-        hasTableOfContents: toc.length > 0,
-        toc,
-        htmlText,
+        from: libs.utils.formatDateTime(version.from),
         hasFact,
+        hasTableOfContents: toc.length > 0,
         htmlFact,
+        htmlText,
         imageObj,
-        socials,
+        ingress: data.ingress,
+        publishedFrom: content.publish.from,
+        to: libs.utils.formatDateTime(version.to),
+        toc,
     };
 };
-// const renderContent = (req, content) => {};
-exports.get = (req) => {
-    const contentId = req.params.contentId;
-    // const currentComponent = libs.portal.getComponent();
 
-    // const partUrl = libs.portal.componentUrl({
-    //     component: currentComponent.path,
-    // });
-
-    // log.info(partUrl);
-    if (!contentId) {
-        return {
-            contentType: 'text/html',
-            body: '<widget class="error">No content selected</widget>',
-        };
-    }
-
+const getTimeline = (contentId) => {
     const navRepo = nodeLib.connect({
         repoId: 'com.enonic.cms.default',
         branch: 'master',
@@ -157,29 +126,45 @@ exports.get = (req) => {
                 return -1;
             }
             return 0;
-        });
+        })
+        .reverse();
 
-    const timeline = articles.reverse().reduce((acc, content, ix) => {
+    return articles.reduce((acc, content, ix) => {
         const previousContent = articles[ix - 1];
         if (
             previousContent?.article?.publish?.from ||
             (ix === articles.length - 1 && !content.article?.publish?.from)
         ) {
-            acc.push(
-                `${libs.utils.formatDateTime(
+            acc.push({
+                content: content.article,
+                from: previousContent.timestamp,
+                to: content.timestamp,
+                description: `${libs.utils.formatDateTime(
                     previousContent.timestamp
-                )} -- ${libs.utils.formatDateTime(content.timestamp)} ${
-                    content.article.displayName
-                }`
-            );
+                )} -- ${libs.utils.formatDateTime(content.timestamp)}`,
+                versionId: content.version.versionId,
+            });
         }
         return acc;
     }, []);
-    log.info(JSON.stringify(timeline, null, 4));
+};
 
-    const model = renderPage(req, articles[articles.length - 1].article);
+exports.get = (req) => {
+    const contentId = req.params.contentId;
+    log.info(JSON.stringify(req.params, null, 4));
+
+    if (!contentId) {
+        return {
+            contentType: 'text/html',
+            body: '<widget class="error">No content selected</widget>',
+        };
+    }
+    const timeline = getTimeline(contentId);
+    log.info(JSON.stringify(timeline, null, 4));
+    const models = timeline.map((version) => renderPage(version));
+    const widgetScriptUrl = libs.portal.assetUrl({ path: 'js/versionHistory.js' });
     return {
         contentType: 'text/html',
-        body: thymeleaf.render(view, model),
+        body: thymeleaf.render(view, { widgetScriptUrl, versions: models }),
     };
 };
