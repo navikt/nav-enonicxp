@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Produktside med venstremeny</display-name>
+    <display-name>Produktside med venstremeny (IKKE PROD-KLAR)</display-name>
     <description>Sidetype med intern-navigasjon og dynamiske komponenter</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
