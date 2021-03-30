@@ -1,6 +1,5 @@
 const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
-const contextLib = require('/lib/xp/context');
 const { sanitize } = require('/lib/xp/common');
 const controller = require('/lib/headless/controllers/component-preview-controller');
 
@@ -63,13 +62,12 @@ const componentHasUniqueAnchorId = (content, currentComponent) => {
 
 exports.get = (req) => {
     if (req.mode === 'edit') {
-        const context = contextLib.get();
         const contentId = portalLib.getContent()._id;
         const component = portalLib.getComponent();
 
         const repo = nodeLib.connect({
-            repoId: context.repository,
-            branch: context.branch,
+            repoId: req.repositoryId,
+            branch: req.branch,
         });
 
         const content = repo.get(contentId);
