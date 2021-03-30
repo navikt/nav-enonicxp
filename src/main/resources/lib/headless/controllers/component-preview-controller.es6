@@ -3,7 +3,7 @@ const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
-const { destructureComponent } = require('/lib/headless/unflatten-components');
+const { destructureComponent } = require('/lib/headless/process-components');
 
 const queryGetComponents = `query($ref:ID!){
     guillotine {
