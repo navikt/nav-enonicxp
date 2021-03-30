@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Dynamisk alertstripe</display-name>
+    <display-name>_Varselstripe</display-name>
     <description>https://design.nav.no/components/alertstripe</description>
     <form>
         <input type="ComboBox" name="type">

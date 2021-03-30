@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Dynamisk les-mer panel</display-name>
+    <display-name>_Les-mer panel</display-name>
     <description>https://design.nav.no/components/lesmerpanel</description>
     <form>
         <input type="TextArea" name="ingress">

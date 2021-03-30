@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Nyhetsliste</display-name>
+    <display-name>_Nyhetsliste</display-name>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
