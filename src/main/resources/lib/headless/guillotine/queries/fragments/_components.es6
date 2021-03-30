@@ -79,6 +79,20 @@ const partsFragment = `
                     ${linkSelectableMixin}
                 }
             }
+            html_area {
+                html(processHtml:{type: server})
+            }
+            page_header {
+                title
+            }
+            button {
+                icon {
+                    ${imageFragment}
+                }
+                link {
+                    ${linkSelectableMixin}
+                }
+            }
             page_navigation_menu {
                 anchorLinks(contentId:$ref) {
                     anchorId
