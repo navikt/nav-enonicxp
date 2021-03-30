@@ -1,7 +1,8 @@
 <layout>
-  <display-name>main-1-col</display-name>
-  <config/>
-  <regions>
-    <region name="first"/>
-  </regions>
+    <display-name>main-1-col</display-name>
+    <description>Legacy-layout med en kolonne (deprecated)</description>
+    <config/>
+    <regions>
+        <region name="first"/>
+    </regions>
 </layout>

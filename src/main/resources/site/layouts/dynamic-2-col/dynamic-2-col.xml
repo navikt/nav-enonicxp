@@ -1,15 +1,15 @@
 <layout>
-    <display-name>Dynamisk - 2 kolonner</display-name>
-    <description>To kolonner med valgfri bredde for dynamiske komponenter</description>
+    <display-name>Fast kolonne-layout - 2 kolonner</display-name>
+    <description>To faste kolonner med valgfri bredde-fordeling</description>
     <form>
-        <input type="TextArea" name="distribution">
-            <label>Fordeling</label>
+        <input type="TextLine" name="distribution">
+            <label>Bredde-fordeling (xx-xx)</label>
             <default>50-50</default>
+            <config>
+                <regexp>^\d+-\d+$</regexp>
+            </config>
         </input>
-        <input type="TextArea" name="margin">
-            <label>Margin på containeren</label>
-            <default>1rem 0 1rem 0</default>
-        </input>
+        <mixin name="layouts-common"/>
     </form>
     <regions>
         <region name="dynamic-1"/>
