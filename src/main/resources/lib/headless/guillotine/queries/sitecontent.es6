@@ -1,6 +1,7 @@
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
+const { getPortalFragmentContent } = require('/lib/headless/process-components');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
@@ -49,7 +50,7 @@ const queryGetContentByRef = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${queryFragments}
-            pageAsJson(resolveTemplate: true)
+            pageAsJson(resolveTemplate: true, resolveFragment: false)
             ...on base_Folder {
                 children(first:1000) {
                     ${queryFragments}
@@ -80,6 +81,11 @@ const getContent = (idOrPath, branch) => {
     }
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
+
+    if (content.__typename === 'portal_Fragment') {
+        return getPortalFragmentContent(contentWithParsedData);
+    }
+
     const page = mergeComponentsIntoPage(contentWithParsedData);
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
@@ -185,4 +191,4 @@ const getSiteContent = (idOrPath, branch = 'master') => {
     return { ...content, ...(notifications && { notifications }) };
 };
 
-module.exports = { getSiteContent };
+module.exports = { getSiteContent, getContent };
