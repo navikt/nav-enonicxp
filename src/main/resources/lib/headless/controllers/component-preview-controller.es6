@@ -72,7 +72,7 @@ const componentPreviewController = () => {
     const componentProps = getComponentProps();
 
     if (!componentProps) {
-        log.info('Failed to get component props');
+        log.info('Failed to get component props for preview');
         return fallbackResponse;
     }
 
@@ -91,10 +91,10 @@ const componentPreviewController = () => {
             };
         }
     } catch (e) {
-        log.info(`component-preview error: ${e}`);
+        log.error(`Error while fetching component preview - ${e}`);
     }
 
-    log.info(`Failed to fetch HTML-preview for component ${componentProps.descriptor}`);
+    log.error(`Failed to fetch preview for component ${componentProps.descriptor}`);
     return fallbackResponse;
 };
 
