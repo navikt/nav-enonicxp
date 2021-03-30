@@ -37,15 +37,29 @@ const linkExternalMixinFragment = `
     text
 `;
 
+const linkSelectableMixin = `
+    _selected
+    external {
+        ${linkExternalMixinFragment}
+    }
+    internal {
+        ${linkInternalMixinFragment}
+    }
+`;
+
 const linkWithIngressMixinFragment = `
     ingress
     link {
+        ${linkSelectableMixin}
+    }
+`;
+
+const headerCommonMixin = `
+    justify
+    typo {
         _selected
-        internal {
-            ${linkInternalMixinFragment}
-        }
-        external {
-            ${linkExternalMixinFragment}
+        custom {
+            typo
         }
     }
 `;
@@ -56,4 +70,6 @@ module.exports = {
     linkInternalMixinFragment,
     linkExternalMixinFragment,
     linkWithIngressMixinFragment,
+    linkSelectableMixin,
+    headerCommonMixin,
 };

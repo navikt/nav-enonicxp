@@ -1,16 +1,15 @@
-const { linkInternalMixinFragment } = require('./_mixins');
-const { linkExternalMixinFragment } = require('./_mixins');
-const { linkWithIngressMixinFragment } = require('./_mixins');
-const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const { linkWithIngressMixinFragment, linkSelectableMixin } = require('./_mixins');
 const { imageFragment } = require('./media');
+const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const { headerCommonMixin } = require('/lib/headless/guillotine/queries/fragments/_mixins');
 
 const partsFragment = `
     config {
         no_nav_navno {
             dynamic_header {
                 title
-                ingress
-                titleTypo
+                anchorId
+                ${headerCommonMixin}
             }
             dynamic_link_panel {
                 ${linkWithIngressMixinFragment}
@@ -47,13 +46,7 @@ const partsFragment = `
                     }
                     linkList {
                         links {
-                            _selected
-                            external {
-                                ${linkExternalMixinFragment}
-                            }
-                            internal {
-                                ${linkInternalMixinFragment}
-                            }
+                            ${linkSelectableMixin}
                         }
                     }
                 }
@@ -66,6 +59,20 @@ const partsFragment = `
                 moreNews {
                     url
                     text
+                }
+            }
+            html_area {
+                html(processHtml:{type: server})
+            }
+            page_header {
+                title
+            }
+            button {
+                icon {
+                    ${imageFragment}
+                }
+                link {
+                    ${linkSelectableMixin}
                 }
             }
         }
@@ -90,7 +97,7 @@ const componentsContent = `
     }
     image {
         image {
-            imageUrl(scale:"$scale", type:server)
+            imageUrl(scale: "$scale", type: server)
         }
     }
 `;
