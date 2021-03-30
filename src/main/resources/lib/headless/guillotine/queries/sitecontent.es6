@@ -1,6 +1,6 @@
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
-const { mergeComponentsIntoPage } = require('/lib/headless/unflatten-components');
+const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
