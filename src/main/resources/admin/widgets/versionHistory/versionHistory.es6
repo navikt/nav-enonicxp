@@ -7,6 +7,43 @@ const libs = {
     utils: require('/lib/nav-utils'),
     audit: require('/lib/xp/auditlog'),
 };
+
+/**
+ * Get the extension from the mime/type
+ * Supported types, [Jpeg Png Gif Svg]
+ * @param {Object} contentId The id to the image content
+ */
+function getExtensionForImage(contentId) {
+    const mimeTypes = {
+        'image/png': 'png',
+        'image/jpeg': 'jpg',
+        'image/gif': 'gif',
+        'image/svg+xml': 'svg',
+    };
+    const content = libs.content.get({ key: contentId });
+    if (content) {
+        const imageInfo = content.x && content.x.media ? content.x.media.imageInfo : false;
+
+        if (imageInfo) {
+            return mimeTypes[imageInfo.contentType] || '';
+        }
+    }
+    return '';
+}
+
+/**
+ * Get the imageUrl for a contentId, wrapper to portal.imageUrl to handle extensions correctly
+ * @param {String} contentId The id of the content.
+ * scale is default blank
+ */
+function getImageUrl(contentId, scale = '') {
+    const extension = getExtensionForImage(contentId);
+    return libs.portal.imageUrl({
+        id: contentId,
+        format: extension,
+        scale,
+    });
+}
 const view = resolve('versionHistorySimpleView.html');
 const renderPage = (version) => {
     if (!version) {
@@ -61,18 +98,20 @@ const renderPage = (version) => {
         : null;
 
     let imageObj = null;
-    if (!!data.picture && data.picture.target) {
+    if (data.picture?.target) {
         const { caption, altText, target, size } = data.picture;
         const imgClass =
             // eslint-disable-next-line no-nested-ternary
             size === '40' ? 'figure-small' : size === '70' ? 'figure-medium' : 'figure-full';
         imageObj = {
-            url: libs.utils.getImageUrl(target, 'max(768)'),
+            url: getImageUrl(target, 'max(768)'),
             imgClass,
             caption,
             altText,
         };
     }
+    log.info(JSON.stringify(imageObj, null, 4));
+
     // current model
     return {
         description: version.description,
@@ -151,8 +190,6 @@ const getTimeline = (contentId) => {
 
 exports.get = (req) => {
     const contentId = req.params.contentId;
-    log.info(JSON.stringify(req.params, null, 4));
-
     if (!contentId) {
         return {
             contentType: 'text/html',

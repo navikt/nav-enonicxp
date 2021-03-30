@@ -33,6 +33,54 @@ h3,
     font-weight: normal;
 }
 
+.preface {
+    font-size: 1.125rem;
+    font-weight: 400;
+    margin: 0;
+}
+
+.figure-container {
+    text-align: center;
+}
+.figure-container figure {
+    width: 100%;
+    margin-top: 60px;
+    display: inline-block;
+}
+.figure-container figure img {
+    max-width: 100%;
+    height: auto;
+}
+.figure-container figure.figure-small img {
+    max-width: 40%;
+}
+.figure-container figure.figure-medium img {
+    max-width: 70%;
+}
+.figure-container figure.figure-full img {
+    max-width: 100%;
+}
+.figure-container figure figcaption {
+    padding-top: 6px;
+    margin-bottom: 0;
+    color: #555;
+    font-size: 0.75rem;
+}
+.article-facts {
+    background: #f1f1f1 url('../img/navno/gfx/icons/info.png') no-repeat center 20px;
+    border: 1px solid #d1d1d1;
+    padding: 72px 30px 30px;
+    margin-top: 60px;
+}
+.article-facts h3 {
+    text-align: center;
+}
+.article-facts ul {
+    padding-left: 20px;
+}
+.article-facts li {
+    font-size: 1rem;
+}
 .ekspanderbartPanel {
     position: relative;
     background: white;
