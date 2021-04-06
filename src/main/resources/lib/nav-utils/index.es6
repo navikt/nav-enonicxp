@@ -21,7 +21,7 @@ function formatDateTime(date, language = 'nb') {
     return libs
         .moment(fixDateFormat(date))
         .locale(language === 'en' ? 'en-gb' : 'nb')
-        .format('LLL');
+        .format('lll');
 }
 
 /**
