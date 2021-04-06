@@ -110,7 +110,6 @@ const renderPage = (version) => {
             altText,
         };
     }
-    log.info(JSON.stringify(imageObj, null, 4));
 
     // current model
     return {
@@ -149,39 +148,30 @@ const getTimeline = (contentId) => {
             const article = navRepo.get({ key: contentId, versionId: version.versionId });
             const auditLog = libs.audit.find({ ids: [contentId], count: 100 });
             const timestamp = versionTimestamps[version.versionId] ?? '';
-            return { auditLog, version, article, timestamp };
+            // adding timestamp massage since nashorn Date can't handle ms
+            return { auditLog, version, article, timestamp: libs.utils.fixDateFormat(timestamp) };
         })
         .filter(({ article }) => {
-            return article.workflow?.state !== 'IN_PROGRESS';
+            return article.workflow?.state !== 'IN_PROGRESS' && article.timestamp !== '';
         })
-        .sort((a, b) => {
-            const aDate = a.article.modifiedTime;
-            const bDate = b.article.modifiedTime;
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-            if (aDate < bDate) {
-                return 1;
-            }
-            if (bDate > aDate) {
-                return -1;
-            }
-            return 0;
-        })
-        .reverse();
-
-    return articles.reduce((acc, content, ix) => {
-        const previousContent = articles[ix - 1];
+    // returns the articles sorted newest version to oldest, with the content bound from previous to
+    // next element
+    return articles.reduce((acc, content, ix, src) => {
+        const previousContent = src[ix - 1];
         if (
             previousContent?.article?.publish?.from ||
-            (ix === articles.length - 1 && !content.article?.publish?.from)
+            (ix === src.length - 1 && !content.article?.publish?.from)
         ) {
             acc.push({
-                content: content.article,
+                content: previousContent.article,
                 from: previousContent.timestamp,
                 to: content.timestamp,
                 description: `${libs.utils.formatDateTime(
                     previousContent.timestamp
                 )} -- ${libs.utils.formatDateTime(content.timestamp)}`,
-                versionId: content.version.versionId,
+                versionId: previousContent.version.versionId,
             });
         }
         return acc;

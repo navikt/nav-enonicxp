@@ -1,6 +1,6 @@
 <widget>
-    <display-name>versionHistory</display-name>
-    <description>Show version history</description>
+    <display-name>Tidsmaskin</display-name>
+    <description>Se tidligere publiserte versjoner av inneholdet</description>
     <interfaces>
         <interface>contentstudio.contextpanel</interface>
     </interfaces>

@@ -137,5 +137,6 @@ module.exports = {
     getAllChildren,
     pushLiveElements,
     formatDateTime,
+    fixDateFormat,
     getNestedValue,
 };
