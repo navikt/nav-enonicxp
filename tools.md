@@ -74,7 +74,7 @@ Query
 _id IN ("9cb56cb1-2195-4dda-a14e-6d2c683b6409","74e6bd4d-ede3-4f6c-9f7f-954cf8cd3226")
 ```
 
-####Alternativ metode (references)
+#### Alternativ metode (references)
 
 Bruk references til å finne innhold som hadde tilknytning til innholdet som ble avpublisert.
 Da holder det å gjøre et query basert på id-en til hovedelementet.
