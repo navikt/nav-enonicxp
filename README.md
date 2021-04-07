@@ -81,6 +81,10 @@ To be able to navigate the site as in production ie. http://localhost:8080/sok, 
     mapping.webapp.target = /webapp
     mapping.admin2.idProvider.system = default
 
+## Usefull Enonic XP tools
+Document describing usefull tools to query the database and look for changes in the case of user errors.
+[Enonic XP Tools](tools.md)
+
 ## Monitoring errors with slack alerts to #xpnavno-alerts
 
 We have some rules which triggers an alert to the #xpnavno-alerts channel, these are there to give
