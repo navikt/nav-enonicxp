@@ -2,7 +2,7 @@
 
 
 ## Users/Brukeradministrasjon
-Installeres sammen med XP
+Installeres automatisk som en del av XP
 
 Enkleste måte å søke opp brukere på. Brukere lagres og vises bare med adfs-ID i Content Viewer og andre verktøy.
 Her kan du matche brukerid og visningsnavn. 
@@ -20,7 +20,7 @@ Husk at det kan være lurt å spesifisere repo og branch.
 
 Ved å bruke søkefeltet øverst til høyre (forstørrelsesglasset), får du satt opp et detaljert Query som du så kan justere.
 
-Queries settes opp på samme måte som fra koden. Feltnavn finner du via live data i **Content Viewer** i **Content Studio** eller i content-types i koden (XML).
+Queries settes opp på samme måte som fra koden. Feltnavn finner du lettest via live data i **Content Viewer** i **Content Studio**, eller eventuelt beskrevet som XML i source-koden, f.eks.: `site/content-types/main-article/main-article.xml`.
 - Bruk **=** for eksakt match på typer som krever dette (number, id-er …)
 - Bruk **LIKE** for treff i strenger. * for å matche hva som helst.
 
@@ -41,7 +41,7 @@ https://developer.enonic.com/docs/xp/stable/storage/noql
 ## Audit Log Browser
 Egen applikasjon - https://market.enonic.com/vendors/enonic/audit-log-browser
 
-Innsyn i Change log for databasen. Kan gjøre filtering på ulike felter for å finne spesifikke logentries.
+Innsyn i Change log for databasen. Kan gjøre filtering på ulike felter for å finne spesifikke logentries ved å velge fra dropdown-felter øverst på skjermen.
 Visning er basert på id-er, for å knytte det til meningsbærende data bruk **Data Toolbox**.
 
 Data Toolbox inneholder også en oversikt - **Audit Log** - hvor redaktørens e-postadresse og path til objektet vises.
@@ -61,9 +61,9 @@ Hvordan finne ut hvilke som ble avpublisert?
 1. Finn eventuelt brukerid via **Users/Brukeradministrasjon**
 2. Bruk **Audit Log Browser** til å finne elementet som ble avpublisert, basert på bruker eller tidspunkt:
 ```
-	From = <dato du vil sjekke fra>
-	Type = system.content.unpublishcontent
-	User = <brukeridentifikasjon> (hvis du vil snevre inn søket)
+	From -> <Velg dato du vil sjekke fra (YYY-MM-DD)>
+	Type -> system.content.unpublishcontent
+	User -> <brukeridentifikasjon> (hvis du vil snevre inn søket)
 ```
 3. Finn aktuelt element og kopier listen av id-er under **unpublishedContents**
 4. Ta listen i en editor og legg id-ene i en kommaseparert liste av strenger (“id1”, ”id2”, ...)
@@ -71,7 +71,7 @@ Hvordan finne ut hvilke som ble avpublisert?
 
 ```
 Query
-_id IN ("9cb56cb1-2195-4dda-a14e-6d2c683b6409","74e6bd4d-ede3-4f6c-9f7f-954cf8cd3226”)
+_id IN ("9cb56cb1-2195-4dda-a14e-6d2c683b6409","74e6bd4d-ede3-4f6c-9f7f-954cf8cd3226")
 ```
 
 ####Alternativ metode (references)
@@ -99,7 +99,7 @@ Branch
 master
 
 Query
-modifier = "user:adfs:39ab475e-a6d6-4089-8f50-05f17d2e5828" AND type = "no.nav.navno:main-article”
+modifier = "user:adfs:39ab475e-a6d6-4089-8f50-05f17d2e5828" AND type = "no.nav.navno:main-article"
 
 Sort
 modifiedTime DESC
@@ -109,8 +109,8 @@ modifiedTime DESC
 
 **Audit Log Browser**
 ```
-From = <gårsdagens dato>
-Type = system.content.delete
+From -> <Velg gårsdagens dato (YYYY-MM-DD)>
+Type -> system.content.delete
 ```
 Listen vil vise user-id for utførende og path til objektene (i tillegg til id)
 Husk prefiks _ for oppslag i Data Toolbox: **_id**, **_path** og **_parentPath**
@@ -120,8 +120,8 @@ Husk prefiks _ for oppslag i Data Toolbox: **_id**, **_path** og **_parentPath**
 
 **Audit Log Browser**
 ```
-From = <ønsket dato>
-Type = system.content.move
+From -> <Velg ønsket dato (YYYY-MM-DD)>
+Type -> system.content.move
 ```
 Listen vil vise user-id for utførende og parentPath til objektene (i tillegg til id)
 Husk prefiks _ for oppslag i Data Toolbox: **_id**, **_path** og **_parentPath**
