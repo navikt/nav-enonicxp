@@ -130,6 +130,14 @@ const renderPage = (version) => {
 };
 
 const getTimeline = (contentId) => {
+    const getLiveDateTime = (published, timestamp) => {
+        // to handle prepublishing we need to make sure that if the publish.from date is in the
+        // future in relation to the timestamp we use publish.from
+        const publishedFrom = published ? libs.utils.fixDateFormat(published) : false;
+        return publishedFrom && new Date(publishedFrom) > new Date(timestamp)
+            ? publishedFrom
+            : timestamp;
+    };
     const navRepo = nodeLib.connect({
         repoId: 'com.enonic.cms.default',
         branch: 'master',
@@ -160,14 +168,15 @@ const getTimeline = (contentId) => {
     // next element
     return articles.reduce((acc, content, ix, src) => {
         const previousContent = src[ix - 1];
-        if (
-            previousContent?.article?.publish?.from ||
-            (ix === src.length - 1 && !content.article?.publish?.from)
-        ) {
+
+        if (previousContent?.article?.publish?.from || ix === src.length - 1) {
             acc.push({
                 content: previousContent.article,
-                from: previousContent.timestamp,
-                to: content.timestamp,
+                from: getLiveDateTime(
+                    previousContent?.article?.publish?.from,
+                    previousContent.timestamp
+                ),
+                to: getLiveDateTime(content?.article?.publish?.from, content.timestamp),
                 description: `${libs.utils.formatDateTime(
                     previousContent.timestamp
                 )} -- ${libs.utils.formatDateTime(content.timestamp)}`,
