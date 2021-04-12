@@ -3,6 +3,7 @@
         <link rel="stylesheet" href="../../assets/css/versionHistory.css" data-th-href="${portal.assetUrl({'_path=css/versionHistory.css'})}" type="text/css" media="all">
 
         <div class="timeMachine">
+            <div data-th-if="${versions.empty}"><span>Det er ingen tidligere versjoner av dette inneholdet</span></div>
             <ul data-th-each="version: ${versions}" data-th-remove="tag">
                 <li class="version ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" id="version.versionId">
                     <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">

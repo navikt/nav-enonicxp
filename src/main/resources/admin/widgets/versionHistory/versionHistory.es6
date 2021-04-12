@@ -168,8 +168,10 @@ const getTimeline = (contentId) => {
     // next element
     return articles.reduce((acc, content, ix, src) => {
         const previousContent = src[ix - 1];
-
-        if (previousContent?.article?.publish?.from || ix === src.length - 1) {
+        if (
+            previousContent?.article?.publish?.from ||
+            (ix === src.length - 1 && src.length !== 1)
+        ) {
             acc.push({
                 content: previousContent.article,
                 from: getLiveDateTime(
