@@ -1,0 +1,37 @@
+<widget>
+  <form method="get" data-th-action="${serviceUrl}" style="padding: 1rem;">
+    <div style="margin-bottom: 0.75rem;">
+      <label for="types">Ny innholdstype:</label><br />
+      <select name="contentType" id="types" style="-webkit-appearance: revert;">
+        <option
+          data-th-each="type : ${types}"
+          data-th-text="${type.displayName}"
+          data-th-value="${type.name}"
+        ></option>
+      </select>
+    </div>
+    <div>
+      <input
+        type="checkbox"
+        id="wipeData"
+        name="wipeData"
+        value="true"
+        style="-webkit-appearance: revert;"
+      />
+      <label for="wipeData">Slett innholds-data</label>
+    </div>
+    <div>
+      <input
+        type="checkbox"
+        id="wipeComponents"
+        name="wipeComponents"
+        value="true"
+        style="-webkit-appearance: revert;"
+      />
+      <label for="wipeComponents">Slett komponenter</label>
+    </div>
+    <input type="hidden" name="contentId" data-th-value="${contentId}" />
+    <input type="hidden" name="repoId" data-th-value="${repoId}" />
+    <button type="submit" style="margin-top: 0.75rem;">Sett ny innholdstype</button>
+  </form>
+</widget>

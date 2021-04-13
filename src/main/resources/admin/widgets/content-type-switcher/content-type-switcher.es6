@@ -1,44 +1,42 @@
-const nodeLib = require('/lib/xp/node');
-var thymeleafLib = require('/lib/thymeleaf');
+const contentLib = require('/lib/xp/content');
+const portalLib = require('/lib/xp/portal');
+const thymeleafLib = require('/lib/thymeleaf');
 
-const editor = (type, wipeData, wipeComponents) => (content) => {
-    content.type = type;
+const view = resolve('./content-type-switcher.html');
 
-    if (wipeComponents) {
-        content.components = [];
-    }
+const allowedTypeNames = [
+    'dynamic-page',
+    'internal-link',
+    'external-link',
+    'main-article',
+    'section-page',
+    'page-list',
+    'transport-page',
+    'office-information',
+    'large-table',
+].map((contentType) => `${app.name}:${contentType}`);
 
-    if (wipeData) {
-        content.data = {};
-    }
-
-    return content;
-};
-
-const setContentType = (repoId, contentId, type) => {
-    try {
-        const repo = nodeLib.connect({
-            repoId: repoId,
-            branch: 'draft',
-            // user: {
-            //     login: 'su',
-            //     userStore: 'system',
-            // },
-            // principals: ['role:system.admin'],
-        });
-
-        repo.modify({ key: contentId, editor: editor(type) });
-    } catch (e) {
-        log.info(`Error while changing content type: ${e}`);
-    }
+const getAllowedTypes = () => {
+    return contentLib
+        .getTypes()
+        .filter((type) =>
+            allowedTypeNames.some((allowedTypeName) => allowedTypeName === type.name)
+        );
 };
 
 const handleGet = (req) => {
     const { repositoryId } = req;
     const { contentId } = req.params;
 
+    const model = {
+        types: getAllowedTypes(),
+        repoId: repositoryId,
+        serviceUrl: portalLib.serviceUrl({ service: 'contentTypeSwitcher' }),
+        contentId,
+    };
+
     return {
-        body: '<widget><div><h1>My first widget</h1></div></widget>',
+        body: thymeleafLib.render(view, model),
         contentType: 'text/html',
     };
 };
