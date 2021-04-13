@@ -2,8 +2,10 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
+const deepJsonParser = require('/lib/headless/deep-json-parser');
+const { getContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
-const { destructureComponent } = require('/lib/headless/unflatten-components');
+const { destructureComponent } = require('/lib/headless/process-components');
 
 const queryGetComponents = `query($ref:ID!){
     guillotine {
@@ -18,16 +20,36 @@ const fallbackResponse = {
     body: `<div>'Mark as ready for preview'</div>`,
 };
 
-const componentPreviewController = (req) => {
+// For layout-previews, we need the complete props-tree of the layout, including
+// components in the layout regions
+const getLayoutComponentProps = (contentId, path) => {
+    const pageRegions = getContent(contentId, 'draft')?.page?.regions;
+
+    if (!pageRegions) {
+        return null;
+    }
+
+    const components = Object.values(pageRegions).reduce((componentsAcc, region) => {
+        return [...componentsAcc, ...region.components];
+    }, []);
+
+    return components.find((component) => component.type === 'layout' && component.path === path);
+};
+
+const getComponentProps = () => {
     const content = portalLib.getContent();
     const component = portalLib.getComponent();
+
+    if (component.type === 'layout') {
+        return getLayoutComponentProps(content._id, component.path);
+    }
 
     const response = guillotineQuery(
         queryGetComponents,
         {
             ref: content._id,
         },
-        req.branch
+        'draft'
     );
 
     const componentFromGuillotine = response?.get?.components.find(
@@ -35,11 +57,24 @@ const componentPreviewController = (req) => {
     );
 
     if (!componentFromGuillotine) {
-        log.info('Failed to get component props from guillotine query');
-        return fallbackResponse;
+        return null;
     }
 
-    const componentProps = { ...component, ...destructureComponent(componentFromGuillotine) };
+    return {
+        ...component,
+        ...destructureComponent(deepJsonParser(componentFromGuillotine, ['config'])),
+    };
+};
+
+// This controller fetches component-HTML from the frontend rendered with the
+// supplied props. Used by the content-studio editor.
+const componentPreviewController = () => {
+    const componentProps = getComponentProps();
+
+    if (!componentProps) {
+        log.info('Failed to get component props for preview');
+        return fallbackResponse;
+    }
 
     try {
         const componentHtml = httpClient.request({
@@ -52,14 +87,14 @@ const componentPreviewController = (req) => {
         if (componentHtml?.body) {
             return {
                 contentType: 'text/html',
-                body: `<div>${componentHtml.body}</div>`,
+                body: componentHtml.body,
             };
         }
     } catch (e) {
-        log.info(`Failed to fetch component preview: ${e}`);
+        log.error(`Error while fetching component preview - ${e}`);
     }
 
-    log.info('Failed to fetch component from frontend');
+    log.error(`Failed to fetch preview for component ${componentProps.descriptor}`);
     return fallbackResponse;
 };
 

@@ -1,0 +1,42 @@
+<mixin>
+    <form>
+        <input name="justify" type="RadioButton">
+            <label>Justering</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="left">Venstre</option>
+                <option value="center">Sentrert</option>
+                <option value="right">Høyre</option>
+            </config>
+            <default>center</default>
+        </input>
+        <option-set name="typo">
+            <label>Typografi</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="default">
+                    <label>Standard</label>
+                    <help-text>Standard typografi-stil for headeren (skal som hovedregel benyttes)</help-text>
+                    <default>true</default>
+                </option>
+                <option name="custom">
+                    <label>Tilpasset</label>
+                    <help-text>Egenvalgt typografi-stil</help-text>
+                    <items>
+                        <input name="typo" type="RadioButton">
+                            <label>Velg typografi-stil</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <option value="sidetittel">Sidetittel</option>
+                                <option value="innholdstittel">Innholdstittel</option>
+                                <option value="systemtittel">Systemtittel</option>
+                                <option value="undertittel">Undertittel</option>
+                                <option value="element">Element (normal bold)</option>
+                            </config>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</mixin>

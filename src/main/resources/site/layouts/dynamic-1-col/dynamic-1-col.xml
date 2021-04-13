@@ -1,0 +1,10 @@
+<layout>
+    <display-name>Fast kolonne-layout - 1 kolonne</display-name>
+    <description>En kolonne</description>
+    <form>
+        <mixin name="layouts-common"/>
+    </form>
+    <regions>
+        <region name="dynamic-1"/>
+    </regions>
+</layout>
