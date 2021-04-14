@@ -166,29 +166,55 @@ const getTimeline = (contentId) => {
 
     // returns the articles sorted newest version to oldest, with the content bound from previous to
     // next element
+    const now = new Date().toISOString();
     return articles.reduce((acc, content, ix, src) => {
         const previousContent = src[ix - 1];
-        if (
-            previousContent?.article?.publish?.from ||
-            (ix === src.length - 1 && src.length !== 1)
-        ) {
-            acc.push({
-                content: previousContent.article,
-                from: getLiveDateTime(
-                    previousContent?.article?.publish?.from,
-                    previousContent.timestamp
-                ),
-                to: getLiveDateTime(content?.article?.publish?.from, content.timestamp),
-                description: `${libs.utils.formatDateTime(
-                    previousContent.timestamp
-                )} -- ${libs.utils.formatDateTime(content.timestamp)}`,
-                versionId: previousContent.version.versionId,
-            });
+        if (previousContent?.article?.publish?.from && src.length > 1) {
+            // push if
+            // 1. previous version was published
+            // 2. not the last version, this is the current live content
+            // 3. there is only one version of this content
+            // inside for clarity and the need of the live dates
+            // 4. check if the published from date is before now, else it hasn't actually been released.
+            // 5. check if the previous published date is after or same as current
+            const from = getLiveDateTime(
+                previousContent?.article?.publish?.from,
+                previousContent.timestamp
+            );
+            const to = getLiveDateTime(content?.article?.publish?.from, content.timestamp);
+            if (from < now && to > from && to !== from) {
+                log.debug(
+                    `pushing: ( ${previousContent?.article?.publish?.from} - ${from} ) - ( ${content?.article?.publish?.from} - ${from} )`
+                );
+
+                acc.push({
+                    content: previousContent.article,
+                    from,
+                    to,
+                    description: `${libs.utils.formatDateTime(from)} -- ${libs.utils.formatDateTime(
+                        to
+                    )}`,
+                    versionId: previousContent.version.versionId,
+                });
+            } else {
+                log.debug(
+                    `skipping inside: ( ${previousContent?.article?.publish?.from} - ${from} ) - ( ${content?.article?.publish?.from} - ${from} )`
+                );
+            }
+        } else {
+            log.debug(
+                `skipping: ( ${previousContent?.article?.publish?.from} - ${previousContent?.timestamp}) - ( ${content?.article?.publish?.from} - ${content?.timestamp} )`
+            );
         }
+
         return acc;
     }, []);
 };
 
+const renderMapping = {
+    [`${app.name}:main-article`]: renderPage,
+    [`${app.name}:dynamic-page`]: renderPage,
+};
 exports.get = (req) => {
     const contentId = req.params.contentId;
     if (!contentId) {
