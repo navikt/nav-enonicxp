@@ -1,0 +1,14 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Sidemeny for intern-navigasjon</display-name>
+    <form>
+        <mixin name="page-navigation-menu"/>
+        <input type="RadioButton" name="dummyInputToPreventEmptyPartConfigDoNotRemove">
+            <label>Klikk "marker som klar" for å oppdatere menyen</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="dummy"> </option>
+            </config>
+            <default>dummy</default>
+        </input>
+    </form>
+</part>

@@ -54,6 +54,13 @@ const linkWithIngressMixinFragment = `
     }
 `;
 
+const pageNavigationMenuMixinFragment = `
+   anchorLinks(contentId:$ref) {
+        anchorId
+        linkText
+    }
+`;
+
 const headerCommonMixin = `
     justify
     typo {
@@ -70,6 +77,7 @@ module.exports = {
     linkInternalMixinFragment,
     linkExternalMixinFragment,
     linkWithIngressMixinFragment,
+    pageNavigationMenuMixinFragment,
     linkSelectableMixin,
     headerCommonMixin,
 };

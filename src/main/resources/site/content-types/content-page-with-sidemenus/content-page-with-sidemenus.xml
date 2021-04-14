@@ -1,0 +1,12 @@
+<content-type>
+    <display-name>Produktside med venstremeny (IKKE PROD-KLAR)</display-name>
+    <description>Sidetype med intern-navigasjon og dynamiske komponenter</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="feedback-toggle"/>
+        <mixin name="seo"/>
+    </form>
+</content-type>
