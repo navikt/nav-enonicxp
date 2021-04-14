@@ -59,38 +59,11 @@ const renderPage = (version) => {
     const hasFact = !!data.fact;
     let htmlText = data.text;
 
-    // Innholdsfortegnelse
-    const toc = [];
-    if (data.hasTableOfContents && data.hasTableOfContents !== 'none') {
-        let count = 0;
-        let ch = 1;
-        let ind = htmlText.indexOf('<h3>');
-
-        while (ind !== -1 && count < 100) {
-            const h2End = ind + 4;
-            const ssEnd = htmlText.indexOf('</h3>', ind);
-            const ss = htmlText
-                .slice(h2End, ssEnd)
-                .replace(/<([^>]+)>/gi, '') // Strip html
-                .replace(/&nbsp;/gi, ' '); // Replace &nbsp;
-            count++;
-            toc.push(ss);
-            htmlText = htmlText.replace(
-                '<h3>',
-                '<h3 id="chapter-' + ch++ + '" tabindex="-1" class="chapter-header">'
-            );
-            ind = htmlText.indexOf('<h3>');
-        }
-    }
-
     // Prosessering av HTML-felter (håndtere url-er inne i html-en) og image-urls
     htmlText = libs.portal.processHtml({
         value: htmlText,
     });
-    // Fjern tomme headings og br-tagger fra HTML
-    htmlText = htmlText.replace(/<h\d>\s*<\/h\d>/g, '');
-    htmlText = htmlText.replace(/<h\d>&nbsp;<\/h\d>/g, '');
-    htmlText = htmlText.replace(/<br \/>/g, '');
+
     const htmlFact = hasFact
         ? libs.portal.processHtml({
               value: data.fact,
@@ -118,14 +91,12 @@ const renderPage = (version) => {
         displayName: content.displayName,
         from: libs.utils.formatDateTime(version.from),
         hasFact,
-        hasTableOfContents: toc.length > 0,
         htmlFact,
         htmlText,
         imageObj,
         ingress: data.ingress,
-        publishedFrom: content.publish.from,
+        publishedFrom: libs.utils.formatDateTime(content.publish.from),
         to: libs.utils.formatDateTime(version.to),
-        toc,
     };
 };
 
