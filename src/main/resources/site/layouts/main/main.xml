@@ -1,8 +1,9 @@
 <layout>
-  <display-name>main</display-name>
-  <config/>
-  <regions>
-    <region name="first"/>
-    <region name="second"/>
-  </regions>
+    <display-name>main</display-name>
+    <description>Legacy-layout med to kolonner (deprecated)</description>
+    <config/>
+    <regions>
+        <region name="first"/>
+        <region name="second"/>
+    </regions>
 </layout>

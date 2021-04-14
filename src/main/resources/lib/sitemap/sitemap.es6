@@ -1,6 +1,8 @@
 const contentLib = require('/lib/xp/content');
 const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
+const eventLib = require('/lib/xp/event');
+const clusterLib = require('/lib/xp/cluster');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
@@ -8,6 +10,7 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 const batchCount = 1000;
 const maxCount = 50000;
 const pathPrefix = '/www.nav.no';
+const eventType = 'sitemap-generated';
 
 const sitemapData = {
     entries: {},
@@ -116,37 +119,40 @@ const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateSitemapData = () =>
-    taskLib.submit({
-        description: 'sitemap-generator-task',
-        task: () => {
-            log.info('Started generating sitemap data');
+const generateSitemapData = () => {
+    if (clusterLib.isMaster()) {
+        taskLib.submit({
+            description: 'sitemap-generator-task',
+            task: () => {
+                log.info('Started generating sitemap data');
 
-            const startTime = Date.now();
-            const sitemapEntries = getSitemapEntries();
+                const startTime = Date.now();
+                const sitemapEntries = getSitemapEntries();
 
-            sitemapData.clear();
+                eventLib.send({
+                    type: eventType,
+                    distributed: true,
+                    data: { entries: sitemapEntries },
+                });
 
-            sitemapEntries.forEach((entry) => {
-                sitemapData.set(entry.url, entry);
-            });
+                log.info(
+                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                        Date.now() - startTime
+                    }ms`
+                );
 
-            log.info(
-                `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-                    Date.now() - startTime
-                }ms`
-            );
+                if (sitemapEntries.length > maxCount) {
+                    log.warning(`Sitemap entries count exceeds recommended maximum`);
+                }
+            },
+        });
+    }
+};
 
-            if (sitemapEntries.length > maxCount) {
-                log.warning(`Sitemap entries count exceeds recommended maximum`);
-            }
-        },
-    });
-
-const generateSitemapDataAndScheduleRegeneration = () => {
+const generateDataAndActivateSchedule = () => {
     runInBranchContext(generateSitemapData, 'master');
 
-    // Regenerate sitemap from scratch at 23:00 daily
+    // Regenerate sitemap from scratch at 06:00 daily
     cronLib.schedule({
         name: 'sitemap-generator-schedule',
         cron: '0 6 * * 1,2,3,4,5',
@@ -163,8 +169,32 @@ const generateSitemapDataAndScheduleRegeneration = () => {
     });
 };
 
+const updateSitemapData = (entries) => {
+    if (!entries || !Array.isArray(entries) || entries.length === 0) {
+        log.info('Attempted to update sitemap with invalid data');
+        return;
+    }
+
+    sitemapData.clear();
+
+    entries.forEach((entry) => {
+        sitemapData.set(entry.url, entry);
+    });
+};
+
+const activateDataUpdateEventListener = () => {
+    eventLib.listener({
+        type: `custom.${eventType}`,
+        callback: (event) => {
+            log.info('Received sitemap data from master, updating...');
+            updateSitemapData(event.data.entries);
+        },
+    });
+};
+
 module.exports = {
     getAllSitemapEntries,
-    generateSitemapDataAndScheduleRegeneration,
+    generateDataAndActivateSchedule,
     updateSitemapEntry,
+    activateDataUpdateEventListener,
 };
