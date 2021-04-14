@@ -194,8 +194,10 @@ exports.get = (req) => {
             body: '<widget class="error">No content selected</widget>',
         };
     }
+    const content = libs.content.get({ key: contentId });
     const timeline = getTimeline(contentId);
-    const models = timeline.map((version) => renderPage(version)).reverse();
+    const renderFunction = renderMapping[content.type];
+    const models = timeline.map((version) => renderFunction(version)).reverse();
     const widgetScriptUrl = libs.portal.assetUrl({ path: 'js/versionHistory.js' });
     return {
         contentType: 'text/html',
