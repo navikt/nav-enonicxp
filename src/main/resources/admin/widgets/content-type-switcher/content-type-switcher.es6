@@ -6,6 +6,7 @@ const view = resolve('./content-type-switcher.html');
 
 const allowedTypeNames = [
     'dynamic-page',
+    'content-page-with-sidemenus',
     'internal-link',
     'external-link',
     'main-article',
