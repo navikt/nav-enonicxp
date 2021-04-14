@@ -10,28 +10,12 @@
         ></option>
       </select>
     </div>
-    <div>
-      <input
-        type="checkbox"
-        id="wipeData"
-        name="wipeData"
-        value="true"
-        style="-webkit-appearance: revert;"
-      />
-      <label for="wipeData">Slett innholds-data</label>
-    </div>
-    <div>
-      <input
-        type="checkbox"
-        id="wipeComponents"
-        name="wipeComponents"
-        value="true"
-        style="-webkit-appearance: revert;"
-      />
-      <label for="wipeComponents">Slett komponenter</label>
-    </div>
     <input type="hidden" name="contentId" data-th-value="${contentId}" />
     <input type="hidden" name="repoId" data-th-value="${repoId}" />
     <button type="submit" style="margin-top: 0.75rem;">Sett ny innholdstype</button>
+    <div style="margin-top: 0.75rem;">
+      Obs: Alt innhold på siden slettes. Dersom du ønsker å reversere, sett innholdstype tilbake til
+      opprinnelig og reverser fra versjonshistorikken for å gjenopprette innhold.
+    </div>
   </form>
 </widget>
