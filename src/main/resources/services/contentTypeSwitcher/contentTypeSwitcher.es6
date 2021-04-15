@@ -18,7 +18,9 @@ const setContentType = (repoId, contentId, contentType) => {
         repo.modify({ key: contentId, editor: editor(contentType) });
         log.info(`Changed content type for ${contentId} to ${contentType}`);
     } catch (e) {
-        log.error(`Error while changing content type - ${e}`);
+        log.error(
+            `Error while attempting to change content type for ${contentId} to ${contentType} - ${e}`
+        );
     }
 };
 
