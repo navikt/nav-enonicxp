@@ -27,6 +27,12 @@ const setContentType = (repoId, contentId, contentType) => {
 const handleGet = (req) => {
     const { repoId, contentId, contentType } = req.params;
 
+    if (!repoId || !contentId || !contentType) {
+        return {
+            status: 400,
+        };
+    }
+
     setContentType(repoId, contentId, contentType);
 
     return {
