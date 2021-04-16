@@ -1,0 +1,12 @@
+<mixin>
+    <form>
+        <input type="TextArea" name="description">
+            <label>Oppsummering/ingress</label>
+            <config>
+                <max-length>140</max-length>
+            </config>
+        </input>
+        <mixin name="feedback-toggle"/>
+        <mixin name="seo"/>
+    </form>
+</mixin>
