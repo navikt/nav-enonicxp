@@ -28,6 +28,9 @@ const handleGet = (req) => {
     const { repoId, contentId, contentType } = req.params;
 
     if (!repoId || !contentId || !contentType) {
+        log.warning(
+            `Malformed content-type switch request occured - repoId: ${repoId} - contentId: ${contentId} - contentType: ${contentType}`
+        );
         return {
             status: 400,
         };
