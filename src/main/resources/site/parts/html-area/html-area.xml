@@ -8,7 +8,7 @@
             <config>
                 <include>Undo Redo</include>
                 <exclude>JustifyBlock Underline</exclude>
-                <allowHeadings>h3 normal</allowHeadings>
+                <allowHeadings>h3 h4 normal</allowHeadings>
             </config>
         </input>
     </form>
