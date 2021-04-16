@@ -5,6 +5,7 @@ const urlFragment = require('./url');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 const menuListItems = require('./menuListItems');
+const { languagesMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
 const { seoMixinFragment } = require('./_mixins');
 
 const pageListShortFragment = `
@@ -24,10 +25,7 @@ const pageListFragment = `
     ...on no_nav_navno_PageList {
         dataAsJson
         data {
-            languages {
-                language
-                _path
-            }
+            ${languagesMixinFragment}
             sectionContents {
                 ${globalFragment}
                 ${transportPage.shortFragment}

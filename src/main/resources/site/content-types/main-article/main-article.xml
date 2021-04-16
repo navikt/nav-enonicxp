@@ -105,20 +105,7 @@
                 </input>
             </items>
         </field-set>
-        <field-set>
-            <label>Legg til andre språkversjoner</label>
-            <items>
-                <input name="languages" type="ContentSelector">
-                    <label>Legg til andre språkversjoner</label>
-                    <help-text>Kun relevant hvis det eksisterer flere språkversjoner av innholdet.</help-text>
-                    <occurrences maximum="0" minimum="0"/>
-                    <config>
-                        <allowContentType>${app}:main-article</allowContentType>
-                        <showStatus>true</showStatus>
-                    </config>
-                </input>
-            </items>
-        </field-set>
+        <mixin name="languages-legaxy"/>
         <mixin name="feedback-toggle"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>
