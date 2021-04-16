@@ -244,30 +244,29 @@ function theJob() {
         log.error(e);
     }
 
-    const maxRetries = 5;
-    let retries = 0;
     let successfulRelease = false;
-
-    const retryInterval = setInterval(() => {
-        retries++;
-
-        try {
-            const updatedLastRun = setIsRunning(false);
-            prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
-            successfulRelease = true;
-        } catch (e) {
-            log.info("Could not release lock, retrying in 3 seconds");
-            successfulRelease = false;
-
-            if (retries === maxRetries && !successfulRelease) {
+    libs.cron.schedule({
+        name: 'retryLockRelease',
+        fixedDelay: 3000,
+        times: 5,
+        callback: function() {
+            try {
+                const updatedLastRun = setIsRunning(false);
+                prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
+                successfulRelease = true;
+            } catch (e) {
                 log.error('could not release the lock');
                 log.error(e);
+                successfulRelease = false;
+            }
+
+            if (successfulRelease) {
+                libs.cron.unschedule({
+                    name: 'retryLockRelease'
+                });
             }
         }
-        if (retries === maxRetries || successfulRelease) {
-            clearInterval(retryInterval);
-        }
-    }, 3000)
+    });
 
     // reschedule to for TIME_BETWEEN_CHECKS or less if publishing
     // events are scheduled before that time
