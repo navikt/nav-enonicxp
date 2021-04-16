@@ -9,6 +9,10 @@
                     </help-text>
                     <occurrences maximum="0" minimum="0"/>
                     <config>
+                        <allowContentType>${app}:main-article</allowContentType>
+                        <allowContentType>${app}:dynamic-page</allowContentType>
+                        <allowContentType>${app}:section-page</allowContentType>
+                        <allowContentType>${app}:page-list</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
                 </input>
