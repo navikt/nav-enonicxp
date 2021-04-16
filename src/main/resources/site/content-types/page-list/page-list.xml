@@ -50,7 +50,7 @@
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
-        <mixin name="languages-legaxy"/>
+        <mixin name="languages-legacy"/>
         <mixin name="feedback-toggle"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>

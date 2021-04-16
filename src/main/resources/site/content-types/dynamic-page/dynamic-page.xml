@@ -6,7 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="languages-legaxy"/>
+        <mixin name="languages-legacy"/>
         <mixin name="feedback-toggle"/>
         <mixin name="seo"/>
     </form>
