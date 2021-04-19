@@ -1,6 +1,5 @@
 // Component config in the components-array is stored in a <app-name>.<region-name> sub-object
 // Move this data down to the base config object, to match the XP page-object structure
-
 const destructureConfig = (component) => {
     const { descriptor, config } = component;
 
@@ -34,7 +33,7 @@ const destructureComponent = (component) => {
         ...layout,
         ...image,
         ...text,
-        ...fragment,
+        ...(fragment && insertComponentsIntoFragment(fragment, fragment.fragment?.components)),
         ...rest,
     };
 
@@ -43,6 +42,45 @@ const destructureComponent = (component) => {
     return {
         ...destructured,
         ...(config && { config }),
+    };
+};
+
+// Takes a fragment-component from a Guillotine query and transforms the
+// data structure into what content studio expects
+const insertComponentsIntoFragment = (fragment, components) => {
+    if (!components) {
+        return null;
+    }
+
+    const rootComponent = components.find((component) => component.path === '/');
+    if (rootComponent.type !== 'layout') {
+        return {
+            ...fragment,
+            fragment: {
+                ...destructureComponent(rootComponent),
+            },
+        };
+    }
+
+    // Layouts can contain multiple components in regions, which need special treatment
+    const regions = components.reduce((regionsAcc, component) => {
+        const regionName = component.path.split('/')[1];
+        if (!regionName) {
+            return regionsAcc;
+        }
+
+        const region = regionsAcc[regionName] || { components: [], name: regionName };
+        region.components.push(destructureComponent(component));
+
+        return { ...regionsAcc, [regionName]: region };
+    }, {});
+
+    return {
+        ...fragment,
+        fragment: {
+            ...destructureComponent(rootComponent),
+            regions,
+        },
     };
 };
 
@@ -107,7 +145,27 @@ const mergeComponentsIntoPage = (content) => {
         return page;
     }
 
-    return insertComponents(page, components);
+    const pageComponent = destructureComponent(
+        components.find((component) => component.type === 'page')
+    );
+    const pageWithPageComponent = { ...page, ...pageComponent };
+
+    return insertComponents(pageWithPageComponent, components);
 };
 
-module.exports = { mergeComponentsIntoPage, destructureComponent };
+const getPortalFragmentContent = (content) => {
+    const { components } = content;
+
+    const rootComponent = components?.find((component) => component.path === '/');
+    if (!rootComponent) {
+        return content;
+    }
+
+    return {
+        ...content,
+        fragment: { ...insertComponentsIntoFragment(rootComponent, components).fragment },
+        components: undefined,
+    };
+};
+
+module.exports = { mergeComponentsIntoPage, destructureComponent, getPortalFragmentContent };

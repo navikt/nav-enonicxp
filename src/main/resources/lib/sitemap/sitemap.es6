@@ -1,0 +1,200 @@
+const contentLib = require('/lib/xp/content');
+const taskLib = require('/lib/xp/task');
+const cronLib = require('/lib/cron');
+const eventLib = require('/lib/xp/event');
+const clusterLib = require('/lib/xp/cluster');
+const { runInBranchContext } = require('/lib/headless/branch-context');
+const { forceArray } = require('/lib/nav-utils');
+const { frontendOrigin } = require('/lib/headless/url-origin');
+
+const batchCount = 1000;
+const maxCount = 50000;
+const pathPrefix = '/www.nav.no';
+const eventType = 'sitemap-generated';
+
+const sitemapData = {
+    entries: {},
+    clear: function () {
+        this.entries = {};
+    },
+    get: function (key) {
+        return this.entries[key];
+    },
+    set: function (key, value) {
+        this.entries[key] = value;
+    },
+    remove: function (key) {
+        delete this.entries[key];
+    },
+    getEntries: function () {
+        return Object.values(this.entries);
+    },
+};
+
+const includedContentTypes = [
+    'dynamic-page',
+    'main-article',
+    'section-page',
+    'page-list',
+    'transport-page',
+    'office-information',
+    'publishing-calendar',
+    'large-table',
+].map((contentType) => `${app.name}:${contentType}`);
+
+const isIncludedType = (type) =>
+    !!includedContentTypes.find((includedType) => includedType === type);
+
+const getUrl = (content) =>
+    content.data?.canonicalUrl || content._path.replace(pathPrefix, frontendOrigin);
+
+const getAlternativeLanguageVersions = (content) =>
+    content.data?.languages &&
+    forceArray(content.data.languages).reduce((acc, id) => {
+        const altContent = contentLib.get({ key: id });
+
+        return altContent?.language
+            ? [
+                  ...acc,
+                  {
+                      language: altContent.language,
+                      url: getUrl(altContent),
+                  },
+              ]
+            : acc;
+    }, []);
+
+const getSitemapEntry = (content) => {
+    const languageVersions = getAlternativeLanguageVersions(content);
+
+    return {
+        url: getUrl(content),
+        modifiedTime: content.modifiedTime,
+        language: content.language,
+        ...(languageVersions?.length > 0 && { languageVersions }),
+    };
+};
+
+const updateSitemapEntry = (pathname) => {
+    const url = `${frontendOrigin}${pathname}`;
+    const path = `${pathPrefix}${pathname}`;
+    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
+
+    if (content && isIncludedType(content.type)) {
+        sitemapData.set(url, getSitemapEntry(content));
+    } else if (sitemapData.get(url)) {
+        sitemapData.remove(url);
+    }
+};
+
+const getSitemapEntries = (start = 0, previousEntries = []) => {
+    const entriesBatch = contentLib
+        .query({
+            start,
+            count: batchCount,
+            contentTypes: includedContentTypes,
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'data.noindex',
+                            values: ['true'],
+                        },
+                    },
+                },
+            },
+        })
+        .hits.map(getSitemapEntry);
+
+    const currentEntries = [...entriesBatch, ...previousEntries];
+
+    if (entriesBatch.length < batchCount) {
+        return currentEntries;
+    }
+
+    return getSitemapEntries(start + batchCount, currentEntries);
+};
+
+const getAllSitemapEntries = () => {
+    return sitemapData.getEntries();
+};
+
+const generateSitemapData = () => {
+    if (clusterLib.isMaster()) {
+        taskLib.submit({
+            description: 'sitemap-generator-task',
+            task: () => {
+                log.info('Started generating sitemap data');
+
+                const startTime = Date.now();
+                const sitemapEntries = getSitemapEntries();
+
+                eventLib.send({
+                    type: eventType,
+                    distributed: true,
+                    data: { entries: sitemapEntries },
+                });
+
+                log.info(
+                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
+                        Date.now() - startTime
+                    }ms`
+                );
+
+                if (sitemapEntries.length > maxCount) {
+                    log.warning(`Sitemap entries count exceeds recommended maximum`);
+                }
+            },
+        });
+    }
+};
+
+const generateDataAndActivateSchedule = () => {
+    runInBranchContext(generateSitemapData, 'master');
+
+    // Regenerate sitemap from scratch at 06:00 daily
+    cronLib.schedule({
+        name: 'sitemap-generator-schedule',
+        cron: '0 6 * * 1,2,3,4,5',
+        context: {
+            repository: 'com.enonic.cms.default',
+            branch: 'master',
+            user: {
+                login: 'su',
+                userStore: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        callback: generateSitemapData,
+    });
+};
+
+const updateSitemapData = (entries) => {
+    if (!entries || !Array.isArray(entries) || entries.length === 0) {
+        log.info('Attempted to update sitemap with invalid data');
+        return;
+    }
+
+    sitemapData.clear();
+
+    entries.forEach((entry) => {
+        sitemapData.set(entry.url, entry);
+    });
+};
+
+const activateDataUpdateEventListener = () => {
+    eventLib.listener({
+        type: `custom.${eventType}`,
+        callback: (event) => {
+            log.info('Received sitemap data from master, updating...');
+            updateSitemapData(event.data.entries);
+        },
+    });
+};
+
+module.exports = {
+    getAllSitemapEntries,
+    generateDataAndActivateSchedule,
+    updateSitemapEntry,
+    activateDataUpdateEventListener,
+};
