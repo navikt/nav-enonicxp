@@ -75,8 +75,8 @@ dependencies {
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.xp:lib-cluster:${xpVersion}"
     include 'com.enonic.lib:lib-router:1.0.0'
-    include 'com.enonic.lib:menu:3.0.0'
-    include 'com.enonic.lib:util:3.0.0'
+    include 'com.enonic.lib:lib-menu:3.0.0'
+    include 'com.enonic.lib:lib-util:3.0.0'
     include 'com.enonic.lib:urlredirect:2.0.0'
     include "com.enonic.lib:lib-http-client:2.2.1"
     include "com.enonic.lib:lib-cache:2.1.0"
