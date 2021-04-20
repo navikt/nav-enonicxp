@@ -69,6 +69,7 @@ jobs:
         env:
           DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
           GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
+          GITHUB_RUN_ID: ${{ secrets.GITHUB_RUN_ID }}
         run: |
           ARTIFACT_ID="$(curl \
           -H "authorization: Bearer ${DEPLOY_PAT}" \
