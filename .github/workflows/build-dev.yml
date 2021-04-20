@@ -68,7 +68,7 @@ jobs:
       - name: Download artifact
         env:
           DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
-          URL_TEST: https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts
+          URL_TEST: https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts
         run: |
           ARTIFACT_ID="$(curl \
           -H "authorization: Bearer ${DEPLOY_PAT}" \
