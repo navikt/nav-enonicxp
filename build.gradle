@@ -41,8 +41,8 @@ repositories {
     // External dependencies
     if (!project.hasProperty('build-inside-firewall')) {
         mavenLocal()
-//        jcenter()
-        mavenCentral()
+        jcenter()
+//        mavenCentral()
         xp.enonicRepo()
     }
 
