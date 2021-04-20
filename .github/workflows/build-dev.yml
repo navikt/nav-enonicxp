@@ -38,7 +38,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: Application
-          path: build/libs/navno.jar
+          path: build/libs
       - name: Create release
         id: create_release
         uses: fleskesvor/create-release@1a72e235c178bf2ae6c51a8ae36febc24568c5fe
@@ -58,28 +58,9 @@ jobs:
           asset_path: build/libs/${{ steps.build.outputs.FILENAME }}
           asset_name: ${{ steps.build.outputs.FILENAME }}
           asset_content_type: application/java-archive
-  deploy:
-    needs: build
-    runs-on: self-hosted
-    environment: dev-sbs:personbruker
-    steps:
-      - name: Cleanup
-        run: rm -rf $(ls navno.jar)
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
         with:
-          name: Application
-      - name: LS
-        run: |
-          echo Files: $(ls)
-      - name: Deploy application
-        env:
-          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
-          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
-          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
-        run: |
-          echo Deploying $(ls navno.jar)
-          curl \
-            -k ${ENONIC_CLI_REMOTE_URL} \
-            --user "${ENONIC_CLI_REMOTE_USER}:${ENONIC_CLI_REMOTE_PASS}" \
-            -F file=@$(ls navno.jar)
+          event-type: deploy-to-dev
+          token: ${{ secrets.DEPLOY_PAT }}
+          client-payload: '{"RUN_ID": "${{ steps.vars.outputs.RUN_ID }}"}'

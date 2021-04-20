@@ -15,7 +15,7 @@ jobs:
         env:
           DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
           GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
-          GITHUB_BUILD_RUN_ID: ${{ github.event.inputs.RUN_ID }}
+          GITHUB_BUILD_RUN_ID: ${{ github.event.client_payload.RUN_ID }}
         run: |
           ARTIFACT_ID="$(curl \
           -H "authorization: Bearer ${DEPLOY_PAT}" \
@@ -34,7 +34,7 @@ jobs:
           ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
           ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
         run: |
-          echo Deploying $(ls navno.jar)
+          echo Deploying $(ls navno-*.jar)
           curl \
             -k ${ENONIC_CLI_REMOTE_URL} \
             --user "${ENONIC_CLI_REMOTE_USER}:${ENONIC_CLI_REMOTE_PASS}" \
