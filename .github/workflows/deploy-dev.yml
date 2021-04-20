@@ -13,7 +13,7 @@ jobs:
         run: rm -rf $(ls navno.jar)
       - name: Download artifact
         env:
-          DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
+          DEPLOY_PAT: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
           GITHUB_BUILD_RUN_ID: ${{ github.event.client_payload.RUN_ID }}
         run: |
