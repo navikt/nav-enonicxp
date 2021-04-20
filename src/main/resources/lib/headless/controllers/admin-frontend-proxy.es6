@@ -5,7 +5,9 @@ const loopbackCheckParam = 'fromXp';
 
 const errorResponse = (url, status, message) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
-    log.error(msg);
+    if (status >= 400) {
+        log.error(msg);
+    }
 
     return {
         contentType: 'text/html',
@@ -48,10 +50,16 @@ const adminFrontendProxy = (req) => {
             return errorResponse(frontendUrl, 500, 'No response from HTTP client');
         }
 
-        if (response.status >= 400) {
-            log.info(
-                `Error response from frontend for ${frontendUrl}: ${response.status} - ${response.message}`
-            );
+        const { status, message } = response;
+
+        if (status >= 400) {
+            log.info(`Error response from frontend for ${frontendUrl}: ${status} - ${message}`);
+        }
+
+        // Do not send redirect-responses to the content-studio editor view,
+        // as it may cause iframe cross-origin errors
+        if (req.mode === 'edit' && status >= 300 && status < 400) {
+            return errorResponse(frontendUrl, status, 'Redirects are not supported in editor view');
         }
 
         return response;
