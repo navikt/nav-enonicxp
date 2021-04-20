@@ -73,7 +73,8 @@ jobs:
         run: |
           echo repo ${GITHUB_REPOSITORY}
           echo run id ${GITHUB_RUN_ID}
-          curl -H "authorization: Bearer ${DEPLOY_PAT}" -sN https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts | echo
+          RESPONSE="$(curl -H "authorization: Bearer ${DEPLOY_PAT}" -sN https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts)"
+          echo response $RESPONSE
 
           ARTIFACT_ID="$(curl \
           -H "authorization: Bearer ${DEPLOY_PAT}" \
