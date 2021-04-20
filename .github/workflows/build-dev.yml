@@ -7,6 +7,7 @@ on:
       - "!v*-*-*"
     branches:
       - develop
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -57,9 +58,37 @@ jobs:
           asset_path: build/libs/${{ steps.build.outputs.FILENAME }}
           asset_name: ${{ steps.build.outputs.FILENAME }}
           asset_content_type: application/java-archive
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          event-type: deploy-to-dev
-          token: ${{ secrets.DEPLOY_PAT }}
-          client-payload: '{"RUN_ID": "${{ steps.vars.outputs.RUN_ID }}"}'
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    environment: dev-sbs:personbruker
+    steps:
+      - name: Cleanup
+        run: rm -rf $(ls navno.jar)
+      - name: Download artifact
+        env:
+          DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
+          GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
+        run: |
+          ARTIFACT_ID="$(curl \
+          -H "authorization: Bearer ${DEPLOY_PAT}" \
+          -s https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts \
+          | jq '.artifacts[0].id')"
+
+          echo Downloading artifact $ARTIFACT_ID
+          curl -o app.zip \
+          --cacert /etc/pki/tls/cacert.pem \
+          -H "Authorization: Bearer ${DEPLOY_PAT}" \
+          -L "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/$ARTIFACT_ID/zip"
+          unzip -o app.zip
+      - name: Deploy application
+        env:
+          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
+          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
+          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
+        run: |
+          echo Deploying $(ls navno.jar)
+          curl \
+            -k ${ENONIC_CLI_REMOTE_URL} \
+            --user "${ENONIC_CLI_REMOTE_USER}:${ENONIC_CLI_REMOTE_PASS}" \
+            -F file=@$(ls navno.jar)
