@@ -10,7 +10,7 @@ jobs:
     environment: dev-sbs:personbruker
     steps:
       - name: Cleanup
-        run: rm -rf $(ls navno-*.jar)
+        run: rm -rf $(ls navno.jar)
       - name: Download artifact
         env:
           DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
@@ -38,4 +38,4 @@ jobs:
           curl \
             -k ${ENONIC_CLI_REMOTE_URL} \
             --user "${ENONIC_CLI_REMOTE_USER}:${ENONIC_CLI_REMOTE_PASS}" \
-            -F file=@$(ls navno-*.jar)
+            -F file=@$(ls navno.jar)
