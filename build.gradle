@@ -4,10 +4,10 @@ buildscript {
     if (project.hasProperty('build-inside-firewall')) {
         repositories {
             maven {
-                url "https://maven.adeo.no/nexus/content/groups/public/"
+                url "http://maven.adeo.no/nexus/content/groups/public/"
             }
             maven {
-                url "https://maven.adeo.no/nexus/content/repositories/m2internal/"
+                url "http://maven.adeo.no/nexus/content/repositories/m2internal/"
             }
         }
         dependencies {
@@ -46,7 +46,8 @@ repositories {
     }
 
     maven {
-        url "https://maven.adeo.no/nexus/content/groups/public"
+        url "http://maven.adeo.no/nexus/content/groups/public"
+        allowInsecureProtocol(true)
     }
     maven {
         url  "https://dl.bintray.com/ljl/maven"
