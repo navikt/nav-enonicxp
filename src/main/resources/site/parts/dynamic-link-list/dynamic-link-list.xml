@@ -43,5 +43,6 @@
                 </option>
             </options>
         </option-set>
+        <mixin name="collapsable"/>
     </form>
 </part>

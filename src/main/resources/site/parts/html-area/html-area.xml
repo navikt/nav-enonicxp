@@ -11,5 +11,6 @@
                 <allowHeadings>h3 h4 normal</allowHeadings>
             </config>
         </input>
+        <mixin name="collapsable"/>
     </form>
 </part>
