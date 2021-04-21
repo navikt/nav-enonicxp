@@ -7,6 +7,7 @@
                 <max-length>140</max-length>
             </config>
         </input>
+        <mixin name="languages-legacy"/>
         <mixin name="feedback-toggle"/>
         <mixin name="seo"/>
     </form>
