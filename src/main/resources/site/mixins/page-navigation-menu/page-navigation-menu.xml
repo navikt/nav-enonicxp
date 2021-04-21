@@ -1,0 +1,21 @@
+<mixin>
+    <form>
+        <item-set name="anchorLinks">
+            <label>Overstyr lenketekster</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input type="TextLine" name="anchorId">
+                    <label>Anker-id</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <regexp>^[0-9a-zA-Z-_]*$</regexp>
+                    </config>
+                </input>
+                <input type="TextLine" name="linkText">
+                    <label>Lenketekst</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</mixin>

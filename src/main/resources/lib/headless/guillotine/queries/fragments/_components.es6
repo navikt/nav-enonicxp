@@ -1,4 +1,8 @@
-const { linkWithIngressMixinFragment, linkSelectableMixin } = require('./_mixins');
+const {
+    linkWithIngressMixinFragment,
+    linkSelectableMixin,
+    pageNavigationMenuMixinFragment,
+} = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 const { headerCommonMixin } = require('/lib/headless/guillotine/queries/fragments/_mixins');
@@ -75,6 +79,50 @@ const partsFragment = `
                     ${linkSelectableMixin}
                 }
             }
+            html_area {
+                html(processHtml:{type: server})
+            }
+            page_header {
+                title
+            }
+            button {
+                icon {
+                    ${imageFragment}
+                }
+                link {
+                    ${linkSelectableMixin}
+                }
+            }
+            page_navigation_menu {
+                anchorLinks(contentId:$ref) {
+                    anchorId
+                    linkText
+                }
+            }
+        }
+    }
+`;
+
+const layoutsFragment = `
+    config {
+        no_nav_navno {
+            section_with_header {
+               anchorId
+               highlight
+               icon {
+                    ${imageFragment}
+               }
+            }
+        }
+    }
+`;
+
+const pagesFragment = `
+    config {
+        no_nav_navno {
+            page_with_side_menus {
+               ${pageNavigationMenuMixinFragment}
+            }
         }
     }
 `;
@@ -85,10 +133,12 @@ const componentsContent = `
     page {
         descriptor
         configAsJson
+        ${pagesFragment}
     }
     layout {
         descriptor
         configAsJson
+        ${layoutsFragment}
     }
     part {
         descriptor
