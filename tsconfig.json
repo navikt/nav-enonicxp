@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "sourceMap": true,
+        "allowJs": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    }
+}

@@ -1,8 +1,7 @@
 {
-    "extends": ["airbnb", "prettier"],
-    "plugins": ["prettier"],
+    "extends": ["plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended"],
+    "plugins": ["@typescript-eslint"],
     "rules": {
-        "prettier/prettier": ["warn"],
         "comma-dangle": ["error", "only-multiline"],
         "no-cond-assign": ["error", "except-parens"],
         "no-unused-vars": ["error", { "vars": "all", "args": "none"}],
@@ -38,7 +37,7 @@
     },
     "overrides": [
         {
-            "files": ["*.html", "*.ftl", "*.xml"],
+            "files": ["*.html", "*.ftl", "*.xml", "*.es6"],
             "rules": {
                 "max-len": "off"
             }
