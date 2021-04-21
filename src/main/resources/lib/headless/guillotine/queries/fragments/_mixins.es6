@@ -2,6 +2,14 @@ const globalFragment = require('./_global');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
 
+const languagesMixinFragment = `
+    languages {
+        language
+        _path
+        _id
+    }
+`;
+
 const linkPanelsMixinFragment = `
     panelsHeading
     panelItems {
@@ -80,4 +88,5 @@ module.exports = {
     pageNavigationMenuMixinFragment,
     linkSelectableMixin,
     headerCommonMixin,
+    languagesMixinFragment,
 };
