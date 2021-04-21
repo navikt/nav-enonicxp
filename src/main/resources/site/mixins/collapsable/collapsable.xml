@@ -1,22 +1,27 @@
 <mixin>
     <form>
-        <input name="collapsable" type="CheckBox">
-            <label>Utvidbar</label>
-            <config>
-                <default>unchecked</default>
-            </config>
-        </input>
-        <input name="collapsableDefault" type="CheckBox">
-            <label>Utvidet som standard</label>
-            <config>
-                <default>unchecked</default>
-            </config>
-        </input>
-        <input name="collapsableTitle" type="TextLine">
-            <label>Tittel på utvidbart panel</label>
-            <config>
-                <default>Tittel</default>
-            </config>
-        </input>
+        <field-set>
+            <label>Utvidbart panel</label>
+            <items>
+                <input name="collapsable" type="CheckBox">
+                    <label>Utvidbar</label>
+                    <config>
+                        <default>unchecked</default>
+                    </config>
+                </input>
+                <input name="collapsableDefault" type="CheckBox">
+                    <label>Utvidet som standard</label>
+                    <config>
+                        <default>unchecked</default>
+                    </config>
+                </input>
+                <input name="collapsableTitle" type="TextLine">
+                    <label>Tittel på utvidbart panel</label>
+                    <config>
+                        <default>Tittel</default>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </mixin>
