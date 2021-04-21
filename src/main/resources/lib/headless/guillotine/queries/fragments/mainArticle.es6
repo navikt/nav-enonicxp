@@ -1,5 +1,6 @@
 const globalFragment = require('./_global');
 const menuListItems = require('./menuListItems');
+const { languagesMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
 const { imageFragment } = require('./media');
 const { seoMixinFragment } = require('./_mixins');
 
@@ -7,11 +8,7 @@ const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
         ${globalFragment}
         data {
-            languages {
-                language
-                _path
-                _id
-            }
+            ${languagesMixinFragment}
             ingress
             text(processHtml:{type:server})
             hasTableOfContents
