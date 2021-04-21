@@ -6,7 +6,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="feedback-toggle"/>
-        <mixin name="seo"/>
+        <mixin name="dynamic-page"/>
     </form>
 </content-type>
