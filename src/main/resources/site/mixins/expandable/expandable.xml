@@ -3,19 +3,19 @@
         <field-set>
             <label>Utvidbart panel</label>
             <items>
-                <input name="collapsable" type="CheckBox">
+                <input name="expandable" type="CheckBox">
                     <label>Utvidbar</label>
                     <config>
                         <default>unchecked</default>
                     </config>
                 </input>
-                <input name="collapsableDefault" type="CheckBox">
+                <input name="expandableOpenByDefault" type="CheckBox">
                     <label>Utvidet som standard</label>
                     <config>
                         <default>unchecked</default>
                     </config>
                 </input>
-                <input name="collapsableTitle" type="TextLine">
+                <input name="expandableTitle" type="TextLine">
                     <label>Tittel på utvidbart panel</label>
                     <config>
                         <default>Tittel</default>
