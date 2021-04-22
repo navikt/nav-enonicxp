@@ -6,6 +6,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="dynamic-page"/>
+        <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
