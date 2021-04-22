@@ -383,6 +383,20 @@ const officeInformationPage = [
     },
 ];
 
+const pageWithSideMenus = [
+    {
+        type: 'page',
+        path: '/',
+        page: {
+            descriptor: 'no.nav.navno:page-with-side-menus',
+            customized: true,
+            config: {
+                'no-nav-navno': {},
+            },
+        },
+    },
+];
+
 const templates = [
     {
         content: {
@@ -491,6 +505,19 @@ const templates = [
             },
         },
         components: officeInformationPage,
+    },
+    {
+        content: {
+            displayName: 'Kjerneside med sidemenyer',
+            parentPath: '/www.nav.no/_templates/',
+            requireValid: true,
+            contentType: 'portal:page-template',
+            branch: 'draft',
+            data: {
+                supports: 'no.nav.navno:content-page-with-sidemenus',
+            },
+        },
+        components: pageWithSideMenus,
     },
 ];
 

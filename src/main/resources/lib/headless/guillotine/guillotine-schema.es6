@@ -15,6 +15,7 @@ const contentListCallback = require('./schema-creation-callbacks/content-list-ca
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
+const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
 const {
     mainArticleDataCallback,
     mainArticleCallback,
@@ -43,6 +44,8 @@ const schemaContextOptions = {
         no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
         PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback('publish.first'),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
+        PartConfigPageNavigationMenu: pageNavigationMenuCallback,
+        PageConfigPageWithSideMenus: pageNavigationMenuCallback,
         PartConfigHtmlArea: htmlAreaPartConfigCallback,
     },
 };
