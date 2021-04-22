@@ -28,5 +28,6 @@
                 </input>
             </items>
         </item-set>
+        <mixin name="expandable"/>
     </form>
 </part>
