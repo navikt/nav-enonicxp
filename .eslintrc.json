@@ -30,7 +30,8 @@
         "fetch": true,
         "document": true,
         "window": true,
-        "__": true
+        "__": true,
+        "__FILE__": true
     },
     "parserOptions": {
         "ecmaVersion": 2020
