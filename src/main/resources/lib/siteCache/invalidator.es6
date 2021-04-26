@@ -245,22 +245,38 @@ function theJob() {
     }
 
     let successfulRelease = false;
+    const numberOfTimesToTry = 5;
+    const retryDelay = 5000;
+    let numberOfRetries = 0;
+
     libs.cron.schedule({
         name: 'retryLockRelease',
-        fixedDelay: 5000,
-        times: 5,
+        fixedDelay: retryDelay,
+        times: numberOfTimesToTry,
         callback: function () {
+            numberOfRetries += 1;
             try {
                 const updatedLastRun = setIsRunning(false);
                 prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
                 successfulRelease = true;
             } catch (e) {
-                log.error('could not release the lock');
-                log.error(e);
-                successfulRelease = false;
+                if (numberOfRetries === numberOfTimesToTry) {
+                    log.error(
+                        `failed to release the lock after ${numberOfTimesToTry}, the invalidator is deadlocked`
+                    );
+                } else {
+                    log.info(
+                        `could not release the lock, attempt: ${numberOfRetries} next in ${
+                            retryDelay / 1000
+                        }s`
+                    );
+                }
             }
 
             if (successfulRelease) {
+                if (numberOfRetries > 1) {
+                    log.info('released the lock');
+                }
                 libs.cron.unschedule({
                     name: 'retryLockRelease',
                 });
