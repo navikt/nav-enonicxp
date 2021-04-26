@@ -32,7 +32,8 @@
         "document": true,
         "window": true,
         "__": true,
-        "__FILE__": true
+        "__FILE__": true,
+        "Java": true
     },
     "parserOptions": {
         "ecmaVersion": 2020

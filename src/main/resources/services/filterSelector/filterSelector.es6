@@ -37,18 +37,14 @@ const generateHits = (req) => {
 };
 
 const filterSelector = (req) => {
-    const { ids, query } = req;
-
-    const content = portalLib.getContent();
-
     const hits = generateHits(req);
     log.info(`Hits: ${JSON.stringify(hits)}`);
 
     return {
         status: 200,
         body: {
-            total: 10,
-            count: 10,
+            total: hits.length,
+            count: hits.length,
             hits: hits,
         },
     };
