@@ -3,8 +3,8 @@
         <field-set>
             <label>Filter</label>
             <items>
-                <input name="filterSelector" type="CustomSelector">
-                    <label>Filter-velger</label>
+                <input name="filters" type="CustomSelector">
+                    <label>Velg filtre</label>
                     <occurrences minimum="0" maximum="0"/>
                     <config>
                         <service>filterSelector</service>

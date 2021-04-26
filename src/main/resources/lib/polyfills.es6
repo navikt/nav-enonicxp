@@ -28,18 +28,18 @@ Object.defineProperty(Array.prototype, 'flat', {
 
         const newArray = [];
 
-        const recursiveMap = (arr) => {
+        const flattenArray = (arr) => {
             for (let i = 0; i < arr.length; i++) {
                 const element = arr[i];
                 if (Array.isArray(element)) {
-                    recursiveMap(element);
+                    flattenArray(element);
                 } else {
                     newArray.push(element);
                 }
             }
         };
 
-        recursiveMap(this);
+        flattenArray(this);
 
         return newArray;
     },
