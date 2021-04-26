@@ -8,32 +8,32 @@ export interface HeaderCommon {
   /**
    * Typografi
    */
-  typo: 
-  | {
-      /**
-       * Selected
-       */
-      _selected: "default";
-
-      /**
-       * Standard
-       */
-      default: Record<string, unknown>
-    }
-  | {
-      /**
-       * Selected
-       */
-      _selected: "custom";
-
-      /**
-       * Tilpasset
-       */
-      custom: {
+  typo:
+    | {
         /**
-         * Velg typografi-stil
+         * Selected
          */
-        typo: "sidetittel" | "innholdstittel" | "systemtittel" | "undertittel" | "element";
+        _selected: "default";
+
+        /**
+         * Standard
+         */
+        default: Record<string, unknown>;
       }
-    };
+    | {
+        /**
+         * Selected
+         */
+        _selected: "custom";
+
+        /**
+         * Tilpasset
+         */
+        custom: {
+          /**
+           * Velg typografi-stil
+           */
+          typo: "sidetittel" | "innholdstittel" | "systemtittel" | "undertittel" | "element";
+        };
+      };
 }

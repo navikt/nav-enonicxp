@@ -18,45 +18,45 @@ export interface Dynamic2ColConfig {
   /**
    * Horisontal padding
    */
-  paddingSides: 
-  | {
-      /**
-       * Selected
-       */
-      _selected: "standard";
-
-      /**
-       * Standard (3rem/1rem desktop/mobil)
-       */
-      standard: Record<string, unknown>
-    }
-  | {
-      /**
-       * Selected
-       */
-      _selected: "fullWidth";
-
-      /**
-       * Full skjermbredde
-       */
-      fullWidth: Record<string, unknown>
-    }
-  | {
-      /**
-       * Selected
-       */
-      _selected: "custom";
-
-      /**
-       * Tilpasset
-       */
-      custom: {
+  paddingSides:
+    | {
         /**
-         * (rem-enheter)
+         * Selected
          */
-        remValue?: number;
+        _selected: "standard";
+
+        /**
+         * Standard (3rem/1rem desktop/mobil)
+         */
+        standard: Record<string, unknown>;
       }
-    };
+    | {
+        /**
+         * Selected
+         */
+        _selected: "fullWidth";
+
+        /**
+         * Full skjermbredde
+         */
+        fullWidth: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "custom";
+
+        /**
+         * Tilpasset
+         */
+        custom: {
+          /**
+           * (rem-enheter)
+           */
+          remValue?: number;
+        };
+      };
 
   /**
    * Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)

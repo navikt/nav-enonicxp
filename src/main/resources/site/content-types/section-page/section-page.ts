@@ -96,6 +96,11 @@ export interface SectionPage {
   breaking_news?: Array<string>;
 
   /**
+   * Legg til andre språkversjoner
+   */
+  languages?: Array<string>;
+
+  /**
    * Fant du det du lette etter? - NB! Skal bare legges inn av hovedredaktør/administrator
    */
   feedbackToggle: boolean;

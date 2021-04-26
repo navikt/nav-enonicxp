@@ -8,85 +8,85 @@ export interface DynamicLinkListPartConfig {
   /**
    * Lenker
    */
-  list: 
-  | {
-      /**
-       * Selected
-       */
-      _selected: "contentList";
-
-      /**
-       * Hent lenker fra innholdsliste
-       */
-      contentList: {
+  list:
+    | {
         /**
-         * Maks antall lenker som vises
+         * Selected
          */
-        numLinks?: number;
+        _selected: "contentList";
 
         /**
-         * Velg innholdsliste
+         * Hent lenker fra innholdsliste
          */
-        target: string;
+        contentList: {
+          /**
+           * Maks antall lenker som vises
+           */
+          numLinks?: number;
+
+          /**
+           * Velg innholdsliste
+           */
+          target: string;
+        };
       }
-    }
-  | {
-      /**
-       * Selected
-       */
-      _selected: "linkList";
-
-      /**
-       * Sett lenker direkte
-       */
-      linkList: {
+    | {
         /**
-         * Lenke
+         * Selected
          */
-        links?: Array<
-        | {
-            /**
-             * Selected
-             */
-            _selected: "internal";
+        _selected: "linkList";
 
-            /**
-             * Intern lenke
-             */
-            internal: {
-              /**
-               * Innhold det skal lenkes til
-               */
-              target: string;
+        /**
+         * Sett lenker direkte
+         */
+        linkList: {
+          /**
+           * Lenke
+           */
+          links?: Array<
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "internal";
 
-              /**
-               * Lenketekst (hvis tom vil tittel på innholdet vises)
-               */
-              text?: string;
-            }
-          }
-        | {
-            /**
-             * Selected
-             */
-            _selected: "external";
+                /**
+                 * Intern lenke
+                 */
+                internal: {
+                  /**
+                   * Innhold det skal lenkes til
+                   */
+                  target: string;
 
-            /**
-             * Ekstern lenke
-             */
-            external: {
-              /**
-               * URL
-               */
-              url: string;
+                  /**
+                   * Lenketekst (hvis tom vil tittel på innholdet vises)
+                   */
+                  text?: string;
+                };
+              }
+            | {
+                /**
+                 * Selected
+                 */
+                _selected: "external";
 
-              /**
-               * Lenketekst
-               */
-              text: string;
-            }
-          }
-        >;
-      }
-    };
+                /**
+                 * Ekstern lenke
+                 */
+                external: {
+                  /**
+                   * URL
+                   */
+                  url: string;
+
+                  /**
+                   * Lenketekst
+                   */
+                  text: string;
+                };
+              }
+          >;
+        };
+      };
 }

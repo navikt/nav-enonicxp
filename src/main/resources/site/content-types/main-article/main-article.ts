@@ -47,7 +47,7 @@ export interface MainArticle {
     /**
      * Skjema og søknad
      */
-    'form-and-application': {
+    "form-and-application": {
       /**
        * Skjema og søknad
        */
@@ -57,7 +57,7 @@ export interface MainArticle {
     /**
      * Saksbehandlingstider
      */
-    'process-times': {
+    "process-times": {
       /**
        * Saksbehandlingstider
        */
@@ -67,7 +67,7 @@ export interface MainArticle {
     /**
      * Relatert informasjon
      */
-    'related-information': {
+    "related-information": {
       /**
        * Innhold
        */
@@ -92,7 +92,7 @@ export interface MainArticle {
     /**
      * Meld fra om endringer
      */
-    'report-changes': {
+    "report-changes": {
       /**
        * Meld fra om endringer
        */
@@ -112,7 +112,7 @@ export interface MainArticle {
     /**
      * Klagerettigheter
      */
-    'appeal-rights': {
+    "appeal-rights": {
       /**
        * Klagerettigheter
        */
@@ -132,7 +132,7 @@ export interface MainArticle {
     /**
      * Regelverk
      */
-    'rules-and-regulations': {
+    "rules-and-regulations": {
       /**
        * Regelverk
        */
