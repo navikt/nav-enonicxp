@@ -11,4 +11,12 @@ const dynamicPageFragment = `
     }
 `;
 
-module.exports = { fragment: dynamicPageFragment };
+const dynamicPageShortFragment = `
+    ...on no_nav_navno_DynamicPage {
+        data {
+            description
+        }
+    }
+`;
+
+module.exports = { fragment: dynamicPageFragment, shortFragment: dynamicPageShortFragment };
