@@ -7,7 +7,7 @@ const globalFragment = require('/lib/headless/guillotine/queries/fragments/_glob
 
 const queryGetNotifications = `query {
     guillotine {
-        query(contentTypes:"no.nav.navno:notification") {
+        query(contentTypes:"no.nav.navno:notification", sort:"_manualordervalue DESC") {
             ${globalFragment}
             ${notification.fragment}
         }
