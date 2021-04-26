@@ -1,14 +1,14 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>_Filtreringsmeny</display-name>
     <form>
-        <item-set name="filterCategory">
+        <item-set name="categories">
             <label>Filter-kategori</label>
             <occurrences minimum="0" maximum="0"/>
             <items>
                 <input name="categoryName" type="TextLine">
                     <label>Kategori-navn</label>
                 </input>
-                <item-set name="filter">
+                <item-set name="filters">
                     <label>Filter</label>
                     <occurrences minimum="0" maximum="0"/>
                     <items>

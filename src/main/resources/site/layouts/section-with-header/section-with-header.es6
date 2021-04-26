@@ -2,17 +2,10 @@ const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
 const { sanitize } = require('/lib/xp/common');
 const controller = require('/lib/headless/controllers/component-preview-controller');
+const { getComponentConfig } = require('/lib/headless/component-utils');
+const { getComponentConfigByPath } = require('/lib/headless/component-utils');
 
-const componentName = __FILE__.split('/').slice(-2, -1)[0];
 const defaultTitle = 'Seksjonstittel';
-
-const getComponentConfig = (component) =>
-    component?.layout?.config?.['no-nav-navno']?.[componentName];
-
-const getComponentConfigByPath = (path, components) => {
-    const foundComponent = components.find((component) => component.path === path);
-    return getComponentConfig(foundComponent);
-};
 
 const generateAnchorIdFromTitle = (componentPath) => (content) => {
     const { components } = content;
