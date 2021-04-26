@@ -1,0 +1,16 @@
+<mixin xmlns="urn:enonic:xp:model:1.0">
+    <form>
+        <field-set>
+            <label>Filter</label>
+            <items>
+                <input name="filterSelector" type="CustomSelector">
+                    <label>Filter-velger</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <service>filterSelector</service>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

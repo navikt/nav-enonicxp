@@ -12,5 +12,6 @@
             </config>
         </input>
         <mixin name="expandable"/>
+        <mixin name="filter-selector"/>
     </form>
 </part>
