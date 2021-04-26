@@ -247,9 +247,9 @@ function theJob() {
     let successfulRelease = false;
     libs.cron.schedule({
         name: 'retryLockRelease',
-        fixedDelay: 3000,
+        fixedDelay: 5000,
         times: 5,
-        callback: function() {
+        callback: function () {
             try {
                 const updatedLastRun = setIsRunning(false);
                 prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
@@ -262,10 +262,10 @@ function theJob() {
 
             if (successfulRelease) {
                 libs.cron.unschedule({
-                    name: 'retryLockRelease'
+                    name: 'retryLockRelease',
                 });
             }
-        }
+        },
     });
 
     // reschedule to for TIME_BETWEEN_CHECKS or less if publishing
