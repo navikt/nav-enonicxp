@@ -79,6 +79,7 @@
         "npm": ">= 6.14.8"
     },
     "dependencies": {
-        "enonic-types": "^0.2.0"
+        "enonic-types": "^0.2.0",
+        "moment": "^2.29.1"
     }
 }

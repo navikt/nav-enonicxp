@@ -89,4 +89,19 @@ export interface DynamicLinkListPartConfig {
           >;
         };
       };
+
+  /**
+   * Utvidbar
+   */
+  expandable: boolean;
+
+  /**
+   * Utvidet som standard
+   */
+  expandableOpenByDefault: boolean;
+
+  /**
+   * Tittel på utvidbart panel
+   */
+  expandableTitle?: string;
 }

@@ -1,7 +1,7 @@
 const libs = {
     content: require('/lib/xp/content'),
     node: require('/lib/xp/node'),
-    moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
+    moment: require('moment'),
 };
 
 /**
