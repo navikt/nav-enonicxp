@@ -3,9 +3,36 @@
     <description>Med valgfri ikon/bakgrunn</description>
     <form>
         <mixin name="link-with-ingress"/>
-        <input name="vertical" type="CheckBox">
-            <label>Vertikalt layout</label>
-        </input>
+        <field-set>
+            <label>
+                Vertikalt layout
+            </label>
+            <items>
+                <input type="CheckBox" name="vertical">
+                    <label>Bruk vertikalt layout</label>
+                </input>
+                <input type="TextLine" name="iconBg">
+                    <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
+                    <config>
+                        <max-length>7</max-length>
+                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+                    </config>
+                </input>
+                <input type="Double" name="iconHeight">
+                    <label>Høyde på ikon (rem-enheter)</label>
+                </input>
+                <input type="RadioButton" name="iconJustify">
+                    <label>Justering av ikon</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="top">Topp</option>
+                        <option value="center">Sentrert</option>
+                        <option value="bottom">Bunn</option>
+                    </config>
+                    <default>center</default>
+                </input>
+            </items>
+        </field-set>
         <field-set>
             <label>Ikon (valgfritt)</label>
             <items>
@@ -15,13 +42,6 @@
                         <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
                         <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
                         <allowPath>./*</allowPath>
-                    </config>
-                </input>
-                <input type="TextLine" name="iconBg">
-                    <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
-                    <config>
-                        <max-length>7</max-length>
-                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
                     </config>
                 </input>
             </items>
