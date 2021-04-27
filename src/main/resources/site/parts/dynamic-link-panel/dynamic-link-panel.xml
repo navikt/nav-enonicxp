@@ -3,51 +3,58 @@
     <description>Med valgfri ikon/bakgrunn</description>
     <form>
         <mixin name="link-with-ingress"/>
-        <field-set>
-            <label>
-                Vertikalt layout
-            </label>
-            <items>
-                <input type="CheckBox" name="vertical">
-                    <label>Bruk vertikalt layout</label>
-                </input>
-                <input type="TextLine" name="iconBg">
-                    <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
-                    <config>
-                        <max-length>7</max-length>
-                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
-                    </config>
-                </input>
-                <input type="Double" name="iconHeight">
-                    <label>Høyde på ikon (rem-enheter)</label>
-                </input>
-                <input type="RadioButton" name="iconJustify">
-                    <label>Justering av ikon</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <option value="top">Topp</option>
-                        <option value="center">Sentrert</option>
-                        <option value="bottom">Bunn</option>
-                    </config>
-                    <default>center</default>
-                </input>
-            </items>
-        </field-set>
-        <field-set>
+        <input name="icon" type="ImageSelector">
             <label>Ikon (valgfritt)</label>
-            <items>
-                <input name="icon" type="ImageSelector">
-                    <label>Velg ikon</label>
-                    <config>
-                        <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                        <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                        <allowPath>./*</allowPath>
-                    </config>
-                </input>
-            </items>
-        </field-set>
+            <config>
+                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                <allowPath>./*</allowPath>
+            </config>
+        </input>
         <input name="background" type="ImageSelector">
             <label>Bakgrunn (valgfritt)</label>
         </input>
+        <input type="CheckBox" name="vertical">
+            <label>Bruk vertikalt layout (deprecated, sett variant nedenfor)</label>
+        </input>
+        <option-set name="variant">
+            <label>Varianter</label>
+            <help-text>Ulike lenkepanel-varianter</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="vertical">
+                    <label>
+                        Standard vertikalt layout
+                    </label>
+                </option>
+                <option name="verticalWithTopBg">
+                    <label>
+                        Vertikalt layout med bakgrunnsfarge
+                    </label>
+                    <items>
+                        <input type="TextLine" name="iconBg">
+                            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
+                            <config>
+                                <max-length>7</max-length>
+                                <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+                            </config>
+                        </input>
+                        <input type="Double" name="iconHeight">
+                            <label>Høyde på ikon (rem-enheter)</label>
+                        </input>
+                        <input type="RadioButton" name="iconJustify">
+                            <label>Justering av ikon</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <option value="top">Topp</option>
+                                <option value="center">Midtstilt</option>
+                                <option value="bottom">Bunn</option>
+                            </config>
+                            <default>center</default>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
     </form>
 </part>
