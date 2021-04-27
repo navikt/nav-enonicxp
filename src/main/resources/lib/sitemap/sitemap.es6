@@ -33,6 +33,7 @@ const sitemapData = {
 
 const includedContentTypes = [
     'dynamic-page',
+    'content-page-with-sidemenus',
     'main-article',
     'section-page',
     'page-list',
