@@ -1,0 +1,10 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Meny for intern-navigasjon</display-name>
+    <form>
+        <input type="TextLine" name="title">
+            <label>Tittel</label>
+            <default>Navigasjon</default>
+        </input>
+        <mixin name="page-navigation-menu"/>
+    </form>
+</part>

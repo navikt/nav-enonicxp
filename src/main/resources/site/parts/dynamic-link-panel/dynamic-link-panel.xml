@@ -2,18 +2,30 @@
     <display-name>_Lenkepanel</display-name>
     <description>Med valgfri ikon/bakgrunn</description>
     <form>
-        <mixin name="link-with-ingress" />
+        <mixin name="link-with-ingress"/>
         <input name="vertical" type="CheckBox">
             <label>Vertikalt layout</label>
         </input>
-        <input name="icon" type="ImageSelector">
+        <field-set>
             <label>Ikon (valgfritt)</label>
-            <config>
-                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                <allowPath>./*</allowPath>
-            </config>
-        </input>
+            <items>
+                <input name="icon" type="ImageSelector">
+                    <label>Velg ikon</label>
+                    <config>
+                        <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                        <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                        <allowPath>./*</allowPath>
+                    </config>
+                </input>
+                <input type="TextLine" name="iconBg">
+                    <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
+                    <config>
+                        <max-length>7</max-length>
+                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+                    </config>
+                </input>
+            </items>
+        </field-set>
         <input name="background" type="ImageSelector">
             <label>Bakgrunn (valgfritt)</label>
         </input>

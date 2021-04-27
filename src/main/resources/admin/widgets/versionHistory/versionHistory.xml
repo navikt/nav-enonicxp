@@ -1,0 +1,10 @@
+<widget>
+    <display-name>Tidsmaskin</display-name>
+    <description>Se tidligere publiserte versjoner av inneholdet</description>
+    <interfaces>
+        <interface>contentstudio.contextpanel</interface>
+    </interfaces>
+    <allow>
+        <principal>role:system.admin</principal>
+    </allow>
+</widget>

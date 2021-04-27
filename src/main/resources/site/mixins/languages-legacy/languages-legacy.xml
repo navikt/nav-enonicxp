@@ -11,6 +11,7 @@
                     <config>
                         <allowContentType>${app}:main-article</allowContentType>
                         <allowContentType>${app}:dynamic-page</allowContentType>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                         <allowContentType>${app}:section-page</allowContentType>
                         <allowContentType>${app}:page-list</allowContentType>
                         <showStatus>true</showStatus>

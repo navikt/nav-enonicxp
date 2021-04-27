@@ -6,6 +6,7 @@ const urlFragment = require('./url');
 const pageList = require('./pageList');
 const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
+const dynamicPage = require('./dynamicPage');
 const { languagesMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
 const { seoMixinFragment, linkPanelsMixinFragment } = require('./_mixins');
 
@@ -31,6 +32,7 @@ const sectionPageFragment = `
                 ${pageList.shortFragment}
                 ${transportPage.shortFragment}
                 ${mainArticle.shortFragment}
+                ${dynamicPage.shortFragment}
             }
             newsContents {
                 ${globalFragment}
