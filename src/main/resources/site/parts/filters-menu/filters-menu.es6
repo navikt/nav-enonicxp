@@ -1,6 +1,7 @@
 const controller = require('/lib/headless/controllers/component-preview-controller');
 const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
+const { forceArray } = require('/lib/nav-utils');
 const { isUUID } = require('/lib/headless/uuid');
 const { getComponentConfigByPath } = require('/lib/headless/component-utils');
 const { generateUUID } = require('/lib/headless/uuid');
@@ -22,9 +23,11 @@ const generatePersistantIds = (componentPath) => (content) => {
         return content;
     }
 
-    config.categories?.forEach((category) => {
+    const categories = forceArray(config.categories);
+
+    categories?.forEach((category) => {
         insertIdIfNotExist(category);
-        category.filters?.forEach((filter) => insertIdIfNotExist(filter));
+        forceArray(category.filters)?.forEach((filter) => insertIdIfNotExist(filter));
     });
 
     return content;

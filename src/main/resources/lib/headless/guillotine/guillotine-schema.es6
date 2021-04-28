@@ -13,6 +13,12 @@ const sectionPageDataCallback = require('./schema-creation-callbacks/section-pag
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
+const {
+    filtersCategoryCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/filters-menu');
+const {
+    filtersMenuPartConfigCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -47,6 +53,8 @@ const schemaContextOptions = {
         PartConfigPageNavigationMenu: pageNavigationMenuCallback,
         PageConfigPageWithSideMenus: pageNavigationMenuCallback,
         PartConfigHtmlArea: htmlAreaPartConfigCallback,
+        PartConfigFiltersMenu: filtersMenuPartConfigCallback,
+        PartConfigFiltersMenu_FilterKategori: filtersCategoryCallback,
     },
 };
 

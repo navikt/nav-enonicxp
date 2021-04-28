@@ -1,5 +1,6 @@
 const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
+const { forceArray } = require('/lib/nav-utils');
 const { getComponentConfig } = require('/lib/headless/component-utils');
 
 const getFilterMenus = (components) =>
@@ -28,9 +29,10 @@ const generateHits = (req) => {
     return filterMenus
         .map((filterMenu) => {
             const config = getComponentConfig(filterMenu);
+            const categories = forceArray(config?.categories);
 
-            return config?.categories?.map((category) =>
-                category.filters?.map((filter) => generateHit(category, filter))
+            return categories?.map((category) =>
+                forceArray(category.filters)?.map((filter) => generateHit(category, filter))
             );
         })
         .flat();

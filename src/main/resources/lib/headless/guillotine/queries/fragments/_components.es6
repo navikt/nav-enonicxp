@@ -99,6 +99,16 @@ const partsFragment = `
                     linkText
                 }
             }
+            filters_menu {
+                title
+                categories {
+                    categoryName
+                    filters {
+                        filterName
+                        id
+                    }
+                }
+            }
         }
     }
 `;
