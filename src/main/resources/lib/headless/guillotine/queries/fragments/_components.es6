@@ -17,7 +17,6 @@ const partsFragment = `
             }
             dynamic_link_panel {
                 ${linkWithIngressMixinFragment}
-                vertical
                 icon {
                     ${imageFragment}
                 }
