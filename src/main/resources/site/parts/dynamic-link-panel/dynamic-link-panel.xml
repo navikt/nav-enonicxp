@@ -3,31 +3,52 @@
     <description>Med valgfri ikon/bakgrunn</description>
     <form>
         <mixin name="link-with-ingress"/>
-        <input name="vertical" type="CheckBox">
-            <label>Vertikalt layout</label>
-        </input>
-        <field-set>
+        <input name="icon" type="ImageSelector">
             <label>Ikon (valgfritt)</label>
-            <items>
-                <input name="icon" type="ImageSelector">
-                    <label>Velg ikon</label>
-                    <config>
-                        <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                        <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                        <allowPath>./*</allowPath>
-                    </config>
-                </input>
-                <input type="TextLine" name="iconBg">
-                    <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
-                    <config>
-                        <max-length>7</max-length>
-                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
-                    </config>
-                </input>
-            </items>
-        </field-set>
-        <input name="background" type="ImageSelector">
-            <label>Bakgrunn (valgfritt)</label>
+            <config>
+                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                <allowPath>./*</allowPath>
+            </config>
         </input>
+        <input name="background" type="ImageSelector">
+            <label>Bakgrunnsbilde (valgfritt)</label>
+        </input>
+        <option-set name="variant">
+            <label>Varianter</label>
+            <help-text>Ulike lenkepanel-stiler</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="vertical">
+                    <label>
+                        Standard vertikalt layout
+                    </label>
+                </option>
+                <option name="verticalWithBgColor">
+                    <label>
+                        Vertikalt med stort ikon og bakgrunnsfarge
+                    </label>
+                    <items>
+                        <input type="TextLine" name="iconBgColor">
+                            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
+                            <config>
+                                <max-length>7</max-length>
+                                <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+                            </config>
+                        </input>
+                        <input type="RadioButton" name="iconJustify">
+                            <label>Posisjon på ikonet</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <option value="flex-start">Topp</option>
+                                <option value="center">Midtstilt</option>
+                                <option value="flex-end">Bunn</option>
+                            </config>
+                            <default>center</default>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
     </form>
 </part>
