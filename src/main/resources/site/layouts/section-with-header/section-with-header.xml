@@ -21,7 +21,6 @@
                         <regexp>^[0-9a-zA-Z-_]+$</regexp>
                     </config>
                 </input>
-                <mixin name="header-common"/>
             </items>
         </field-set>
         <input name="icon" type="ImageSelector">
@@ -39,10 +38,34 @@
                 <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
             </config>
         </input>
-        <input type="CheckBox" name="highlight">
-            <label>Fremhevet</label>
-            <default>unchecked</default>
-        </input>
+        <item-set name="border">
+            <label>Omriss</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <input type="TextLine" name="color">
+                    <label>Farge (6-siffer hex-kode, eks. #2f0055)</label>
+                    <config>
+                        <max-length>7</max-length>
+                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
+                        <default>#ffffff</default>
+                    </config>
+                </input>
+                <input type="CheckBox" name="rounded">
+                    <label>Avrundede hjørner</label>
+                    <config>
+                        <default>unchecked</default>
+                    </config>
+                </input>
+                <input type="Long" name="width">
+                    <label>Tykkelse (px)</label>
+                    <default>3</default>
+                    <config>
+                        <min>0</min>
+                        <max>8</max>
+                    </config>
+                </input>
+            </items>
+        </item-set>
     </form>
     <regions>
         <region name="content"/>

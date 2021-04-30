@@ -107,7 +107,6 @@ const layoutsFragment = `
         no_nav_navno {
             section_with_header {
                anchorId
-               highlight
                icon {
                     ${imageFragment}
                }
