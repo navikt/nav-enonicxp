@@ -65,6 +65,7 @@ const partsFragment = `
                 }
             }
             html_area {
+                filters
                 html(processHtml:{type: server})
             }
             page_header {
