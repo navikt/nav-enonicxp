@@ -140,12 +140,11 @@ const generateHits = (query) => {
     const customColor =
         !dsColors.some((color) => color.id === query) && generateHit(query, 'Egendefinert');
 
-    return customColor ? [...dsColors, customColor] : dsColors;
+    return customColor ? [customColor] : dsColors;
 };
 
 const colorPicker = (req) => {
-    const { params } = req;
-    const hits = generateHits(params.query);
+    const hits = generateHits(req.params.query);
 
     return {
         status: 200,
