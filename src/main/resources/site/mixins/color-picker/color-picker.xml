@@ -2,6 +2,7 @@
     <form>
         <input name="color" type="CustomSelector">
             <label>Velg farge</label>
+            <help-text>Du kan også bruke en egendefinert hex-code, f.eks. #abcdef</help-text>
             <occurrences minimum="1" maximum="1"/>
             <config>
                 <service>colorPicker</service>

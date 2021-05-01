@@ -1,6 +1,6 @@
 const colorCodePattern = new RegExp('^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$');
 
-const colorsNameKeyed = {
+const colorsNameToCode = {
     navBakgrunn: '#ffffff',
     navGraBakgrunn: '#f1f1f1',
     navRod: '#c30000',
@@ -108,7 +108,7 @@ const colorsNameKeyed = {
     redErrorDarken80: '#573830',
 };
 
-const colorsCodeKeyed = Object.entries(colorsNameKeyed).reduce((acc, [colorName, colorCode]) => {
+const colorsCodeToNames = Object.entries(colorsNameToCode).reduce((acc, [colorName, colorCode]) => {
     const existingNames = acc[colorCode];
 
     return {
@@ -133,7 +133,7 @@ const generateHit = (colorCode, colorName) =>
     };
 
 const generateHits = (query) => {
-    const dsColors = Object.entries(colorsCodeKeyed).map(([colorCode, colorName]) =>
+    const dsColors = Object.entries(colorsCodeToNames).map(([colorCode, colorName]) =>
         generateHit(colorCode, colorName)
     );
 
