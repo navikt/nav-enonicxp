@@ -1,0 +1,11 @@
+<mixin>
+    <form>
+        <input name="color" type="CustomSelector">
+            <label>Velg farge</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <service>colorPicker</service>
+            </config>
+        </input>
+    </form>
+</mixin>
