@@ -119,7 +119,7 @@ const colorsCodeKeyed = Object.entries(colorsNameKeyed).reduce((acc, [colorName,
 
 const generateIcon = (color) => `
     <svg width="32" height="32">
-        <circle r="16" cx="16" cy="16" fill="#555"/>
+        <circle r="16" cx="16" cy="16" fill="#444"/>
         <circle r="15" cx="16" cy="16" fill="${color}"/>
     </svg>
 `;
@@ -140,7 +140,7 @@ const generateHits = (query) => {
     const customColor =
         !dsColors.some((color) => color.id === query) && generateHit(query, 'Egendefinert');
 
-    return [...dsColors, ...(customColor ? [customColor] : [])];
+    return customColor ? [...dsColors, customColor] : dsColors;
 };
 
 const colorPicker = (req) => {
