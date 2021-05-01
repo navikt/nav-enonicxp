@@ -1,6 +1,4 @@
-const colorCodePattern = new RegExp('^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$');
-
-const colorsNameToCode = {
+const colorsByName = {
     navBakgrunn: '#ffffff',
     navGraBakgrunn: '#f1f1f1',
     navRod: '#c30000',
@@ -108,7 +106,7 @@ const colorsNameToCode = {
     redErrorDarken80: '#573830',
 };
 
-const colorsCodeToNames = Object.entries(colorsNameToCode).reduce((acc, [colorName, colorCode]) => {
+const colorsByCode = Object.entries(colorsByName).reduce((acc, [colorName, colorCode]) => {
     const existingNames = acc[colorCode];
 
     return {
@@ -117,12 +115,14 @@ const colorsCodeToNames = Object.entries(colorsNameToCode).reduce((acc, [colorNa
     };
 }, {});
 
-const generateIcon = (color) => `
-    <svg width="32" height="32">
-        <circle r="16" cx="16" cy="16" fill="#444"/>
-        <circle r="15" cx="16" cy="16" fill="${color}"/>
-    </svg>
+const generateIcon = (color) => `\
+<svg width="32" height="32">\
+<circle r="16" cx="16" cy="16" fill="#444"/>\
+<circle r="15" cx="16" cy="16" fill="${color}"/>\
+</svg>\
 `;
+
+const colorCodePattern = new RegExp('^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$');
 
 const generateHit = (colorCode, colorName) =>
     colorCodePattern.test(colorCode) && {
@@ -132,22 +132,23 @@ const generateHit = (colorCode, colorName) =>
         icon: { data: generateIcon(colorCode), type: 'image/svg+xml' },
     };
 
-const generateHits = (query) => {
-    const dsColors = Object.entries(colorsCodeToNames).map(([colorCode, colorName]) =>
-        generateHit(colorCode, colorName)
-    );
+const colorHits = Object.entries(colorsByCode).map(([colorCode, colorName]) =>
+    generateHit(colorCode, colorName)
+);
 
+const getHits = (query) => {
     const customColor =
-        !dsColors.some((color) => color.id === query) && generateHit(query, 'Egendefinert');
+        !colorHits.some((color) => color.id === query) && generateHit(query, 'Egendefinert');
 
-    return customColor ? [customColor] : dsColors;
+    return customColor ? [customColor] : colorHits;
 };
 
 const colorPicker = (req) => {
-    const hits = generateHits(req.params.query);
+    const hits = getHits(req.params.query);
 
     return {
         status: 200,
+        contentType: 'application/json',
         body: {
             total: hits.length,
             count: hits.length,
