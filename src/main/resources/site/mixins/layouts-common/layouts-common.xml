@@ -45,12 +45,12 @@
                 </option>
             </options>
         </option-set>
-        <input type="TextLine" name="backgroundColor">
-            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
-            <config>
-                <max-length>7</max-length>
-                <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
-            </config>
-        </input>
+        <item-set name="bgColor">
+            <label>Bakgrunnsfarge</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="color-picker"/>
+            </items>
+        </item-set>
     </form>
 </mixin>
