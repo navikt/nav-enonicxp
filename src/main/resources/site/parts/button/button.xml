@@ -26,13 +26,6 @@
         <input name="fullwidth" type="CheckBox">
             <label>Full bredde</label>
         </input>
-        <input name="icon" type="ImageSelector">
-            <label>Ikon (valgfritt)</label>
-            <config>
-                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                <allowPath>./*</allowPath>
-            </config>
-        </input>
+        <mixin name="icon-selector"/>
     </form>
 </part>

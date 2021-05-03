@@ -23,14 +23,14 @@
                 </input>
             </items>
         </field-set>
-        <input name="icon" type="ImageSelector">
+        <item-set name="icon">
             <label>Ikon</label>
-            <config>
-                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                <allowPath>./*</allowPath>
-            </config>
-        </input>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="icon-selector"/>
+                <mixin name="color-picker"/>
+            </items>
+        </item-set>
         <item-set name="bgColor">
             <label>Bakgrunnsfarge</label>
             <occurrences minimum="0" maximum="1"/>
@@ -42,14 +42,7 @@
             <label>Omriss</label>
             <occurrences minimum="0" maximum="1"/>
             <items>
-                <input type="TextLine" name="color">
-                    <label>Farge (6-siffer hex-kode, eks. #2f0055)</label>
-                    <config>
-                        <max-length>7</max-length>
-                        <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
-                        <default>#ffffff</default>
-                    </config>
-                </input>
+                <mixin name="color-picker"/>
                 <input type="CheckBox" name="rounded">
                     <label>Avrundede hjørner</label>
                     <config>

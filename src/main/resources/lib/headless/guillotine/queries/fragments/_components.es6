@@ -106,10 +106,13 @@ const layoutsFragment = `
     config {
         no_nav_navno {
             section_with_header {
-               anchorId
-               icon {
-                    ${imageFragment}
-               }
+                anchorId
+                icon {
+                    color
+                    icon {
+                        ${imageFragment}
+                    }
+                }
             }
         }
     }
