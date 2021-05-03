@@ -4,6 +4,9 @@
         <input name="title" type="TextLine">
             <label>Tittel</label>
         </input>
+        <input name="description" type="TextArea">
+            <label>Beskrivelse</label>
+        </input>
         <item-set name="categories">
             <label>Filter-kategori</label>
             <occurrences minimum="0" maximum="0"/>
@@ -13,7 +16,7 @@
                 </input>
                 <item-set name="filters">
                     <label>Filter</label>
-                    <occurrences minimum="0" maximum="0"/>
+                    <occurrences minimum="1" maximum="0"/>
                     <items>
                         <input name="filterName" type="TextLine">
                             <label>Filter-navn</label>

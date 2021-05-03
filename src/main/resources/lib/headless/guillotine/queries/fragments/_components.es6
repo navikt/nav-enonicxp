@@ -101,6 +101,7 @@ const partsFragment = `
             }
             filters_menu {
                 title
+                description
                 categories {
                     categoryName
                     filters {
