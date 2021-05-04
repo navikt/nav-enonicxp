@@ -1,9 +1,9 @@
 exports.macro = function (context) {
-    const { text, phoneNumber, withChevron } = context.params;
+    const { text, phoneNumber, chevron } = context.params;
 
     return {
         body: `<a class="macroLinkPhone${
-            withChevron ? ' chevron' : ''
+            chevron === 'true' ? ' chevron' : ''
         }" href="tel:${phoneNumber}">${text}</a>`,
     };
 };
