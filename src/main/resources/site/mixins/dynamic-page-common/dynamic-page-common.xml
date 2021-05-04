@@ -8,7 +8,7 @@
             </config>
         </input>
         <mixin name="languages-legacy"/>
-        <mixin name="feedback-toggle"/>
+        <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>
     </form>
