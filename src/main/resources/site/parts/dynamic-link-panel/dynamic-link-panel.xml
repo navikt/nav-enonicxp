@@ -29,13 +29,13 @@
                         Vertikalt med stort ikon og bakgrunnsfarge
                     </label>
                     <items>
-                        <input type="TextLine" name="iconBgColor">
-                            <label>Bakgrunnsfarge (6-siffer hex-kode, eks. #2f0055)</label>
-                            <config>
-                                <max-length>7</max-length>
-                                <regexp>^(#[0-9a-fA-F]{6}|)$</regexp>
-                            </config>
-                        </input>
+                        <item-set name="iconBg">
+                            <label>Bakgrunnsfarge</label>
+                            <occurrences minimum="0" maximum="1"/>
+                            <items>
+                                <mixin name="color-picker"/>
+                            </items>
+                        </item-set>
                         <input type="RadioButton" name="iconJustify">
                             <label>Posisjon på ikonet</label>
                             <occurrences minimum="1" maximum="1"/>
