@@ -21,17 +21,16 @@
                         <regexp>^[0-9a-zA-Z-_]+$</regexp>
                     </config>
                 </input>
-                <mixin name="header-common"/>
             </items>
         </field-set>
-        <input name="icon" type="ImageSelector">
+        <item-set name="icon">
             <label>Ikon</label>
-            <config>
-                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                <allowPath>./*</allowPath>
-            </config>
-        </input>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="icon-selector"/>
+                <mixin name="color-picker"/>
+            </items>
+        </item-set>
         <item-set name="bgColor">
             <label>Bakgrunnsfarge</label>
             <occurrences minimum="0" maximum="1"/>
@@ -39,10 +38,27 @@
                 <mixin name="color-picker"/>
             </items>
         </item-set>
-        <input type="CheckBox" name="highlight">
-            <label>Fremhevet</label>
-            <default>unchecked</default>
-        </input>
+        <item-set name="border">
+            <label>Omriss</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="color-picker"/>
+                <input type="CheckBox" name="rounded">
+                    <label>Avrundede hjørner</label>
+                    <config>
+                        <default>unchecked</default>
+                    </config>
+                </input>
+                <input type="Long" name="width">
+                    <label>Tykkelse (px)</label>
+                    <default>3</default>
+                    <config>
+                        <min>0</min>
+                        <max>8</max>
+                    </config>
+                </input>
+            </items>
+        </item-set>
     </form>
     <regions>
         <region name="content"/>
