@@ -1,0 +1,13 @@
+<mixin>
+    <form>
+        <input name="icon" type="ImageSelector">
+            <label>Velg ikon</label>
+            <help-text>Ikoner må plasseres i en mappe under dette innholdet, eller i /nav.no-ressurser/bilder/(ikoner|svg-ikoner)</help-text>
+            <config>
+                <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
+                <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
+                <allowPath>./*</allowPath>
+            </config>
+        </input>
+    </form>
+</mixin>
