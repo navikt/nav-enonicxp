@@ -25,8 +25,6 @@ const processHtmlWithPostProcessing = (html, type) => {
             connectionTimeout: 1000,
         });
 
-        log.info(`Response from procesHtml hack: ${processedHtmlResponse?.status}`);
-
         if (processedHtmlResponse?.status === 200) {
             return processedHtmlResponse.body;
         }
