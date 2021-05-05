@@ -48,6 +48,7 @@ const schemaContextOptions = {
         PageConfigPageWithSideMenus: pageNavigationMenuCallback,
         PartConfigHtmlArea: htmlAreaPartConfigCallback,
     },
+    applications: [app.name, 'navno.nav.no.search'],
 };
 
 const initAndCreateSchema = () => {
