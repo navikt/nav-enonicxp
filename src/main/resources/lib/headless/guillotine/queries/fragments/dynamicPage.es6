@@ -1,10 +1,11 @@
-const { languagesMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const { decoratorTogglesMixinFragment } = require('./_mixins');
+const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
 
 const dataObject = `
     data {
         description
-        feedbackToggle
+        ${decoratorTogglesMixinFragment}
         ${languagesMixinFragment}
         ${seoMixinFragment}
     }

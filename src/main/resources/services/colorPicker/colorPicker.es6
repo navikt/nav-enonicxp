@@ -137,8 +137,10 @@ const colorHits = Object.entries(colorsByCode).map(([colorCode, colorName]) =>
 );
 
 const getHits = (query) => {
+    const queryLowerCase = query?.toLowerCase();
     const customColor =
-        !colorHits.some((color) => color.id === query) && generateHit(query, 'Egendefinert');
+        !colorHits.some((color) => color.id.toLowerCase() === queryLowerCase) &&
+        generateHit(query, 'Egendefinert');
 
     return customColor ? [customColor] : colorHits;
 };

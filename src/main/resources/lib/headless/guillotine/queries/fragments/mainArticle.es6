@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 const menuListItems = require('./menuListItems');
-const { languagesMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const { decoratorTogglesMixinFragment } = require('./_mixins');
+const { languagesMixinFragment } = require('./_mixins');
 const { imageFragment } = require('./media');
 const { seoMixinFragment } = require('./_mixins');
 
@@ -25,7 +26,7 @@ const mainArticleFragment = `
             chapters {
                 ${globalFragment}
             }
-            feedbackToggle
+            ${decoratorTogglesMixinFragment}
             ${menuListItems.fragment}
             ${seoMixinFragment}
         }

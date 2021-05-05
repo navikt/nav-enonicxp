@@ -1,0 +1,6 @@
+<macro>
+    <display-name>Lenke med chevron (ekstern)</display-name>
+    <form>
+        <mixin name="link-external" />
+    </form>
+</macro>
