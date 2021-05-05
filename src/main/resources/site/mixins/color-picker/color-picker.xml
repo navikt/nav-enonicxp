@@ -1,0 +1,12 @@
+<mixin>
+    <form>
+        <input name="color" type="CustomSelector">
+            <label>Velg farge</label>
+            <help-text>Velg fra designsystemets fargepalett, eller en egendefinert hex-code, f.eks. #0451ff</help-text>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <service>colorPicker</service>
+            </config>
+        </input>
+    </form>
+</mixin>

@@ -6,7 +6,8 @@ const mainArticle = require('./mainArticle');
 const transportPage = require('./transportPage');
 const menuListItems = require('./menuListItems');
 const dynamicPage = require('./dynamicPage');
-const { languagesMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const { decoratorTogglesMixinFragment } = require('./_mixins');
+const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
 
 const pageListShortFragment = `
@@ -16,7 +17,7 @@ const pageListShortFragment = `
             hide_date
             hideSectionContentsDate
             orderSectionContentsByPublished
-            feedbackToggle
+            ${decoratorTogglesMixinFragment}
             ${seoMixinFragment}
         }
     }

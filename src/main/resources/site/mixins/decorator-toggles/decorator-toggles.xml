@@ -1,0 +1,17 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Dekoratør-parametre</label>
+            <items>
+                <input type="CheckBox" name="feedbackToggle">
+                    <label>Fant du det du lette etter?</label>
+                    <default>unchecked</default>
+                </input>
+                <input type="CheckBox" name="chatbotToggle">
+                    <label>Chatbot Frida</label>
+                    <default>checked</default>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

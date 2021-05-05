@@ -6,14 +6,7 @@
         <field-set>
             <label>Varsel</label>
             <items>
-                <input name="icon" type="ImageSelector">
-                    <label>Ikon</label>
-                    <config>
-                        <allowPath>${site}/nav.no-ressurser/bilder/svg-ikoner</allowPath>
-                        <allowPath>${site}/nav.no-ressurser/bilder/ikoner</allowPath>
-                        <allowPath>./*</allowPath>
-                    </config>
-                </input>
+                <mixin name="icon-selector"/>
                 <input name="title" type="TextLine">
                     <label>Tittel (overstyrer sidetittel fra valgt innhold)</label>
                     <help-text>
