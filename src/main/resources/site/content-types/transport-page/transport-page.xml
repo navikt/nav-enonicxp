@@ -7,7 +7,7 @@
     <form>
         <mixin name="ingress"/>
         <mixin name="link-panels"/>
-        <mixin name="feedback-toggle"/>
+        <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>
     </form>

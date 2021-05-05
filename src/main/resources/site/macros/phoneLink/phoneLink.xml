@@ -1,0 +1,20 @@
+<macro>
+    <display-name>Lenke til telefonnummer</display-name>
+    <form>
+        <input name="text" type="TextLine">
+            <label>Lenketekst</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="phoneNumber" type="TextLine">
+            <label>Telefonnummer</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <regexp>^(\+?[0-9]+)$</regexp>
+            </config>
+        </input>
+        <input name="chevron" type="CheckBox">
+            <label>Lenke med chevron</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+</macro>
