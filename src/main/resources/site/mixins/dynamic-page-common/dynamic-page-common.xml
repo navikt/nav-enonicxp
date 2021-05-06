@@ -2,13 +2,13 @@
     <form>
         <input type="TextArea" name="description">
             <label>Oppsummering/ingress</label>
-            <help-text>Vises i lenkepaneler når denne siden lenkes til fra andre sider</help-text>
+            <help-text>Vises i lenkepaneler når denne siden lenkes til fra andre sider, og i søkeresultater</help-text>
             <config>
                 <max-length>140</max-length>
             </config>
         </input>
         <mixin name="languages-legacy"/>
-        <mixin name="feedback-toggle"/>
+        <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
         <mixin name="keywords"/>
     </form>

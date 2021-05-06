@@ -65,6 +65,7 @@ const partsFragment = `
                 }
             }
             html_area {
+                filters
                 html(processHtml:{type: server})
                 filters
             }
@@ -101,6 +102,7 @@ const partsFragment = `
             }
             filters_menu {
                 title
+                description
                 categories {
                     categoryName
                     filters {
@@ -117,11 +119,13 @@ const layoutsFragment = `
     config {
         no_nav_navno {
             section_with_header {
-               anchorId
-               highlight
-               icon {
-                    ${imageFragment}
-               }
+                anchorId
+                icon {
+                    color
+                    icon {
+                        ${imageFragment}
+                    }
+                }
             }
         }
     }

@@ -33,6 +33,11 @@ const seoMixinFragment = `
     noindex
 `;
 
+const decoratorTogglesMixinFragment = `
+    feedbackToggle
+    chatbotToggle
+`;
+
 const linkInternalMixinFragment = `
     target {
         ${globalFragment}
@@ -89,4 +94,5 @@ module.exports = {
     linkSelectableMixin,
     headerCommonMixin,
     languagesMixinFragment,
+    decoratorTogglesMixinFragment,
 };

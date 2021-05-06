@@ -56,6 +56,7 @@ const schemaContextOptions = {
         PartConfigFiltersMenu: filtersMenuPartConfigCallback,
         PartConfigFiltersMenu_FilterKategori: filtersCategoryCallback,
     },
+    applications: [app.name, 'navno.nav.no.search'],
 };
 
 const initAndCreateSchema = () => {

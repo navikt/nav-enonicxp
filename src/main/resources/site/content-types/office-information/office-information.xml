@@ -290,6 +290,6 @@
                 </item-set>
             </items>
         </item-set>
-        <mixin name="feedback-toggle"/>
+        <mixin name="decorator-toggles"/>
     </form>
 </content-type>

@@ -1,10 +1,11 @@
+const { decoratorTogglesMixinFragment } = require('./_mixins');
 const { linkPanelsMixinFragment, seoMixinFragment } = require('./_mixins');
 
 const transportPageFragment = `
     ...on no_nav_navno_TransportPage {
         data {
             ingress
-            feedbackToggle
+            ${decoratorTogglesMixinFragment}
             ${linkPanelsMixinFragment}
             ${seoMixinFragment}
         }
