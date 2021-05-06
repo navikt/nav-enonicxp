@@ -1,3 +1,5 @@
 const { frontendOrigin, xpOrigin, revalidatorProxyOrigin } = app.config;
 
-module.exports = { frontendOrigin, xpOrigin, revalidatorProxyOrigin };
+const xpOriginFixed = xpOrigin.replace('-q1', '.dev');
+
+module.exports = { frontendOrigin, xpOrigin: xpOriginFixed, revalidatorProxyOrigin };
