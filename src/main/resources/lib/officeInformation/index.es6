@@ -6,6 +6,7 @@ const libs = {
     cron: require('/lib/cron'),
     cluster: require('/lib/xp/cluster'),
     context: require('/lib/xp/context'),
+    utils: require('/lib/nav-utils'),
 };
 
 function setIsRefreshing(navRepo, isRefreshing, failed) {
@@ -26,48 +27,6 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
         },
     });
 }
-
-const hashCode = (str) => {
-    let hash = 0;
-    if (str.length === 0) return hash;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        // eslint-disable-next-line
-        hash = (hash << 5) - hash + char;
-        // eslint-disable-next-line
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-};
-
-const removeNullProperties = (obj) => {
-    return Object.keys(obj).reduce((acc, key) => {
-        const value = obj[key];
-        if (typeof value === 'object' && value !== null) {
-            if (!Array.isArray(value) && Object.keys(value).length > 0) {
-                acc[key] = removeNullProperties(value);
-            }
-            if (Array.isArray(value) && value.length > 0) {
-                const moddedList = value.map((item) => {
-                    if (typeof item === 'object') {
-                        return removeNullProperties(item);
-                    }
-                    return typeof value === 'string' ? value : `${value}`;
-                });
-                acc[key] = moddedList.length === 1 ? moddedList[0] : moddedList;
-            }
-        } else if (value !== null) {
-            acc[key] = typeof value === 'string' ? value : `${value}`;
-        }
-        return acc;
-    }, {});
-};
-
-const createObjectChecksum = (obj) => {
-    const cleanObj = removeNullProperties(obj);
-    const serializedObj = JSON.stringify(cleanObj).split('').sort().join();
-    return hashCode(serializedObj);
-};
 
 function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
@@ -114,8 +73,8 @@ function refreshOfficeInformation(officeInformationList) {
                     : false;
             });
             if (existingOffice) {
-                const existing = createObjectChecksum(existingOffice.data);
-                const fetched = createObjectChecksum(officeInformation);
+                const existing = libs.utils.createObjectChecksum(existingOffice.data);
+                const fetched = libs.utils.createObjectChecksum(officeInformation);
                 if (existing !== fetched) {
                     updated.push(existingOffice._path);
                     libs.content.modify({

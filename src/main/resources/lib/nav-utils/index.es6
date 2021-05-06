@@ -132,6 +132,48 @@ const getNestedValue = (obj, keysString) => {
     return getNestedValueFromKeyArray(obj, keysString?.split('.'));
 };
 
+const hashCode = (str) => {
+    let hash = 0;
+    if (str.length === 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        // eslint-disable-next-line
+        hash = (hash << 5) - hash + char;
+        // eslint-disable-next-line
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+};
+
+const removeNullProperties = (obj) => {
+    return Object.keys(obj).reduce((acc, key) => {
+        const value = obj[key];
+        if (typeof value === 'object' && value !== null) {
+            if (!Array.isArray(value) && Object.keys(value).length > 0) {
+                acc[key] = removeNullProperties(value);
+            }
+            if (Array.isArray(value) && value.length > 0) {
+                const moddedList = value.map((item) => {
+                    if (typeof item === 'object') {
+                        return removeNullProperties(item);
+                    }
+                    return typeof value === 'string' ? value : `${value}`;
+                });
+                acc[key] = moddedList.length === 1 ? moddedList[0] : moddedList;
+            }
+        } else if (value !== null) {
+            acc[key] = typeof value === 'string' ? value : `${value}`;
+        }
+        return acc;
+    }, {});
+};
+
+const createObjectChecksum = (obj) => {
+    const cleanObj = removeNullProperties(obj);
+    const serializedObj = JSON.stringify(cleanObj).split('').sort().join();
+    return hashCode(serializedObj);
+};
+
 module.exports = {
     forceArray,
     getAllChildren,
@@ -139,4 +181,5 @@ module.exports = {
     formatDateTime,
     fixDateFormat,
     getNestedValue,
+    createObjectChecksum,
 };

@@ -17,6 +17,27 @@ const debounceTime = 5000;
 let lastUpdate = 0;
 let currentTask = null;
 
+const getLastFacetConfig = (contentId) => {
+    const versionFinder = __.newBean('tools.PublishedVersions');
+    const versionTimestamps = JSON.parse(versionFinder.getLiveVersions(contentId));
+
+    const allVersions = repo.findVersions({ key: contentId, count: 1000 });
+    const content = allVersions.hits
+        .filter((version) => 'commitId' in version)
+        .map((version) => {
+            const article = repo.get({ key: contentId, versionId: version.versionId });
+            const timestamp = versionTimestamps[version.versionId] ?? '';
+            // adding timestamp massage since nashorn Date can't handle ms
+            return { article, timestamp: navUtils.fixDateFormat(timestamp) };
+        })
+        .filter(({ article }) => {
+            return article.workflow?.state !== 'IN_PROGRESS' && article.timestamp !== '';
+        })
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        .reverse();
+    return content.length > 2 ? content[1].article : [];
+};
+
 const getNavRepo = () => {
     return contextLib.run(
         {
@@ -220,12 +241,25 @@ const updateFacets = (fasetter, ids) => {
 };
 
 const bulkUpdateFacets = (facetConfig, ids) => {
+    let fasetter = navUtils.forceArray(facetConfig.data.fasetter);
+
     if (!ids) {
         log.info('TAG ALL FACETS');
+        const previousFacetConfig = getLastFacetConfig(facetConfig._id);
+        if (previousFacetConfig) {
+            const previous = navUtils.forceArray(previousFacetConfig.data.fasetter);
+            fasetter = fasetter.reduce((acc, rule, ix) => {
+                const current = navUtils.createObjectChecksum(rule);
+                const previousRule = navUtils.createObjectChecksum(previous[ix]);
+                if (current !== previousRule) {
+                    acc.push(rule);
+                }
+                return acc;
+            }, []);
+        }
         // block facet updates
         setUpdateAll(true);
     }
-    const fasetter = navUtils.forceArray(facetConfig.data.fasetter);
     updateFacets(fasetter, ids);
 };
 
@@ -246,7 +280,6 @@ const checkIfUpdateNeeded = (nodeIds) => {
         log.info('blocked by update all');
         return;
     }
-
     const facetConfig = getFacetConfig();
 
     // update nodes that is not in the just validated nodes list
@@ -303,7 +336,6 @@ const facetHandler = (event) => {
 
     // save last node event time
     lastUpdate = Date.now();
-
     // add node ids to next check
     toCheckOnNext = toCheckOnNext.concat(
         cmsNodesChanged.map((node) => {
