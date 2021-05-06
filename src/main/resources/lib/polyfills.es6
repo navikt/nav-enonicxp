@@ -20,6 +20,33 @@ Object.defineProperty(Array.prototype, 'find', {
     writable: true,
 });
 
+Object.defineProperty(Array.prototype, 'flat', {
+    value: function () {
+        if (!this) {
+            return null;
+        }
+
+        const newArray = [];
+
+        const flattenArray = (arr) => {
+            for (let i = 0; i < arr.length; i++) {
+                const element = arr[i];
+                if (Array.isArray(element)) {
+                    flattenArray(element);
+                } else {
+                    newArray.push(element);
+                }
+            }
+        };
+
+        flattenArray(this);
+
+        return newArray;
+    },
+    configurable: true,
+    writable: true,
+});
+
 Object.entries = function (obj) {
     if (obj === null || obj === undefined) {
         throw new TypeError('Cannot convert undefined or null to object');

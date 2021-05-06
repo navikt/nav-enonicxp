@@ -65,6 +65,7 @@ const partsFragment = `
                 }
             }
             html_area {
+                filters
                 html(processHtml:{type: server})
             }
             page_header {
@@ -96,6 +97,17 @@ const partsFragment = `
                 anchorLinks(contentId:$ref) {
                     anchorId
                     linkText
+                }
+            }
+            filters_menu {
+                title
+                description
+                categories {
+                    categoryName
+                    filters {
+                        filterName
+                        id
+                    }
                 }
             }
         }
