@@ -5,7 +5,6 @@ const navUtils = require('/lib/nav-utils');
 const nodeLib = require('/lib/xp/node');
 const taskLib = require('/lib/xp/task');
 const repoLib = require('/lib/xp/repo');
-const auditLib = require('/lib/xp/auditlog');
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -27,10 +26,9 @@ const getLastFacetConfig = (contentId) => {
         .filter((version) => 'commitId' in version)
         .map((version) => {
             const article = repo.get({ key: contentId, versionId: version.versionId });
-            const auditLog = auditLib.find({ ids: [contentId], count: 100 });
             const timestamp = versionTimestamps[version.versionId] ?? '';
             // adding timestamp massage since nashorn Date can't handle ms
-            return { auditLog, version, article, timestamp: navUtils.fixDateFormat(timestamp) };
+            return { article, timestamp: navUtils.fixDateFormat(timestamp) };
         })
         .filter(({ article }) => {
             return article.workflow?.state !== 'IN_PROGRESS' && article.timestamp !== '';
