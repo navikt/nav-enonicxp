@@ -361,7 +361,6 @@ const activateEventListener = () => {
     });
     log.info('Started: facet-handler listening on node.pushed');
 };
-
 module.exports = {
     activateEventListener,
     checkIfUpdateNeeded,

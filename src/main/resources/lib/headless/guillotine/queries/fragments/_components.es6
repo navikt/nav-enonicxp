@@ -67,7 +67,6 @@ const partsFragment = `
             html_area {
                 filters
                 html(processHtml:{type: server})
-                filters
             }
             page_header {
                 title
