@@ -40,7 +40,6 @@ const generateHits = (req) => {
 
 const filterSelector = (req) => {
     const hits = generateHits(req);
-    log.info(`Hits: ${JSON.stringify(hits)}`);
 
     return {
         status: 200,
