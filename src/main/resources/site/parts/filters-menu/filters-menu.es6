@@ -49,5 +49,5 @@ exports.get = (req) => {
         });
     }
 
-    return controller;
+    return controller(req);
 };
