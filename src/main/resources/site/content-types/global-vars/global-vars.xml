@@ -1,0 +1,17 @@
+<content-type>
+    <display-name>Gjenbrukbar verdi</display-name>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input name="text" type="TextLine">
+            <label>Tall og bokstaver (for bruk i tekst)</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input name="number" type="Double">
+            <label>Kun tall (for bruk i kalkulator)</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</content-type>
