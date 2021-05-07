@@ -1,14 +1,11 @@
 <content-type>
-    <display-name>Gjenbrukbare verdier</display-name>
+    <display-name>Globale verdier</display-name>
+    <description>Et sett med verdier som kan benyttes i tekster eller kalkulatorer</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input name="name" type="TextLine">
-            <label>Navn på verdi-sett</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
         <item-set name="values">
             <label>Verdi</label>
             <occurrences minimum="0" maximum="0"/>

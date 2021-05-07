@@ -24,6 +24,7 @@ const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
+const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 
 const queryFragments = [
@@ -43,6 +44,7 @@ const queryFragments = [
     publishingCalendar.fragment,
     melding.fragment,
     dynamicPage.fragment,
+    globalValueSet.fragment,
     media.mediaAttachmentFragment,
 ].join('\n');
 
