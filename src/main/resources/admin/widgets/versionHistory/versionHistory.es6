@@ -45,7 +45,86 @@ function getImageUrl(contentId, scale = '') {
     });
 }
 const view = resolve('versionHistorySimpleView.html');
-const renderPage = (version) => {
+const findParts = (obj) => {
+    if (obj && typeof obj === 'object') {
+        if (Array.isArray(obj)) {
+            return obj.reduce((acc, item) => {
+                if (typeof item === 'object') {
+                    if (item?.type === 'part') {
+                        acc.push(item);
+                    }
+                }
+                return acc;
+            }, []);
+        }
+        return Object.keys(obj).reduce((acc, key) => {
+            const current = obj[key];
+            return [...acc, ...findParts(current)];
+        }, []);
+    }
+    return [];
+};
+
+const extractInfoFromPart = (part) => {
+    const translation = {
+        'dynamic-header': {
+            fields: {
+                title: '',
+                anchorId: '',
+                titleTag: '',
+            },
+        },
+        'page-header': {
+            fields: { title: 'TextLine' },
+            render: (content) => `<h1>${content.title}</h1>`,
+        },
+        'html-area': {
+            fields: {},
+            render: (content) => libs.portal.processHtml({ value: content.html }),
+        },
+    };
+
+    const { descriptor, config } = part;
+    const name = descriptor.split(':').slice(-1);
+    if (config && config['no-nav-navno']) {
+        const partConfig = config['no-nav-navno'];
+        const content = partConfig[name];
+        if (translation[name]) {
+            const renderer = translation[name];
+            if (renderer.render) {
+                return renderer.render(content);
+            }
+            // TODO: if no custom renderer, try to see if we have a standard we can use
+        }
+    }
+    return descriptor;
+};
+
+const renderDynamicPage = (version) => {
+    // 1. order by path, at least shown relation between parts
+    // 2. extract relevant information from the part
+    const parts = findParts(version.content.components);
+    const renderedParts = parts.map((part) => {
+        if (part?.part) {
+            return extractInfoFromPart(part.part);
+        }
+        return false;
+    });
+    return { ...getContentInfo(version), parts: renderedParts };
+};
+
+const getContentInfo = (version) => {
+    return {
+        description: version.description,
+        versionId: version.versionId,
+        displayName: version?.content?.displayName,
+        from: libs.utils.formatDateTime(version.from),
+        publishedFrom: libs.utils.formatDateTime(version.content.publish.from),
+        to: libs.utils.formatDateTime(version.to),
+        type: version.content.type,
+    };
+};
+const renderMainArticle = (version) => {
     if (!version) {
         log.info('version is off');
     }
@@ -86,17 +165,12 @@ const renderPage = (version) => {
 
     // current model
     return {
-        description: version.description,
-        versionId: version.versionId,
-        displayName: content.displayName,
-        from: libs.utils.formatDateTime(version.from),
+        ...getContentInfo(version),
         hasFact,
         htmlFact,
         htmlText,
         imageObj,
         ingress: data.ingress,
-        publishedFrom: libs.utils.formatDateTime(content.publish.from),
-        to: libs.utils.formatDateTime(version.to),
     };
 };
 
@@ -183,8 +257,8 @@ const getTimeline = (contentId) => {
 };
 
 const renderMapping = {
-    [`${app.name}:main-article`]: renderPage,
-    [`${app.name}:dynamic-page`]: renderPage,
+    [`${app.name}:main-article`]: renderMainArticle,
+    [`${app.name}:dynamic-page`]: renderDynamicPage,
 };
 exports.get = (req) => {
     const contentId = req.params.contentId;
@@ -198,9 +272,10 @@ exports.get = (req) => {
     const timeline = getTimeline(contentId);
     const renderFunction = renderMapping[content.type];
     const models = timeline.map((version) => renderFunction(version)).reverse();
+
     const widgetScriptUrl = libs.portal.assetUrl({ path: 'js/versionHistory.js' });
     return {
         contentType: 'text/html',
-        body: thymeleaf.render(view, { widgetScriptUrl, versions: models }),
+        body: thymeleaf.render(view, { appName: app.name, widgetScriptUrl, versions: models }),
     };
 };
