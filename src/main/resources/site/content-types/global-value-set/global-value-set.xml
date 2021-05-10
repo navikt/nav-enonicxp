@@ -1,28 +1,8 @@
 <content-type>
     <display-name>Globale verdier</display-name>
-    <description>Et sett med verdier som kan benyttes i tekster eller kalkulatorer</description>
+    <description>Verdier som kan benyttes i tekster eller kalkulatorer</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
-    <form>
-        <item-set name="values">
-            <label>Verdi</label>
-            <occurrences minimum="0" maximum="0"/>
-            <items>
-                <input name="key" type="TextLine">
-                    <label>Nøkkel</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <input name="textValue" type="TextLine">
-                    <label>Tall og bokstaver (for bruk i tekst)</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <input name="numberValue" type="Double">
-                    <label>Kun tall (for bruk i kalkulatorer, valgfri)</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-            </items>
-        </item-set>
-    </form>
 </content-type>

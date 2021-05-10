@@ -1,8 +1,9 @@
 const globalValueSetFragment = `
     ...on no_nav_navno_GlobalValueSet {
         data {
-            values {
+            valueItems {
                 key
+                itemName
                 textValue
                 numberValue
             }

@@ -6,7 +6,8 @@
             <label>Velg verdi</label>
             <occurrences minimum="1" maximum="1"/>
             <config>
-                <service>globalVars</service>
+                <service>globalValues</service>
+                <param value="type">selector</param>
             </config>
         </input>
     </form>

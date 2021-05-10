@@ -1,9 +1,17 @@
 const contentLib = require('/lib/xp/content');
 const { forceArray } = require('/lib/nav-utils');
 
-const getGlobalValueKey = (valueKey, setId) => valueKey && setId && `${setId}-${valueKey}`;
+const validTypes = { textValue: true, numberValue: true };
 
-const validTypes = { text: true, number: true };
+const getGlobalValueUsage = (key) => {
+    const result = contentLib.query({
+        start: 0,
+        count: 10,
+        query: `fulltext("data.text, components.part.config.no-nav-navno.html-area.html", "${key}", "AND")`,
+    });
+
+    return result.hits;
+};
 
 const getAllGlobalValues = () => {
     const valueSets = contentLib.query({
@@ -27,7 +35,7 @@ const getAllGlobalValues = () => {
                 ...value,
                 setId: varSet._id,
                 setName: varSet.displayName,
-                globalKey: getGlobalValueKey(value.key, varSet._id),
+                globalKey: value.key,
             }))
         )
         .flat();
@@ -52,4 +60,5 @@ const getGlobalValue = (key, type) => {
 module.exports = {
     getAllGlobalValues,
     getGlobalValue,
+    getGlobalValueUsage,
 };

@@ -13,12 +13,9 @@ const sectionPageDataCallback = require('./schema-creation-callbacks/section-pag
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
-const {
-    filtersCategoryCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/filters-menu');
-const {
-    filtersMenuPartConfigCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/filters-menu');
+const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
+const { filtersCategoryCallback } = require('./schema-creation-callbacks/filters-menu');
+const { filtersMenuPartConfigCallback } = require('./schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -48,6 +45,7 @@ const schemaContextOptions = {
         no_nav_navno_ContentList_Data: contentListDataCallback,
         no_nav_navno_MainArticle_InnholdIHYremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
+        no_nav_navno_GlobalValueSet: globalValuesCallback,
         PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback('publish.first'),
         PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
         PartConfigPageNavigationMenu: pageNavigationMenuCallback,
