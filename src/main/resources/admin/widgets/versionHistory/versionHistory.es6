@@ -45,6 +45,24 @@ function getImageUrl(contentId, scale = '') {
     });
 }
 const view = resolve('versionHistorySimpleView.html');
+const translation = {
+    'dynamic-header': {
+        fields: {
+            title: '',
+            anchorId: '',
+            titleTag: '',
+        },
+    },
+    'page-header': {
+        fields: { title: 'TextLine' },
+        render: (content) => `<h1>${content.title}</h1>`,
+    },
+    'html-area': {
+        fields: {},
+        render: (content) => libs.portal.processHtml({ value: content.html }),
+    },
+};
+
 const findParts = (obj) => {
     if (obj && typeof obj === 'object') {
         if (Array.isArray(obj)) {
@@ -53,42 +71,41 @@ const findParts = (obj) => {
                     if (item?.type === 'part') {
                         acc.push(item);
                     }
+                    if (item.type === 'fragment') {
+                        if (item.fragment?.id) {
+                            const fragData = libs.content.get({ key: item.fragment?.id });
+                            acc = [...acc, ...findParts(fragData.fragment)];
+                        }
+                    }
                 }
                 return acc;
             }, []);
         }
+        // if the obj is just a part return it, else search each key for parts
+        if (obj?.type === 'part') {
+            return [obj];
+        }
+
         return Object.keys(obj).reduce((acc, key) => {
             const current = obj[key];
             return [...acc, ...findParts(current)];
         }, []);
     }
+    log.info(`an object has not been passed: ${JSON.stringify(obj, null, 4)}`);
     return [];
 };
 
 const extractInfoFromPart = (part) => {
-    const translation = {
-        'dynamic-header': {
-            fields: {
-                title: '',
-                anchorId: '',
-                titleTag: '',
-            },
-        },
-        'page-header': {
-            fields: { title: 'TextLine' },
-            render: (content) => `<h1>${content.title}</h1>`,
-        },
-        'html-area': {
-            fields: {},
-            render: (content) => libs.portal.processHtml({ value: content.html }),
-        },
-    };
-
     const { descriptor, config } = part;
-    const name = descriptor.split(':').slice(-1);
-    if (config && config['no-nav-navno']) {
-        const partConfig = config['no-nav-navno'];
-        const content = partConfig[name];
+    const descriptorSplit = descriptor.split(':');
+    const domain = descriptorSplit[0].replace(/\./g, '-');
+    const name = descriptorSplit[1];
+    if (config) {
+        let content = config;
+        if (config[domain]) {
+            content = config[domain][name];
+        }
+
         if (translation[name]) {
             const renderer = translation[name];
             if (renderer.render) {
@@ -103,12 +120,19 @@ const extractInfoFromPart = (part) => {
 const renderDynamicPage = (version) => {
     // 1. order by path, at least shown relation between parts
     // 2. extract relevant information from the part
-    const parts = findParts(version.content.components);
+    const { components } = version.content;
+    const parts = findParts(components);
+
     const renderedParts = parts.map((part) => {
         if (part?.part) {
             return extractInfoFromPart(part.part);
         }
-        return false;
+        // parts in fragments don't have the extra layer with the data contained within the .part
+        // property!!
+        if (part?.type === 'part' && part?.descriptor && part?.config) {
+            return extractInfoFromPart(part);
+        }
+        return `could not render ${part}`;
     });
     return { ...getContentInfo(version), parts: renderedParts };
 };
@@ -259,6 +283,7 @@ const getTimeline = (contentId) => {
 const renderMapping = {
     [`${app.name}:main-article`]: renderMainArticle,
     [`${app.name}:dynamic-page`]: renderDynamicPage,
+    'portal:fragment': renderDynamicPage,
 };
 exports.get = (req) => {
     const contentId = req.params.contentId;

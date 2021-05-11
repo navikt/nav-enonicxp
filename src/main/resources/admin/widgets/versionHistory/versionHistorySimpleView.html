@@ -22,7 +22,7 @@
                                 [[${version.ingress}]]
                             </p>
                         </header>
-                        <div data-th-if="${version.type == appName + ':dynamic-page'}">
+                        <div data-th-if="${version.type == appName + ':dynamic-page' || version.type == 'portal:fragment' }">
                             <ul data-th-each="part: ${version.parts}">
                                 <li>
                                     <div data-th-utext="${part}"></div>
