@@ -27,6 +27,7 @@
         "@babel/core": "^7.10.2",
         "@babel/preset-env": "^7.10.2",
         "core-js": "^3.8.0",
+        "enonic-types": "^0.2.1",
         "eslint": "^7.7.0",
         "eslint-config-airbnb": "^18.1.0",
         "eslint-config-prettier": "^6.11.0",
