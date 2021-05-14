@@ -14,8 +14,10 @@ const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
-const { filtersCategoryCallback } = require('./schema-creation-callbacks/filters-menu');
-const { filtersMenuPartConfigCallback } = require('./schema-creation-callbacks/filters-menu');
+const {
+    filtersCategoryCallback,
+    filtersMenuPartConfigCallback,
+} = require('./schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
