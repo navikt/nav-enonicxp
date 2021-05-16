@@ -1,9 +1,10 @@
 const { getGlobalValue } = require('/lib/global-values/global-values');
 
 exports.macro = function (context) {
-    const { globalKey } = context.params;
+    const { key } = context.params;
+    log.info(JSON.stringify(context));
 
-    const value = getGlobalValue(globalKey, 'textValue');
+    const value = getGlobalValue(key, 'textValue');
 
     if (!value) {
         return {

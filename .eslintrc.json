@@ -33,6 +33,7 @@
         "window": true,
         "__": true,
         "__FILE__": true,
+        "__DIR__": true,
         "Java": true
     },
     "parserOptions": {
