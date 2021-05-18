@@ -2,10 +2,11 @@ const {
     linkWithIngressMixinFragment,
     linkSelectableMixin,
     pageNavigationMenuMixinFragment,
+    processedHtmlMixin,
+    headerCommonMixin,
 } = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
-const { headerCommonMixin } = require('/lib/headless/guillotine/queries/fragments/_mixins');
 
 const partsFragment = `
     config {
@@ -25,18 +26,18 @@ const partsFragment = `
                 }
             }
             dynamic_supervisor_panel {
-                content
+                content ${processedHtmlMixin}
                 margin
             }
             dynamic_alert {
                 type
                 inline
-                content
+                content ${processedHtmlMixin}
                 margin
             }
             dynamic_read_more_panel {
                 ingress
-                content
+                content ${processedHtmlMixin}
                 border
                 margin
             }
@@ -66,7 +67,7 @@ const partsFragment = `
             }
             html_area {
                 filters
-                html(processHtml:{type: server})
+                html ${processedHtmlMixin}
             }
             page_header {
                 title
@@ -78,9 +79,6 @@ const partsFragment = `
                 link {
                     ${linkSelectableMixin}
                 }
-            }
-            html_area {
-                html(processHtml:{type: server})
             }
             page_header {
                 title

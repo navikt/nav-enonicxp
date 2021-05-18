@@ -2,6 +2,13 @@ const globalFragment = require('./_global');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
 
+const processedHtmlMixin = `(processHtml:{type:server})
+    {
+        processedHtml
+        macrosAsJson
+    }
+`;
+
 const languagesMixinFragment = `
     languages {
         language
@@ -95,4 +102,5 @@ module.exports = {
     headerCommonMixin,
     languagesMixinFragment,
     decoratorTogglesMixinFragment,
+    processedHtmlMixin,
 };

@@ -16,7 +16,6 @@ const internalLink = require('./fragments/internalLink');
 const transportPage = require('./fragments/transportPage');
 const externalLink = require('./fragments/externalLink');
 const pageList = require('./fragments/pageList');
-const melding = require('./fragments/melding');
 const mainArticle = require('./fragments/mainArticle');
 const mainArticleChapter = require('./fragments/mainArticleChapter');
 const officeInformation = require('./fragments/officeInformation');
@@ -41,7 +40,6 @@ const queryFragments = [
     largeTable.fragment,
     officeInformation.fragment,
     publishingCalendar.fragment,
-    melding.fragment,
     dynamicPage.fragment,
     media.mediaAttachmentFragment,
 ].join('\n');
@@ -80,7 +78,7 @@ const getContent = (idOrPath, branch) => {
         return content;
     }
 
-    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
+    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page', 'macros']);
 
     if (content.__typename === 'portal_Fragment') {
         return getPortalFragmentContent(contentWithParsedData);

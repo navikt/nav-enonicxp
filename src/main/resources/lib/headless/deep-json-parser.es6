@@ -7,13 +7,32 @@ const deepParseJson = (obj, parseFrom, appendTo) => {
         const newObj = {};
 
         Object.entries(obj).forEach(([key, value]) => {
+            const valueIsArray = Array.isArray(value);
+
             if (key === parseFrom) {
-                newObj[appendTo] = { ...JSON.parse(value), ...newObj[appendTo] };
+                if (valueIsArray) {
+                    newObj[appendTo] = [
+                        ...deepParseJson(value, parseFrom, appendTo),
+                        ...(newObj[appendTo] ? newObj[appendTo] : []),
+                    ];
+                } else {
+                    newObj[appendTo] = {
+                        ...deepParseJson(value, parseFrom, appendTo),
+                        ...newObj[appendTo],
+                    };
+                }
             } else if (key === appendTo) {
-                newObj[appendTo] = {
-                    ...newObj[appendTo],
-                    ...deepParseJson(value, parseFrom, appendTo),
-                };
+                if (valueIsArray) {
+                    newObj[appendTo] = [
+                        ...newObj[appendTo],
+                        ...deepParseJson(value, parseFrom, appendTo),
+                    ];
+                } else {
+                    newObj[appendTo] = {
+                        ...newObj[appendTo],
+                        ...deepParseJson(value, parseFrom, appendTo),
+                    };
+                }
             } else {
                 newObj[key] = deepParseJson(value, parseFrom, appendTo);
             }
