@@ -30,7 +30,7 @@ if (clusterLib.isMaster()) {
     // make sure the updateAll lock is released on startup
     const facetValidation = facetLib.getFacetValidation();
     if (facetValidation) {
-        facetLib.setUpdateAll(false);
+        facetLib.clearAll();
     }
 }
 
