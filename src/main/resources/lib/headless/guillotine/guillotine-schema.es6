@@ -15,10 +15,8 @@ const contentListCallback = require('./schema-creation-callbacks/content-list-ca
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
     filtersCategoryCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/filters-menu');
-const {
     filtersMenuPartConfigCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/filters-menu');
+} = require('./schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');

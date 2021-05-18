@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Filtreringsmeny</display-name>
+    <display-name>Filtreringsmeny (ikke klar til prod-bruk)</display-name>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
