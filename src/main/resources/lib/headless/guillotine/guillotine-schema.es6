@@ -54,7 +54,7 @@ const schemaContextOptions = {
         PartConfigFiltersMenu: filtersMenuPartConfigCallback,
         PartConfigFiltersMenu_FilterKategori: filtersCategoryCallback,
     },
-    applications: [app.name, 'navno.nav.no.search'],
+    applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
 };
 
 const initAndCreateSchema = () => {
