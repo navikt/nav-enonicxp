@@ -27,10 +27,11 @@ if (clusterLib.isMaster()) {
     // make sure the lock is released on startup
     invalidator.releaseInvalidatorLock();
 
-    // make sure the updateAll lock is released on startup
+    // make sure the updateAll lock is released on startup, and clear the
+    // list of recently validated nodes
     const facetValidation = facetLib.getFacetValidation();
     if (facetValidation) {
-        facetLib.setUpdateAll(false);
+        facetLib.clearUpdateState();
     }
 }
 
