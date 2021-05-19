@@ -60,10 +60,6 @@ const getTimeline = (contentId) => {
             );
             const to = getLiveDateTime(content?.article?.publish?.from, content.timestamp);
             if (from < now && to > from && to !== from) {
-                log.debug(
-                    `pushing: ( ${previousContent?.article?.publish?.from} - ${from} ) - ( ${content?.article?.publish?.from} - ${from} )`
-                );
-
                 acc.push({
                     content: previousContent.article,
                     fromDate: new Date(from),
@@ -75,17 +71,18 @@ const getTimeline = (contentId) => {
                     )}`,
                     versionId: previousContent.version.versionId,
                 });
-            } else {
-                log.debug(
-                    `skipping inside: ( ${previousContent?.article?.publish?.from} - ${from} ) - ( ${content?.article?.publish?.from} - ${from} )`
-                );
+                if (ix + 1 === src.length) {
+                    // adds the current element
+                    acc.push({
+                        content: content.article,
+                        fromDate: new Date(to),
+                        from: to,
+                        description: `${libs.utils.formatDateTime(to)} -- `,
+                        versionId: content.version.versionId,
+                    });
+                }
             }
-        } else {
-            log.debug(
-                `skipping: ( ${previousContent?.article?.publish?.from} - ${previousContent?.timestamp}) - ( ${content?.article?.publish?.from} - ${content?.timestamp} )`
-            );
         }
-
         return acc;
     }, []);
 };
