@@ -1,0 +1,21 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Faktaboks</display-name>
+    <description>Faktaboks</description>
+    <form>
+        <field-set>
+            <label>Faktaboks</label>
+            <items>
+                <input name="fact" type="HtmlArea">
+                    <label>Faktaboksen vises under brødteksten</label>
+                    <help-text>Bruk maks 500 tegn.</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <include>Undo Redo</include>
+                        <exclude>JustifyBlock Underline</exclude>
+                        <allowHeadings>h3 h4 normal</allowHeadings>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</part>
