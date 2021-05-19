@@ -22,8 +22,8 @@ const selectorHandler = () => {
     const hits = values
         .map((value) => ({
             id: value.key,
-            displayName: `${value.textValue} - ${value.setName}`,
-            description: `Verdi-sett: ${value.setName}`,
+            displayName: `${value.itemName} - ${value.setName}`,
+            description: ' ',
         }))
         .flat();
 
