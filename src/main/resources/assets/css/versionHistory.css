@@ -1,3 +1,7 @@
+li.part, li.version {
+    list-style: none;
+}
+
 h1,
 h2,
 h3,
@@ -32,6 +36,7 @@ h3,
     font-size: 1.25rem;
     font-weight: normal;
 }
+
 
 .preface {
     font-size: 1.125rem;
