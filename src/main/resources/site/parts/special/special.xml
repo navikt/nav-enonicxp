@@ -1,0 +1,17 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Spesielle komponenter</display-name>
+    <description>Komponenter med begrenset bruksområde</description>
+    <form>
+        <option-set name="component">
+            <label>Komponenter</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="chatbot-button">
+                    <label>
+                        Knapp for å åpne chatbot Frida
+                    </label>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</part>
