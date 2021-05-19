@@ -100,7 +100,7 @@ const setUpdateAll = (updateAll) => {
     });
 };
 
-const clearValidationList = () => {
+const clearUpdateState = () => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
@@ -412,7 +412,6 @@ const activateEventListener = () => {
 module.exports = {
     activateEventListener,
     checkIfUpdateNeeded,
-    setUpdateAll,
     getFacetValidation,
-    clearValidationList,
+    clearUpdateState,
 };
