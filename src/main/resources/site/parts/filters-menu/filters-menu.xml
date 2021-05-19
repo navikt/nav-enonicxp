@@ -1,0 +1,33 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Filtreringsmeny (ikke klar til prod-bruk)</display-name>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+        </input>
+        <input name="description" type="TextArea">
+            <label>Beskrivelse</label>
+        </input>
+        <item-set name="categories">
+            <label>Filter-kategori</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input name="categoryName" type="TextLine">
+                    <label>Kategori-navn</label>
+                </input>
+                <item-set name="filters">
+                    <label>Filter</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <items>
+                        <input name="filterName" type="TextLine">
+                            <label>Filter-navn</label>
+                        </input>
+                        <input name="id" type="TextLine">
+                            <label>id (autogenereres)</label>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </item-set>
+        <mixin name="expandable"/>
+    </form>
+</part>

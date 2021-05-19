@@ -21,6 +21,9 @@
                         <regexp>^[0-9a-zA-Z-_]+$</regexp>
                     </config>
                 </input>
+                <input type="CheckBox" name="hideCopyButton">
+                    <label>Skjul "kopier lenke" knapp</label>
+                </input>
             </items>
         </field-set>
         <item-set name="icon">
