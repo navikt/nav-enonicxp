@@ -11,7 +11,7 @@ const libs = {
  * @returns {string} Correctly formated date
  */
 function fixDateFormat(date) {
-    if (date.indexOf('.') !== -1) {
+    if (date && date.indexOf('.') !== -1) {
         return date.split('.')[0] + 'Z';
     }
     return date;
