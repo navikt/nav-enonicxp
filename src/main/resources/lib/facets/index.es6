@@ -100,6 +100,21 @@ const setUpdateAll = (updateAll) => {
     });
 };
 
+const clearUpdateState = () => {
+    getNavRepo().modify({
+        key: getFacetValidation()._path,
+        editor: (facetValidation) => {
+            return {
+                ...facetValidation,
+                data: {
+                    updateAll: false,
+                    justValidatedNodes: [],
+                },
+            };
+        },
+    });
+};
+
 const isUpdatingAll = () => {
     return getFacetValidation().data.updateAll;
 };
@@ -393,9 +408,10 @@ const activateEventListener = () => {
     });
     log.info('Started: facet-handler listening on node.pushed');
 };
+
 module.exports = {
     activateEventListener,
     checkIfUpdateNeeded,
-    setUpdateAll,
     getFacetValidation,
+    clearUpdateState,
 };
