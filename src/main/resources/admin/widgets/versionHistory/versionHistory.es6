@@ -63,18 +63,44 @@ const translation = {
     },
 };
 
-const findParts = (obj) => {
+const findParts = (obj, [from, to], optionals = {}) => {
     if (obj && typeof obj === 'object') {
         if (Array.isArray(obj)) {
             return obj.reduce((acc, item) => {
                 if (typeof item === 'object') {
                     if (item?.type === 'part') {
-                        acc.push(item);
+                        acc.push({ ...item, ...optionals });
                     }
                     if (item.type === 'fragment') {
+                        // fragments can have versions of themselves, to be able to show the
+                        // fragment which was published at the time one needs to specify the given
+                        // time one is after. As there can be multiple fragments on a page, in the
+                        // timeline we show all the valid fragment-parts within a time-range
                         if (item.fragment?.id) {
-                            const fragData = libs.content.get({ key: item.fragment?.id });
-                            acc = [...acc, ...findParts(fragData.fragment)];
+                            const timeline = getTimeline(item.fragment?.id);
+                            const previousFragments = timeline.reduce((data, fragVersion, ix) => {
+                                if (
+                                    to >= fragVersion.fromDate &&
+                                    (!fragVersion.to || fragVersion.toDate >= from)
+                                ) {
+                                    return [
+                                        ...data,
+                                        ...findParts(fragVersion?.content?.components, [from, to], {
+                                            type: 'fragment',
+                                            to: fragVersion.to,
+                                            from: fragVersion.from,
+                                        }),
+                                    ];
+                                }
+                                return data;
+                            }, []);
+                            if (previousFragments.length === 0) {
+                                // if no previous versions use the latest
+                                const current = libs.content.get({ key: item.fragment?.id });
+                                previousFragments.push(current?.fragment);
+                            }
+
+                            acc = [...acc, ...previousFragments];
                         }
                     }
                 }
@@ -83,12 +109,12 @@ const findParts = (obj) => {
         }
         // if the obj is just a part return it, else search each key for parts
         if (obj?.type === 'part') {
-            return [obj];
+            return [{ ...obj, ...optionals }];
         }
 
         return Object.keys(obj).reduce((acc, key) => {
             const current = obj[key];
-            return [...acc, ...findParts(current)];
+            return [...acc, ...findParts(current, [from, to], optionals)];
         }, []);
     }
     log.info(`an object has not been passed: ${JSON.stringify(obj, null, 4)}`);
@@ -109,22 +135,29 @@ const extractInfoFromPart = (part) => {
         if (translation[name]) {
             const renderer = translation[name];
             if (renderer.render) {
-                return renderer.render(content);
+                return { content: renderer.render(content) };
             }
             // TODO: if no custom renderer, try to see if we have a standard we can use
         }
     }
-    return descriptor;
+    return { content: descriptor };
 };
 
 const renderDynamicPage = (version) => {
     // 1. order by path, at least shown relation between parts
     // 2. extract relevant information from the part
     const { components } = version.content;
-    const parts = findParts(components);
-
+    const parts = findParts(components, [version.fromDate, version.toDate]);
     const renderedParts = parts.map((part) => {
         if (part?.part) {
+            if (part.type === 'fragment') {
+                return {
+                    ...extractInfoFromPart(part.part),
+                    type: 'fragment',
+                    to: libs.utils.formatDateTime(part.to),
+                    from: libs.utils.formatDateTime(part.from),
+                };
+            }
             return extractInfoFromPart(part.part);
         }
         // parts in fragments don't have the extra layer with the data contained within the .part
@@ -132,7 +165,8 @@ const renderDynamicPage = (version) => {
         if (part?.type === 'part' && part?.descriptor && part?.config) {
             return extractInfoFromPart(part);
         }
-        return `could not render ${part}`;
+
+        return `could not render ${part.type}`;
     });
     return { ...getContentInfo(version), parts: renderedParts };
 };
@@ -219,6 +253,11 @@ exports.get = (req) => {
     const widgetScriptUrl = libs.portal.assetUrl({ path: 'js/versionHistory.js' });
     return {
         contentType: 'text/html',
-        body: thymeleaf.render(view, { appName: app.name, widgetScriptUrl, versions: models }),
+        body: thymeleaf.render(view, {
+            contentId,
+            appName: app.name,
+            widgetScriptUrl,
+            versions: models,
+        }),
     };
 };

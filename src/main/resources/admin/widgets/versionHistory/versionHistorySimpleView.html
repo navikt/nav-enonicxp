@@ -25,8 +25,20 @@
                         </header>
                         <div data-th-if="${version.type == appName + ':dynamic-page' || version.type == 'portal:fragment' }">
                             <ul data-th-each="part: ${version.parts}">
-                                <li>
-                                    <div data-th-utext="${part}"></div>
+                                <li class="part">
+                                    <div class="fragment ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" data-th-if="${part.type == 'fragment'}">
+                                        <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">
+                                            <div class="ekspanderbartPanel__flex-wrapper">
+                                                <span class="ekspanderbartPanel__tittel">[[${part.from}]] til [[${part.to}]]</span>
+                                            </div>
+                                        </button>
+
+                                        <div class="ekspanderbartPanel__innhold">
+                                            <div data-th-utext="${part.content}"></div>
+                                        </div>
+                                    </div>
+
+                                    <div data-th-if="${part.type != 'fragment'}" data-th-utext="${part.content}"></div>
                                 </li>
                             </ul>
                         </div>
