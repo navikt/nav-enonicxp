@@ -1,6 +1,17 @@
 <macro>
     <display-name>Lenke med chevron (intern)</display-name>
     <form>
-        <mixin name="link-internal" />
+        <input name="target" type="ContentSelector">
+            <label>Innhold det skal lenkes til</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowPath>/www.nav.no/*</allowPath>
+                <allowContentType>^(?!media:*$).*</allowContentType>
+                <showStatus>true</showStatus>
+            </config>
+        </input>
+        <input name="text" type="TextLine">
+            <label>Lenketekst (hvis tom vil tittel på innholdet vises)</label>
+        </input>
     </form>
 </macro>

@@ -1,7 +1,7 @@
 const globalFragment = require('./_global');
 const menuListItems = require('./menuListItems');
+const { processedHtmlFragment } = require('./_processedHtml');
 const {
-    processedHtmlMixin,
     decoratorTogglesMixinFragment,
     languagesMixinFragment,
     seoMixinFragment,
@@ -14,9 +14,9 @@ const mainArticleFragment = `
         data {
             ${languagesMixinFragment}
             ingress
-            text ${processedHtmlMixin}
+            text ${processedHtmlFragment}
             hasTableOfContents
-            fact ${processedHtmlMixin}
+            fact ${processedHtmlFragment}
             social
             picture {
                 target {

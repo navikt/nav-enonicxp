@@ -2,11 +2,11 @@ const {
     linkWithIngressMixinFragment,
     linkSelectableMixin,
     pageNavigationMenuMixinFragment,
-    processedHtmlMixin,
     headerCommonMixin,
 } = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const { processedHtmlFragment } = require('./_processedHtml');
 
 const partsFragment = `
     config {
@@ -26,18 +26,18 @@ const partsFragment = `
                 }
             }
             dynamic_supervisor_panel {
-                content ${processedHtmlMixin}
+                content ${processedHtmlFragment}
                 margin
             }
             dynamic_alert {
                 type
                 inline
-                content ${processedHtmlMixin}
+                content ${processedHtmlFragment}
                 margin
             }
             dynamic_read_more_panel {
                 ingress
-                content ${processedHtmlMixin}
+                content ${processedHtmlFragment}
                 border
                 margin
             }
@@ -67,7 +67,7 @@ const partsFragment = `
             }
             html_area {
                 filters
-                html ${processedHtmlMixin}
+                html ${processedHtmlFragment}
             }
             page_header {
                 title

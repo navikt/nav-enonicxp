@@ -1,9 +1,11 @@
-const { processedHtmlMixin } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const {
+    processedHtmlFragment,
+} = require('/lib/headless/guillotine/queries/fragments/_processedHtml');
 
 const largeTableFragment = `
     ...on no_nav_navno_LargeTable {
         data {
-            text ${processedHtmlMixin}
+            text ${processedHtmlFragment}
         }
     }
 `;
