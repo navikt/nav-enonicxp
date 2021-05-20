@@ -235,6 +235,7 @@ const renderMainArticle = (version) => {
 const renderMapping = {
     [`${app.name}:main-article`]: renderMainArticle,
     [`${app.name}:dynamic-page`]: renderDynamicPage,
+    [`${app.name}:content-page-with-sidemenus`]: renderDynamicPage,
     'portal:fragment': renderDynamicPage,
 };
 exports.get = (req) => {
