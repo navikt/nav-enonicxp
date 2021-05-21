@@ -64,6 +64,7 @@
         </item-set>
     </form>
     <regions>
+        <region name="intro"/>
         <region name="content"/>
     </regions>
 </layout>
