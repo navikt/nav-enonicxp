@@ -45,6 +45,7 @@ function getImageUrl(contentId, scale = '') {
     });
 }
 const view = resolve('versionHistorySimpleView.html');
+
 const translation = {
     'dynamic-header': {
         fields: {
@@ -161,6 +162,20 @@ const extractInfoFromPart = (part) => {
     return { content: descriptor };
 };
 
+const getContentInfo = (version) => {
+    return {
+        description: version.description,
+        versionId: version.versionId,
+        displayName: version?.content?.displayName,
+        from: libs.utils.formatDateTime(version.from),
+        publishedFrom: libs.utils.formatDateTime(version.content.publish.from),
+        to: libs.utils.formatDateTime(version.to),
+        type: version.content.type,
+        renderType:
+            dynamicRenderedContentTypes.indexOf(version.content.type) !== -1 ? 'dynamic' : 'custom',
+    };
+};
+
 const renderDynamicPage = (version) => {
     // 1. order by path, at least shown relation between parts
     // 2. extract relevant information from the part
@@ -196,17 +211,6 @@ const renderDynamicPage = (version) => {
     return { ...getContentInfo(version), parts: renderedParts };
 };
 
-const getContentInfo = (version) => {
-    return {
-        description: version.description,
-        versionId: version.versionId,
-        displayName: version?.content?.displayName,
-        from: libs.utils.formatDateTime(version.from),
-        publishedFrom: libs.utils.formatDateTime(version.content.publish.from),
-        to: libs.utils.formatDateTime(version.to),
-        type: version.content.type,
-    };
-};
 const renderMainArticle = (version) => {
     if (!version) {
         log.info('version is off');
@@ -256,13 +260,22 @@ const renderMainArticle = (version) => {
         ingress: data.ingress,
     };
 };
-// const dynamicRenderedContentTypes = [];
+
+const dynamicRenderedContentTypes = [
+    `${app.name}:dynamic-page`,
+    'portal:fragment',
+    `${app.name}:content-page-with-sidemenus`,
+];
+
+// make a collection of all pagetypes which use the dynamicPage renderer and pass this to the
+// template as well
 const renderMapping = {
     [`${app.name}:main-article`]: renderMainArticle,
-    [`${app.name}:dynamic-page`]: renderDynamicPage,
-    [`${app.name}:content-page-with-sidemenus`]: renderDynamicPage,
-    'portal:fragment': renderDynamicPage,
 };
+dynamicRenderedContentTypes.forEach((contentType) => {
+    renderMapping[contentType] = renderDynamicPage;
+});
+
 exports.get = (req) => {
     const contentId = req.params.contentId;
     if (!contentId) {

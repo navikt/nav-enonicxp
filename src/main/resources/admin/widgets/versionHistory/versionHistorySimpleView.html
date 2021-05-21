@@ -23,7 +23,7 @@
                                 [[${version.ingress}]]
                             </p>
                         </header>
-                        <div data-th-if="${version.type == appName + ':content-page-with-sidemenus' || version.type == appName + ':dynamic-page' || version.type == 'portal:fragment' }">
+                        <div data-th-if="${version.renderType == 'dynamic'}">
                             <ul data-th-each="part: ${version.parts}">
                                 <li class="part">
                                     <div class="fragment ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" data-th-if="${part.type == 'fragment'}">
