@@ -57,6 +57,9 @@ const translation = {
         fields: { title: 'TextLine' },
         render: (content) => `<h1>${content.title}</h1>`,
     },
+    'section-with-header': {
+        render: (content) => `<h2>${content.title}</h2>`,
+    },
     'html-area': {
         fields: {},
         render: (content) => libs.portal.processHtml({ value: content.html }),
@@ -68,40 +71,54 @@ const findParts = (obj, [from, to], optionals = {}) => {
         if (Array.isArray(obj)) {
             return obj.reduce((acc, item) => {
                 if (typeof item === 'object') {
-                    if (item?.type === 'part') {
-                        acc.push({ ...item, ...optionals });
-                    }
-                    if (item.type === 'fragment') {
-                        // fragments can have versions of themselves, to be able to show the
-                        // fragment which was published at the time one needs to specify the given
-                        // time one is after. As there can be multiple fragments on a page, in the
-                        // timeline we show all the valid fragment-parts within a time-range
-                        if (item.fragment?.id) {
-                            const timeline = getTimeline(item.fragment?.id);
-                            const previousFragments = timeline.reduce((data, fragVersion, ix) => {
-                                if (
-                                    to >= fragVersion.fromDate &&
-                                    (!fragVersion.to || fragVersion.toDate >= from)
-                                ) {
-                                    return [
-                                        ...data,
-                                        ...findParts(fragVersion?.content?.components, [from, to], {
-                                            type: 'fragment',
-                                            to: fragVersion.to,
-                                            from: fragVersion.from,
-                                        }),
-                                    ];
+                    switch (item?.type) {
+                        case 'layout':
+                            acc.push({ ...item, ...optionals });
+                            break;
+                        case 'part':
+                            acc.push({ ...item, ...optionals });
+                            break;
+                        case 'fragment':
+                            // fragments can have versions of themselves, to be able to show the
+                            // fragment which was published at the time one needs to specify the given
+                            // time one is after. As there can be multiple fragments on a page, in the
+                            // timeline we show all the valid fragment-parts within a time-range
+                            if (item.fragment?.id) {
+                                const timeline = getTimeline(item.fragment?.id);
+                                const previousFragments = timeline.reduce(
+                                    (data, fragVersion, ix) => {
+                                        if (
+                                            to >= fragVersion.fromDate &&
+                                            (!fragVersion.to || fragVersion.toDate >= from)
+                                        ) {
+                                            return [
+                                                ...data,
+                                                ...findParts(
+                                                    fragVersion?.content?.components,
+                                                    [from, to],
+                                                    {
+                                                        type: 'fragment',
+                                                        from: fragVersion.from,
+                                                        to: fragVersion.to,
+                                                    }
+                                                ),
+                                            ];
+                                        }
+                                        return data;
+                                    },
+                                    []
+                                );
+                                if (previousFragments.length === 0) {
+                                    // if no previous versions use the latest
+                                    const current = libs.content.get({ key: item.fragment?.id });
+                                    previousFragments.push(current?.fragment);
                                 }
-                                return data;
-                            }, []);
-                            if (previousFragments.length === 0) {
-                                // if no previous versions use the latest
-                                const current = libs.content.get({ key: item.fragment?.id });
-                                previousFragments.push(current?.fragment);
-                            }
 
-                            acc = [...acc, ...previousFragments];
-                        }
+                                acc = [...acc, ...previousFragments];
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
                 return acc;
@@ -126,6 +143,7 @@ const extractInfoFromPart = (part) => {
     const descriptorSplit = descriptor.split(':');
     const domain = descriptorSplit[0].replace(/\./g, '-');
     const name = descriptorSplit[1];
+
     if (config) {
         let content = config;
         if (config[domain]) {
@@ -146,28 +164,35 @@ const extractInfoFromPart = (part) => {
 const renderDynamicPage = (version) => {
     // 1. order by path, at least shown relation between parts
     // 2. extract relevant information from the part
+
     const { components } = version.content;
     const parts = findParts(components, [version.fromDate, version.toDate]);
-    const renderedParts = parts.map((part) => {
-        if (part?.part) {
-            if (part.type === 'fragment') {
-                return {
-                    ...extractInfoFromPart(part.part),
-                    type: 'fragment',
-                    to: libs.utils.formatDateTime(part.to),
-                    from: libs.utils.formatDateTime(part.from),
-                };
-            }
-            return extractInfoFromPart(part.part);
-        }
-        // parts in fragments don't have the extra layer with the data contained within the .part
-        // property!!
-        if (part?.type === 'part' && part?.descriptor && part?.config) {
-            return extractInfoFromPart(part);
-        }
 
-        return `could not render ${part.type}`;
-    });
+    const renderedParts = parts
+        .map((component) => {
+            if (component?.part) {
+                if (component.type === 'fragment') {
+                    return {
+                        ...extractInfoFromPart(component.part),
+                        type: 'fragment',
+                        to: libs.utils.formatDateTime(component.to),
+                        from: libs.utils.formatDateTime(component.from),
+                    };
+                }
+                return extractInfoFromPart(component.part);
+            }
+            // parts in fragments don't have the extra layer with the data contained within the .part
+            // property!!
+            if (component?.type === 'part' && component?.descriptor && component?.config) {
+                return extractInfoFromPart(component);
+            }
+            if (component?.layout) {
+                return extractInfoFromPart(component.layout);
+            }
+            log.info(`unknown component: ${JSON.stringify(component)}`);
+            return false;
+        })
+        .filter((item) => !!item);
     return { ...getContentInfo(version), parts: renderedParts };
 };
 
@@ -231,7 +256,7 @@ const renderMainArticle = (version) => {
         ingress: data.ingress,
     };
 };
-
+// const dynamicRenderedContentTypes = [];
 const renderMapping = {
     [`${app.name}:main-article`]: renderMainArticle,
     [`${app.name}:dynamic-page`]: renderDynamicPage,
