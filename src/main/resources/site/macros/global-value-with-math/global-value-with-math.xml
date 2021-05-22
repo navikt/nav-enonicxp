@@ -16,7 +16,7 @@
                 første valgte verdien med 5, og legge til den andre valgte verdien
             </help-text>
         </input>
-        <input name="digits" type="Long">
+        <input name="decimals" type="Long">
             <label>Avrunding</label>
             <help-text>Antall desimaler resultatet skal avrundes til (0 for kun heltall)</help-text>
             <default>0</default>

@@ -35,7 +35,7 @@ const macrosFragment = `
             value
         }
         global_value_with_math {
-            digits
+            decimals
             expression
             variables
         }
