@@ -11,7 +11,7 @@
             </config>
         </input>
         <input name="expression" type="TextLine">
-            <label>Skriv inn en matematisk operasjon</label>
+            <label>Skriv inn et matematisk uttrykk</label>
             <help-text>'$n' erstattes av valgt verdi n over. F.eks: '$1 * 5 + $2' vil gange den
                 første valgte verdien med 5, og legge til den andre valgte verdien
             </help-text>
