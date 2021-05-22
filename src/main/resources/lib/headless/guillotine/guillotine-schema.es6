@@ -10,6 +10,7 @@ const contentListCallback = require('./schema-creation-callbacks/content-list-ca
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
     globalValueMacroConfigCallback,
+    globalValueWithMathMacroConfigCallback,
 } = require('./schema-creation-callbacks/global-value-macro-config');
 const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
 const {
@@ -50,6 +51,7 @@ const schemaContextOptions = {
         Part_no_nav_navno_filters_menu: filtersMenuPartConfigCallback,
         Part_no_nav_navno_filters_menu_FilterKategori: filtersCategoryCallback,
         Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
+        Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
 };

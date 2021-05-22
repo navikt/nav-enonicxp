@@ -16,14 +16,15 @@ const getSubPath = (req) =>
         .slice(-1)[0]
         .replace(/(^\/)|(\/$)/, ''); // Trim leading/trailing slash
 
-const selectorHandler = () => {
-    const values = getAllGlobalValues();
+const selectorHandler = (req) => {
+    const { valueType = 'textValue' } = req.params;
+    const values = getAllGlobalValues(valueType);
 
     const hits = values
         .map((value) => ({
             id: value.key,
             displayName: `${value.itemName} - ${value.setName}`,
-            description: ' ',
+            description: value[valueType],
         }))
         .flat();
 
@@ -45,7 +46,7 @@ const globalValues = (req) => {
     const subPath = getSubPath(req);
 
     if (!subPath) {
-        return selectorHandler();
+        return selectorHandler(req);
     }
 
     if (subPath === 'getSet') {

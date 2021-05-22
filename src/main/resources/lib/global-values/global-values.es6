@@ -1,5 +1,4 @@
 const contentLib = require('/lib/xp/content');
-const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 
 const globalValuesContentType = `${app.name}:global-value-set`;
@@ -19,7 +18,12 @@ const getGlobalValueUsage = (key) => {
     }));
 };
 
-const getAllGlobalValues = () => {
+const getAllGlobalValues = (type) => {
+    if (type && !validTypes[type]) {
+        log.info(`Invalid type ${type} specified for all values query`);
+        return null;
+    }
+
     const valueSets = contentLib.query({
         start: 0,
         count: 1000,
@@ -35,10 +39,29 @@ const getAllGlobalValues = () => {
         },
     }).hits;
 
+    if (type) {
+        return valueSets
+            .map((varSet) =>
+                forceArray(varSet.data?.valueItems).reduce((acc, valueItem) => {
+                    return valueItem[type] !== undefined
+                        ? [
+                              ...acc,
+                              {
+                                  ...valueItem,
+                                  setId: varSet._id,
+                                  setName: varSet.displayName,
+                              },
+                          ]
+                        : acc;
+                }, [])
+            )
+            .flat();
+    }
+
     return valueSets
         .map((varSet) =>
-            forceArray(varSet.data?.valueItems).map((value) => ({
-                ...value,
+            forceArray(varSet.data?.valueItems).map((valueItem) => ({
+                ...valueItem,
                 setId: varSet._id,
                 setName: varSet.displayName,
             }))

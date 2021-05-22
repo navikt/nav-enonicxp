@@ -34,6 +34,11 @@ const macrosFragment = `
         global_value {
             value
         }
+        global_value_with_math {
+            digits
+            expression
+            variables
+        }
         infoBoks {
             infoBoks
         }
