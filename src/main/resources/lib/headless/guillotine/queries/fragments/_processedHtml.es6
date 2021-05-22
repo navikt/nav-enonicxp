@@ -31,6 +31,9 @@ const macrosFragment = `
         fotnote {
             fotnote
         }
+        global_value {
+            value
+        }
         infoBoks {
             infoBoks
         }

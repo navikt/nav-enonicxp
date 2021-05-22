@@ -8,6 +8,9 @@ const sectionPageDataCallback = require('./schema-creation-callbacks/section-pag
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
 const largeTableCallback = require('./schema-creation-callbacks/large-table');
+const {
+    globalValueMacroConfigCallback,
+} = require('./schema-creation-callbacks/global-value-macro-config');
 const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
 const {
     filtersCategoryCallback,
@@ -46,6 +49,7 @@ const schemaContextOptions = {
         Part_no_nav_navno_html_area: htmlAreaPartConfigCallback,
         Part_no_nav_navno_filters_menu: filtersMenuPartConfigCallback,
         Part_no_nav_navno_filters_menu_FilterKategori: filtersCategoryCallback,
+        Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
 };
