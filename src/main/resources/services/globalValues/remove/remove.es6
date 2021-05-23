@@ -1,4 +1,6 @@
 const nodeLib = require('/lib/xp/node');
+const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
+const { validateCurrentUserPermission } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
 
@@ -12,6 +14,10 @@ const invalidRequest = (msg) => ({
 
 const removeGlobalValueItem = (req) => {
     const { key, contentId } = req.params;
+
+    if (!validateCurrentUserPermission(contentId, 'DELETE')) {
+        return insufficientAccessResponse('DELETE');
+    }
 
     if (!key || !contentId) {
         return invalidRequest('ContentId and value-key must be provided');

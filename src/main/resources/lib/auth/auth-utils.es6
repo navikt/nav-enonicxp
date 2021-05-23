@@ -1,6 +1,14 @@
 const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
 
+const insufficientAccessResponse = (requiredPermission) => ({
+    status: 403,
+    contentType: 'application/json',
+    body: {
+        message: `Forbidden: ${requiredPermission} access required for this resource`,
+    },
+});
+
 const validateCurrentUserPermission = (contentId, requiredPermission) => {
     const content = contentLib.getPermissions({ key: contentId });
     if (!content) {
@@ -41,4 +49,4 @@ const validateCurrentUserPermission = (contentId, requiredPermission) => {
     return currentUserHasAccess;
 };
 
-module.exports = { validateContentAccess: validateCurrentUserPermission };
+module.exports = { validateCurrentUserPermission, insufficientAccessResponse };
