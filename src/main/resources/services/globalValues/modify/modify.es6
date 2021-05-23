@@ -1,6 +1,6 @@
 const nodeLib = require('/lib/xp/node');
 const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermission } = require('/lib/auth/auth-utils');
+const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
 
@@ -18,7 +18,7 @@ const itemNameExists = (valueItems, itemName, key) =>
 const modifyGlobalValueItem = (req) => {
     const { contentId, key, itemName, textValue, numberValue } = req.params;
 
-    if (!validateCurrentUserPermission(contentId, 'MODIFY')) {
+    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
         return insufficientAccessResponse('MODIFY');
     }
 

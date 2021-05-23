@@ -1,5 +1,6 @@
 const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
+const authLib = require('/lib/xp/auth');
 
 const insufficientAccessResponse = (requiredPermission) => ({
     status: 403,
@@ -9,7 +10,9 @@ const insufficientAccessResponse = (requiredPermission) => ({
     },
 });
 
-const validateCurrentUserPermission = (contentId, requiredPermission) => {
+const userIsAdmin = () => authLib.hasRole('role:system.admin');
+
+const validateCurrentUserPermissionForContent = (contentId, requiredPermission) => {
     const content = contentLib.getPermissions({ key: contentId });
     if (!content) {
         return {
@@ -40,8 +43,6 @@ const validateCurrentUserPermission = (contentId, requiredPermission) => {
         return hasPermission ? [...acc, principal.principal] : acc;
     }, []);
 
-    log.info(`Allowed principals: ${JSON.stringify(allowedPrincipals)}`);
-
     const currentUserHasAccess = allowedPrincipals.some((allowedPrincipal) =>
         currentUserPrincipals.some((currentPrincipal) => currentPrincipal === allowedPrincipal)
     );
@@ -49,4 +50,8 @@ const validateCurrentUserPermission = (contentId, requiredPermission) => {
     return currentUserHasAccess;
 };
 
-module.exports = { validateCurrentUserPermission, insufficientAccessResponse };
+module.exports = {
+    validateCurrentUserPermissionForContent,
+    insufficientAccessResponse,
+    userIsAdmin,
+};

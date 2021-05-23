@@ -1,7 +1,7 @@
 const nodeLib = require('/lib/xp/node');
 const contentLib = require('/lib/xp/content');
 const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermission } = require('/lib/auth/auth-utils');
+const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { generateUUID } = require('/lib/headless/uuid');
@@ -19,7 +19,7 @@ const generateKey = () => `gv_${generateUUID()}`;
 const addGlobalValueItem = (req) => {
     const { contentId, itemName, textValue, numberValue } = req.params;
 
-    if (!validateCurrentUserPermission(contentId, 'MODIFY')) {
+    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
         return insufficientAccessResponse('MODIFY');
     }
 

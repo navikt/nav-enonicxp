@@ -18,16 +18,17 @@ const getGlobalValueUsage = (key) => {
     }));
 };
 
-const getAllGlobalValues = (type) => {
+const getAllGlobalValues = (type, query) => {
     if (type && !validTypes[type]) {
         log.info(`Invalid type ${type} specified for all values query`);
-        return null;
+        return [];
     }
 
     const valueSets = contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: [globalValuesContentType],
+        query: query && `fulltext("data.valueItems.itemName, displayName", "${query}", "AND")`,
         filters: {
             boolean: {
                 must: [

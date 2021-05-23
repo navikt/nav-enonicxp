@@ -1,6 +1,7 @@
 const nodeLib = require('/lib/xp/node');
+const { userIsAdmin } = require('/lib/auth/auth-utils');
 const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermission } = require('/lib/auth/auth-utils');
+const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
 
@@ -15,7 +16,7 @@ const invalidRequest = (msg) => ({
 const removeGlobalValueItem = (req) => {
     const { key, contentId } = req.params;
 
-    if (!validateCurrentUserPermission(contentId, 'DELETE')) {
+    if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
         return insufficientAccessResponse('DELETE');
     }
 
@@ -37,6 +38,16 @@ const removeGlobalValueItem = (req) => {
 
     const usage = getGlobalValueUsage(key);
     if (usage.length > 0) {
+        if (!userIsAdmin()) {
+            return {
+                status: 403,
+                contentType: 'application/json',
+                body: {
+                    message: 'Removing values that are in use requires admin access',
+                },
+            };
+        }
+
         log.warning(
             `Warning: removing in-use values with key ${key} - uses: ${JSON.stringify(usage)}`
         );

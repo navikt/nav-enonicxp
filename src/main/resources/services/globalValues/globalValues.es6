@@ -17,14 +17,20 @@ const getSubPath = (req) =>
         .replace(/(^\/)|(\/$)/, ''); // Trim leading/trailing slash
 
 const selectorHandler = (req) => {
-    const { valueType = 'textValue' } = req.params;
-    const values = getAllGlobalValues(valueType);
+    const { valueType = 'textValue', query } = req.params;
+
+    const wordsWithWildcard = query
+        ?.split(' ')
+        .map((word) => `${word}*`)
+        .join(' ');
+
+    const values = getAllGlobalValues(valueType, wordsWithWildcard);
 
     const hits = values
         .map((value) => ({
             id: value.key,
             displayName: `${value.itemName} - ${value.setName}`,
-            description: value[valueType],
+            description: `Verdi: ${value[valueType]}`,
         }))
         .flat();
 
@@ -42,31 +48,24 @@ const selectorHandler = (req) => {
 };
 
 const globalValues = (req) => {
-    log.info(JSON.stringify(req));
     const subPath = getSubPath(req);
+    log.info(JSON.stringify(req));
 
     if (!subPath) {
         return selectorHandler(req);
     }
 
-    if (subPath === 'getValueSet') {
-        return getGlobalValueSetService(req);
-    }
-
-    if (subPath === 'usage') {
-        return getGlobalValueUsageService(req);
-    }
-
-    if (subPath === 'add') {
-        return addGlobalValueItem(req);
-    }
-
-    if (subPath === 'modify') {
-        return modifyGlobalValueItem(req);
-    }
-
-    if (subPath === 'remove') {
-        return removeGlobalValueItem(req);
+    switch (subPath) {
+        case 'getValueSet':
+            return getGlobalValueSetService(req);
+        case 'usage':
+            return getGlobalValueUsageService(req);
+        case 'add':
+            return addGlobalValueItem(req);
+        case 'modify':
+            return modifyGlobalValueItem(req);
+        case 'remove':
+            return removeGlobalValueItem(req);
     }
 
     return {
