@@ -49,7 +49,7 @@ const globalValues = (req) => {
         return selectorHandler(req);
     }
 
-    if (subPath === 'getSet') {
+    if (subPath === 'getValueSet') {
         return getGlobalValueSetService(req);
     }
 
