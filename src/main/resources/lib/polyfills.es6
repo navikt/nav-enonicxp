@@ -66,3 +66,21 @@ Object.values = function (obj) {
 
     return Object.keys(_obj).map((key) => _obj[key]);
 };
+
+Object.defineProperty(String.prototype, 'includes', {
+    value: function (searchString, position = 0) {
+        if (!this) {
+            return null;
+        }
+        if (typeof searchString !== 'string') {
+            throw new TypeError(`${searchString} is not a string`);
+        }
+        if (typeof position !== 'number') {
+            throw new TypeError(`${position} is not a number`);
+        }
+
+        return this.indexOf(searchString, position) !== -1;
+    },
+    configurable: true,
+    writable: true,
+});

@@ -124,22 +124,35 @@ const generateIcon = (color) => `\
 
 const colorCodePattern = new RegExp('^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$');
 
-const generateHit = (colorCode, colorName) =>
-    colorCodePattern.test(colorCode) && {
-        id: colorCode,
-        displayName: `${colorName} - ${colorCode}`,
-        description: ' ',
-        icon: { data: generateIcon(colorCode), type: 'image/svg+xml' },
-    };
+const generateHit = (colorCode, colorName) => ({
+    id: colorCode,
+    displayName: `${colorName} - ${colorCode}`,
+    description: colorCode,
+    icon: { data: generateIcon(colorCode), type: 'image/svg+xml' },
+});
 
 const colorHits = Object.entries(colorsByCode).map(([colorCode, colorName]) =>
     generateHit(colorCode, colorName)
 );
 
+const normalizeString = (str) => str.replace(/ø/g, 'o').replace(/å/g, 'a').toLowerCase();
+
 const getHits = (query) => {
-    const queryLowerCase = query?.toLowerCase();
+    if (!query) {
+        return colorHits;
+    }
+
+    const queryNormalized = normalizeString(query);
+
+    const filteredHits = colorHits.filter(
+        (hit) =>
+            normalizeString(hit.displayName).includes(queryNormalized) ||
+            normalizeString(hit.description).includes(queryNormalized)
+    );
+
     const customColor =
-        !colorHits.some((color) => color.id.toLowerCase() === queryLowerCase) &&
+        filteredHits.length === 0 &&
+        colorCodePattern.test(query) &&
         generateHit(query, 'Egendefinert');
 
     return customColor ? [customColor] : colorHits;
