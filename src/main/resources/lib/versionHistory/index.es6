@@ -87,6 +87,78 @@ const getTimeline = (contentId) => {
     }, []);
 };
 
+const findComponents = (obj, [from, to], optionals = {}) => {
+    if (obj && typeof obj === 'object') {
+        if (Array.isArray(obj)) {
+            return obj.reduce((acc, item) => {
+                if (typeof item === 'object') {
+                    switch (item?.type) {
+                        case 'layout':
+                            acc.push({ ...item, ...optionals });
+                            break;
+                        case 'part':
+                            acc.push({ ...item, ...optionals });
+                            break;
+                        case 'fragment':
+                            // fragments can have versions of themselves, to be able to show the
+                            // fragment which was published at the time one needs to specify the given
+                            // time one is after. As there can be multiple fragments on a page, in the
+                            // timeline we show all the valid fragment-parts within a time-range
+                            if (item.fragment?.id) {
+                                const timeline = getTimeline(item.fragment?.id);
+                                const previousFragments = timeline.reduce(
+                                    (data, fragVersion, ix) => {
+                                        if (
+                                            to >= fragVersion.fromDate &&
+                                            (!fragVersion.to || fragVersion.toDate >= from)
+                                        ) {
+                                            return [
+                                                ...data,
+                                                ...findComponents(
+                                                    fragVersion?.content?.components,
+                                                    [from, to],
+                                                    {
+                                                        type: 'fragment',
+                                                        from: fragVersion.from,
+                                                        to: fragVersion.to,
+                                                    }
+                                                ),
+                                            ];
+                                        }
+                                        return data;
+                                    },
+                                    []
+                                );
+                                if (previousFragments.length === 0) {
+                                    // if no previous versions use the latest
+                                    const current = libs.content.get({ key: item.fragment?.id });
+                                    previousFragments.push(current?.fragment);
+                                }
+
+                                acc = [...acc, ...previousFragments];
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return acc;
+            }, []);
+        }
+        // if the obj is just a part return it, else search each key for parts
+        if (obj?.type === 'part') {
+            return [{ ...obj, ...optionals }];
+        }
+
+        return Object.keys(obj).reduce((acc, key) => {
+            const current = obj[key];
+            return [...acc, ...findComponents(current, [from, to], optionals)];
+        }, []);
+    }
+    log.info(`an object has not been passed: ${JSON.stringify(obj, null, 4)}`);
+    return [];
+};
 module.exports = {
     getTimeline,
+    findComponents,
 };
