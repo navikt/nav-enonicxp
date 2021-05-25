@@ -1,5 +1,6 @@
 const thymeleaf = require('/lib/thymeleaf');
 const { getTimeline, findComponents } = require('/lib/versionHistory');
+const { getRenderedComponent } = require('/lib/versionHistory/components');
 
 const libs = {
     portal: require('/lib/xp/portal'),
@@ -8,50 +9,6 @@ const libs = {
 };
 
 const view = resolve('versionHistorySimpleView.html');
-
-const translation = {
-    'dynamic-header': {
-        fields: {
-            title: '',
-            anchorId: '',
-            titleTag: '',
-        },
-    },
-    'page-header': {
-        fields: { title: 'TextLine' },
-        render: (content) => `<h1>${content.title}</h1>`,
-    },
-    'section-with-header': {
-        render: (content) => `<h2>${content.title}</h2>`,
-    },
-    'html-area': {
-        fields: {},
-        render: (content) => libs.portal.processHtml({ value: content.html }),
-    },
-};
-
-const extractInfoFromComponent = (component) => {
-    const { descriptor, config } = component;
-    const descriptorSplit = descriptor.split(':');
-    const domain = descriptorSplit[0].replace(/\./g, '-');
-    const name = descriptorSplit[1];
-
-    if (config) {
-        let content = config;
-        if (config[domain]) {
-            content = config[domain][name];
-        }
-
-        if (translation[name]) {
-            const renderer = translation[name];
-            if (renderer.render) {
-                return { content: renderer.render(content) };
-            }
-            // TODO: if no custom renderer, try to see if we have a standard we can use
-        }
-    }
-    return { content: descriptor };
-};
 
 const getContentInfo = (version) => {
     return {
@@ -76,21 +33,21 @@ const renderDynamicPage = (version) => {
             if (component?.part) {
                 if (component.type === 'fragment') {
                     return {
-                        ...extractInfoFromComponent(component.part),
+                        ...getRenderedComponent(component.part),
                         type: 'fragment',
                         to: libs.utils.formatDateTime(component.to),
                         from: libs.utils.formatDateTime(component.from),
                     };
                 }
-                return extractInfoFromComponent(component.part);
+                return getRenderedComponent(component.part);
             }
             // if the component is fetched from with content-lib the structure is not the same as
             // above
             if (component?.type === 'part' && component?.descriptor && component?.config) {
-                return extractInfoFromComponent(component);
+                return getRenderedComponent(component);
             }
             if (component?.layout) {
-                return extractInfoFromComponent(component.layout);
+                return getRenderedComponent(component.layout);
             }
             log.info(`unknown component: ${JSON.stringify(component)}`);
             return false;
