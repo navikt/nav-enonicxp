@@ -1,3 +1,5 @@
+const { sanitize } = require('/lib/xp/common');
+
 const colorsByName = {
     navRod: '#c30000',
     navOransje: '#ff9100',
@@ -117,19 +119,17 @@ const colorHits = Object.entries(colorsByCode).map(([colorCode, colorName]) =>
     generateHit(colorCode, colorName)
 );
 
-const normalizeString = (str) => str.replace(/ø/g, 'o').replace(/å/g, 'a').toLowerCase();
-
 const getHits = (query) => {
     if (!query) {
         return colorHits;
     }
 
-    const queryNormalized = normalizeString(query);
+    const queryNormalized = sanitize(query);
 
     const filteredHits = colorHits.filter(
         (hit) =>
-            normalizeString(hit.displayName).includes(queryNormalized) ||
-            normalizeString(hit.description).includes(queryNormalized)
+            sanitize(hit.displayName).includes(queryNormalized) ||
+            sanitize(hit.description).includes(queryNormalized)
     );
 
     const customColor =
