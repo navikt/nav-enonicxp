@@ -1,8 +1,10 @@
+const { processedHtmlFragment } = require('./_processedHtml');
+
 const meldingFragment = `
     ...on no_nav_navno_Melding {
         dataAsJson
         data {
-            text(processHtml:{type:server})
+            text ${processedHtmlFragment}
         }
     }
 `;
