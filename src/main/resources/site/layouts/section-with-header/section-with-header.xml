@@ -31,6 +31,15 @@
             <occurrences minimum="0" maximum="1"/>
             <items>
                 <mixin name="icon-selector"/>
+                <input type="Long" name="size">
+                    <label>Størrelse (%)</label>
+                    <help-text>Sett til 0 for automatisk tilpasset størrelse</help-text>
+                    <default>0</default>
+                    <config>
+                        <min>0</min>
+                        <max>100</max>
+                    </config>
+                </input>
                 <mixin name="color-picker"/>
             </items>
         </item-set>
@@ -64,6 +73,7 @@
         </item-set>
     </form>
     <regions>
+        <region name="intro"/>
         <region name="content"/>
     </regions>
 </layout>
