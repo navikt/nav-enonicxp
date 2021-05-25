@@ -121,6 +121,7 @@ const layoutsFragment = `
                 anchorId
                 icon {
                     color
+                    size
                     icon {
                         ${imageFragment}
                     }
