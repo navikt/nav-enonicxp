@@ -5,7 +5,7 @@
         <div class="timeMachine">
             <div data-th-if="${versions.empty}"><span>Det er ingen tidligere versjoner av dette inneholdet</span></div>
             <div><a data-th-href="'/admin/site/admin/default/master/_/widgets/no.nav.navno/versionHistory/?contentId=' + ${contentId}">Fullskjerm</a></div>
-                <ul data-th-each="version: ${versions}" data-th-remove="tag">
+            <ul data-th-each="version: ${versions}" data-th-remove="tag">
                 <li class="version ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" id="version.versionId">
                     <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">
                         <div class="ekspanderbartPanel__flex-wrapper">
@@ -25,21 +25,23 @@
                         </header>
                         <div data-th-if="${version.renderType == 'dynamic'}">
                             <ul data-th-each="part: ${version.parts}">
-                                <li class="part">
-                                    <div class="fragment ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" data-th-if="${part.type == 'fragment'}">
-                                        <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">
-                                            <div class="ekspanderbartPanel__flex-wrapper">
-                                                <span class="ekspanderbartPanel__tittel">[[${part.from}]] til [[${part.to}]]</span>
+                                <div data-th-if="${part.content != ''}" data-th-remove="tag">
+                                    <li class="part">
+                                        <div class="fragment ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border" data-th-if="${part.type == 'fragment'}">
+                                            <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">
+                                                <div class="ekspanderbartPanel__flex-wrapper">
+                                                    <span class="ekspanderbartPanel__tittel">[[${part.from}]] til [[${part.to}]]</span>
+                                                </div>
+                                            </button>
+
+                                            <div class="ekspanderbartPanel__innhold">
+                                                <div data-th-utext="${part.content}"></div>
                                             </div>
-                                        </button>
-
-                                        <div class="ekspanderbartPanel__innhold">
-                                            <div data-th-utext="${part.content}"></div>
                                         </div>
-                                    </div>
 
-                                    <div data-th-if="${part.type != 'fragment'}" data-th-utext="${part.content}"></div>
-                                </li>
+                                        <div data-th-if="${part.type != 'fragment'}" data-th-utext="${part.content}"></div>
+                                    </li>
+                                </div>
                             </ul>
                         </div>
                         <div data-th-if="${version.type == appName + ':main-article'}" data-th-remove="tag">
