@@ -33,21 +33,21 @@ const renderDynamicPage = (version) => {
             if (component?.part) {
                 if (component.type === 'fragment') {
                     return {
-                        ...getRenderedComponent(component.part),
+                        ...getRenderedComponent(component.part, [version.fromDate, version.toDate]),
                         type: 'fragment',
                         to: libs.utils.formatDateTime(component.to),
                         from: libs.utils.formatDateTime(component.from),
                     };
                 }
-                return getRenderedComponent(component.part);
+                return getRenderedComponent(component.part, [version.fromDate, version.toDate]);
             }
             // if the component is fetched from with content-lib the structure is not the same as
             // above
             if (component?.type === 'part' && component?.descriptor && component?.config) {
-                return getRenderedComponent(component);
+                return getRenderedComponent(component, [version.fromDate, version.toDate]);
             }
             if (component?.layout) {
-                return getRenderedComponent(component.layout);
+                return getRenderedComponent(component.layout, [version.fromDate, version.toDate]);
             }
             log.info(`unknown component: ${JSON.stringify(component)}`);
             return false;

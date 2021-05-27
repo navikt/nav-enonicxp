@@ -1,17 +1,18 @@
 const { pageUrl, processHtml } = require('/lib/xp/portal');
 const { get } = require('/lib/xp/content');
+// const { getTimeline } = require('/lib/versionHistory');
 const thymeleaf = require('/lib/thymeleaf');
 
 const htmlArea = {
     fields: {},
-    render: (content) => processHtml({ value: content.html }),
+    render: (content, [from, to]) => processHtml({ value: content.html }),
 };
 const sectionWithHeader = {
-    render: (content) => `<h2>${content.title}</h2>`,
+    render: (content, [from, to]) => `<h2>${content.title}</h2>`,
 };
 const pageHeader = {
     fields: { title: 'TextLine' },
-    render: (content) => `<h1>${content.title}</h1>`,
+    render: (content, [from, to]) => `<h1>${content.title}</h1>`,
 };
 const dynamicHeader = {
     fields: {
@@ -22,7 +23,7 @@ const dynamicHeader = {
 };
 
 const dynamicLinkList = {
-    render: (content) => {
+    render: (content, [from, to]) => {
         const listType = content.list._selected;
         const view = resolve('templates/dynamicLinkList.html');
 
@@ -50,6 +51,8 @@ const dynamicLinkList = {
             // TODO: we need to display the correct published version at the time.
             // in the same fashion as with fragments...
             const contentList = get({ key: content.list?.contentList?.target });
+            // const timeline = getTimeline(content.list?.contentList?.target);
+
             contentLinks = contentList.data?.sectionContents.map((id, ix) => {
                 if (content.list?.contentList?.numLinks < ix) {
                     const currentContent = get({ key: id });
@@ -81,7 +84,7 @@ const mapping = {
     'dynamic-link-list': dynamicLinkList,
 };
 
-const getRenderedComponent = (componentData) => {
+const getRenderedComponent = (componentData, [from, to]) => {
     const { descriptor, config } = componentData;
     const descriptorSplit = descriptor.split(':');
     const domain = descriptorSplit[0].replace(/\./g, '-');
@@ -101,7 +104,7 @@ const getRenderedComponent = (componentData) => {
         if (mapping[name]) {
             const renderer = mapping[name];
             if (renderer.render) {
-                renderedComponent['content'] = renderer.render(content);
+                renderedComponent['content'] = renderer.render(content, [from, to]);
             } else {
                 renderedComponent['content'] = renderComponentFromFields(
                     renderer.fields,
