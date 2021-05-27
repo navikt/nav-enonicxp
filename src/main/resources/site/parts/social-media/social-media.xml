@@ -1,0 +1,21 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Sosiale medier</display-name>
+    <description>Komponent for å dele på sosiale medier</description>
+    <form>
+        <field-set>
+            <label>Sosiale medier</label>
+            <items>
+                <input name="social" type="ComboBox">
+                    <label>Del på sosiale medier</label>
+                    <help-text>Velg hvor dette skal deles</help-text>
+                    <config>
+                        <option value="twitter">Twitter</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="linkedin">LinkedIn</option>
+                    </config>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</part>
