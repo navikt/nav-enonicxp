@@ -81,8 +81,8 @@ To be able to navigate the site as in production ie. http://localhost:8080/sok, 
     mapping.webapp.target = /webapp
     mapping.admin2.idProvider.system = default
 
-## Usefull Enonic XP tools
-Document describing usefull tools to query the database and look for changes in the case of user errors.
+## Useful Enonic XP tools
+Document describing useful tools to query the database and look for changes in the case of user errors.
 [Enonic XP Tools](tools.md)
 
 ## Monitoring errors with slack alerts to #xpnavno-alerts
@@ -674,4 +674,39 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
     }
   }
 }
+```
+## NAIS-device
+We are able to use nais device to reach portal-admin and use ssh to reach our server nodes. To be able to use this with the host names instead of the ip-addresses we need to set this up in our hosts file
+### /etc/hosts
+```
+# Q1
+10.186.160.27 b31apvl00104.oera-q.local
+10.186.32.37 b31apvl00105.oera-q.local
+10.186.32.39 b31apvl00106.oera-q.local
+10.186.160.28 b31apvl00107.oera-q.local
+10.49.1.53 b31apvl00110.oera-q.local
+10.186.160.30 b31apvl00108.oera-q.local
+10.186.160.45 b31apvl00109.oera-q.local
+10.186.32.43 b31apvl00111.oera-q.local
+10.186.32.60 b31apvl00112.oera-q.local
+# Q6
+10.49.1.54 b31apvl00059.oera-q.local
+10.186.32.17 b31apvl00060.oera-q.local
+10.186.160.50 b31apvl00061.oera-q.local
+10.186.32.21 b31apvl00062.oera-q.local
+10.186.160.11 b31apvl00063.oera-q.local
+# portal-admin
+155.55.182.101 portal-admin-dev.oera.no
+155.55.182.101 portal-admin-q6.oera.no
+155.55.183.16 portal-admin.oera.no
+#prod
+10.187.160.36 a30apvl00088.oera.no
+10.187.32.49 a30apvl00089.oera.no
+10.187.160.40 a30apvl00113.oera.no
+10.187.32.45 a30apvl00115.oera.no
+10.49.0.69 a30apvl00090.oera.no
+10.187.160.34 a30apvl00084.oera.no
+10.187.160.35 a30apvl00085.oera.no
+10.187.32.47 a30apvl00086.oera.no
+10.187.32.48 a30apvl00087.oera.no
 ```
