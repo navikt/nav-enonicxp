@@ -7,7 +7,6 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const largeTableCallback = require('./schema-creation-callbacks/large-table');
 const {
     filtersCategoryCallback,
     filtersMenuPartConfigCallback,
@@ -30,7 +29,6 @@ const schemaContextOptions = {
         no_nav_navno_MainArticle_Data: mainArticleDataCallback,
         no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
         no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
-        no_nav_navno_LargeTable: largeTableCallback,
         no_nav_navno_SectionPage_Data: sectionPageDataCallback,
         no_nav_navno_ContentList_Data: contentListDataCallback,
         no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
