@@ -710,3 +710,14 @@ We are able to use nais device to reach portal-admin and use ssh to reach our se
 10.187.32.47 a30apvl00086.oera.no
 10.187.32.48 a30apvl00087.oera.no
 ```
+## In case of errors in which case we need to restart the app.
+go to portal-admin of the environment you wish to restart:
+
+| environment | url                              |
+|-------------|----------------------------------|
+| production  | https://portal-admin.oera.no     |
+| develop     | https://portal-admin-dev.oera.no |
+| q6          | https://portal-admin-q6.oera.no  |
+
+Then just use the Applications link ({baseurl}/admin/tool/com.enonic.xp.app.applications/main). When
+you select the app you will see buttons on the top of the page for stopping and starting the app.
