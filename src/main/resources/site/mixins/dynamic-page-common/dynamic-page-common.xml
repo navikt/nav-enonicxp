@@ -4,6 +4,10 @@
             <label>Oppsummering/ingress</label>
             <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i søkeresultater. Bør være maks 240 tegn.</help-text>
         </input>
+        <input type="TextLine" name="publicPath">
+            <label>Ekstern url</label>
+            <help-text>Dersom du ønsker at denne siden skal nåes fra en annen url enn den interne i Enonic kan dette settes her. Dette blir da en "kort-url" uten redirect.</help-text>
+        </input>
         <mixin name="languages-legacy"/>
         <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
