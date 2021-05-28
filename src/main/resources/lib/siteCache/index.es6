@@ -1,3 +1,6 @@
+const { forceArray } = require('/lib/nav-utils');
+const { getGlobalValueUsage } = require('/lib/global-values/global-values');
+const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -273,7 +276,7 @@ function findReferences(id, path, depth) {
 
     // remove duplicates and return all references
     const refPaths = references.map((i) => i._path);
-    return references.filter((v, i, a) => !!v._path && refPaths.indexOf(v._path) === i);
+    return references.filter((v, i) => !!v._path && refPaths.indexOf(v._path) === i);
 }
 
 function clearReferences(id, path, depth) {
@@ -293,6 +296,14 @@ function clearReferences(id, path, depth) {
     });
 }
 
+function clearGlobalValueReferences(globalValueSet) {
+    forceArray(globalValueSet.data?.valueItems).map((item) => {
+        getGlobalValueUsage(item.key).map((content) => {
+            wipeOnChange(content.path);
+        });
+    });
+}
+
 function nodeListenerCallback(event) {
     // Stop execution if not valid event type.
     const shouldRun = cacheInvalidatorEvents.filter((eventType) => event.type === eventType);
@@ -302,6 +313,12 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+            const globalValueSet = getGlobalValueSet(node.id);
+            if (globalValueSet) {
+                clearGlobalValueReferences(globalValueSet);
+                return true;
+            }
+
             wipeOnChange(node.path);
             libs.context.run(
                 {
@@ -321,6 +338,7 @@ function nodeListenerCallback(event) {
             wipe('decorator')();
         }
     });
+
     return true;
 }
 
