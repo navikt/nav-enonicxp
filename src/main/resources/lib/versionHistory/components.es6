@@ -1,6 +1,8 @@
 const { pageUrl, processHtml } = require('/lib/xp/portal');
 const { get } = require('/lib/xp/content');
-// const { getTimeline } = require('/lib/versionHistory');
+const { getVersionsInRange, wasLiveInRange } = require('/lib/versionHistory');
+const { formatDateTime } = require('/lib/nav-utils');
+
 const thymeleaf = require('/lib/thymeleaf');
 
 const htmlArea = {
@@ -47,26 +49,60 @@ const dynamicLinkList = {
             });
         }
         let contentLinks = [];
+        let versionedLinks = [];
         if (listType === 'contentList') {
-            // TODO: we need to display the correct published version at the time.
-            // in the same fashion as with fragments...
             const contentList = get({ key: content.list?.contentList?.target });
-            // const timeline = getTimeline(content.list?.contentList?.target);
+            const timeline = getVersionsInRange(content.list?.contentList?.target, [from, to]);
 
-            contentLinks = contentList.data?.sectionContents.map((id, ix) => {
-                if (content.list?.contentList?.numLinks < ix) {
-                    const currentContent = get({ key: id });
-                    return {
-                        text: currentContent ? currentContent.displayName : 'lenke',
-                        url: pageUrl(id),
-                    };
-                }
-                return false;
+            const previousContentLists = timeline.map((listVersion, ix) => {
+                return {
+                    fromDate: listVersion.fromDate,
+                    toDate: listVersion.toDate,
+                    from: formatDateTime(listVersion.from),
+                    to: formatDateTime(listVersion.to),
+                    links: listVersion.content?.data?.sectionContents,
+                };
             });
+
+            if (previousContentLists.length > 1) {
+                versionedLinks = previousContentLists.map((version, ix) => {
+                    return {
+                        ...version,
+                        content: version.links.reverse().reduce((acc, id, i) => {
+                            // TODO: for now just checks if the linked content was published in the given timerange
+                            // in the future the content should be fetched and the correct displayName
+                            // from the correct version displayed
+                            if (
+                                content.list?.contentList?.numLinks > acc.length &&
+                                wasLiveInRange(id, [version.fromDate, version.toDate])
+                            ) {
+                                const currentContent = get({ key: id });
+                                acc.push({
+                                    text: currentContent ? currentContent.displayName : 'lenke',
+                                    url: pageUrl(id),
+                                });
+                            }
+                            return acc;
+                        }, []),
+                    };
+                });
+            } else {
+                contentLinks = contentList.data?.sectionContents.map((id, ix) => {
+                    if (content.list?.contentList?.numLinks < ix) {
+                        const currentContent = get({ key: id });
+                        return {
+                            text: currentContent ? currentContent.displayName : 'lenke',
+                            url: pageUrl(id),
+                        };
+                    }
+                    return false;
+                });
+            }
         }
         return thymeleaf.render(view, {
             title: processHtml({ value: content.title }),
             links: [...linkList, ...contentLinks].filter((item) => !!item),
+            versionedLinks,
         });
     },
 };

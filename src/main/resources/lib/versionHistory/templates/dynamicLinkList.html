@@ -1,8 +1,38 @@
 <div>
     <h2>[[${title}]]</h2>
-    <ul >
-        <li data-th-each="link: ${links}">
-            <a data-th-href="${link.url}">[[${link.text}]]</a>
-        </li>
-    </ul>
+    <div data-th-if="${links}" data-th-remove="tag">
+        <ul>
+            <li data-th-each="link: ${links}">
+                <a data-th-href="${link.url}">[[${link.text}]]</a>
+            </li>
+        </ul>
+    </div>
+    <div data-th-if="${versionedLinks}" data-th-remove="tag">
+        <ul data-th-each="linkList: ${versionedLinks}">
+            <div data-th-if="${linkList}" data-th-remove="tag">
+                <li class="linkList version">
+                    <div class="contentList ekspanderbartPanel related-info__panel ekspanderbartPanel--lukket ekspanderbartPanel--border">
+                        <button id="" class="ekspanderbartPanel__hode" aria-expanded="true" type="button">
+                            <div class="ekspanderbartPanel__flex-wrapper">
+                                <span class="ekspanderbartPanel__tittel">[[${linkList.from}]] til [[${linkList.to}]]</span>
+                            </div>
+                        </button>
+                        <div class="ekspanderbartPanel__innhold">
+                            <ul>
+                                <li data-th-each="link: ${linkList.content}">
+                                    <a data-th-href="${link.url}">[[${link.text}]]</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </li>
+            </div>
+        </ul>
+        <ul>
+            <li data-th-each="link: ${links}">
+                <a data-th-href="${link.url}">[[${link.text}]]</a>
+            </li>
+        </ul>
+    </div>
 </div>

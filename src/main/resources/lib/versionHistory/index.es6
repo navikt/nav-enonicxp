@@ -86,6 +86,19 @@ const getTimeline = (contentId) => {
         return acc;
     }, []);
 };
+const wasLiveInRange = (contentId, [from, to]) => {
+    return getVersionsInRange(contentId, [from, to]).length !== 0;
+};
+
+const getVersionsInRange = (contentId, [from, to]) => {
+    const timeline = getTimeline(contentId);
+    return timeline.reduce((data, version, ix) => {
+        if ((!to || to >= version.fromDate) && (!version.to || version.toDate >= from)) {
+            data.push(version);
+        }
+        return data;
+    }, []);
+};
 
 const findComponents = (obj, [from, to], optionals = {}) => {
     if (obj && typeof obj === 'object') {
@@ -105,27 +118,21 @@ const findComponents = (obj, [from, to], optionals = {}) => {
                             // time one is after. As there can be multiple fragments on a page, in the
                             // timeline we show all the valid fragment-parts within a time-range
                             if (item.fragment?.id) {
-                                const timeline = getTimeline(item.fragment?.id);
+                                const timeline = getVersionsInRange(item.fragment?.id, [from, to]);
                                 const previousFragments = timeline.reduce(
                                     (data, fragVersion, ix) => {
-                                        if (
-                                            to >= fragVersion.fromDate &&
-                                            (!fragVersion.to || fragVersion.toDate >= from)
-                                        ) {
-                                            return [
-                                                ...data,
-                                                ...findComponents(
-                                                    fragVersion?.content?.components,
-                                                    [from, to],
-                                                    {
-                                                        type: 'fragment',
-                                                        from: fragVersion.from,
-                                                        to: fragVersion.to,
-                                                    }
-                                                ),
-                                            ];
-                                        }
-                                        return data;
+                                        return [
+                                            ...data,
+                                            ...findComponents(
+                                                fragVersion?.content?.components,
+                                                [from, to],
+                                                {
+                                                    type: 'fragment',
+                                                    from: fragVersion.from,
+                                                    to: fragVersion.to,
+                                                }
+                                            ),
+                                        ];
                                     },
                                     []
                                 );
@@ -160,5 +167,7 @@ const findComponents = (obj, [from, to], optionals = {}) => {
 };
 module.exports = {
     getTimeline,
+    getVersionsInRange,
+    wasLiveInRange,
     findComponents,
 };
