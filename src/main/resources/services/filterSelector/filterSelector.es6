@@ -23,7 +23,7 @@ const generateHits = (req) => {
     const filterMenus = getFilterMenus(repo.get(contentId)?.components);
     if (!filterMenus?.length > 0) {
         log.info('No filter menus found');
-        return null;
+        return [];
     }
 
     return filterMenus
