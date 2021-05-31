@@ -1,6 +1,5 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
-const { htmlCleanUp } = require('./common/html-cleanup');
 
 const mainArticleDataCallback = (context, params) => {
     params.fields.chapters = {
@@ -10,11 +9,6 @@ const mainArticleDataCallback = (context, params) => {
 
 const mainArticleCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
-        // Resolve html-fields in data-object
-        const data = env.source?.data;
-        const text = data?.text ? htmlCleanUp(data.text) : '';
-        const fact = data?.fact ? htmlCleanUp(data.fact) : '';
-
         // Resolve chapters
         const chapters = contentLib.query({
             query: `_parentPath = '/content${env.source._path}'`,
@@ -36,9 +30,7 @@ const mainArticleCallback = (context, params) => {
         }).hits;
 
         return {
-            ...data,
-            text,
-            fact,
+            ...env.source?.data,
             ...(chapters.length > 0 && { chapters }),
         };
     };
