@@ -18,6 +18,27 @@ const getGlobalValueUsage = (key) => {
     }));
 };
 
+const getValuesOfTypeFromSet = (type) => (varSet) =>
+    forceArray(varSet.data.valueItems).reduce((acc, valueItem) => {
+        return valueItem[type] !== undefined
+            ? [
+                  ...acc,
+                  {
+                      ...valueItem,
+                      setId: varSet._id,
+                      setName: varSet.displayName,
+                  },
+              ]
+            : acc;
+    }, []);
+
+const getAllValuesFromSet = (varSet) =>
+    forceArray(varSet.data?.valueItems).map((valueItem) => ({
+        ...valueItem,
+        setId: varSet._id,
+        setName: varSet.displayName,
+    }));
+
 const getAllGlobalValues = (type, query) => {
     if (type && !validTypes[type]) {
         log.info(`Invalid type ${type} specified for all values query`);
@@ -41,33 +62,10 @@ const getAllGlobalValues = (type, query) => {
     }).hits;
 
     if (type) {
-        return valueSets
-            .map((varSet) =>
-                forceArray(varSet.data?.valueItems).reduce((acc, valueItem) => {
-                    return valueItem[type] !== undefined
-                        ? [
-                              ...acc,
-                              {
-                                  ...valueItem,
-                                  setId: varSet._id,
-                                  setName: varSet.displayName,
-                              },
-                          ]
-                        : acc;
-                }, [])
-            )
-            .flat();
+        return valueSets.map(getValuesOfTypeFromSet(type)).flat();
     }
 
-    return valueSets
-        .map((varSet) =>
-            forceArray(varSet.data?.valueItems).map((valueItem) => ({
-                ...valueItem,
-                setId: varSet._id,
-                setName: varSet.displayName,
-            }))
-        )
-        .flat();
+    return valueSets.map(getAllValuesFromSet).flat();
 };
 
 const getGlobalValue = (key, type) => {
@@ -76,14 +74,39 @@ const getGlobalValue = (key, type) => {
         return null;
     }
 
-    const values = getAllGlobalValues();
-    const foundValue = values.find((value) => value.key === key);
-    if (!foundValue) {
-        log.info(`Value not found for key ${key}`);
+    const valueSets = contentLib.query({
+        start: 0,
+        count: 2,
+        contentTypes: [globalValuesContentType],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.valueItems.key',
+                        values: [key],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    if (valueSets.length === 0) {
+        log.error(`Value not found for key ${key}`);
         return null;
     }
 
-    return foundValue[type];
+    if (valueSets.length > 1) {
+        log.error(`Found multiple values with key ${key}!`);
+        return null;
+    }
+
+    const foundValue = forceArray(valueSets[0].data.valueItems).find((value) => value.key === key);
+    if (!foundValue) {
+        log.error(`Value not found for key ${key}`);
+        return null;
+    }
+
+    return foundValue[type] || foundValue.numberValue;
 };
 
 const getGlobalValueSet = (contentId) => {
