@@ -134,6 +134,9 @@ const layoutsFragment = `
                     }
                 }
             }
+            situation_flex_cols {
+                anchorId
+            }
         }
     }
 `;

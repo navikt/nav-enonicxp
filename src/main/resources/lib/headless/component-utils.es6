@@ -1,3 +1,7 @@
+const portalLib = require('/lib/xp/portal');
+const nodeLib = require('/lib/xp/node');
+const { sanitize } = require('/lib/xp/common');
+
 const appKey = app.name.replace(/\./g, '-');
 
 const getComponentConfig = (component) => {
@@ -30,4 +34,65 @@ const getComponentConfigByPath = (path, components) => {
     return getComponentConfig(foundComponent);
 };
 
-module.exports = { getComponentConfigByPath, getComponentConfig };
+const componentHasUniqueAnchorId = (content, currentComponent) => {
+    const currentAnchorId = currentComponent?.config?.anchorId;
+    if (!currentAnchorId) {
+        return false;
+    }
+
+    const { components } = content;
+
+    const isDuplicate = components.some((component) => {
+        const config = getComponentConfig(component);
+        return config?.anchorId === currentAnchorId && component.path !== currentComponent.path;
+    });
+
+    return !isDuplicate;
+};
+
+const generateAnchorIdFromFieldValue = (componentPath, fieldKey) => (content) => {
+    const { components } = content;
+
+    const config = getComponentConfigByPath(componentPath, components);
+
+    if (!config) {
+        return content;
+    }
+
+    const fieldValue = config[fieldKey];
+
+    if (fieldValue) {
+        const id = sanitize(fieldValue);
+        const idExists = components.some(
+            (component) => getComponentConfig(component)?.anchorId === id
+        );
+        if (idExists) {
+            config.anchorId = undefined;
+        } else {
+            config.anchorId = id;
+        }
+    }
+
+    return content;
+};
+
+const generateAnchorIdField = (req, fieldKey) => {
+    const contentId = portalLib.getContent()._id;
+    const component = portalLib.getComponent();
+
+    const repo = nodeLib.connect({
+        repoId: req.repositoryId,
+        branch: req.branch,
+    });
+
+    const content = repo.get(contentId);
+
+    if (!componentHasUniqueAnchorId(content, component)) {
+        repo.modify({
+            key: contentId,
+            editor: generateAnchorIdFromFieldValue(component.path, fieldKey),
+        });
+    }
+};
+
+module.exports = { getComponentConfigByPath, getComponentConfig, generateAnchorIdField };

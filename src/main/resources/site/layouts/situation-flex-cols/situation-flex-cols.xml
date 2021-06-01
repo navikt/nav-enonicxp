@@ -2,9 +2,7 @@
     <display-name>Fleksibelt kolonne-layout for situasjons-side</display-name>
     <description>Responsive flexbox-kolonner</description>
     <form>
-        <input type="TextLine" name="title">
-            <label>Tittel</label>
-        </input>
+        <mixin name="header-with-anchor"/>
         <input type="Long" name="numCols">
             <label>Antall kolonner ved full skjermbredde</label>
             <default>3</default>
