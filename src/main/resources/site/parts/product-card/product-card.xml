@@ -10,7 +10,7 @@
                     <occurrences minimum="0" maximum="1"/>
                     <config>
                         <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                        <allowContentType>${app}:overview-page</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
                     </config>
                 </input>
                 <input name="ingressOverride" type='TextArea'>

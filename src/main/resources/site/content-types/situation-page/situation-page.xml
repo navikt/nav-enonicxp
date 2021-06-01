@@ -14,7 +14,7 @@
                     <label>Velg aktuelle produktsider</label>
                     <occurrences minimum="0" maximum="0"/>
                     <config>
-                        <allowContentType>no.nav.navno:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                     </config>
                 </input>
             </items>

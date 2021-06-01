@@ -19,7 +19,7 @@ const commonDataObjectShort = `
 `;
 
 const productPageFragment = `
-    ...on no_nav_navno_OverviewPage {
+    ...on no_nav_navno_SituationPage {
         ${commonDataObject}
         data {
             ${productDataMixin}
@@ -41,7 +41,7 @@ const dynamicPageFragment = `
 `;
 
 const dynamicPageShortFragment = `
-    ...on no_nav_navno_OverviewPage {
+    ...on no_nav_navno_SituationPage {
         ${commonDataObjectShort}
     }
     ...on no_nav_navno_ContentPageWithSidemenus {
