@@ -6,7 +6,7 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="page-digest"/>
+        <mixin name="product-data"/>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>

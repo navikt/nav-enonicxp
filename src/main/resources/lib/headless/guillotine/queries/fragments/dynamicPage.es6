@@ -1,8 +1,9 @@
+const { productDataMixin } = require('./_mixins');
 const { decoratorTogglesMixinFragment } = require('./_mixins');
 const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
 
-const dataObject = `
+const commonDataObject = `
     data {
         description
         ${decoratorTogglesMixinFragment}
@@ -11,27 +12,39 @@ const dataObject = `
     }
 `;
 
-const dataObjectShort = `
+const commonDataObjectShort = `
     data {
         description
     }
 `;
 
 const dynamicPageFragment = `
+    ...on no_nav_navno_OverviewPage {
+        ${commonDataObject}
+        data {
+            ${productDataMixin}
+        }
+    }
     ...on no_nav_navno_ContentPageWithSidemenus {
-        ${dataObject}
+        ${commonDataObject}
+        data {
+            ${productDataMixin}
+        }
     }
     ...on no_nav_navno_DynamicPage {
-        ${dataObject}
+        ${commonDataObject}
     }
 `;
 
 const dynamicPageShortFragment = `
+    ...on no_nav_navno_OverviewPage {
+        ${commonDataObjectShort}
+    }
     ...on no_nav_navno_ContentPageWithSidemenus {
-        ${dataObjectShort}
+        ${commonDataObjectShort}
     }
     ...on no_nav_navno_DynamicPage {
-        ${dataObjectShort}
+        ${commonDataObjectShort}
     }
 `;
 

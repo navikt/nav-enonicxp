@@ -84,6 +84,15 @@ const headerCommonMixin = `
     }
 `;
 
+const productDataMixin = `
+    title
+    ingress
+    label
+    illustration {
+        ${globalFragment}
+    }
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
@@ -95,4 +104,5 @@ module.exports = {
     headerCommonMixin,
     languagesMixinFragment,
     decoratorTogglesMixinFragment,
+    productDataMixin,
 };

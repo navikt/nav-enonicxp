@@ -1,7 +1,7 @@
 <mixin>
     <form>
         <field-set>
-            <label>Data?</label>
+            <label>Data for produkt/situasjon</label>
             <items>
                 <mixin name="page-header"/>
                 <input name="ingress" type="TextArea">
