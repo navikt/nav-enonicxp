@@ -1,0 +1,24 @@
+<content-type>
+    <display-name>Oversiktsside for livssituasjon</display-name>
+    <description>Livssituasjonsside med oversikt over aktuelle stønader og tjenester</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="page-digest"/>
+        <field-set>
+            <label>Aktuelle produktsider</label>
+            <items>
+                <input name="productPages" type="ContentSelector">
+                    <label>Velg aktuelle produktsider</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <allowContentType>no.nav.navno:content-page-with-sidemenus</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>

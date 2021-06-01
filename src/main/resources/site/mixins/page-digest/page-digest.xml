@@ -1,0 +1,28 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Data?</label>
+            <items>
+                <mixin name="page-header"/>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                </input>
+                <input name="label" type="ComboBox">
+                    <label>Etikett/kategori</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="benefits">Pengestøtte</option>
+                        <option value="rights">Rettigheter</option>
+                    </config>
+                </input>
+                <input name="illustration" type="ContentSelector">
+                    <label>Velg illustrasjon</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <allowContentType>no.nav.navno:animated-icons</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
