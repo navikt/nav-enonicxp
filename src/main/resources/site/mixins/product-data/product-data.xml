@@ -19,7 +19,7 @@
                     <label>Velg illustrasjon</label>
                     <occurrences minimum="0" maximum="1"/>
                     <config>
-                        <allowContentType>no.nav.navno:animated-icons</allowContentType>
+                        <allowContentType>${app}:animated-icons</allowContentType>
                     </config>
                 </input>
             </items>

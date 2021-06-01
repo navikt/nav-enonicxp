@@ -1,0 +1,23 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Produkt-kort</display-name>
+    <description>Lenker til en produkt- eller livssituasjons-side</description>
+    <form>
+        <field-set>
+            <label>Produkt eller livssituasjon</label>
+            <items>
+                <input name="targetPage" type="ContentSelector">
+                    <label>Velg side</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:overview-page</allowContentType>
+                    </config>
+                </input>
+                <input name="ingressOverride" type='TextArea'>
+                    <label>Overstyr ingress</label>
+                    <help-text>La stå blank dersom standard-ingress skal vises</help-text>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</part>
