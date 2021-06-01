@@ -1,0 +1,32 @@
+<layout>
+    <display-name>Fleksibelt kolonne-layout for situasjons-side</display-name>
+    <description>Responsive flexbox-kolonner</description>
+    <form>
+        <input type="TextLine" name="title">
+            <label>Tittel</label>
+        </input>
+        <input type="Long" name="numCols">
+            <label>Antall kolonner ved full skjermbredde</label>
+            <default>3</default>
+            <config>
+                <min>1</min>
+                <max>3</max>
+            </config>
+        </input>
+        <input type="RadioButton" name="justifyContent">
+            <label>Justering</label>
+            <help-text>
+                Justering for ufullstendige rader
+            </help-text>
+            <config>
+                <option value="flex-start">Venstre</option>
+                <option value="center">Midtstilt</option>
+                <option value="flex-end">Høyre</option>
+            </config>
+            <default>flex-start</default>
+        </input>
+    </form>
+    <regions>
+        <region name="flexcols"/>
+    </regions>
+</layout>
