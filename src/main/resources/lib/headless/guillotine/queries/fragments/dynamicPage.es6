@@ -18,7 +18,7 @@ const commonDataObjectShort = `
     }
 `;
 
-const dynamicPageFragment = `
+const productPageFragment = `
     ...on no_nav_navno_OverviewPage {
         ${commonDataObject}
         data {
@@ -31,6 +31,10 @@ const dynamicPageFragment = `
             ${productDataMixin}
         }
     }
+`;
+
+const dynamicPageFragment = `
+    ${productPageFragment}
     ...on no_nav_navno_DynamicPage {
         ${commonDataObject}
     }
@@ -48,4 +52,8 @@ const dynamicPageShortFragment = `
     }
 `;
 
-module.exports = { fragment: dynamicPageFragment, shortFragment: dynamicPageShortFragment };
+module.exports = {
+    fragment: dynamicPageFragment,
+    shortFragment: dynamicPageShortFragment,
+    productPageFragment,
+};

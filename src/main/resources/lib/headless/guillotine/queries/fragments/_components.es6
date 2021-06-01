@@ -6,6 +6,7 @@ const {
 } = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const { productPageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
 const { processedHtmlFragment } = require('./_processedHtml');
 
 const partsFragment = `
@@ -106,6 +107,12 @@ const partsFragment = `
                         filterName
                         id
                     }
+                }
+            }
+            product_card {
+                ingressOverride
+                targetPage {
+                    ${productPageFragment}
                 }
             }
         }
