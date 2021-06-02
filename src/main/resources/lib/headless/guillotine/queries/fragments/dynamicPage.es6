@@ -19,12 +19,6 @@ const commonDataObjectShort = `
 `;
 
 const productPageFragment = `
-    ...on no_nav_navno_SituationPage {
-        ${commonDataObject}
-        data {
-            ${productDataMixin}
-        }
-    }
     ...on no_nav_navno_ContentPageWithSidemenus {
         ${commonDataObject}
         data {
@@ -33,8 +27,31 @@ const productPageFragment = `
     }
 `;
 
+const situationPageFragment = `
+    ...on no_nav_navno_SituationPage {
+        ${commonDataObject}
+        data {
+            contactOptions {
+                _selected
+                chat {
+                    ingress
+                }
+                write {
+                    ingress
+                }
+                call {
+                    ingress
+                    phoneNumber
+                }
+            }
+            ${productDataMixin}
+        }
+    }
+`;
+
 const dynamicPageFragment = `
     ${productPageFragment}
+    ${situationPageFragment}
     ...on no_nav_navno_DynamicPage {
         ${commonDataObject}
     }
@@ -56,4 +73,5 @@ module.exports = {
     fragment: dynamicPageFragment,
     shortFragment: dynamicPageShortFragment,
     productPageFragment,
+    situationPageFragment,
 };

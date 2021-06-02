@@ -1,0 +1,46 @@
+<mixin>
+    <form>
+        <field-set>
+            <items>
+                <option-set name="contactOptions">
+                    <label>Kontakt-oss kanaler</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <expanded>false</expanded>
+                    <options minimum="3" maximum="3">
+                        <option name="chat">
+                            <label>Chat</label>
+                            <default>true</default>
+                            <items>
+                                <input name="ingress" type="TextArea">
+                                    <label>Overstyr ingress</label>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="write">
+                            <label>Skriv til oss</label>
+                            <default>true</default>
+                            <items>
+                                <input name="ingress" type="TextArea">
+                                    <label>Overstyr ingress</label>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="call">
+                            <label>Ring oss</label>
+                            <default>true</default>
+                            <items>
+                                <input name="phoneNumber" type="TextLine">
+                                    <label>Telefonnummer</label>
+                                    <default>55 55 33 33</default>
+                                </input>
+                                <input name="ingress" type="TextArea">
+                                    <label>Overstyr ingress</label>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
+            </items>
+        </field-set>
+    </form>
+</mixin>

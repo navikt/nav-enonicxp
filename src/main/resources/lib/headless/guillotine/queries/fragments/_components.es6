@@ -7,6 +7,7 @@ const {
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');
+const { situationPageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
 const { productPageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
 const { processedHtmlFragment } = require('./_processedHtml');
 
@@ -115,6 +116,7 @@ const partsFragment = `
                 targetPage {
                     ${globalFragment}
                     ${productPageFragment}
+                    ${situationPageFragment}
                 }
             }
         }
