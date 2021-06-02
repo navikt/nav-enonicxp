@@ -119,6 +119,21 @@ const partsFragment = `
                     ${situationPageFragment}
                 }
             }
+            contact_option {
+                contactOptions {
+                    _selected
+                    chat {
+                        ingress
+                    }
+                    write {
+                        ingress
+                    }
+                    call {
+                        ingress
+                        phoneNumber
+                    }
+                }
+            }
         }
     }
 `;

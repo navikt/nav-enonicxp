@@ -1,0 +1,14 @@
+<content-type>
+    <display-name>Verktøy-side</display-name>
+    <description>Side-type for kalkulatorer, veivisere, osv [ikke implementert]</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="product-data"/>
+        <input type="TextLine" name="url">
+            <label>Lenke til eksternt verktøy</label>
+        </input>
+    </form>
+</content-type>

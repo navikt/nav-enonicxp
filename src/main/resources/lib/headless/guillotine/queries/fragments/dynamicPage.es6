@@ -31,19 +31,6 @@ const situationPageFragment = `
     ...on no_nav_navno_SituationPage {
         ${commonDataObject}
         data {
-            contactOptions {
-                _selected
-                chat {
-                    ingress
-                }
-                write {
-                    ingress
-                }
-                call {
-                    ingress
-                    phoneNumber
-                }
-            }
             ${productDataMixin}
         }
     }

@@ -23,6 +23,13 @@
             </config>
             <default>flex-start</default>
         </input>
+        <item-set name="bgColor">
+            <label>Bakgrunnsfarge</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="color-picker"/>
+            </items>
+        </item-set>
     </form>
     <regions>
         <region name="flexcols"/>
