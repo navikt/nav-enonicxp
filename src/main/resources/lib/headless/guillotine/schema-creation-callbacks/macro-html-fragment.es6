@@ -22,49 +22,52 @@ const generateRichTextTypeWithoutHtmlFragment = (context) => {
         (descriptor) => descriptor.name !== 'html-fragment'
     );
 
-    const macroConfigTypeFields = macroDescriptors.reduce((acc, descriptor) => {
-        const sanitizeDescriptorName = sanitizeText(descriptor.name);
+    const macroConfigTypeFields = macroDescriptors.reduce(
+        (macroConfigTypeFieldsAcc, descriptor) => {
+            const sanitizeDescriptorName = sanitizeText(descriptor.name);
 
-        const macroTypeName = `Macro_${sanitizeText(
-            descriptor.applicationKey
-        )}_${sanitizeDescriptorName}`;
+            const macroTypeName = `Macro_${sanitizeText(
+                descriptor.applicationKey
+            )}_${sanitizeDescriptorName}`;
 
-        const macroDataConfigTypeName = `${macroTypeName}HtmlFragment_DataConfig`;
+            const macroDataConfigTypeName = `${macroTypeName}HtmlFragment_DataConfig`;
 
-        const formItems = formLib.getFormItems(descriptor.form);
+            const formItems = formLib.getFormItems(descriptor.form);
 
-        const macroDataConfigFields = formItems.reduce(
-            (acc, formItem) => ({
-                ...acc,
-                [sanitizeText(formItem.name)]: {
-                    type: formLib.generateFormItemObjectType(
-                        context,
-                        macroDataConfigTypeName,
-                        formItem
-                    ),
-                    args: formLib.generateFormItemArguments(context, formItem),
-                    resolve: formLib.generateFormItemResolveFunction(formItem),
+            const macroDataConfigFields = formItems.reduce(
+                (macroDataConfigFieldsAcc, formItem) => ({
+                    ...macroDataConfigFieldsAcc,
+                    [sanitizeText(formItem.name)]: {
+                        type: formLib.generateFormItemObjectType(
+                            context,
+                            macroDataConfigTypeName,
+                            formItem
+                        ),
+                        args: formLib.generateFormItemArguments(context, formItem),
+                        resolve: formLib.generateFormItemResolveFunction(formItem),
+                    },
+                }),
+                {}
+            );
+
+            const macroDataConfigType = graphQlLib.createObjectType(context, {
+                name: macroDataConfigTypeName,
+                description: `Macro descriptor data config for application ['${descriptor.applicationKey}'] and descriptor ['${descriptor.name}']`,
+                fields: macroDataConfigFields,
+            });
+
+            return {
+                ...macroConfigTypeFieldsAcc,
+                [sanitizeDescriptorName]: {
+                    type: macroDataConfigType,
+                    resolve: (env) => {
+                        return env.source[descriptor.name];
+                    },
                 },
-            }),
-            {}
-        );
-
-        const macroDataConfigType = graphQlLib.createObjectType(context, {
-            name: macroDataConfigTypeName,
-            description: `Macro descriptor data config for application ['${descriptor.applicationKey}'] and descriptor ['${descriptor.name}']`,
-            fields: macroDataConfigFields,
-        });
-
-        return {
-            ...acc,
-            [sanitizeDescriptorName]: {
-                type: macroDataConfigType,
-                resolve: (env) => {
-                    return env.source[descriptor.name];
-                },
-            },
-        };
-    }, {});
+            };
+        },
+        {}
+    );
 
     const macroConfigTypeModified = graphQlLib.createObjectType(context, {
         name: `MacroConfigHtmlFragment`,
