@@ -1,20 +1,11 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_MicroCard</display-name>
-    <description>Microcard</description>
+    <display-name>_MikroKort</display-name>
+    <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
         <field-set>
-            <label>Microcard</label>
+            <label>Produkt eller livssituasjon</label>
             <items>
-                <input name="microcard" type="HtmlArea">
-                    <label>Faktaboksen vises under brødteksten</label>
-                    <help-text>Bruk maks 500 tegn.</help-text>
-                    <occurrences minimum="0" maximum="1"/>
-                    <config>
-                        <include>Undo Redo</include>
-                        <exclude>JustifyBlock Underline</exclude>
-                        <allowHeadings>h3 h4 normal</allowHeadings>
-                    </config>
-                </input>
+                <mixin name="product-target-selector"/>
             </items>
         </field-set>
     </form>
