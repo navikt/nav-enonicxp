@@ -1,0 +1,37 @@
+<layout>
+    <display-name>Fleksibelt kolonne-layout for situasjons-side</display-name>
+    <description>Responsive flexbox-kolonner</description>
+    <form>
+        <mixin name="header-with-anchor"/>
+        <input type="Long" name="numCols">
+            <label>Antall kolonner ved full skjermbredde</label>
+            <default>3</default>
+            <config>
+                <min>1</min>
+                <max>3</max>
+            </config>
+        </input>
+        <input type="RadioButton" name="justifyContent">
+            <label>Justering</label>
+            <help-text>
+                Justering for ufullstendige rader
+            </help-text>
+            <config>
+                <option value="flex-start">Venstre</option>
+                <option value="center">Midtstilt</option>
+                <option value="flex-end">Høyre</option>
+            </config>
+            <default>flex-start</default>
+        </input>
+        <item-set name="bgColor">
+            <label>Bakgrunnsfarge</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="color-picker"/>
+            </items>
+        </item-set>
+    </form>
+    <regions>
+        <region name="flexcols"/>
+    </regions>
+</layout>

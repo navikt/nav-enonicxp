@@ -1,0 +1,7 @@
+<page>
+    <display-name>Side med en kolonne</display-name>
+    <description>En enkelt kolonne for innhold, uten sidemenyer</description>
+    <regions>
+        <region name="pageContent"/>
+    </regions>
+</page>

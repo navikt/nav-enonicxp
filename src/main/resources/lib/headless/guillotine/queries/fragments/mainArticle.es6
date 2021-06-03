@@ -1,9 +1,12 @@
 const globalFragment = require('./_global');
 const menuListItems = require('./menuListItems');
-const { decoratorTogglesMixinFragment } = require('./_mixins');
-const { languagesMixinFragment } = require('./_mixins');
+const { processedHtmlFragment } = require('./_processedHtml');
+const {
+    decoratorTogglesMixinFragment,
+    languagesMixinFragment,
+    seoMixinFragment,
+} = require('./_mixins');
 const { imageFragment } = require('./media');
-const { seoMixinFragment } = require('./_mixins');
 
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
@@ -11,9 +14,9 @@ const mainArticleFragment = `
         data {
             ${languagesMixinFragment}
             ingress
-            text(processHtml:{type:server})
+            text ${processedHtmlFragment}
             hasTableOfContents
-            fact(processHtml:{type:server})
+            fact ${processedHtmlFragment}
             social
             picture {
                 target {

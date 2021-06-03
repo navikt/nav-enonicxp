@@ -3,8 +3,12 @@
     <description>Sidetype med menyer på høyre og/eller venstre side</description>
     <form>
         <field-set>
+            <label>Side-tittel (deprecated, sett tittel i content-type)</label>
             <items>
-                <mixin name="page-header"/>
+                <input type="TextLine" name="title">
+                    <label>H1 header for siden</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
             </items>
         </field-set>
         <field-set>

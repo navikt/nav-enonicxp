@@ -31,6 +31,12 @@ const getComponentAnchorLink = (component) => {
         return anchorId && { anchorId, linkText: title };
     }
 
+    const situationFlexCols = component.layout?.config?.['no-nav-navno']?.['situation-flex-cols'];
+    if (situationFlexCols) {
+        const { anchorId, title } = situationFlexCols;
+        return anchorId && { anchorId, linkText: title };
+    }
+
     return null;
 };
 
