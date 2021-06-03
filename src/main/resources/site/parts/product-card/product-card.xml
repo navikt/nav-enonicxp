@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Produkt-kort</display-name>
+    <display-name>_Kort</display-name>
     <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
         <field-set>
