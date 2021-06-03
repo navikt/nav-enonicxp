@@ -115,6 +115,9 @@ const partsFragment = `
                 ingressOverride
                 ${productTargetMixin}
             }
+            product_card_micro {
+                ${productTargetMixin}
+            }
             contact_option {
                 contactOptions {
                     _selected

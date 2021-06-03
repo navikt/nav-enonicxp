@@ -6,10 +6,6 @@
             <label>Produkt eller livssituasjon</label>
             <items>
                 <mixin name="product-target-selector"/>
-                <input name="ingressOverride" type='TextArea'>
-                    <label>Overstyr ingress</label>
-                    <help-text>La stå blank dersom standard-ingress skal vises</help-text>
-                </input>
             </items>
         </field-set>
     </form>
