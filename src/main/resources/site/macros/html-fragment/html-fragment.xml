@@ -1,5 +1,6 @@
 <macro>
-    <display-name>Formattert innhold fra fragment</display-name>
+    <display-name>Innhold fra fragment</display-name>
+    <description>Sett inn innhold fra fragmenter av komponenten "Formattert innhold"</description>
     <form>
         <input name="fragmentId" type="CustomSelector">
             <label>Velg fragment</label>
