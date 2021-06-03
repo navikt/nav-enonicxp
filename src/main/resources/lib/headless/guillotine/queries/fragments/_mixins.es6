@@ -87,7 +87,7 @@ const headerCommonMixin = `
 const productDataMixin = `
     title
     ingress
-    label
+    taxonomy
     illustration {
         ${globalFragment}
     }

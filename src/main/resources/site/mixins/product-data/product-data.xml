@@ -6,11 +6,11 @@
                 <input name="ingress" type="TextArea">
                     <label>Ingress</label>
                 </input>
-                <input name="label" type="ComboBox">
-                    <label>Etikett/kategori</label>
+                <input name="taxonomy" type="ComboBox">
+                    <label>Kategori</label>
                     <occurrences minimum="0" maximum="1"/>
                     <config>
-                        <option value="benefits">Pengestøtte</option>
+                        <option value="benefits">Pengestøtte fra NAV</option>
                         <option value="rights">Rettigheter</option>
                     </config>
                 </input>
