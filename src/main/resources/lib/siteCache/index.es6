@@ -281,11 +281,13 @@ function findReferences(id, path, depth) {
 function clearFragmentMacroReferences(id) {
     const fragment = contentLib.get({ key: id });
     if (!fragment || fragment.type !== 'portal:fragment') {
+        log.info(`Not a fragment: ${JSON.stringify(fragment)}`)
         return;
     }
 
     const contentsWithFragmentId = findContentWithHtmlAreaText(id);
     if (!contentsWithFragmentId?.length > 0) {
+        log.info(`No html found: ${JSON.stringify(contentsWithFragmentId)}`)
         return;
     }
 
