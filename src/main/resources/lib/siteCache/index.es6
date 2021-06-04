@@ -281,7 +281,6 @@ function findReferences(id, path, depth) {
 function clearFragmentMacroReferences(id) {
     const fragment = contentLib.get({ key: id });
     if (!fragment || fragment.type !== 'portal:fragment') {
-        log.info(`Not a fragment: ${JSON.stringify(fragment)}`);
         return;
     }
 

@@ -15,8 +15,7 @@ const includedContentTypes = [
 ].map((contentType) => `${app.name}:${contentType}`);
 
 const findContentsWithHtmlAreaText = (text) => {
-    const query = htmlAreaObjectPaths.map((objPath) => `${objPath} LIKE "${text}"`).join(' OR ');
-    log.info(`Html-area query: ${query}`);
+    const query = htmlAreaObjectPaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
 
     const result = contentLib.query({
         start: 0,
@@ -29,7 +28,7 @@ const findContentsWithHtmlAreaText = (text) => {
 };
 
 const findContentsWithFragmentId = (fragmentId) => {
-    return findContentsWithHtmlAreaText(`*fragmentId=\\"${fragmentId}*`);
+    return findContentsWithHtmlAreaText(`fragmentId=\\"${fragmentId}`);
 };
 
 module.exports = { findContentsWithHtmlAreaText, findContentsWithFragmentId };
