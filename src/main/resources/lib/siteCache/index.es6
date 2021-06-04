@@ -1,3 +1,5 @@
+const contentLib = require('/lib/xp/content');
+const { findContentWithHtmlAreaText } = require('/lib/htmlarea/htmlarea');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -118,7 +120,7 @@ function wipeOnChange(path) {
     if (path.indexOf('_templates/') !== -1) {
         wipeAll();
         log.info(
-            `WIPED: [${pathname}] - All caches cleared due to updated template on [${myHash}]`
+            `WIPED: [${pathname}] - All caches cleared due to updated template on [${myHash}]`,
         );
         return true;
     }
@@ -276,6 +278,22 @@ function findReferences(id, path, depth) {
     return references.filter((v, i, a) => !!v._path && refPaths.indexOf(v._path) === i);
 }
 
+function clearFragmentMacroReferences(id) {
+    const fragment = contentLib.get({ key: id });
+    if (!fragment || fragment.type !== 'portal:fragment') {
+        return;
+    }
+
+    const contentsWithFragmentId = findContentWithHtmlAreaText(id);
+    if (!contentsWithFragmentId?.length > 0) {
+        return;
+    }
+
+    log.info(`Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${id}`);
+
+    contentsWithFragmentId.forEach(content => wipeOnChange(content._path));
+}
+
 function clearReferences(id, path, depth) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
@@ -283,14 +301,16 @@ function clearReferences(id, path, depth) {
             `Clear references: ${JSON.stringify(
                 references.map((item) => item._path),
                 null,
-                4
-            )}`
+                4,
+            )}`,
         );
     }
 
     references.forEach((el) => {
         wipeOnChange(el._path);
     });
+
+    clearFragmentMacroReferences(id);
 }
 
 function nodeListenerCallback(event) {
@@ -315,7 +335,7 @@ function nodeListenerCallback(event) {
                 },
                 () => {
                     clearReferences(node.id, node.path, 0);
-                }
+                },
             );
         } else if (node.path.indexOf('/dekorator-meny/') !== -1) {
             wipe('decorator')();
