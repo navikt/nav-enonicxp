@@ -14,7 +14,7 @@ const includedContentTypes = [
     'main-article',
 ].map((contentType) => `${app.name}:${contentType}`);
 
-const findContentWithHtmlAreaText = (text) => {
+const findContentsWithHtmlAreaText = (text) => {
     const query = htmlAreaObjectPaths
         .map((objPath) => `${objPath} LIKE "*fragmentId=\\"${text}*"`)
         .join(' OR ');
@@ -25,9 +25,9 @@ const findContentWithHtmlAreaText = (text) => {
         count: 1000,
         contentTypes: includedContentTypes,
         query: query,
-    }).hits;
+    });
 
-    return result;
+    return result.hits;
 };
 
-module.exports = { findContentWithHtmlAreaText };
+module.exports = { findContentsWithHtmlAreaText };
