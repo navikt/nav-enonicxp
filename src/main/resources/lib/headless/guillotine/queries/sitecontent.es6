@@ -62,63 +62,18 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getInternalPathFromPublicPath = (path) => {
-    const content = runInBranchContext(
-        () =>
-            contentLib.query({
-                start: 0,
-                count: 2,
-                filters: {
-                    boolean: {
-                        must: {
-                            hasValue: {
-                                field: 'data.publicPath',
-                                values: [path],
-                            },
-                        },
-                    },
-                },
-            }).hits,
-        'master'
-    );
-
-    if (content.length === 0) {
-        return path;
-    }
-
-    if (content.length > 1) {
-        log.error(`Public path ${path} exists on multiple content objects!`);
-        return path;
-    }
-
-    return content[0]._path;
-};
-
 const getContent = (idOrPath, branch) => {
-    const internalPath = getInternalPathFromPublicPath(idOrPath);
-
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: internalPath,
+            ref: idOrPath,
         },
         branch
-    )?.get;
+    );
 
-    const content = response && internalPath ? { ...response, _path: internalPath } : response;
+    const content = response?.get;
     if (!content) {
         return null;
-    }
-
-    if (
-        branch !== 'draft' &&
-        content.data?.publicPath &&
-        content.data.publicPath !== content._path
-    ) {
-        return {
-            __typename: 'no_nav_navno_InternalLink',
-            data: { target: { _path: content.data?.publicPath } },
-        };
     }
 
     if (isMedia(content)) {
@@ -132,7 +87,7 @@ const getContent = (idOrPath, branch) => {
     }
 
     const page = mergeComponentsIntoPage(contentWithParsedData);
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(internalPath), branch);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
 
     return {
         ...contentWithParsedData,
