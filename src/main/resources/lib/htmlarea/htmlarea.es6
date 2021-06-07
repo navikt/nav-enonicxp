@@ -27,8 +27,8 @@ const findContentsWithHtmlAreaText = (text) => {
     return result.hits;
 };
 
-const findContentsWithFragmentId = (fragmentId) => {
+const findContentsWithFragmentMacro = (fragmentId) => {
     return findContentsWithHtmlAreaText(`fragmentId=\\"${fragmentId}`);
 };
 
-module.exports = { findContentsWithHtmlAreaText, findContentsWithFragmentId };
+module.exports = { findContentsWithHtmlAreaText, findContentsWithFragmentMacro };

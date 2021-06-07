@@ -1,5 +1,5 @@
 const contentLib = require('/lib/xp/content');
-const { findContentsWithFragmentId } = require('/lib/htmlarea/htmlarea');
+const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -284,7 +284,7 @@ function clearFragmentMacroReferences(id) {
         return;
     }
 
-    const contentsWithFragmentId = findContentsWithFragmentId(id);
+    const contentsWithFragmentId = findContentsWithFragmentMacro(id);
     if (!contentsWithFragmentId?.length > 0) {
         log.info(`No html found: ${JSON.stringify(contentsWithFragmentId)}`);
         return;
