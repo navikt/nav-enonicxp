@@ -26,6 +26,7 @@ const getContentWithCustomPath = (path) =>
     );
 
 // Looks for content where 'path' is set as a valid custom public-facing path
+// and returns the actual content path
 const getInternalContentPath = (path) => {
     if (!isValidCustomPath(path)) {
         return path;
