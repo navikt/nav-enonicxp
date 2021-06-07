@@ -11,31 +11,31 @@ const menuListItemsFragment = `
         selfservice {
             ${menuListItemsLinks}
         }
-        formAndApplication {
+        form_and_application {
             ${menuListItemsLinks}
         }
-        processTimes {
+        process_times {
             ${menuListItemsLinks}
         }
-        relatedInformation {
+        related_information {
             ${menuListItemsLinks}
         }
         international {
             ${menuListItemsLinks}
         }
-        reportChanges {
+        report_changes {
             ${menuListItemsLinks}
         }
         rates {
             ${menuListItemsLinks}
         }
-        appealRights {
+        appeal_rights {
             ${menuListItemsLinks}
         }
         membership {
             ${menuListItemsLinks}
         }
-        rulesAndRegulations {
+        rules_and_regulations {
             ${menuListItemsLinks}
         }
     }
