@@ -1,16 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const includedContentTypes = [
-    'dynamic-page',
-    'content-page-with-sidemenus',
-    'situation-page',
-    'main-article',
-    'section-page',
-    'page-list',
-    'office-information',
-].map((contentType) => `${app.name}:${contentType}`);
-
 const validCustomPathPattern = new RegExp('^/[0-9a-z-]+$');
 
 const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
@@ -21,7 +11,6 @@ const getContentWithCustomPath = (path) =>
             contentLib.query({
                 start: 0,
                 count: 2,
-                contentTypes: includedContentTypes,
                 filters: {
                     boolean: {
                         must: {
