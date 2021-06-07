@@ -36,9 +36,8 @@ const getContentWithCustomPath = (path) =>
         'master'
     );
 
-// Finds content where 'path' is set as a custom public-facing path
-// If found, returns the internal path for the content
-const getContentPath = (path) => {
+// Looks for content where 'path' is set as a valid custom public-facing path
+const getInternalContentPath = (path) => {
     if (!isValidCustomPath(path)) {
         return path;
     }
@@ -50,7 +49,7 @@ const getContentPath = (path) => {
     }
 
     if (content.length > 1) {
-        log.error(`Public path ${path} exists on multiple content objects!`);
+        log.error(`Custom public path ${path} exists on multiple content objects!`);
         return path;
     }
 
@@ -72,7 +71,7 @@ const getPathMapForReferences = (contentId) =>
         }, undefined);
 
 module.exports = {
-    getContentPath,
+    getInternalContentPath,
     getPathMapForReferences,
     getContentWithCustomPath,
     isValidCustomPath,

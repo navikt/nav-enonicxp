@@ -7,7 +7,10 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
-const { getContentPath, getPathMapForReferences } = require('/lib/custom-paths/custom-paths');
+const {
+    getInternalContentPath,
+    getPathMapForReferences,
+} = require('/lib/custom-paths/custom-paths');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -64,7 +67,7 @@ const queryGetContentByRef = `query($ref:ID!){
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
 const getContent = (requestedPath, branch) => {
-    const internalPath = getContentPath(requestedPath);
+    const internalPath = getInternalContentPath(requestedPath);
 
     const response = guillotineQuery(
         queryGetContentByRef,

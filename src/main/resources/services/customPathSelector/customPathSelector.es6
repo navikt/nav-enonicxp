@@ -20,7 +20,7 @@ const getResult = (query) => {
                 id: `error-${Date.now()}`,
                 displayName: `Feil: "${query}" er ikke en gyldig kort-url`,
                 description:
-                    'Kort-url må starte med / og kan inneholde tall, bokstaver (a-z) og bindestrek',
+                    'Kort-url må starte med "/" og kan inneholde tall, bokstaver (a-z) og bindestrek',
                 icon: errorIcon,
             },
         ];
