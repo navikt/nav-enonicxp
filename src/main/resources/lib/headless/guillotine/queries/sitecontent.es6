@@ -7,6 +7,7 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
+const { getContentPath, getPathMapForReferences } = require('/lib/custom-paths/custom-paths');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -62,11 +63,13 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getContent = (idOrPath, branch) => {
+const getContent = (requestedPath, branch) => {
+    const internalPath = getContentPath(requestedPath);
+
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: idOrPath,
+            ref: internalPath,
         },
         branch
     );
@@ -87,13 +90,15 @@ const getContent = (idOrPath, branch) => {
     }
 
     const page = mergeComponentsIntoPage(contentWithParsedData);
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(internalPath), branch);
+    const pathMap = getPathMapForReferences(internalPath);
 
     return {
         ...contentWithParsedData,
         page,
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
+        ...(pathMap && { pathMap }),
     };
 };
 

@@ -12,7 +12,7 @@ const includedContentTypes = [
 ].map((contentType) => `${app.name}:${contentType}`);
 
 const handleGet = () => {
-    const contentWithPublicPath = runInBranchContext(
+    const contentsWithCustomPublicPath = runInBranchContext(
         () =>
             contentLib.query({
                 start: 0,
@@ -23,7 +23,7 @@ const handleGet = () => {
                         must: [
                             {
                                 exists: {
-                                    field: 'data.publicPath',
+                                    field: 'data.customPublicPath',
                                 },
                             },
                         ],
@@ -33,8 +33,11 @@ const handleGet = () => {
         'master'
     );
 
-    const internalPathToPublicPathMap = contentWithPublicPath.reduce(
-        (acc, content) => ({ ...acc, [content._path]: content.data.publicPath }),
+    const internalPathToPublicPathMap = contentsWithCustomPublicPath.reduce(
+        (acc, content) => ({
+            ...acc,
+            [content._path.replace('/www.nav.no', '')]: content.data.customPublicPath,
+        }),
         {}
     );
 
