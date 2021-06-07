@@ -8,7 +8,7 @@ const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
 const {
-    getInternalContentPath,
+    getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
 
@@ -29,6 +29,7 @@ const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
 const media = require('./fragments/media');
+const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
 
 const queryFragments = [
     globalFragment,
@@ -66,13 +67,14 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getContent = (requestedPath, branch) => {
-    const internalPath = getInternalContentPath(requestedPath);
+const getContent = (requestedPathOrId, branch) => {
+    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
+    const contentRef = internalPathFromCustomPath || requestedPathOrId;
 
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: internalPath,
+            ref: contentRef,
         },
         branch
     );
@@ -80,6 +82,13 @@ const getContent = (requestedPath, branch) => {
     const content = response?.get;
     if (!content) {
         return null;
+    }
+
+    if (shouldRedirectToCustomPath(content, requestedPathOrId, branch)) {
+        return {
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: content.data.customPath } },
+        };
     }
 
     if (isMedia(content)) {
@@ -93,8 +102,8 @@ const getContent = (requestedPath, branch) => {
     }
 
     const page = mergeComponentsIntoPage(contentWithParsedData);
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(internalPath), branch);
-    const pathMap = getPathMapForReferences(internalPath);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
+    const pathMap = getPathMapForReferences(contentRef);
 
     return {
         ...contentWithParsedData,
