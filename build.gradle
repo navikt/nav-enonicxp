@@ -29,9 +29,7 @@ apply plugin: "com.enonic.xp.app"
 // App config
 app {
     name = project.appName
-    displayName = 'Nav.no - XP 2019'
-    vendorName = 'Enonic AS'
-    vendorUrl = 'http://enonic.com'
+    displayName = 'Nav.no - XP 2021'
     systemVersion = "${xpVersion}"
 }
 
