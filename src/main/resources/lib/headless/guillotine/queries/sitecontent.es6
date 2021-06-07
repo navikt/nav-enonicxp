@@ -101,7 +101,7 @@ const getContent = (requestedPath, branch) => {
         page,
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
-        ...(pathMap && { pathMap }),
+        pathMap,
     };
 };
 

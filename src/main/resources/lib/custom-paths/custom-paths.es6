@@ -57,18 +57,18 @@ const getInternalContentPath = (path) => {
 };
 
 const getPathMapForReferences = (contentId) =>
-    contentLib
-        .getOutboundDependencies({ key: contentId })
-        .map((dependencyId) => contentLib.get({ key: dependencyId }))
-        .reduce((acc, item) => {
-            if (isValidCustomPath(item?.data?.customPublicPath)) {
-                return {
-                    ...acc,
-                    [item._path.replace('/www.nav.no', '')]: item.data.customPublicPath,
-                };
-            }
-            return acc;
-        }, undefined);
+    contentLib.getOutboundDependencies({ key: contentId }).reduce((pathMapAcc, dependencyId) => {
+        const dependencyContent = contentLib.get({ key: dependencyId });
+        const customPath = dependencyContent?.data?.customPublicPath;
+
+        if (isValidCustomPath(customPath)) {
+            return {
+                ...pathMapAcc,
+                [dependencyContent._path.replace('/www.nav.no', '')]: customPath,
+            };
+        }
+        return pathMapAcc;
+    }, {});
 
 module.exports = {
     getInternalContentPath,
