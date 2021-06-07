@@ -31,6 +31,11 @@ const macrosFragment = `
         fotnote {
             fotnote
         }
+        header_with_anchor {
+            text
+            id
+            tag
+        }
         infoBoks {
             infoBoks
         }
