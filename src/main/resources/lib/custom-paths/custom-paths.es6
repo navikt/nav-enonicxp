@@ -13,7 +13,7 @@ const includedContentTypes = [
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-]+$');
 
-const isValidCustomPath = (path) => validCustomPathPattern.test(path);
+const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
 
 const getContentWithCustomPath = (path) =>
     runInBranchContext(
@@ -62,8 +62,11 @@ const getPathMapForReferences = (contentId) =>
         .getOutboundDependencies({ key: contentId })
         .map((dependencyId) => contentLib.get({ key: dependencyId }))
         .reduce((acc, item) => {
-            if (item?.data?.customPublicPath) {
-                return { ...acc, [item._path]: item.data.customPublicPath };
+            if (isValidCustomPath(item?.data?.customPublicPath)) {
+                return {
+                    ...acc,
+                    [item._path.replace('/www.nav.no', '')]: item.data.customPublicPath,
+                };
             }
             return acc;
         }, undefined);
