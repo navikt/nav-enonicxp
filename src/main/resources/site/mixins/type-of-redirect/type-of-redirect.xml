@@ -1,0 +1,15 @@
+<mixin>
+    <display-name>Type redirect</display-name>
+    <form>
+        <input type="RadioButton" name="typeOfRedirect">
+            <label>Type redirect</label>
+            <help-text>Velg om dette er en permanent eller midlertidig redirect</help-text>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="301">Permanent</option>
+                <option value="307">Midlertidig</option>
+            </config>
+            <default>301</default>
+        </input>
+    </form>
+</mixin>
