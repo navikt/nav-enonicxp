@@ -25,9 +25,9 @@
                 <max>5</max>
             </config>
         </input>
-        <input name="variables" type="Double">
-            <label>Dummy variabler</label>
-            <occurrences minimum="0" maximum="0"/>
+        <input name="variables" type="RadioButton">
+            <label>-</label>
+            <occurrences minimum="1" maximum="1"/>
         </input>
     </form>
 </macro>
