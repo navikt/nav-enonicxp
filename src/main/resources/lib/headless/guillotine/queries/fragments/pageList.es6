@@ -27,6 +27,7 @@ const pageListFragment = `
     ...on no_nav_navno_PageList {
         dataAsJson
         data {
+            customPath
             ${languagesMixinFragment}
             sectionContents {
                 ${globalFragment}

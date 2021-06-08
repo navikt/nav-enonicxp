@@ -22,6 +22,7 @@ const sectionPageShortFragment = `
 const sectionPageFragment = `
     ...on no_nav_navno_SectionPage {
         data {
+            customPath
             ingress
             moreNewsUrl
             tableContents {

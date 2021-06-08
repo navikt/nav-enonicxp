@@ -12,6 +12,7 @@ const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
         ${globalFragment}
         data {
+            customPath
             ${languagesMixinFragment}
             ingress
             text ${processedHtmlFragment}
