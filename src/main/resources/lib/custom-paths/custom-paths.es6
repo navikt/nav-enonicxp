@@ -64,6 +64,7 @@ const getInternalContentPathFromCustomPath = (xpPath) => {
 };
 
 const getPathMapForReferences = (contentId) => {
+    // getOutboundDependencies throws an error if the key does not exist
     try {
         return contentLib
             .getOutboundDependencies({
@@ -73,18 +74,14 @@ const getPathMapForReferences = (contentId) => {
                 const dependencyContent = contentLib.get({ key: dependencyId });
                 const customPath = dependencyContent?.data?.customPath;
 
-                if (isValidCustomPath(customPath)) {
-                    return {
-                        ...pathMapAcc,
-                        [xpPathToPathname(dependencyContent._path)]: customPath,
-                    };
-                }
-                return pathMapAcc;
-            }, {});
-    } catch (e) {
-        return {};
-    }
-};
+        if (isValidCustomPath(customPath)) {
+            return {
+                ...pathMapAcc,
+                [xpPathToPathname(dependencyContent._path)]: customPath,
+            };
+        }
+        return pathMapAcc;
+    }, {});
 
 module.exports = {
     getInternalContentPathFromCustomPath,
