@@ -63,12 +63,24 @@ const macrosFragment = `
     }
 `;
 
+// html_fragment is a macro which points to fragments of the html-area part
+// This is handled separately from other macros to prevent circular references
 const processedHtmlFragment = `(processHtml:{type:server}) {
-        processedHtml
-        macros {
-            ${macrosFragment}
+    processedHtml
+    macros {
+        ${macrosFragment}
+        config {
+            html_fragment {
+                fragmentId
+                processedHtml {
+                    processedHtml
+                    macros {
+                        ${macrosFragment}
+                    }
+                }
+            }
         }
     }
-`;
+}`;
 
 module.exports = { processedHtmlFragment };
