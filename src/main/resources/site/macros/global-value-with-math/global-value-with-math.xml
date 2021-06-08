@@ -27,7 +27,7 @@
         </input>
         <input name="variables" type="RadioButton">
             <label>-</label>
-            <occurrences minimum="1" maximum="1"/>
+            <occurrences minimum="0" maximum="1"/>
         </input>
     </form>
 </macro>
