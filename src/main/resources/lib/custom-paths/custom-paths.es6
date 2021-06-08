@@ -64,6 +64,7 @@ const getInternalContentPathFromCustomPath = (xpPath) => {
 };
 
 const getPathMapForReferences = (contentId) => {
+    // getOutboundDependencies throws an error if the key does not exist
     try {
         return contentLib
             .getOutboundDependencies({
