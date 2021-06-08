@@ -4,6 +4,7 @@
             <label>Oppsummering/ingress</label>
             <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i søkeresultater. Bør være maks 240 tegn.</help-text>
         </input>
+        <mixin name="custom-path-selector"/>
         <mixin name="languages-legacy"/>
         <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
