@@ -7,7 +7,8 @@ const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
 
 const xpPathToPathname = (xpPath) => xpPath.replace(/^\/www\.nav\.no/, '');
 
-// If the requested path
+// If the content has a custom path and it is not the requested path
+// we should redirect to the custom path
 const shouldRedirectToCustomPath = (content, requestedPathOrId, branch) => {
     const customPath = content.data?.customPath;
 
@@ -19,8 +20,10 @@ const shouldRedirectToCustomPath = (content, requestedPathOrId, branch) => {
     );
 };
 
+const getCustomPathFromContent = (contentId) =>
+    contentLib.get({ key: contentId })?.data?.customPath;
+
 const getContentWithCustomPath = (path) => {
-    log.info(`path: ${xpPathToPathname(path)}`);
     return runInBranchContext(
         () =>
             contentLib.query({
@@ -93,4 +96,5 @@ module.exports = {
     getContentWithCustomPath,
     isValidCustomPath,
     shouldRedirectToCustomPath,
+    getCustomPathFromContent,
 };

@@ -1,3 +1,4 @@
+const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const contentLib = require('/lib/xp/content');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
@@ -315,6 +316,11 @@ function clearReferences(id, path, depth) {
     references.forEach((el) => {
         wipeOnChange(el._path);
     });
+
+    const contentCustomPath = getCustomPathFromContent(id);
+    if (contentCustomPath) {
+        wipeOnChange(contentCustomPath);
+    }
 
     clearFragmentMacroReferences(id);
 }
