@@ -80,6 +80,7 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="custom-path-selector"/>
         <mixin name="languages-legacy"/>
         <mixin name="decorator-toggles"/>
         <mixin name="seo"/>

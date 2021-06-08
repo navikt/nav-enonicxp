@@ -50,6 +50,7 @@
             <label>Meta tagger</label>
             <occurrences maximum="0" minimum="0"/>
         </input>
+        <mixin name="custom-path-selector"/>
         <mixin name="languages-legacy"/>
         <mixin name="decorator-toggles"/>
         <mixin name="seo"/>
