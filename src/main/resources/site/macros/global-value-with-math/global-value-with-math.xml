@@ -25,5 +25,9 @@
                 <max>5</max>
             </config>
         </input>
+        <input name="variables" type="RadioButton">
+            <label>-</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
     </form>
 </macro>

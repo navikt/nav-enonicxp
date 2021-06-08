@@ -10,5 +10,9 @@
                 <param value="valueType">textValue</param>
             </config>
         </input>
+        <input name="value" type="RadioButton">
+            <label>-</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
     </form>
 </macro>
