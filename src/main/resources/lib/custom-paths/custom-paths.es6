@@ -63,19 +63,28 @@ const getInternalContentPathFromCustomPath = (xpPath) => {
     return content[0]._path;
 };
 
-const getPathMapForReferences = (contentId) =>
-    contentLib.getOutboundDependencies({ key: contentId }).reduce((pathMapAcc, dependencyId) => {
-        const dependencyContent = contentLib.get({ key: dependencyId });
-        const customPath = dependencyContent?.data?.customPath;
+const getPathMapForReferences = (contentId) => {
+    try {
+        return contentLib
+            .getOutboundDependencies({
+                key: contentId,
+            })
+            .reduce((pathMapAcc, dependencyId) => {
+                const dependencyContent = contentLib.get({ key: dependencyId });
+                const customPath = dependencyContent?.data?.customPath;
 
-        if (isValidCustomPath(customPath)) {
-            return {
-                ...pathMapAcc,
-                [xpPathToPathname(dependencyContent._path)]: customPath,
-            };
-        }
-        return pathMapAcc;
-    }, {});
+                if (isValidCustomPath(customPath)) {
+                    return {
+                        ...pathMapAcc,
+                        [xpPathToPathname(dependencyContent._path)]: customPath,
+                    };
+                }
+                return pathMapAcc;
+            }, {});
+    } catch (e) {
+        return {};
+    }
+};
 
 module.exports = {
     getInternalContentPathFromCustomPath,
