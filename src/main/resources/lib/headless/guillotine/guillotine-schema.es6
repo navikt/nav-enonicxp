@@ -1,22 +1,13 @@
 const guillotineLib = require('/lib/guillotine');
 const genericLib = require('/lib/guillotine/generic');
 const dynamicLib = require('/lib/guillotine/dynamic');
-const guillotineGraphQlLib = require('/lib/guillotine/graphql');
 const rootQueryLib = require('/lib/guillotine/query/root-query');
 const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscription');
-
-const hookGenerateFormItemArguments = require('./function-hooks/generate-form-item-arguments');
-const hookGenerateFormItemResolver = require('./function-hooks/generate-form-item-resolve-function');
-const hookCreatePageComponentDataConfigType = require('./function-hooks/create-page-component-data-config-type');
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const largeTableCallback = require('./schema-creation-callbacks/large-table');
-const {
-    filtersCategoryCallback,
-    filtersMenuPartConfigCallback,
-} = require('./schema-creation-callbacks/filters-menu');
+const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -29,41 +20,33 @@ const {
     mainArticleChapterDataCallback,
 } = require('./schema-creation-callbacks/main-article-chapter');
 
-const hookGuillotineFunctions = () => {
-    hookGenerateFormItemArguments();
-    hookGenerateFormItemResolver();
-    hookCreatePageComponentDataConfigType();
-};
-
 const schemaContextOptions = {
     creationCallbacks: {
         no_nav_navno_MainArticle: mainArticleCallback,
         no_nav_navno_MainArticle_Data: mainArticleDataCallback,
         no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
         no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
-        no_nav_navno_LargeTable: largeTableCallback,
         no_nav_navno_SectionPage_Data: sectionPageDataCallback,
         no_nav_navno_ContentList_Data: contentListDataCallback,
-        no_nav_navno_MainArticle_InnholdIHYremenyen: menuListDataCallback,
-        no_nav_navno_PageList_InnholdIHYremenyen: menuListDataCallback,
-        PartConfigDynamicNewsList_InnholdslisteForNyheter: contentListCallback('publish.first'),
-        PartConfigDynamicLinkList_HentLenkerFraInnholdsliste: contentListCallback(),
-        PartConfigPageNavigationMenu: pageNavigationMenuCallback,
-        PageConfigPageWithSideMenus: pageNavigationMenuCallback,
-        PartConfigHtmlArea: htmlAreaPartConfigCallback,
-        PartConfigFiltersMenu: filtersMenuPartConfigCallback,
-        PartConfigFiltersMenu_FilterKategori: filtersCategoryCallback,
+        no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
+        no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
+        Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter: contentListCallback(
+            'publish.first'
+        ),
+        Part_no_nav_navno_dynamic_link_list_HentLenkerFraInnholdsliste: contentListCallback(),
+        Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
+        Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
+        Part_no_nav_navno_html_area: htmlAreaPartConfigCallback,
+        Part_no_nav_navno_filters_menu_Filter: filterCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
 };
 
 const initAndCreateSchema = () => {
-    hookGuillotineFunctions();
-
     const context = guillotineLib.createContext(schemaContextOptions);
     genericLib.createTypes(context);
     dynamicLib.createTypes(context);
-    return guillotineGraphQlLib.createSchema({
+    return context.schemaGenerator.createSchema({
         query: rootQueryLib.createRootQueryType(context),
         subscription: rootSubscriptionLib.createRootSubscriptionType(context),
         dictionary: context.dictionary,

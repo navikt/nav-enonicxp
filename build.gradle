@@ -29,9 +29,7 @@ apply plugin: "com.enonic.xp.app"
 // App config
 app {
     name = project.appName
-    displayName = 'Nav.no - XP 2019'
-    vendorName = 'Enonic AS'
-    vendorUrl = 'http://enonic.com'
+    displayName = 'Nav.no - XP 2021'
     systemVersion = "${xpVersion}"
 }
 
@@ -50,9 +48,6 @@ repositories {
     }
     maven {
         url  "https://dl.bintray.com/ljl/maven"
-    }
-    maven {
-        url  "https://dl.bintray.com/pdrevland/wsUtil"
     }
 }
 
@@ -82,9 +77,8 @@ dependencies {
     include "com.enonic.lib:lib-http-client:2.2.1"
     include "com.enonic.lib:lib-cache:2.1.0"
     include 'com.enonic.lib:lib-cron:1.1.1'
-    include "com.enonic.lib:lib-guillotine:4.2.3"
+    include "com.enonic.lib:lib-guillotine:5.0.1"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
-    include "no.item.wsUtil:wsUtil:1.1.1"
     webjar "org.webjars:momentjs:2.14.1"
     include "org.jsoup:jsoup:1.13.1"
 }

@@ -115,18 +115,18 @@ const generateHit = (colorCode, colorName) => ({
     icon: { data: generateIcon(colorCode), type: 'image/svg+xml' },
 });
 
-const colorHits = Object.entries(colorsByCode).map(([colorCode, colorName]) =>
+const allHits = Object.entries(colorsByCode).map(([colorCode, colorName]) =>
     generateHit(colorCode, colorName)
 );
 
 const getHits = (query) => {
     if (!query) {
-        return colorHits;
+        return allHits;
     }
 
     const queryNormalized = sanitize(query);
 
-    const filteredHits = colorHits.filter(
+    const filteredHits = allHits.filter(
         (hit) =>
             sanitize(hit.displayName).includes(queryNormalized) ||
             sanitize(hit.description).includes(queryNormalized)
@@ -137,7 +137,7 @@ const getHits = (query) => {
         colorCodePattern.test(query) &&
         generateHit(query, 'Egendefinert');
 
-    return customColor ? [customColor] : colorHits;
+    return customColor ? [customColor] : filteredHits;
 };
 
 const colorPicker = (req) => {

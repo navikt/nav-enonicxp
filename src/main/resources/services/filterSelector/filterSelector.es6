@@ -22,8 +22,7 @@ const generateHits = (req) => {
 
     const filterMenus = getFilterMenus(repo.get(contentId)?.components);
     if (!filterMenus?.length > 0) {
-        log.info('No filter menus found');
-        return null;
+        return [];
     }
 
     return filterMenus
@@ -31,7 +30,7 @@ const generateHits = (req) => {
             const config = getComponentConfig(filterMenu);
             const categories = forceArray(config?.categories);
 
-            return categories?.map((category) =>
+            return categories.map((category) =>
                 forceArray(category.filters)?.map((filter) => generateHit(category, filter))
             );
         })
