@@ -1,3 +1,4 @@
+const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -273,7 +274,7 @@ function findReferences(id, path, depth) {
 
     // remove duplicates and return all references
     const refPaths = references.map((i) => i._path);
-    return references.filter((v, i, a) => !!v._path && refPaths.indexOf(v._path) === i);
+    return references.filter((v, i) => !!v._path && refPaths.indexOf(v._path) === i);
 }
 
 function clearReferences(id, path, depth) {
@@ -291,6 +292,11 @@ function clearReferences(id, path, depth) {
     references.forEach((el) => {
         wipeOnChange(el._path);
     });
+
+    const contentCustomPath = getCustomPathFromContent(id);
+    if (contentCustomPath) {
+        wipeOnChange(contentCustomPath);
+    }
 }
 
 function nodeListenerCallback(event) {
