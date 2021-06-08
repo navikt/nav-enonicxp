@@ -36,6 +36,14 @@ const macrosFragment = `
             id
             tag
         }
+        global_value {
+            value
+        }
+        global_value_with_math {
+            decimals
+            expression
+            variables
+        }
         infoBoks {
             infoBoks
         }
@@ -65,22 +73,24 @@ const macrosFragment = `
 
 // html_fragment is a macro which points to fragments of the html-area part
 // This is handled separately from other macros to prevent circular references
-const processedHtmlFragment = `(processHtml:{type:server}) {
-    processedHtml
-    macros {
-        ${macrosFragment}
-        config {
-            html_fragment {
-                fragmentId
-                processedHtml {
-                    processedHtml
-                    macros {
-                        ${macrosFragment}
+const processedHtmlFragment = `
+    (processHtml:{type:server}) {
+        processedHtml
+        macros {
+            ${macrosFragment}
+            config {
+                html_fragment {
+                    fragmentId
+                    processedHtml {
+                        processedHtml
+                        macros {
+                            ${macrosFragment}
+                        }
                     }
                 }
             }
         }
     }
-}`;
+`;
 
 module.exports = { processedHtmlFragment };

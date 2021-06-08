@@ -1,0 +1,14 @@
+<macro>
+    <display-name>Global verdi</display-name>
+    <description>Sett inn en verdi i teksten</description>
+    <form>
+        <input name="key" type="CustomSelector">
+            <label>Velg verdi</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <service>globalValues</service>
+                <param value="valueType">textValue</param>
+            </config>
+        </input>
+    </form>
+</macro>
