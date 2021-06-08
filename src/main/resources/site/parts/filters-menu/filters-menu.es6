@@ -8,7 +8,6 @@ const { generateUUID } = require('/lib/headless/uuid');
 
 const insertIdIfNotExist = (obj) => {
     if (!isUUID(obj.id)) {
-        log.info(`Generating UUID for ${JSON.stringify(obj)}`);
         obj.id = generateUUID();
     }
 };
@@ -19,7 +18,6 @@ const generatePersistantIds = (componentPath) => (content) => {
     const config = getComponentConfigByPath(componentPath, components);
 
     if (!config) {
-        log.info('No config found!');
         return content;
     }
 

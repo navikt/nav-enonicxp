@@ -7,10 +7,7 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const {
-    filtersCategoryCallback,
-    filtersMenuPartConfigCallback,
-} = require('./schema-creation-callbacks/filters-menu');
+const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -40,8 +37,7 @@ const schemaContextOptions = {
         Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
         Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
         Part_no_nav_navno_html_area: htmlAreaPartConfigCallback,
-        Part_no_nav_navno_filters_menu: filtersMenuPartConfigCallback,
-        Part_no_nav_navno_filters_menu_FilterKategori: filtersCategoryCallback,
+        Part_no_nav_navno_filters_menu_Filter: filterCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
 };
