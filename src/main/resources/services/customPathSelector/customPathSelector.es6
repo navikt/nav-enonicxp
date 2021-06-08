@@ -1,10 +1,18 @@
 const contentLib = require('/lib/xp/content');
+const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { getContentWithCustomPath } = require('/lib/custom-paths/custom-paths');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 
 const errorIcon = {
     data: `<svg width="32" height="32">\
-<circle r="16" cx="16" cy="16" fill="#BA3A26"/>\
+<circle r="16" cx="16" cy="16" fill="#ba3a26"/>\
+</svg>`,
+    type: 'image/svg+xml',
+};
+
+const warningIcon = {
+    data: `<svg width="32" height="32">\
+<circle r="16" cx="16" cy="16" fill="#ffaa33"/>\
 </svg>`,
     type: 'image/svg+xml',
 };
@@ -46,6 +54,18 @@ const getResult = (query) => {
                 displayName: `Feil: "${query}" er allerede i bruk som vanlig url`,
                 description: `"${contentWithInternalPath.displayName}" har denne url'en`,
                 icon: errorIcon,
+            },
+        ];
+    }
+
+    const redirectContent = getRedirectContent(`/www.nav.no${query}`);
+    if (redirectContent) {
+        return [
+            {
+                id: query,
+                displayName: query,
+                description: `Advarsel: ${query} er i bruk som redirect url - redirect vil overstyres av kort-url`,
+                icon: warningIcon,
             },
         ];
     }

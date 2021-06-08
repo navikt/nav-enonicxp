@@ -1,7 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const validCustomPathPattern = new RegExp('^/[0-9a-z-]+$');
+const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
 const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
 
