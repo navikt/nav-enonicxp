@@ -25,6 +25,7 @@ const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
 const media = require('./fragments/media');
+const animatedIconFragment = require('./fragments/animatedIcons');
 
 const queryFragments = [
     globalFragment,
@@ -44,6 +45,7 @@ const queryFragments = [
     melding.fragment,
     dynamicPage.fragment,
     media.mediaAttachmentFragment,
+    animatedIconFragment.fragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
