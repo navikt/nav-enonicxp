@@ -10,5 +10,8 @@
         <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
             <match>type:'portal:fragment'</match>
         </mapping>
+        <mapping controller="/lib/headless/controllers/media-preview.js">
+            <match>type:'media:.*'</match>
+        </mapping>
     </mappings>
 </site>
