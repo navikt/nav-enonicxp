@@ -14,7 +14,7 @@ const getSubPath = (req) =>
 
 const getHtmlFragmentHits = (query) => {
     const htmlFragments = contentLib.query({
-        ...(query && { query: `fulltext("displayName, _path", ${query}, "AND")` }),
+        ...(query && { query: `fulltext("displayName, _path", "${query}", "AND")` }),
         start: 0,
         count: 10000,
         contentTypes: ['portal:fragment'],
