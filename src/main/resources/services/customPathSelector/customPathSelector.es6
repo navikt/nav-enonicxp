@@ -1,4 +1,6 @@
+const httpClient = require('/lib/http-client');
 const contentLib = require('/lib/xp/content');
+const { frontendOrigin } = require('/lib/headless/url-origin');
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { getContentWithCustomPath } = require('/lib/custom-paths/custom-paths');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
@@ -17,16 +19,16 @@ const warningIcon = {
     type: 'image/svg+xml',
 };
 
-const getResult = (query) => {
-    if (!query) {
+const getResult = (suggestedPath) => {
+    if (!suggestedPath) {
         return [];
     }
 
-    if (!isValidCustomPath(query)) {
+    if (!isValidCustomPath(suggestedPath)) {
         return [
             {
                 id: `error-${Date.now()}`,
-                displayName: `Feil: "${query}" er ikke en gyldig kort-url`,
+                displayName: `Feil: "${suggestedPath}" er ikke en gyldig kort-url`,
                 description:
                     'Kort-url må starte med "/" og kan inneholde tall, bokstaver (a-z) og bindestrek',
                 icon: errorIcon,
@@ -34,47 +36,62 @@ const getResult = (query) => {
         ];
     }
 
-    const contentWithCustomPath = getContentWithCustomPath(query);
+    const contentWithCustomPath = getContentWithCustomPath(suggestedPath);
     if (contentWithCustomPath.length > 0) {
         return [
             {
                 id: `error-${Date.now()}`,
-                displayName: `Feil: "${query}" er allerede i bruk som kort-url`,
+                displayName: `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
                 description: `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`,
                 icon: errorIcon,
             },
         ];
     }
 
-    const contentWithInternalPath = contentLib.get({ key: `/www.nav.no${query}` });
+    const contentWithInternalPath = contentLib.get({ key: `/www.nav.no${suggestedPath}` });
     if (contentWithInternalPath) {
         return [
             {
                 id: `error-${Date.now()}`,
-                displayName: `Feil: "${query}" er allerede i bruk som vanlig url`,
+                displayName: `Feil: "${suggestedPath}" er allerede i bruk som vanlig url`,
                 description: `"${contentWithInternalPath.displayName}" har denne url'en`,
                 icon: errorIcon,
             },
         ];
     }
 
-    const redirectContent = getRedirectContent(`/www.nav.no${query}`);
+    const redirectContent = getRedirectContent(`/www.nav.no${suggestedPath}`);
     if (redirectContent) {
         return [
             {
-                id: query,
-                displayName: query,
-                description: `Advarsel: ${query} er i bruk som redirect url - redirect vil overstyres av kort-url`,
+                id: suggestedPath,
+                displayName: suggestedPath,
+                description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
                 icon: warningIcon,
+            },
+        ];
+    }
+
+    const responseFromPath = httpClient.request({
+        url: `${frontendOrigin}${suggestedPath}`,
+        method: 'HEAD',
+    });
+    if (responseFromPath.status !== 404) {
+        return [
+            {
+                id: `error-${Date.now()}`,
+                displayName: `Feil: "${suggestedPath}" brukes av en annen app på nav.no`,
+                description: '',
+                icon: errorIcon,
             },
         ];
     }
 
     return [
         {
-            id: query,
-            displayName: query,
-            description: `Denne siden vil kunne nåes på nav.no${query}`,
+            id: suggestedPath,
+            displayName: suggestedPath,
+            description: `Denne siden vil kunne nåes på nav.no${suggestedPath}`,
         },
     ];
 };
