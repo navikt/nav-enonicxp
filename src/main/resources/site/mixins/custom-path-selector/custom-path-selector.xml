@@ -1,12 +1,19 @@
 <mixin>
     <form>
-        <input name="customPath" type="CustomSelector">
+        <field-set>
             <label>Kort url</label>
-            <help-text>Dersom du ønsker at denne siden skal nåes fra en annen url enn den interne i Enonic kan dette settes her. F.eks. /min-korte-url</help-text>
-            <occurrences minimum="0" maximum="1"/>
-            <config>
-                <service>customPathSelector</service>
-            </config>
-        </input>
+            <items>
+                <input name="customPath" type="CustomSelector">
+                    <label>Skriv inn ønsket url</label>
+                    <help-text>Dersom du ønsker at denne siden skal nåes fra en annen url enn den
+                        interne i Enonic kan dette settes her. F.eks. /min-korte-url
+                    </help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>customPathSelector</service>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </mixin>
