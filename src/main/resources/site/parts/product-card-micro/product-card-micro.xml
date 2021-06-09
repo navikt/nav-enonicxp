@@ -2,11 +2,12 @@
     <display-name>_MikroKort</display-name>
     <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
-        <field-set>
+        <item-set name="card-list">
             <label>Produkt eller livssituasjon</label>
+            <occurrences minimum="0" maximum="5"/>
             <items>
                 <mixin name="product-target-selector"/>
             </items>
-        </field-set>
+        </item-set>
     </form>
 </part>

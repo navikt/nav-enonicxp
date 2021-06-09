@@ -116,7 +116,9 @@ const partsFragment = `
                 ${productTargetMixin}
             }
             product_card_micro {
+                card_list {
                 ${productTargetMixin}
+                }
             }
             contact_option {
                 contactOptions {
