@@ -49,6 +49,7 @@
     </form>
     <regions>
         <region name="leftMenu"/>
+        <region name="pageContentTop"/>
         <region name="pageContent"/>
         <region name="rightMenu"/>
     </regions>
