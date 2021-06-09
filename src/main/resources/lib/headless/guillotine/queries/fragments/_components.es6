@@ -118,6 +118,9 @@ const partsFragment = `
             product_card_micro {
                 ${productTargetMixin}
             }
+            product_card_mini {
+                ${productTargetMixin}
+            }
             contact_option {
                 contactOptions {
                     _selected

@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
+const animatedIconsFragment = require('./animatedIcons');
 
 const languagesMixinFragment = `
     languages {
@@ -90,6 +91,7 @@ const productDataMixin = `
     taxonomy
     illustration {
         ${globalFragment}
+        ${animatedIconsFragment.fragment}
     }
 `;
 

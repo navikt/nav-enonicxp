@@ -1,0 +1,12 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Kort mini</display-name>
+    <description>Lenker til en produkt- eller livssituasjons-side</description>
+    <form>
+        <field-set>
+            <label>Produkt eller livssituasjon</label>
+            <items>
+                <mixin name="product-target-selector"/>
+            </items>
+        </field-set>
+    </form>
+</part>
