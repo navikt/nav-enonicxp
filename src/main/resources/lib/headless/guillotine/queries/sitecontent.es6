@@ -26,6 +26,7 @@ const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
+const toolsPage = require('./fragments/toolsPage');
 
 const queryFragments = [
     globalFragment,
@@ -46,6 +47,7 @@ const queryFragments = [
     dynamicPage.fragment,
     media.mediaAttachmentFragment,
     animatedIconFragment.fragment,
+    toolsPage.toolsPageFragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
