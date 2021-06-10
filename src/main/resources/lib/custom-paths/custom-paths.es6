@@ -10,7 +10,7 @@ const xpPathToPathname = (xpPath) => xpPath.replace(/^\/www\.nav\.no/, '');
 // If the content has a custom path and it is not the requested path
 // we should redirect to the custom path
 const shouldRedirectToCustomPath = (content, requestedPathOrId, branch) => {
-    const customPath = content.data?.customPath;
+    const customPath = content?.data?.customPath;
 
     return (
         customPath &&
