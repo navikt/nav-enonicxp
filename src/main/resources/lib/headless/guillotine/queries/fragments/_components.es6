@@ -115,6 +115,11 @@ const partsFragment = `
                 ingressOverride
                 ${productTargetMixin}
             }
+            product_card_micro {
+                card_list {
+                ${productTargetMixin}
+                }
+            }
             product_card_mini {
                 ${productTargetMixin}
             }

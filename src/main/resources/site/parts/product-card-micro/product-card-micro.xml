@@ -1,0 +1,13 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Kort mikro</display-name>
+    <description>Lenker til en produkt- eller livssituasjons-side</description>
+    <form>
+        <item-set name="card-list">
+            <label>Produkt eller livssituasjon</label>
+            <occurrences minimum="0" maximum="5"/>
+            <items>
+                <mixin name="product-target-selector"/>
+            </items>
+        </item-set>
+    </form>
+</part>
