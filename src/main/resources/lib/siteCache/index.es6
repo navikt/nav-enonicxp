@@ -307,6 +307,17 @@ function clearCustomPathReferences(id) {
     }
 }
 
+function clearGlobalValueReferences(id) {
+    const globalValueSet = getGlobalValueSet(id);
+    if (globalValueSet) {
+        forceArray(globalValueSet.data?.valueItems).map((item) => {
+            getGlobalValueUsage(item.key).map((content) => {
+                wipeOnChange(content.path);
+            });
+        });
+    }
+}
+
 function clearReferences(id, path, depth) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
@@ -325,19 +336,7 @@ function clearReferences(id, path, depth) {
 
     clearCustomPathReferences(id);
     clearFragmentMacroReferences(id);
-    const globalValueSet = getGlobalValueSet(node.id);
-    if (globalValueSet) {
-        clearGlobalValueReferences(globalValueSet);
-        return true;
-    }
-}
-
-function clearGlobalValueReferences(globalValueSet) {
-    forceArray(globalValueSet.data?.valueItems).map((item) => {
-        getGlobalValueUsage(item.key).map((content) => {
-            wipeOnChange(content.path);
-        });
-    });
+    clearGlobalValueReferences(id);
 }
 
 function nodeListenerCallback(event) {
@@ -349,8 +348,6 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-
-
             wipeOnChange(node.path);
             libs.context.run(
                 {
