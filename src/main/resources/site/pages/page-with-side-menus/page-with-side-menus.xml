@@ -3,15 +3,6 @@
     <description>Sidetype med menyer på høyre og/eller venstre side</description>
     <form>
         <field-set>
-            <label>Side-tittel (deprecated, sett tittel i content-type)</label>
-            <items>
-                <input type="TextLine" name="title">
-                    <label>H1 header for siden</label>
-                    <occurrences minimum="0" maximum="1"/>
-                </input>
-            </items>
-        </field-set>
-        <field-set>
             <label>Venstre meny</label>
             <items>
                 <input type="CheckBox" name="leftMenuToggle">
@@ -43,6 +34,15 @@
                 <input type="CheckBox" name="rightMenuSticky">
                     <label>Sticky-meny</label>
                     <default>unchecked</default>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Side-tittel (deprecated, sett tittel i content-type)</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>H1 header for siden</label>
+                    <occurrences minimum="0" maximum="1"/>
                 </input>
             </items>
         </field-set>
