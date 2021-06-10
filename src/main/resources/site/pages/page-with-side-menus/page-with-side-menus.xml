@@ -49,7 +49,7 @@
     </form>
     <regions>
         <region name="leftMenu"/>
-        <region name="pageContentTop"/>
+        <region name="topPageContent"/>
         <region name="pageContent"/>
         <region name="rightMenu"/>
     </regions>

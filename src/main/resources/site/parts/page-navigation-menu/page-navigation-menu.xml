@@ -3,7 +3,7 @@
     <form>
         <input type="TextLine" name="title">
             <label>Tittel</label>
-            <default>Navigasjon</default>
+            <default>Innhold</default>
         </input>
         <mixin name="page-navigation-menu"/>
     </form>

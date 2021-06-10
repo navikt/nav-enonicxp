@@ -3,7 +3,7 @@ const { generateAnchorIdField } = require('/lib/headless/component-utils');
 
 exports.get = (req) => {
     if (req.mode === 'edit') {
-        generateAnchorIdField(req, 'title');
+        generateAnchorIdField(req, 'title', 'Seksjonstittel');
     }
 
     return controller(req);

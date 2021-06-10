@@ -50,7 +50,9 @@ const componentHasUniqueAnchorId = (content, currentComponent) => {
     return !isDuplicate;
 };
 
-const generateAnchorIdFromFieldValue = (componentPath, fieldKey) => (content) => {
+const generateAnchorIdFromFieldValue = (componentPath, fieldKey, fieldDefaultValue) => (
+    content
+) => {
     const { components } = content;
 
     const config = getComponentConfigByPath(componentPath, components);
@@ -61,7 +63,11 @@ const generateAnchorIdFromFieldValue = (componentPath, fieldKey) => (content) =>
 
     const fieldValue = config[fieldKey];
 
-    if (fieldValue) {
+    if (!fieldValue && fieldDefaultValue) {
+        config[fieldKey] = fieldDefaultValue;
+    }
+
+    if (fieldValue && fieldValue !== fieldDefaultValue) {
         const id = sanitize(fieldValue);
         const idExists = components.some(
             (component) => getComponentConfig(component)?.anchorId === id
@@ -76,7 +82,7 @@ const generateAnchorIdFromFieldValue = (componentPath, fieldKey) => (content) =>
     return content;
 };
 
-const generateAnchorIdField = (req, fieldKey) => {
+const generateAnchorIdField = (req, fieldKey, fieldDefaultValue) => {
     const contentId = portalLib.getContent()._id;
     const component = portalLib.getComponent();
 
@@ -90,7 +96,7 @@ const generateAnchorIdField = (req, fieldKey) => {
     if (!componentHasUniqueAnchorId(content, component)) {
         repo.modify({
             key: contentId,
-            editor: generateAnchorIdFromFieldValue(component.path, fieldKey),
+            editor: generateAnchorIdFromFieldValue(component.path, fieldKey, fieldDefaultValue),
         });
     }
 };
