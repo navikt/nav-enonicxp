@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { forceArray } = require('/lib/nav-utils');
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { getContentWithCustomPath } = require('/lib/custom-paths/custom-paths');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
@@ -17,10 +18,9 @@ const warningIcon = {
     type: 'image/svg+xml',
 };
 
-const getResult = (suggestedPath) => {
-    if (!suggestedPath) {
-        return [];
-    }
+const getResult = ({ query, ids }) => {
+    const currentSelection = forceArray(ids)[0];
+    const suggestedPath = query || currentSelection;
 
     if (!isValidCustomPath(suggestedPath)) {
         return [
@@ -34,16 +34,18 @@ const getResult = (suggestedPath) => {
         ];
     }
 
-    const contentWithCustomPath = getContentWithCustomPath(suggestedPath);
-    if (contentWithCustomPath.length > 0) {
-        return [
-            {
-                id: `error-${Date.now()}`,
-                displayName: `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
-                description: `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`,
-                icon: errorIcon,
-            },
-        ];
+    if (suggestedPath !== currentSelection) {
+        const contentWithCustomPath = getContentWithCustomPath(suggestedPath);
+        if (contentWithCustomPath.length > 0) {
+            return [
+                {
+                    id: `error-${Date.now()}`,
+                    displayName: `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
+                    description: `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`,
+                    icon: errorIcon,
+                },
+            ];
+        }
     }
 
     const contentWithInternalPath = contentLib.get({ key: `/www.nav.no${suggestedPath}` });
@@ -80,7 +82,7 @@ const getResult = (suggestedPath) => {
 };
 
 const handleGet = (req) => {
-    const result = getResult(req.params.query);
+    const result = getResult(req.params);
 
     return {
         status: 200,
