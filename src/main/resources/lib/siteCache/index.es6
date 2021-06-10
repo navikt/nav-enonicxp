@@ -1,3 +1,6 @@
+const contentLib = require('/lib/xp/content');
+const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
+const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
@@ -279,6 +282,31 @@ function findReferences(id, path, depth) {
     return references.filter((v, i) => !!v._path && refPaths.indexOf(v._path) === i);
 }
 
+function clearFragmentMacroReferences(id) {
+    const fragment = contentLib.get({ key: id });
+    if (!fragment || fragment.type !== 'portal:fragment') {
+        return;
+    }
+
+    const contentsWithFragmentId = findContentsWithFragmentMacro(id);
+    if (!contentsWithFragmentId?.length > 0) {
+        return;
+    }
+
+    log.info(
+        `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${id}`
+    );
+
+    contentsWithFragmentId.forEach((content) => wipeOnChange(content._path));
+}
+
+function clearCustomPathReferences(id) {
+    const contentCustomPath = getCustomPathFromContent(id);
+    if (contentCustomPath) {
+        wipeOnChange(contentCustomPath);
+    }
+}
+
 function clearReferences(id, path, depth) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
@@ -294,6 +322,14 @@ function clearReferences(id, path, depth) {
     references.forEach((el) => {
         wipeOnChange(el._path);
     });
+
+    clearCustomPathReferences(id);
+    clearFragmentMacroReferences(id);
+    const globalValueSet = getGlobalValueSet(node.id);
+    if (globalValueSet) {
+        clearGlobalValueReferences(globalValueSet);
+        return true;
+    }
 }
 
 function clearGlobalValueReferences(globalValueSet) {
@@ -313,11 +349,7 @@ function nodeListenerCallback(event) {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            const globalValueSet = getGlobalValueSet(node.id);
-            if (globalValueSet) {
-                clearGlobalValueReferences(globalValueSet);
-                return true;
-            }
+
 
             wipeOnChange(node.path);
             libs.context.run(
