@@ -286,7 +286,6 @@ function clearFragmentMacroReferences(id) {
 
     const contentsWithFragmentId = findContentsWithFragmentMacro(id);
     if (!contentsWithFragmentId?.length > 0) {
-        log.info(`No html found: ${JSON.stringify(contentsWithFragmentId)}`);
         return;
     }
 
