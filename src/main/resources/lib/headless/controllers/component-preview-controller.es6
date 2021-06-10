@@ -22,8 +22,12 @@ const fallbackResponse = {
 
 // For layout-previews, we need the complete props-tree of the layout, including
 // components in the layout regions
-const getLayoutComponentProps = (contentId, path) => {
-    const pageRegions = getContent(contentId, 'draft')?.page?.regions;
+const getLayoutComponentProps = (content, path) => {
+    if (content.type === 'portal:fragment') {
+        return content.fragment;
+    }
+
+    const pageRegions = getContent(content._id, 'draft')?.page?.regions;
 
     if (!pageRegions) {
         return null;
@@ -41,7 +45,7 @@ const getComponentProps = () => {
     const component = portalLib.getComponent();
 
     if (component.type === 'layout') {
-        return getLayoutComponentProps(content._id, component.path);
+        return getLayoutComponentProps(content, component.path);
     }
 
     const response = guillotineQuery(
@@ -52,8 +56,10 @@ const getComponentProps = () => {
         'draft'
     );
 
+    const componentPath = component.path || '/';
+
     const componentFromGuillotine = response?.get?.components.find(
-        (item) => item.path === component.path
+        (item) => item.path === componentPath
     );
 
     if (!componentFromGuillotine) {

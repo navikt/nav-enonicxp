@@ -25,20 +25,10 @@ const partsFragment = `
                     ${imageFragment}
                 }
             }
-            dynamic_supervisor_panel {
-                content ${processedHtmlFragment}
-                margin
-            }
             dynamic_alert {
                 type
                 inline
                 content ${processedHtmlFragment}
-                margin
-            }
-            dynamic_read_more_panel {
-                ingress
-                content ${processedHtmlFragment}
-                border
                 margin
             }
             dynamic_link_list {

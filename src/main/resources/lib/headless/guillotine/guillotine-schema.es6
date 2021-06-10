@@ -7,6 +7,7 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
+const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
@@ -38,6 +39,7 @@ const schemaContextOptions = {
         Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
         Part_no_nav_navno_html_area: htmlAreaPartConfigCallback,
         Part_no_nav_navno_filters_menu_Filter: filterCallback,
+        Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
 };
@@ -46,6 +48,7 @@ const initAndCreateSchema = () => {
     const context = guillotineLib.createContext(schemaContextOptions);
     genericLib.createTypes(context);
     dynamicLib.createTypes(context);
+
     return context.schemaGenerator.createSchema({
         query: rootQueryLib.createRootQueryType(context),
         subscription: rootSubscriptionLib.createRootSubscriptionType(context),
