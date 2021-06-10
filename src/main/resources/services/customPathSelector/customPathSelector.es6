@@ -1,6 +1,4 @@
-const httpClient = require('/lib/http-client');
 const contentLib = require('/lib/xp/content');
-const { frontendOrigin } = require('/lib/headless/url-origin');
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
 const { getContentWithCustomPath } = require('/lib/custom-paths/custom-paths');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
@@ -68,21 +66,6 @@ const getResult = (suggestedPath) => {
                 displayName: suggestedPath,
                 description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
                 icon: warningIcon,
-            },
-        ];
-    }
-
-    const responseFromPath = httpClient.request({
-        url: `${frontendOrigin}${suggestedPath}`,
-        method: 'HEAD',
-    });
-    if (responseFromPath.status !== 404) {
-        return [
-            {
-                id: `error-${Date.now()}`,
-                displayName: `Feil: "${suggestedPath}" brukes av en annen app på nav.no`,
-                description: '',
-                icon: errorIcon,
             },
         ];
     }
