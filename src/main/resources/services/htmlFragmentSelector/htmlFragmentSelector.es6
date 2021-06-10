@@ -27,9 +27,8 @@ const getHtmlFragmentHits = (query) => {
                     },
                 },
                 mustNot: {
-                    hasValue: {
-                        field: 'components.type',
-                        values: ['layout'],
+                    exists: {
+                        field: 'components.layout',
                     },
                 },
             },
