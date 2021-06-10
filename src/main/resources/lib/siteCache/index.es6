@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
@@ -296,6 +297,13 @@ function clearFragmentMacroReferences(id) {
     contentsWithFragmentId.forEach((content) => wipeOnChange(content._path));
 }
 
+function clearCustomPathReferences(id) {
+    const contentCustomPath = getCustomPathFromContent(id);
+    if (contentCustomPath) {
+        wipeOnChange(contentCustomPath);
+    }
+}
+
 function clearReferences(id, path, depth) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
@@ -312,6 +320,7 @@ function clearReferences(id, path, depth) {
         wipeOnChange(el._path);
     });
 
+    clearCustomPathReferences(id);
     clearFragmentMacroReferences(id);
 }
 
