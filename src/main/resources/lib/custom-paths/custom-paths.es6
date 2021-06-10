@@ -20,10 +20,17 @@ const shouldRedirectToCustomPath = (content, requestedPathOrId, branch) => {
     );
 };
 
-const getCustomPathFromContent = (contentId) =>
-    contentLib.get({ key: contentId })?.data?.customPath;
+const getCustomPathFromContent = (contentId) => {
+    const customPath = contentLib.get({ key: contentId })?.data?.customPath;
+    return isValidCustomPath(customPath) ? customPath : null;
+};
 
 const getContentWithCustomPath = (path) => {
+    const customPath = xpPathToPathname(path);
+    if (!isValidCustomPath(customPath)) {
+        return [];
+    }
+
     return runInBranchContext(
         () =>
             contentLib.query({
@@ -34,7 +41,7 @@ const getContentWithCustomPath = (path) => {
                         must: {
                             hasValue: {
                                 field: 'data.customPath',
-                                values: [xpPathToPathname(path)],
+                                values: [customPath],
                             },
                         },
                     },
