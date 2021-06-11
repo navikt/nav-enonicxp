@@ -1,7 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const { forceArray } = require('/lib/nav-utils');
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
-const { getContentWithCustomPath } = require('/lib/custom-paths/custom-paths');
+const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 
 const errorIcon = {
@@ -35,7 +35,7 @@ const getResult = ({ query, ids }) => {
     }
 
     if (suggestedPath !== currentSelection) {
-        const contentWithCustomPath = getContentWithCustomPath(suggestedPath);
+        const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
         if (contentWithCustomPath.length > 0) {
             return [
                 {
