@@ -1,15 +1,10 @@
 <mixin>
     <display-name>Type redirect</display-name>
     <form>
-        <input type="RadioButton" name="permanentRedirect">
-            <label>Type redirect</label>
-            <help-text>Velg om dette er en permanent eller midlertidig redirect</help-text>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <option value="true">Permanent</option>
-                <option value="false">Midlertidig</option>
-            </config>
-            <default>true</default>
+        <input name="permanentRedirect" type="CheckBox" >
+            <label>Permanent redirect</label>
+            <help-text>Velg vekk hvis dette er en midlertidig redirect</help-text>
+            <default>checked</default>
         </input>
     </form>
 </mixin>
