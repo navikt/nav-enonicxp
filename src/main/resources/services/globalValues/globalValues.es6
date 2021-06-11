@@ -39,7 +39,6 @@ const selectorHandler = (req) => {
 
 const globalValues = (req) => {
     const subPath = getSubPath(req);
-    log.info(JSON.stringify(req));
 
     if (!subPath) {
         return selectorHandler(req);

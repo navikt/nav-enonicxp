@@ -48,7 +48,7 @@ const modifyGlobalValueItem = (req) => {
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                _content.data.valueItems = _content.data.valueItems.map((item) =>
+                _content.data.valueItems = valueItems.map((item) =>
                     item.key === key ? modifiedItem : item
                 );
 

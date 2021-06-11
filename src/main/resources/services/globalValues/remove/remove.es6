@@ -5,7 +5,7 @@ const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-util
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
 
-const invalidRequest = (msg) => ({
+const invalidRequestResponse = (msg) => ({
     status: 400,
     contentType: 'application/json',
     body: {
@@ -21,19 +21,19 @@ const removeGlobalValueItem = (req) => {
     }
 
     if (!key || !contentId) {
-        return invalidRequest('ContentId and value-key must be provided');
+        return invalidRequestResponse('ContentId and value-key must be provided');
     }
 
     const content = getGlobalValueSet(contentId);
     if (!content) {
-        return invalidRequest(`Global value set with id ${contentId} not found`);
+        return invalidRequestResponse(`Global value set with id ${contentId} not found`);
     }
 
     const valueItems = forceArray(content.data?.valueItems);
 
     const itemExists = valueItems.some((item) => item.key === key);
     if (!itemExists) {
-        return invalidRequest(`Item with key ${key} not found on ${contentId}`);
+        return invalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
     const usage = getGlobalValueUsage(key);
@@ -56,9 +56,7 @@ const removeGlobalValueItem = (req) => {
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                _content.data.valueItems = _content.data.valueItems.filter(
-                    (item) => item.key !== key
-                );
+                _content.data.valueItems = valueItems.filter((item) => item.key !== key);
                 return _content;
             },
         });
