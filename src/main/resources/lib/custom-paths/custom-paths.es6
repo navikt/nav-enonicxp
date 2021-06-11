@@ -5,7 +5,7 @@ const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
 const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
 
-const xpPathToPathname = (xpPath) => xpPath.replace(/^\/www\.nav\.no/, '');
+const xpPathToPathname = (xpPath) => xpPath?.replace(/^\/www\.nav\.no/, '');
 
 // If the content has a custom path and it is not the requested path
 // we should redirect to the custom path
