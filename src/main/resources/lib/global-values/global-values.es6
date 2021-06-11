@@ -119,9 +119,14 @@ const getGlobalValueSet = (contentId) => {
     return content;
 };
 
+const getGlobalTextValue = (key) => getGlobalValue(key, 'textValue');
+const getGlobalNumberValue = (key) => getGlobalValue(key, 'numberValue');
+
 module.exports = {
     getAllGlobalValues,
     getGlobalValue,
     getGlobalValueUsage,
     getGlobalValueSet,
+    getGlobalTextValue,
+    getGlobalNumberValue,
 };
