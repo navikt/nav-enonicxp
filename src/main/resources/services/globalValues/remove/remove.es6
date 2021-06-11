@@ -39,13 +39,7 @@ const removeGlobalValueItem = (req) => {
     const usage = getGlobalValueUsage(key);
     if (usage.length > 0) {
         if (!userIsAdmin()) {
-            return {
-                status: 403,
-                contentType: 'application/json',
-                body: {
-                    message: 'Removing values that are in use requires admin access',
-                },
-            };
+            return insufficientPermissionResponse('administrator');
         }
 
         log.warning(
@@ -62,7 +56,9 @@ const removeGlobalValueItem = (req) => {
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                _content.data.valueItems = valueItems.filter((item) => item.key !== key);
+                _content.data.valueItems = _content.data.valueItems.filter(
+                    (item) => item.key !== key
+                );
                 return _content;
             },
         });

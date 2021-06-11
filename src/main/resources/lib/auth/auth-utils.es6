@@ -6,7 +6,7 @@ const insufficientPermissionResponse = (requiredPermission) => ({
     status: 403,
     contentType: 'application/json',
     body: {
-        message: `Feil: "${requiredPermission}" tilgang kreves for denne handlingen`,
+        message: `Feil: ${requiredPermission} tilgang kreves for denne handlingen`,
     },
 });
 

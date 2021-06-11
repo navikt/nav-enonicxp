@@ -6,19 +6,17 @@ const { forceArray } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { generateUUID } = require('/lib/headless/uuid');
 
-const invalidRequest = (msg) => ({
+const invalidValueInputResponse = (msg) => ({
     status: 400,
     contentType: 'application/json',
     body: {
-        message: `Invalid add request: ${msg}`,
+        message: `Invalid value input: ${msg}`,
     },
 });
 
 const generateKey = () => `gv_${generateUUID()}`;
 
-const addGlobalValueItem = (req) => {
-    const { contentId, itemName, textValue, numberValue } = req.params;
-
+const getErrorResponseForInvalidValueInput = ({ contentId, itemName, textValue, numberValue }) => {
     if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
         return insufficientPermissionResponse('MODIFY');
     }
@@ -26,7 +24,7 @@ const addGlobalValueItem = (req) => {
     const hasValue = textValue || numberValue !== undefined;
 
     if (!contentId || !itemName || !hasValue) {
-        return invalidRequest(
+        return invalidValueInputResponse(
             'Missing parameters:' +
                 `${!contentId && ' contentId'}` +
                 `${!itemName && ' itemName'}` +
@@ -34,20 +32,31 @@ const addGlobalValueItem = (req) => {
         );
     }
 
-    if (isNaN(numberValue)) {
-        return invalidRequest('numberValue must be a number');
+    if (numberValue !== undefined && isNaN(numberValue)) {
+        return invalidValueInputResponse(`numberValue ${numberValue} is not a number`);
     }
+
+    return null;
+};
+
+const addGlobalValueItem = (req) => {
+    const errorResponse = getErrorResponseForInvalidValueInput(req.path);
+    if (errorResponse) {
+        return errorResponse;
+    }
+
+    const { contentId, itemName, textValue, numberValue } = req.params;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
-        return invalidRequest(`Global value set with id ${contentId} not found`);
+        return invalidValueInputResponse(`Global value set with id ${contentId} not found`);
     }
 
     const valueItems = forceArray(content.data?.valueItems);
     const nameExists = valueItems.some((item) => item.itemName === itemName);
 
     if (nameExists) {
-        return invalidRequest(`Item name ${itemName} already exists on ${contentId}`);
+        return invalidValueInputResponse(`Item name ${itemName} already exists on ${contentId}`);
     }
 
     try {
@@ -92,4 +101,8 @@ const addGlobalValueItem = (req) => {
     }
 };
 
-module.exports = { addGlobalValueItem };
+module.exports = {
+    addGlobalValueItem,
+    getErrorResponseForInvalidValueInput,
+    invalidValueInputResponse,
+};

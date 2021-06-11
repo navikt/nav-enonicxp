@@ -1,49 +1,35 @@
 const nodeLib = require('/lib/xp/node');
-const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
-const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
-
-const invalidRequest = (msg) => ({
-    status: 400,
-    contentType: 'application/json',
-    body: {
-        message: `Invalid modify request: ${msg}`,
-    },
-});
+const { runInBranchContext } = require('/lib/headless/branch-context');
+const { invalidValueInputResponse } = require('../add/add');
+const { getErrorResponseForInvalidValueInput } = require('../add/add');
+const { forceArray } = require('/lib/nav-utils');
 
 const itemNameExists = (valueItems, itemName, key) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
 const modifyGlobalValueItem = (req) => {
+    const errorResponse = getErrorResponseForInvalidValueInput(req.params);
+    if (errorResponse) {
+        return errorResponse;
+    }
+
     const { contentId, key, itemName, textValue, numberValue } = req.params;
 
-    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
-        return insufficientPermissionResponse('MODIFY');
-    }
-
-    if (!contentId || !key) {
-        return invalidRequest('ContentId and value-key must be provided');
-    }
-
-    const content = getGlobalValueSet(contentId);
+    const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
-        return invalidRequest(`Global value set with id ${contentId} not found`);
+        return invalidValueInputResponse(`Global value set with id ${contentId} not found`);
     }
 
     const valueItems = forceArray(content.data?.valueItems);
 
     const itemToModify = valueItems.find((item) => item.key === key);
     if (!itemToModify) {
-        return invalidRequest(`Item with key ${key} not found on ${contentId}`);
+        return invalidValueInputResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
-    if (itemNameExists(valueItems, itemName, key)) {
-        return invalidRequest(`Item name ${itemName} already exists on ${contentId}`);
-    }
-
-    if (numberValue !== undefined && isNaN(numberValue)) {
-        return invalidRequest(`numberValue ${numberValue} is not a number`);
+    if (itemName && itemNameExists(valueItems, itemName, key)) {
+        return invalidValueInputResponse(`Item name ${itemName} already exists on ${contentId}`);
     }
 
     try {
@@ -55,14 +41,14 @@ const modifyGlobalValueItem = (req) => {
         const modifiedItem = {
             key,
             itemName,
-            textValue,
-            ...(numberValue && { numberValue: parseFloat(numberValue) }),
+            ...(textValue && { textValue }),
+            ...(numberValue !== undefined && { numberValue }),
         };
 
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                _content.data.valueItems = valueItems.map((item) =>
+                _content.data.valueItems = _content.data.valueItems.map((item) =>
                     item.key === key ? modifiedItem : item
                 );
 
