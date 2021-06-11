@@ -1,6 +1,5 @@
 const nodeLib = require('/lib/xp/node');
-const contentLib = require('/lib/xp/content');
-const { globalValuesContentType } = require('/lib/global-values/global-values');
+const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
@@ -28,15 +27,19 @@ const addGlobalValueItem = (req) => {
 
     if (!contentId || !itemName || !hasValue) {
         return invalidRequest(
-            'Bad request: Missing parameters:' +
+            'Missing parameters:' +
                 `${!contentId && ' contentId'}` +
                 `${!itemName && ' itemName'}` +
                 `${!hasValue && ' textValue or numberValue'}`
         );
     }
 
-    const content = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
-    if (!content || content.type !== globalValuesContentType) {
+    if (isNaN(numberValue)) {
+        return invalidRequest('numberValue must be a number');
+    }
+
+    const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
+    if (!content) {
         return invalidRequest(`Global value set with id ${contentId} not found`);
     }
 

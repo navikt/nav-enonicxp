@@ -1,20 +1,10 @@
+const { getSubPath } = require('../service-utils');
 const { getGlobalValueSetService } = require('./getSet/getSet');
 const { removeGlobalValueItem } = require('./remove/remove');
 const { modifyGlobalValueItem } = require('./modify/modify');
 const { addGlobalValueItem } = require('./add/add');
 const { getGlobalValueUsageService } = require('./usage/usage');
 const { getAllGlobalValues } = require('/lib/global-values/global-values');
-
-const serviceName = __DIR__
-    .split('/')
-    .filter((str) => !!str)
-    .slice(-1)[0];
-
-const getSubPath = (req) =>
-    req.path
-        .split(serviceName)
-        .slice(-1)[0]
-        .replace(/(^\/)|(\/$)/, ''); // Trim leading/trailing slash
 
 const selectorHandler = (req) => {
     const { valueType = 'textValue', query } = req.params;
