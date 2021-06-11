@@ -10,6 +10,7 @@
                 <param value="valueType">textValue</param>
             </config>
         </input>
+        <!-- Dummy value to prevent graphql-errors for undefined field -->
         <input name="value" type="RadioButton">
             <label>-</label>
             <occurrences minimum="0" maximum="1"/>

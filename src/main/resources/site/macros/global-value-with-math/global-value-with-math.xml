@@ -25,6 +25,7 @@
                 <max>5</max>
             </config>
         </input>
+        <!-- Dummy value to prevent graphql-errors for undefined field -->
         <input name="variables" type="RadioButton">
             <label>-</label>
             <occurrences minimum="0" maximum="1"/>

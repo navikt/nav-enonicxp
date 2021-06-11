@@ -1,17 +1,14 @@
 const contentLib = require('/lib/xp/content');
+const { findContentsWithHtmlAreaText } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 
 const globalValuesContentType = `${app.name}:global-value-set`;
 const validTypes = { textValue: true, numberValue: true };
 
 const getGlobalValueUsage = (key) => {
-    const result = contentLib.query({
-        start: 0,
-        count: 10,
-        query: `fulltext("data.text, components.part.config.no-nav-navno.html-area.html", "${key}", "AND")`,
-    });
+    const results = findContentsWithHtmlAreaText(key);
 
-    return result.hits.map((content) => ({
+    return results.map((content) => ({
         id: content._id,
         path: content._path,
         displayName: content.displayName,
@@ -47,7 +44,7 @@ const getAllGlobalValues = (type, query) => {
 
     const valueSets = contentLib.query({
         start: 0,
-        count: 1000,
+        count: 10000,
         contentTypes: [globalValuesContentType],
         query: query && `fulltext("data.valueItems.itemName, displayName", "${query}", "AND")`,
         filters: {
