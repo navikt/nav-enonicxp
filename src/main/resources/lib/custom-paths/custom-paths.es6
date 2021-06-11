@@ -5,7 +5,7 @@ const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
 const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
 
-const xpPathToPathname = (xpPath) => xpPath.replace(/^\/www\.nav\.no/, '');
+const xpPathToPathname = (xpPath) => xpPath?.replace(/^\/www\.nav\.no/, '');
 
 // If the content has a custom path and it is not the requested path
 // we should redirect to the custom path
@@ -25,7 +25,7 @@ const getCustomPathFromContent = (contentId) => {
     return isValidCustomPath(customPath) ? customPath : null;
 };
 
-const getContentWithCustomPath = (path) => {
+const getContentFromCustomPath = (path) => {
     const customPath = xpPathToPathname(path);
     if (!isValidCustomPath(customPath)) {
         return [];
@@ -59,7 +59,7 @@ const getInternalContentPathFromCustomPath = (xpPath) => {
         return null;
     }
 
-    const content = getContentWithCustomPath(path);
+    const content = getContentFromCustomPath(path);
 
     if (content.length === 0) {
         return null;
@@ -100,7 +100,7 @@ const getPathMapForReferences = (contentId) => {
 module.exports = {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
-    getContentWithCustomPath,
+    getContentFromCustomPath,
     isValidCustomPath,
     shouldRedirectToCustomPath,
     getCustomPathFromContent,

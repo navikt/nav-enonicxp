@@ -1,0 +1,16 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>_Tilbyderkort</display-name>
+    <description>Benyttes på livssituasjonssider for lenking til eksterne tilbydere.</description>
+    <form>
+        <mixin name="link"/>
+        <input type="TextArea" name="description">
+            <label>Beskrivelse</label>
+            <config>
+                <max-length>300</max-length> 
+            </config>
+        </input>
+        <input type="Input" name="endnote">
+            <label>Sluttnote / kategorinavn</label>
+        </input>
+    </form>
+</part>

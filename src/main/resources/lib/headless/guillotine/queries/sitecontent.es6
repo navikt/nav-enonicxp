@@ -7,6 +7,7 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
+const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
 const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
@@ -30,7 +31,8 @@ const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
-const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
+const animatedIconFragment = require('./fragments/animatedIcons');
+const toolsPage = require('./fragments/toolsPage');
 
 const queryFragments = [
     globalFragment,
@@ -51,6 +53,8 @@ const queryFragments = [
     dynamicPage.fragment,
     globalValueSet.fragment,
     media.mediaAttachmentFragment,
+    animatedIconFragment.fragment,
+    toolsPage.toolsPageFragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
