@@ -66,6 +66,8 @@ const globalValues = (req) => {
             return modifyGlobalValueItem(req);
         case 'remove':
             return removeGlobalValueItem(req);
+        default:
+            break;
     }
 
     return {

@@ -1,6 +1,6 @@
 const nodeLib = require('/lib/xp/node');
 const { userIsAdmin } = require('/lib/auth/auth-utils');
-const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
+const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
@@ -17,7 +17,7 @@ const removeGlobalValueItem = (req) => {
     const { key, contentId } = req.params;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
-        return insufficientAccessResponse('DELETE');
+        return insufficientPermissionResponse('DELETE');
     }
 
     if (!key || !contentId) {
@@ -61,9 +61,9 @@ const removeGlobalValueItem = (req) => {
 
         repo.modify({
             key: contentId,
-            editor: (content) => {
-                content.data.valueItems = valueItems.filter((item) => item.key !== key);
-                return content;
+            editor: (_content) => {
+                _content.data.valueItems = valueItems.filter((item) => item.key !== key);
+                return _content;
             },
         });
 

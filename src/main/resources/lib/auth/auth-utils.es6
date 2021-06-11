@@ -2,11 +2,11 @@ const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
 const authLib = require('/lib/xp/auth');
 
-const insufficientAccessResponse = (requiredPermission) => ({
+const insufficientPermissionResponse = (requiredPermission) => ({
     status: 403,
     contentType: 'application/json',
     body: {
-        message: `Forbidden: ${requiredPermission} access required for this resource`,
+        message: `Feil: "${requiredPermission}" tilgang kreves for denne handlingen`,
     },
 });
 
@@ -30,7 +30,7 @@ const validateCurrentUserPermissionForContent = (contentId, requiredPermission) 
             status: 500,
             contentType: 'application/json',
             body: {
-                message: 'Could not retrieve user permissions',
+                message: 'Error: could not retrieve user permissions',
             },
         };
     }
@@ -52,6 +52,6 @@ const validateCurrentUserPermissionForContent = (contentId, requiredPermission) 
 
 module.exports = {
     validateCurrentUserPermissionForContent,
-    insufficientAccessResponse,
+    insufficientPermissionResponse,
     userIsAdmin,
 };

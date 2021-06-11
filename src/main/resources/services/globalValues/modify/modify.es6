@@ -1,5 +1,5 @@
 const nodeLib = require('/lib/xp/node');
-const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
+const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
@@ -19,7 +19,7 @@ const modifyGlobalValueItem = (req) => {
     const { contentId, key, itemName, textValue, numberValue } = req.params;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
-        return insufficientAccessResponse('MODIFY');
+        return insufficientPermissionResponse('MODIFY');
     }
 
     if (!contentId || !key) {
@@ -61,12 +61,12 @@ const modifyGlobalValueItem = (req) => {
 
         repo.modify({
             key: contentId,
-            editor: (content) => {
-                content.data.valueItems = valueItems.map((item) =>
+            editor: (_content) => {
+                _content.data.valueItems = valueItems.map((item) =>
                     item.key === key ? modifiedItem : item
                 );
 
-                return content;
+                return _content;
             },
         });
 

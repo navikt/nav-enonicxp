@@ -310,8 +310,8 @@ function clearCustomPathReferences(id) {
 function clearGlobalValueReferences(id) {
     const globalValueSet = getGlobalValueSet(id);
     if (globalValueSet) {
-        forceArray(globalValueSet.data?.valueItems).map((item) => {
-            getGlobalValueUsage(item.key).map((content) => {
+        forceArray(globalValueSet.data?.valueItems).forEach((item) => {
+            getGlobalValueUsage(item.key).forEach((content) => {
                 wipeOnChange(content.path);
             });
         });

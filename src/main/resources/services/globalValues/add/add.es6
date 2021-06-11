@@ -1,6 +1,6 @@
 const nodeLib = require('/lib/xp/node');
 const contentLib = require('/lib/xp/content');
-const { insufficientAccessResponse } = require('/lib/auth/auth-utils');
+const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -20,7 +20,7 @@ const addGlobalValueItem = (req) => {
     const { contentId, itemName, textValue, numberValue } = req.params;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
-        return insufficientAccessResponse('MODIFY');
+        return insufficientPermissionResponse('MODIFY');
     }
 
     if (!contentId || !itemName || !textValue) {
@@ -58,11 +58,11 @@ const addGlobalValueItem = (req) => {
 
         repo.modify({
             key: contentId,
-            editor: (content) => {
+            editor: (_content) => {
                 log.info(`new item: ${JSON.stringify(newItem)}`);
-                content.data.valueItems = [...valueItems, newItem];
+                _content.data.valueItems = [...valueItems, newItem];
 
-                return content;
+                return _content;
             },
         });
 
