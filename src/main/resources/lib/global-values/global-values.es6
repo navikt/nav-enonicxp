@@ -124,9 +124,9 @@ const getGlobalNumberValue = (key) => getGlobalValue(key, 'numberValue');
 
 module.exports = {
     getAllGlobalValues,
-    getGlobalValue,
     getGlobalValueUsage,
     getGlobalValueSet,
     getGlobalTextValue,
     getGlobalNumberValue,
+    globalValuesContentType,
 };

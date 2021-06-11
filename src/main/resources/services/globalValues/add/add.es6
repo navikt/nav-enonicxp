@@ -1,5 +1,6 @@
 const nodeLib = require('/lib/xp/node');
 const contentLib = require('/lib/xp/content');
+const { globalValuesContentType } = require('/lib/global-values/global-values');
 const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
@@ -23,23 +24,26 @@ const addGlobalValueItem = (req) => {
         return insufficientPermissionResponse('MODIFY');
     }
 
-    if (!contentId || !itemName || !textValue) {
+    const hasValue = textValue || numberValue !== undefined;
+
+    if (!contentId || !itemName || !hasValue) {
         return invalidRequest(
             'Bad request: Missing parameters:' +
                 `${!contentId && ' contentId'}` +
                 `${!itemName && ' itemName'}` +
-                `${!textValue && ' textValue'}'`
+                `${!hasValue && ' textValue or numberValue'}`
         );
     }
 
     const content = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
-    if (!content) {
-        return invalidRequest(`Content with id ${contentId} not found`);
+    if (!content || content.type !== globalValuesContentType) {
+        return invalidRequest(`Global value set with id ${contentId} not found`);
     }
 
     const valueItems = forceArray(content.data?.valueItems);
+    const nameExists = valueItems.some((item) => item.itemName === itemName);
 
-    if (valueItems.find((item) => item.itemName === itemName)) {
+    if (nameExists) {
         return invalidRequest(`Item name ${itemName} already exists on ${contentId}`);
     }
 
@@ -52,7 +56,7 @@ const addGlobalValueItem = (req) => {
         const newItem = {
             key: generateKey(),
             itemName,
-            textValue,
+            ...(textValue && { textValue }),
             ...(numberValue !== undefined && { numberValue }),
         };
 
