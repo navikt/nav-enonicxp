@@ -65,6 +65,19 @@ const getAllGlobalValues = (type, query) => {
     return valueSets.map(getAllValuesFromSet).flat();
 };
 
+const getGlobalValueSet = (contentId) => {
+    if (!contentId) {
+        return null;
+    }
+
+    const content = contentLib.get({ key: contentId });
+    if (!content || content.type !== globalValuesContentType) {
+        return null;
+    }
+
+    return content;
+};
+
 const getGlobalValue = (key, type) => {
     if (!validTypes[type]) {
         log.info(`Invalid type ${type} specified for ${key}`);
@@ -104,19 +117,6 @@ const getGlobalValue = (key, type) => {
     }
 
     return foundValue[type] || foundValue.numberValue;
-};
-
-const getGlobalValueSet = (contentId) => {
-    if (!contentId) {
-        return null;
-    }
-
-    const content = contentLib.get({ key: contentId });
-    if (!content || content.type !== globalValuesContentType) {
-        return null;
-    }
-
-    return content;
 };
 
 const getGlobalTextValue = (key) => getGlobalValue(key, 'textValue');

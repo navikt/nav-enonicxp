@@ -1,12 +1,12 @@
 const graphQlLib = require('/lib/guillotine/graphql');
+const { getGlobalNumberValue, getGlobalTextValue } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
-const { getGlobalValue } = require('/lib/global-values/global-values');
 
 const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            return getGlobalValue(env.source.key, 'textValue');
+            return getGlobalTextValue(env.source.key);
         },
     };
 };
@@ -15,12 +15,16 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
     params.fields.variables = {
         type: graphQlLib.list(graphQlLib.GraphQLFloat),
         resolve: (env) => {
-            const variables = forceArray(env.source.keys).reduce((acc, key) => {
-                const value = getGlobalValue(key, 'numberValue');
+            const keys = forceArray(env.source.keys);
+            const variables = keys.reduce((acc, key) => {
+                const value = getGlobalNumberValue(key);
                 return value ? [...acc, value] : acc;
             }, []);
 
-            return variables || [];
+            // If any specified variables are missing, we return nothing to ensure
+            // inconsistent/unintended calculations does not happen
+            const hasMissingValues = keys.length !== variables.length;
+            return hasMissingValues ? [] : variables;
         },
     };
 };
