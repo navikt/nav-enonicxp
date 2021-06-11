@@ -13,8 +13,8 @@ const insufficientPermissionResponse = (requiredPermission) => ({
 const userIsAdmin = () => authLib.hasRole('role:system.admin');
 
 const validateCurrentUserPermissionForContent = (contentId, requiredPermission) => {
-    const content = contentLib.getPermissions({ key: contentId });
-    if (!content) {
+    const contentPermissions = contentLib.getPermissions({ key: contentId });
+    if (!contentPermissions) {
         return {
             status: 400,
             contentType: 'application/json',
@@ -35,7 +35,7 @@ const validateCurrentUserPermissionForContent = (contentId, requiredPermission) 
         };
     }
 
-    const allowedPrincipals = content.permissions.reduce((acc, principal) => {
+    const allowedPrincipals = contentPermissions.permissions.reduce((acc, principal) => {
         const hasPermission = principal.allow.some(
             (permission) => permission === requiredPermission
         );

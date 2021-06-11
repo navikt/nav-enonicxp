@@ -40,7 +40,7 @@ const getErrorResponseForInvalidValueInput = ({ contentId, itemName, textValue, 
 };
 
 const addGlobalValueItem = (req) => {
-    const errorResponse = getErrorResponseForInvalidValueInput(req.path);
+    const errorResponse = getErrorResponseForInvalidValueInput(req.params);
     if (errorResponse) {
         return errorResponse;
     }
