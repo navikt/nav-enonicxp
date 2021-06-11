@@ -29,6 +29,9 @@
                         <allowContentType>${app}:animated-icons</allowContentType>
                     </config>
                 </input>
+                <input type="TextLine" name="url">
+                    <label>Videresend alle besøk til annen url:</label>
+                </input>
             </items>
         </field-set>
     </form>
