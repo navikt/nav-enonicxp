@@ -1,3 +1,6 @@
+const contentLib = require('/lib/xp/content');
+const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
+const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -273,7 +276,32 @@ function findReferences(id, path, depth) {
 
     // remove duplicates and return all references
     const refPaths = references.map((i) => i._path);
-    return references.filter((v, i, a) => !!v._path && refPaths.indexOf(v._path) === i);
+    return references.filter((v, i) => !!v._path && refPaths.indexOf(v._path) === i);
+}
+
+function clearFragmentMacroReferences(id) {
+    const fragment = contentLib.get({ key: id });
+    if (!fragment || fragment.type !== 'portal:fragment') {
+        return;
+    }
+
+    const contentsWithFragmentId = findContentsWithFragmentMacro(id);
+    if (!contentsWithFragmentId?.length > 0) {
+        return;
+    }
+
+    log.info(
+        `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${id}`
+    );
+
+    contentsWithFragmentId.forEach((content) => wipeOnChange(content._path));
+}
+
+function clearCustomPathReferences(id) {
+    const contentCustomPath = getCustomPathFromContent(id);
+    if (contentCustomPath) {
+        wipeOnChange(contentCustomPath);
+    }
 }
 
 function clearReferences(id, path, depth) {
@@ -291,6 +319,9 @@ function clearReferences(id, path, depth) {
     references.forEach((el) => {
         wipeOnChange(el._path);
     });
+
+    clearCustomPathReferences(id);
+    clearFragmentMacroReferences(id);
 }
 
 function nodeListenerCallback(event) {

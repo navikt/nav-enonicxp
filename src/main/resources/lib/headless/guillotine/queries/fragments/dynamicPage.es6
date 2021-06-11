@@ -6,6 +6,7 @@ const { seoMixinFragment } = require('./_mixins');
 const commonDataObject = `
     data {
         description
+        customPath
         ${decoratorTogglesMixinFragment}
         ${languagesMixinFragment}
         ${seoMixinFragment}

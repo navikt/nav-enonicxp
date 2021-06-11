@@ -7,6 +7,11 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
+const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
+const {
+    getInternalContentPathFromCustomPath,
+    getPathMapForReferences,
+} = require('/lib/custom-paths/custom-paths');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -66,11 +71,14 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getContent = (idOrPath, branch) => {
+const getContent = (requestedPathOrId, branch) => {
+    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
+    const contentRef = internalPathFromCustomPath || requestedPathOrId;
+
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: idOrPath,
+            ref: contentRef,
         },
         branch
     );
@@ -78,6 +86,13 @@ const getContent = (idOrPath, branch) => {
     const content = response?.get;
     if (!content) {
         return null;
+    }
+
+    if (shouldRedirectToCustomPath(content, requestedPathOrId, branch)) {
+        return {
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: content.data.customPath } },
+        };
     }
 
     if (isMedia(content)) {
@@ -91,13 +106,15 @@ const getContent = (idOrPath, branch) => {
     }
 
     const page = mergeComponentsIntoPage(contentWithParsedData);
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
+    const pathMap = getPathMapForReferences(contentRef);
 
     return {
         ...contentWithParsedData,
         page,
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
+        pathMap,
     };
 };
 
@@ -145,7 +162,7 @@ const getRedirectContent = (idOrPath, branch) => {
                 return null;
             }
 
-            const targetContent = getContent(target);
+            const targetContent = getContent(target, branch);
             if (!targetContent) {
                 return null;
             }
@@ -195,4 +212,4 @@ const getSiteContent = (idOrPath, branch = 'master') => {
     return { ...content, ...(notifications && { notifications }) };
 };
 
-module.exports = { getSiteContent, getContent };
+module.exports = { getSiteContent, getContent, getRedirectContent };
