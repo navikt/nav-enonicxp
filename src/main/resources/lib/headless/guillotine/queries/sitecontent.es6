@@ -149,7 +149,10 @@ const getRedirectContent = (idOrPath, branch) => {
             return {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_InternalLink',
-                data: { target: { _path: targetContent._path } },
+                data: {
+                    target: { _path: targetContent._path },
+                    permanentRedirect: shortUrlTarget.data?.permanentRedirect,
+                },
             };
         }
 
@@ -157,6 +160,9 @@ const getRedirectContent = (idOrPath, branch) => {
             return {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_ExternalLink',
+                data: {
+                    permanentRedirect: shortUrlTarget.data?.permanentRedirect,
+                },
             };
         }
 

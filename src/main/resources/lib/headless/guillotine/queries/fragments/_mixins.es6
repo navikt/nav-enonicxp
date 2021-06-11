@@ -33,10 +33,6 @@ const seoMixinFragment = `
     noindex
 `;
 
-const permanentRedirectMixinFragment = `
-    permanentRedirect
-`;
-
 const decoratorTogglesMixinFragment = `
     feedbackToggle
     chatbotToggle
@@ -91,7 +87,6 @@ const headerCommonMixin = `
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
-    permanentRedirectMixinFragment,
     linkInternalMixinFragment,
     linkExternalMixinFragment,
     linkWithIngressMixinFragment,
