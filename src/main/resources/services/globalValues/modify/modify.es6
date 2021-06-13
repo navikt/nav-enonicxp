@@ -1,15 +1,14 @@
 const nodeLib = require('/lib/xp/node');
+const { validateGlobalValueInputAndGetErrorResponse } = require('/lib/global-values/global-values');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
-const { invalidValueInputResponse } = require('../add/add');
-const { getErrorResponseForInvalidValueInput } = require('../add/add');
 const { forceArray } = require('/lib/nav-utils');
 
 const itemNameExists = (valueItems, itemName, key) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
 const modifyGlobalValueItem = (req) => {
-    const errorResponse = getErrorResponseForInvalidValueInput(req.params);
+    const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
     }
@@ -18,18 +17,36 @@ const modifyGlobalValueItem = (req) => {
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
-        return invalidValueInputResponse(`Global value set with id ${contentId} not found`);
+        return {
+            status: 400,
+            contentType: 'application/json',
+            body: {
+                message: `Global value set with id ${contentId} not found`,
+            },
+        };
     }
 
     const valueItems = forceArray(content.data?.valueItems);
 
     const itemToModify = valueItems.find((item) => item.key === key);
     if (!itemToModify) {
-        return invalidValueInputResponse(`Item with key ${key} not found on ${contentId}`);
+        return {
+            status: 400,
+            contentType: 'application/json',
+            body: {
+                message: `Item with key ${key} not found on ${contentId}`,
+            },
+        };
     }
 
     if (itemName && itemNameExists(valueItems, itemName, key)) {
-        return invalidValueInputResponse(`Item name ${itemName} already exists on ${contentId}`);
+        return {
+            status: 400,
+            contentType: 'application/json',
+            body: {
+                message: `Item name ${itemName} already exists on ${contentId}`,
+            },
+        };
     }
 
     try {

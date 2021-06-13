@@ -1,46 +1,14 @@
 const nodeLib = require('/lib/xp/node');
+const { validateGlobalValueInputAndGetErrorResponse } = require('/lib/global-values/global-values');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { generateUUID } = require('/lib/headless/uuid');
 
-const invalidValueInputResponse = (msg) => ({
-    status: 400,
-    contentType: 'application/json',
-    body: {
-        message: `Invalid value input: ${msg}`,
-    },
-});
-
 const generateKey = () => `gv_${generateUUID()}`;
 
-const getErrorResponseForInvalidValueInput = ({ contentId, itemName, textValue, numberValue }) => {
-    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
-        return insufficientPermissionResponse('MODIFY');
-    }
-
-    const hasValue = textValue || numberValue !== undefined;
-
-    if (!contentId || !itemName || !hasValue) {
-        return invalidValueInputResponse(
-            'Missing parameters:' +
-                `${!contentId && ' contentId'}` +
-                `${!itemName && ' itemName'}` +
-                `${!hasValue && ' textValue or numberValue'}`
-        );
-    }
-
-    if (numberValue !== undefined && isNaN(numberValue)) {
-        return invalidValueInputResponse(`numberValue ${numberValue} is not a number`);
-    }
-
-    return null;
-};
-
 const addGlobalValueItem = (req) => {
-    const errorResponse = getErrorResponseForInvalidValueInput(req.params);
+    const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
     }
@@ -49,14 +17,26 @@ const addGlobalValueItem = (req) => {
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
-        return invalidValueInputResponse(`Global value set with id ${contentId} not found`);
+        return {
+            status: 400,
+            contentType: 'application/json',
+            body: {
+                message: `Global value set with id ${contentId} not found`,
+            },
+        };
     }
 
     const valueItems = forceArray(content.data?.valueItems);
     const nameExists = valueItems.some((item) => item.itemName === itemName);
 
     if (nameExists) {
-        return invalidValueInputResponse(`Item name ${itemName} already exists on ${contentId}`);
+        return {
+            status: 400,
+            contentType: 'application/json',
+            body: {
+                message: `Item name ${itemName} already exists on ${contentId}`,
+            },
+        };
     }
 
     try {
@@ -103,6 +83,4 @@ const addGlobalValueItem = (req) => {
 
 module.exports = {
     addGlobalValueItem,
-    getErrorResponseForInvalidValueInput,
-    invalidValueInputResponse,
 };
