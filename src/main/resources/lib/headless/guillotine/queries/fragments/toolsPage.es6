@@ -3,7 +3,6 @@ const { productDataMixin } = require('/lib/headless/guillotine/queries/fragments
 const toolsPageFragment = `
     ...on no_nav_navno_ToolsPage {
         data {
-            url
             ${productDataMixin}
         }
     }
