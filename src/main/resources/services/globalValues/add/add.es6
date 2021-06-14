@@ -22,6 +22,7 @@ const addGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Global value set with id ${contentId} not found`,
+                level: 'error',
             },
         };
     }
@@ -35,6 +36,7 @@ const addGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Item name ${itemName} already exists on ${contentId}`,
+                level: 'error',
             },
         };
     }
@@ -67,6 +69,7 @@ const addGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Successfully added new item with name ${itemName} to content ${contentId}`,
+                level: 'info',
             },
         };
     } catch (e) {
@@ -76,6 +79,7 @@ const addGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Failed to add new item with name ${itemName} to content ${contentId} - Error: ${e}`,
+                level: 'error',
             },
         };
     }

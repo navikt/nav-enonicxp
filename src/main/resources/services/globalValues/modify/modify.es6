@@ -22,6 +22,7 @@ const modifyGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Global value set with id ${contentId} not found`,
+                level: 'error',
             },
         };
     }
@@ -35,6 +36,7 @@ const modifyGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Item with key ${key} not found on ${contentId}`,
+                level: 'error',
             },
         };
     }
@@ -45,6 +47,7 @@ const modifyGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Item name ${itemName} already exists on ${contentId}`,
+                level: 'error',
             },
         };
     }
@@ -78,6 +81,7 @@ const modifyGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Successfully modified ${key} on ${contentId}`,
+                level: 'info',
             },
         };
     } catch (e) {
@@ -87,6 +91,7 @@ const modifyGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Error modifying ${key} on ${contentId} - ${e}`,
+                level: 'error',
             },
         };
     }

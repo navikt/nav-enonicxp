@@ -7,6 +7,7 @@ const insufficientPermissionResponse = (requiredPermission) => ({
     contentType: 'application/json',
     body: {
         message: `Feil: ${requiredPermission} tilgang kreves for denne handlingen`,
+        level: 'error',
     },
 });
 
@@ -20,6 +21,7 @@ const validateCurrentUserPermissionForContent = (contentId, requiredPermission) 
             contentType: 'application/json',
             body: {
                 message: 'Invalid content id',
+                level: 'error',
             },
         };
     }
@@ -31,6 +33,7 @@ const validateCurrentUserPermissionForContent = (contentId, requiredPermission) 
             contentType: 'application/json',
             body: {
                 message: 'Error: could not retrieve user permissions',
+                level: 'error',
             },
         };
     }

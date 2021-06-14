@@ -10,6 +10,7 @@ const invalidRequestResponse = (msg) => ({
     contentType: 'application/json',
     body: {
         message: `Invalid remove request: ${msg}`,
+        level: 'error',
     },
 });
 
@@ -66,6 +67,7 @@ const removeGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Successfully deleted ${key} on ${contentId}`,
+                level: 'info',
             },
         };
     } catch (e) {
@@ -75,6 +77,7 @@ const removeGlobalValueItem = (req) => {
             contentType: 'application/json',
             body: {
                 message: `Error deleting ${key} on ${contentId} - ${e}`,
+                level: 'error',
             },
         };
     }
