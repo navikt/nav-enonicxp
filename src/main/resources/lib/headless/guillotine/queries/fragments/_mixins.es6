@@ -93,7 +93,7 @@ const productDataMixin = `
         ${globalFragment}
         ${animatedIconsFragment.fragment}
     }
-    url
+    externalProductUrl
 `;
 
 module.exports = {
