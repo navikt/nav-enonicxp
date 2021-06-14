@@ -19,12 +19,19 @@ const selectorHandler = (req) => {
     const hits = values
         .map((value) => ({
             id: value.key,
-            displayName: `${value.itemName} - ${value.setName}`,
+            displayName: `${value.setName} - ${value.itemName}`,
             description: `Verdi: ${value[valueType]}`,
         }))
-        .flat();
-
-    log.info(`Hits: ${JSON.stringify(hits)}`);
+        .flat()
+        .sort((a, b) => {
+            if (a.displayName > b.displayName) {
+                return 1;
+            }
+            if (a.displayName < b.displayName) {
+                return -1;
+            }
+            return 0;
+        });
 
     return {
         status: 200,
