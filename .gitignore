@@ -95,4 +95,3 @@ node_modules/
 
 # Assets
 src/main/resources/assets/iac
-/package-lock.json
