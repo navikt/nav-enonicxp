@@ -3,7 +3,16 @@
     <form>
         <input type="TextLine" name="title">
             <label>Tittel</label>
-            <default>Navigasjon</default>
+            <default>Innhold</default>
+        </input>
+        <input name="viewStyle" type="RadioButton">
+            <label>Visningstype</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="sidebar">Smal (sidemeny)</option>
+                <option value="inContent">Bred (innholdsseksjon)</option>
+            </config>
+            <default>inContent</default>
         </input>
         <mixin name="page-navigation-menu"/>
     </form>

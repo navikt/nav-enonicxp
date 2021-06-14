@@ -1,8 +1,9 @@
+const { productDataMixin } = require('./_mixins');
 const { decoratorTogglesMixinFragment } = require('./_mixins');
 const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
 
-const dataObject = `
+const commonDataObject = `
     data {
         description
         customPath
@@ -12,28 +13,53 @@ const dataObject = `
     }
 `;
 
-const dataObjectShort = `
+const commonDataObjectShort = `
     data {
         description
     }
 `;
 
-const dynamicPageFragment = `
+const productPageFragment = `
     ...on no_nav_navno_ContentPageWithSidemenus {
-        ${dataObject}
+        ${commonDataObject}
+        data {
+            ${productDataMixin}
+        }
     }
+`;
+
+const situationPageFragment = `
+    ...on no_nav_navno_SituationPage {
+        ${commonDataObject}
+        data {
+            ${productDataMixin}
+        }
+    }
+`;
+
+const dynamicPageFragment = `
+    ${productPageFragment}
+    ${situationPageFragment}
     ...on no_nav_navno_DynamicPage {
-        ${dataObject}
+        ${commonDataObject}
     }
 `;
 
 const dynamicPageShortFragment = `
+    ...on no_nav_navno_SituationPage {
+        ${commonDataObjectShort}
+    }
     ...on no_nav_navno_ContentPageWithSidemenus {
-        ${dataObjectShort}
+        ${commonDataObjectShort}
     }
     ...on no_nav_navno_DynamicPage {
-        ${dataObjectShort}
+        ${commonDataObjectShort}
     }
 `;
 
-module.exports = { fragment: dynamicPageFragment, shortFragment: dynamicPageShortFragment };
+module.exports = {
+    fragment: dynamicPageFragment,
+    shortFragment: dynamicPageShortFragment,
+    productPageFragment,
+    situationPageFragment,
+};

@@ -1,0 +1,29 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Header (H2)</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>Tittel</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextLine" name="anchorId">
+                    <label>Anker-id</label>
+                    <help-text>
+                        Sett et anker-id for å kunne lenke til denne delen av siden
+                        Eks: https://www.nav.no/no/min-side#mitt-anker
+                        Dette feltet benyttes også av komponenten for intern-navigasjon på siden
+                    </help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <regexp>^[0-9a-zA-Z-_]+$</regexp>
+                    </config>
+                </input>
+                <input type="CheckBox" name="toggleCopyButton">
+                    <label>Toggle "kopier lenke" knapp</label>
+                    <help-text>Skjuler "kopier lenke" dersom den er default på for denne komponenten, eller vice versa</help-text>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

@@ -1,6 +1,6 @@
 <content-type>
-    <display-name>Produktside med sidemenyer</display-name>
-    <description>Produktside med intern-navigasjon og dynamiske komponenter</description>
+    <display-name>Oversiktsside for livssituasjon</display-name>
+    <description>Livssituasjonsside med oversikt over aktuelle stønader og tjenester</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

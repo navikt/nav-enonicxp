@@ -1,0 +1,38 @@
+<mixin>
+    <form>
+        <field-set>
+            <items>
+                <mixin name="page-header"/>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                </input>
+                <input name="taxonomy" type="ComboBox">
+                    <label>Kategori</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <option value="benefits">Pengestøtte fra NAV</option>
+                        <option value="rights">Rettigheter</option>
+                    </config>
+                </input>
+                <input name="area" type="ComboBox">
+                    <label>Områdekategori</label>
+                    <occurrences minimum="0" maximum="99"/>
+                    <config>
+                        <option value="family">Familie og barn</option>
+                        <option value="health">Helse og sykdom</option>
+                    </config>
+                </input>
+                <input name="illustration" type="ContentSelector">
+                    <label>Velg illustrasjon</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:animated-icons</allowContentType>
+                    </config>
+                </input>
+                <input type="TextLine" name="externalProductUrl">
+                    <label>Videresend alle besøk til annen url:</label>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
