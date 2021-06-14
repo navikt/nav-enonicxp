@@ -1,16 +1,6 @@
 const contentLib = require('/lib/xp/content');
+const { getSubPath } = require('../service-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
-
-const serviceName = __DIR__
-    .split('/')
-    .filter((str) => !!str)
-    .slice(-1)[0];
-
-const getSubPath = (req) =>
-    req.path
-        .split(serviceName)
-        .slice(-1)[0]
-        .replace(/(^\/)|(\/$)/, ''); // Trim leading/trailing slash
 
 const getHtmlFragmentHits = (query) => {
     const htmlFragments = contentLib.query({

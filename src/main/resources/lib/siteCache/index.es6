@@ -1,6 +1,9 @@
 const contentLib = require('/lib/xp/content');
 const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
+const { forceArray } = require('/lib/nav-utils');
+const { getGlobalValueUsage } = require('/lib/global-values/global-values');
+const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -304,6 +307,17 @@ function clearCustomPathReferences(id) {
     }
 }
 
+function clearGlobalValueReferences(id) {
+    const globalValueSet = getGlobalValueSet(id);
+    if (globalValueSet) {
+        forceArray(globalValueSet.data?.valueItems).forEach((item) => {
+            getGlobalValueUsage(item.key).forEach((content) => {
+                wipeOnChange(content.path);
+            });
+        });
+    }
+}
+
 function clearReferences(id, path, depth) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
@@ -322,6 +336,7 @@ function clearReferences(id, path, depth) {
 
     clearCustomPathReferences(id);
     clearFragmentMacroReferences(id);
+    clearGlobalValueReferences(id);
 }
 
 function nodeListenerCallback(event) {
@@ -352,6 +367,7 @@ function nodeListenerCallback(event) {
             wipe('decorator')();
         }
     });
+
     return true;
 }
 

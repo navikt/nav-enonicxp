@@ -31,6 +31,14 @@ const macrosFragment = `
         fotnote {
             fotnote
         }
+        global_value {
+            value
+        }
+        global_value_with_math {
+            decimals
+            expression
+            variables
+        }
         header_with_anchor {
             text
             id
