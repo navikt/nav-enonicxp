@@ -7,18 +7,6 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="product-data"/>
-        <field-set>
-            <label>Aktuelle produktsider</label>
-            <items>
-                <input name="productPages" type="ContentSelector">
-                    <label>Velg aktuelle produktsider</label>
-                    <occurrences minimum="0" maximum="0"/>
-                    <config>
-                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                    </config>
-                </input>
-            </items>
-        </field-set>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
