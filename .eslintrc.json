@@ -20,7 +20,8 @@
         "no-use-before-define": "off",
         "dot-notation": "off",
         "no-param-reassign": "off",
-        "no-extend-native": "off"
+        "no-extend-native": "off",
+        "no-restricted-globals": "off"
     },
     "globals": {
         "require": true,
@@ -33,8 +34,7 @@
         "window": true,
         "__": true,
         "__FILE__": true,
-        "Java": true,
-        "__DIR__": true
+        "Java": true
     },
     "parserOptions": {
         "ecmaVersion": 2020
