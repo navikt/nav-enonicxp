@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
 const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
@@ -300,6 +301,30 @@ function clearFragmentMacroReferences(id) {
     contentsWithFragmentId.forEach((content) => wipeOnChange(content._path));
 }
 
+const productCardTargetTypes = {
+    [`${app.name}:content-page-with-sidemenus`]: true,
+    [`${app.name}:situation-page`]: true,
+    [`${app.name}:tools-page`]: true,
+};
+
+function clearProductCardMacroReferences(id) {
+    const targetContent = contentLib.get({ key: id });
+    if (!targetContent || !productCardTargetTypes[targetContent.type]) {
+        return;
+    }
+
+    const contentsWithProductCardMacro = findContentsWithProductCardMacro(id);
+    if (!contentsWithProductCardMacro?.length > 0) {
+        return;
+    }
+
+    log.info(
+        `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${id}`
+    );
+
+    contentsWithProductCardMacro.forEach((content) => wipeOnChange(content._path));
+}
+
 function clearCustomPathReferences(id) {
     const contentCustomPath = getCustomPathFromContent(id);
     if (contentCustomPath) {
@@ -337,6 +362,7 @@ function clearReferences(id, path, depth) {
     clearCustomPathReferences(id);
     clearFragmentMacroReferences(id);
     clearGlobalValueReferences(id);
+    clearProductCardMacroReferences(id);
 }
 
 function nodeListenerCallback(event) {

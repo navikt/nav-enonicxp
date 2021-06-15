@@ -1,5 +1,6 @@
-const { linkExternalMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
-const { linkInternalMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const { productTargetMixin } = require('./dangerous-mixins/product-target-mixin');
+const { linkExternalMixinFragment } = require('./_mixins');
+const { linkInternalMixinFragment } = require('./_mixins');
 
 const macrosFragment = `
     name
@@ -57,6 +58,9 @@ const macrosFragment = `
             text
             phoneNumber
             chevron
+        }
+        product_card_mini {
+            ${productTargetMixin}
         }
         quote {
             quote
