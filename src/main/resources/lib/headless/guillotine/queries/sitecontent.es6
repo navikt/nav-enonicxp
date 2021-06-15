@@ -151,7 +151,7 @@ const getRedirectContent = (idOrPath, branch) => {
                 __typename: 'no_nav_navno_InternalLink',
                 data: {
                     target: { _path: targetContent._path },
-                    permanentRedirect: shortUrlTarget.data?.permanentRedirect,
+                    tempRedirect: shortUrlTarget.data?.tempRedirect,
                 },
             };
         }
@@ -161,7 +161,7 @@ const getRedirectContent = (idOrPath, branch) => {
                 ...shortUrlTarget,
                 __typename: 'no_nav_navno_ExternalLink',
                 data: {
-                    permanentRedirect: shortUrlTarget.data?.permanentRedirect,
+                    tempRedirect: shortUrlTarget.data?.tempRedirect,
                 },
             };
         }

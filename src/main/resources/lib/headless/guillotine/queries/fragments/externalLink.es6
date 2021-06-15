@@ -3,7 +3,7 @@ const externalLinkFragment = `
         data {
             description
             url
-            permanentRedirect
+            tempRedirect
         }
     }
 `;
