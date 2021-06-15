@@ -47,6 +47,22 @@ const includedContentTypes = [
 const isIncludedType = (type) =>
     !!includedContentTypes.find((includedType) => includedType === type);
 
+const validateContent = (content) => {
+    if (!content) {
+        return false;
+    }
+
+    if (!isIncludedType(content.type)) {
+        return false;
+    }
+
+    if (content.data?.externalProductUrl || content.data?.noindex) {
+        return false;
+    }
+
+    return true;
+};
+
 const getUrl = (content) =>
     content.data?.canonicalUrl || content._path.replace(pathPrefix, frontendOrigin);
 
@@ -82,7 +98,7 @@ const updateSitemapEntry = (pathname) => {
     const path = `${pathPrefix}${pathname}`;
     const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
 
-    if (content && isIncludedType(content.type)) {
+    if (validateContent(content)) {
         sitemapData.set(url, getSitemapEntry(content));
     } else if (sitemapData.get(url)) {
         sitemapData.remove(url);
