@@ -10,8 +10,8 @@
                     <label>Kategori</label>
                     <occurrences minimum="0" maximum="1"/>
                     <config>
-                        <option value="benefits">Pengestøtte fra NAV</option>
-                        <option value="rights">Rettigheter</option>
+                        <option value="benefits">Pengestøtte</option>
+                        <option value="rights">Råd og veiledning</option>
                     </config>
                 </input>
                 <input name="area" type="ComboBox">

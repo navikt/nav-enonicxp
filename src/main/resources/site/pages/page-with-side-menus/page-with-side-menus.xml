@@ -19,7 +19,7 @@
                 </input>
                 <input type="TextLine" name="leftMenuHeader">
                     <label>Tittel</label>
-                    <default>Navigasjon</default>
+                    <default>Innhold</default>
                 </input>
                 <mixin name="page-navigation-menu"/>
             </items>
