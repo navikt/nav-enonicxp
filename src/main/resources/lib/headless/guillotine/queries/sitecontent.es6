@@ -138,7 +138,11 @@ const getContentFromLegacyPath = (path) => {
 const getRedirectContent = (idOrPath, branch) => {
     const legacyPathTarget = runInBranchContext(() => getContentFromLegacyPath(idOrPath), branch);
     if (legacyPathTarget) {
-        return getContent(legacyPathTarget._path, branch);
+        return {
+            ...legacyPathTarget,
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: legacyPathTarget._path } },
+        };
     }
 
     const pathSegments = idOrPath.split('/');
