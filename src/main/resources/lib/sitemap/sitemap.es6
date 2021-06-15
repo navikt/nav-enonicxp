@@ -32,6 +32,7 @@ const sitemapData = {
 };
 
 const includedContentTypes = [
+    'situation-page',
     'dynamic-page',
     'content-page-with-sidemenus',
     'main-article',
@@ -100,6 +101,9 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
                         hasValue: {
                             field: 'data.noindex',
                             values: ['true'],
+                        },
+                        exists: {
+                            field: 'data.externalProductUrl',
                         },
                     },
                 },
