@@ -31,4 +31,12 @@ const findContentsWithFragmentMacro = (fragmentId) => {
     return findContentsWithHtmlAreaText(`fragmentId=\\"${fragmentId}`);
 };
 
-module.exports = { findContentsWithHtmlAreaText, findContentsWithFragmentMacro };
+const findContentsWithProductCardMacro = (targetPageId) => {
+    return findContentsWithHtmlAreaText(`targetPage=\\"${targetPageId}`);
+};
+
+module.exports = {
+    findContentsWithHtmlAreaText,
+    findContentsWithFragmentMacro,
+    findContentsWithProductCardMacro,
+};
