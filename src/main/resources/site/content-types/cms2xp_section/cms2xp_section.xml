@@ -1,0 +1,5 @@
+<content-type>
+    <display-name>~CMS2XP_SECTION</display-name>
+    <description>(deprecated - ikke bruk denne)</description>
+    <super-type>base:unstructured</super-type>
+</content-type>
