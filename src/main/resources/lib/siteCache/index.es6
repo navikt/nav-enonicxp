@@ -176,7 +176,7 @@ function wipeOnChange(path) {
         });
     }
 
-    updateSitemapEntry(pathname);
+    updateSitemapEntry(xpPath);
     clearCustomPathEntry(xpPath);
 
     return true;

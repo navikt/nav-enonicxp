@@ -9,7 +9,6 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const batchCount = 1000;
 const maxCount = 50000;
-const pathPrefix = '/www.nav.no';
 const eventType = 'sitemap-generated';
 
 const sitemapData = {
@@ -63,8 +62,14 @@ const validateContent = (content) => {
     return true;
 };
 
-const getUrl = (content) =>
-    content.data?.canonicalUrl || content._path.replace(pathPrefix, frontendOrigin);
+const getUrl = (content) => {
+    if (content.data?.canonicalUrl) {
+        return content.data.canonicalUrl;
+    }
+
+    const pathname = content.data?.customPath || content._path.replace(/^\/www.nav.no/, '');
+    return `${frontendOrigin}${pathname}`;
+};
 
 const getAlternativeLanguageVersions = (content) =>
     content.data?.languages &&
@@ -93,10 +98,9 @@ const getSitemapEntry = (content) => {
     };
 };
 
-const updateSitemapEntry = (pathname) => {
-    const url = `${frontendOrigin}${pathname}`;
-    const path = `${pathPrefix}${pathname}`;
-    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
+const updateSitemapEntry = (xpPath) => {
+    const content = runInBranchContext(() => contentLib.get({ key: xpPath }), 'master');
+    const url = getUrl(content);
 
     if (validateContent(content)) {
         sitemapData.set(url, getSitemapEntry(content));
