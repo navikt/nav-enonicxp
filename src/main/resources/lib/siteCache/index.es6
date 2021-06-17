@@ -118,6 +118,7 @@ function wipeOnChange(path) {
         return false;
     }
 
+    const xpPath = path.replace(/^\/content/, '');
     const pathname = getPathname(path);
     log.info(`Clearing: ${pathname}`);
 
@@ -176,6 +177,7 @@ function wipeOnChange(path) {
     }
 
     updateSitemapEntry(pathname);
+    clearCustomPathEntry(xpPath);
 
     return true;
 }
@@ -325,9 +327,13 @@ function clearProductCardMacroReferences(id) {
     contentsWithProductCardMacro.forEach((content) => wipeOnChange(content._path));
 }
 
-function clearCustomPathReferences(id) {
+function clearCustomPathEntry(id) {
     const contentCustomPath = getCustomPathFromContent(id);
     if (contentCustomPath) {
+        if (contentCustomPath === id) {
+            log.warning(`Content with custom path set to the actual path detected: ${id}`);
+            return;
+        }
         wipeOnChange(contentCustomPath);
     }
 }
@@ -359,7 +365,6 @@ function clearReferences(id, path, depth) {
         wipeOnChange(el._path);
     });
 
-    clearCustomPathReferences(id);
     clearFragmentMacroReferences(id);
     clearGlobalValueReferences(id);
     clearProductCardMacroReferences(id);
