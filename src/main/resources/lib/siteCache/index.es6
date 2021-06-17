@@ -118,6 +118,7 @@ function wipeOnChange(path) {
         return false;
     }
 
+    const xpPath = path.replace(/^\/content/, '');
     const pathname = getPathname(path);
     log.info(`Clearing: ${pathname}`);
 
@@ -176,8 +177,6 @@ function wipeOnChange(path) {
     }
 
     updateSitemapEntry(pathname);
-
-    const xpPath = path.replace(/^\/content/, '');
     clearCustomPathEntry(xpPath);
 
     return true;
@@ -330,6 +329,7 @@ function clearProductCardMacroReferences(id) {
 
 function clearCustomPathEntry(id) {
     const contentCustomPath = getCustomPathFromContent(id);
+    // check custom path & id equality to prevent infinite loop
     if (contentCustomPath && contentCustomPath !== id) {
         wipeOnChange(contentCustomPath);
     }
