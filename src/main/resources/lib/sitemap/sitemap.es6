@@ -107,7 +107,7 @@ const getContent = (path) => {
     const contentFromCustomPath = getContentFromCustomPath(path);
     if (contentFromCustomPath.length > 0) {
         if (contentFromCustomPath.length === 1) {
-            return contentFromCustomPath;
+            return contentFromCustomPath[0];
         }
         log.warning(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
         return null;
