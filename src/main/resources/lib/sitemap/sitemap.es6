@@ -64,10 +64,6 @@ const validateContent = (content) => {
 };
 
 const getUrl = (content) => {
-    if (!content) {
-        return null;
-    }
-
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
     }
@@ -96,6 +92,7 @@ const getSitemapEntry = (content) => {
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
+        id: content._id,
         url: getUrl(content),
         modifiedTime: content.modifiedTime,
         language: content.language,
@@ -118,12 +115,17 @@ const getContent = (path) => {
 
 const updateSitemapEntry = (path) => {
     const content = getContent(path);
-    const url = getUrl(content);
+    if (!content) {
+        log.warning(`Content not found for ${path} during sitemap update`);
+        return;
+    }
+
+    const key = content._id;
 
     if (validateContent(content)) {
-        sitemapData.set(url, getSitemapEntry(content));
-    } else if (sitemapData.get(url)) {
-        sitemapData.remove(url);
+        sitemapData.set(key, getSitemapEntry(content));
+    } else if (sitemapData.get(key)) {
+        sitemapData.remove(key);
     }
 };
 
@@ -221,7 +223,7 @@ const updateSitemapData = (entries) => {
     sitemapData.clear();
 
     entries.forEach((entry) => {
-        sitemapData.set(entry.url, entry);
+        sitemapData.set(entry.id, entry);
     });
 };
 
