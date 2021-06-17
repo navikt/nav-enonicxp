@@ -13,7 +13,7 @@ const getFilterMenus = (req) => {
 
     const components = forceArray(repo.get(contentId)?.components);
 
-    return forceArray(components).filter(
+    return components.filter(
         (component) => component.part?.descriptor === `${app.name}:filters-menu`
     );
 };
