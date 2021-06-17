@@ -362,7 +362,6 @@ function clearReferences(id, path, depth) {
         wipeOnChange(el._path);
     });
 
-    clearCustomPathEntry(id);
     clearFragmentMacroReferences(id);
     clearGlobalValueReferences(id);
     clearProductCardMacroReferences(id);
