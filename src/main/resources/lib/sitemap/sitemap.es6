@@ -3,6 +3,7 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
+const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
@@ -63,6 +64,10 @@ const validateContent = (content) => {
 };
 
 const getUrl = (content) => {
+    if (!content) {
+        return null;
+    }
+
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
     }
@@ -98,8 +103,21 @@ const getSitemapEntry = (content) => {
     };
 };
 
-const updateSitemapEntry = (xpPath) => {
-    const content = runInBranchContext(() => contentLib.get({ key: xpPath }), 'master');
+const getContent = (path) => {
+    const contentFromCustomPath = getContentFromCustomPath(path);
+    if (contentFromCustomPath.length > 0) {
+        if (contentFromCustomPath.length === 1) {
+            return contentFromCustomPath;
+        }
+        log.warning(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
+        return null;
+    }
+
+    return runInBranchContext(() => contentLib.get({ key: path }), 'master');
+};
+
+const updateSitemapEntry = (path) => {
+    const content = getContent(path);
     const url = getUrl(content);
 
     if (validateContent(content)) {
