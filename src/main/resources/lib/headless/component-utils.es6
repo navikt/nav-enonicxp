@@ -1,5 +1,6 @@
 const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
+const { forceArray } = require('/lib/nav-utils');
 const { sanitize } = require('/lib/xp/common');
 
 const appKey = app.name.replace(/\./g, '-');
@@ -30,7 +31,7 @@ const getComponentConfig = (component) => {
 };
 
 const getComponentConfigByPath = (path, components) => {
-    const foundComponent = components?.find((component) => component.path === path);
+    const foundComponent = forceArray(components).find((component) => component.path === path);
     return getComponentConfig(foundComponent);
 };
 
@@ -40,7 +41,7 @@ const componentHasUniqueAnchorId = (content, currentComponent) => {
         return false;
     }
 
-    const { components } = content;
+    const components = forceArray(content.components);
 
     const isDuplicate = components.some((component) => {
         const config = getComponentConfig(component);
@@ -53,7 +54,7 @@ const componentHasUniqueAnchorId = (content, currentComponent) => {
 const generateAnchorIdFromFieldValue = (componentPath, fieldKey, fieldDefaultValue) => (
     content
 ) => {
-    const { components } = content;
+    const components = forceArray(content.components);
 
     const config = getComponentConfigByPath(componentPath, components);
 

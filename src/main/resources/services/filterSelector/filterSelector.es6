@@ -3,8 +3,20 @@ const nodeLib = require('/lib/xp/node');
 const { forceArray } = require('/lib/nav-utils');
 const { getComponentConfig } = require('/lib/headless/component-utils');
 
-const getFilterMenus = (components) =>
-    components?.filter((component) => component.part?.descriptor === `${app.name}:filters-menu`);
+const getFilterMenus = (req) => {
+    const contentId = portalLib.getContent()._id;
+
+    const repo = nodeLib.connect({
+        repoId: req.repositoryId,
+        branch: req.branch,
+    });
+
+    const components = forceArray(repo.get(contentId)?.components);
+
+    return components.filter(
+        (component) => component.part?.descriptor === `${app.name}:filters-menu`
+    );
+};
 
 const generateHit = (category, filter) => ({
     id: filter.id,
@@ -13,15 +25,8 @@ const generateHit = (category, filter) => ({
 });
 
 const generateHits = (req) => {
-    const contentId = portalLib.getContent()._id;
-
-    const repo = nodeLib.connect({
-        repoId: req.repositoryId,
-        branch: req.branch,
-    });
-
-    const filterMenus = getFilterMenus(repo.get(contentId)?.components);
-    if (!filterMenus?.length > 0) {
+    const filterMenus = getFilterMenus(req);
+    if (!filterMenus.length > 0) {
         return [];
     }
 
