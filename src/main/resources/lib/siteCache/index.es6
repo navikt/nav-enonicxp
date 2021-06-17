@@ -329,8 +329,11 @@ function clearProductCardMacroReferences(id) {
 
 function clearCustomPathEntry(id) {
     const contentCustomPath = getCustomPathFromContent(id);
-    // check custom path & id equality to prevent infinite loop
-    if (contentCustomPath && contentCustomPath !== id) {
+    if (contentCustomPath) {
+        if (contentCustomPath === id) {
+            log.warning(`Content with custom path set to the actual path detected: ${id}`);
+            return;
+        }
         wipeOnChange(contentCustomPath);
     }
 }
