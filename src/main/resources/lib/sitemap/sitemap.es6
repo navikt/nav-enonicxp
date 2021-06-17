@@ -3,6 +3,7 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
+const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
@@ -68,7 +69,11 @@ const getUrl = (content) => {
         return content.data.canonicalUrl;
     }
 
-    const pathname = content.data?.customPath || content._path.replace(/^\/www.nav.no/, '');
+    const customPath = content.data?.customPath;
+
+    const pathname = isValidCustomPath(customPath)
+        ? customPath
+        : content._path.replace(/^\/www.nav.no/, '');
     return `${frontendOrigin}${pathname}`;
 };
 
