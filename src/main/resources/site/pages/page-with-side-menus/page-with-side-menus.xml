@@ -3,11 +3,6 @@
     <description>Sidetype med menyer på høyre og/eller venstre side</description>
     <form>
         <field-set>
-            <items>
-                <mixin name="page-header"/>
-            </items>
-        </field-set>
-        <field-set>
             <label>Venstre meny</label>
             <items>
                 <input type="CheckBox" name="leftMenuToggle">
@@ -24,7 +19,7 @@
                 </input>
                 <input type="TextLine" name="leftMenuHeader">
                     <label>Tittel</label>
-                    <default>Navigasjon</default>
+                    <default>Innhold</default>
                 </input>
                 <mixin name="page-navigation-menu"/>
             </items>
@@ -42,9 +37,19 @@
                 </input>
             </items>
         </field-set>
+        <field-set>
+            <label>Side-tittel (deprecated, sett tittel i content-type)</label>
+            <items>
+                <input type="TextLine" name="title">
+                    <label>H1 header for siden</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+            </items>
+        </field-set>
     </form>
     <regions>
         <region name="leftMenu"/>
+        <region name="topPageContent"/>
         <region name="pageContent"/>
         <region name="rightMenu"/>
     </regions>

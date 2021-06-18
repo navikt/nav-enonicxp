@@ -6,6 +6,9 @@ const {
 } = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
+const {
+    productTargetMixin,
+} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
 
 const partsFragment = `
@@ -25,20 +28,10 @@ const partsFragment = `
                     ${imageFragment}
                 }
             }
-            dynamic_supervisor_panel {
-                content ${processedHtmlFragment}
-                margin
-            }
             dynamic_alert {
                 type
                 inline
                 content ${processedHtmlFragment}
-                margin
-            }
-            dynamic_read_more_panel {
-                ingress
-                content ${processedHtmlFragment}
-                border
                 margin
             }
             dynamic_link_list {
@@ -108,6 +101,33 @@ const partsFragment = `
                     }
                 }
             }
+            product_card {
+                ingressOverride
+                ${productTargetMixin}
+            }
+            product_card_micro {
+                card_list {
+                ${productTargetMixin}
+                }
+            }
+            product_card_mini {
+                ${productTargetMixin}
+            }
+            contact_option {
+                contactOptions {
+                    _selected
+                    chat {
+                        ingress
+                    }
+                    write {
+                        ingress
+                    }
+                    call {
+                        ingress
+                        phoneNumber
+                    }
+                }
+            }
         }
     }
 `;
@@ -124,6 +144,9 @@ const layoutsFragment = `
                         ${imageFragment}
                     }
                 }
+            }
+            situation_flex_cols {
+                anchorId
             }
         }
     }

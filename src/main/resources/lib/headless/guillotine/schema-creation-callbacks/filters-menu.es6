@@ -1,15 +1,9 @@
-const { forceArray } = require('/lib/nav-utils');
+const graphQlLib = require('/lib/guillotine/graphql.js');
 
-const filtersMenuPartConfigCallback = (context, params) => {
-    params.fields.categories.resolve = (env) => {
-        return forceArray(env.source.categories);
+const filterCallback = (context, params) => {
+    params.fields.id = {
+        type: graphQlLib.GraphQLString,
     };
 };
 
-const filtersCategoryCallback = (context, params) => {
-    params.fields.filters.resolve = (env) => {
-        return forceArray(env.source.filters);
-    };
-};
-
-module.exports = { filtersMenuPartConfigCallback, filtersCategoryCallback };
+module.exports = { filterCallback };

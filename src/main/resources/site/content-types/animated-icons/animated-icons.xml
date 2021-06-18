@@ -1,0 +1,32 @@
+<content-type>
+    <display-name>Illustrasjon</display-name>
+    <description>Ikoner med mouseover animasjon</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <item-set name="icons">
+            <label>Velg ikoner</label>
+            <occurrences minimum="3" maximum="0"/>
+            <items>
+                <mixin name="icon-selector"/>
+                <field-set>
+                    <label>Animasjon</label>
+                    <items>
+                        <input name="transformStart" type="TextLine">
+                            <label>Start-transformasjon</label>
+                        </input>
+                        <input name="transformEnd" type="TextLine">
+                            <label>Slutt-transformasjon</label>
+                        </input>
+                        <input name="transformOrigin" type="TextLine">
+                            <label>Origo</label>
+                            <default>center</default>
+                        </input>
+                    </items>
+                </field-set>
+            </items>
+        </item-set>
+    </form>
+</content-type>

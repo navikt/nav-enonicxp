@@ -7,10 +7,13 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
+const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
+const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const {
-    filtersCategoryCallback,
-    filtersMenuPartConfigCallback,
-} = require('./schema-creation-callbacks/filters-menu');
+    globalValueMacroConfigCallback,
+    globalValueWithMathMacroConfigCallback,
+} = require('./schema-creation-callbacks/global-value-macro-config');
+const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { htmlAreaPartConfigCallback } = require('./schema-creation-callbacks/html-area-part-config');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -33,6 +36,7 @@ const schemaContextOptions = {
         no_nav_navno_ContentList_Data: contentListDataCallback,
         no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
+        no_nav_navno_GlobalValueSet: globalValuesCallback,
         Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter: contentListCallback(
             'publish.first'
         ),
@@ -40,16 +44,20 @@ const schemaContextOptions = {
         Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
         Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
         Part_no_nav_navno_html_area: htmlAreaPartConfigCallback,
-        Part_no_nav_navno_filters_menu: filtersMenuPartConfigCallback,
-        Part_no_nav_navno_filters_menu_FilterKategori: filtersCategoryCallback,
+        Part_no_nav_navno_filters_menu_Filter: filterCallback,
+        Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
+        Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
+        Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
+    allowPaths: ['/redirects'],
 };
 
 const initAndCreateSchema = () => {
     const context = guillotineLib.createContext(schemaContextOptions);
     genericLib.createTypes(context);
     dynamicLib.createTypes(context);
+
     return context.schemaGenerator.createSchema({
         query: rootQueryLib.createRootQueryType(context),
         subscription: rootSubscriptionLib.createRootSubscriptionType(context),

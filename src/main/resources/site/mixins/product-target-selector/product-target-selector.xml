@@ -1,0 +1,13 @@
+<mixin>
+    <form>
+        <input name="targetPage" type="ContentSelector">
+            <label>Velg side</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                <allowContentType>${app}:situation-page</allowContentType>
+                <allowContentType>${app}:tools-page</allowContentType>
+            </config>
+        </input>
+    </form>
+</mixin>

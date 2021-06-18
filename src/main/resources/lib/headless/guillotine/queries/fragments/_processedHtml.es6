@@ -1,5 +1,6 @@
-const { linkExternalMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
-const { linkInternalMixinFragment } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const { productTargetMixin } = require('./dangerous-mixins/product-target-mixin');
+const { linkExternalMixinFragment } = require('./_mixins');
+const { linkInternalMixinFragment } = require('./_mixins');
 
 const macrosFragment = `
     name
@@ -31,6 +32,19 @@ const macrosFragment = `
         fotnote {
             fotnote
         }
+        global_value {
+            value
+        }
+        global_value_with_math {
+            decimals
+            expression
+            variables
+        }
+        header_with_anchor {
+            text
+            id
+            tag
+        }
         infoBoks {
             infoBoks
         }
@@ -45,6 +59,9 @@ const macrosFragment = `
             phoneNumber
             chevron
         }
+        product_card_mini {
+            ${productTargetMixin}
+        }
         quote {
             quote
         }
@@ -58,12 +75,24 @@ const macrosFragment = `
     }
 `;
 
+// html_fragment is a macro which points to fragments of the html-area part
+// This is handled separately from other macros to prevent circular references
 const processedHtmlFragment = `(processHtml:{type:server}) {
-        processedHtml
-        macros {
-            ${macrosFragment}
+    processedHtml
+    macros {
+        ${macrosFragment}
+        config {
+            html_fragment {
+                fragmentId
+                processedHtml {
+                    processedHtml
+                    macros {
+                        ${macrosFragment}
+                    }
+                }
+            }
         }
     }
-`;
+}`;
 
 module.exports = { processedHtmlFragment };

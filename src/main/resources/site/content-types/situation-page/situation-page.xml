@@ -1,0 +1,12 @@
+<content-type>
+    <display-name>Oversiktsside for livssituasjon</display-name>
+    <description>Livssituasjonsside med oversikt over aktuelle stønader og tjenester</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="product-data"/>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>

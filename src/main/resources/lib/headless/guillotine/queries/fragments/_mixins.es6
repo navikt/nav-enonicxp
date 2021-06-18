@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
+const animatedIconsFragment = require('./animatedIcons');
 
 const languagesMixinFragment = `
     languages {
@@ -84,6 +85,17 @@ const headerCommonMixin = `
     }
 `;
 
+const productDataMixin = `
+    title
+    ingress
+    taxonomy
+    illustration {
+        ${globalFragment}
+        ${animatedIconsFragment.fragment}
+    }
+    externalProductUrl
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
@@ -95,4 +107,5 @@ module.exports = {
     headerCommonMixin,
     languagesMixinFragment,
     decoratorTogglesMixinFragment,
+    productDataMixin,
 };

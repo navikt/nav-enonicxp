@@ -7,6 +7,11 @@ const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
+const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
+const {
+    getInternalContentPathFromCustomPath,
+    getPathMapForReferences,
+} = require('/lib/custom-paths/custom-paths');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -24,7 +29,10 @@ const largeTable = require('./fragments/largeTable');
 const publishingCalendar = require('./fragments/publishingCalendar');
 const urlFragment = require('./fragments/url');
 const dynamicPage = require('./fragments/dynamicPage');
+const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
+const animatedIconFragment = require('./fragments/animatedIcons');
+const toolsPage = require('./fragments/toolsPage');
 
 const queryFragments = [
     globalFragment,
@@ -43,7 +51,10 @@ const queryFragments = [
     publishingCalendar.fragment,
     melding.fragment,
     dynamicPage.fragment,
+    globalValueSet.fragment,
     media.mediaAttachmentFragment,
+    animatedIconFragment.fragment,
+    toolsPage.toolsPageFragment,
 ].join('\n');
 
 const queryGetContentByRef = `query($ref:ID!){
@@ -62,11 +73,14 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getContent = (idOrPath, branch) => {
+const getContent = (requestedPathOrId, branch) => {
+    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
+    const contentRef = internalPathFromCustomPath || requestedPathOrId;
+
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: idOrPath,
+            ref: contentRef,
         },
         branch
     );
@@ -74,6 +88,13 @@ const getContent = (idOrPath, branch) => {
     const content = response?.get;
     if (!content) {
         return null;
+    }
+
+    if (shouldRedirectToCustomPath(content, requestedPathOrId, branch)) {
+        return {
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: content.data.customPath } },
+        };
     }
 
     if (isMedia(content)) {
@@ -87,13 +108,15 @@ const getContent = (idOrPath, branch) => {
     }
 
     const page = mergeComponentsIntoPage(contentWithParsedData);
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(idOrPath), branch);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
+    const pathMap = getPathMapForReferences(contentRef);
 
     return {
         ...contentWithParsedData,
         page,
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
+        pathMap,
     };
 };
 
@@ -126,52 +149,7 @@ const getRedirectContent = (idOrPath, branch) => {
     const shortUrlPath = pathSegments.length === 3 && pathSegments[2];
 
     if (shortUrlPath) {
-        const shortUrlTarget = runInBranchContext(
-            () => contentLib.get({ key: `/redirects/${shortUrlPath}` }),
-            branch
-        );
-
-        if (!shortUrlTarget) {
-            return null;
-        }
-
-        if (shortUrlTarget.type === 'no.nav.navno:internal-link') {
-            const target = shortUrlTarget.data?.target;
-            if (!target) {
-                return null;
-            }
-
-            const targetContent = getContent(target);
-            if (!targetContent) {
-                return null;
-            }
-
-            return {
-                ...shortUrlTarget,
-                __typename: 'no_nav_navno_InternalLink',
-                data: {
-                    target: { _path: targetContent._path },
-                    tempRedirect: shortUrlTarget.data?.tempRedirect,
-                },
-            };
-        }
-
-        if (shortUrlTarget.type === 'no.nav.navno:external-link') {
-            return {
-                ...shortUrlTarget,
-                __typename: 'no_nav_navno_ExternalLink',
-                data: {
-                    tempRedirect: shortUrlTarget.data?.tempRedirect,
-                },
-            };
-        }
-
-        if (shortUrlTarget.type === 'no.nav.navno:url') {
-            return {
-                ...shortUrlTarget,
-                __typename: 'no_nav_navno_Url',
-            };
-        }
+        return getContent(`/redirects/${shortUrlPath}`, branch);
     }
 
     return null;
@@ -197,4 +175,4 @@ const getSiteContent = (idOrPath, branch = 'master') => {
     return { ...content, ...(notifications && { notifications }) };
 };
 
-module.exports = { getSiteContent, getContent };
+module.exports = { getSiteContent, getContent, getRedirectContent };
