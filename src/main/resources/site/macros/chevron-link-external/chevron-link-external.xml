@@ -3,8 +3,14 @@
     <form>
         <input name="url" type="TextLine">
             <label>URL</label>
-            <default>/</default>
+            <help-text>Url til ekstern side</help-text>
+            <default>https://</default>
             <occurrences minimum="1" maximum="1"/>
+            <config>
+                <regexp>
+                    ^https?:\/\/.*
+                </regexp>
+            </config>
         </input>
         <input name="text" type="TextLine">
             <label>Lenketekst</label>

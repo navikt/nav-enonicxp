@@ -149,46 +149,7 @@ const getRedirectContent = (idOrPath, branch) => {
     const shortUrlPath = pathSegments.length === 3 && pathSegments[2];
 
     if (shortUrlPath) {
-        const shortUrlTarget = runInBranchContext(
-            () => contentLib.get({ key: `/redirects/${shortUrlPath}` }),
-            branch
-        );
-
-        if (!shortUrlTarget) {
-            return null;
-        }
-
-        if (shortUrlTarget.type === 'no.nav.navno:internal-link') {
-            const target = shortUrlTarget.data?.target;
-            if (!target) {
-                return null;
-            }
-
-            const targetContent = getContent(target, branch);
-            if (!targetContent) {
-                return null;
-            }
-
-            return {
-                ...shortUrlTarget,
-                __typename: 'no_nav_navno_InternalLink',
-                data: { target: { _path: targetContent._path } },
-            };
-        }
-
-        if (shortUrlTarget.type === 'no.nav.navno:external-link') {
-            return {
-                ...shortUrlTarget,
-                __typename: 'no_nav_navno_ExternalLink',
-            };
-        }
-
-        if (shortUrlTarget.type === 'no.nav.navno:url') {
-            return {
-                ...shortUrlTarget,
-                __typename: 'no_nav_navno_Url',
-            };
-        }
+        return getContent(`/redirects/${shortUrlPath}`, branch);
     }
 
     return null;

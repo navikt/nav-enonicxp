@@ -3,13 +3,14 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
+const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
+const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const batchCount = 1000;
 const maxCount = 50000;
-const pathPrefix = '/www.nav.no';
 const eventType = 'sitemap-generated';
 
 const sitemapData = {
@@ -32,6 +33,7 @@ const sitemapData = {
 };
 
 const includedContentTypes = [
+    'situation-page',
     'dynamic-page',
     'content-page-with-sidemenus',
     'main-article',
@@ -46,8 +48,34 @@ const includedContentTypes = [
 const isIncludedType = (type) =>
     !!includedContentTypes.find((includedType) => includedType === type);
 
-const getUrl = (content) =>
-    content.data?.canonicalUrl || content._path.replace(pathPrefix, frontendOrigin);
+const validateContent = (content) => {
+    if (!content) {
+        return false;
+    }
+
+    if (!isIncludedType(content.type)) {
+        return false;
+    }
+
+    if (content.data?.externalProductUrl || content.data?.noindex) {
+        return false;
+    }
+
+    return true;
+};
+
+const getUrl = (content) => {
+    if (content.data?.canonicalUrl) {
+        return content.data.canonicalUrl;
+    }
+
+    const customPath = content.data?.customPath;
+
+    const pathname = isValidCustomPath(customPath)
+        ? customPath
+        : content._path.replace(/^\/www.nav.no/, '');
+    return `${frontendOrigin}${pathname}`;
+};
 
 const getAlternativeLanguageVersions = (content) =>
     content.data?.languages &&
@@ -69,6 +97,7 @@ const getSitemapEntry = (content) => {
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
+        id: content._id,
         url: getUrl(content),
         modifiedTime: content.modifiedTime,
         language: content.language,
@@ -76,15 +105,32 @@ const getSitemapEntry = (content) => {
     };
 };
 
-const updateSitemapEntry = (pathname) => {
-    const url = `${frontendOrigin}${pathname}`;
-    const path = `${pathPrefix}${pathname}`;
-    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
+const getContent = (path) => {
+    const contentFromCustomPath = getContentFromCustomPath(path);
+    if (contentFromCustomPath.length > 0) {
+        if (contentFromCustomPath.length === 1) {
+            return contentFromCustomPath[0];
+        }
+        log.warning(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
+        return null;
+    }
 
-    if (content && isIncludedType(content.type)) {
-        sitemapData.set(url, getSitemapEntry(content));
-    } else if (sitemapData.get(url)) {
-        sitemapData.remove(url);
+    return runInBranchContext(() => contentLib.get({ key: path }), 'master');
+};
+
+const updateSitemapEntry = (path) => {
+    const content = getContent(path);
+    if (!content) {
+        log.warning(`Content not found for ${path} during sitemap update`);
+        return;
+    }
+
+    const key = content._id;
+
+    if (validateContent(content)) {
+        sitemapData.set(key, getSitemapEntry(content));
+    } else if (sitemapData.get(key)) {
+        sitemapData.remove(key);
     }
 };
 
@@ -100,6 +146,9 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
                         hasValue: {
                             field: 'data.noindex',
                             values: ['true'],
+                        },
+                        exists: {
+                            field: 'data.externalProductUrl',
                         },
                     },
                 },
@@ -179,7 +228,7 @@ const updateSitemapData = (entries) => {
     sitemapData.clear();
 
     entries.forEach((entry) => {
-        sitemapData.set(entry.url, entry);
+        sitemapData.set(entry.id, entry);
     });
 };
 

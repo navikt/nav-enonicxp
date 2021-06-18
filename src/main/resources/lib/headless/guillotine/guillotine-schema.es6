@@ -50,6 +50,7 @@ const schemaContextOptions = {
         Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
+    allowPaths: ['/redirects'],
 };
 
 const initAndCreateSchema = () => {

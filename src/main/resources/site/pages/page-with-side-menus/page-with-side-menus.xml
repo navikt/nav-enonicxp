@@ -48,6 +48,7 @@
         </field-set>
     </form>
     <regions>
+        <region name="topLeftMenu"/>
         <region name="leftMenu"/>
         <region name="topPageContent"/>
         <region name="pageContent"/>
