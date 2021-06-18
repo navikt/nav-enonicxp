@@ -1,0 +1,10 @@
+<macro>
+    <display-name>Ingress-tekst</display-name>
+    <description>Tekst med 20px størrelse</description>
+    <form>
+        <input name="body" type="TextArea">
+            <label>Tekst</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+</macro>

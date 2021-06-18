@@ -42,11 +42,15 @@ const macrosFragment = `
         }
         header_with_anchor {
             text
+            body
             id
             tag
         }
         infoBoks {
             infoBoks
+        }
+        ingress {
+            body
         }
         lenkeFiler {
             text
