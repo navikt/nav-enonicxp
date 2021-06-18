@@ -11,6 +11,7 @@
                     <occurrences minimum="0" maximum="1"/>
                     <config>
                         <option value="benefits">Pengestøtte</option>
+                        <option value="benefitsAndFollowup">Pengestøtte og oppfølging</option>
                         <option value="rights">Råd og veiledning</option>
                     </config>
                 </input>
