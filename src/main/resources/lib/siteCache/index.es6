@@ -262,8 +262,6 @@ function findReferences(id, path, depth) {
         `${app.name}:page-list`,
         `${app.name}:main-article`,
         `${app.name}:publishing-calendar`,
-        `${app.name}:dynamic-page`,
-        `${app.name}:content-page-with-sidemenus`,
         `${app.name}:section-page`,
     ];
 

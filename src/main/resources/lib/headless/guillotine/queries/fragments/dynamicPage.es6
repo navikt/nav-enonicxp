@@ -37,9 +37,18 @@ const situationPageFragment = `
     }
 `;
 
+const toolsPageFragment = `
+    ...on no_nav_navno_ToolsPage {
+        data {
+            ${productDataMixin}
+        }
+    }
+`;
+
 const dynamicPageFragment = `
     ${productPageFragment}
     ${situationPageFragment}
+    ${toolsPageFragment}
     ...on no_nav_navno_DynamicPage {
         ${commonDataObject}
     }
@@ -48,9 +57,23 @@ const dynamicPageFragment = `
 const dynamicPageShortFragment = `
     ...on no_nav_navno_SituationPage {
         ${commonDataObjectShort}
+        data {
+            title
+            ingress
+        }
     }
     ...on no_nav_navno_ContentPageWithSidemenus {
         ${commonDataObjectShort}
+        data {
+            title
+            ingress
+        }
+    }
+    ...on no_nav_navno_ToolsPage {
+        data {
+            title
+            ingress
+        }
     }
     ...on no_nav_navno_DynamicPage {
         ${commonDataObjectShort}
@@ -62,4 +85,5 @@ module.exports = {
     shortFragment: dynamicPageShortFragment,
     productPageFragment,
     situationPageFragment,
+    toolsPageFragment,
 };
