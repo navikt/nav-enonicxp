@@ -28,5 +28,17 @@
                 </field-set>
             </items>
         </item-set>
+        <field-set>
+            <label>Lottie-files (animasjon)</label>
+            <help-text>Dersom du laster opp en lottie-fil så vil denne vises istedet for statisk illustrasjon</help-text>
+            <items>
+                <input name="lottieHover" type="AttachmentUploader">
+                    <label>Lottiefil (hover)</label>
+                </input>
+                <input name="lottieActive" type="AttachmentUploader">
+                    <label>Lottiefil (active)</label>
+                </input>
+            </items>
+        </field-set>
     </form>
 </content-type>
