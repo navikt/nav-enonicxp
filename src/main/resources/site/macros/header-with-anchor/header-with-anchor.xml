@@ -2,7 +2,7 @@
     <display-name>Header med anker-id (H3/H4)</display-name>
     <description>Header som kan lenkes til med hash/anker-id, f.eks nav.no/no/min-side#mitt-anker-id</description>
     <form>
-        <input name="text" type="TextLine">
+        <input name="body" type="TextLine">
             <label>Tekst</label>
             <occurrences minimum="1" maximum="1"/>
         </input>
@@ -18,6 +18,13 @@
                 <option value="h4">H4</option>
             </config>
             <default>h3</default>
+        </input>
+        <input name="text" type="TextLine">
+            <label>(Deprecated - Bruk "Tekst" feltet)</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <regexp>^$</regexp>
+            </config>
         </input>
     </form>
 </macro>
