@@ -11,12 +11,8 @@ const animatedIconsFragment = `
                 transformEnd
                 transformOrigin
             }
-            lottieHover {
-                attachmentUrl
-            }
-            lottieActive {
-                attachmentUrl
-            }
+            lottieHover
+            lottieActive
         }
     }
 `;
