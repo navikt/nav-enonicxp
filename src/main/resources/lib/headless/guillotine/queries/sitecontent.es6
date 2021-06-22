@@ -71,10 +71,7 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getContent = (requestedPathOrId, branch) => {
-    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
-    const contentRef = internalPathFromCustomPath || requestedPathOrId;
-
+const getContent = (contentRef, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
         {
@@ -86,13 +83,6 @@ const getContent = (requestedPathOrId, branch) => {
     const content = response?.get;
     if (!content) {
         return null;
-    }
-
-    if (shouldRedirectToCustomPath(content, requestedPathOrId, branch)) {
-        return {
-            __typename: 'no_nav_navno_InternalLink',
-            data: { target: { _path: content.data.customPath } },
-        };
     }
 
     if (isMedia(content)) {
@@ -153,15 +143,29 @@ const getRedirectContent = (idOrPath, branch) => {
     return null;
 };
 
-const getSiteContent = (idOrPath, branch = 'master') => {
+const getSiteContent = (requestedPathOrId, branch = 'master') => {
+    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
+    const contentRef = internalPathFromCustomPath || requestedPathOrId;
+
+    // Get the content from cache if it exists
+    // We always want to use the actual XP content ref as cache key, to keep the cache
+    // consistent even if the custom path of a content is changed
     const content = cache.getSitecontent(
-        idOrPath,
+        contentRef,
         branch,
-        () => getContent(idOrPath, branch) || getRedirectContent(idOrPath, branch)
+        () => getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
     );
 
     if (!content) {
         return null;
+    }
+
+    // If the content has a custom path, we want to redirect requests from the internal path
+    if (shouldRedirectToCustomPath(content, requestedPathOrId, branch)) {
+        return {
+            __typename: 'no_nav_navno_InternalLink',
+            data: { target: { _path: content.data.customPath } },
+        };
     }
 
     if (isMedia(content)) {
