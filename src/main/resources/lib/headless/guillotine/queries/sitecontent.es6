@@ -71,11 +71,11 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getContent = (pathOrId, branch) => {
+const getContent = (contentRef, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
         {
-            ref: pathOrId,
+            ref: contentRef,
         },
         branch
     );
@@ -96,8 +96,8 @@ const getContent = (pathOrId, branch) => {
     }
 
     const page = mergeComponentsIntoPage(contentWithParsedData);
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(pathOrId), branch);
-    const pathMap = getPathMapForReferences(pathOrId);
+    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
+    const pathMap = getPathMapForReferences(contentRef);
 
     return {
         ...contentWithParsedData,
