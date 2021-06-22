@@ -1,5 +1,11 @@
 const { imageFragment } = require('/lib/headless/guillotine/queries/fragments/media');
 
+const codeFragment = `
+    ...on media_Code {
+        mediaText
+    }
+`;
+
 const animatedIconsFragment = `
     ...on no_nav_navno_AnimatedIcons {
         data {
@@ -10,6 +16,12 @@ const animatedIconsFragment = `
                 transformStart
                 transformEnd
                 transformOrigin
+            }
+            lottieHover {
+                ${codeFragment}
+            }
+            lottieActive {
+                ${codeFragment}
             }
         }
     }

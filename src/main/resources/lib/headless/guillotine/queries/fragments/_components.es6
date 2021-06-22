@@ -107,7 +107,7 @@ const partsFragment = `
             }
             product_card_micro {
                 card_list {
-                ${productTargetMixin}
+                    ${productTargetMixin}
                 }
             }
             product_card_mini {

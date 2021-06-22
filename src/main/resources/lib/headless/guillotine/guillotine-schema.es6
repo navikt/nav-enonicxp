@@ -7,6 +7,8 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
+const { mediaCodeCallback } = require('./schema-creation-callbacks/media');
+const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const {
@@ -28,6 +30,8 @@ const {
 
 const schemaContextOptions = {
     creationCallbacks: {
+        Attachment: attachmentCallback,
+        media_Code: mediaCodeCallback,
         no_nav_navno_MainArticle: mainArticleCallback,
         no_nav_navno_MainArticle_Data: mainArticleDataCallback,
         no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
