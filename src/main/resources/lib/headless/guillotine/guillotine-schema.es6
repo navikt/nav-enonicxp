@@ -7,6 +7,7 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
+const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const {
@@ -48,6 +49,7 @@ const schemaContextOptions = {
         Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
         Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
         Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
+        Attachment: attachmentCallback,
     },
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
     allowPaths: ['/redirects'],

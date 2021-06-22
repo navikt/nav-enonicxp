@@ -32,10 +32,10 @@
             <label>Lottie-files (animasjon)</label>
             <help-text>Dersom du laster opp en lottie-fil så vil denne vises istedet for statisk illustrasjon</help-text>
             <items>
-                <input name="lottieHover" type="TextArea">
+                <input name="lottieHover" type="AttachmentUploader">
                     <label>Lottie-animasjon ved hover</label>
                 </input>
-                <input name="lottieActive" type="TextArea">
+                <input name="lottieActive" type="AttachmentUploader">
                     <label>Lottieanimasjon ved klikk (active)</label>
                 </input>
             </items>
