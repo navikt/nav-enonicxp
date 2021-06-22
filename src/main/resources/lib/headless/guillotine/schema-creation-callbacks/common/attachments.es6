@@ -34,7 +34,14 @@ const getAttachmentText = (attachment, maxSize = maxSizeDefault) => {
     }
 
     if (mimeType === 'application/json') {
-        return JSON.parse(attachmentText);
+        try {
+            return JSON.parse(attachmentText);
+        } catch (e) {
+            log.warning(
+                `JSON parse error for attachment id ${id} / name ${name} - returning string as-is - Error: ${e}`
+            );
+            return attachmentText;
+        }
     }
 
     if (!mimeType.startsWith('text')) {
