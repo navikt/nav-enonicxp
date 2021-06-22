@@ -32,11 +32,21 @@
             <label>Lottie-files (animasjon)</label>
             <help-text>Dersom du laster opp en lottie-fil så vil denne vises istedet for statisk illustrasjon</help-text>
             <items>
-                <input name="lottieHover" type="AttachmentUploader">
+                <input name="lottieHover" type="MediaSelector">
                     <label>Lottie-animasjon ved hover</label>
+                    <config>
+                        <allowContentType>media:code</allowContentType>
+                        <allowPath>./*.json</allowPath>
+                        <hideToggleIcon>true</hideToggleIcon>
+                    </config>
                 </input>
-                <input name="lottieActive" type="AttachmentUploader">
+                <input name="lottieActive" type="MediaSelector">
                     <label>Lottieanimasjon ved klikk (active)</label>
+                    <config>
+                        <allowContentType>media:code</allowContentType>
+                        <allowPath>./*.json</allowPath>
+                        <hideToggleIcon>true</hideToggleIcon>
+                    </config>
                 </input>
             </items>
         </field-set>
