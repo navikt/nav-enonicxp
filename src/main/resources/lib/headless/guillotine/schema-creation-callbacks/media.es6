@@ -14,7 +14,7 @@ const mediaCodeCallback = (context, params) => {
             }
 
             const attachment = env.source.attachments?.[attachmentName];
-            if (!attachmentName) {
+            if (!attachment) {
                 return null;
             }
 
