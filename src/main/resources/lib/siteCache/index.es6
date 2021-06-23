@@ -1,6 +1,5 @@
 const contentLib = require('/lib/xp/content');
 const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
-const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
@@ -176,7 +175,6 @@ function wipeOnChange(path) {
         });
     }
 
-    clearCustomPathEntry(xpPath);
     updateSitemapEntry(xpPath);
 
     return true;
@@ -323,17 +321,6 @@ function clearProductCardMacroReferences(id) {
     );
 
     contentsWithProductCardMacro.forEach((content) => wipeOnChange(content._path));
-}
-
-function clearCustomPathEntry(id) {
-    const contentCustomPath = getCustomPathFromContent(id);
-    if (contentCustomPath) {
-        if (contentCustomPath === id) {
-            log.warning(`Content with custom path set to the actual path detected: ${id}`);
-            return;
-        }
-        wipeOnChange(contentCustomPath);
-    }
 }
 
 function clearGlobalValueReferences(id) {
