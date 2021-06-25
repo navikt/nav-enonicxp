@@ -10,9 +10,5 @@
             <label>Underfasett</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
-        <input type="TextLine" name="className">
-            <label>Class name</label>
-            <occurrences minimum="0" maximum="1"/>
-        </input>
     </form>
 </x-data>
