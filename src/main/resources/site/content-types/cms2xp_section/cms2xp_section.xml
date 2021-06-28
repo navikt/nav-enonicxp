@@ -1,0 +1,88 @@
+<content-type>
+    <display-name>Oppslagstavle</display-name>
+    <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <mixin name="ingress"/>
+        <mixin name="main-panels"/>
+        <mixin name="link-panels"/>
+        <field-set>
+            <label>Nyheter</label>
+            <help-text>Nyheter hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
+            <items>
+                <input type="Long" name="nrNews">
+                    <label>Hvor mange elementer i undermenyene er tillatt</label>
+                </input>
+                <input name="newsContents" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences minimum="0" maximum="1" />
+                    <config>
+                        <treeMode>true</treeMode>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+                <input type="TextLine" name="moreNewsUrl">
+                    <label>Url til flere nyheter</label>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Nyttig å vite</label>
+            <help-text>'Nyttig å vite' hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
+            <items>
+                <input type="Long" name="nrNTK">
+                    <label>Hvor mange elementer i undermenyene er tillatt</label>
+                </input>
+                <input name="ntkContents" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences minimum="0" maximum="1" />
+                    <config>
+                        <treeMode>true</treeMode>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Snarveier</label>
+            <help-text>Snarveier hentes fra prioriterte underartikler og/eller fra valgt innhold</help-text>
+            <items>
+                <input type="Long" name="nrSC">
+                    <label>Hvor mange elementer i undermenyene er tillatt</label>
+                </input>
+                <input name="scContents" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences minimum="0" maximum="1" />
+                    <config>
+                        <treeMode>true</treeMode>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Kampanje - Skal bare brukes sentralt</label>
+            <items>
+                <input name="breaking_news" type="ContentSelector">
+                    <label>Velg innhold</label>
+                    <help-text>
+                        Velg innhold som skal vises som en kampanje øverst på siden
+                    </help-text>
+                    <allowPath>${site}/*</allowPath>
+                    <occurrences minimum="0" maximum="2" />
+                    <config>
+                        <treeMode>true</treeMode>
+                        <allowContentType>breaking-news</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="languages-legacy"/>
+        <mixin name="decorator-toggles"/>
+        <mixin name="seo"/>
+        <mixin name="keywords"/>
+    </form>
+</content-type>

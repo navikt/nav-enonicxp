@@ -1,0 +1,25 @@
+<content-type>
+    <display-name>Artikkelliste</display-name>
+    <description>Overskriften blir lenke og ingress vises under</description>
+    <super-type>base:unstructured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+        <option-set name="menuListItems">
+            <label >Innhold i høyremenyen</label>
+            <expanded>false</expanded>
+            <occurrences minimum="0" maximum="1"/>
+            <options minimum="0" maximum="11">
+                <option name="shortcuts">
+                    <label>Snarveier</label>
+                    <items>
+                        <input name="link" type="ContentSelector">
+                            <label>Snarveier</label>
+                            <custom-text>contentdata/links</custom-text>
+                            <occurrences minimum="0" maximum="0"/>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+</content-type>
