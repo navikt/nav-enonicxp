@@ -170,7 +170,6 @@ const updateFacets = (fasetter, ids) => {
                 t.push({
                     fasett: el.name,
                     underfasett: value.name,
-                    className: value.className,
                     query:
                         el.rulekey +
                         ' LIKE "' +
@@ -212,7 +211,6 @@ const updateFacets = (fasetter, ids) => {
             fasett: value.fasett,
         };
         if (value.underfasett) fasett.underfasett = value.underfasett;
-        if (value.className) fasett.className = value.className;
         let start = 0;
         let count = 1000;
         let hits = [];
