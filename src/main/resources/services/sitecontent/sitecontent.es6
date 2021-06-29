@@ -1,9 +1,13 @@
+const { unhookTimeMachine } = require('/lib/content-lib-time-machine/content-lib-time-machine');
+const {
+    hookContentLibGetWithTimeMachine,
+} = require('/lib/content-lib-time-machine/content-lib-time-machine');
 const { isValidBranch } = require('/lib/headless/branch-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
 const handleGet = (req) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch } = req.params;
+    const { id: idOrPath, branch, time } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -36,7 +40,15 @@ const handleGet = (req) => {
         };
     }
 
+    if (time) {
+        hookContentLibGetWithTimeMachine(time);
+    }
+
     const content = getSiteContent(idOrPath, branch);
+
+    if (time) {
+        unhookTimeMachine();
+    }
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);
