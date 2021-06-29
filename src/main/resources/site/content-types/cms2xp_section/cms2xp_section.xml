@@ -1,10 +1,7 @@
 <content-type>
     <display-name>Cms2xp_section - Skal ikke brukes</display-name>
     <description>Utgått innholdstype fra Enonic CMS</description>
-    <super-type>base:unstructured</super-type>
-    <is-abstract>false</is-abstract>
-    <is-final>true</is-final>
-    <allow-child-content>true</allow-child-content>
-    <form>
-    </form>
+    <config>
+        <allow-new-content>false</allow-new-content>
+    </config>
 </content-type>
