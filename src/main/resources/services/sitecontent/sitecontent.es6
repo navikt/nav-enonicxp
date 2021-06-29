@@ -1,7 +1,3 @@
-const { unhookTimeMachine } = require('/lib/content-lib-time-machine/content-lib-time-machine');
-const {
-    hookContentLibGetWithTimeMachine,
-} = require('/lib/content-lib-time-machine/content-lib-time-machine');
 const { isValidBranch } = require('/lib/headless/branch-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
@@ -40,15 +36,7 @@ const handleGet = (req) => {
         };
     }
 
-    if (time) {
-        hookContentLibGetWithTimeMachine(time);
-    }
-
-    const content = getSiteContent(idOrPath, branch);
-
-    if (time) {
-        unhookTimeMachine();
-    }
+    const content = getSiteContent(idOrPath, branch, time);
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);

@@ -12,6 +12,10 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
+const {
+    unhookTimeMachine,
+    hookContentLibGetWithTimeMachine,
+} = require('/lib/content-lib-time-machine/content-lib-time-machine');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -143,9 +147,36 @@ const getRedirectContent = (idOrPath, branch) => {
     return null;
 };
 
-const getSiteContent = (requestedPathOrId, branch = 'master') => {
-    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
-    const contentRef = internalPathFromCustomPath || requestedPathOrId;
+const getContentVersion = (contentRef, branch = 'master', time) => {
+    try {
+        hookContentLibGetWithTimeMachine(time);
+
+        const content = getContent(contentRef, branch);
+        if (!content) {
+            unhookTimeMachine();
+            return null;
+        }
+
+        const notifications = getNotifications(content._path);
+
+        unhookTimeMachine();
+
+        return { ...content, ...(notifications && { notifications }) };
+    } catch (e) {
+        log.error(
+            `Error while retrieving old content for ${contentRef} at timestamp ${time} on branch ${branch} - ${e}`
+        );
+        // Ensure the time machine is always unhooked in the event of errors
+        unhookTimeMachine();
+        return null;
+    }
+};
+
+const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
+    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
+    if (time) {
+        return getContentVersion(contentRef, branch, time);
+    }
 
     // Get the content from cache if it exists
     // We always want to use the actual XP content ref as cache key, to keep the cache
