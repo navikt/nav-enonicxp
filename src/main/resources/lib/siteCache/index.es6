@@ -98,7 +98,6 @@ function wipeOnChange(path) {
         return false;
     }
 
-    const xpPath = path.replace(/^\/content/, '');
     const pathname = getPathname(path);
     log.info(`Clearing: ${pathname}`);
 
@@ -111,24 +110,21 @@ function wipeOnChange(path) {
         return true;
     }
 
-    // For decorator
+    // Wipe cache for decorator services
     const w = wipe('paths');
     if (path.indexOf('/driftsmeldinger/') !== -1) {
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
+        return true;
     }
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
+        return true;
     }
 
-    // For headless setup
+    // Wipe cache for frontend content service
     wipe('sitecontent')(pathname);
-    wipe('notifications')(pathname);
-    if (path.indexOf('/global-notifications/') !== -1) {
-        // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
-        wipe('notifications')();
-    }
     if (libs.cluster.isMaster()) {
         libs.task.submit({
             description: `send revalidate on ${pathname}`,
@@ -138,6 +134,7 @@ function wipeOnChange(path) {
         });
     }
 
+    const xpPath = path.replace(/^\/content/, '');
     updateSitemapEntry(xpPath);
 
     return true;
@@ -309,7 +306,15 @@ function clearNotificationReferences(content) {
         return;
     }
 
-    log.info(`content: ${JSON.stringify(content)}`);
+    // If the notification is shown globally, wipe the whole cache
+    if (content._path.includes('/global-notifications/')) {
+        wipe('notifications')();
+        return;
+    }
+
+    // Non-global notifications are only displayed on the parent
+    const parentPath = content._path.split('/').slice(-1).join('/');
+    wipe('notifications')(parentPath);
 }
 
 function clearReferences(id, path, depth) {
