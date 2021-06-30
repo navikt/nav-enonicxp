@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
 const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
@@ -313,11 +314,12 @@ function clearNotificationReferences(content) {
     }
 
     // Non-global notifications are only displayed on the parent
-    const parentPath = content._path.split('/').slice(-1).join('/');
+    const parentPath = getPathname(content._path.split('/').slice(0, -1).join('/'));
+    log.info(`Clearing notifications from ${parentPath}`);
     wipe('notifications')(parentPath);
 }
 
-function clearReferences(id, path, depth) {
+function clearReferences(id, path, depth, event) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
         log.info(
@@ -333,7 +335,10 @@ function clearReferences(id, path, depth) {
         wipeOnChange(el._path);
     });
 
-    const content = contentLib.get({ key: id });
+    const content = runInBranchContext(
+        () => contentLib.get({ key: id }),
+        event === 'node.deleted' ? 'draft' : 'master'
+    );
     if (!content) {
         return;
     }
@@ -365,7 +370,7 @@ function nodeListenerCallback(event) {
                     principals: ['role:system.admin'],
                 },
                 () => {
-                    clearReferences(node.id, node.path, 0);
+                    clearReferences(node.id, node.path, 0, event.type);
                 }
             );
         } else if (node.path.indexOf('/dekorator-meny/') !== -1) {
