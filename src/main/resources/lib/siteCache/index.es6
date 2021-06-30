@@ -123,7 +123,7 @@ function wipeOnChange(path) {
         return true;
     }
 
-    // Wipe cache for frontend content service
+    // Wipe cache for frontend sitecontent service
     wipe('sitecontent')(pathname);
     if (libs.cluster.isMaster()) {
         libs.task.submit({
