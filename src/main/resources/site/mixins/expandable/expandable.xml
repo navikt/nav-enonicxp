@@ -24,6 +24,9 @@
                 <input name="expandableAnchorId" type="TextLine">
                     <label>Anker-id på utvidbart panel</label>
                     <help-text>Sett denne dersom det skal lenkes direkte til dette panelet, f.eks. nav.no/min-side#mitt-anker-id</help-text>
+                    <config>
+                        <regexp>^[0-9a-zA-Z-_]+$</regexp>
+                    </config>
                 </input>
             </items>
         </field-set>
