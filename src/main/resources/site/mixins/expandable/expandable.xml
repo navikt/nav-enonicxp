@@ -21,6 +21,10 @@
                         <default>Tittel</default>
                     </config>
                 </input>
+                <input name="expandableAnchorId" type="TextLine">
+                    <label>Anker-id på utvidbart panel</label>
+                    <help-text>Sett denne dersom det skal lenkes direkte til dette panelet, f.eks. nav.no/min-side#mitt-anker-id</help-text>
+                </input>
             </items>
         </field-set>
     </form>
