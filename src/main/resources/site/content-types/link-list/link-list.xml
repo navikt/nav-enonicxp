@@ -1,0 +1,10 @@
+<content-type>
+    <display-name>link-list - Skal ikke brukes</display-name>
+    <description>
+        Utgått innholdstype fra Enonic CMS - må være definert for å unngå krasj i Content Studio
+    </description>
+    <super-type>base:structured</super-type>
+    <is-abstract>true</is-abstract>
+    <form>
+    </form>
+</content-type>
