@@ -47,4 +47,4 @@ const getNotifications = (path) => {
 
 const getFromCache = (path) => cache.getNotifications(path, () => getNotifications(path));
 
-module.exports = { getNotifications: getFromCache };
+module.exports = { getNotifications: getFromCache, getNotificationsNoCache: getNotifications };

@@ -36,6 +36,7 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
+const { getNotificationsNoCache } = require('/lib/headless/guillotine/queries/notifications');
 
 const queryFragments = [
     globalFragment,
@@ -157,7 +158,7 @@ const getContentVersion = (contentRef, branch = 'master', time) => {
             return null;
         }
 
-        const notifications = getNotifications(content._path);
+        const notifications = getNotificationsNoCache(content._path);
 
         unhookTimeMachine();
 
