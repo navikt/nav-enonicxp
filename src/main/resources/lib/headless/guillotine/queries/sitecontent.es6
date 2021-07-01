@@ -146,7 +146,7 @@ const getRedirectContent = (idOrPath, branch) => {
 };
 
 const getContentVersionFromTime = (contentRef, branch, time) => {
-    return contentLibTimeTravel(time, branch, () => {
+    return contentLibTimeTravel(time, branch, contentRef, () => {
         const content = getContent(contentRef, branch);
         if (!content) {
             return null;
