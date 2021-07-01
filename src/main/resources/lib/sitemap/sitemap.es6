@@ -121,7 +121,6 @@ const getContent = (path) => {
 const updateSitemapEntry = (path) => {
     const content = getContent(path);
     if (!content) {
-        log.warning(`Content not found for ${path} during sitemap update`);
         return;
     }
 
