@@ -13,8 +13,8 @@ const {
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
 const {
-    unhookTimeMachine,
-    hookContentLibGetWithTimeMachine,
+    unhookContentLibTimeMachine,
+    dangerouslyHookContentLibWithTimeMachine,
 } = require('/lib/content-lib-time-machine/content-lib-time-machine');
 
 const globalFragment = require('./fragments/_global');
@@ -148,19 +148,19 @@ const getRedirectContent = (idOrPath, branch) => {
     return null;
 };
 
-const getContentVersion = (contentRef, branch = 'master', time) => {
+const getContentVersionFromTime = (contentRef, branch, time) => {
     try {
-        hookContentLibGetWithTimeMachine(time);
+        dangerouslyHookContentLibWithTimeMachine(time);
 
         const content = getContent(contentRef, branch);
         if (!content) {
-            unhookTimeMachine();
+            unhookContentLibTimeMachine();
             return null;
         }
 
-        const notifications = getNotificationsNoCache(content._path);
+        const notifications = getNotificationsNoCache(content._path, branch);
 
-        unhookTimeMachine();
+        unhookContentLibTimeMachine();
 
         return { ...content, ...(notifications && { notifications }) };
     } catch (e) {
@@ -168,7 +168,7 @@ const getContentVersion = (contentRef, branch = 'master', time) => {
             `Error while retrieving old content for ${contentRef} at timestamp ${time} on branch ${branch} - ${e}`
         );
         // Ensure the time machine is always unhooked in the event of errors
-        unhookTimeMachine();
+        unhookContentLibTimeMachine();
         return null;
     }
 };
@@ -176,7 +176,7 @@ const getContentVersion = (contentRef, branch = 'master', time) => {
 const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
     if (time) {
-        return getContentVersion(contentRef, branch, time);
+        return getContentVersionFromTime(contentRef, branch, time);
     }
 
     // Get the content from cache if it exists

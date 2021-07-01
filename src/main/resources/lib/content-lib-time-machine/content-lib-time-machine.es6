@@ -1,8 +1,9 @@
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const contentLibGet = contentLib.get;
+const contentLibGetOriginal = contentLib.get;
 
 const getVersionFromRequestedTime = (contentVersions, requestedTime) => {
     const length = contentVersions.length;
@@ -22,11 +23,25 @@ const getVersionFromRequestedTime = (contentVersions, requestedTime) => {
     return contentVersions[length - 1];
 };
 
-const hookContentLibGetWithTimeMachine = (requestedTimestamp) => {
+const unhookContentLibTimeMachine = () => {
+    contentLib.get = contentLibGetOriginal;
+};
+
+// This function will hook contentLib database query functions to ensure data is
+// retrieved from the version at the requested timestamp. It is _EXTREMELY_ important
+// to clean up after yourself after retrieving the data you want. Do this by running the
+// 'unhookContentLibTimeMachine' function at the end of every possible logic branch
+// (remember to catch errors!)
+//
+// Failing to do so will corrupt the hooked functions indefinitely (or until the
+// application is restarted)
+//
+// Do not use asynchronously
+const dangerouslyHookContentLibWithTimeMachine = (requestedTimestamp, branch) => {
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,
-        branch: 'master',
+        branch: branch,
     });
 
     log.info(`Going back in time to ${requestedTimestamp}`);
@@ -35,7 +50,7 @@ const hookContentLibGetWithTimeMachine = (requestedTimestamp) => {
 
     contentLib.get = (args) => {
         if (!args?.key) {
-            return contentLibGet();
+            return contentLibGetOriginal();
         }
 
         const nodeKey = args.key.replace(/^\/www.nav.no/, '/content/www.nav.no');
@@ -44,18 +59,21 @@ const hookContentLibGetWithTimeMachine = (requestedTimestamp) => {
         const requestedVersion = getVersionFromRequestedTime(nodeVersions.hits, requestedUnixTime);
         if (!requestedVersion) {
             log.info(`No versions found for ${nodeKey}, returning current live version`);
-            return contentLibGet(args);
+            return contentLibGetOriginal(args);
         }
 
-        return contentLibGet({
-            key: requestedVersion.nodeId,
-            versionId: requestedVersion.versionId,
-        });
+        return runInBranchContext(
+            () =>
+                contentLibGetOriginal({
+                    key: requestedVersion.nodeId,
+                    versionId: requestedVersion.versionId,
+                }),
+            branch
+        );
     };
 };
 
-const unhookTimeMachine = () => {
-    contentLib.get = contentLibGet;
+module.exports = {
+    dangerouslyHookContentLibWithTimeMachine,
+    unhookContentLibTimeMachine,
 };
-
-module.exports = { hookContentLibGetWithTimeMachine, unhookTimeMachine };

@@ -14,13 +14,10 @@ const queryGetNotifications = `query {
     }
 }`;
 
-const getNotifications = (path) => {
-    // Notifications should always be fetched from master, we don't want unpublished notifications
-    // to be displayed in content studio
-    const queryResponse = guillotineQuery(queryGetNotifications, undefined, 'master');
+const getNotifications = (path, branch = 'master') => {
+    const queryResponse = guillotineQuery(queryGetNotifications, undefined, branch);
 
     const notifications = queryResponse?.query;
-
     if (!notifications) {
         log.info('Notifications not found');
         return null;
