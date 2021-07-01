@@ -4,14 +4,17 @@ const { forceArray } = require('/lib/nav-utils');
 const { getComponentConfig } = require('/lib/headless/component-utils');
 
 const getFilterMenus = (req) => {
-    const contentId = portalLib.getContent()._id;
+    const content = portalLib.getContent();
+    if (!content) {
+        return [];
+    }
 
     const repo = nodeLib.connect({
         repoId: req.repositoryId,
         branch: req.branch,
     });
 
-    const components = forceArray(repo.get(contentId)?.components);
+    const components = forceArray(repo.get(content._id)?.components);
 
     return components.filter(
         (component) => component.part?.descriptor === `${app.name}:filters-menu`
