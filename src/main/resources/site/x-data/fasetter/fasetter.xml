@@ -10,5 +10,13 @@
             <label>Underfasett</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
+        <!--
+            Dummy value to prevent Elasticsearch error due to missing property mapping
+            (this is a legacy field no longer in use)
+        -->
+        <input type="RadioButton" name="className">
+            <label>-</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
     </form>
 </x-data>

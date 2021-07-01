@@ -21,7 +21,7 @@ const constructMessage = (message, language) => {
 const handleGet = (req) => {
     const content = libs.portal.getContent();
     const language = content.language || 'no';
-    const body = libs.cache.getPaths(
+    const body = libs.cache.getDriftsmeldinger(
         `driftsmelding-heading-${language}`,
         undefined,
         req.branch,
