@@ -48,7 +48,7 @@ const caches = {
         expire: oneDay,
     }),
     notifications: libs.cache.newCache({
-        size: 500,
+        size: 5000,
         expire: oneDay,
     }),
 };
