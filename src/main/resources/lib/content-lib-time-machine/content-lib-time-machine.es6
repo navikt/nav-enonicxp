@@ -1,6 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
+const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
 const contentLibGetOriginal = contentLib.get;
@@ -13,7 +14,7 @@ const getVersionFromTime = (contentVersions, time) => {
 
     for (let i = 0; i < length; i++) {
         const version = contentVersions[i];
-        const versionTime = new Date(version.timestamp).getTime();
+        const versionTime = getUnixTimeFromDateTimeString(version.timestamp);
         if (time >= versionTime) {
             return version;
         }
@@ -41,8 +42,8 @@ const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
         return new Date().getTime();
     }
 
-    const oldestVersion = nodeVersions.slice(-1);
-    const oldestUnixTime = new Date(oldestVersion.timestamp).getTime();
+    const oldestVersion = nodeVersions.slice(-1)[0];
+    const oldestUnixTime = getUnixTimeFromDateTimeString(oldestVersion.timestamp);
 
     return Math.max(oldestUnixTime, requestedUnixTime);
 };
@@ -66,7 +67,7 @@ const dangerouslyHookContentLibWithTimeTravel = (requestedTime, branch, baseCont
         branch: branch,
     });
 
-    const requestedUnixTime = new Date(requestedTime).getTime();
+    const requestedUnixTime = getUnixTimeFromDateTimeString(requestedTime);
 
     // If a base contentRef is provided, ensure versions retrieved are not older than
     // what would be available at the first version of this content.
