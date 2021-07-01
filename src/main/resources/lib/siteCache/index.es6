@@ -39,8 +39,8 @@ const caches = {
         size: 50,
         expire: oneDay,
     }),
-    paths: libs.cache.newCache({
-        size: 5000,
+    driftsmeldinger: libs.cache.newCache({
+        size: 50,
         expire: oneDay,
     }),
     sitecontent: libs.cache.newCache({
@@ -112,8 +112,8 @@ function wipeOnChange(path) {
     }
 
     // Wipe cache for decorator services
-    const w = wipe('paths');
     if (path.indexOf('/driftsmeldinger/') !== -1) {
+        const w = wipe('driftsmeldinger');
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
@@ -409,7 +409,7 @@ function activateEventListener() {
 
 module.exports = {
     getDecorator: getSome('decorator'),
-    getPaths: getSome('paths'),
+    getDriftsmeldinger: getSome('driftsmeldinger'),
     getSitecontent,
     getNotifications,
     activateEventListener,
