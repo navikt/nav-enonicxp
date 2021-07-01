@@ -1,11 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
-const cronLib = require('/lib/cron');
 const { runInBranchContext } = require('/lib/headless/branch-context');
-
-const taskName = 'timemachine-safety-valve';
-const safetyTimerMs = 15000;
 
 const contentLibGetOriginal = contentLib.get;
 
@@ -27,9 +23,8 @@ const getVersionFromRequestedTime = (contentVersions, requestedTime) => {
     return contentVersions[length - 1];
 };
 
-const unhookContentLibTimeMachine = () => {
+const unhookContentLibTimeTravel = () => {
     contentLib.get = contentLibGetOriginal;
-    cronLib.unschedule({ name: taskName });
 };
 
 // This function will hook contentLib database query functions to ensure data is
@@ -42,37 +37,16 @@ const unhookContentLibTimeMachine = () => {
 // served until the safety timer kicks in
 //
 // Do not use asynchronously!
-const dangerouslyHookContentLibWithTimeMachine = (requestedTimestamp, branch) => {
+const dangerouslyHookContentLibWithTimeTravel = (requestedTimestamp, branch) => {
+    log.info(`Going back in time to ${requestedTimestamp}`);
+
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,
         branch: branch,
     });
 
-    log.info(`Going back in time to ${requestedTimestamp}`);
-
     const requestedUnixTime = new Date(requestedTimestamp).getTime();
-
-    // Unhook the functions after a certain period of time
-    cronLib.schedule({
-        name: taskName,
-        delay: safetyTimerMs,
-        fixedDelay: safetyTimerMs,
-        times: 1,
-        callback: () => {
-            unhookContentLibTimeMachine();
-            log.error(`Stopped time machine due to timeout after ${safetyTimerMs}ms`);
-        },
-        context: {
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            user: {
-                login: 'su',
-                userStore: 'system',
-            },
-            principals: ['role:system.admin'],
-        },
-    });
 
     contentLib.get = (args) => {
         if (!args?.key) {
@@ -99,7 +73,20 @@ const dangerouslyHookContentLibWithTimeMachine = (requestedTimestamp, branch) =>
     };
 };
 
+const contentLibTimeTravel = (requestedTimestamp, branch, callback) => {
+    dangerouslyHookContentLibWithTimeTravel(requestedTimestamp, branch);
+
+    try {
+        return callback();
+    } catch (e) {
+        log.info(`Error occured while time-travelling - ${e}`);
+        throw e;
+    } finally {
+        unhookContentLibTimeTravel();
+        log.info('Returning to the present');
+    }
+};
+
 module.exports = {
-    dangerouslyHookContentLibWithTimeMachine,
-    unhookContentLibTimeMachine,
+    contentLibTimeTravel,
 };

@@ -12,10 +12,7 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
-const {
-    unhookContentLibTimeMachine,
-    dangerouslyHookContentLibWithTimeMachine,
-} = require('/lib/content-lib-time-machine/content-lib-time-machine');
+const { contentLibTimeTravel } = require('/lib/content-lib-time-machine/content-lib-time-machine');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -149,28 +146,16 @@ const getRedirectContent = (idOrPath, branch) => {
 };
 
 const getContentVersionFromTime = (contentRef, branch, time) => {
-    try {
-        dangerouslyHookContentLibWithTimeMachine(time, branch);
-
+    return contentLibTimeTravel(time, branch, () => {
         const content = getContent(contentRef, branch);
         if (!content) {
-            unhookContentLibTimeMachine();
             return null;
         }
 
         const notifications = getNotificationsNoCache(content._path, branch);
 
-        unhookContentLibTimeMachine();
-
         return { ...content, ...(notifications && { notifications }) };
-    } catch (e) {
-        log.error(
-            `Error while retrieving old content for ${contentRef} at timestamp ${time} on branch ${branch} - ${e}`
-        );
-        // Ensure the time machine is always unhooked in the event of errors
-        unhookContentLibTimeMachine();
-        return null;
-    }
+    });
 };
 
 const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
