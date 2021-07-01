@@ -6,7 +6,7 @@ const { getComponentConfig } = require('/lib/headless/component-utils');
 const getFilterMenus = (req) => {
     const content = portalLib.getContent();
     if (!content) {
-        return [];
+        throw new Error('Ugyldig context, forsøk å laste inn editoren på nytt (F5)');
     }
 
     const repo = nodeLib.connect({
@@ -46,16 +46,33 @@ const generateHits = (req) => {
 };
 
 const filterSelector = (req) => {
-    const hits = generateHits(req);
+    try {
+        const hits = generateHits(req);
 
-    return {
-        status: 200,
-        body: {
-            total: hits.length,
-            count: hits.length,
-            hits: hits,
-        },
-    };
+        return {
+            status: 200,
+            body: {
+                total: hits.length,
+                count: hits.length,
+                hits: hits,
+            },
+        };
+    } catch (e) {
+        return {
+            status: 200,
+            body: {
+                total: 1,
+                count: 1,
+                hits: [
+                    {
+                        id: '',
+                        displayName: 'Det oppsto en feil:',
+                        description: e.toString(),
+                    },
+                ],
+            },
+        };
+    }
 };
 
 exports.get = filterSelector;
