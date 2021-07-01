@@ -150,7 +150,7 @@ const getRedirectContent = (idOrPath, branch) => {
 
 const getContentVersionFromTime = (contentRef, branch, time) => {
     try {
-        dangerouslyHookContentLibWithTimeMachine(time);
+        dangerouslyHookContentLibWithTimeMachine(time, branch);
 
         const content = getContent(contentRef, branch);
         if (!content) {
