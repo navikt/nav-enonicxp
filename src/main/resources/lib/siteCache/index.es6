@@ -1,9 +1,10 @@
 const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
+const { globalValuesContentType } = require('/lib/global-values/global-values');
 const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
-const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -26,9 +27,7 @@ const redirectPath = '/redirects/';
 const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const oneDay = 3600 * 24;
-const oneMinute = 60;
 
-let etag = Date.now().toString(16);
 let hasSetupListeners = false;
 const myHash =
     Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -36,19 +35,11 @@ const myHash =
 log.info(`Creating new cache: ${myHash}`);
 const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
-    notificationsLegacy: libs.cache.newCache({
-        size: 500,
-        expire: oneMinute,
-    }),
     decorator: libs.cache.newCache({
         size: 50,
         expire: oneDay,
     }),
-    paths: libs.cache.newCache({
-        size: 5000,
-        expire: oneDay,
-    }),
-    redirects: libs.cache.newCache({
+    driftsmeldinger: libs.cache.newCache({
         size: 50,
         expire: oneDay,
     }),
@@ -57,7 +48,7 @@ const caches = {
         expire: oneDay,
     }),
     notifications: libs.cache.newCache({
-        size: 500,
+        size: 5000,
         expire: oneDay,
     }),
 };
@@ -84,14 +75,6 @@ function getPath(path, type) {
     return (type ? type + '::' : '') + key;
 }
 
-function getEtag() {
-    return etag;
-}
-
-function setEtag() {
-    etag = Date.now().toString(16);
-}
-
 function wipe(name) {
     return (key) => {
         if (!key) {
@@ -104,7 +87,6 @@ function wipe(name) {
 }
 
 function wipeAll() {
-    setEtag();
     Object.keys(caches).forEach((name) => wipe(name)());
 }
 
@@ -117,7 +99,6 @@ function wipeOnChange(path) {
         return false;
     }
 
-    const xpPath = path.replace(/^\/content/, '');
     const pathname = getPathname(path);
     log.info(`Clearing: ${pathname}`);
 
@@ -129,43 +110,22 @@ function wipeOnChange(path) {
         );
         return true;
     }
-    const w = wipe('paths');
-    w(getPath(path, 'main-page'));
-    w(getPath(path, 'page-heading'));
-    w(getPath(path, 'breaking-news'));
-    w(getPath(path, 'main-panels'));
-    w(getPath(path, 'link-panels'));
-    w(getPath(path, 'link-lists'));
-    w(getPath(path, 'main-article'));
-    w(getPath(path, 'main-article-linked-list'));
-    w(getPath(path, 'menu-list'));
-    w(getPath(path, 'page-list'));
-    w(getPath(path, 'office-information'));
-    w(getPath(path, 'page-large-table'));
-    w(getPath(path, 'faq-page'));
-    w(getPath(path, 'generic-page'));
+
+    // Wipe cache for decorator services
     if (path.indexOf('/driftsmeldinger/') !== -1) {
+        const w = wipe('driftsmeldinger');
         w('driftsmelding-heading-no');
         w('driftsmelding-heading-en');
         w('driftsmelding-heading-se');
-    }
-    if (path.indexOf('/publiseringskalender') !== -1) {
-        w('publiseringskalender');
+        return true;
     }
     if (path.indexOf('/dekorator-meny/') !== -1) {
         wipe('decorator')();
-    }
-    if (path.indexOf(redirectPath) !== -1) {
-        wipe('redirects')();
+        return true;
     }
 
-    // For headless setup
+    // Wipe cache for frontend sitecontent service
     wipe('sitecontent')(pathname);
-    wipe('notifications')(pathname);
-    if (path.indexOf('/global-notifications/') !== -1) {
-        // Hvis det skjer en endring på et globalt varsel, må hele cachen wipes
-        wipe('notifications')();
-    }
     if (libs.cluster.isMaster()) {
         libs.task.submit({
             description: `send revalidate on ${pathname}`,
@@ -175,6 +135,7 @@ function wipeOnChange(path) {
         });
     }
 
+    const xpPath = path.replace(/^\/content/, '');
     updateSitemapEntry(xpPath);
 
     return true;
@@ -281,22 +242,25 @@ function findReferences(id, path, depth) {
     return references.filter((v, i) => !!v._path && refPaths.indexOf(v._path) === i);
 }
 
-function clearFragmentMacroReferences(id) {
-    const fragment = contentLib.get({ key: id });
-    if (!fragment || fragment.type !== 'portal:fragment') {
+function clearFragmentMacroReferences(content) {
+    if (content.type !== 'portal:fragment') {
         return;
     }
 
-    const contentsWithFragmentId = findContentsWithFragmentMacro(id);
+    const { _id } = content;
+
+    const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
     if (!contentsWithFragmentId?.length > 0) {
         return;
     }
 
     log.info(
-        `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${id}`
+        `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${_id}`
     );
 
-    contentsWithFragmentId.forEach((content) => wipeOnChange(content._path));
+    contentsWithFragmentId.forEach((contentWithFragment) =>
+        wipeOnChange(contentWithFragment._path)
+    );
 }
 
 const productCardTargetTypes = {
@@ -305,36 +269,57 @@ const productCardTargetTypes = {
     [`${app.name}:tools-page`]: true,
 };
 
-function clearProductCardMacroReferences(id) {
-    const targetContent = contentLib.get({ key: id });
-    if (!targetContent || !productCardTargetTypes[targetContent.type]) {
+function clearProductCardMacroReferences(content) {
+    if (!productCardTargetTypes[content.type]) {
         return;
     }
 
-    const contentsWithProductCardMacro = findContentsWithProductCardMacro(id);
+    const { _id } = content;
+
+    const contentsWithProductCardMacro = findContentsWithProductCardMacro(_id);
     if (!contentsWithProductCardMacro?.length > 0) {
         return;
     }
 
     log.info(
-        `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${id}`
+        `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
     );
 
-    contentsWithProductCardMacro.forEach((content) => wipeOnChange(content._path));
+    contentsWithProductCardMacro.forEach((contentWithMacro) =>
+        wipeOnChange(contentWithMacro._path)
+    );
 }
 
-function clearGlobalValueReferences(id) {
-    const globalValueSet = getGlobalValueSet(id);
-    if (globalValueSet) {
-        forceArray(globalValueSet.data?.valueItems).forEach((item) => {
-            getGlobalValueUsage(item.key).forEach((content) => {
-                wipeOnChange(content.path);
-            });
-        });
+function clearGlobalValueReferences(content) {
+    if (content.type !== globalValuesContentType) {
+        return;
     }
+
+    forceArray(content.data?.valueItems).forEach((item) => {
+        getGlobalValueUsage(item.key).forEach((contentWithValues) => {
+            wipeOnChange(contentWithValues.path);
+        });
+    });
 }
 
-function clearReferences(id, path, depth) {
+function clearNotificationReferences(content) {
+    if (content.type !== `${app.name}:notification`) {
+        return;
+    }
+
+    // If the notification is shown globally, wipe the whole cache
+    if (content._path.includes('/global-notifications/')) {
+        wipe('notifications')();
+        return;
+    }
+
+    // Non-global notifications are only displayed on the parent
+    const parentPath = getPathname(content._path.split('/').slice(0, -1).join('/'));
+    log.info(`Clearing notifications from ${parentPath}`);
+    wipe('notifications')(parentPath);
+}
+
+function clearReferences(id, path, depth, event) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
         log.info(
@@ -350,9 +335,18 @@ function clearReferences(id, path, depth) {
         wipeOnChange(el._path);
     });
 
-    clearFragmentMacroReferences(id);
-    clearGlobalValueReferences(id);
-    clearProductCardMacroReferences(id);
+    const content = runInBranchContext(
+        () => contentLib.get({ key: id }),
+        event === 'node.deleted' ? 'draft' : 'master'
+    );
+    if (!content) {
+        return;
+    }
+
+    clearNotificationReferences(content);
+    clearFragmentMacroReferences(content);
+    clearProductCardMacroReferences(content);
+    clearGlobalValueReferences(content);
 }
 
 function nodeListenerCallback(event) {
@@ -376,7 +370,7 @@ function nodeListenerCallback(event) {
                     principals: ['role:system.admin'],
                 },
                 () => {
-                    clearReferences(node.id, node.path, 0);
+                    clearReferences(node.id, node.path, 0, event.type);
                 }
             );
         } else if (node.path.indexOf('/dekorator-meny/') !== -1) {
@@ -414,15 +408,9 @@ function activateEventListener() {
 }
 
 module.exports = {
-    wipeDecorator: wipe('decorator'),
-    wipePaths: wipe('paths'),
     getDecorator: getSome('decorator'),
-    getPaths: getSome('paths'),
-    getRedirects: getSome('redirects'),
-    getNotificationsLegacy: getSome('notificationsLegacy'),
+    getDriftsmeldinger: getSome('driftsmeldinger'),
     getSitecontent,
     getNotifications,
     activateEventListener,
-    stripPath: getPath,
-    etag: getEtag,
 };
