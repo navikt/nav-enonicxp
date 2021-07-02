@@ -55,7 +55,7 @@ const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
 // (remember to catch errors!)
 //
 // Failing to do so will leave the hooked functions corrupted, and outdated data will be
-// served until the safety timer kicks in
+// served indefinitely.
 //
 // Do not use asynchronously!
 const dangerouslyHookContentLibWithTimeTravel = (requestedTime, branch, baseContentRef) => {
@@ -70,7 +70,7 @@ const dangerouslyHookContentLibWithTimeTravel = (requestedTime, branch, baseCont
     const requestedUnixTime = getUnixTimeFromDateTimeString(requestedTime);
 
     // If a base contentRef is provided, ensure versions retrieved are not older than
-    // what would be available at the first version of this content.
+    // what would be available for the first version of this content.
     const validUnixTime = baseContentRef
         ? getValidUnixTimeFromContent(requestedUnixTime, baseContentRef, repo)
         : requestedUnixTime;

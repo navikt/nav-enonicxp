@@ -12,7 +12,7 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
-const { contentLibTimeTravel } = require('/lib/content-lib-time-machine/content-lib-time-machine');
+const { contentLibTimeTravel } = require('/lib/content-lib-time-travel/content-lib-time-travel');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
