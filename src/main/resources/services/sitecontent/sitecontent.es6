@@ -36,6 +36,8 @@ const handleGet = (req) => {
         };
     }
 
+    log.info(`Time: ${time}`);
+
     const content = getSiteContent(idOrPath, branch, time);
 
     if (!content) {

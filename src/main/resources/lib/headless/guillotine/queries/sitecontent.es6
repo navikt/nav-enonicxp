@@ -146,6 +146,8 @@ const getRedirectContent = (idOrPath, branch) => {
 };
 
 const getContentVersionFromTime = (contentRef, branch, time) => {
+    const contentRaw = contentLib.get({ key: contentRef });
+
     return contentLibTimeTravel(time, branch, contentRef, () => {
         const content = getContent(contentRef, branch);
         if (!content) {
@@ -154,7 +156,7 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
 
         const notifications = getNotificationsNoCache(content._path, branch);
 
-        return { ...content, ...(notifications && { notifications }), livePath: contentRef };
+        return { ...content, ...(notifications && { notifications }), livePath: contentRaw._path };
     });
 };
 
