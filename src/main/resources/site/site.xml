@@ -8,10 +8,7 @@
     <x-data name="oldContentType" optional="true"/>
     <mappings>
         <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
-            <match>type:'portal:fragment'</match>
-        </mapping>
-        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
-            <match>type:'no.nav.navno:global-value-set'</match>
+            <pattern invert="true">(/no/rss)</pattern>
         </mapping>
     </mappings>
 </site>
