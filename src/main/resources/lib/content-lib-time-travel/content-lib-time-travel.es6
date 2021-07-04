@@ -28,9 +28,13 @@ const unhookContentLibTimeTravel = () => {
     contentLib.get = contentLibGetOriginal;
 };
 
-const getNodeVersions = (contentRef, repo) => {
+const getNodeVersions = (contentRef, repo, branch) => {
     const nodeKey = contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
-    return repo.findVersions({ key: nodeKey, start: 0, count: 1000 }).hits;
+    const versions = repo.findVersions({ key: nodeKey, start: 0, count: 1000 }).hits;
+    if (branch === 'master') {
+        return versions.filter((version) => !!version.commitId);
+    }
+    return versions;
 };
 
 // If the requested time is older than the oldest version of the content,
@@ -58,8 +62,14 @@ const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
 // served indefinitely.
 //
 // Do not use asynchronously!
-const dangerouslyHookContentLibWithTimeTravel = (requestedTime, branch, baseContentRef) => {
-    log.info(`Travelling back in time to ${requestedTime}`);
+const dangerouslyHookContentLibWithTimeTravel = (
+    requestedTime,
+    branch = 'master',
+    baseContentRef
+) => {
+    log.info(
+        `Travelling back in time to ${requestedTime} on branch ${branch} for base content ${baseContentRef}`
+    );
 
     const context = contextLib.get();
     const repo = nodeLib.connect({
@@ -75,6 +85,9 @@ const dangerouslyHookContentLibWithTimeTravel = (requestedTime, branch, baseCont
         ? getValidUnixTimeFromContent(requestedUnixTime, baseContentRef, repo)
         : requestedUnixTime;
 
+    const nodeVersionsBase = getNodeVersions(baseContentRef, repo, branch);
+    log.info(`Base content versions: ${JSON.stringify(nodeVersionsBase)}`);
+
     // TODO: legg til flere funksjoner - getChildren, getAttachments
     contentLib.get = (args) => {
         const key = args?.key;
@@ -82,7 +95,7 @@ const dangerouslyHookContentLibWithTimeTravel = (requestedTime, branch, baseCont
             return contentLibGetOriginal();
         }
 
-        const nodeVersions = getNodeVersions(key, repo);
+        const nodeVersions = getNodeVersions(key, repo, branch);
 
         const requestedVersion = getVersionFromTime(nodeVersions, validUnixTime);
         if (!requestedVersion) {
