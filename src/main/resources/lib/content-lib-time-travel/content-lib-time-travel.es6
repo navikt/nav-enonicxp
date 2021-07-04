@@ -85,8 +85,6 @@ const dangerouslyHookContentLibWithTimeTravel = (
         ? getValidUnixTimeFromContent(requestedUnixTime, baseContentRef, repo)
         : requestedUnixTime;
 
-    const nodeVersionsBase = getNodeVersions(baseContentRef, repo, branch);
-
     // TODO: legg til flere funksjoner - getChildren, getAttachments
     contentLib.get = (args) => {
         const key = args?.key;
