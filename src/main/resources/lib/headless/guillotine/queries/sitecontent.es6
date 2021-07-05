@@ -103,8 +103,7 @@ const getContent = (contentRef, branch) => {
     return {
         ...contentWithParsedData,
         page,
-        pageOriginal: contentWithParsedData.page,
-        // components: undefined,
+        components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
         pathMap,
     };
