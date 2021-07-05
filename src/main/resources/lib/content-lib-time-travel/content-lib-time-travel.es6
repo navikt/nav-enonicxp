@@ -8,7 +8,7 @@ const contentLibGet = contentLib.get;
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
-const getVersionFromTime = (contentVersions, time, alwaysGetOldest) => {
+const getVersionFromTime = (contentVersions, requestedUnixTime, alwaysGetOldest) => {
     const length = contentVersions?.length;
     if (!length) {
         return null;
@@ -16,8 +16,8 @@ const getVersionFromTime = (contentVersions, time, alwaysGetOldest) => {
 
     // Return the newest version which is older than the requested time
     const foundVersion = contentVersions.find((version) => {
-        const versionTime = getUnixTimeFromDateTimeString(version.timestamp);
-        return time >= versionTime;
+        const versionUnixTime = getUnixTimeFromDateTimeString(version.timestamp);
+        return requestedUnixTime >= versionUnixTime;
     });
 
     if (!foundVersion && alwaysGetOldest) {
@@ -29,7 +29,7 @@ const getVersionFromTime = (contentVersions, time, alwaysGetOldest) => {
 
 const getNodeVersions = (contentRef, repo, branch) => {
     const nodeKey = getNodeKey(contentRef);
-    const versions = repo.findVersions({ key: nodeKey, start: 0, count: 1000 }).hits;
+    const versions = repo.findVersions({ key: nodeKey, start: 0, count: 10000 }).hits;
     if (branch === 'master') {
         return versions.filter((version) => !!version.commitId);
     }
@@ -40,12 +40,13 @@ const getNodeVersions = (contentRef, repo, branch) => {
 // return the timestamp of the oldest version instead
 const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
     const nodeVersions = getNodeVersions(contentRef, repo);
+    const length = nodeVersions?.length;
     // If no versions exist, return the current time
-    if (nodeVersions.length === 0) {
+    if (!length) {
         return new Date().getTime();
     }
 
-    const oldestVersion = nodeVersions.slice(-1)[0];
+    const oldestVersion = nodeVersions[length - 1];
     const oldestUnixTime = getUnixTimeFromDateTimeString(oldestVersion.timestamp);
 
     return Math.max(oldestUnixTime, requestedUnixTime);
@@ -66,7 +67,7 @@ const dangerouslyHookContentLibWithTimeTravel = (
     baseContentKey
 ) => {
     log.info(
-        `Time travel: Retrieving content from ${requestedTime} on branch ${branch} for base content ${baseContentKey}`
+        `Time travel: Retrieving content from base content ${baseContentKey} for time ${requestedTime} on branch ${branch}`
     );
 
     const context = contextLib.get();
@@ -77,8 +78,8 @@ const dangerouslyHookContentLibWithTimeTravel = (
 
     const requestedUnixTime = getUnixTimeFromDateTimeString(requestedTime);
 
-    // If a base contentRef is provided, ensure versions retrieved are not older than
-    // what would be available for the first version of this content.
+    // If a base content key is provided, ensure versions retrieved from referenced contents
+    // are not older than what would be available for the first version of the base content
     const retrieveFromUnixTime = baseContentKey
         ? getValidUnixTimeFromContent(requestedUnixTime, baseContentKey, repo)
         : requestedUnixTime;
