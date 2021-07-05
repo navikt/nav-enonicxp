@@ -31,7 +31,7 @@ const adminFrontendProxy = (req) => {
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
-    const frontendUrl = `${frontendOrigin}/draft}${contentPath}`;
+    const frontendUrl = `${frontendOrigin}/draft${contentPath}`;
 
     try {
         const response = httpClient.request({
