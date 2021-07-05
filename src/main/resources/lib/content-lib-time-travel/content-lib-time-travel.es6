@@ -52,7 +52,7 @@ const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
     return Math.max(oldestUnixTime, requestedUnixTime);
 };
 
-// This function will hook database query functions to ensure data is retrieved from
+// This function will hook contentLib functions to ensure data is retrieved from
 // the version at the requested timestamp. It is _EXTREMELY_ important to clean up
 // after retrieving the data you want. Do this by running the 'unhookContentLibTimeMachine'
 // function at the end of every possible logic branch (remember to catch errors!)
