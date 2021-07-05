@@ -33,7 +33,6 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
-const { getNotificationsNoCache } = require('/lib/headless/guillotine/queries/notifications');
 
 const queryFragments = [
     globalFragment,
