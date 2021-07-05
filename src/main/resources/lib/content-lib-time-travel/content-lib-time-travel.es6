@@ -4,32 +4,24 @@ const nodeLib = require('/lib/xp/node');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const contentLibGetOriginal = contentLib.get;
+const contentLibGet = contentLib.get;
+
+const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
 const getVersionFromTime = (contentVersions, time) => {
-    const length = contentVersions.length;
+    const length = contentVersions?.length;
     if (!length) {
         return null;
     }
 
-    for (let i = 0; i < length; i++) {
-        const version = contentVersions[i];
+    return contentVersions.find((version) => {
         const versionTime = getUnixTimeFromDateTimeString(version.timestamp);
-        if (time >= versionTime) {
-            return version;
-        }
-    }
-
-    log.info(`Version not found for requested time, returning oldest version`);
-    return contentVersions[length - 1];
-};
-
-const unhookContentLibTimeTravel = () => {
-    contentLib.get = contentLibGetOriginal;
+        return time >= versionTime;
+    });
 };
 
 const getNodeVersions = (contentRef, repo, branch) => {
-    const nodeKey = contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
+    const nodeKey = getNodeKey(contentRef);
     const versions = repo.findVersions({ key: nodeKey, start: 0, count: 1000 }).hits;
     if (branch === 'master') {
         return versions.filter((version) => !!version.commitId);
@@ -54,9 +46,8 @@ const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
 
 // This function will hook database query functions to ensure data is retrieved from
 // the version at the requested timestamp. It is _EXTREMELY_ important to clean up
-// after yourself after retrieving the data you want. Do this by running the
-// 'unhookContentLibTimeMachine' function at the end of every possible logic branch
-// (remember to catch errors!)
+// after retrieving the data you want. Do this by running the 'unhookContentLibTimeMachine'
+// function at the end of every possible logic branch (remember to catch errors!)
 //
 // Failing to do so will leave the hooked functions corrupted, and outdated data will be
 // served indefinitely.
@@ -68,7 +59,7 @@ const dangerouslyHookContentLibWithTimeTravel = (
     baseContentRef
 ) => {
     log.info(
-        `Travelling back in time to ${requestedTime} on branch ${branch} for base content ${baseContentRef}`
+        `Time travel: Retrieving content from ${requestedTime} on branch ${branch} for base content ${baseContentRef}`
     );
 
     const context = contextLib.get();
@@ -81,28 +72,29 @@ const dangerouslyHookContentLibWithTimeTravel = (
 
     // If a base contentRef is provided, ensure versions retrieved are not older than
     // what would be available for the first version of this content.
-    const validUnixTime = baseContentRef
+    const retrieveFromUnixTime = baseContentRef
         ? getValidUnixTimeFromContent(requestedUnixTime, baseContentRef, repo)
         : requestedUnixTime;
 
-    // TODO: legg til flere funksjoner - getChildren, getAttachments
     contentLib.get = (args) => {
         const key = args?.key;
         if (!key) {
-            return contentLibGetOriginal();
+            return contentLibGet(args);
         }
 
         const nodeVersions = getNodeVersions(key, repo, branch);
+        const requestedVersion = getVersionFromTime(nodeVersions, retrieveFromUnixTime);
 
-        const requestedVersion = getVersionFromTime(nodeVersions, validUnixTime);
         if (!requestedVersion) {
-            log.info(`No versions found for ${key}, returning current live version`);
-            return contentLibGetOriginal(args);
+            log.info(
+                `Time travel: No version found for ${key} at time ${retrieveFromUnixTime} on branch ${branch}`
+            );
+            return null;
         }
 
         return runInBranchContext(
             () =>
-                contentLibGetOriginal({
+                contentLibGet({
                     key: requestedVersion.nodeId,
                     versionId: requestedVersion.versionId,
                 }),
@@ -111,17 +103,25 @@ const dangerouslyHookContentLibWithTimeTravel = (
     };
 };
 
-const contentLibTimeTravel = (requestedTime, branch, baseContentRef, callback) => {
-    dangerouslyHookContentLibWithTimeTravel(requestedTime, branch, baseContentRef);
+const unhookContentLibTimeTravel = () => {
+    contentLib.get = contentLibGet;
+};
+
+// Execute a callback function while contentLib is hooked to retreive data from
+// a specified date/time
+const contentLibTimeTravel = (requestedDateTime, branch, baseContentRef, callback) => {
+    dangerouslyHookContentLibWithTimeTravel(requestedDateTime, branch, baseContentRef);
 
     try {
         return callback();
     } catch (e) {
-        log.info(`Error occured while time-travelling - ${e}`);
+        log.info(
+            `Time travel: Error occured while retrieving historical data from content ${baseContentRef} at time ${requestedDateTime} on branch ${branch} - ${e}`
+        );
         throw e;
     } finally {
         unhookContentLibTimeTravel();
-        log.info('Returning to the present');
+        log.info('Time travel: Returning to the present');
     }
 };
 
