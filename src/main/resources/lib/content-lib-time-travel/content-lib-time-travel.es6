@@ -5,7 +5,8 @@ const { generateUUID } = require('/lib/headless/uuid');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const contentLibGet = contentLib.get;
+const contentLibGet = contentLib.get.bind(contentLib);
+const nodeLibConnect = nodeLib.connect.bind(nodeLib);
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
@@ -68,7 +69,7 @@ const dangerouslyHookContentLibWithTimeTravel = (
     baseContentKey
 ) => {
     const context = contextLib.get();
-    const repo = nodeLib.connect({
+    const repo = nodeLibConnect({
         repoId: context.repository,
         branch: branch,
     });
@@ -81,7 +82,7 @@ const dangerouslyHookContentLibWithTimeTravel = (
         ? getValidUnixTimeFromContent(requestedUnixTime, baseContentKey, repo)
         : requestedUnixTime;
 
-    contentLib.get = (args) => {
+    contentLib.get = function (args) {
         const key = args?.key;
         if (!key) {
             return runInBranchContext(() => contentLibGet(args), branch);
@@ -110,10 +111,49 @@ const dangerouslyHookContentLibWithTimeTravel = (
             branch
         );
     };
+
+    nodeLib.connect = function (connectArgs) {
+        log.info(`NodeLib connect args object: ${JSON.stringify(connectArgs)}`);
+        const repoConnection = nodeLibConnect(connectArgs);
+        const repoGet = repoConnection.get.bind(repoConnection);
+
+        repoConnection.get = function (getArgs) {
+            if (getArgs && typeof getArgs === 'object') {
+                log.info(`NodeLib get args object: ${JSON.stringify(getArgs)}`);
+            } else {
+                log.info(`NodeLib get args primitive: ${getArgs}`);
+            }
+
+            if (typeof getArgs === 'string') {
+                const nodeVersions = getNodeVersions(getArgs, repoConnection, branch);
+                const requestedVersion = getVersionFromTime(
+                    nodeVersions,
+                    retrieveFromUnixTime,
+                    getArgs === baseContentKey
+                );
+
+                if (requestedVersion) {
+                    log.info(`Found a version!: ${JSON.stringify(requestedVersion)}`);
+                    return repoGet({
+                        key: requestedVersion.nodeId,
+                        versionId: requestedVersion.versionId,
+                    });
+                }
+            }
+
+            const getResult = repoGet(getArgs);
+            log.info(`Result: ${JSON.stringify(getResult)}`);
+
+            return getResult;
+        };
+
+        return repoConnection;
+    };
 };
 
 const unhookContentLibTimeTravel = () => {
     contentLib.get = contentLibGet;
+    nodeLib.connect = nodeLibConnect;
 };
 
 // Execute a callback function while contentLib is hooked to retreive data from
