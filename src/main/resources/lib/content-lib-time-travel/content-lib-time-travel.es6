@@ -8,18 +8,23 @@ const contentLibGet = contentLib.get;
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
-const getVersionFromTime = (contentVersions, time) => {
+const getVersionFromTime = (contentVersions, time, alwaysGetOldest) => {
     const length = contentVersions?.length;
     if (!length) {
         return null;
     }
 
-    // Return the newest version which is older than the requested time,
-    // or the oldest version if the above does not exist
-    return contentVersions.find((version, index) => {
+    // Return the newest version which is older than the requested time
+    const foundVersion = contentVersions.find((version) => {
         const versionTime = getUnixTimeFromDateTimeString(version.timestamp);
-        return time >= versionTime || index === length - 1;
+        return time >= versionTime;
     });
+
+    if (!foundVersion && alwaysGetOldest) {
+        return contentVersions[length - 1];
+    }
+
+    return foundVersion;
 };
 
 const getNodeVersions = (contentRef, repo, branch) => {
@@ -58,10 +63,10 @@ const getValidUnixTimeFromContent = (requestedUnixTime, contentRef, repo) => {
 const dangerouslyHookContentLibWithTimeTravel = (
     requestedTime,
     branch = 'master',
-    baseContentRef
+    baseContentKey
 ) => {
     log.info(
-        `Time travel: Retrieving content from ${requestedTime} on branch ${branch} for base content ${baseContentRef}`
+        `Time travel: Retrieving content from ${requestedTime} on branch ${branch} for base content ${baseContentKey}`
     );
 
     const context = contextLib.get();
@@ -74,8 +79,8 @@ const dangerouslyHookContentLibWithTimeTravel = (
 
     // If a base contentRef is provided, ensure versions retrieved are not older than
     // what would be available for the first version of this content.
-    const retrieveFromUnixTime = baseContentRef
-        ? getValidUnixTimeFromContent(requestedUnixTime, baseContentRef, repo)
+    const retrieveFromUnixTime = baseContentKey
+        ? getValidUnixTimeFromContent(requestedUnixTime, baseContentKey, repo)
         : requestedUnixTime;
 
     contentLib.get = (args) => {
@@ -85,7 +90,11 @@ const dangerouslyHookContentLibWithTimeTravel = (
         }
 
         const nodeVersions = getNodeVersions(key, repo, branch);
-        const requestedVersion = getVersionFromTime(nodeVersions, retrieveFromUnixTime);
+        const requestedVersion = getVersionFromTime(
+            nodeVersions,
+            retrieveFromUnixTime,
+            key === baseContentKey
+        );
 
         if (!requestedVersion) {
             log.info(
@@ -111,14 +120,14 @@ const unhookContentLibTimeTravel = () => {
 
 // Execute a callback function while contentLib is hooked to retreive data from
 // a specified date/time
-const contentLibTimeTravel = (requestedDateTime, branch, baseContentRef, callback) => {
-    dangerouslyHookContentLibWithTimeTravel(requestedDateTime, branch, baseContentRef);
+const contentLibTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
+    dangerouslyHookContentLibWithTimeTravel(requestedDateTime, branch, baseContentKey);
 
     try {
         return callback();
     } catch (e) {
         log.info(
-            `Time travel: Error occured while retrieving historical data from content ${baseContentRef} at time ${requestedDateTime} on branch ${branch} - ${e}`
+            `Time travel: Error occured while retrieving historical data from content ${baseContentKey} at time ${requestedDateTime} on branch ${branch} - ${e}`
         );
         throw e;
     } finally {
