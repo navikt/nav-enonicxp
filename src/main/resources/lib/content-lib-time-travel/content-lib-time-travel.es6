@@ -1,6 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
+const { generateUUID } = require('/lib/headless/uuid');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
@@ -66,10 +67,6 @@ const dangerouslyHookContentLibWithTimeTravel = (
     branch = 'master',
     baseContentKey
 ) => {
-    log.info(
-        `Time travel: Retrieving content from base content ${baseContentKey} for time ${requestedTime} on branch ${branch}`
-    );
-
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,
@@ -122,18 +119,21 @@ const unhookContentLibTimeTravel = () => {
 // Execute a callback function while contentLib is hooked to retreive data from
 // a specified date/time
 const contentLibTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
+    const sessionId = generateUUID();
+    log.info(
+        `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch}`
+    );
+
     dangerouslyHookContentLibWithTimeTravel(requestedDateTime, branch, baseContentKey);
 
     try {
         return callback();
     } catch (e) {
-        log.info(
-            `Time travel: Error occured while retrieving historical data from content ${baseContentKey} at time ${requestedDateTime} on branch ${branch} - ${e}`
-        );
+        log.info(`Time travel: Error occured during sessions ${sessionId} - ${e}`);
         throw e;
     } finally {
         unhookContentLibTimeTravel();
-        log.info('Time travel: Returning to the present');
+        log.info(`Time travel: Ending session ${sessionId}`);
     }
 };
 
