@@ -14,9 +14,11 @@ const getVersionFromTime = (contentVersions, time) => {
         return null;
     }
 
-    return contentVersions.find((version) => {
+    // Return the newest version which is older than the requested time,
+    // or the oldest version if the above does not exist
+    return contentVersions.find((version, index) => {
         const versionTime = getUnixTimeFromDateTimeString(version.timestamp);
-        return time >= versionTime;
+        return time >= versionTime || index === length - 1;
     });
 };
 
