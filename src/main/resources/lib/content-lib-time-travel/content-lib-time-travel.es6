@@ -87,7 +87,7 @@ const dangerouslyHookContentLibWithTimeTravel = (
     contentLib.get = (args) => {
         const key = args?.key;
         if (!key) {
-            return contentLibGet(args);
+            return runInBranchContext(() => contentLibGet(args), branch);
         }
 
         const nodeVersions = getNodeVersions(key, repo, branch);
