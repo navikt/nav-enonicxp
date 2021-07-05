@@ -154,9 +154,7 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
             return null;
         }
 
-        const notifications = getNotificationsNoCache(content._path, branch);
-
-        return { ...content, ...(notifications && { notifications }), livePath: contentRaw._path };
+        return { ...content, livePath: contentRaw._path };
     });
 };
 
