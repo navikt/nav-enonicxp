@@ -156,7 +156,14 @@ const pagesFragment = `
     config {
         no_nav_navno {
             page_with_side_menus {
-               ${pageNavigationMenuMixinFragment}
+                title
+                leftMenuToggle
+                showInternalNav
+                leftMenuSticky
+                leftMenuHeader
+                rightMenuToggle
+                rightMenuSticky
+                ${pageNavigationMenuMixinFragment}
             }
         }
     }

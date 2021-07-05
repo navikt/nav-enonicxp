@@ -90,7 +90,7 @@ const getContent = (contentRef, branch) => {
         return content;
     }
 
-    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
+    const contentWithParsedData = deepJsonParser(content, ['data', 'page']);
 
     if (content.__typename === 'portal_Fragment') {
         return getPortalFragmentContent(contentWithParsedData);
