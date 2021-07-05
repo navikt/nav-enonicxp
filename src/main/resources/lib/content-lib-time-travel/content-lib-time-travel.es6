@@ -129,7 +129,7 @@ const contentLibTimeTravel = (requestedDateTime, branch, baseContentKey, callbac
     try {
         return callback();
     } catch (e) {
-        log.info(`Time travel: Error occured during sessions ${sessionId} - ${e}`);
+        log.info(`Time travel: Error occured during session ${sessionId} - ${e}`);
         throw e;
     } finally {
         unhookContentLibTimeTravel();
