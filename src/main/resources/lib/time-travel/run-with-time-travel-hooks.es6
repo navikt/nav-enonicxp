@@ -153,6 +153,12 @@ const dangerouslyHookLibsWithTimeTravel = (
                 return null;
             }
 
+            // Templates should always resolve to the active version, to avoid inconsistent
+            // component structures
+            if (requestedVersion.nodePath.startsWith('/content/www.nav.no/_templates')) {
+                return repoGet(nodeKey);
+            }
+
             return repoGet({
                 key: requestedVersion.nodeId,
                 versionId: requestedVersion.versionId,

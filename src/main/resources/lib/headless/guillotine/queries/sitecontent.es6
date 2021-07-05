@@ -146,9 +146,10 @@ const getRedirectContent = (idOrPath, branch) => {
 
 const getContentVersionFromTime = (contentRef, branch, time) => {
     const contentRaw = contentLib.get({ key: contentRef });
+    const contentId = contentRaw._id;
 
-    return runWithTimeTravelHooks(time, branch, contentRef, () => {
-        const content = getContent(contentRef, branch);
+    return runWithTimeTravelHooks(time, branch, contentId, () => {
+        const content = getContent(contentId, branch);
         if (!content) {
             return null;
         }
