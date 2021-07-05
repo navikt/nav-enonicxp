@@ -40,16 +40,15 @@ const getVersionFromTime = ({ nodeKey, unixTime, repo, branch, getOldestIfNotFou
 
 // If the requested time is older than the oldest version of the content,
 // return the timestamp of the oldest version instead
-const getPreferredUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
+const getTargetUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
     if (!nodeKey) {
         return requestedUnixTime;
     }
 
     const nodeVersions = getNodeVersions({ nodeKey, repo, branch });
     const length = nodeVersions?.length;
-    // If no versions exist, return the current time
     if (!length) {
-        return new Date().getTime();
+        return requestedUnixTime;
     }
 
     const oldestVersion = nodeVersions[length - 1];
@@ -67,7 +66,11 @@ const getPreferredUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
 // served indefinitely.
 //
 // Do not use asynchronously!
-const dangerouslyHookLibsWithTimeTravel = (requestedTime, branch = 'master', baseContentKey) => {
+const dangerouslyHookLibsWithTimeTravel = (
+    requestedDateTime,
+    branch = 'master',
+    baseContentKey
+) => {
     const context = contextLib.get();
     const repo = nodeLibConnect({
         repoId: context.repository,
@@ -75,21 +78,19 @@ const dangerouslyHookLibsWithTimeTravel = (requestedTime, branch = 'master', bas
     });
 
     const baseNodeKey = getNodeKey(baseContentKey);
-    const requestedUnixTime = getUnixTimeFromDateTimeString(requestedTime);
+    const requestedUnixTime = getUnixTimeFromDateTimeString(requestedDateTime);
 
-    const targetUnixTime = getPreferredUnixTime({
+    const targetUnixTime = getTargetUnixTime({
         nodeKey: baseNodeKey,
         requestedUnixTime,
         repo,
         branch,
     });
 
-    log.info(targetUnixTime);
-
     contentLib.get = function (args) {
         const key = args?.key;
         if (!key) {
-            return runInBranchContext(() => contentLibGet(args), branch);
+            return contentLibGet(args);
         }
 
         const requestedVersion = getVersionFromTime({
@@ -182,7 +183,7 @@ const unhookTimeTravel = () => {
 
 // Execute a callback function while contentLib is hooked to retreive data from
 // a specified date/time
-const contentLibTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
+const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callback) => {
     const sessionId = generateUUID();
     log.info(
         `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch}`
@@ -202,5 +203,5 @@ const contentLibTimeTravel = (requestedDateTime, branch, baseContentKey, callbac
 };
 
 module.exports = {
-    contentLibTimeTravel,
+    runWithTimeTravelHooks,
 };
