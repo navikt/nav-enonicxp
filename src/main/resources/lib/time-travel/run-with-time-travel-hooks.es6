@@ -10,7 +10,7 @@ const Thread = Java.type('java.lang.Thread');
 const contentLibGet = contentLib.get;
 const nodeLibConnect = nodeLib.connect;
 
-const getThreadId = () => Thread.currentThread().getId();
+const getThreadId = () => Number(Thread.currentThread().getId());
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
@@ -76,6 +76,7 @@ const dangerouslyHookLibsWithTimeTravel = (
     baseContentKey
 ) => {
     const callingThreadId = getThreadId();
+    log.info(`Calling thread: ${callingThreadId}`);
 
     const context = contextLib.get();
     const repo = nodeLibConnect({
@@ -94,8 +95,11 @@ const dangerouslyHookLibsWithTimeTravel = (
     });
 
     contentLib.get = function (args) {
-        if (getThreadId() !== callingThreadId) {
-            log.warning(`Function called on new thread, returning default`);
+        const threadId = getThreadId();
+        if (threadId !== callingThreadId) {
+            log.warning(
+                `ContentLib function called on wrong thread ${threadId}, returning default`
+            );
             return contentLibGet(args);
         }
 
@@ -103,7 +107,6 @@ const dangerouslyHookLibsWithTimeTravel = (
         if (!key) {
             return contentLibGet(args);
         }
-        log.info(`Thread id contentLib: ${Thread.currentThread().getId()}`);
 
         const requestedVersion = getVersionFromTime({
             nodeKey: getNodeKey(key),
@@ -131,8 +134,9 @@ const dangerouslyHookLibsWithTimeTravel = (
     };
 
     nodeLib.connect = function (connectArgs) {
-        if (getThreadId() !== callingThreadId) {
-            log.warning(`Function called on new thread, returning default`);
+        const threadId = getThreadId();
+        if (threadId !== callingThreadId) {
+            log.warning(`NodeLib function called on wrong thread ${threadId}, returning default`);
             return nodeLibConnect(connectArgs);
         }
 

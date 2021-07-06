@@ -164,6 +164,7 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
     // Peace-of-mind check to see if hooks for time-specific content retrieval is
     // causing unexpected lasting effects. Can be removed when peace of mind has been
     // attained :D
+    // (Mind status: no peace detected!)
     const contentLibIsCorrupted = contentLibGetOriginal.toString() !== contentLib.get.toString();
     if (contentLibIsCorrupted) {
         log.error('ContentLib.get is corrupt!');
