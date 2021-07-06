@@ -3,7 +3,7 @@ const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent
 
 const handleGet = (req) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch, time } = req.params;
+    const { id: idOrPath, branch, time, nocache } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -36,7 +36,7 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getSiteContent(idOrPath, branch, time);
+    const content = getSiteContent(idOrPath, branch, time, nocache);
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);

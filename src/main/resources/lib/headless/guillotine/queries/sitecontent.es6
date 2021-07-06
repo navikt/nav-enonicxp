@@ -160,9 +160,10 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
     });
 };
 
-const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
+const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
     // Peace-of-mind check to see if hooks for time-specific content retrieval is
-    // causing unexpected lasting effects
+    // causing unexpected lasting effects. Can be removed when peace of mind has been
+    // attained :D
     const contentLibIsCorrupted = contentLibGetOriginal.toString() !== contentLib.get.toString();
     if (contentLibIsCorrupted) {
         log.error('ContentLib.get is corrupt!');
@@ -178,11 +179,13 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
     // Get the content from cache if it exists
     // We always want to use the actual XP content ref as cache key, to keep the cache
     // consistent even if the custom path of a content is changed
-    const content = cache.getSitecontent(
-        contentRef,
-        branch,
-        () => getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
-    );
+    const content = nocache
+        ? getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
+        : cache.getSitecontent(
+              contentRef,
+              branch,
+              () => getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
+          );
 
     if (!content) {
         return null;

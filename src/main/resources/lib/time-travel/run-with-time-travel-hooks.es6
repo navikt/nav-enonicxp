@@ -123,7 +123,7 @@ const dangerouslyHookLibsWithTimeTravel = (
         const repoGet = repoConnection.get.bind(repoConnection);
 
         // repo.get args can be a single key, or an array of keys, or an object
-        // or array of objects of the form { key: <id or path> }
+        // or array of objects of the shape { key: <id or path> }
         const getNodeKeysFromArgs = (args) => {
             if (typeof args === 'string') {
                 return args;
