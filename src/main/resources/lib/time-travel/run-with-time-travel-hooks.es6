@@ -5,8 +5,8 @@ const { generateUUID } = require('/lib/headless/uuid');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const contentLibGet = contentLib.get.bind(contentLib);
-const nodeLibConnect = nodeLib.connect.bind(nodeLib);
+const contentLibGet = contentLib.get;
+const nodeLibConnect = nodeLib.connect;
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
