@@ -162,7 +162,7 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
 
 const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
     // Peace-of-mind check to see if hooks for time-specific content retrieval is
-    // causing unexpectedly lasting effects
+    // causing unexpected lasting effects
     const contentLibIsCorrupted = contentLibGetOriginal.toString() !== contentLib.get.toString();
     if (contentLibIsCorrupted) {
         log.error('ContentLib.get is corrupt!');
