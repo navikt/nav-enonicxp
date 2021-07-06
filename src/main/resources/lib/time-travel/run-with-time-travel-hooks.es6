@@ -5,8 +5,12 @@ const { generateUUID } = require('/lib/headless/uuid');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
+const Thread = Java.type('java.lang.Thread');
+
 const contentLibGet = contentLib.get;
 const nodeLibConnect = nodeLib.connect;
+
+const getThreadId = () => Thread.currentThread().getId();
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
@@ -71,6 +75,8 @@ const dangerouslyHookLibsWithTimeTravel = (
     branch = 'master',
     baseContentKey
 ) => {
+    const callingThreadId = getThreadId();
+
     const context = contextLib.get();
     const repo = nodeLibConnect({
         repoId: context.repository,
@@ -88,10 +94,16 @@ const dangerouslyHookLibsWithTimeTravel = (
     });
 
     contentLib.get = function (args) {
+        if (getThreadId() !== callingThreadId) {
+            log.warning(`Function called on new thread, returning default`);
+            return contentLibGet(args);
+        }
+
         const key = args?.key;
         if (!key) {
             return contentLibGet(args);
         }
+        log.info(`Thread id contentLib: ${Thread.currentThread().getId()}`);
 
         const requestedVersion = getVersionFromTime({
             nodeKey: getNodeKey(key),
@@ -102,9 +114,9 @@ const dangerouslyHookLibsWithTimeTravel = (
         });
 
         if (!requestedVersion) {
-            log.info(
-                `Time travel: No version found for ${key} at time ${targetUnixTime} on branch ${branch}`
-            );
+            // log.info(
+            //     `Time travel: No version found for ${key} at time ${targetUnixTime} on branch ${branch}`
+            // );
             return null;
         }
 
@@ -119,6 +131,11 @@ const dangerouslyHookLibsWithTimeTravel = (
     };
 
     nodeLib.connect = function (connectArgs) {
+        if (getThreadId() !== callingThreadId) {
+            log.warning(`Function called on new thread, returning default`);
+            return nodeLibConnect(connectArgs);
+        }
+
         const repoConnection = nodeLibConnect(connectArgs);
         const repoGet = repoConnection.get.bind(repoConnection);
 
@@ -195,9 +212,8 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
         `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch}`
     );
 
-    dangerouslyHookLibsWithTimeTravel(requestedDateTime, branch, baseContentKey);
-
     try {
+        dangerouslyHookLibsWithTimeTravel(requestedDateTime, branch, baseContentKey);
         return callback();
     } catch (e) {
         log.info(`Time travel: Error occured during session ${sessionId} - ${e}`);
