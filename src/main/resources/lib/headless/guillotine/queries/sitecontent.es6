@@ -14,7 +14,7 @@ const {
 } = require('/lib/custom-paths/custom-paths');
 const { runWithTimeTravelHooks } = require('/lib/time-travel/run-with-time-travel-hooks');
 
-const contentLibGet = contentLib.get;
+const contentLibGetOriginal = contentLib.get;
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -161,11 +161,11 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
 };
 
 const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
-    const contentLibIsCorrupted = contentLibGet.toString() === contentLib.get.toString();
-    if (!contentLibIsCorrupted) {
-        log.error('Error, content lib is corrupt!');
-        log.info(`Content lib get: ${contentLib.get.toString()}`);
-        log.info(`Content lib original: ${contentLibGet.toString()}`);
+    const contentLibIsCorrupted = contentLibGetOriginal.toString() !== contentLib.get.toString();
+    if (contentLibIsCorrupted) {
+        log.error('ContentLib.get is corrupt!');
+        log.error(`Content lib get current: ${contentLib.get.toString()}`);
+        log.error(`Content lib get original: ${contentLibGetOriginal.toString()}`);
     }
 
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
