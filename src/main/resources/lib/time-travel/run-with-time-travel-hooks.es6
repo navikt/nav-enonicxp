@@ -1,6 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
+const taskLib = require('/lib/xp/task');
 const { generateUUID } = require('/lib/headless/uuid');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -10,8 +11,8 @@ const Thread = Java.type('java.lang.Thread');
 const contentLibGet = contentLib.get;
 const nodeLibConnect = nodeLib.connect;
 
-const getThreadId = () => Number(Thread.currentThread().getId());
-const getThreadName = () => Thread.currentThread().getName().toString();
+const getCurrentThreadId = () => Number(Thread.currentThread().getId());
+const getCurrentThreadName = () => Thread.currentThread().getName().toString();
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
@@ -67,18 +68,19 @@ const getTargetUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
 // after retrieving the data you want. Do this by running the 'unhookTimeTravel'
 // function at the end of every possible logic branch (remember to catch errors!)
 //
-// Failing to do so may leave the hooked functions corrupted, and outdated data will be
+// Failing to do so will leave the hooked functions corrupted, and outdated data may be
 // served indefinitely.
 //
-// Do not use asynchronously!
+// Do not use asynchronously - do not use concurrently. This is not thread-safe!
 const dangerouslyHookLibsWithTimeTravel = (
     requestedDateTime,
     branch = 'master',
-    baseContentKey
+    baseContentKey,
+    timeTravelThreadId
 ) => {
-    const callingThreadId = getThreadId();
-    const callingThreadName = getThreadName();
-    log.info(`Calling thread: ${callingThreadId} ${callingThreadName}`);
+    log.info(
+        `Time travel: initialized by thread id: ${timeTravelThreadId} - name: ${getCurrentThreadName()}`
+    );
 
     const context = contextLib.get();
     const repo = nodeLibConnect({
@@ -97,11 +99,9 @@ const dangerouslyHookLibsWithTimeTravel = (
     });
 
     contentLib.get = function (args) {
-        const threadId = getThreadId();
-        if (threadId !== callingThreadId) {
-            log.warning(
-                `ContentLib function called on wrong thread ${threadId}, returning default - Name: ${getThreadName()}`
-            );
+        // If the function is called while hooked, only the thread which initialized the hook
+        // should get non-standard functionality
+        if (getCurrentThreadId() !== timeTravelThreadId) {
             return contentLibGet(args);
         }
 
@@ -119,9 +119,6 @@ const dangerouslyHookLibsWithTimeTravel = (
         });
 
         if (!requestedVersion) {
-            // log.info(
-            //     `Time travel: No version found for ${key} at time ${targetUnixTime} on branch ${branch}`
-            // );
             return null;
         }
 
@@ -136,11 +133,9 @@ const dangerouslyHookLibsWithTimeTravel = (
     };
 
     nodeLib.connect = function (connectArgs) {
-        const threadId = getThreadId();
-        if (threadId !== callingThreadId) {
-            log.warning(
-                `NodeLib function called on wrong thread ${threadId}, returning default - Name: ${getThreadName()}`
-            );
+        // If the function is called while hooked, only the thread which initialized the hook
+        // should get non-standard functionality
+        if (getCurrentThreadId() !== timeTravelThreadId) {
             return nodeLibConnect(connectArgs);
         }
 
@@ -212,23 +207,63 @@ const unhookTimeTravel = () => {
     nodeLib.connect = nodeLibConnect;
 };
 
-// Execute a callback function while contentLib is hooked to retreive data from
-// a specified date/time
+const timeoutMs = 15000;
+const retryPeriodMs = 500;
+const timeTravelQueue = [];
+
+// Execute a callback function while contentLib is hooked to retreive data from a
+// specified date/time. This implements a queueing mechanism, as it should not be used
+// concurrently. Concurrent use on the same cluster node may produce incorrect data.
 const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callback) => {
+    const threadId = getCurrentThreadId();
+    timeTravelQueue.push(threadId);
+    log.info(`Time travel: New thread ${threadId}`);
+
+    if (timeTravelQueue.length > 1) {
+        const startTime = new Date().getTime();
+        const threadName = getCurrentThreadName();
+        log.info(
+            `Time travel: Thread ${threadId}/${threadName} joined the time machine queue - queue length is now ${
+                timeTravelQueue.length
+            } - queue: ${JSON.stringify(timeTravelQueue)}`
+        );
+
+        while (timeTravelQueue[0] !== threadId) {
+            const currentTime = new Date().getTime();
+            if (currentTime - startTime > timeoutMs) {
+                const queueIndex = timeTravelQueue.indexOf(threadId);
+                if (queueIndex !== -1) {
+                    timeTravelQueue.splice(queueIndex, 1);
+                } else {
+                    log.error(`Time travel: queue lost coherence!`);
+                }
+
+                log.info(
+                    `Time travel: Thread ${threadId}/${threadName} dropped from time machine queue - queue length is now ${timeTravelQueue.length}`
+                );
+                throw new Error('Timed out waiting for time machine to become available');
+            }
+            taskLib.sleep(retryPeriodMs);
+        }
+    }
+
     const sessionId = generateUUID();
-    log.info(
-        `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch}`
-    );
 
     try {
-        dangerouslyHookLibsWithTimeTravel(requestedDateTime, branch, baseContentKey);
+        log.info(
+            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId} / queue length: ${timeTravelQueue.length}`
+        );
+        dangerouslyHookLibsWithTimeTravel(requestedDateTime, branch, baseContentKey, threadId);
         return callback();
     } catch (e) {
         log.info(`Time travel: Error occured during session ${sessionId} - ${e}`);
         throw e;
     } finally {
         unhookTimeTravel();
-        log.info(`Time travel: Ending session ${sessionId}`);
+        const threadLeaving = timeTravelQueue.shift();
+        log.info(
+            `Time travel: Ending session ${sessionId} for thread ${threadLeaving} ${threadId}`
+        );
     }
 };
 

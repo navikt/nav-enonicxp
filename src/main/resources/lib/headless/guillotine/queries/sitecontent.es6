@@ -160,36 +160,31 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
     });
 };
 
-const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
-    // Peace-of-mind check to see if hooks for time-specific content retrieval is
-    // causing unexpected lasting effects. Can be removed when peace of mind has been
-    // attained :D
-    // (Mind status: no peace detected!)
-    const contentLibIsCorrupted = contentLibGetOriginal.toString() !== contentLib.get.toString();
-    if (contentLibIsCorrupted) {
-        log.error('ContentLib.get is corrupt!');
-        log.error(`Content lib get current: ${contentLib.get.toString()}`);
-        log.error(`Content lib get original: ${contentLibGetOriginal.toString()}`);
-    }
+const getContentOrRedirect = (contentRef, branch) =>
+    getContent(contentRef, branch) || getRedirectContent(contentRef, branch);
 
+const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
+
     if (time) {
         return getContentVersionFromTime(contentRef, branch, time);
     }
 
-    // Get the content from cache if it exists
-    // We always want to use the actual XP content ref as cache key, to keep the cache
-    // consistent even if the custom path of a content is changed
     const content = nocache
-        ? getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
-        : cache.getSitecontent(
-              contentRef,
-              branch,
-              () => getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
-          );
+        ? getContentOrRedirect(contentRef, branch)
+        : cache.getSitecontent(contentRef, branch, () => getContentOrRedirect(contentRef, branch));
 
     if (!content) {
         return null;
+    }
+
+    // Peace-of-mind check to see if hooks for time-specific content retrieval is
+    // causing unexpected side-effects. Can be removed once peace of mind has been
+    // attained :D
+    // (Mind status: not at peace!)
+    const contentRaw = contentLibGetOriginal({ key: contentRef });
+    if (contentRaw?.modifiedTime !== content.modifiedTime) {
+        log.error(`Time machine failing hard!`);
     }
 
     // If the content has a custom path, we want to redirect requests from the internal path
