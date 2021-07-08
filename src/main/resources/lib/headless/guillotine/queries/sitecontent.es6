@@ -191,7 +191,7 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
     // causing unexpected side-effects. Can be removed once peace of mind has been
     // attained :D
     // (Mind status: not at peace!)
-    const contentRaw = contentLibGetOriginal({ key: contentRef });
+    const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
     if (contentRaw?.modifiedTime !== content.modifiedTime) {
         log.error(
             `Time travel: bad response on content ${contentRef} - modified time: ${content.modifiedTime} - should be: ${contentRaw.modifiedTime}`
