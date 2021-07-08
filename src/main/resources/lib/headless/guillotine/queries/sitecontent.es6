@@ -147,7 +147,11 @@ const getRedirectContent = (idOrPath, branch) => {
 };
 
 const getContentVersionFromTime = (contentRef, branch, time) => {
-    const contentRaw = contentLib.get({ key: contentRef });
+    const contentRaw = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+    if (!contentRaw) {
+        return null;
+    }
+
     const contentId = contentRaw._id;
 
     return runWithTimeTravelHooks(time, branch, contentId, () => {
