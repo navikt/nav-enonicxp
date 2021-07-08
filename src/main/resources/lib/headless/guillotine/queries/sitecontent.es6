@@ -13,6 +13,7 @@ const {
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
 const { runWithTimeTravelHooks } = require('/lib/time-travel/run-with-time-travel-hooks');
+const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 
 const contentLibGetOriginal = contentLib.get;
 
@@ -94,8 +95,8 @@ const getContent = (contentRef, branch) => {
     // (Mind status: not at peace!)
     const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
     if (contentRaw) {
-        const rawTimestamp = new Date(contentRaw.modifiedTime).getTime();
-        const guillotineTimestamp = new Date(content.modifiedTime).getTime();
+        const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw.modifiedTime);
+        const guillotineTimestamp = getUnixTimeFromDateTimeString(content.modifiedTime);
 
         if (rawTimestamp !== guillotineTimestamp) {
             log.error(
