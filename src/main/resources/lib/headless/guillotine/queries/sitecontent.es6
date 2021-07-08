@@ -193,7 +193,9 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
     // (Mind status: not at peace!)
     const contentRaw = contentLibGetOriginal({ key: contentRef });
     if (contentRaw?.modifiedTime !== content.modifiedTime) {
-        log.error(`Time machine failing hard!`);
+        log.error(
+            `Time travel: bad response on content ${contentRef} - modified time: ${content.modifiedTime} - should be: ${contentRaw.modifiedTime}`
+        );
     }
 
     // If the content has a custom path, we want to redirect requests from the internal path
