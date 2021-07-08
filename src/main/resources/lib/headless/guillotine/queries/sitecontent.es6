@@ -154,14 +154,19 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
 
     const contentId = contentRaw._id;
 
-    return runWithTimeTravelHooks(time, branch, contentId, () => {
-        const content = getContent(contentId, branch);
-        if (!content) {
-            return null;
-        }
+    try {
+        return runWithTimeTravelHooks(time, branch, contentId, () => {
+            const content = getContent(contentId, branch);
+            if (!content) {
+                return null;
+            }
 
-        return { ...content, livePath: contentRaw._path };
-    });
+            return { ...content, livePath: contentRaw._path };
+        });
+    } catch (e) {
+        log.warning(`Feil ved uthenting av historisk innhold: ${e}`);
+        return null;
+    }
 };
 
 const getContentOrRedirect = (contentRef, branch) =>
