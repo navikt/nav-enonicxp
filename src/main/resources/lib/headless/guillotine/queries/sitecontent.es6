@@ -88,6 +88,26 @@ const getContent = (contentRef, branch) => {
         return null;
     }
 
+    // Peace-of-mind check to see if hooks for time-specific content retrieval is
+    // causing unexpected side-effects. Can be removed once peace of mind has been
+    // attained :D
+    // (Mind status: not at peace!)
+    const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
+    if (contentRaw) {
+        const rawTimestamp = new Date(contentRaw.modifiedTime).getTime();
+        const guillotineTimestamp = new Date(content.modifiedTime).getTime();
+
+        if (rawTimestamp !== guillotineTimestamp) {
+            log.error(
+                `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}`
+            );
+        }
+    } else {
+        log.error(
+            `Time travel: inconsistent response for content ${contentRef} - got content from Guillotine, but null from contentLib`
+        );
+    }
+
     if (isMedia(content)) {
         return content;
     }
@@ -185,17 +205,6 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
 
     if (!content) {
         return null;
-    }
-
-    // Peace-of-mind check to see if hooks for time-specific content retrieval is
-    // causing unexpected side-effects. Can be removed once peace of mind has been
-    // attained :D
-    // (Mind status: not at peace!)
-    const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
-    if (contentRaw?.modifiedTime !== content.modifiedTime) {
-        log.error(
-            `Time travel: bad response on content ${contentRef} - modified time: ${content.modifiedTime} - should be: ${contentRaw.modifiedTime}`
-        );
     }
 
     // If the content has a custom path, we want to redirect requests from the internal path
