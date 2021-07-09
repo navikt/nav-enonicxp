@@ -174,36 +174,20 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
     }
 };
 
-const getContentOrRedirect = (contentRef, branch) =>
-    getContent(contentRef, branch) || getRedirectContent(contentRef, branch);
-
-const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, retry = true) => {
-    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
-
-    if (time && timeTravelEnabled) {
-        return getContentVersionFromTime(contentRef, branch, time);
-    }
-
-    const content = nocache
-        ? getContentOrRedirect(contentRef, branch)
-        : cache.getSitecontent(contentRef, branch, () => getContentOrRedirect(contentRef, branch));
-
-    if (!content) {
-        return null;
-    }
+const getContentOrRedirect = (contentRef, branch, retry = true) => {
+    const content = getContent(contentRef, branch);
 
     // Peace-of-mind checks to see if hooks for time-specific content retrieval is
     // causing unexpected side-effects. Can be removed once peace of mind has been
     // attained :D
-    if (timeTravelEnabled && content._path.startsWith('/www.nav.no')) {
+    if (timeTravelEnabled && content) {
         const contentRaw = runInBranchContext(
             () => contentLibGetOriginal({ key: contentRef }),
             branch
         );
 
         const rawTime = contentRaw?.modifiedTime || contentRaw?.createdTime;
-        const guillotineTime = content?.modifiedTime || content?.createdTime;
-        log.info(`Checking modifiedTime for ${contentRef} - ${rawTime} ${guillotineTime}`);
+        const guillotineTime = content.modifiedTime || content.createdTime;
 
         const rawTimestamp = getUnixTimeFromDateTimeString(rawTime);
         const guillotineTimestamp = getUnixTimeFromDateTimeString(guillotineTime);
@@ -217,15 +201,33 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, ret
                         retry ? ' - retrying one more time' : ''
                     }`
                 );
-                return getSiteContent(requestedPathOrId, branch, time, nocache, false);
+                return getContentOrRedirect(contentRef, branch, false);
             }
 
             // if retry didn't help, disable time travel functionality
             unhookTimeTravel();
             timeTravelEnabled = false;
             log.error(`Time travel permanently disabled on this node`);
-            return null;
+            return getContentOrRedirect(contentRef, branch);
         }
+    }
+
+    return content || getRedirectContent(contentRef, branch);
+};
+
+const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
+    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
+
+    if (time && timeTravelEnabled) {
+        return getContentVersionFromTime(contentRef, branch, time);
+    }
+
+    const content = nocache
+        ? getContentOrRedirect(contentRef, branch)
+        : cache.getSitecontent(contentRef, branch, () => getContentOrRedirect(contentRef, branch));
+
+    if (!content) {
+        return null;
     }
 
     // If the content has a custom path, we want to redirect requests from the internal path
