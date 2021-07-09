@@ -195,7 +195,7 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, ret
     // Peace-of-mind checks to see if hooks for time-specific content retrieval is
     // causing unexpected side-effects. Can be removed once peace of mind has been
     // attained :D
-    if (timeTravelEnabled && !content._path.startsWith('/redirects')) {
+    if (timeTravelEnabled && content._path.startsWith('/www.nav.no')) {
         const contentRaw = runInBranchContext(
             () => contentLibGetOriginal({ key: contentRef }),
             branch
