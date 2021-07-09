@@ -1,10 +1,7 @@
 const { isValidBranch } = require('/lib/headless/branch-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
-const Thread = Java.type('java.lang.Thread');
-
 const handleGet = (req) => {
-    log.info(`req thread id: ${Thread.currentThread().getId()}`);
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
     const { id: idOrPath, branch, time, nocache } = req.params;
     const { secret } = req.headers;

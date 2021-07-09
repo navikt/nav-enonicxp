@@ -79,7 +79,7 @@ const dangerouslyHookLibsWithTimeTravel = (
     timeTravelThreadId
 ) => {
     log.info(
-        `Time travel: initialized by thread id: ${timeTravelThreadId} - name: ${getCurrentThreadName()}`
+        `Time travel: initiated by thread id: ${timeTravelThreadId} - name: ${getCurrentThreadName()}`
     );
 
     const context = contextLib.get();
@@ -99,7 +99,7 @@ const dangerouslyHookLibsWithTimeTravel = (
     });
 
     contentLib.get = function (args) {
-        // If the function is called while hooked, only the thread which initialized the hook
+        // If the function is called while hooked, only the thread which initiated the hook
         // should get non-standard functionality
         if (getCurrentThreadId() !== timeTravelThreadId) {
             return contentLibGet(args);
@@ -133,7 +133,7 @@ const dangerouslyHookLibsWithTimeTravel = (
     };
 
     nodeLib.connect = function (connectArgs) {
-        // If the function is called while hooked, only the thread which initialized the hook
+        // If the function is called while hooked, only the thread which initiated the hook
         // should get non-standard functionality
         if (getCurrentThreadId() !== timeTravelThreadId) {
             return nodeLibConnect(connectArgs);
@@ -209,21 +209,26 @@ const unhookTimeTravel = () => {
 
 const timeoutMs = 15000;
 const retryPeriodMs = 500;
+const queueMaxLength = 10;
 const timeTravelQueue = [];
 
-// Execute a callback function while contentLib is hooked to retreive data from a
-// specified date/time. This implements a queueing mechanism, as it should not be used
-// concurrently. Concurrent use on the same cluster node may produce incorrect data.
+// Execute a callback function while libs are hooked to retreive data from a
+// specified date/time. This implements a thread-based queueing mechanism, as it
+// does not currently support concurrent usage.
 const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callback) => {
     const threadId = getCurrentThreadId();
+
+    if (timeTravelQueue.length > queueMaxLength) {
+        log.warning(`Time travel: queue is at max length, denying request on thread ${threadId}`);
+        throw new Error('Queue is full');
+    }
+
     timeTravelQueue.push(threadId);
-    log.info(`Time travel: New thread ${threadId}`);
 
     if (timeTravelQueue.length > 1) {
         const startTime = new Date().getTime();
-        const threadName = getCurrentThreadName();
         log.info(
-            `Time travel: Thread ${threadId}/${threadName} joined the time machine queue - queue length is now ${
+            `Time travel: Thread ${threadId} joined the queue - queue length is now ${
                 timeTravelQueue.length
             } - queue: ${JSON.stringify(timeTravelQueue)}`
         );
@@ -235,13 +240,15 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
                 if (queueIndex !== -1) {
                     timeTravelQueue.splice(queueIndex, 1);
                 } else {
-                    log.error(`Time travel: queue lost coherence!`);
+                    log.error(
+                        `Time travel: queue lost integrity! ThreadId ${threadId} should be in queue but was not found`
+                    );
                 }
 
                 log.info(
-                    `Time travel: Thread ${threadId}/${threadName} dropped from time machine queue - queue length is now ${timeTravelQueue.length}`
+                    `Time travel: Thread ${threadId} dropped from queue - queue length is now ${timeTravelQueue.length}`
                 );
-                throw new Error('Timed out waiting for time machine to become available');
+                throw new Error('Timed out while queued');
             }
             taskLib.sleep(retryPeriodMs);
         }
@@ -261,6 +268,11 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
     } finally {
         unhookTimeTravel();
         const threadLeaving = timeTravelQueue.shift();
+        if (threadLeaving !== threadId) {
+            log.error(
+                `Time travel: queue lost integrity! Shift result: ${threadLeaving} - expected: ${threadId}`
+            );
+        }
         log.info(
             `Time travel: Ending session ${sessionId} for thread ${threadLeaving} ${threadId}`
         );

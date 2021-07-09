@@ -165,12 +165,12 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
             return { ...content, livePath: contentRaw._path };
         });
     } catch (e) {
-        log.warning(`Feil ved uthenting av historisk innhold: ${e}`);
+        log.warning(`Time travel: Error retrieving data from version history: ${e}`);
         return null;
     }
 };
 
-const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
+const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, retry = true) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
     if (time) {
@@ -189,10 +189,9 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
               );
     }
 
-    // Peace-of-mind check to see if hooks for time-specific content retrieval is
+    // Peace-of-mind checks to see if hooks for time-specific content retrieval is
     // causing unexpected side-effects. Can be removed once peace of mind has been
     // attained :D
-    // (Mind status: not at peace!)
     const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
     if (contentRaw) {
         const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw.modifiedTime);
@@ -200,8 +199,17 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
 
         if (rawTimestamp !== guillotineTimestamp) {
             log.error(
-                `Time travel: bad response for content ${contentRef} - got timestamp: ${content.modifiedTime} - should be: ${contentRaw.modifiedTime}`
+                `Time travel: bad response for content ${contentRef} - got timestamp: ${
+                    content.modifiedTime
+                } - should be: ${contentRaw.modifiedTime}${
+                    retry ? ' - retrying one more time' : ''
+                }`
             );
+            // Retry in the unlikely (hopefully impossible!) event that data from previous versions
+            // were unintentionally retrieved
+            if (retry) {
+                return getSiteContent(requestedPathOrId, branch, time, nocache, false);
+            }
         }
     } else {
         log.error(
