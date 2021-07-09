@@ -174,6 +174,9 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
     }
 };
 
+const getContentOrRedirect = (contentRef, branch) =>
+    getContent(contentRef, branch) || getRedirectContent(contentRef, branch);
+
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, retry = true) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
@@ -182,28 +185,28 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, ret
     }
 
     const content = nocache
-        ? getContent(contentRef, branch)
-        : cache.getSitecontent(contentRef, branch, () => getContent(contentRef, branch));
+        ? getContentOrRedirect(contentRef, branch)
+        : cache.getSitecontent(contentRef, branch, () => getContentOrRedirect(contentRef, branch));
 
     if (!content) {
-        return nocache
-            ? getRedirectContent(contentRef, branch)
-            : cache.getSitecontent(contentRef, branch, () =>
-                  getRedirectContent(contentRef, branch)
-              );
+        return null;
     }
 
     // Peace-of-mind checks to see if hooks for time-specific content retrieval is
     // causing unexpected side-effects. Can be removed once peace of mind has been
     // attained :D
-    if (timeTravelEnabled) {
+    if (timeTravelEnabled && content._path.startsWith('/www.nav.no')) {
         const contentRaw = runInBranchContext(
             () => contentLibGetOriginal({ key: contentRef }),
             branch
         );
 
-        const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw?.modifiedTime || 0);
-        const guillotineTimestamp = getUnixTimeFromDateTimeString(content?.modifiedTime || 0);
+        const rawTime = contentRaw?.modifiedTime || contentRaw?.createdTime;
+        const guillotineTime = content?.modifiedTime || content?.createdTime;
+        log.info(`Checking modifiedTime for ${contentRef} - ${rawTime} ${guillotineTime}`);
+
+        const rawTimestamp = getUnixTimeFromDateTimeString(rawTime);
+        const guillotineTimestamp = getUnixTimeFromDateTimeString(guillotineTime);
 
         if (rawTimestamp !== guillotineTimestamp) {
             // In the (hopefully impossible!) event that time travel functionality is causing
