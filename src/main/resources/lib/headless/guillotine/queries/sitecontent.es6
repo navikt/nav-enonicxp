@@ -19,7 +19,7 @@ const {
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 
 const contentLibGetOriginal = contentLib.get;
-let enableTimeTravel = true;
+let timeTravelEnabled = true;
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -177,7 +177,7 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, retry = true) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
-    if (time && enableTimeTravel) {
+    if (time && timeTravelEnabled) {
         return getContentVersionFromTime(contentRef, branch, time);
     }
 
@@ -196,31 +196,33 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, ret
     // Peace-of-mind checks to see if hooks for time-specific content retrieval is
     // causing unexpected side-effects. Can be removed once peace of mind has been
     // attained :D
-    const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
-    if (contentRaw) {
-        const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw.modifiedTime);
-        const guillotineTimestamp = getUnixTimeFromDateTimeString(content.modifiedTime);
+    if (timeTravelEnabled) {
+        const contentRaw = runInBranchContext(
+            () => contentLibGetOriginal({ key: contentRef }),
+            branch
+        );
+
+        const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw?.modifiedTime || 0);
+        const guillotineTimestamp = getUnixTimeFromDateTimeString(content?.modifiedTime || 0);
 
         if (rawTimestamp !== guillotineTimestamp) {
-            log.error(
-                `Time travel: bad response for content ${contentRef} - got timestamp: ${
-                    content.modifiedTime
-                } - should be: ${contentRaw.modifiedTime}${
-                    retry ? ' - retrying one more time' : ''
-                }`
-            );
             // In the (hopefully impossible!) event that time travel functionality is causing
-            // normal requests to retrieve outdated date, disable time travel and retry
+            // normal requests to retrieve outdated data, retry the request
             if (retry) {
-                unhookTimeTravel();
-                enableTimeTravel = false;
+                log.error(
+                    `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
+                        retry ? ' - retrying one more time' : ''
+                    }`
+                );
                 return getSiteContent(requestedPathOrId, branch, time, nocache, false);
             }
+
+            // if retry didn't help, disable time travel functionality
+            unhookTimeTravel();
+            timeTravelEnabled = false;
+            log.error(`Time travel permanently disabled on this node`);
+            return null;
         }
-    } else {
-        log.error(
-            `Time travel: inconsistent response for content ${contentRef} - got content from Guillotine, but null from contentLib`
-        );
     }
 
     // If the content has a custom path, we want to redirect requests from the internal path
