@@ -5,6 +5,9 @@ const libs = {
 };
 
 const getUnixTimeFromDateTimeString = (datetime) => {
+    if (typeof datetime !== 'string') {
+        return 0;
+    }
     const validDateTime = datetime.split('.')[0];
     return new Date(validDateTime).getTime();
 };
