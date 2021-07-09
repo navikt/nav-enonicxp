@@ -217,6 +217,7 @@ const timeTravelQueue = [];
 // does not currently support concurrent usage.
 const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callback) => {
     const threadId = getCurrentThreadId();
+    const threadName = getCurrentThreadName();
 
     if (timeTravelQueue.length > queueMaxLength) {
         log.warning(`Time travel: queue is at max length, denying request on thread ${threadId}`);
@@ -241,7 +242,7 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
                     timeTravelQueue.splice(queueIndex, 1);
                 } else {
                     log.error(
-                        `Time travel: queue lost integrity! ThreadId ${threadId} should be in queue but was not found`
+                        `Time travel: queue integrity lost! Thread ${threadId}/${threadName} should be in queue but was not found`
                     );
                 }
 
@@ -258,7 +259,7 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
 
     try {
         log.info(
-            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId} / queue length: ${timeTravelQueue.length}`
+            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId} ${threadName} / queue length: ${timeTravelQueue.length}`
         );
         dangerouslyHookLibsWithTimeTravel(requestedDateTime, branch, baseContentKey, threadId);
         return callback();
@@ -270,12 +271,10 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
         const threadLeaving = timeTravelQueue.shift();
         if (threadLeaving !== threadId) {
             log.error(
-                `Time travel: queue lost integrity! Shift result: ${threadLeaving} - expected: ${threadId}`
+                `Time travel: queue integrity lost! Shift result: ${threadLeaving} - expected: ${threadId}`
             );
         }
-        log.info(
-            `Time travel: Ending session ${sessionId} for thread ${threadLeaving} ${threadId}`
-        );
+        log.info(`Time travel: Ending session ${sessionId} for thread ${threadId} ${threadName}`);
     }
 };
 
