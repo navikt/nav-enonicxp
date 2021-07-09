@@ -202,8 +202,12 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, ret
             branch
         );
 
-        const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw?.modifiedTime || 0);
-        const guillotineTimestamp = getUnixTimeFromDateTimeString(content?.modifiedTime || 0);
+        const rawTime = contentRaw?.modifiedTime || contentRaw?.createdTime;
+        const guillotineTime = content?.modifiedTime || content?.createdTime;
+        log.info(`Checking modifiedTime for ${contentRef} - ${rawTime} ${guillotineTime}`);
+
+        const rawTimestamp = getUnixTimeFromDateTimeString(rawTime);
+        const guillotineTimestamp = getUnixTimeFromDateTimeString(guillotineTime);
 
         if (rawTimestamp !== guillotineTimestamp) {
             // In the (hopefully impossible!) event that time travel functionality is causing
