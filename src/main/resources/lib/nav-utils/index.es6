@@ -4,6 +4,11 @@ const libs = {
     moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
 };
 
+const getUnixTimeFromDateTimeString = (datetime) => {
+    const validDateTime = datetime.split('.')[0];
+    return new Date(validDateTime).getTime();
+};
+
 /**
  * @description Date formats on content created in XP7 is not necessarily
  * supported in the Date wrapper in XP7 (but it does work in browsers)
@@ -182,4 +187,5 @@ module.exports = {
     fixDateFormat,
     getNestedValue,
     createObjectChecksum,
+    getUnixTimeFromDateTimeString,
 };

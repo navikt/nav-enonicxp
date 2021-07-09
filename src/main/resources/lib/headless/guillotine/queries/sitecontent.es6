@@ -12,6 +12,14 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
+const {
+    runWithTimeTravelHooks,
+    unhookTimeTravel,
+} = require('/lib/time-travel/run-with-time-travel-hooks');
+const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
+
+const contentLibGetOriginal = contentLib.get;
+let timeTravelEnabled = true;
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -143,21 +151,78 @@ const getRedirectContent = (idOrPath, branch) => {
     return null;
 };
 
-const getSiteContent = (requestedPathOrId, branch = 'master') => {
-    const internalPathFromCustomPath = getInternalContentPathFromCustomPath(requestedPathOrId);
-    const contentRef = internalPathFromCustomPath || requestedPathOrId;
+const getContentVersionFromTime = (contentRef, branch, time) => {
+    const contentRaw = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+    if (!contentRaw) {
+        return null;
+    }
 
-    // Get the content from cache if it exists
-    // We always want to use the actual XP content ref as cache key, to keep the cache
-    // consistent even if the custom path of a content is changed
-    const content = cache.getSitecontent(
-        contentRef,
-        branch,
-        () => getContent(contentRef, branch) || getRedirectContent(contentRef, branch)
-    );
+    const contentId = contentRaw._id;
+
+    try {
+        return runWithTimeTravelHooks(time, branch, contentId, () => {
+            const content = getContent(contentId, branch);
+            if (!content) {
+                return null;
+            }
+
+            return { ...content, livePath: contentRaw._path };
+        });
+    } catch (e) {
+        log.warning(`Time travel: Error retrieving data from version history: ${e}`);
+        return null;
+    }
+};
+
+const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, retry = true) => {
+    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
+
+    if (time && timeTravelEnabled) {
+        return getContentVersionFromTime(contentRef, branch, time);
+    }
+
+    const content = nocache
+        ? getContent(contentRef, branch)
+        : cache.getSitecontent(contentRef, branch, () => getContent(contentRef, branch));
 
     if (!content) {
-        return null;
+        return nocache
+            ? getRedirectContent(contentRef, branch)
+            : cache.getSitecontent(contentRef, branch, () =>
+                  getRedirectContent(contentRef, branch)
+              );
+    }
+
+    // Peace-of-mind checks to see if hooks for time-specific content retrieval is
+    // causing unexpected side-effects. Can be removed once peace of mind has been
+    // attained :D
+    if (timeTravelEnabled) {
+        const contentRaw = runInBranchContext(
+            () => contentLibGetOriginal({ key: contentRef }),
+            branch
+        );
+
+        const rawTimestamp = getUnixTimeFromDateTimeString(contentRaw?.modifiedTime || 0);
+        const guillotineTimestamp = getUnixTimeFromDateTimeString(content?.modifiedTime || 0);
+
+        if (rawTimestamp !== guillotineTimestamp) {
+            // In the (hopefully impossible!) event that time travel functionality is causing
+            // normal requests to retrieve outdated data, retry the request
+            if (retry) {
+                log.error(
+                    `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
+                        retry ? ' - retrying one more time' : ''
+                    }`
+                );
+                return getSiteContent(requestedPathOrId, branch, time, nocache, false);
+            }
+
+            // if retry didn't help, disable time travel functionality
+            unhookTimeTravel();
+            timeTravelEnabled = false;
+            log.error(`Time travel permanently disabled on this node`);
+            return null;
+        }
     }
 
     // If the content has a custom path, we want to redirect requests from the internal path

@@ -31,9 +31,7 @@ const adminFrontendProxy = (req) => {
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
-
-    const frontendPath = req.branch === 'draft' ? `/draft${contentPath}` : contentPath;
-    const frontendUrl = `${frontendOrigin}${frontendPath}?${loopbackCheckParam}=true&mode=${req.mode}`;
+    const frontendUrl = `${frontendOrigin}/draft${contentPath}`;
 
     try {
         const response = httpClient.request({
@@ -44,6 +42,11 @@ const adminFrontendProxy = (req) => {
                 secret: app.config.serviceSecret,
             },
             followRedirects: false,
+            queryParams: {
+                ...req.params,
+                [loopbackCheckParam]: true,
+                mode: req.mode,
+            },
         });
 
         if (!response) {
