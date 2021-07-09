@@ -12,10 +12,14 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
-const { runWithTimeTravelHooks } = require('/lib/time-travel/run-with-time-travel-hooks');
+const {
+    runWithTimeTravelHooks,
+    unhookTimeTravel,
+} = require('/lib/time-travel/run-with-time-travel-hooks');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 
 const contentLibGetOriginal = contentLib.get;
+let enableTimeTravel = true;
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -173,7 +177,7 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, retry = true) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
-    if (time) {
+    if (time && enableTimeTravel) {
         return getContentVersionFromTime(contentRef, branch, time);
     }
 
@@ -205,9 +209,11 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache, ret
                     retry ? ' - retrying one more time' : ''
                 }`
             );
-            // Retry in the unlikely (hopefully impossible!) event that data from previous versions
-            // were unintentionally retrieved
+            // In the (hopefully impossible!) event that time travel functionality is causing
+            // normal requests to retrieve outdated date, disable time travel and retry
             if (retry) {
+                unhookTimeTravel();
+                enableTimeTravel = false;
                 return getSiteContent(requestedPathOrId, branch, time, nocache, false);
             }
         }

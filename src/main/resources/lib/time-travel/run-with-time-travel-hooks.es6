@@ -281,4 +281,5 @@ const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callb
 
 module.exports = {
     runWithTimeTravelHooks,
+    unhookTimeTravel,
 };
