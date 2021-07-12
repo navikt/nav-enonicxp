@@ -12,10 +12,7 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
-const {
-    runWithTimeTravelHooks,
-    unhookTimeTravel,
-} = require('/lib/time-travel/run-with-time-travel-hooks');
+const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 
 const contentLibGetOriginal = contentLib.get;
@@ -160,7 +157,7 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
     const contentId = contentRaw._id;
 
     try {
-        return runWithTimeTravelHooks(time, branch, contentId, () => {
+        return runWithTimeTravel(time, branch, contentId, () => {
             const content = getContent(contentId, branch);
             if (!content) {
                 return null;
@@ -195,12 +192,13 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
         if (rawTimestamp !== guillotineTimestamp) {
             // In the (hopefully impossible!) event that time travel functionality is causing
             // normal requests to retrieve outdated data, retry the request
+            log.error(
+                `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
+                    retry ? ' - retrying one more time' : ''
+                }`
+            );
+
             if (retry) {
-                log.error(
-                    `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
-                        retry ? ' - retrying one more time' : ''
-                    }`
-                );
                 return getContentOrRedirect(contentRef, branch, false);
             }
 

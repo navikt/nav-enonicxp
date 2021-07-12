@@ -1,7 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
-const taskLib = require('/lib/xp/task');
 const { generateUUID } = require('/lib/headless/uuid');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -63,52 +62,62 @@ const getTargetUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
     return Math.max(oldestUnixTime, requestedUnixTime);
 };
 
+const timeTravelConfig = {
+    configs: {},
+    add: function ({ threadId, requestedDateTime, branch = 'master', baseContentKey }) {
+        const context = contextLib.get();
+        const repo = nodeLibConnect({
+            repoId: context.repository,
+            branch: branch,
+        });
+
+        const baseNodeKey = getNodeKey(baseContentKey);
+        const requestedUnixTime = getUnixTimeFromDateTimeString(requestedDateTime);
+
+        const targetUnixTime = getTargetUnixTime({
+            nodeKey: baseNodeKey,
+            requestedUnixTime,
+            repo,
+            branch,
+        });
+
+        log.info(
+            `Adding time travel config for thread ${threadId} - name: ${getCurrentThreadName()}`
+        );
+
+        this.configs[threadId] = { repo, branch, baseNodeKey, baseContentKey, targetUnixTime };
+    },
+    get: function (threadId) {
+        return this.configs[threadId];
+    },
+    remove: function (threadId) {
+        delete this.configs[threadId];
+    },
+    clear: function () {
+        this.config = {};
+    },
+};
+
 // This function will hook database retrieval functions to retrieve data from
-// the version at the requested timestamp. It is _EXTREMELY_ important to clean up
-// after retrieving the data you want. Do this by running the 'unhookTimeTravel'
-// function at the end of every possible logic branch (remember to catch errors!)
-//
-// Failing to do so will leave the hooked functions corrupted, and outdated data may be
-// served indefinitely.
-//
-// Do not use asynchronously - do not use concurrently. This is not thread-safe!
-const dangerouslyHookLibsWithTimeTravel = (
-    requestedDateTime,
-    branch = 'master',
-    baseContentKey,
-    timeTravelThreadId
-) => {
-    log.info(
-        `Time travel: initiated by thread id: ${timeTravelThreadId} - name: ${getCurrentThreadName()}`
-    );
-
-    const context = contextLib.get();
-    const repo = nodeLibConnect({
-        repoId: context.repository,
-        branch: branch,
-    });
-
-    const baseNodeKey = getNodeKey(baseContentKey);
-    const requestedUnixTime = getUnixTimeFromDateTimeString(requestedDateTime);
-
-    const targetUnixTime = getTargetUnixTime({
-        nodeKey: baseNodeKey,
-        requestedUnixTime,
-        repo,
-        branch,
-    });
-
+// the version at the requested timestamp. Only calls from threads currently
+// registered with a time travel config will be affected.
+const hookLibsWithTimeTravel = () => {
     contentLib.get = function (args) {
+        const configForThread = timeTravelConfig.get(getCurrentThreadId());
+
         // If the function is called while hooked, only the thread which initiated the hook
         // should get non-standard functionality
-        if (getCurrentThreadId() !== timeTravelThreadId) {
+        if (!configForThread) {
             return contentLibGet(args);
         }
 
         const key = args?.key;
+
         if (!key) {
             return contentLibGet(args);
         }
+
+        const { repo, branch, baseContentKey, targetUnixTime } = configForThread;
 
         const requestedVersion = getVersionFromTime({
             nodeKey: getNodeKey(key),
@@ -133,11 +142,15 @@ const dangerouslyHookLibsWithTimeTravel = (
     };
 
     nodeLib.connect = function (connectArgs) {
+        const configForThread = timeTravelConfig.get(getCurrentThreadId());
+
         // If the function is called while hooked, only the thread which initiated the hook
         // should get non-standard functionality
-        if (getCurrentThreadId() !== timeTravelThreadId) {
+        if (!configForThread) {
             return nodeLibConnect(connectArgs);
         }
+
+        const { branch, targetUnixTime, baseNodeKey } = configForThread;
 
         const repoConnection = nodeLibConnect(connectArgs);
         const repoGet = repoConnection.get.bind(repoConnection);
@@ -203,82 +216,33 @@ const dangerouslyHookLibsWithTimeTravel = (
 };
 
 const unhookTimeTravel = () => {
+    timeTravelConfig.clear();
     contentLib.get = contentLibGet;
     nodeLib.connect = nodeLibConnect;
 };
 
-const timeoutMs = 15000;
-const retryPeriodMs = 500;
-const queueMaxLength = 10;
-const timeTravelQueue = [];
-
-// Execute a callback function while libs are hooked to retreive data from a
-// specified date/time. This implements a thread-based queueing mechanism, as it
-// does not currently support concurrent usage.
-const runWithTimeTravelHooks = (requestedDateTime, branch, baseContentKey, callback) => {
+const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
     const threadId = getCurrentThreadId();
     const threadName = getCurrentThreadName();
-
-    if (timeTravelQueue.length > queueMaxLength) {
-        log.warning(`Time travel: queue is at max length, denying request on thread ${threadId}`);
-        throw new Error('Queue is full');
-    }
-
-    timeTravelQueue.push(threadId);
-
-    if (timeTravelQueue.length > 1) {
-        const startTime = new Date().getTime();
-        log.info(
-            `Time travel: Thread ${threadId} joined the queue - queue length is now ${
-                timeTravelQueue.length
-            } - queue: ${JSON.stringify(timeTravelQueue)}`
-        );
-
-        while (timeTravelQueue[0] !== threadId) {
-            const currentTime = new Date().getTime();
-            if (currentTime - startTime > timeoutMs) {
-                const queueIndex = timeTravelQueue.indexOf(threadId);
-                if (queueIndex !== -1) {
-                    timeTravelQueue.splice(queueIndex, 1);
-                } else {
-                    log.error(
-                        `Time travel: queue integrity lost! Thread ${threadId}/${threadName} should be in queue but was not found`
-                    );
-                }
-
-                log.info(
-                    `Time travel: Thread ${threadId} dropped from queue - queue length is now ${timeTravelQueue.length}`
-                );
-                throw new Error('Timed out while queued');
-            }
-            taskLib.sleep(retryPeriodMs);
-        }
-    }
-
     const sessionId = generateUUID();
 
     try {
         log.info(
-            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId} ${threadName} / queue length: ${timeTravelQueue.length}`
+            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId} ${threadName}`
         );
-        dangerouslyHookLibsWithTimeTravel(requestedDateTime, branch, baseContentKey, threadId);
+        timeTravelConfig.add({ threadId, requestedDateTime, branch, baseContentKey });
         return callback();
     } catch (e) {
         log.info(`Time travel: Error occured during session ${sessionId} - ${e}`);
         throw e;
     } finally {
-        unhookTimeTravel();
-        const threadLeaving = timeTravelQueue.shift();
-        if (threadLeaving !== threadId) {
-            log.error(
-                `Time travel: queue integrity lost! Shift result: ${threadLeaving} - expected: ${threadId}`
-            );
-        }
+        timeTravelConfig.remove(threadId);
         log.info(`Time travel: Ending session ${sessionId} for thread ${threadId} ${threadName}`);
     }
 };
 
 module.exports = {
-    runWithTimeTravelHooks,
+    hookLibsWithTimeTravel,
     unhookTimeTravel,
+    runWithTimeTravel,
 };
