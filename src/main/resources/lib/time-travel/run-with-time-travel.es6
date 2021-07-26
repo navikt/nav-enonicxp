@@ -94,7 +94,7 @@ const timeTravelConfig = {
         delete this.configs[threadId];
     },
     clear: function () {
-        this.config = {};
+        this.configs = {};
     },
 };
 
