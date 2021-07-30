@@ -192,6 +192,8 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
         if (rawTimestamp !== guillotineTimestamp) {
             // In the (hopefully impossible!) event that time travel functionality is causing
             // normal requests to retrieve outdated data, retry the request
+            // Note: this has false positives if the content is updated and requested within
+            // a short period of time
             log.error(
                 `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
                     retry ? ' - retrying one more time' : ''
