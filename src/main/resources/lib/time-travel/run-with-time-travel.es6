@@ -103,11 +103,18 @@ const timeTravelConfig = {
 // registered with a time travel config will be affected.
 const hookLibsWithTimeTravel = () => {
     contentLib.get = function (args) {
-        const configForThread = timeTravelConfig.get(getCurrentThreadId());
+        const threadId = getCurrentThreadId();
+        const configForThread = timeTravelConfig.get(threadId);
+
+        if (!!configForThread && configForThread.toString() === 'undefined') {
+            log.error('WTF');
+        }
 
         // If the function is called while hooked, only the thread which initiated the hook
         // should get non-standard functionality
-        if (!configForThread) {
+        // Check for 'undefined' to account for a strange nashorn behaviour where a deleted
+        // object entry sometimes returns an object of the Undefined Java class, which evalutes to true
+        if (!configForThread || configForThread.toString() === 'undefined') {
             return contentLibGet(args);
         }
 
