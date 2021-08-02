@@ -11,7 +11,6 @@ const contentLibGet = contentLib.get;
 const nodeLibConnect = nodeLib.connect;
 
 const getCurrentThreadId = () => Number(Thread.currentThread().getId());
-const getCurrentThreadName = () => Thread.currentThread().getName().toString();
 
 const getNodeKey = (contentRef) => contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
 
@@ -81,9 +80,7 @@ const timeTravelConfig = {
             branch,
         });
 
-        log.info(
-            `Adding time travel config for thread ${threadId} - name: ${getCurrentThreadName()}`
-        );
+        log.info(`Adding time travel config for thread ${threadId}}`);
 
         this.configs[threadId] = { repo, branch, baseNodeKey, baseContentKey, targetUnixTime };
     },
@@ -106,10 +103,10 @@ const hookLibsWithTimeTravel = () => {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
 
-        // If the function is called while hooked, only the thread which initiated the hook
+        // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
-        // Check for 'undefined' to account for a strange nashorn behaviour where a deleted
-        // object entry sometimes returns an object of the Undefined Java class, which evalutes to true
+        // Check for 'undefined' to account for a strange nashorn behaviour where a deleted object
+        // entry sometimes returns an object of the Undefined Java class, which evalutes to true
         if (!configForThread || configForThread.toString() === 'undefined') {
             if (configForThread) {
                 log.error('WTF');
@@ -151,9 +148,12 @@ const hookLibsWithTimeTravel = () => {
     nodeLib.connect = function (connectArgs) {
         const configForThread = timeTravelConfig.get(getCurrentThreadId());
 
-        // If the function is called while hooked, only the thread which initiated the hook
+        // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
-        if (!configForThread) {
+        if (!configForThread || configForThread.toString() === 'undefined') {
+            if (configForThread) {
+                log.error('WTF 2');
+            }
             return nodeLibConnect(connectArgs);
         }
 
@@ -230,12 +230,11 @@ const unhookTimeTravel = () => {
 
 const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
     const threadId = getCurrentThreadId();
-    const threadName = getCurrentThreadName();
     const sessionId = generateUUID();
 
     try {
         log.info(
-            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId} ${threadName}`
+            `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId}`
         );
         timeTravelConfig.add({ threadId, requestedDateTime, branch, baseContentKey });
         return callback();
@@ -244,7 +243,7 @@ const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) 
         throw e;
     } finally {
         timeTravelConfig.remove(threadId);
-        log.info(`Time travel: Ending session ${sessionId} for thread ${threadId} ${threadName}`);
+        log.info(`Time travel: Ending session ${sessionId} for thread ${threadId}`);
     }
 };
 
