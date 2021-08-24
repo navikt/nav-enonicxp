@@ -12,7 +12,7 @@
                     <config>
                         <option value="benefits">Pengestøtte</option>
                         <option value="followup">Oppfølging</option>
-                        <option value="rights">Råd og veiledning</option>
+                        <option value="rights">Veiledning</option>
                     </config>
                 </input>
                 <input name="area" type="ComboBox">
