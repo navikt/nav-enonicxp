@@ -8,11 +8,11 @@
                 </input>
                 <input name="taxonomy" type="ComboBox">
                     <label>Kategori</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="10"/>
                     <config>
                         <option value="benefits">Pengestøtte</option>
-                        <option value="benefitsAndFollowup">Pengestøtte og oppfølging</option>
-                        <option value="rights">Råd og veiledning</option>
+                        <option value="followup">Oppfølging</option>
+                        <option value="rights">Veiledning</option>
                     </config>
                 </input>
                 <input name="area" type="ComboBox">

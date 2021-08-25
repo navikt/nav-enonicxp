@@ -1,3 +1,4 @@
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getSubPath } = require('../service-utils');
 const { getGlobalValueSetService } = require('./getSet/getSet');
 const { removeGlobalValueItem } = require('./remove/remove');
@@ -14,7 +15,10 @@ const selectorHandler = (req) => {
         .map((word) => `${word}*`)
         .join(' ');
 
-    const values = getAllGlobalValues(valueType, wordsWithWildcard);
+    const values = runInBranchContext(
+        () => getAllGlobalValues(valueType, wordsWithWildcard),
+        'master'
+    );
 
     const hits = values
         .map((value) => ({
