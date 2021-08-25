@@ -8,7 +8,7 @@
                 </input>
                 <input name="taxonomy" type="ComboBox">
                     <label>Kategori</label>
-                    <occurrences minimum="0" maximum="10"/>
+                    <occurrences minimum="0" maximum="8"/>
                     <config>
                         <option value="benefits">Pengestøtte</option>
                         <option value="followup">Oppfølging</option>
