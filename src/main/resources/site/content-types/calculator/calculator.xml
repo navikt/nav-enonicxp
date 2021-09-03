@@ -1,0 +1,79 @@
+<content-type>
+    <display-name>Kalkulator</display-name>
+    <description>Kalkulator som kan settes inn i produktsider</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <option-set name="fields">
+            <label>Brukerinput</label>
+            <occurrences minimum="0" maximum="0"/>
+            <help-text>Angi om brukeren skal kunne taste inn verdi selv eller velge fra en liste</help-text>
+            <options minimum="1" maximum="1">
+                <option name="inputField">
+                    <label>Nummerfelt</label>
+                    <help-text>Alle inputfelt blir automatisk begrenset til å kun inneholde tall.</help-text>
+                    <items>
+                        <input name="variableName" type="TextLine">
+                            <label>Variabelnavn</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
+                        <input name="label" type="TextLine">
+                            <label>Tittel på felt</label>
+                        </input>
+                        <input name="explanation" type="TextArea">
+                            <label>Forklaring</label>
+                            <help-text>Oppgi en ekstra forklaring til feltet dersom det er nødvendig.</help-text>
+                        </input>
+                    </items>
+                </option>
+                <option name="dropdownField">
+                    <label>Listevalg</label>
+                    <items>
+                        <input name="variableName" type="TextLine">
+                            <label>Variabelnavn</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
+                        <input name="label" type="TextLine">
+                            <label>Tittel på felt</label>
+                        </input>
+                        <item-set name="optionItems">
+                            <label>Valg</label>
+                            <occurrences minimum="1" maximum="0"/>
+                            <items>
+                                <input name="label" type="TextLine">
+                                    <label>Tittel</label>
+                                </input>
+                                <input name="value" type="Double">
+                                    <label>Tallverdi</label>
+                                </input>
+                            </items>
+                        </item-set>
+                        <input name="explanation" type="TextArea">
+                            <label>Forklaring</label>
+                            <help-text>Oppgi en ekstra forklaring til feltet dersom det er nødvendig.</help-text>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+        <input name="calculation" type="TextArea" >
+            <label>Beregning</label>
+            <help-text>Variabler må være like navnet som variabelnavn ovenfor. Du kan kun benytte javascript.</help-text>
+        </input>
+        <input name="unit" type="RadioButton">
+            <label>Enhet</label>
+            <help-text>Enheten du velger vil avgjøre hvordan tall formatteres, feks med tusenskilletegn.</help-text>
+            <occurrences minimum="1" maximum="1"/>
+            <config> 
+                <option value="currency">Kroner</option>
+                <option value="days">Dager</option>
+                <option value="months">Måneder</option>
+                <option value="years">År</option>
+            </config>
+            <default>currency</default>
+        </input>
+        <input name="summaryText" type="TextArea" >
+            <label>Tekst for beregingsresultat</label>
+            <help-text>Skriv inn tekst eller forklarende tekst som skal vises i forbindelse av beregningsresultatet. For å sette inn selve resultatet, sett inn kortkoden "[resultat]" i teksten.</help-text>
+        </input>
+    </form>
+</content-type>
