@@ -4,9 +4,9 @@
     <super-type>base:unstructured</super-type>
     <form>
         <option-set name="fields">
-            <label>Brukerinput</label>
+            <label>Variabel</label>
             <occurrences minimum="0" maximum="0"/>
-            <help-text>Angi om brukeren skal kunne taste inn verdi selv eller velge fra en liste</help-text>
+            <help-text>Definer variabler som brukeren skal kunne oppgi eller global verdi som skal brukes i utregningen.</help-text>
             <options minimum="1" maximum="1">
                 <option name="inputField">
                     <label>Nummerfelt</label>
