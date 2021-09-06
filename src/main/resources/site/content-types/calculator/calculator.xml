@@ -53,23 +53,37 @@
                         </input>
                     </items>
                 </option>
+                <option name="globalValue">
+                    <label>Global verdi</label>
+                    <items>
+                        <input name="variableName" type="TextLine">
+                            <label>Variabelnavn</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
+                        <input name="key" type="CustomSelector">
+                            <label>Velg verdier</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <service>globalValues</service>
+                                <param value="valueType">numberValue</param>
+                            </config>
+                        </input>
+                        <!-- Dummy value to prevent graphql-errors for undefined field -->
+                        <input name="value" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                </option>
             </options>
         </option-set>
         <input name="calculation" type="TextArea" >
             <label>Beregning</label>
             <help-text>Variabler må være like navnet som variabelnavn ovenfor. Du kan kun benytte javascript.</help-text>
         </input>
-        <input name="unit" type="RadioButton">
-            <label>Enhet</label>
-            <help-text>Enheten du velger vil avgjøre hvordan tall formatteres, feks med tusenskilletegn.</help-text>
-            <occurrences minimum="1" maximum="1"/>
-            <config> 
-                <option value="currency">Kroner</option>
-                <option value="days">Dager</option>
-                <option value="months">Måneder</option>
-                <option value="years">År</option>
-            </config>
-            <default>currency</default>
+        <input name="useThousandSeparator" type="Checkbox">
+            <label>Legg inn tusenskille i svaret</label>
+            <help-text>Nyttig når svaret feks gis i kroner</help-text>
         </input>
         <input name="summaryText" type="TextArea" >
             <label>Tekst for beregingsresultat</label>

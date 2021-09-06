@@ -16,9 +16,13 @@ const calculatorFragment = `
                         value
                     }
                 }
+                globalValue {
+                    variableName
+                    value
+                }
             }
             calculation
-            unit
+            useThousandSeparator
             summaryText
         }
     }
