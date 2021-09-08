@@ -52,5 +52,16 @@
                 <mixin name="color-picker"/>
             </items>
         </item-set>
+        <input type="RadioButton" name="renderOnAuthState">
+            <label>Innloggings-avhengig visning</label>
+            <help-text>Velg om komponentene skal vises kun for innlogget eller uinnlogget bruker</help-text>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="always">Vis alltid</option>
+                <option value="loggedIn">Kun for innlogget</option>
+                <option value="loggedOut">Kun for uinnlogget</option>
+            </config>
+            <default>always</default>
+        </input>
     </form>
 </mixin>
