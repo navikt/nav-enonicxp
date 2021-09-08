@@ -24,7 +24,7 @@ const getOfficeInfo = () =>
         }));
     });
 
-const globalValues = () => {
+const officeInfo = () => {
     return {
         status: 200,
         contentType: 'application/json',
@@ -32,4 +32,4 @@ const globalValues = () => {
     };
 };
 
-exports.get = globalValues;
+exports.get = officeInfo;
