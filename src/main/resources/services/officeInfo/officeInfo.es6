@@ -28,7 +28,7 @@ const officeInfo = () => {
     return {
         status: 200,
         contentType: 'application/json',
-        body: { paths: getOfficeInfo() },
+        body: { offices: getOfficeInfo() },
     };
 };
 
