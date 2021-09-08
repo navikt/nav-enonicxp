@@ -13,9 +13,11 @@ const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const {
     globalValueMacroConfigCallback,
-    globalValueCalculatorConfigCallback,
     globalValueWithMathMacroConfigCallback,
 } = require('./schema-creation-callbacks/global-value-macro-config');
+const {
+    globalValueCalculatorConfigCallback,
+} = require('./schema-creation-callbacks/global-value-calculator-config');
 const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');

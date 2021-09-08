@@ -77,7 +77,7 @@
                 </option>
             </options>
         </option-set>
-        <input name="calculation" type="TextArea" >
+        <input name="calculationScript" type="TextArea" >
             <label>Beregning</label>
             <help-text>Variabler må være like navnet som variabelnavn ovenfor. Du kan kun benytte javascript.</help-text>
         </input>

@@ -21,7 +21,7 @@ const calculatorFragment = `
                     value
                 }
             }
-            calculation
+            calculationScript
             useThousandSeparator
             summaryText
         }

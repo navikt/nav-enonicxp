@@ -12,15 +12,6 @@ const globalValueMacroConfigCallback = (context, params) => {
     };
 };
 
-const globalValueCalculatorConfigCallback = (context, params) => {
-    params.fields.value = {
-        type: graphQlLib.GraphQLFloat,
-        resolve: (env) => {
-            return runInBranchContext(() => getGlobalNumberValue(env.source.key));
-        },
-    };
-};
-
 const globalValueWithMathMacroConfigCallback = (context, params) => {
     params.fields.variables = {
         type: graphQlLib.list(graphQlLib.GraphQLFloat),
@@ -44,7 +35,6 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
 };
 
 module.exports = {
-    globalValueCalculatorConfigCallback,
     globalValueMacroConfigCallback,
     globalValueWithMathMacroConfigCallback,
 };
