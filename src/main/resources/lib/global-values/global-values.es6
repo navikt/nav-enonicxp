@@ -81,6 +81,11 @@ const getGlobalValueSet = (contentId) => {
 };
 
 const getGlobalValue = (key, type) => {
+    if (!key) {
+        log.info(`Invalid key: ${key}`);
+        return null;
+    }
+
     if (!validTypes[type]) {
         log.info(`Invalid type ${type} specified for ${key}`);
         return null;
