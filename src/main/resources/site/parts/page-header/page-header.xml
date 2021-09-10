@@ -3,5 +3,6 @@
     <description>Skal kun benyttes som side-tittel</description>
     <form>
         <mixin name="page-header"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

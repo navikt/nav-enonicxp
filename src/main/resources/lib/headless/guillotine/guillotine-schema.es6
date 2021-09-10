@@ -15,6 +15,9 @@ const {
     globalValueMacroConfigCallback,
     globalValueWithMathMacroConfigCallback,
 } = require('./schema-creation-callbacks/global-value-macro-config');
+const {
+    globalValueCalculatorConfigCallback,
+} = require('./schema-creation-callbacks/global-value-calculator-config');
 const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -40,6 +43,7 @@ const schemaContextOptions = {
         no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_GlobalValueSet: globalValuesCallback,
+        no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
         Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter: contentListCallback(
             'publish.first'
         ),

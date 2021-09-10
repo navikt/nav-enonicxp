@@ -29,5 +29,6 @@
             </items>
         </item-set>
         <mixin name="expandable"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>
