@@ -6,7 +6,7 @@ const globalValueCalculatorConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLFloat,
         resolve: (env) => {
-            return runInBranchContext(() => getGlobalNumberValue(env.source.key));
+            return runInBranchContext(() => getGlobalNumberValue(env.source.key), 'master');
         },
     };
 };
