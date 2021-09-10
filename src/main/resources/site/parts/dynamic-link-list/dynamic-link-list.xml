@@ -48,5 +48,6 @@
             </options>
         </option-set>
         <mixin name="expandable"/>
+        <mixin name="parts-common"/>
     </form>
 </part>

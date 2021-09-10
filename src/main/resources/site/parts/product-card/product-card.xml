@@ -12,5 +12,6 @@
                 </input>
             </items>
         </field-set>
+        <mixin name="parts-common"/>
     </form>
 </part>

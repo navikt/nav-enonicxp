@@ -42,5 +42,6 @@
                 </option>
             </options>
         </option-set>
+        <mixin name="parts-common"/>
     </form>
 </part>

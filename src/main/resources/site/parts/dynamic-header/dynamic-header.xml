@@ -32,5 +32,6 @@
             <default>h2</default>
         </input>
         <mixin name="header-common"/>
+        <mixin name="parts-common"/>
     </form>
 </part>

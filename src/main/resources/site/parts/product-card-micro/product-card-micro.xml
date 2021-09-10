@@ -9,5 +9,6 @@
                 <mixin name="product-target-selector"/>
             </items>
         </item-set>
+        <mixin name="parts-common"/>
     </form>
 </part>
