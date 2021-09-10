@@ -1,0 +1,22 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Innloggings-avhengig visning</label>
+            <items>
+                <input type="RadioButton" name="renderOnAuthState">
+                    <label>Velg visning</label>
+                    <help-text>Velg om komponenten skal vises kun for innlogget eller uinnlogget
+                        bruker. Markeres med hhv grønt eller rødt omriss (kun i editoren).
+                    </help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="always">Vis for alle</option>
+                        <option value="loggedIn">Vis kun for innlogget</option>
+                        <option value="loggedOut">Vis kun for uinnlogget</option>
+                    </config>
+                    <default>always</default>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

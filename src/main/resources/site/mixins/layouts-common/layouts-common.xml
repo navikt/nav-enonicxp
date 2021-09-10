@@ -1,11 +1,16 @@
 <mixin>
     <form>
-        <input type="Double" name="marginTop">
-            <label>Topp-margin (rem-enheter)</label>
-        </input>
-        <input type="Double" name="marginBottom">
-            <label>Bunn-margin (rem-enheter)</label>
-        </input>
+        <field-set>
+            <label>Marginer</label>
+            <items>
+                <input type="Double" name="marginTop">
+                    <label>Topp-margin (rem-enheter)</label>
+                </input>
+                <input type="Double" name="marginBottom">
+                    <label>Bunn-margin (rem-enheter)</label>
+                </input>
+            </items>
+        </field-set>
         <option-set name="paddingSides">
             <label>Horisontal padding</label>
             <occurrences minimum="1" maximum="1"/>
@@ -52,16 +57,6 @@
                 <mixin name="color-picker"/>
             </items>
         </item-set>
-        <input type="RadioButton" name="renderOnAuthState">
-            <label>Innloggings-avhengig visning</label>
-            <help-text>Velg om komponentene skal vises kun for innlogget eller uinnlogget bruker</help-text>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <option value="always">Vis alltid</option>
-                <option value="loggedIn">Kun for innlogget</option>
-                <option value="loggedOut">Kun for uinnlogget</option>
-            </config>
-            <default>always</default>
-        </input>
+        <mixin name="auth-render-option"/>
     </form>
 </mixin>
