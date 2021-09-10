@@ -34,4 +34,7 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
     };
 };
 
-module.exports = { globalValueMacroConfigCallback, globalValueWithMathMacroConfigCallback };
+module.exports = {
+    globalValueMacroConfigCallback,
+    globalValueWithMathMacroConfigCallback,
+};
