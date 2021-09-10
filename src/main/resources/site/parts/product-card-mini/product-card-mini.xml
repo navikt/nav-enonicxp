@@ -3,6 +3,5 @@
     <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
         <mixin name="product-card-mini"/>
-        <mixin name="auth-render-option"/>
     </form>
 </part>

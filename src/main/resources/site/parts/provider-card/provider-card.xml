@@ -12,6 +12,5 @@
         <input type="Input" name="endnote">
             <label>Sluttnote / kategorinavn</label>
         </input>
-        <mixin name="auth-render-option"/>
     </form>
 </part>
