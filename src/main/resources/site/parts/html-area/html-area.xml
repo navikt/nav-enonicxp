@@ -13,6 +13,6 @@
         </input>
         <mixin name="expandable"/>
         <mixin name="filter-selector"/>
-        <mixin name="parts-common"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

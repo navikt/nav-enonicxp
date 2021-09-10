@@ -32,6 +32,6 @@
             <default>h2</default>
         </input>
         <mixin name="header-common"/>
-        <mixin name="parts-common"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

@@ -1,5 +1,0 @@
-<mixin>
-    <form>
-        <mixin name="auth-render-option"/>
-    </form>
-</mixin>
