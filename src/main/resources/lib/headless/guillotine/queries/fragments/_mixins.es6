@@ -103,6 +103,7 @@ const situationDataMixin = `
         ${globalFragment}
         ${animatedIconsFragment.fragment}
     }
+    externalProductUrl
 `;
 
 module.exports = {
