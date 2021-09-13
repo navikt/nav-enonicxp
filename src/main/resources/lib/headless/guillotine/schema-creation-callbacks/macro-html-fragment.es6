@@ -4,6 +4,13 @@ const graphQlLib = require('/lib/guillotine/graphql');
 const formLib = require('/lib/guillotine/dynamic/form');
 const { sanitizeText } = require('/lib/guillotine/util/naming');
 
+// The prefix used for all macro types
+const macroConfigTypeNamePrefix = 'Macro_no_nav_navno';
+// The suffix used for the macro config clone types used for HtmlFragment macros
+const macroConfigTypeNameHtmlFragmentSuffix = '_HtmlFragment';
+// The typename of the HtmlFragment macro itself
+const htmlFragmentMacroConfigTypename = `${macroConfigTypeNamePrefix}_html_fragment_DataConfig`;
+
 const getMacroDescriptors = (applicationsKeys) => {
     const descriptorBean = __.newBean(
         'com.enonic.lib.guillotine.handler.ComponentDescriptorHandler'
@@ -18,6 +25,8 @@ const getMacroDescriptors = (applicationsKeys) => {
 //
 // (this is largely derived from createMacroDataConfigType() in lib-guillotine)
 const generateRichTextTypeWithoutHtmlFragment = (context) => {
+    log.info(JSON.stringify(context));
+
     const macroDescriptors = getMacroDescriptors(context.options.applications).filter(
         (descriptor) => descriptor.name !== 'html-fragment'
     );
@@ -30,7 +39,7 @@ const generateRichTextTypeWithoutHtmlFragment = (context) => {
                 descriptor.applicationKey
             )}_${sanitizeDescriptorName}`;
 
-            const macroDataConfigTypeName = `${macroTypeName}HtmlFragment_DataConfig`;
+            const macroDataConfigTypeName = `${macroTypeName}_DataConfig${macroConfigTypeNameHtmlFragmentSuffix}`;
 
             const formItems = formLib.getFormItems(descriptor.form);
 
@@ -155,4 +164,28 @@ const macroHtmlFragmentCallback = (context, params) => {
     };
 };
 
-module.exports = { macroHtmlFragmentCallback };
+// Applies any macro creation callbacks to the special HtmlFragment macro types as well
+const applyMacroCreationCallbacksToHtmlFragmentTypes = (creationCallbacks) => {
+    const htmlFragmentMacroCreationCallbacks = Object.entries(creationCallbacks).reduce(
+        (acc, [key, callback]) => {
+            if (
+                key.startsWith(macroConfigTypeNamePrefix) &&
+                !key.endsWith(macroConfigTypeNameHtmlFragmentSuffix) &&
+                key !== htmlFragmentMacroConfigTypename
+            ) {
+                const htmlFragmentMacroKey = `${key}${macroConfigTypeNameHtmlFragmentSuffix}`;
+                return { ...acc, [htmlFragmentMacroKey]: callback };
+            }
+
+            return acc;
+        },
+        {}
+    );
+
+    return {
+        ...creationCallbacks,
+        ...htmlFragmentMacroCreationCallbacks,
+    };
+};
+
+module.exports = { macroHtmlFragmentCallback, applyMacroCreationCallbacksToHtmlFragmentTypes };
