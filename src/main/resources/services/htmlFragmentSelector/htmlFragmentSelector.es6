@@ -42,6 +42,15 @@ const transformContentToResponseData = (contentArray) => {
 };
 
 const getFragmentUsage = (fragmentId) => {
+    if (!fragmentId) {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid fragmentUsage request: missing parameter "fragmentId"',
+            },
+        };
+    }
+
     const contentWithMacro = findContentsWithFragmentMacro(fragmentId);
     const contentWithComponent = findContentsWithFragmentComponent(fragmentId);
 
