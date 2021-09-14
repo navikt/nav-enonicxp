@@ -1,9 +1,16 @@
 const portalLib = require('/lib/xp/portal');
+const contentLib = require('/lib/xp/content');
 const nodeLib = require('/lib/xp/node');
 const { forceArray } = require('/lib/nav-utils');
 const { sanitize } = require('/lib/xp/common');
 
 const appKey = app.name.replace(/\./g, '-');
+
+// Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
+const macroDescriptionSeparator = ' ';
+const getKeyWithoutMacroDescription = (key) => key?.split(macroDescriptionSeparator)[0];
+const appendMacroDescriptionToKey = (key, description) =>
+    `${key}${macroDescriptionSeparator}${description}`;
 
 const getComponentConfig = (component) => {
     if (!component) {
@@ -102,4 +109,28 @@ const generateAnchorIdField = (req, fieldKey, fieldDefaultValue) => {
     }
 };
 
-module.exports = { getComponentConfigByPath, getComponentConfig, generateAnchorIdField };
+const findContentsWithFragmentComponent = (fragmentId) => {
+    return contentLib.query({
+        start: 0,
+        count: 1000,
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'components.fragment.id',
+                        values: [fragmentId],
+                    },
+                },
+            },
+        },
+    }).hits;
+};
+
+module.exports = {
+    getComponentConfigByPath,
+    getComponentConfig,
+    generateAnchorIdField,
+    findContentsWithFragmentComponent,
+    appendMacroDescriptionToKey,
+    getKeyWithoutMacroDescription,
+};
