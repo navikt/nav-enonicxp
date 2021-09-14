@@ -1,0 +1,7 @@
+<mixin>
+  <form>
+    <input type="TextLine" name="externalProductUrl">
+        <label>Videresend alle besøk til annen url:</label>
+    </input>
+  </form>
+</mixin>

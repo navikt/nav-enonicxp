@@ -1,6 +1,6 @@
 <content-type>
-    <display-name>Oversiktsside for livssituasjon</display-name>
-    <description>Livssituasjonsside med oversikt over aktuelle stønader og tjenester</description>
+    <display-name>Oversiktsside for arbeidsgiversituasjon</display-name>
+    <description>Arbeidsgiversituasjonside med oversikt over tjenester og tilbud relatert til arbeidsgiver</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

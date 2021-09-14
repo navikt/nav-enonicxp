@@ -1,4 +1,4 @@
-const { productDataMixin } = require('./_mixins');
+const { productDataMixin, situationDataMixin } = require('./_mixins');
 const { decoratorTogglesMixinFragment } = require('./_mixins');
 const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
@@ -32,7 +32,16 @@ const situationPageFragment = `
     ...on no_nav_navno_SituationPage {
         ${commonDataObject}
         data {
-            ${productDataMixin}
+            ${situationDataMixin}
+        }
+    }
+`;
+
+const employerSituationPageFragment = `
+    ...on no_nav_navno_EmployerSituationPage {
+        ${commonDataObject}
+        data {
+            ${situationDataMixin}
         }
     }
 `;
@@ -48,6 +57,7 @@ const toolsPageFragment = `
 const dynamicPageFragment = `
     ${productPageFragment}
     ${situationPageFragment}
+    ${employerSituationPageFragment}
     ${toolsPageFragment}
     ...on no_nav_navno_DynamicPage {
         ${commonDataObject}
@@ -56,6 +66,13 @@ const dynamicPageFragment = `
 
 const dynamicPageShortFragment = `
     ...on no_nav_navno_SituationPage {
+        ${commonDataObjectShort}
+        data {
+            title
+            ingress
+        }
+    }
+    ...on no_nav_navno_EmployerSituationPage {
         ${commonDataObjectShort}
         data {
             title

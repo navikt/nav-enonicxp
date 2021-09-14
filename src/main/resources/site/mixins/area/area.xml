@@ -1,0 +1,12 @@
+<mixin>
+  <form>
+    <input name="area" type="ComboBox">
+        <label>Områdekategori</label>
+        <occurrences minimum="0" maximum="99"/>
+        <config>
+            <option value="family">Familie og barn</option>
+            <option value="health">Helse og sykdom</option>
+        </config>
+    </input>
+  </form>
+</mixin>
