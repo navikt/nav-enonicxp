@@ -29,9 +29,12 @@ const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
 } = require('./schema-creation-callbacks/main-article-chapter');
+const {
+    applyMacroCreationCallbacksToHtmlFragmentTypes,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
 
 const schemaContextOptions = {
-    creationCallbacks: {
+    creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
         Attachment: attachmentCallback,
         media_Code: mediaCodeCallback,
         no_nav_navno_MainArticle: mainArticleCallback,
@@ -54,7 +57,7 @@ const schemaContextOptions = {
         Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
         Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
         Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
-    },
+    }),
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
     allowPaths: ['/redirects'],
 };

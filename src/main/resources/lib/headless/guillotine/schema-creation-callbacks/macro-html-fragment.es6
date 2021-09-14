@@ -4,6 +4,10 @@ const graphQlLib = require('/lib/guillotine/graphql');
 const formLib = require('/lib/guillotine/dynamic/form');
 const { sanitizeText } = require('/lib/guillotine/util/naming');
 
+const macroConfigTypeNamePrefix = 'Macro_no_nav_navno';
+const macroConfigTypeNameHtmlFragmentSuffix = '_HtmlFragment';
+const htmlFragmentMacroConfigTypename = `${macroConfigTypeNamePrefix}_html_fragment_DataConfig`;
+
 const getMacroDescriptors = (applicationsKeys) => {
     const descriptorBean = __.newBean(
         'com.enonic.lib.guillotine.handler.ComponentDescriptorHandler'
@@ -30,7 +34,7 @@ const generateRichTextTypeWithoutHtmlFragment = (context) => {
                 descriptor.applicationKey
             )}_${sanitizeDescriptorName}`;
 
-            const macroDataConfigTypeName = `${macroTypeName}HtmlFragment_DataConfig`;
+            const macroDataConfigTypeName = `${macroTypeName}_DataConfig${macroConfigTypeNameHtmlFragmentSuffix}`;
 
             const formItems = formLib.getFormItems(descriptor.form);
 
@@ -155,4 +159,28 @@ const macroHtmlFragmentCallback = (context, params) => {
     };
 };
 
-module.exports = { macroHtmlFragmentCallback };
+// Applies any macro creation callbacks to the special HtmlFragment macro types as well
+const applyMacroCreationCallbacksToHtmlFragmentTypes = (creationCallbacks) => {
+    const htmlFragmentMacroCreationCallbacks = Object.entries(creationCallbacks).reduce(
+        (acc, [key, callback]) => {
+            if (
+                key.startsWith(macroConfigTypeNamePrefix) &&
+                !key.endsWith(macroConfigTypeNameHtmlFragmentSuffix) &&
+                key !== htmlFragmentMacroConfigTypename
+            ) {
+                const htmlFragmentMacroKey = `${key}${macroConfigTypeNameHtmlFragmentSuffix}`;
+                return { ...acc, [htmlFragmentMacroKey]: callback };
+            }
+
+            return acc;
+        },
+        {}
+    );
+
+    return {
+        ...creationCallbacks,
+        ...htmlFragmentMacroCreationCallbacks,
+    };
+};
+
+module.exports = { macroHtmlFragmentCallback, applyMacroCreationCallbacksToHtmlFragmentTypes };
