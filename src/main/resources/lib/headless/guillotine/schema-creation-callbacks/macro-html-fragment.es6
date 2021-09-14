@@ -22,8 +22,6 @@ const getMacroDescriptors = (applicationsKeys) => {
 //
 // (this is largely derived from createMacroDataConfigType() in lib-guillotine)
 const generateRichTextTypeWithoutHtmlFragment = (context) => {
-    log.info(JSON.stringify(context));
-
     const macroDescriptors = getMacroDescriptors(context.options.applications).filter(
         (descriptor) => descriptor.name !== 'html-fragment'
     );
