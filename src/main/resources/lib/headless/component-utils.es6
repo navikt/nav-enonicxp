@@ -1,4 +1,5 @@
 const portalLib = require('/lib/xp/portal');
+const contentLib = require('/lib/xp/content');
 const nodeLib = require('/lib/xp/node');
 const { forceArray } = require('/lib/nav-utils');
 const { sanitize } = require('/lib/xp/common');
@@ -102,4 +103,26 @@ const generateAnchorIdField = (req, fieldKey, fieldDefaultValue) => {
     }
 };
 
-module.exports = { getComponentConfigByPath, getComponentConfig, generateAnchorIdField };
+const findContentsWithFragmentComponent = (fragmentId) => {
+    return contentLib.query({
+        start: 0,
+        count: 1000,
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'components.fragment.id',
+                        values: [fragmentId],
+                    },
+                },
+            },
+        },
+    }).hits;
+};
+
+module.exports = {
+    getComponentConfigByPath,
+    getComponentConfig,
+    generateAnchorIdField,
+    findContentsWithFragmentComponent,
+};

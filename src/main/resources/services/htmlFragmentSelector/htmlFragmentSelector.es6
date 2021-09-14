@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { findContentsWithFragmentComponent } = require('/lib/headless/component-utils');
 const { getSubPath } = require('../service-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 
@@ -32,19 +33,23 @@ const getHtmlFragmentHits = (query) => {
     }));
 };
 
-const getFragmentMacroUsage = (fragmentId) => {
-    const contentWithMacro = findContentsWithFragmentMacro(fragmentId);
-
-    const response = contentWithMacro.map((content) => ({
+const transformContentToResponseData = (contentArray) => {
+    return contentArray.map((content) => ({
         name: content.displayName,
         path: content._path,
         id: content._id,
     }));
+};
+
+const getFragmentUsage = (fragmentId) => {
+    const contentWithMacro = findContentsWithFragmentMacro(fragmentId);
+    const contentWithComponent = findContentsWithFragmentComponent(fragmentId);
 
     return {
         status: 200,
         body: {
-            usage: response,
+            macroUsage: transformContentToResponseData(contentWithMacro),
+            componentUsage: transformContentToResponseData(contentWithComponent),
         },
     };
 };
@@ -54,8 +59,8 @@ const htmlFragmentSelector = (req) => {
 
     const subPath = getSubPath(req);
 
-    if (subPath === 'macroUsage') {
-        return getFragmentMacroUsage(fragmentId);
+    if (subPath === 'fragmentUsage') {
+        return getFragmentUsage(fragmentId);
     }
 
     const hits = getHtmlFragmentHits(query);
