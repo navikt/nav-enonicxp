@@ -6,6 +6,12 @@ const { sanitize } = require('/lib/xp/common');
 
 const appKey = app.name.replace(/\./g, '-');
 
+// Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
+const macroDescriptionSeparator = ' // ';
+const getKeyWithoutMacroDescription = (key) => key?.split(macroDescriptionSeparator)[0];
+const appendMacroDescriptionToKey = (key, description) =>
+    `${key}${macroDescriptionSeparator}${description}`;
+
 const getComponentConfig = (component) => {
     if (!component) {
         return null;
@@ -125,4 +131,6 @@ module.exports = {
     getComponentConfig,
     generateAnchorIdField,
     findContentsWithFragmentComponent,
+    appendMacroDescriptionToKey,
+    getKeyWithoutMacroDescription,
 };

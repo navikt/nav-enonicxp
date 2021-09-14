@@ -1,9 +1,12 @@
 const contentLib = require('/lib/xp/content');
+const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { findContentsWithFragmentComponent } = require('/lib/headless/component-utils');
 const { getSubPath } = require('../service-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 
-const getHtmlFragmentHits = (query) => {
+const selectorHandler = (req) => {
+    const { query, withDescription } = req.params;
+
     const htmlFragments = contentLib.query({
         ...(query && { query: `fulltext("displayName, _path", "${query}", "AND")` }),
         start: 0,
@@ -27,7 +30,9 @@ const getHtmlFragmentHits = (query) => {
     }).hits;
 
     return htmlFragments.map((fragment) => ({
-        id: fragment._id,
+        id: withDescription
+            ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
+            : fragment._id,
         displayName: fragment.displayName,
         description: fragment._path,
     }));
@@ -41,7 +46,9 @@ const transformContentToResponseData = (contentArray) => {
     }));
 };
 
-const getFragmentUsage = (fragmentId) => {
+const getFragmentUsage = (req) => {
+    const { fragmentId } = req.params;
+
     if (!fragmentId) {
         return {
             status: 400,
@@ -64,15 +71,13 @@ const getFragmentUsage = (fragmentId) => {
 };
 
 const htmlFragmentSelector = (req) => {
-    const { query, fragmentId } = req.params;
-
     const subPath = getSubPath(req);
 
     if (subPath === 'fragmentUsage') {
-        return getFragmentUsage(fragmentId);
+        return getFragmentUsage(req);
     }
 
-    const hits = getHtmlFragmentHits(query);
+    const hits = selectorHandler(req);
 
     return {
         status: 200,

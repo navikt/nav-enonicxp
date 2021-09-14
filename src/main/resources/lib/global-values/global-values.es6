@@ -7,9 +7,6 @@ const { forceArray } = require('/lib/nav-utils');
 const globalValuesContentType = `${app.name}:global-value-set`;
 const validTypes = { textValue: true, numberValue: true };
 
-// Used to separate the gv key from descriptive helper text in macros
-const globalValueMacroDescriptionSeparator = ' // ';
-
 const getGlobalValueUsage = (key) => {
     const results = findContentsWithHtmlAreaText(key);
 
@@ -179,5 +176,4 @@ module.exports = {
     getGlobalNumberValue,
     globalValuesContentType,
     validateGlobalValueInputAndGetErrorResponse,
-    globalValueMacroDescriptionSeparator,
 };

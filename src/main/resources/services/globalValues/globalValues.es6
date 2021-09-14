@@ -1,4 +1,3 @@
-const { globalValueMacroDescriptionSeparator } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getSubPath } = require('../service-utils');
 const { getGlobalValueSetService } = require('./getSet/getSet');
@@ -26,9 +25,9 @@ const selectorHandler = (req) => {
             const displayName = `${value.setName} - ${value.itemName}`;
 
             return {
-                id: `${value.key}${
-                    withDescription ? `${globalValueMacroDescriptionSeparator}${displayName}` : ''
-                }`,
+                id: withDescription
+                    ? appendMacroDescriptionToKey(value.key, displayName)
+                    : value.key,
                 displayName,
                 description: `Verdi: ${value[valueType]}`,
             };
