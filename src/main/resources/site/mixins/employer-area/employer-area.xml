@@ -1,0 +1,10 @@
+<mixin>
+  <form>
+    <input name="area" type="ComboBox">
+        <label>Områdekategori</label>
+        <occurrences minimum="0" maximum="99"/>
+        <config>
+        </config>
+    </input>
+  </form>
+</mixin>

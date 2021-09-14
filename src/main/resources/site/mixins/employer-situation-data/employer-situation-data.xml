@@ -4,8 +4,9 @@
             <items>
                 <mixin name="page-header"/>
                 <mixin name="ingress" />
-                <mixin name="area" />
+                <mixin name="employer-area" />
                 <mixin name="illustration" />
+                <mixin name="external-product-url" />
             </items>
         </field-set>
     </form>
