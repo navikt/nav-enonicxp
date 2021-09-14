@@ -4,11 +4,8 @@ const graphQlLib = require('/lib/guillotine/graphql');
 const formLib = require('/lib/guillotine/dynamic/form');
 const { sanitizeText } = require('/lib/guillotine/util/naming');
 
-// The prefix used for all macro types
 const macroConfigTypeNamePrefix = 'Macro_no_nav_navno';
-// The suffix used for the macro config clone types used for HtmlFragment macros
 const macroConfigTypeNameHtmlFragmentSuffix = '_HtmlFragment';
-// The typename of the HtmlFragment macro itself
 const htmlFragmentMacroConfigTypename = `${macroConfigTypeNamePrefix}_html_fragment_DataConfig`;
 
 const getMacroDescriptors = (applicationsKeys) => {
