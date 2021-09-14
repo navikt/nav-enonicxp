@@ -8,6 +8,7 @@
             <config>
                 <service>globalValues</service>
                 <param value="valueType">textValue</param>
+                <param value="withDescription">true</param>
             </config>
         </input>
         <!-- Dummy value to prevent graphql-errors for undefined field -->

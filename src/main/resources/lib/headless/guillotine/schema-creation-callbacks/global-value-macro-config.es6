@@ -1,13 +1,18 @@
 const graphQlLib = require('/lib/guillotine/graphql');
+const { globalValueMacroDescriptionSeparator } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalNumberValue, getGlobalTextValue } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
+
+const getKeyWithoutDescription = (key) => key?.split(globalValueMacroDescriptionSeparator)[0];
 
 const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            return runInBranchContext(() => getGlobalTextValue(env.source.key), 'master');
+            const key = getKeyWithoutDescription(env.source.key);
+
+            return runInBranchContext(() => getGlobalTextValue(key), 'master');
         },
     };
 };
@@ -16,7 +21,7 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
     params.fields.variables = {
         type: graphQlLib.list(graphQlLib.GraphQLFloat),
         resolve: (env) => {
-            const keys = forceArray(env.source.keys);
+            const keys = forceArray(env.source.keys).map(getKeyWithoutDescription);
             const variables = runInBranchContext(
                 () =>
                     keys.reduce((acc, key) => {
