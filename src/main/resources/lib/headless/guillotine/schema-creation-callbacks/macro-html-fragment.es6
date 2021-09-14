@@ -2,6 +2,7 @@ const contentLib = require('/lib/xp/content');
 const macroLib = require('/lib/guillotine/macro');
 const graphQlLib = require('/lib/guillotine/graphql');
 const formLib = require('/lib/guillotine/dynamic/form');
+const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
 const { sanitizeText } = require('/lib/guillotine/util/naming');
 
 const macroConfigTypeNamePrefix = 'Macro_no_nav_navno';
@@ -139,7 +140,9 @@ const macroHtmlFragmentCallback = (context, params) => {
                 return null;
             }
 
-            const content = contentLib.get({ key: fragmentId });
+            const key = getKeyWithoutMacroDescription(fragmentId);
+
+            const content = contentLib.get({ key });
             if (!content) {
                 log.warning(`Content not found for fragment in html-fragment macro: ${fragmentId}`);
                 return null;
