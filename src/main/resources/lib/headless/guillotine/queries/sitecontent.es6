@@ -228,7 +228,12 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
         }
     }
 
-    return content || getRedirectContent(contentRef, branch);
+    const modifiedTimeIncludingFragments = getModifiedTimeIncludingFragments(contentRef, branch);
+
+    return (
+        { ...content, modifiedTime: modifiedTimeIncludingFragments } ||
+        getRedirectContent(contentRef, branch)
+    );
 };
 
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
@@ -259,12 +264,10 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
     }
 
     const notifications = getNotifications(content._path);
-    const modifiedTimeIncludingFragments = getModifiedTimeIncludingFragments(contentRef, branch);
 
     return {
         ...content,
         ...(notifications && { notifications }),
-        modifiedTime: modifiedTimeIncludingFragments,
     };
 };
 
