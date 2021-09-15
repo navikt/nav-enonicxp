@@ -12,10 +12,6 @@
                     <label>Nummerfelt</label>
                     <help-text>Alle inputfelt blir automatisk begrenset til å kun inneholde tall.</help-text>
                     <items>
-                        <input name="variableName" type="TextLine">
-                            <label>Variabelnavn</label>
-                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
-                        </input>
                         <input name="label" type="TextLine">
                             <label>Tittel på felt</label>
                         </input>
@@ -23,15 +19,15 @@
                             <label>Forklaring</label>
                             <help-text>Oppgi en ekstra forklaring til feltet dersom det er nødvendig.</help-text>
                         </input>
+                        <input name="variableName" type="TextLine">
+                            <label>Javascript variabelnavn (skal normalt ikke endres)</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
                     </items>
                 </option>
                 <option name="dropdownField">
                     <label>Listevalg</label>
                     <items>
-                        <input name="variableName" type="TextLine">
-                            <label>Variabelnavn</label>
-                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
-                        </input>
                         <input name="label" type="TextLine">
                             <label>Tittel på felt</label>
                         </input>
@@ -51,15 +47,15 @@
                             <label>Forklaring</label>
                             <help-text>Oppgi en ekstra forklaring til feltet dersom det er nødvendig.</help-text>
                         </input>
+                        <input name="variableName" type="TextLine">
+                            <label>Javascript variabelnavn (skal normalt ikke endres)</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
                     </items>
                 </option>
                 <option name="globalValue">
                     <label>Global verdi</label>
                     <items>
-                        <input name="variableName" type="TextLine">
-                            <label>Variabelnavn</label>
-                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
-                        </input>
                         <input name="key" type="CustomSelector">
                             <label>Velg verdier</label>
                             <occurrences minimum="1" maximum="1"/>
@@ -67,6 +63,10 @@
                                 <service>globalValues</service>
                                 <param value="valueType">numberValue</param>
                             </config>
+                        </input>
+                        <input name="variableName" type="TextLine">
+                            <label>Javascript variabelnavn (skal normalt ikke endres)</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
                         </input>
                         <!-- Dummy value to prevent graphql-errors for undefined field -->
                         <input name="value" type="RadioButton">
