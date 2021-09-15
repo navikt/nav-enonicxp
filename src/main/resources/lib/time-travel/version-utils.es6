@@ -20,7 +20,7 @@ const getVersionFromTime = ({ nodeKey, unixTime, repo, branch, getOldestIfNotFou
         return null;
     }
 
-    // Return the newest version which is older than the requested time
+    // Return the newest version which is equal to or older than the requested time
     const foundVersion = contentVersions.find((version) => {
         const versionUnixTime = getUnixTimeFromDateTimeString(version.timestamp);
         return unixTime >= versionUnixTime;
