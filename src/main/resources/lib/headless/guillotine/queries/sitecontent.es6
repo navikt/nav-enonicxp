@@ -83,7 +83,7 @@ const queryGetContentByRef = `query($ref:ID!){
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
 const getPublishedVersionTimestamps = (contentRef, branch) => {
-    // In production, only requests from "draft" should include version timestamps
+    // In production, requests from master should not include version timestamps
     // This check must be removed if/when we decide to make version history public
     if (app.config.env === 'p' && branch === 'master') {
         return null;
@@ -120,8 +120,6 @@ const getContent = (contentRef, branch) => {
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
     const pathMap = getPathMapForReferences(contentRef);
     const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
-
-    log.info(JSON.stringify(publishedVersionTimestamps));
 
     return {
         ...contentWithParsedData,
