@@ -84,3 +84,18 @@ Object.defineProperty(String.prototype, 'includes', {
     configurable: true,
     writable: true,
 });
+
+Object.defineProperty(Array.prototype, 'includes', {
+    value: function (searchValue, fromIndex = 0) {
+        if (!this) {
+            return null;
+        }
+        if (typeof fromIndex !== 'number') {
+            throw new TypeError(`${fromIndex} is not a number`);
+        }
+
+        return this.indexOf(searchValue, fromIndex) !== -1;
+    },
+    configurable: true,
+    writable: true,
+});

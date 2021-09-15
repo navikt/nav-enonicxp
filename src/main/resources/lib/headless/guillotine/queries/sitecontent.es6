@@ -17,6 +17,8 @@ const {
     unhookTimeTravel,
 } = require('/lib/time-travel/run-with-time-travel-hooks');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
+const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
+const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
 
 const contentLibGetOriginal = contentLib.get;
 let timeTravelEnabled = true;
@@ -41,7 +43,6 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
-const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 
 const queryFragments = [
     globalFragment,
@@ -120,6 +121,7 @@ const getContent = (contentRef, branch) => {
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
     const pathMap = getPathMapForReferences(contentRef);
     const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
+    const modifiedTimeIncludingFragments = getModifiedTimeIncludingFragments(contentRef, branch);
 
     return {
         ...contentWithParsedData,
@@ -128,6 +130,7 @@ const getContent = (contentRef, branch) => {
         ...(breadcrumbs && { breadcrumbs }),
         pathMap,
         ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
+        modifiedTime: modifiedTimeIncludingFragments,
     };
 };
 
