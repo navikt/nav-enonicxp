@@ -40,7 +40,7 @@ const getAllValuesFromSet = (varSet) =>
 
 const getAllGlobalValues = (type, query) => {
     if (type && !validTypes[type]) {
-        log.info(`Invalid type ${type} specified for all values query`);
+        log.info(`Invalid type ${type} specified for all global values query`);
         return [];
     }
 
@@ -81,8 +81,13 @@ const getGlobalValueSet = (contentId) => {
 };
 
 const getGlobalValue = (key, type) => {
+    if (!key) {
+        log.info(`Invalid global value key: ${key}`);
+        return null;
+    }
+
     if (!validTypes[type]) {
-        log.info(`Invalid type ${type} specified for ${key}`);
+        log.info(`Invalid type ${type} specified for global value ${key}`);
         return null;
     }
 
@@ -103,18 +108,18 @@ const getGlobalValue = (key, type) => {
     }).hits;
 
     if (valueSets.length === 0) {
-        log.error(`Value not found for key ${key}`);
+        log.error(`Value not found for global value key ${key}`);
         return null;
     }
 
     if (valueSets.length > 1) {
-        log.error(`Found multiple values with key ${key}!`);
+        log.error(`Found multiple values with global value key ${key}!`);
         return null;
     }
 
     const foundValue = forceArray(valueSets[0].data.valueItems).find((value) => value.key === key);
     if (!foundValue) {
-        log.error(`Value not found for key ${key}`);
+        log.error(`Value not found for global value key ${key}`);
         return null;
     }
 

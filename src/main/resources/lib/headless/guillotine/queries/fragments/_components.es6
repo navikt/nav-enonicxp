@@ -9,6 +9,9 @@ const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin'
 const {
     productTargetMixin,
 } = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-target-mixin');
+const {
+    calculatorTargetMixin,
+} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/calculator-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
 
 const partsFragment = `
@@ -112,6 +115,9 @@ const partsFragment = `
             }
             product_card_mini {
                 ${productTargetMixin}
+            }
+            calculator {
+                ${calculatorTargetMixin}
             }
             contact_option {
                 contactOptions {

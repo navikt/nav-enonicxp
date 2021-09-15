@@ -42,5 +42,6 @@
                 </option>
             </options>
         </option-set>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

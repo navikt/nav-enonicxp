@@ -3,36 +3,19 @@
         <field-set>
             <items>
                 <mixin name="page-header"/>
-                <input name="ingress" type="TextArea">
-                    <label>Ingress</label>
-                </input>
+                <mixin name="ingress" />
                 <input name="taxonomy" type="ComboBox">
                     <label>Kategori</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="8"/>
                     <config>
                         <option value="benefits">Pengestøtte</option>
-                        <option value="benefitsAndFollowup">Pengestøtte og oppfølging</option>
-                        <option value="rights">Råd og veiledning</option>
+                        <option value="followup">Oppfølging</option>
+                        <option value="rights">Veiledning</option>
                     </config>
                 </input>
-                <input name="area" type="ComboBox">
-                    <label>Områdekategori</label>
-                    <occurrences minimum="0" maximum="99"/>
-                    <config>
-                        <option value="family">Familie og barn</option>
-                        <option value="health">Helse og sykdom</option>
-                    </config>
-                </input>
-                <input name="illustration" type="ContentSelector">
-                    <label>Velg illustrasjon</label>
-                    <occurrences minimum="0" maximum="1"/>
-                    <config>
-                        <allowContentType>${app}:animated-icons</allowContentType>
-                    </config>
-                </input>
-                <input type="TextLine" name="externalProductUrl">
-                    <label>Videresend alle besøk til annen url:</label>
-                </input>
+                <mixin name="area" />
+                <mixin name="illustration" />
+                <mixin name="external-product-url" />
             </items>
         </field-set>
     </form>

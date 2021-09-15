@@ -8,6 +8,7 @@
             <config>
                 <service>globalValues</service>
                 <param value="valueType">numberValue</param>
+                <param value="withDescription">true</param>
             </config>
         </input>
         <input name="expression" type="TextLine">

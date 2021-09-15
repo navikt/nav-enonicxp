@@ -15,6 +15,9 @@ const {
     globalValueMacroConfigCallback,
     globalValueWithMathMacroConfigCallback,
 } = require('./schema-creation-callbacks/global-value-macro-config');
+const {
+    globalValueCalculatorConfigCallback,
+} = require('./schema-creation-callbacks/global-value-calculator-config');
 const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
 const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
@@ -26,9 +29,12 @@ const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
 } = require('./schema-creation-callbacks/main-article-chapter');
+const {
+    applyMacroCreationCallbacksToHtmlFragmentTypes,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
 
 const schemaContextOptions = {
-    creationCallbacks: {
+    creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
         Attachment: attachmentCallback,
         media_Code: mediaCodeCallback,
         no_nav_navno_MainArticle: mainArticleCallback,
@@ -40,6 +46,7 @@ const schemaContextOptions = {
         no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_GlobalValueSet: globalValuesCallback,
+        no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
         Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter: contentListCallback(
             'publish.first'
         ),
@@ -50,7 +57,7 @@ const schemaContextOptions = {
         Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
         Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
         Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
-    },
+    }),
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
     allowPaths: ['/redirects'],
 };

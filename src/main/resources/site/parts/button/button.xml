@@ -27,5 +27,6 @@
             <label>Full bredde</label>
         </input>
         <mixin name="icon-selector"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

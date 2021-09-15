@@ -1,3 +1,4 @@
+const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getSubPath } = require('../service-utils');
 const { getGlobalValueSetService } = require('./getSet/getSet');
@@ -8,7 +9,7 @@ const { getGlobalValueUsageService } = require('./usage/usage');
 const { getAllGlobalValues } = require('/lib/global-values/global-values');
 
 const selectorHandler = (req) => {
-    const { valueType = 'textValue', query } = req.params;
+    const { valueType = 'textValue', withDescription, query } = req.params;
 
     const wordsWithWildcard = query
         ?.split(' ')
@@ -21,11 +22,17 @@ const selectorHandler = (req) => {
     );
 
     const hits = values
-        .map((value) => ({
-            id: value.key,
-            displayName: `${value.setName} - ${value.itemName}`,
-            description: `Verdi: ${value[valueType]}`,
-        }))
+        .map((value) => {
+            const displayName = `${value.setName} - ${value.itemName}`;
+
+            return {
+                id: withDescription
+                    ? appendMacroDescriptionToKey(value.key, displayName)
+                    : value.key,
+                displayName,
+                description: `Verdi: ${value[valueType]}`,
+            };
+        })
         .flat()
         .sort((a, b) => {
             if (a.displayName > b.displayName) {

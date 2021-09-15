@@ -1,0 +1,11 @@
+<mixin>
+    <form>
+        <input name="targetCalculator" type="ContentSelector">
+            <label>Velg side</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <allowContentType>${app}:calculator</allowContentType>
+            </config>
+        </input>
+    </form>
+</mixin>
