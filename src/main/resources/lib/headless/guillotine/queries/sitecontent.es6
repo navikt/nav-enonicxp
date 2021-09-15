@@ -41,6 +41,7 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
+const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 
 const queryFragments = [
     globalFragment,
@@ -81,6 +82,16 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
+const getPublishedVersionTimestamps = (contentRef, branch) => {
+    // In production, requests from master should not include version timestamps
+    // This check must be removed if/when we decide to make version history public
+    if (app.config.env === 'p' && branch === 'master') {
+        return null;
+    }
+
+    return getVersionTimestamps(contentRef, 'master');
+};
+
 const getContent = (contentRef, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
@@ -108,6 +119,7 @@ const getContent = (contentRef, branch) => {
     const page = mergeComponentsIntoPage(contentWithParsedData);
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
     const pathMap = getPathMapForReferences(contentRef);
+    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
 
     return {
         ...contentWithParsedData,
@@ -115,6 +127,7 @@ const getContent = (contentRef, branch) => {
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
         pathMap,
+        ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
     };
 };
 
@@ -196,7 +209,7 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
 
         if (rawTimestamp !== guillotineTimestamp) {
             // In the (hopefully impossible!) event that time travel functionality is causing
-            // normal requests to retrieve outdated data, retry the request
+            // normal requests to retrieve old data, retry the request
             if (retry) {
                 log.error(
                     `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
