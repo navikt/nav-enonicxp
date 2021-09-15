@@ -121,7 +121,6 @@ const getContent = (contentRef, branch) => {
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
     const pathMap = getPathMapForReferences(contentRef);
     const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
-    const modifiedTimeIncludingFragments = getModifiedTimeIncludingFragments(contentRef, branch);
 
     return {
         ...contentWithParsedData,
@@ -130,7 +129,6 @@ const getContent = (contentRef, branch) => {
         ...(breadcrumbs && { breadcrumbs }),
         pathMap,
         ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
-        modifiedTime: modifiedTimeIncludingFragments,
     };
 };
 
@@ -261,8 +259,13 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
     }
 
     const notifications = getNotifications(content._path);
+    const modifiedTimeIncludingFragments = getModifiedTimeIncludingFragments(contentRef, branch);
 
-    return { ...content, ...(notifications && { notifications }) };
+    return {
+        ...content,
+        ...(notifications && { notifications }),
+        modifiedTime: modifiedTimeIncludingFragments,
+    };
 };
 
 module.exports = { getSiteContent, getContent, getRedirectContent };
