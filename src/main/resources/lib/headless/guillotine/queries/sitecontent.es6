@@ -82,6 +82,16 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
+const getPublishedVersionTimestamps = (contentRef, branch) => {
+    // In production, only requests from "draft" should include version timestamps
+    // This check must be removed if/when we decide to make version history public
+    if (app.config.env === 'p' && branch === 'master') {
+        return null;
+    }
+
+    return getVersionTimestamps(contentRef, 'master');
+};
+
 const getContent = (contentRef, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
@@ -109,7 +119,7 @@ const getContent = (contentRef, branch) => {
     const page = mergeComponentsIntoPage(contentWithParsedData);
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
     const pathMap = getPathMapForReferences(contentRef);
-    const publishedVersionTimestamps = getVersionTimestamps(contentRef, 'master');
+    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
 
     log.info(JSON.stringify(publishedVersionTimestamps));
 
