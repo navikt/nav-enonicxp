@@ -1,6 +1,7 @@
 const nodeLib = require('/lib/xp/node');
 const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
+const { removeDuplicates } = require('/lib/nav-utils');
 const { getNodeKey } = require('/lib/time-travel/version-utils');
 const { forceArray, getNestedValue, getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { htmlAreaDataPaths, htmlAreaComponentPaths } = require('/lib/htmlarea/htmlarea');
@@ -77,10 +78,7 @@ const getFragmentIdsFromContent = (contentRef, branch) => {
     const fragmentIdsFromMacros = getFragmentIdsFromMacros(contentRef, branch);
     const fragmentIdsFromComponents = getFragmentIdsFromComponents(contentRef, branch);
 
-    // remove duplicates
-    return [...fragmentIdsFromMacros, ...fragmentIdsFromComponents].filter(
-        (id, index, arr) => arr.indexOf(id) === index
-    );
+    return removeDuplicates([...fragmentIdsFromMacros, ...fragmentIdsFromComponents]);
 };
 
 // Returns the most recent modifiedTime value, taking into account both the content
