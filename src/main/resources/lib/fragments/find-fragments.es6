@@ -7,7 +7,7 @@ const { htmlAreaDataPaths, htmlAreaComponentPaths } = require('/lib/htmlarea/htm
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
-const htmlFragmentMacroRegex = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]+`, 'gi');
+const htmlFragmentMacroPattern = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]+`, 'gi');
 
 const getContentNode = (contentRef, branch) => {
     const context = contextLib.get();
@@ -24,7 +24,9 @@ const getFragmentIdsFromHtmlArea = (htmlArea) => {
         return [];
     }
 
-    const fragmentIds = htmlArea.match(htmlFragmentMacroRegex);
+    const fragmentIds = htmlArea.match(htmlFragmentMacroPattern);
+
+    log.info(`macro fragments: ${JSON.stringify(fragmentIds)}`);
 
     return fragmentIds ? fragmentIds.map((id) => id.replace(htmlFragmentMacroPrefix, '')) : [];
 };
@@ -45,7 +47,7 @@ const getFragmentIdsFromComponents = (contentRef, branch) => {
     }, []);
 };
 
-// Gets fragment ids references from HtmlFragment macros
+// Gets fragment ids referenced from HtmlFragment macros
 const getFragmentIdsFromMacros = (contentRef, branch) => {
     const contentNode = getContentNode(contentRef, branch);
 
@@ -77,8 +79,9 @@ const getFragmentIdsFromContent = (contentRef, branch) => {
     const fragmentIdsFromMacros = getFragmentIdsFromMacros(contentRef, branch);
     const fragmentIdsFromComponents = getFragmentIdsFromComponents(contentRef, branch);
 
+    // remove duplicates
     return [...fragmentIdsFromMacros, ...fragmentIdsFromComponents].filter(
-        (id, index, acc) => acc.indexOf(id) === index
+        (id, index, arr) => arr.indexOf(id) === index
     );
 };
 
@@ -89,7 +92,7 @@ const getModifiedTimeIncludingFragments = (contentRef, branch) => {
     const latestModifiedFragmentTime = fragmentIds.reduce((latestModifiedTime, fragmentId) => {
         const fragment = contentLib.get({ key: fragmentId });
         if (!fragment) {
-            log.warn(`No fragment found for id ${fragmentId}`);
+            log.warning(`No fragment found for id ${fragmentId}`);
             return latestModifiedTime;
         }
 
