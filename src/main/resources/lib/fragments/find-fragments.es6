@@ -85,6 +85,11 @@ const getFragmentIdsFromContent = (contentRef, branch) => {
 // itself and any fragments used in the content
 const getModifiedTimeIncludingFragments = (contentRef, branch) => {
     const content = contentLib.get({ key: contentRef });
+
+    if (!content) {
+        return null;
+    }
+
     const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
 
     return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
