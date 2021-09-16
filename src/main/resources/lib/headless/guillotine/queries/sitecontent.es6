@@ -17,6 +17,8 @@ const {
     unhookTimeTravel,
 } = require('/lib/time-travel/run-with-time-travel-hooks');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
+const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
+const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
 
 const contentLibGetOriginal = contentLib.get;
 let timeTravelEnabled = true;
@@ -41,7 +43,6 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
-const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 
 const queryFragments = [
     globalFragment,
@@ -235,7 +236,9 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
         }
     }
 
-    return content || getRedirectContent(contentRef, branch);
+    return content
+        ? { ...content, modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch) }
+        : getRedirectContent(contentRef, branch);
 };
 
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
@@ -267,7 +270,10 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
 
     const notifications = getNotifications(content._path);
 
-    return { ...content, ...(notifications && { notifications }) };
+    return {
+        ...content,
+        ...(notifications && { notifications }),
+    };
 };
 
 module.exports = { getSiteContent, getContent, getRedirectContent };
