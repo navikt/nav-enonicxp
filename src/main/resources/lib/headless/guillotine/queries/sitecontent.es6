@@ -17,6 +17,8 @@ const {
     unhookTimeTravel,
 } = require('/lib/time-travel/run-with-time-travel-hooks');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
+const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
+const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
 
 const contentLibGetOriginal = contentLib.get;
 let timeTravelEnabled = true;
@@ -41,7 +43,6 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
-const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 
 const queryFragments = [
     globalFragment,
@@ -112,22 +113,30 @@ const getContent = (contentRef, branch) => {
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
 
+    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
+
+    const commonFields = {
+        components: undefined,
+        pathMap: getPathMapForReferences(contentRef),
+        ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
+    };
+
+    // This is the preview/editor page for fragments (not user-facing). It requires some
+    // special handling for its contained components
     if (content.__typename === 'portal_Fragment') {
-        return getPortalFragmentContent(contentWithParsedData);
+        return {
+            ...getPortalFragmentContent(contentWithParsedData),
+            ...commonFields,
+        };
     }
 
-    const page = mergeComponentsIntoPage(contentWithParsedData);
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
-    const pathMap = getPathMapForReferences(contentRef);
-    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
 
     return {
         ...contentWithParsedData,
-        page,
-        components: undefined,
+        ...commonFields,
         ...(breadcrumbs && { breadcrumbs }),
-        pathMap,
-        ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
+        page: mergeComponentsIntoPage(contentWithParsedData),
     };
 };
 
@@ -227,7 +236,9 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
         }
     }
 
-    return content || getRedirectContent(contentRef, branch);
+    return content
+        ? { ...content, modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch) }
+        : getRedirectContent(contentRef, branch);
 };
 
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
@@ -259,7 +270,10 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
 
     const notifications = getNotifications(content._path);
 
-    return { ...content, ...(notifications && { notifications }) };
+    return {
+        ...content,
+        ...(notifications && { notifications }),
+    };
 };
 
 module.exports = { getSiteContent, getContent, getRedirectContent };

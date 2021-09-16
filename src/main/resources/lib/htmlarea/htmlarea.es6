@@ -1,26 +1,23 @@
 const contentLib = require('/lib/xp/content');
 
-const htmlAreaObjectPaths = [
-    'data.text',
-    'data.fact',
-    'components.part.config.no-nav-navno.html-area.html',
-    'components.part.config.no-nav-navno.dynamic-alert.content',
+const htmlAreaComponentPaths = [
+    'part.config.no-nav-navno.html-area.html',
+    'part.config.no-nav-navno.dynamic-alert.content',
 ];
 
-const includedContentTypes = [
-    'dynamic-page',
-    'content-page-with-sidemenus',
-    'situation-page',
-    'main-article',
-].map((contentType) => `${app.name}:${contentType}`);
+const htmlAreaDataPaths = ['text', 'fact'];
+
+const htmlAreaNodePaths = [
+    ...htmlAreaDataPaths.map((path) => `data.${path}`),
+    ...htmlAreaComponentPaths.map((path) => `components.${path}`),
+];
 
 const findContentsWithHtmlAreaText = (text) => {
-    const query = htmlAreaObjectPaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
+    const query = htmlAreaNodePaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
 
     const result = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: includedContentTypes,
         query: query,
     });
 
@@ -39,4 +36,7 @@ module.exports = {
     findContentsWithHtmlAreaText,
     findContentsWithFragmentMacro,
     findContentsWithProductCardMacro,
+    htmlAreaComponentPaths,
+    htmlAreaDataPaths,
+    htmlAreaNodePaths,
 };

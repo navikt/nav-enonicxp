@@ -5,6 +5,7 @@ const navUtils = require('/lib/nav-utils');
 const nodeLib = require('/lib/xp/node');
 const taskLib = require('/lib/xp/task');
 const repoLib = require('/lib/xp/repo');
+const { removeDuplicates } = require('/lib/nav-utils');
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -356,10 +357,7 @@ const facetHandler = (event) => {
         })
     );
 
-    // remove duplicates
-    toCheckOnNext = toCheckOnNext.filter((nodeId, index, self) => {
-        return self.indexOf(nodeId) === index;
-    });
+    toCheckOnNext = removeDuplicates(toCheckOnNext);
 
     // run task to check for facet update after 5 seconds after last update
     if (!currentTask) {
