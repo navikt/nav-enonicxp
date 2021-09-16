@@ -19,22 +19,22 @@ const getContentNode = (contentRef, branch) => {
     return repo.get(getNodeKey(contentRef));
 };
 
-const getFragmentIdsFromHtmlArea = (htmlArea) => {
-    if (!htmlArea) {
+const getFragmentIdsFromHtmlArea = (htmlAreaString) => {
+    if (!htmlAreaString) {
         return [];
     }
 
-    const fragmentIds = htmlArea.match(htmlFragmentMacroPattern);
+    const fragmentIds = htmlAreaString.match(htmlFragmentMacroPattern);
 
     return fragmentIds ? fragmentIds.map((id) => id.replace(htmlFragmentMacroPrefix, '')) : [];
 };
 
-// Gets fragment ids from fragment components
+// Gets fragment ids from fragment components in a content
 const getFragmentIdsFromComponents = (contentRef, branch) => {
     const contentNode = getContentNode(contentRef, branch);
 
     if (!contentNode) {
-        return null;
+        return [];
     }
 
     return forceArray(contentNode.components).reduce((fragmentIds, component) => {
@@ -45,12 +45,12 @@ const getFragmentIdsFromComponents = (contentRef, branch) => {
     }, []);
 };
 
-// Gets fragment ids referenced from HtmlFragment macros
+// Gets fragment ids referenced from HtmlFragment macros in a content
 const getFragmentIdsFromMacros = (contentRef, branch) => {
     const contentNode = getContentNode(contentRef, branch);
 
     if (!contentNode) {
-        return null;
+        return [];
     }
 
     const fragmentIdsFromData = htmlAreaDataPaths.reduce((fragmentIdsAcc, dataPath) => {
