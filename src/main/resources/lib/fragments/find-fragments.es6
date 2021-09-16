@@ -90,6 +90,8 @@ const getModifiedTimeIncludingFragments = (contentRef, branch) => {
         return null;
     }
 
+    const contentModifiedTime = content.modifiedTime || content.createdTime;
+
     const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
 
     return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
@@ -107,7 +109,7 @@ const getModifiedTimeIncludingFragments = (contentRef, branch) => {
             getUnixTimeFromDateTimeString(latestModifiedTime)
             ? modifiedTime
             : latestModifiedTime;
-    }, content.modifiedTime);
+    }, contentModifiedTime);
 };
 
 module.exports = {
