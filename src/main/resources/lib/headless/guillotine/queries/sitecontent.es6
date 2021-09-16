@@ -14,6 +14,7 @@ const {
 } = require('/lib/custom-paths/custom-paths');
 const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
+const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 
 const contentLibGetOriginal = contentLib.get;
 let timeTravelEnabled = true;
@@ -78,6 +79,16 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
+const getPublishedVersionTimestamps = (contentRef, branch) => {
+    // In production, requests from master should not include version timestamps
+    // This check must be removed if/when we decide to make version history public
+    if (app.config.env === 'p' && branch === 'master') {
+        return null;
+    }
+
+    return getVersionTimestamps(contentRef, 'master');
+};
+
 const getContent = (contentRef, branch) => {
     const response = guillotineQuery(
         queryGetContentByRef,
@@ -105,6 +116,7 @@ const getContent = (contentRef, branch) => {
     const page = mergeComponentsIntoPage(contentWithParsedData);
     const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
     const pathMap = getPathMapForReferences(contentRef);
+    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
 
     return {
         ...contentWithParsedData,
@@ -112,6 +124,7 @@ const getContent = (contentRef, branch) => {
         components: undefined,
         ...(breadcrumbs && { breadcrumbs }),
         pathMap,
+        ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
     };
 };
 
@@ -193,7 +206,7 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
 
         if (rawTimestamp !== guillotineTimestamp) {
             // In the (hopefully impossible!) event that time travel functionality is causing
-            // normal requests to retrieve outdated data, retry the request
+            // normal requests to retrieve old data, retry the request
             // Note: this has false positives if the content is updated and requested within
             // a short period of time
             log.error(
@@ -201,7 +214,6 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
                     retry ? ' - retrying one more time' : ''
                 }`
             );
-
             if (retry) {
                 return getContentOrRedirect(contentRef, branch, false);
             }
