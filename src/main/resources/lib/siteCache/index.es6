@@ -238,7 +238,10 @@ function findReferences(id, path, depth) {
         });
     }
 
-    return removeDuplicates(references, (a, b) => !a?._path || !b?._path || a._path === b._path);
+    return removeDuplicates(
+        references.filter((ref) => !!ref._path),
+        (a, b) => a._path === b._path
+    );
 }
 
 function clearFragmentMacroReferences(content) {
