@@ -26,8 +26,6 @@ const getFragmentIdsFromHtmlArea = (htmlArea) => {
 
     const fragmentIds = htmlArea.match(htmlFragmentMacroPattern);
 
-    log.info(`macro fragments: ${JSON.stringify(fragmentIds)}`);
-
     return fragmentIds ? fragmentIds.map((id) => id.replace(htmlFragmentMacroPrefix, '')) : [];
 };
 
@@ -85,39 +83,28 @@ const getFragmentIdsFromContent = (contentRef, branch) => {
     );
 };
 
+// Returns the most recent modifiedTime value, taking into account both the content
+// itself and any fragments used in the content
 const getModifiedTimeIncludingFragments = (contentRef, branch) => {
     const content = contentLib.get({ key: contentRef });
     const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
 
-    const latestModifiedFragmentTime = fragmentIds.reduce((latestModifiedTime, fragmentId) => {
+    return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
         const fragment = contentLib.get({ key: fragmentId });
         if (!fragment) {
-            log.warning(`No fragment found for id ${fragmentId}`);
+            log.error(
+                `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
+            );
             return latestModifiedTime;
         }
 
         const modifiedTime = fragment.modifiedTime;
 
-        if (!latestModifiedTime) {
-            return modifiedTime;
-        }
-
         return getUnixTimeFromDateTimeString(modifiedTime) >
             getUnixTimeFromDateTimeString(latestModifiedTime)
             ? modifiedTime
             : latestModifiedTime;
-    }, '');
-
-    if (latestModifiedFragmentTime) {
-        const fragmentTimestamp = getUnixTimeFromDateTimeString(latestModifiedFragmentTime);
-        const contentTimestamp = getUnixTimeFromDateTimeString(content.modifiedTime);
-
-        if (fragmentTimestamp > contentTimestamp) {
-            return latestModifiedFragmentTime;
-        }
-    }
-
-    return content.modifiedTime;
+    }, content.modifiedTime);
 };
 
 module.exports = {
