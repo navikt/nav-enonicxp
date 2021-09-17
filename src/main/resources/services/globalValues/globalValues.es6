@@ -1,3 +1,4 @@
+const { getMacroKeyForGlobalValueItem } = require('/lib/global-values/global-values');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getSubPath } = require('../service-utils');
@@ -22,15 +23,14 @@ const selectorHandler = (req) => {
     );
 
     const hits = values
-        .map((value) => {
-            const displayName = `${value.setName} - ${value.itemName}`;
+        .map((valueItem) => {
+            const displayName = `${valueItem.setName} - ${valueItem.itemName}`;
+            const macroKey = getMacroKeyForGlobalValueItem(valueItem);
 
             return {
-                id: withDescription
-                    ? appendMacroDescriptionToKey(value.key, displayName)
-                    : value.key,
+                id: withDescription ? appendMacroDescriptionToKey(macroKey, displayName) : macroKey,
                 displayName,
-                description: `Verdi: ${value[valueType]}`,
+                description: `Verdi: ${valueItem[valueType]}`,
             };
         })
         .flat()

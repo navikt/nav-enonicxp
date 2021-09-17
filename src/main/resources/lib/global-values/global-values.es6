@@ -7,6 +7,21 @@ const { forceArray } = require('/lib/nav-utils');
 const globalValuesContentType = `${app.name}:global-value-set`;
 const validTypes = { textValue: true, numberValue: true };
 
+const macroKeySeparator = '::';
+
+const getMacroKeyForGlobalValueItem = (valueItem) => {
+    return `${valueItem.key}${macroKeySeparator}${valueItem.setId}`;
+};
+
+const getSetIdAndValueKeyFromMacroKey = (macroKey) => {
+    const [valueKey, setId] = macroKey.split(macroKeySeparator);
+
+    return {
+        setId,
+        valueKey,
+    };
+};
+
 const getGlobalValueUsage = (key) => {
     const results = findContentsWithHtmlAreaText(key);
 
@@ -17,26 +32,30 @@ const getGlobalValueUsage = (key) => {
     }));
 };
 
-const getValuesOfTypeFromSet = (type) => (varSet) =>
-    forceArray(varSet.data.valueItems).reduce((acc, valueItem) => {
-        return valueItem[type] !== undefined
-            ? [
-                  ...acc,
-                  {
-                      ...valueItem,
-                      setId: varSet._id,
-                      setName: varSet.displayName,
-                  },
-              ]
-            : acc;
-    }, []);
+const getAllValuesFromSet = (varSet, type) => {
+    const valueItemsArray = forceArray(varSet.data?.valueItems);
 
-const getAllValuesFromSet = (varSet) =>
-    forceArray(varSet.data?.valueItems).map((valueItem) => ({
+    if (type) {
+        return valueItemsArray.reduce((acc, valueItem) => {
+            return valueItem[type] !== undefined
+                ? [
+                      ...acc,
+                      {
+                          ...valueItem,
+                          setId: varSet._id,
+                          setName: varSet.displayName,
+                      },
+                  ]
+                : acc;
+        }, []);
+    }
+
+    return valueItemsArray.map((valueItem) => ({
         ...valueItem,
         setId: varSet._id,
         setName: varSet.displayName,
     }));
+};
 
 const getAllGlobalValues = (type, query) => {
     if (type && !validTypes[type]) {
@@ -60,11 +79,7 @@ const getAllGlobalValues = (type, query) => {
         },
     }).hits;
 
-    if (type) {
-        return valueSets.map(getValuesOfTypeFromSet(type)).flat();
-    }
-
-    return valueSets.map(getAllValuesFromSet).flat();
+    return valueSets.map((varSet) => getAllValuesFromSet(varSet, type)).flat();
 };
 
 const getGlobalValueSet = (contentRef) => {
@@ -80,6 +95,53 @@ const getGlobalValueSet = (contentRef) => {
     return content;
 };
 
+// TODO: remove this when all macros have been converted to the new format
+const backwardsCompatibleGetGlobalValue = (key, type) => {
+    if (!key) {
+        log.info(`Invalid global value key: ${key}`);
+        return null;
+    }
+
+    if (!validTypes[type]) {
+        log.info(`Invalid type ${type} specified for global value ${key}`);
+        return null;
+    }
+
+    const valueSets = contentLib.query({
+        start: 0,
+        count: 2,
+        contentTypes: [globalValuesContentType],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.valueItems.key',
+                        values: [key],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    if (valueSets.length === 0) {
+        log.error(`Value not found for global value key ${key}`);
+        return null;
+    }
+
+    if (valueSets.length > 1) {
+        log.error(`Found multiple values with global value key ${key}!`);
+        return null;
+    }
+
+    const foundValue = forceArray(valueSets[0].data.valueItems).find((value) => value.key === key);
+    if (!foundValue) {
+        log.error(`Value not found for global value key ${key}`);
+        return null;
+    }
+
+    return foundValue[type] || foundValue.numberValue;
+};
+
 const getGlobalValue = (gvKey, contentRef, type) => {
     if (!gvKey) {
         log.info(`Invalid global value key requested from ${contentRef}`);
@@ -87,8 +149,10 @@ const getGlobalValue = (gvKey, contentRef, type) => {
     }
 
     if (!contentRef) {
-        log.info(`Invalid contentRef provided for gv key ${gvKey}`);
-        return null;
+        log.info(
+            `Invalid contentRef provided for gv key ${gvKey} - trying backwards-compatible retrieval`
+        );
+        return backwardsCompatibleGetGlobalValue(gvKey, type);
     }
 
     if (!validTypes[type]) {
@@ -170,4 +234,6 @@ module.exports = {
     getGlobalNumberValue,
     globalValuesContentType,
     validateGlobalValueInputAndGetErrorResponse,
+    getMacroKeyForGlobalValueItem,
+    getSetIdAndValueKeyFromMacroKey,
 };

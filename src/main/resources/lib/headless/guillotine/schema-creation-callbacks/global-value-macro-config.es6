@@ -1,4 +1,5 @@
 const graphQlLib = require('/lib/guillotine/graphql');
+const { getSetIdAndValueKeyFromMacroKey } = require('/lib/global-values/global-values');
 const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalNumberValue, getGlobalTextValue } = require('/lib/global-values/global-values');
@@ -8,9 +9,10 @@ const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            const key = getKeyWithoutMacroDescription(env.source.key);
+            const macroKey = getKeyWithoutMacroDescription(env.source.key);
+            const { valueKey, setId } = getSetIdAndValueKeyFromMacroKey(macroKey);
 
-            return runInBranchContext(() => getGlobalTextValue(key), 'master');
+            return runInBranchContext(() => getGlobalTextValue(valueKey, setId), 'master');
         },
     };
 };
