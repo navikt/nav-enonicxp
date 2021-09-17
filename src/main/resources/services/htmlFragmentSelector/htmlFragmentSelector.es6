@@ -6,6 +6,14 @@ const { findContentsWithFragmentComponent } = require('/lib/headless/component-u
 const { getSubPath } = require('../service-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 
+const hitFromFragment = (fragment, withDescription) => ({
+    id: withDescription
+        ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
+        : fragment._id,
+    displayName: fragment.displayName,
+    description: fragment._path,
+});
+
 const selectorHandler = (req) => {
     const { query, withDescription, ids } = req.params;
 
@@ -21,9 +29,8 @@ const selectorHandler = (req) => {
             return [
                 ...acc,
                 {
-                    id: id,
-                    displayName: fragment.displayName,
-                    description: fragment._path,
+                    ...hitFromFragment(fragment),
+                    id,
                 },
             ];
         }, []);
@@ -51,13 +58,7 @@ const selectorHandler = (req) => {
         },
     }).hits;
 
-    return htmlFragments.map((fragment) => ({
-        id: withDescription
-            ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
-            : fragment._id,
-        displayName: fragment.displayName,
-        description: fragment._path,
-    }));
+    return htmlFragments.map((fragment) => hitFromFragment(fragment, withDescription));
 };
 
 const transformContentToResponseData = (contentArray) => {
