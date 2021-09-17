@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
 const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { findContentsWithHtmlAreaText } = require('/lib/htmlarea/htmlarea');
@@ -20,6 +21,11 @@ const getSetIdAndValueKeyFromMacroKey = (macroKey) => {
         setId,
         valueKey,
     };
+};
+
+const getValueKeyAndSetIdFromMacroKey = (macroKey) => {
+    const key = getKeyWithoutMacroDescription(macroKey);
+    return getSetIdAndValueKeyFromMacroKey(key);
 };
 
 const getGlobalValueUsage = (key) => {
@@ -236,4 +242,5 @@ module.exports = {
     validateGlobalValueInputAndGetErrorResponse,
     getMacroKeyForGlobalValueItem,
     getSetIdAndValueKeyFromMacroKey,
+    getValueKeyAndSetIdFromMacroKey,
 };
