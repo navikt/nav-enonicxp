@@ -67,12 +67,12 @@ const getAllGlobalValues = (type, query) => {
     return valueSets.map(getAllValuesFromSet).flat();
 };
 
-const getGlobalValueSet = (contentId) => {
-    if (!contentId) {
+const getGlobalValueSet = (contentRef) => {
+    if (!contentRef) {
         return null;
     }
 
-    const content = contentLib.get({ key: contentId });
+    const content = contentLib.get({ key: contentRef });
     if (!content || content.type !== globalValuesContentType) {
         return null;
     }
@@ -80,54 +80,48 @@ const getGlobalValueSet = (contentId) => {
     return content;
 };
 
-const getGlobalValue = (key, type) => {
-    if (!key) {
-        log.info(`Invalid global value key: ${key}`);
+const getGlobalValue = (gvKey, contentRef, type) => {
+    if (!gvKey) {
+        log.info(`Invalid global value key requested from ${contentRef}`);
+        return null;
+    }
+
+    if (!contentRef) {
+        log.info(`Invalid contentRef provided for gv key ${gvKey}`);
         return null;
     }
 
     if (!validTypes[type]) {
-        log.info(`Invalid type ${type} specified for global value ${key}`);
+        log.info(`Invalid type ${type} specified for global value ${gvKey}`);
         return null;
     }
 
-    const valueSets = contentLib.query({
-        start: 0,
-        count: 2,
-        contentTypes: [globalValuesContentType],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.valueItems.key',
-                        values: [key],
-                    },
-                },
-            },
-        },
-    }).hits;
+    const valueSet = getGlobalValueSet(contentRef);
 
-    if (valueSets.length === 0) {
-        log.error(`Value not found for global value key ${key}`);
+    if (!valueSet) {
+        log.info(`No value set found for contentRef ${contentRef}`);
         return null;
     }
 
-    if (valueSets.length > 1) {
-        log.error(`Found multiple values with global value key ${key}!`);
+    const valuesFound = forceArray(valueSet.data.valueItems).filter((value) => value.key === gvKey);
+
+    if (valuesFound.length === 0) {
+        log.error(`Value not found for global value key ${gvKey}`);
         return null;
     }
 
-    const foundValue = forceArray(valueSets[0].data.valueItems).find((value) => value.key === key);
-    if (!foundValue) {
-        log.error(`Value not found for global value key ${key}`);
+    if (valuesFound.length > 1) {
+        log.error(`Found multiple values with global value key ${gvKey}!`);
         return null;
     }
 
-    return foundValue[type] || foundValue.numberValue;
+    const value = valuesFound[0];
+
+    return value[type] || value.numberValue;
 };
 
-const getGlobalTextValue = (key) => getGlobalValue(key, 'textValue');
-const getGlobalNumberValue = (key) => getGlobalValue(key, 'numberValue');
+const getGlobalTextValue = (key, contentRef) => getGlobalValue(key, contentRef, 'textValue');
+const getGlobalNumberValue = (key, contentRef) => getGlobalValue(key, contentRef, 'numberValue');
 
 const validateGlobalValueInputAndGetErrorResponse = ({
     contentId,
