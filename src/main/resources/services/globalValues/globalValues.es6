@@ -35,8 +35,6 @@ const selectorHandler = (req) => {
         'master'
     );
 
-    log.info(`ids: ${ids}`);
-
     if (ids) {
         const hits = forceArray(ids).reduce((acc, id) => {
             const valueKey = getKeyWithoutMacroDescription(id);
