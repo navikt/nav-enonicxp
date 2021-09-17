@@ -1,11 +1,33 @@
 const contentLib = require('/lib/xp/content');
+const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
+const { forceArray } = require('/lib/nav-utils');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { findContentsWithFragmentComponent } = require('/lib/headless/component-utils');
 const { getSubPath } = require('../service-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 
 const selectorHandler = (req) => {
-    const { query, withDescription } = req.params;
+    const { query, withDescription, ids } = req.params;
+
+    if (ids) {
+        return forceArray(ids).reduce((acc, id) => {
+            const fragmentId = getKeyWithoutMacroDescription(id);
+            const fragment = contentLib.get({ key: fragmentId });
+
+            if (!fragment) {
+                return acc;
+            }
+
+            return [
+                ...acc,
+                {
+                    id: id,
+                    displayName: fragment.displayName,
+                    description: fragment._path,
+                },
+            ];
+        }, []);
+    }
 
     const htmlFragments = contentLib.query({
         ...(query && { query: `fulltext("displayName, _path", "${query}", "AND")` }),
