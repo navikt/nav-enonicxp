@@ -39,7 +39,7 @@ const getHitsFromQuery = (query, type, withDescription) => {
             contentTypes: [globalValuesContentType],
             query:
                 query &&
-                `fulltext("data.valueItems.itemName, displayName", "${wordsWithWildcard}", "AND")`,
+                `fulltext("data.valueItems.itemName, data.valueItems.key, displayName", "${wordsWithWildcard}", "AND")`,
             filters: {
                 boolean: {
                     must: [
