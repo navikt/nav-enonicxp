@@ -2,18 +2,15 @@ const {
     getGlobalValueUsage,
     getGlobalValueUsageLegacy,
 } = require('/lib/global-values/global-values');
+const { gvServiceInvalidRequestResponse } = require('../utils');
 
 const getGlobalValueUsageService = (req) => {
     const { key, contentId } = req.params;
 
     if (!key || !contentId) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: `Missing parameters:${!key && ' "key"'}${!contentId && ' "contentId"'}`,
-            },
-        };
+        return gvServiceInvalidRequestResponse(
+            `Missing parameters:${!key && ' "key"'}${!contentId && ' "contentId"'}`
+        );
     }
 
     return {

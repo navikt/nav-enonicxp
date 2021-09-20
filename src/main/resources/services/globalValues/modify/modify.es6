@@ -1,5 +1,8 @@
 const nodeLib = require('/lib/xp/node');
-const { validateGlobalValueInputAndGetErrorResponse } = require('../utils');
+const {
+    validateGlobalValueInputAndGetErrorResponse,
+    gvServiceInvalidRequestResponse,
+} = require('../utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
@@ -17,39 +20,18 @@ const modifyGlobalValueItemService = (req) => {
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: `Global value set with id ${contentId} not found`,
-                level: 'error',
-            },
-        };
+        return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);
     }
 
     const valueItems = forceArray(content.data?.valueItems);
 
     const itemToModify = valueItems.find((item) => item.key === key);
     if (!itemToModify) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: `Item with key ${key} not found on ${contentId}`,
-                level: 'error',
-            },
-        };
+        gvServiceInvalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
     if (itemName && itemNameExists(valueItems, itemName, key)) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: `Item name ${itemName} already exists on ${contentId}`,
-                level: 'error',
-            },
-        };
+        gvServiceInvalidRequestResponse(`Item name ${itemName} already exists on ${contentId}`);
     }
 
     try {

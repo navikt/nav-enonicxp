@@ -16,32 +16,31 @@ const validateGlobalValueInputAndGetErrorResponse = ({
     const hasValue = textValue || numberValue !== undefined;
 
     if (!contentId || !itemName || !hasValue) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message:
-                    'Missing parameters:' +
-                    `${!contentId && ' contentId'}` +
-                    `${!itemName && ' itemName'}` +
-                    `${!hasValue && ' textValue or numberValue'}`,
-            },
-        };
+        return gvServiceInvalidRequestResponse(
+            'Missing parameters:' +
+                `${!contentId && ' contentId'}` +
+                `${!itemName && ' itemName'}` +
+                `${!hasValue && ' textValue or numberValue'}`
+        );
     }
 
     if (numberValue !== undefined && isNaN(numberValue)) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: `numberValue ${numberValue} must be a number`,
-            },
-        };
+        return gvServiceInvalidRequestResponse(`numberValue ${numberValue} must be a number`);
     }
 
     return null;
 };
 
+const gvServiceInvalidRequestResponse = (msg) => ({
+    status: 400,
+    contentType: 'application/json',
+    body: {
+        message: `Invalid request: ${msg}`,
+        level: 'error',
+    },
+});
+
 module.exports = {
     validateGlobalValueInputAndGetErrorResponse,
+    gvServiceInvalidRequestResponse,
 };
