@@ -41,6 +41,7 @@ const getGlobalValueUsage = (valueKey, contentId) => {
     }));
 };
 
+// TODO: remove this when macros have been updated
 const getContentFromValueKeyLegacy = (valueKey) => {
     const legacyQueryRes = contentLib.query({
         start: 0,
@@ -71,7 +72,7 @@ const getContentFromValueKeyLegacy = (valueKey) => {
     return legacyQueryRes[0];
 };
 
-// TODO: remove this when macros have been updated to new format
+// TODO: remove this when macros have been updated
 const getGlobalValueLegacyUsage = (valueKey) => {
     const results1 = findContentsWithHtmlAreaText(`${valueKey} `);
     const results2 = findContentsWithHtmlAreaText(`${valueKey}\\"`);
@@ -107,7 +108,7 @@ const getGlobalValueSet = (contentRef) => {
     return content;
 };
 
-// TODO: remove this when all macros have been converted to the new format
+// TODO: remove this when macros have been updated
 const backwardsCompatibleGetGlobalValue = (key, type) => {
     if (!key) {
         log.info(`Invalid global value key: ${key}`);
