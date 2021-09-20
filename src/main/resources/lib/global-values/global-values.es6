@@ -98,6 +98,8 @@ const getGlobalValueLegacy = (key, type) => {
 //
 //
 
+// Creates a globally unique key for a global value, as a composite of
+// the global value key and the id of the content it belongs to
 const getGlobalValueUniqueKey = (gvKey, contentId) => {
     return `${gvKey}${uniqueKeySeparator}${contentId}`;
 };
@@ -135,7 +137,7 @@ const getGlobalValueCalcUsage = (key) =>
     contentLib.query({
         start: 0,
         count: 10000,
-        contentTypes: [globalValuesContentType],
+        contentTypes: ['no.nav.navno:calculator'],
         filters: {
             boolean: {
                 must: {
