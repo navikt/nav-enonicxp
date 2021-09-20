@@ -298,7 +298,7 @@ function clearGlobalValueReferences(content) {
     }
 
     forceArray(content.data?.valueItems).forEach((item) => {
-        getGlobalValueUsage(item.key).forEach((contentWithValues) => {
+        getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
             wipeOnChange(contentWithValues.path);
         });
     });
