@@ -4,7 +4,7 @@ const {
     getGlobalValueItem,
     globalValuesContentType,
 } = require('/lib/global-values/global-values');
-const { getValueKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
+const { getGvKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -61,13 +61,13 @@ const getHitsFromQuery = (query, type, withDescription) => {
 
 const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
     forceArray(ids).reduce((acc, macroKey) => {
-        const { valueKey, contentId } = getValueKeyAndContentIdFromMacroKey(macroKey);
+        const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(macroKey);
 
-        if (!valueKey || !contentId) {
+        if (!gvKey || !contentId) {
             return acc;
         }
 
-        const valueItem = getGlobalValueItem(valueKey, contentId);
+        const valueItem = getGlobalValueItem(gvKey, contentId);
 
         if (!valueItem) {
             return acc;

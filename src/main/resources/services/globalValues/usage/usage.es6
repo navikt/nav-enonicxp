@@ -1,6 +1,6 @@
 const {
     getGlobalValueUsage,
-    getGlobalValueLegacyUsage,
+    getGlobalValueUsageLegacy,
 } = require('/lib/global-values/global-values');
 
 const getGlobalValueUsageService = (req) => {
@@ -21,7 +21,7 @@ const getGlobalValueUsageService = (req) => {
         contentType: 'application/json',
         body: {
             usage: getGlobalValueUsage(key, contentId),
-            legacyUsage: getGlobalValueLegacyUsage(key),
+            legacyUsage: getGlobalValueUsageLegacy(key),
         },
     };
 };

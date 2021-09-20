@@ -1,7 +1,5 @@
 const contentLib = require('/lib/xp/content');
 const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
-const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { findContentsWithHtmlAreaText } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 
@@ -10,39 +8,9 @@ const validTypes = { textValue: true, numberValue: true };
 
 const macroKeySeparator = '::';
 
-const getMacroKeyForGlobalValue = (valueKey, contentId) => {
-    return `${valueKey}${macroKeySeparator}${contentId}`;
-};
-
-const getValueKeyAndContentIdFromMacroKey = (macroKey) => {
-    if (!macroKey) {
-        return {
-            contentId: null,
-            valueKey: null,
-        };
-    }
-
-    const [valueKey, contentId] = getKeyWithoutMacroDescription(macroKey).split(macroKeySeparator);
-
-    return {
-        contentId: contentId || getContentFromValueKeyLegacy(valueKey)?._id,
-        valueKey,
-    };
-};
-
-const getGlobalValueUsage = (valueKey, contentId) => {
-    const macroKey = getMacroKeyForGlobalValue(valueKey, contentId);
-    const results = findContentsWithHtmlAreaText(macroKey);
-
-    return results.map((content) => ({
-        id: content._id,
-        path: content._path,
-        displayName: content.displayName,
-    }));
-};
-
+//
 // TODO: remove this when macros have been updated
-const getContentFromValueKeyLegacy = (valueKey) => {
+const getContentIdFromgvKeyLegacy = (gvKey) => {
     const legacyQueryRes = contentLib.query({
         start: 0,
         count: 2,
@@ -52,7 +20,7 @@ const getContentFromValueKeyLegacy = (valueKey) => {
                 must: {
                     hasValue: {
                         field: 'data.valueItems.key',
-                        values: [valueKey],
+                        values: [gvKey],
                     },
                 },
             },
@@ -60,22 +28,20 @@ const getContentFromValueKeyLegacy = (valueKey) => {
     }).hits;
 
     if (legacyQueryRes.length > 1) {
-        log.error(`Multiple global values with key ${valueKey} found!`);
+        log.error(`Multiple global values with key ${gvKey} found!`);
         return null;
     }
 
     if (legacyQueryRes.length === 0) {
-        log.info(`No value found for key ${valueKey}`);
+        log.info(`No value found for key ${gvKey}`);
         return null;
     }
 
-    return legacyQueryRes[0];
+    return legacyQueryRes[0]._id;
 };
-
-// TODO: remove this when macros have been updated
-const getGlobalValueLegacyUsage = (valueKey) => {
-    const results1 = findContentsWithHtmlAreaText(`${valueKey} `);
-    const results2 = findContentsWithHtmlAreaText(`${valueKey}\\"`);
+const getGlobalValueUsageLegacy = (gvKey) => {
+    const results1 = findContentsWithHtmlAreaText(`${gvKey} `);
+    const results2 = findContentsWithHtmlAreaText(`${gvKey}\\"`);
 
     return [...results1, ...results2].map((content) => ({
         id: content._id,
@@ -83,33 +49,7 @@ const getGlobalValueLegacyUsage = (valueKey) => {
         displayName: content.displayName,
     }));
 };
-
-const getGlobalValueItem = (valueKey, contentId) => {
-    const valueSet = contentLib.get({ key: contentId });
-
-    if (!valueSet || valueSet.type !== globalValuesContentType) {
-        log.info(`No global value set found for contentId ${contentId}`);
-        return null;
-    }
-
-    return forceArray(valueSet.data?.valueItems).find((item) => item.key === valueKey);
-};
-
-const getGlobalValueSet = (contentRef) => {
-    if (!contentRef) {
-        return null;
-    }
-
-    const content = contentLib.get({ key: contentRef });
-    if (!content || content.type !== globalValuesContentType) {
-        return null;
-    }
-
-    return content;
-};
-
-// TODO: remove this when macros have been updated
-const backwardsCompatibleGetGlobalValue = (key, type) => {
+const getGlobalValueLegacy = (key, type) => {
     if (!key) {
         log.info(`Invalid global value key: ${key}`);
         return null;
@@ -154,18 +94,75 @@ const backwardsCompatibleGetGlobalValue = (key, type) => {
 
     return foundValue[type] || foundValue.numberValue;
 };
+//
+//
 
-const getGlobalValue = (gvKey, contentRef, type) => {
-    if (!gvKey) {
-        log.info(`Invalid global value key requested from ${contentRef}`);
+const getMacroKeyForGlobalValue = (gvKey, contentId) => {
+    return `${gvKey}${macroKeySeparator}${contentId}`;
+};
+
+const getGvKeyAndContentIdFromMacroKey = (macroKey) => {
+    if (!macroKey) {
+        return {
+            contentId: null,
+            gvKey: null,
+        };
+    }
+
+    const [gvKey, contentId] = getKeyWithoutMacroDescription(macroKey).split(macroKeySeparator);
+
+    return {
+        contentId: contentId || getContentIdFromgvKeyLegacy(gvKey),
+        gvKey,
+    };
+};
+
+const getGlobalValueUsage = (gvKey, contentId) => {
+    const macroKey = getMacroKeyForGlobalValue(gvKey, contentId);
+    const results = findContentsWithHtmlAreaText(macroKey);
+
+    return results.map((content) => ({
+        id: content._id,
+        path: content._path,
+        displayName: content.displayName,
+    }));
+};
+
+const getGlobalValueItem = (gvKey, contentId) => {
+    const valueSet = contentLib.get({ key: contentId });
+
+    if (!valueSet || valueSet.type !== globalValuesContentType) {
+        log.info(`No global value set found for contentId ${contentId}`);
         return null;
     }
 
-    if (!contentRef) {
+    return forceArray(valueSet.data?.valueItems).find((item) => item.key === gvKey);
+};
+
+const getGlobalValueSet = (contentId) => {
+    if (!contentId) {
+        return null;
+    }
+
+    const content = contentLib.get({ key: contentId });
+    if (!content || content.type !== globalValuesContentType) {
+        return null;
+    }
+
+    return content;
+};
+
+const getGlobalValue = (gvKey, contentId, type) => {
+    if (!gvKey) {
+        log.info(`Invalid global value key requested from ${contentId}`);
+        return null;
+    }
+
+    if (!contentId) {
         log.info(
-            `Invalid contentRef provided for gv key ${gvKey} - trying backwards-compatible retrieval`
+            `Invalid contentId provided for global value key ${gvKey} - trying backwards-compatible retrieval`
         );
-        return backwardsCompatibleGetGlobalValue(gvKey, type);
+        return getGlobalValueLegacy(gvKey, type);
     }
 
     if (!validTypes[type]) {
@@ -173,10 +170,10 @@ const getGlobalValue = (gvKey, contentRef, type) => {
         return null;
     }
 
-    const valueSet = getGlobalValueSet(contentRef);
+    const valueSet = getGlobalValueSet(contentId);
 
     if (!valueSet) {
-        log.info(`No value set found for contentRef ${contentRef}`);
+        log.info(`No value set found for contentRef ${contentId}`);
         return null;
     }
 
@@ -197,57 +194,18 @@ const getGlobalValue = (gvKey, contentRef, type) => {
     return value[type] || value.numberValue;
 };
 
-const getGlobalTextValue = (key, contentRef) => getGlobalValue(key, contentRef, 'textValue');
-const getGlobalNumberValue = (key, contentRef) => getGlobalValue(key, contentRef, 'numberValue');
+const getGlobalTextValue = (gvKey, contentId) => getGlobalValue(gvKey, contentId, 'textValue');
 
-const validateGlobalValueInputAndGetErrorResponse = ({
-    contentId,
-    itemName,
-    textValue,
-    numberValue,
-}) => {
-    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
-        return insufficientPermissionResponse('MODIFY');
-    }
-
-    const hasValue = textValue || numberValue !== undefined;
-
-    if (!contentId || !itemName || !hasValue) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message:
-                    'Missing parameters:' +
-                    `${!contentId && ' contentId'}` +
-                    `${!itemName && ' itemName'}` +
-                    `${!hasValue && ' textValue or numberValue'}`,
-            },
-        };
-    }
-
-    if (numberValue !== undefined && isNaN(numberValue)) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: `numberValue ${numberValue} must be a number`,
-            },
-        };
-    }
-
-    return null;
-};
+const getGlobalNumberValue = (gvKey, contentId) => getGlobalValue(gvKey, contentId, 'numberValue');
 
 module.exports = {
     getGlobalValueUsage,
-    getGlobalValueLegacyUsage,
+    getGlobalValueUsageLegacy,
     getGlobalValueSet,
     getGlobalTextValue,
     getGlobalNumberValue,
     globalValuesContentType,
-    validateGlobalValueInputAndGetErrorResponse,
     getMacroKeyForGlobalValue,
-    getValueKeyAndContentIdFromMacroKey,
+    getGvKeyAndContentIdFromMacroKey,
     getGlobalValueItem,
 };

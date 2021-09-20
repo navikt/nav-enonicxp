@@ -1,5 +1,5 @@
 const nodeLib = require('/lib/xp/node');
-const { validateGlobalValueInputAndGetErrorResponse } = require('/lib/global-values/global-values');
+const { validateGlobalValueInputAndGetErrorResponse } = require('../utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');

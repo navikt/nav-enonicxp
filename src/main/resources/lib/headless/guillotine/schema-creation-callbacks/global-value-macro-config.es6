@@ -1,5 +1,5 @@
 const graphQlLib = require('/lib/guillotine/graphql');
-const { getValueKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
+const { getGvKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalNumberValue, getGlobalTextValue } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
@@ -8,9 +8,8 @@ const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            const { valueKey, contentId } = getValueKeyAndContentIdFromMacroKey(env.source.key);
-
-            return runInBranchContext(() => getGlobalTextValue(valueKey, contentId), 'master');
+            const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(env.source.key);
+            return runInBranchContext(() => getGlobalTextValue(gvKey, contentId), 'master');
         },
     };
 };
@@ -24,11 +23,9 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
             const variables = runInBranchContext(
                 () =>
                     macroKeys.reduce((acc, keyAndId) => {
-                        const { valueKey, contentId } = getValueKeyAndContentIdFromMacroKey(
-                            keyAndId
-                        );
+                        const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(keyAndId);
 
-                        const value = getGlobalNumberValue(valueKey, contentId);
+                        const value = getGlobalNumberValue(gvKey, contentId);
                         return value ? [...acc, value] : acc;
                     }, []),
                 'master'

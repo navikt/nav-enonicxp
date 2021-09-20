@@ -1,5 +1,5 @@
 const graphQlLib = require('/lib/guillotine/graphql');
-const { getValueKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
+const { getGvKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalNumberValue } = require('/lib/global-values/global-values');
 
@@ -12,8 +12,8 @@ const globalValueCalculatorConfigCallback = (context, params) => {
                 return null;
             }
 
-            const { valueKey, contentId } = getValueKeyAndContentIdFromMacroKey(env.source.key);
-            return runInBranchContext(() => getGlobalNumberValue(valueKey, contentId), 'master');
+            const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(env.source.key);
+            return runInBranchContext(() => getGlobalNumberValue(gvKey, contentId), 'master');
         },
     };
 };
