@@ -10,28 +10,43 @@ const validTypes = { textValue: true, numberValue: true };
 
 const macroKeySeparator = '::';
 
-const getMacroKeyForGlobalValueItem = (valueItem) => {
-    return `${valueItem.key}${macroKeySeparator}${valueItem.setId}`;
+const getMacroKeyForGlobalValue = (valueKey, contentId) => {
+    return `${valueKey}${macroKeySeparator}${contentId}`;
 };
 
-const getSetIdAndValueKeyFromMacroKey = (macroKey) => {
-    const [valueKey, setId] = macroKey.split(macroKeySeparator);
+const getValueKeyAndcontentIdFromMacroKey = (macroKey) => {
+    if (!macroKey) {
+        return {
+            contentId: null,
+            valueKey: null,
+        };
+    }
+
+    const [valueKey, contentId] = getKeyWithoutMacroDescription(macroKey).split(macroKeySeparator);
 
     return {
-        setId,
+        contentId,
         valueKey,
     };
 };
 
-const getValueKeyAndSetIdFromMacroKey = (macroKey) => {
-    const key = getKeyWithoutMacroDescription(macroKey);
-    return getSetIdAndValueKeyFromMacroKey(key);
-};
-
-const getGlobalValueUsage = (key) => {
-    const results = findContentsWithHtmlAreaText(key);
+const getGlobalValueUsage = (valueKey, contentId) => {
+    const macroKey = getMacroKeyForGlobalValue(valueKey, contentId);
+    const results = findContentsWithHtmlAreaText(macroKey);
 
     return results.map((content) => ({
+        id: content._id,
+        path: content._path,
+        displayName: content.displayName,
+    }));
+};
+
+// TODO: remove this when macros have been updated to new format
+const getGlobalValueLegacyUsage = (valueKey) => {
+    const results1 = findContentsWithHtmlAreaText(`${valueKey} `);
+    const results2 = findContentsWithHtmlAreaText(`${valueKey}\\"`);
+
+    return [...results1, ...results2].map((content) => ({
         id: content._id,
         path: content._path,
         displayName: content.displayName,
@@ -48,7 +63,7 @@ const getAllValuesFromSet = (varSet, type) => {
                       ...acc,
                       {
                           ...valueItem,
-                          setId: varSet._id,
+                          contentId: varSet._id,
                           setName: varSet.displayName,
                       },
                   ]
@@ -58,7 +73,7 @@ const getAllValuesFromSet = (varSet, type) => {
 
     return valueItemsArray.map((valueItem) => ({
         ...valueItem,
-        setId: varSet._id,
+        contentId: varSet._id,
         setName: varSet.displayName,
     }));
 };
@@ -235,12 +250,12 @@ const validateGlobalValueInputAndGetErrorResponse = ({
 module.exports = {
     getAllGlobalValues,
     getGlobalValueUsage,
+    getGlobalValueLegacyUsage,
     getGlobalValueSet,
     getGlobalTextValue,
     getGlobalNumberValue,
     globalValuesContentType,
     validateGlobalValueInputAndGetErrorResponse,
-    getMacroKeyForGlobalValueItem,
-    getSetIdAndValueKeyFromMacroKey,
-    getValueKeyAndSetIdFromMacroKey,
+    getMacroKeyForGlobalValue,
+    getValueKeyAndcontentIdFromMacroKey,
 };

@@ -22,7 +22,9 @@ const removeGlobalValueItem = (req) => {
     }
 
     if (!key || !contentId) {
-        return invalidRequestResponse('ContentId and value-key must be provided');
+        return invalidRequestResponse(
+            `Missing parameters:${!key && ' "key"'}${!contentId && ' "contentId"'}`
+        );
     }
 
     const content = getGlobalValueSet(contentId);
@@ -37,7 +39,7 @@ const removeGlobalValueItem = (req) => {
         return invalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
-    const usage = getGlobalValueUsage(key);
+    const usage = getGlobalValueUsage(key, contentId);
     if (usage.length > 0) {
         if (!userIsAdmin()) {
             return insufficientPermissionResponse('administrator');

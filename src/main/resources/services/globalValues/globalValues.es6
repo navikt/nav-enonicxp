@@ -1,5 +1,5 @@
-const { getMacroKeyForGlobalValueItem } = require('/lib/global-values/global-values');
-const { getValueKeyAndSetIdFromMacroKey } = require('/lib/global-values/global-values');
+const { getMacroKeyForGlobalValue } = require('/lib/global-values/global-values');
+const { getValueKeyAndcontentIdFromMacroKey } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -13,7 +13,7 @@ const { getAllGlobalValues } = require('/lib/global-values/global-values');
 
 const hitFromValueItem = (valueItem, valueType, withDescription) => {
     const displayName = `${valueItem.setName} - ${valueItem.itemName}`;
-    const macroKey = getMacroKeyForGlobalValueItem(valueItem);
+    const macroKey = getMacroKeyForGlobalValue(valueItem.key, valueItem.contentId);
 
     return {
         id: withDescription ? appendMacroDescriptionToKey(macroKey, displayName) : macroKey,
@@ -37,9 +37,9 @@ const selectorHandler = (req) => {
 
     if (ids) {
         const hits = forceArray(ids).reduce((acc, id) => {
-            const { valueKey, setId } = getValueKeyAndSetIdFromMacroKey(id);
+            const { valueKey, contentId } = getValueKeyAndcontentIdFromMacroKey(id);
             const valueItem = values.find(
-                (value) => value.key === valueKey && value.setId === setId
+                (value) => value.key === valueKey && value.contentId === contentId
             );
 
             if (!valueItem) {
