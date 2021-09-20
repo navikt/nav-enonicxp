@@ -7,7 +7,7 @@ const { forceArray } = require('/lib/nav-utils');
 const itemNameExists = (valueItems, itemName, key) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
-const modifyGlobalValueItem = (req) => {
+const modifyGlobalValueItemService = (req) => {
     const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
@@ -97,4 +97,4 @@ const modifyGlobalValueItem = (req) => {
     }
 };
 
-module.exports = { modifyGlobalValueItem };
+module.exports = { modifyGlobalValueItemService };

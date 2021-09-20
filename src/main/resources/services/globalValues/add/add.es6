@@ -7,7 +7,7 @@ const { generateUUID } = require('/lib/headless/uuid');
 
 const generateKey = () => `gv_${generateUUID()}`;
 
-const addGlobalValueItem = (req) => {
+const addGlobalValueItemService = (req) => {
     const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
@@ -86,5 +86,5 @@ const addGlobalValueItem = (req) => {
 };
 
 module.exports = {
-    addGlobalValueItem,
+    addGlobalValueItemService,
 };

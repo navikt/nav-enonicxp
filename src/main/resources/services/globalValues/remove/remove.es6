@@ -14,7 +14,7 @@ const invalidRequestResponse = (msg) => ({
     },
 });
 
-const removeGlobalValueItem = (req) => {
+const removeGlobalValueItemService = (req) => {
     const { key, contentId } = req.params;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
@@ -85,4 +85,4 @@ const removeGlobalValueItem = (req) => {
     }
 };
 
-module.exports = { removeGlobalValueItem };
+module.exports = { removeGlobalValueItemService };
