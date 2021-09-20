@@ -21,7 +21,7 @@ const hitFromValueItem = (valueItem, valueType, content, withDescription) => {
 
     return {
         id: withDescription ? appendMacroDescriptionToKey(macroKey, displayName) : macroKey,
-        displayName,
+        displayName: `${displayName} - ${valueItem.key}`,
         description: `Verdi: ${valueItem[valueType]}`,
     };
 };
