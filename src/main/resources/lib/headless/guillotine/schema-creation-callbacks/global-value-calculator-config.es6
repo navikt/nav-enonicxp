@@ -8,7 +8,6 @@ const globalValueCalculatorConfigCallback = (context, params) => {
         type: graphQlLib.GraphQLFloat,
         resolve: (env) => {
             if (!env.source.key) {
-                log.info('Empty global value in calculator');
                 return null;
             }
 
