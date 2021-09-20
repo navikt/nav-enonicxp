@@ -8,9 +8,10 @@ const globalValueCalculatorConfigCallback = (context, params) => {
         type: graphQlLib.GraphQLFloat,
         resolve: (env) => {
             if (!env.source.key) {
-                log.info(`null key in calculator ${env.source.key}`);
+                log.info('Empty global value in calculator');
                 return null;
             }
+
             const { valueKey, contentId } = getValueKeyAndContentIdFromMacroKey(env.source.key);
             return runInBranchContext(() => getGlobalNumberValue(valueKey, contentId), 'master');
         },

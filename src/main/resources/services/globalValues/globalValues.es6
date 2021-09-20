@@ -88,7 +88,7 @@ const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
         ];
     }, []);
 
-const selectorHandler = (req) => {
+const customSelectorHandler = (req) => {
     const { valueType = 'textValue', withDescription, query, ids } = req.params;
 
     const hits = runInBranchContext(
@@ -114,8 +114,7 @@ const globalValues = (req) => {
     const subPath = getSubPath(req);
 
     if (!subPath) {
-        // If no subpath is requested, return hits for CustomSelectors
-        return selectorHandler(req);
+        return customSelectorHandler(req);
     }
 
     switch (subPath) {

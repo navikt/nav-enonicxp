@@ -71,15 +71,6 @@ const getContentFromValueKeyLegacy = (valueKey) => {
     return legacyQueryRes[0];
 };
 
-const getGlobalValueItemLegacy = (valueKey) => {
-    const content = getContentFromValueKeyLegacy(valueKey);
-    if (!content) {
-        return null;
-    }
-
-    return forceArray(content.data.valueItems).find((item) => item.key === valueKey);
-};
-
 // TODO: remove this when macros have been updated to new format
 const getGlobalValueLegacyUsage = (valueKey) => {
     const results1 = findContentsWithHtmlAreaText(`${valueKey} `);
@@ -93,14 +84,10 @@ const getGlobalValueLegacyUsage = (valueKey) => {
 };
 
 const getGlobalValueItem = (valueKey, contentId) => {
-    if (!contentId) {
-        return getGlobalValueItemLegacy(valueKey);
-    }
-
     const valueSet = contentLib.get({ key: contentId });
 
-    if (!valueSet) {
-        log.info('No value set found');
+    if (!valueSet || valueSet.type !== globalValuesContentType) {
+        log.info(`No global value set found for contentId ${contentId}`);
         return null;
     }
 
