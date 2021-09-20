@@ -1,5 +1,10 @@
-const { getMacroKeyForGlobalValue } = require('/lib/global-values/global-values');
-const { getValueKeyAndcontentIdFromMacroKey } = require('/lib/global-values/global-values');
+const contentLib = require('/lib/xp/content');
+const {
+    getMacroKeyForGlobalValue,
+    getGlobalValueItem,
+    globalValuesContentType,
+} = require('/lib/global-values/global-values');
+const { getValueKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -9,11 +14,10 @@ const { removeGlobalValueItem } = require('./remove/remove');
 const { modifyGlobalValueItem } = require('./modify/modify');
 const { addGlobalValueItem } = require('./add/add');
 const { getGlobalValueUsageService } = require('./usage/usage');
-const { getAllGlobalValues } = require('/lib/global-values/global-values');
 
-const hitFromValueItem = (valueItem, valueType, withDescription) => {
-    const displayName = `${valueItem.setName} - ${valueItem.itemName}`;
-    const macroKey = getMacroKeyForGlobalValue(valueItem.key, valueItem.contentId);
+const hitFromValueItem = (valueItem, valueType, content, withDescription) => {
+    const displayName = `${content.displayName} - ${valueItem.itemName}`;
+    const macroKey = getMacroKeyForGlobalValue(valueItem.key, content._id);
 
     return {
         id: withDescription ? appendMacroDescriptionToKey(macroKey, displayName) : macroKey,
@@ -22,62 +26,78 @@ const hitFromValueItem = (valueItem, valueType, withDescription) => {
     };
 };
 
-const selectorHandler = (req) => {
-    const { valueType = 'textValue', withDescription, query, ids } = req.params;
-
+const getHitsFromQuery = (query, type, withDescription) => {
     const wordsWithWildcard = query
         ?.split(' ')
         .map((word) => `${word}*`)
         .join(' ');
 
-    const values = runInBranchContext(
-        () => getAllGlobalValues(valueType, wordsWithWildcard),
+    return contentLib
+        .query({
+            start: 0,
+            count: 10000,
+            contentTypes: [globalValuesContentType],
+            query:
+                query &&
+                `fulltext("data.valueItems.itemName, displayName", "${wordsWithWildcard}", "AND")`,
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            exists: [{ field: 'data.valueItems' }],
+                        },
+                    ],
+                },
+            },
+        })
+        .hits.map((valueSet) =>
+            forceArray(valueSet.data.valueItems).map((valueItem) =>
+                hitFromValueItem(valueItem, type, valueSet, withDescription)
+            )
+        )
+        .flat()
+        .sort((a, b) => (a.displayName.toLowerCase() > b.displayName.toLowerCase() ? 1 : -1));
+};
+
+const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
+    forceArray(ids).reduce((acc, macroKey) => {
+        const { valueKey, contentId } = getValueKeyAndContentIdFromMacroKey(macroKey);
+
+        if (!valueKey || !contentId) {
+            return acc;
+        }
+
+        const valueItem = getGlobalValueItem(valueKey, contentId);
+
+        if (!valueItem) {
+            return acc;
+        }
+
+        const content = contentLib.get({ key: contentId });
+
+        if (!content) {
+            return acc;
+        }
+
+        return [
+            ...acc,
+            {
+                ...hitFromValueItem(valueItem, valueType, content, withDescription),
+                id: macroKey,
+            },
+        ];
+    }, []);
+
+const selectorHandler = (req) => {
+    const { valueType = 'textValue', withDescription, query, ids } = req.params;
+
+    const hits = runInBranchContext(
+        () =>
+            ids
+                ? getHitsFromSelectedIds(ids, valueType, withDescription)
+                : getHitsFromQuery(query, valueType, withDescription),
         'master'
     );
-
-    if (ids) {
-        const hits = forceArray(ids).reduce((acc, id) => {
-            const { valueKey, contentId } = getValueKeyAndcontentIdFromMacroKey(id);
-            const valueItem = values.find(
-                (value) => value.key === valueKey && value.contentId === contentId
-            );
-
-            if (!valueItem) {
-                return acc;
-            }
-
-            return [
-                ...acc,
-                {
-                    ...hitFromValueItem(valueItem, valueType, false),
-                    id,
-                },
-            ];
-        }, []);
-
-        return {
-            status: 200,
-            contentType: 'application/json',
-            body: {
-                total: hits.length,
-                count: hits.length,
-                hits: hits,
-            },
-        };
-    }
-
-    const hits = values
-        .map((value) => hitFromValueItem(value, valueType, withDescription))
-        .flat()
-        .sort((a, b) => {
-            if (a.displayName > b.displayName) {
-                return 1;
-            }
-            if (a.displayName < b.displayName) {
-                return -1;
-            }
-            return 0;
-        });
 
     return {
         status: 200,
@@ -94,6 +114,7 @@ const globalValues = (req) => {
     const subPath = getSubPath(req);
 
     if (!subPath) {
+        // If no subpath is requested, return hits for CustomSelectors
         return selectorHandler(req);
     }
 

@@ -14,7 +14,7 @@ const getMacroKeyForGlobalValue = (valueKey, contentId) => {
     return `${valueKey}${macroKeySeparator}${contentId}`;
 };
 
-const getValueKeyAndcontentIdFromMacroKey = (macroKey) => {
+const getValueKeyAndContentIdFromMacroKey = (macroKey) => {
     if (!macroKey) {
         return {
             contentId: null,
@@ -25,7 +25,7 @@ const getValueKeyAndcontentIdFromMacroKey = (macroKey) => {
     const [valueKey, contentId] = getKeyWithoutMacroDescription(macroKey).split(macroKeySeparator);
 
     return {
-        contentId,
+        contentId: contentId || getContentFromValueKeyLegacy(valueKey)?._id,
         valueKey,
     };
 };
@@ -41,6 +41,45 @@ const getGlobalValueUsage = (valueKey, contentId) => {
     }));
 };
 
+const getContentFromValueKeyLegacy = (valueKey) => {
+    const legacyQueryRes = contentLib.query({
+        start: 0,
+        count: 2,
+        contentTypes: [globalValuesContentType],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.valueItems.key',
+                        values: [valueKey],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    if (legacyQueryRes.length > 1) {
+        log.error(`Multiple global values with key ${valueKey} found!`);
+        return null;
+    }
+
+    if (legacyQueryRes.length === 0) {
+        log.info(`No value found for key ${valueKey}`);
+        return null;
+    }
+
+    return legacyQueryRes[0];
+};
+
+const getGlobalValueItemLegacy = (valueKey) => {
+    const content = getContentFromValueKeyLegacy(valueKey);
+    if (!content) {
+        return null;
+    }
+
+    return forceArray(content.data.valueItems).find((item) => item.key === valueKey);
+};
+
 // TODO: remove this when macros have been updated to new format
 const getGlobalValueLegacyUsage = (valueKey) => {
     const results1 = findContentsWithHtmlAreaText(`${valueKey} `);
@@ -53,54 +92,19 @@ const getGlobalValueLegacyUsage = (valueKey) => {
     }));
 };
 
-const getAllValuesFromSet = (varSet, type) => {
-    const valueItemsArray = forceArray(varSet.data?.valueItems);
-
-    if (type) {
-        return valueItemsArray.reduce((acc, valueItem) => {
-            return valueItem[type] !== undefined
-                ? [
-                      ...acc,
-                      {
-                          ...valueItem,
-                          contentId: varSet._id,
-                          setName: varSet.displayName,
-                      },
-                  ]
-                : acc;
-        }, []);
+const getGlobalValueItem = (valueKey, contentId) => {
+    if (!contentId) {
+        return getGlobalValueItemLegacy(valueKey);
     }
 
-    return valueItemsArray.map((valueItem) => ({
-        ...valueItem,
-        contentId: varSet._id,
-        setName: varSet.displayName,
-    }));
-};
+    const valueSet = contentLib.get({ key: contentId });
 
-const getAllGlobalValues = (type, query) => {
-    if (type && !validTypes[type]) {
-        log.info(`Invalid type ${type} specified for all global values query`);
-        return [];
+    if (!valueSet) {
+        log.info('No value set found');
+        return null;
     }
 
-    const valueSets = contentLib.query({
-        start: 0,
-        count: 10000,
-        contentTypes: [globalValuesContentType],
-        query: query && `fulltext("data.valueItems.itemName, displayName", "${query}", "AND")`,
-        filters: {
-            boolean: {
-                must: [
-                    {
-                        exists: [{ field: 'data.valueItems' }],
-                    },
-                ],
-            },
-        },
-    }).hits;
-
-    return valueSets.map((varSet) => getAllValuesFromSet(varSet, type)).flat();
+    return forceArray(valueSet.data?.valueItems).find((item) => item.key === valueKey);
 };
 
 const getGlobalValueSet = (contentRef) => {
@@ -248,7 +252,6 @@ const validateGlobalValueInputAndGetErrorResponse = ({
 };
 
 module.exports = {
-    getAllGlobalValues,
     getGlobalValueUsage,
     getGlobalValueLegacyUsage,
     getGlobalValueSet,
@@ -257,5 +260,6 @@ module.exports = {
     globalValuesContentType,
     validateGlobalValueInputAndGetErrorResponse,
     getMacroKeyForGlobalValue,
-    getValueKeyAndcontentIdFromMacroKey,
+    getValueKeyAndContentIdFromMacroKey,
+    getGlobalValueItem,
 };
