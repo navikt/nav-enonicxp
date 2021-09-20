@@ -1,10 +1,10 @@
 const contentLib = require('/lib/xp/content');
 const {
-    getMacroKeyForGlobalValue,
+    getGlobalValueUniqueKey,
     getGlobalValueItem,
     globalValuesContentType,
 } = require('/lib/global-values/global-values');
-const { getGvKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
+const { getGvKeyAndContentIdFromUniqueKey } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -17,10 +17,10 @@ const { getGlobalValueUsageService } = require('./usage/usage');
 
 const hitFromValueItem = (valueItem, valueType, content, withDescription) => {
     const displayName = `${content.displayName} - ${valueItem.itemName}`;
-    const macroKey = getMacroKeyForGlobalValue(valueItem.key, content._id);
+    const key = getGlobalValueUniqueKey(valueItem.key, content._id);
 
     return {
-        id: withDescription ? appendMacroDescriptionToKey(macroKey, displayName) : macroKey,
+        id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
         displayName: `${displayName} - ${valueItem.key}`,
         description: `Verdi: ${valueItem[valueType]}`,
     };
@@ -60,8 +60,8 @@ const getHitsFromQuery = (query, type, withDescription) => {
 };
 
 const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
-    forceArray(ids).reduce((acc, macroKey) => {
-        const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(macroKey);
+    forceArray(ids).reduce((acc, key) => {
+        const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
 
         if (!gvKey || !contentId) {
             return acc;
@@ -83,7 +83,7 @@ const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
             ...acc,
             {
                 ...hitFromValueItem(valueItem, valueType, content, withDescription),
-                id: macroKey,
+                id: key,
             },
         ];
     }, []);

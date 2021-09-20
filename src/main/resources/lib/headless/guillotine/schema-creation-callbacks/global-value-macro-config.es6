@@ -1,5 +1,5 @@
 const graphQlLib = require('/lib/guillotine/graphql');
-const { getGvKeyAndContentIdFromMacroKey } = require('/lib/global-values/global-values');
+const { getGvKeyAndContentIdFromUniqueKey } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalNumberValue, getGlobalTextValue } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
@@ -8,7 +8,7 @@ const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(env.source.key);
+            const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
             return runInBranchContext(() => getGlobalTextValue(gvKey, contentId), 'master');
         },
     };
@@ -18,12 +18,12 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
     params.fields.variables = {
         type: graphQlLib.list(graphQlLib.GraphQLFloat),
         resolve: (env) => {
-            const macroKeys = forceArray(env.source.keys);
+            const keys = forceArray(env.source.keys);
 
             const variables = runInBranchContext(
                 () =>
-                    macroKeys.reduce((acc, keyAndId) => {
-                        const { gvKey, contentId } = getGvKeyAndContentIdFromMacroKey(keyAndId);
+                    keys.reduce((acc, key) => {
+                        const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
 
                         const value = getGlobalNumberValue(gvKey, contentId);
                         return value ? [...acc, value] : acc;
@@ -33,7 +33,7 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
 
             // If any specified variables are missing, we return nothing to ensure
             // inconsistent/unintended calculations does not happen
-            const hasMissingValues = macroKeys.length !== variables.length;
+            const hasMissingValues = keys.length !== variables.length;
             return hasMissingValues ? [] : variables;
         },
     };

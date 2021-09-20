@@ -6,7 +6,7 @@ const { forceArray } = require('/lib/nav-utils');
 const globalValuesContentType = `${app.name}:global-value-set`;
 const validTypes = { textValue: true, numberValue: true };
 
-const macroKeySeparator = '::';
+const uniqueKeySeparator = '::';
 
 //
 // TODO: remove this when macros have been updated
@@ -40,10 +40,11 @@ const getContentIdFromgvKeyLegacy = (gvKey) => {
     return legacyQueryRes[0]._id;
 };
 const getGlobalValueUsageLegacy = (gvKey) => {
-    const results1 = findContentsWithHtmlAreaText(`${gvKey} `);
-    const results2 = findContentsWithHtmlAreaText(`${gvKey}\\"`);
+    const macroUsage1 = findContentsWithHtmlAreaText(`${gvKey} `);
+    const macroUsage2 = findContentsWithHtmlAreaText(`${gvKey}\\"`);
+    const calcUsage = getGlobalValueCalcUsage(gvKey);
 
-    return [...results1, ...results2].map((content) => ({
+    return [...macroUsage1, ...macroUsage2, ...calcUsage].map((content) => ({
         id: content._id,
         path: content._path,
         displayName: content.displayName,
@@ -97,19 +98,19 @@ const getGlobalValueLegacy = (key, type) => {
 //
 //
 
-const getMacroKeyForGlobalValue = (gvKey, contentId) => {
-    return `${gvKey}${macroKeySeparator}${contentId}`;
+const getGlobalValueUniqueKey = (gvKey, contentId) => {
+    return `${gvKey}${uniqueKeySeparator}${contentId}`;
 };
 
-const getGvKeyAndContentIdFromMacroKey = (macroKey) => {
-    if (!macroKey) {
+const getGvKeyAndContentIdFromUniqueKey = (key) => {
+    if (!key) {
         return {
             contentId: null,
             gvKey: null,
         };
     }
 
-    const [gvKey, contentId] = getKeyWithoutMacroDescription(macroKey).split(macroKeySeparator);
+    const [gvKey, contentId] = getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
 
     return {
         contentId: contentId || getContentIdFromgvKeyLegacy(gvKey),
@@ -118,15 +119,34 @@ const getGvKeyAndContentIdFromMacroKey = (macroKey) => {
 };
 
 const getGlobalValueUsage = (gvKey, contentId) => {
-    const macroKey = getMacroKeyForGlobalValue(gvKey, contentId);
-    const results = findContentsWithHtmlAreaText(macroKey);
+    const key = getGlobalValueUniqueKey(gvKey, contentId);
 
-    return results.map((content) => ({
+    const macroUsage = findContentsWithHtmlAreaText(key);
+    const calcUsage = getGlobalValueCalcUsage(key);
+
+    return [...macroUsage, ...calcUsage].map((content) => ({
         id: content._id,
         path: content._path,
         displayName: content.displayName,
     }));
 };
+
+const getGlobalValueCalcUsage = (key) =>
+    contentLib.query({
+        start: 0,
+        count: 10000,
+        contentTypes: [globalValuesContentType],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.fields.globalValue.key',
+                        values: [key],
+                    },
+                },
+            },
+        },
+    }).hits;
 
 const getGlobalValueItem = (gvKey, contentId) => {
     const valueSet = contentLib.get({ key: contentId });
@@ -205,7 +225,7 @@ module.exports = {
     getGlobalTextValue,
     getGlobalNumberValue,
     globalValuesContentType,
-    getMacroKeyForGlobalValue,
-    getGvKeyAndContentIdFromMacroKey,
+    getGlobalValueUniqueKey,
+    getGvKeyAndContentIdFromUniqueKey,
     getGlobalValueItem,
 };
