@@ -15,13 +15,23 @@ const htmlAreaNodePaths = [
 const findContentsWithHtmlAreaText = (text) => {
     const query = htmlAreaNodePaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
 
-    const result = contentLib.query({
+    const queryHits = contentLib.query({
         start: 0,
         count: 1000,
         query: query,
-    });
+    }).hits;
 
-    return result.hits;
+    // Workaround for searching htmlarea fragments. Query strings or filters don't seem to pick
+    // up component config-fields in fragments...
+    const fragmentHits = contentLib
+        .query({
+            start: 0,
+            count: 10000,
+            contentTypes: ['portal:fragment'],
+        })
+        .hits.filter((hit) => hit?.fragment?.config?.html?.includes(text));
+
+    return [...queryHits, ...fragmentHits];
 };
 
 const findContentsWithFragmentMacro = (fragmentId) => {
