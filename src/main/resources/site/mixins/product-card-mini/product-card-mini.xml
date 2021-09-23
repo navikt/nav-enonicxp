@@ -3,7 +3,7 @@
         <field-set>
             <label>Produkt eller livssituasjon</label>
             <items>
-                <input name="title" type="TextLine">
+                <input name="header" type="TextLine">
                     <label>Overskrift</label>
                     <help-text>Overskrift er ikke påkrevet</help-text>
                 </input>
