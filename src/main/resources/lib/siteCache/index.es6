@@ -16,8 +16,6 @@ const libs = {
     context: require('/lib/xp/context'),
     content: require('/lib/xp/content'),
     common: require('/lib/xp/common'),
-    cluster: require('/lib/xp/cluster'),
-    task: require('/lib/xp/task'),
 };
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
@@ -127,14 +125,7 @@ function wipeOnChange(path) {
 
     // Wipe cache for frontend sitecontent service
     wipe('sitecontent')(pathname);
-    if (libs.cluster.isMaster()) {
-        libs.task.submit({
-            description: `send revalidate on ${pathname}`,
-            task: () => {
-                frontendCacheRevalidate(pathname);
-            },
-        });
-    }
+    frontendCacheRevalidate(pathname);
 
     const xpPath = path.replace(/^\/content/, '');
     updateSitemapEntry(xpPath);
@@ -319,6 +310,8 @@ function clearNotificationReferences(content) {
     const parentPath = getPathname(content._path.split('/').slice(0, -1).join('/'));
     log.info(`Clearing notifications from ${parentPath}`);
     wipe('notifications')(parentPath);
+
+    frontendCacheRevalidate(getPathname(parentPath));
 }
 
 function clearReferences(id, path, depth, event) {

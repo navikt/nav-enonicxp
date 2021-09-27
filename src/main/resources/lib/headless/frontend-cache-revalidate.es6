@@ -1,4 +1,6 @@
 const httpClient = require('/lib/http-client');
+const clusterLib = require('/lib/xp/cluster');
+const taskLib = require('/lib/xp/task');
 const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { revalidatorProxyOrigin } = require('/lib/headless/url-origin');
 
@@ -30,11 +32,18 @@ const frontendCacheRevalidate = (pathname) => {
         return;
     }
 
-    // If the content has a custom path, the frontend will use this as key for its cache
-    // Make sure we send this path to the revalidator proxy
-    const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
+    if (clusterLib.isMaster()) {
+        taskLib.submit({
+            description: `send revalidate on ${pathname}`,
+            task: () => {
+                // If the content has a custom path, the frontend will use this as key for its cache
+                // Make sure we send this path to the revalidator proxy
+                const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
 
-    requestRevalidate(customPath || pathname);
+                requestRevalidate(customPath || pathname);
+            },
+        });
+    }
 };
 
 module.exports = { frontendCacheRevalidate };
