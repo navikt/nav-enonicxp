@@ -41,7 +41,7 @@ const requestWipeAll = (retriesLeft = numRetries) => {
         log.info('Wipe-all request to frontend acknowledged');
     } catch (e) {
         if (retriesLeft > 0) {
-            requestWipeAll(path, retriesLeft - 1);
+            requestWipeAll(retriesLeft - 1);
         } else {
             log.error(`Wipe-all request to frontend failed - ${e}`);
         }
