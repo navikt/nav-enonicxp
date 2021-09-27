@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
@@ -92,7 +93,10 @@ function wipeAll() {
 }
 
 function getPathname(path) {
-    return path.replace(pathnameFilter, '/');
+    const contentPath = path.replace(pathnameFilter, '');
+    const customPath = getCustomPathFromContent(`${sitePath}${contentPath}`);
+
+    return customPath || `/${contentPath}`;
 }
 
 function wipeOnChange(path) {
