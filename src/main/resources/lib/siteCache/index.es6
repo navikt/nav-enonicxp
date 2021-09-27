@@ -301,10 +301,12 @@ function clearNotificationReferences(content) {
         return;
     }
 
+    log.info(`path: ${content._path}`);
+
     // If the notification is shown globally, wipe the whole cache
     if (content._path.includes('/global-notifications/')) {
+        log.info(`Clearing whole notifications cache`);
         wipe('notifications')();
-
         frontendCacheWipeAll();
         return;
     }
@@ -313,7 +315,6 @@ function clearNotificationReferences(content) {
     const parentPath = getPathname(content._path.split('/').slice(0, -1).join('/'));
     log.info(`Clearing notifications from ${parentPath}`);
     wipe('notifications')(parentPath);
-
     frontendCacheRevalidate(getPathname(parentPath));
 }
 
@@ -327,11 +328,11 @@ function clearReferences(id, path, depth, event) {
                 4
             )}`
         );
-    }
 
-    references.forEach((el) => {
-        wipeOnChange(el._path);
-    });
+        references.forEach((el) => {
+            wipeOnChange(el._path);
+        });
+    }
 
     const content = runInBranchContext(
         () => contentLib.get({ key: id }),
