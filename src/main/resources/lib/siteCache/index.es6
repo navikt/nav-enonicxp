@@ -1,5 +1,4 @@
 const contentLib = require('/lib/xp/content');
-const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
@@ -126,17 +125,13 @@ function wipeOnChange(path) {
         return true;
     }
 
-    // Cache for sitecontent uses the custom path of a page as key, if it exists
-    const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
-    const cacheKey = customPath || pathname;
-
     // Wipe cache for frontend sitecontent service
-    wipe('sitecontent')(cacheKey);
+    wipe('sitecontent')(pathname);
     if (libs.cluster.isMaster()) {
         libs.task.submit({
-            description: `send revalidate on ${cacheKey}`,
+            description: `send revalidate on ${pathname}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(cacheKey));
+                frontendCacheRevalidate(pathname);
             },
         });
     }
