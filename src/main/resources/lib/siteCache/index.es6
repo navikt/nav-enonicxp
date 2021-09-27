@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
@@ -303,6 +304,8 @@ function clearNotificationReferences(content) {
     // If the notification is shown globally, wipe the whole cache
     if (content._path.includes('/global-notifications/')) {
         wipe('notifications')();
+
+        frontendCacheWipeAll();
         return;
     }
 
