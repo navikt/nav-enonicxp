@@ -338,6 +338,9 @@ function clearReferences(id, path, depth, event) {
         () => contentLib.get({ key: id }),
         event === 'node.deleted' ? 'draft' : 'master'
     );
+
+    log.info(`id: ${id}, path: ${path}, content path: ${content?._path}`);
+
     if (!content) {
         return;
     }
