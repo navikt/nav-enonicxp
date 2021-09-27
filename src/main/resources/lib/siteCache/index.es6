@@ -131,7 +131,7 @@ function wipeOnChange(path) {
         libs.task.submit({
             description: `send revalidate on ${pathname}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(pathname));
+                frontendCacheRevalidate(pathname);
             },
         });
     }
