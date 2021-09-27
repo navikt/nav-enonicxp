@@ -93,10 +93,7 @@ function wipeAll() {
 }
 
 function getPathname(path) {
-    const contentPath = path.replace(pathnameFilter, '');
-    const customPath = getCustomPathFromContent(`${sitePath}${contentPath}`);
-
-    return customPath || `/${contentPath}`;
+    return path.replace(pathnameFilter, '/');
 }
 
 function wipeOnChange(path) {
@@ -129,13 +126,17 @@ function wipeOnChange(path) {
         return true;
     }
 
+    // Cache for sitecontent uses the custom path of a page as key, if it exists
+    const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
+    const cacheKey = customPath || pathname;
+
     // Wipe cache for frontend sitecontent service
-    wipe('sitecontent')(pathname);
+    wipe('sitecontent')(cacheKey);
     if (libs.cluster.isMaster()) {
         libs.task.submit({
-            description: `send revalidate on ${pathname}`,
+            description: `send revalidate on ${cacheKey}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(pathname));
+                frontendCacheRevalidate(encodeURI(cacheKey));
             },
         });
     }
