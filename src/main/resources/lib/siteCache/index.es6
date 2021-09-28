@@ -125,6 +125,15 @@ function wipeOnChange(path) {
         return true;
     }
 
+    // If global notifications are modified, every page is potentially affected
+    // Wipe the whole cache
+    if (path.includes('/global-notifications/')) {
+        log.info(`Global notification modified, wiping notifications cache and frontend cache`);
+        wipe('notifications')();
+        frontendCacheWipeAll();
+        return;
+    }
+
     // Wipe cache for frontend sitecontent service
     wipe('sitecontent')(pathname);
     frontendCacheRevalidate(pathname);
@@ -298,15 +307,6 @@ function wipeNotificationsEntry(path) {
 }
 
 function clearReferences(id, path, depth, event) {
-    // If global notifications are modified, every page is potentially affected
-    // Wipe the whole cache
-    if (path.includes('/global-notifications/')) {
-        log.info(`Global notification modified, wiping notifications cache and frontend cache`);
-        wipe('notifications')();
-        frontendCacheWipeAll();
-        return;
-    }
-
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
         log.info(
