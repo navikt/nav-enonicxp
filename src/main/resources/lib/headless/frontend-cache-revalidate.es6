@@ -5,13 +5,14 @@ const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
 const { revalidatorProxyOrigin } = require('/lib/headless/url-origin');
 
 const numRetries = 2;
+const timeoutMs = 5000;
 
 const requestRevalidate = (path, retriesLeft = numRetries) => {
     try {
         httpClient.request({
             url: `${revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(path)}`,
             method: 'GET',
-            connectionTimeout: 5000,
+            connectionTimeout: timeoutMs,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
@@ -32,7 +33,7 @@ const requestWipeAll = (retriesLeft = numRetries) => {
         httpClient.request({
             url: `${revalidatorProxyOrigin}/revalidator-proxy/wipe-all`,
             method: 'GET',
-            connectionTimeout: 5000,
+            connectionTimeout: timeoutMs,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
