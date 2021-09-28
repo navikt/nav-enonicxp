@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { getParentPath } = require('/lib/nav-utils');
 const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -170,7 +171,6 @@ function getNotifications(idOrPath, callback) {
 
 function findReferences(id, path, depth) {
     log.info(`Find references for: ${path}`);
-    let newPath = path;
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
         return [];
@@ -198,14 +198,9 @@ function findReferences(id, path, depth) {
     }, []);
     references = [...references, ...deepReferences];
 
-    // fix path before getting parent
-    if (path.indexOf('/content/') === 0) {
-        newPath = path.replace('/content', '');
-    }
-
     // get parent
     const parent = libs.content.get({
-        key: newPath.split('/').slice(0, -1).join('/'),
+        key: getParentPath(path.replace(/`\/content/, '')),
     });
 
     // remove parents cache if its of a type that autogenerates content based on
@@ -296,29 +291,22 @@ function clearGlobalValueReferences(content) {
     });
 }
 
-function clearNotificationReferences(content) {
-    if (content.type !== `${app.name}:notification`) {
-        return;
-    }
+function wipeNotificationsEntry(path) {
+    log.info(`Clearing notifications from ${path}`);
+    wipe('notifications')(path);
+    frontendCacheRevalidate(path);
+}
 
-    log.info(`path: ${content._path}`);
-
-    // If the notification is shown globally, wipe the whole cache
-    if (content._path.includes('/global-notifications/')) {
-        log.info(`Clearing whole notifications cache`);
+function clearReferences(id, path, depth, event) {
+    // If global notifications are modified, every page is potentially affected
+    // Wipe the whole cache
+    if (path.includes('/global-notifications/')) {
+        log.info(`Global notification modified, wiping notifications cache and frontend cache`);
         wipe('notifications')();
         frontendCacheWipeAll();
         return;
     }
 
-    // Non-global notifications are only displayed on the parent
-    const parentPath = getPathname(content._path.split('/').slice(0, -1).join('/'));
-    log.info(`Clearing notifications from ${parentPath}`);
-    wipe('notifications')(parentPath);
-    frontendCacheRevalidate(getPathname(parentPath));
-}
-
-function clearReferences(id, path, depth, event) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
         log.info(
@@ -345,7 +333,6 @@ function clearReferences(id, path, depth, event) {
         return;
     }
 
-    clearNotificationReferences(content);
     clearFragmentMacroReferences(content);
     clearProductCardMacroReferences(content);
     clearGlobalValueReferences(content);
@@ -361,6 +348,8 @@ function nodeListenerCallback(event) {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
+            wipeNotificationsEntry(getPathname(getParentPath(node.path)));
+
             libs.context.run(
                 {
                     repository: 'com.enonic.cms.default',
