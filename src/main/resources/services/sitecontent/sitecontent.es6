@@ -6,7 +6,7 @@ const handleGet = (req) => {
     const { id: idOrPath, branch, time } = req.params;
     const { secret } = req.headers;
 
-    log.info(`Request for ${idOrPath} - testy mctestface`);
+    log.info(`Request for ${idOrPath} - WHAT`);
 
     if (secret !== app.config.serviceSecret) {
         return {
