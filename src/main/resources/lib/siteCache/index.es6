@@ -200,7 +200,7 @@ function findReferences(id, path, depth) {
 
     // get parent
     const parent = libs.content.get({
-        key: getParentPath(path.replace(/`\/content/, '')),
+        key: getParentPath(path.replace(/\/content/, '')),
     });
 
     // remove parents cache if its of a type that autogenerates content based on
