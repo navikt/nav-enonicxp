@@ -25,6 +25,8 @@ const getNotifications = (path) => {
         return null;
     }
 
+    log.info(`Notifications: ${JSON.stringify(notifications)}`);
+
     const parsedNotifications = deepJsonParser(notifications, ['data']);
 
     const localNotifications = path
