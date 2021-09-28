@@ -9,7 +9,6 @@ const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
-const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
 
 const libs = {
@@ -42,14 +41,6 @@ const caches = {
     }),
     driftsmeldinger: libs.cache.newCache({
         size: 50,
-        expire: oneDay,
-    }),
-    sitecontent: libs.cache.newCache({
-        size: 5000,
-        expire: oneDay,
-    }),
-    notifications: libs.cache.newCache({
-        size: 5000,
         expire: oneDay,
     }),
 };
@@ -126,16 +117,14 @@ function wipeOnChange(path) {
     }
 
     // If global notifications are modified, every page is potentially affected
-    // Wipe the whole cache
+    // Wipe the whole frontend-cache
     if (path.includes('/global-notifications/')) {
         log.info(`Global notification modified, wiping notifications cache and frontend cache`);
-        wipe('notifications')();
         frontendCacheWipeAll();
-        return;
+        return true;
     }
 
-    // Wipe cache for frontend sitecontent service
-    wipe('sitecontent')(pathname);
+    // Invalidate frontend-cache
     frontendCacheRevalidate(pathname);
 
     const xpPath = path.replace(/^\/content/, '');
@@ -152,30 +141,6 @@ function getSome(cacheStoreName) {
         }
         return f(params);
     };
-}
-
-function getSitecontent(idOrPath, branch, callback) {
-    // Do not cache draft branch or content id requests
-    if (branch === 'draft' || isUUID(idOrPath)) {
-        return callback();
-    }
-    try {
-        return caches['sitecontent'].get(getPathname(idOrPath), callback);
-    } catch (e) {
-        // cache functions throws if callback returns null
-        return null;
-    }
-}
-
-function getNotifications(idOrPath, callback) {
-    if (isUUID(idOrPath)) {
-        return callback();
-    }
-    try {
-        return caches['notifications'].get(getPathname(idOrPath), callback);
-    } catch (e) {
-        return null;
-    }
 }
 
 function findReferences(id, path, depth) {
@@ -300,12 +265,6 @@ function clearGlobalValueReferences(content) {
     });
 }
 
-function wipeNotificationsEntry(path) {
-    log.info(`Clearing notifications from ${path}`);
-    wipe('notifications')(path);
-    frontendCacheRevalidate(path);
-}
-
 function clearReferences(id, path, depth, event) {
     const references = findReferences(id, path, depth);
     if (references && references.length > 0) {
@@ -346,7 +305,7 @@ function nodeListenerCallback(event) {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
-            wipeNotificationsEntry(getPathname(getParentPath(node.path)));
+            wipeOnChange(getParentPath(node.path));
 
             libs.context.run(
                 {
@@ -399,7 +358,5 @@ function activateEventListener() {
 module.exports = {
     getDecorator: getSome('decorator'),
     getDriftsmeldinger: getSome('driftsmeldinger'),
-    getSitecontent,
-    getNotifications,
     activateEventListener,
 };
