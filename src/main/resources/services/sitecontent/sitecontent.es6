@@ -6,6 +6,8 @@ const handleGet = (req) => {
     const { id: idOrPath, branch, time } = req.params;
     const { secret } = req.headers;
 
+    log.info(`Request for ${idOrPath}`);
+
     if (secret !== app.config.serviceSecret) {
         return {
             status: 401,
