@@ -4,7 +4,6 @@ const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
 const { getPortalFragmentContent } = require('/lib/headless/process-components');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const menuUtils = require('/lib/menu-utils');
-const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const contentLib = require('/lib/xp/content');
 const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
@@ -241,16 +240,14 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
         : getRedirectContent(contentRef, branch);
 };
 
-const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
+const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
     if (time && timeTravelEnabled) {
         return getContentVersionFromTime(contentRef, branch, time);
     }
 
-    const content = nocache
-        ? getContentOrRedirect(contentRef, branch)
-        : cache.getSitecontent(contentRef, branch, () => getContentOrRedirect(contentRef, branch));
+    const content = getContentOrRedirect(contentRef, branch);
 
     if (!content) {
         return null;

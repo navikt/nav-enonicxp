@@ -44,14 +44,6 @@ const caches = {
         size: 50,
         expire: oneDay,
     }),
-    sitecontent: libs.cache.newCache({
-        size: 5000,
-        expire: oneDay,
-    }),
-    notifications: libs.cache.newCache({
-        size: 5000,
-        expire: oneDay,
-    }),
 };
 
 function getPath(path, type) {
@@ -125,8 +117,6 @@ function wipeOnChange(path) {
         return true;
     }
 
-    // Wipe cache for frontend sitecontent service
-    wipe('sitecontent')(pathname);
     if (libs.cluster.isMaster()) {
         libs.task.submit({
             description: `send revalidate on ${pathname}`,
