@@ -4,6 +4,8 @@ const libs = {
     moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
 };
 
+const getParentPath = (path) => path.split('/').slice(0, -1).join('/');
+
 const removeDuplicates = (array, isEqualPredicate) =>
     isEqualPredicate
         ? array.filter((aItem, aIndex) => {
@@ -200,4 +202,5 @@ module.exports = {
     createObjectChecksum,
     getUnixTimeFromDateTimeString,
     removeDuplicates,
+    getParentPath,
 };
