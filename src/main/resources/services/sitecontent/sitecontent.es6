@@ -55,9 +55,9 @@ const handleGet = (req) => {
         status: 200,
         body: content,
         contentType: 'application/json',
-        //headers: {
+        // headers: {
         //    'Cache-Control': 'no-store, no-cache, must-revalidate',
-        //},
+        // },
     };
 };
 
