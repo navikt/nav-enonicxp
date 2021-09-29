@@ -6,8 +6,6 @@ const handleGet = (req) => {
     const { id: idOrPath, branch, time, nocache } = req.params;
     const { secret } = req.headers;
 
-    log.info(`Request from ${idOrPath} - New deploy test`);
-
     if (secret !== app.config.serviceSecret) {
         return {
             status: 401,
