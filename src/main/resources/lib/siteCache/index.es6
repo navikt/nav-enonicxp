@@ -1,4 +1,6 @@
 const contentLib = require('/lib/xp/content');
+const { getParentPath } = require('/lib/nav-utils');
+const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
@@ -16,8 +18,6 @@ const libs = {
     context: require('/lib/xp/context'),
     content: require('/lib/xp/content'),
     common: require('/lib/xp/common'),
-    cluster: require('/lib/xp/cluster'),
-    task: require('/lib/xp/task'),
 };
 
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
@@ -125,16 +125,18 @@ function wipeOnChange(path) {
         return true;
     }
 
+    // If global notifications are modified, every page is potentially affected
+    // Wipe the whole cache
+    if (path.includes('/global-notifications/')) {
+        log.info(`Global notification modified, wiping notifications cache and frontend cache`);
+        wipe('notifications')();
+        frontendCacheWipeAll();
+        return true;
+    }
+
     // Wipe cache for frontend sitecontent service
     wipe('sitecontent')(pathname);
-    if (libs.cluster.isMaster()) {
-        libs.task.submit({
-            description: `send revalidate on ${pathname}`,
-            task: () => {
-                frontendCacheRevalidate(pathname);
-            },
-        });
-    }
+    frontendCacheRevalidate(pathname);
 
     const xpPath = path.replace(/^\/content/, '');
     updateSitemapEntry(xpPath);
@@ -178,7 +180,6 @@ function getNotifications(idOrPath, callback) {
 
 function findReferences(id, path, depth) {
     log.info(`Find references for: ${path}`);
-    let newPath = path;
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
         return [];
@@ -206,14 +207,9 @@ function findReferences(id, path, depth) {
     }, []);
     references = [...references, ...deepReferences];
 
-    // fix path before getting parent
-    if (path.indexOf('/content/') === 0) {
-        newPath = path.replace('/content', '');
-    }
-
     // get parent
     const parent = libs.content.get({
-        key: newPath.split('/').slice(0, -1).join('/'),
+        key: getParentPath(path.replace(/\/content/, '')),
     });
 
     // remove parents cache if its of a type that autogenerates content based on
@@ -304,21 +300,10 @@ function clearGlobalValueReferences(content) {
     });
 }
 
-function clearNotificationReferences(content) {
-    if (content.type !== `${app.name}:notification`) {
-        return;
-    }
-
-    // If the notification is shown globally, wipe the whole cache
-    if (content._path.includes('/global-notifications/')) {
-        wipe('notifications')();
-        return;
-    }
-
-    // Non-global notifications are only displayed on the parent
-    const parentPath = getPathname(content._path.split('/').slice(0, -1).join('/'));
-    log.info(`Clearing notifications from ${parentPath}`);
-    wipe('notifications')(parentPath);
+function wipeNotificationsEntry(path) {
+    log.info(`Clearing notifications from ${path}`);
+    wipe('notifications')(path);
+    frontendCacheRevalidate(path);
 }
 
 function clearReferences(id, path, depth, event) {
@@ -331,21 +316,21 @@ function clearReferences(id, path, depth, event) {
                 4
             )}`
         );
-    }
 
-    references.forEach((el) => {
-        wipeOnChange(el._path);
-    });
+        references.forEach((el) => {
+            wipeOnChange(el._path);
+        });
+    }
 
     const content = runInBranchContext(
         () => contentLib.get({ key: id }),
         event === 'node.deleted' ? 'draft' : 'master'
     );
+
     if (!content) {
         return;
     }
 
-    clearNotificationReferences(content);
     clearFragmentMacroReferences(content);
     clearProductCardMacroReferences(content);
     clearGlobalValueReferences(content);
@@ -361,6 +346,8 @@ function nodeListenerCallback(event) {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeOnChange(node.path);
+            wipeNotificationsEntry(getPathname(getParentPath(node.path)));
+
             libs.context.run(
                 {
                     repository: 'com.enonic.cms.default',
