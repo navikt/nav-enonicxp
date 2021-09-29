@@ -6,7 +6,7 @@ const handleGet = (req) => {
     const { id: idOrPath, branch, time, nocache } = req.params;
     const { secret } = req.headers;
 
-    log.info(`Request from ${idOrPath} - Every node should log this!`);
+    log.info(`Request from ${idOrPath} - Every node should log this also!`);
 
     if (secret !== app.config.serviceSecret) {
         return {
