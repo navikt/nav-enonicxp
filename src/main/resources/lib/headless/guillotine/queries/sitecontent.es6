@@ -83,10 +83,10 @@ const queryGetContentByRef = `query($ref:ID!){
 
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
-const getPublishedVersionTimestamps = (contentRef, branch) => {
+const getPublishedVersionTimestamps = (contentRef, branch, time) => {
     // In production, requests from master should not include version timestamps
     // This check must be removed if/when we decide to make version history public
-    if (app.config.env === 'p' && branch === 'master') {
+    if (app.config.env === 'p' && branch === 'master' && !time) {
         return null;
     }
 
@@ -113,12 +113,9 @@ const getContent = (contentRef, branch) => {
 
     const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
 
-    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
-
     const commonFields = {
         components: undefined,
         pathMap: getPathMapForReferences(contentRef),
-        ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
     };
 
     // This is the preview/editor page for fragments (not user-facing). It requires some
@@ -270,9 +267,12 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
 
     const notifications = getNotifications(content._path);
 
+    const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch, time);
+
     return {
         ...content,
         ...(notifications && { notifications }),
+        ...(publishedVersionTimestamps && { versionTimestamps: publishedVersionTimestamps }),
     };
 };
 
