@@ -131,7 +131,7 @@ function wipeOnChange(path) {
         log.info(`Global notification modified, wiping notifications cache and frontend cache`);
         wipe('notifications')();
         frontendCacheWipeAll();
-        return;
+        return true;
     }
 
     // Wipe cache for frontend sitecontent service
