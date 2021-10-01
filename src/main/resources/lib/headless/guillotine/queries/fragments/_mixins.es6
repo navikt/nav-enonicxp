@@ -1,6 +1,7 @@
 const globalFragment = require('./_global');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
+const url = require('./url');
 const animatedIconsFragment = require('./animatedIcons');
 
 const languagesMixinFragment = `
@@ -42,6 +43,8 @@ const decoratorTogglesMixinFragment = `
 const linkInternalMixinFragment = `
     target {
         ${globalFragment}
+        ${externalLink.fragment}
+        ${url.fragment}
     }
     text
 `;
