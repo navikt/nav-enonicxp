@@ -5,6 +5,10 @@
         <field-set>
             <label>Velg kalkulator</label>
             <items>
+                <input name="header" type="TextLine">
+                    <label>Overskrift</label>
+                    <help-text>Overskrift er ikke påkrevet</help-text>
+                </input>
                 <mixin name="calculator-target-selector"/>
             </items>
         </field-set>
