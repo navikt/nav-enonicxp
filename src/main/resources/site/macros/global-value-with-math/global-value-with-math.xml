@@ -8,6 +8,7 @@
             <config>
                 <service>globalValues</service>
                 <param value="valueType">numberValue</param>
+                <param value="withDescription">true</param>
             </config>
         </input>
         <input name="expression" type="TextLine">
@@ -22,7 +23,7 @@
             <default>0</default>
             <config>
                 <min>0</min>
-                <max>5</max>
+                <max>2</max>
             </config>
         </input>
         <!-- Dummy value to prevent graphql-errors for undefined field -->

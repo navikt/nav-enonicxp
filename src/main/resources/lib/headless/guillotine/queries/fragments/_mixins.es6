@@ -96,6 +96,16 @@ const productDataMixin = `
     externalProductUrl
 `;
 
+const situationDataMixin = `
+    title
+    ingress
+    illustration {
+        ${globalFragment}
+        ${animatedIconsFragment.fragment}
+    }
+    externalProductUrl
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
@@ -108,4 +118,5 @@ module.exports = {
     languagesMixinFragment,
     decoratorTogglesMixinFragment,
     productDataMixin,
+    situationDataMixin,
 };

@@ -6,7 +6,7 @@
         <input type="TextArea" name="description">
             <label>Beskrivelse</label>
             <config>
-                <max-length>300</max-length> 
+                <max-length>300</max-length>
             </config>
         </input>
         <input type="Input" name="endnote">

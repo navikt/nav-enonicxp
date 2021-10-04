@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { removeDuplicates } = require('/lib/nav-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
 const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
@@ -130,7 +131,7 @@ function wipeOnChange(path) {
         libs.task.submit({
             description: `send revalidate on ${pathname}`,
             task: () => {
-                frontendCacheRevalidate(encodeURI(pathname));
+                frontendCacheRevalidate(pathname);
             },
         });
     }
@@ -237,9 +238,10 @@ function findReferences(id, path, depth) {
         });
     }
 
-    // remove duplicates and return all references
-    const refPaths = references.map((i) => i._path);
-    return references.filter((v, i) => !!v._path && refPaths.indexOf(v._path) === i);
+    return removeDuplicates(
+        references.filter((ref) => !!ref._path),
+        (a, b) => a._path === b._path
+    );
 }
 
 function clearFragmentMacroReferences(content) {
@@ -296,7 +298,7 @@ function clearGlobalValueReferences(content) {
     }
 
     forceArray(content.data?.valueItems).forEach((item) => {
-        getGlobalValueUsage(item.key).forEach((contentWithValues) => {
+        getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
             wipeOnChange(contentWithValues.path);
         });
     });

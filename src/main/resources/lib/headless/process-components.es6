@@ -164,7 +164,6 @@ const getPortalFragmentContent = (content) => {
     return {
         ...content,
         fragment: { ...insertComponentsIntoFragment(rootComponent, components).fragment },
-        components: undefined,
     };
 };
 
