@@ -4,17 +4,9 @@ const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
 const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
+const { gvServiceInvalidRequestResponse } = require('../utils');
 
-const invalidRequestResponse = (msg) => ({
-    status: 400,
-    contentType: 'application/json',
-    body: {
-        message: `Invalid remove request: ${msg}`,
-        level: 'error',
-    },
-});
-
-const removeGlobalValueItem = (req) => {
+const removeGlobalValueItemService = (req) => {
     const { key, contentId } = req.params;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
@@ -22,22 +14,24 @@ const removeGlobalValueItem = (req) => {
     }
 
     if (!key || !contentId) {
-        return invalidRequestResponse('ContentId and value-key must be provided');
+        return gvServiceInvalidRequestResponse(
+            `Missing parameters:${!key && ' "key"'}${!contentId && ' "contentId"'}`
+        );
     }
 
     const content = getGlobalValueSet(contentId);
     if (!content) {
-        return invalidRequestResponse(`Global value set with id ${contentId} not found`);
+        return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);
     }
 
     const valueItems = forceArray(content.data?.valueItems);
 
     const itemExists = valueItems.some((item) => item.key === key);
     if (!itemExists) {
-        return invalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
+        return gvServiceInvalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
-    const usage = getGlobalValueUsage(key);
+    const usage = getGlobalValueUsage(key, contentId);
     if (usage.length > 0) {
         if (!userIsAdmin()) {
             return insufficientPermissionResponse('administrator');
@@ -83,4 +77,4 @@ const removeGlobalValueItem = (req) => {
     }
 };
 
-module.exports = { removeGlobalValueItem };
+module.exports = { removeGlobalValueItemService };

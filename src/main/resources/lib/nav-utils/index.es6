@@ -4,6 +4,16 @@ const libs = {
     moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
 };
 
+const getParentPath = (path) => path.split('/').slice(0, -1).join('/');
+
+const removeDuplicates = (array, isEqualPredicate) =>
+    isEqualPredicate
+        ? array.filter((aItem, aIndex) => {
+              const bIndex = array.findIndex((bItem) => isEqualPredicate(aItem, bItem));
+              return aIndex === bIndex;
+          })
+        : array.filter((item, index) => array.indexOf(item) === index);
+
 const getUnixTimeFromDateTimeString = (datetime) => {
     if (typeof datetime !== 'string') {
         return 0;
@@ -191,4 +201,6 @@ module.exports = {
     getNestedValue,
     createObjectChecksum,
     getUnixTimeFromDateTimeString,
+    removeDuplicates,
+    getParentPath,
 };

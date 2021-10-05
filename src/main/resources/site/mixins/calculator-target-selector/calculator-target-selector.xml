@@ -1,7 +1,7 @@
 <mixin>
     <form>
         <input name="targetCalculator" type="ContentSelector">
-            <label>Velg side</label>
+            <label>Velg kalkulator</label>
             <occurrences minimum="0" maximum="1"/>
             <config>
                 <allowContentType>${app}:calculator</allowContentType>

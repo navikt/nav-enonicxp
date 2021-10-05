@@ -1,30 +1,37 @@
 const contentLib = require('/lib/xp/content');
 
-const htmlAreaObjectPaths = [
-    'data.text',
-    'data.fact',
-    'components.part.config.no-nav-navno.html-area.html',
-    'components.part.config.no-nav-navno.dynamic-alert.content',
+const htmlAreaComponentPaths = [
+    'part.config.no-nav-navno.html-area.html',
+    'part.config.no-nav-navno.dynamic-alert.content',
 ];
 
-const includedContentTypes = [
-    'dynamic-page',
-    'content-page-with-sidemenus',
-    'situation-page',
-    'main-article',
-].map((contentType) => `${app.name}:${contentType}`);
+const htmlAreaDataPaths = ['text', 'fact'];
+
+const htmlAreaNodePaths = [
+    ...htmlAreaDataPaths.map((path) => `data.${path}`),
+    ...htmlAreaComponentPaths.map((path) => `components.${path}`),
+];
 
 const findContentsWithHtmlAreaText = (text) => {
-    const query = htmlAreaObjectPaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
+    const query = htmlAreaNodePaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
 
-    const result = contentLib.query({
+    const queryHits = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: includedContentTypes,
         query: query,
-    });
+    }).hits;
 
-    return result.hits;
+    // Workaround for searching htmlarea fragments. Query strings or filters don't seem to pick
+    // up component config-fields in fragments...
+    const fragmentHits = contentLib
+        .query({
+            start: 0,
+            count: 10000,
+            contentTypes: ['portal:fragment'],
+        })
+        .hits.filter((hit) => hit?.fragment?.config?.html?.includes(text));
+
+    return [...queryHits, ...fragmentHits];
 };
 
 const findContentsWithFragmentMacro = (fragmentId) => {
@@ -39,4 +46,7 @@ module.exports = {
     findContentsWithHtmlAreaText,
     findContentsWithFragmentMacro,
     findContentsWithProductCardMacro,
+    htmlAreaComponentPaths,
+    htmlAreaDataPaths,
+    htmlAreaNodePaths,
 };
