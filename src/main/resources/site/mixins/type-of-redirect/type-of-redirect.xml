@@ -1,9 +1,9 @@
 <mixin>
     <display-name>Type redirect</display-name>
     <form>
-        <input name="tempRedirect" type="CheckBox" >
-            <label>Midlertidig redirect</label>
-            <help-text>Velg hvis dette er en midlertidig redirect (307). Permanent (308) er standard.</help-text>
+        <input name="permanentRedirect" type="CheckBox" >
+            <label>Permanent redirect (innhold flyttet til ny url)</label>
+            <help-text>Velg hvis dette er en permanent redirect (308). Midlertidig (307) er standard.</help-text>
         </input>
     </form>
 </mixin>
