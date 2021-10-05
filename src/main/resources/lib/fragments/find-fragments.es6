@@ -1,6 +1,7 @@
 const nodeLib = require('/lib/xp/node');
 const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { getNodeKey } = require('/lib/time-travel/version-utils');
 const { forceArray, getNestedValue, getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
@@ -84,7 +85,7 @@ const getFragmentIdsFromContent = (contentRef, branch) => {
 // Returns the most recent modifiedTime value, taking into account both the content
 // itself and any fragments used in the content
 const getModifiedTimeIncludingFragments = (contentRef, branch) => {
-    const content = contentLib.get({ key: contentRef });
+    const content = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
 
     if (!content) {
         return null;
@@ -95,7 +96,7 @@ const getModifiedTimeIncludingFragments = (contentRef, branch) => {
     const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
 
     return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
-        const fragment = contentLib.get({ key: fragmentId });
+        const fragment = runInBranchContext(() => contentLib.get({ key: fragmentId }), branch);
         if (!fragment) {
             log.error(
                 `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
