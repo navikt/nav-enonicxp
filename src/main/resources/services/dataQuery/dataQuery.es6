@@ -5,81 +5,38 @@ const { runInBranchContext } = require('/lib/headless/branch-context');
 
 const batchMaxSize = 1000;
 
-const defaultTypes = pageContentTypes;
+const defaultTypes = [
+    ...pageContentTypes,
+    'media:text',
+    'media:document',
+    'media:spreadsheet',
+    'media:presentation',
+];
 
-const validBranch = {
+const validBranches = {
     published: true,
     unpublished: true,
     all: true,
 };
 
-const includedFieldKeys = [
-    '_id',
-    '_name',
-    '_path',
-    'createdTime',
-    'modifiedTime',
-    'publish.first',
-    'publish.from',
-    'type',
-    'language',
-    'displayName',
-    'data.customPath',
-];
-
-const handleGet = (req) => {
-    const { query, branch = 'published', start = 0, types = defaultTypes } = req.params;
-    const { secret } = req.headers;
-
-    if (secret !== app.config.serviceSecret) {
-        return {
-            status: 401,
-            body: {
-                message: 'Not authorized',
-            },
-            contentType: 'application/json',
-        };
+const parseJsonArray = (str) => {
+    try {
+        const array = JSON.parse(str);
+        if (Array.isArray(array)) {
+            return array;
+        }
+        return null;
+    } catch (e) {
+        log.info(`Failed to parse JSON string - ${e}`);
+        return null;
     }
+};
 
-    if (!validBranch[branch]) {
-        log.info(`Invalid branch specified: ${branch}`);
-        return {
-            status: 400,
-            body: {
-                message: `Invalid "branch"-parameter specified, must be one of ${Object.keys(
-                    validBranch
-                ).join(', ')}`,
-            },
-            contentType: 'application/json',
-        };
-    }
-
-    if (!query) {
-        log.info(`Missing query`);
-        return {
-            status: 400,
-            body: {
-                message: 'Missing required parameter "query"',
-            },
-            contentType: 'application/json',
-        };
-    }
-
-    if (!Array.isArray(types)) {
-        log.info(`Invalid types array: not an array`);
-        return {
-            status: 400,
-            body: {
-                message: 'Parameter "types" must be an array',
-            },
-            contentType: 'application/json',
-        };
-    }
-
+const runQuery = ({ query, start, branch, types, returnFields }) => {
     const result = runInBranchContext(
         () =>
             contentLib.query({
-                query,
+                query: query || '_path LIKE "*"',
                 start: start,
                 count: batchMaxSize,
                 contentTypes: types,
@@ -98,23 +55,85 @@ const handleGet = (req) => {
         branch === 'published' ? 'master' : 'draft'
     );
 
+    return returnFields
+        ? {
+              ...result,
+              hits: result.hits.map((hit) =>
+                  returnFields.reduce((acc, key) => {
+                      const value = getNestedValue(hit, key);
+
+                      return value
+                          ? {
+                                ...acc,
+                                [key]: value,
+                            }
+                          : acc;
+                  }, {})
+              ),
+          }
+        : result;
+};
+
+const handleGet = (req) => {
+    const { query, branch = 'published', start = 0, types, returnFields } = req.params;
+    const { secret } = req.headers;
+
+    if (secret !== app.config.serviceSecret) {
+        return {
+            status: 401,
+            body: {
+                message: 'Not authorized',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const fieldsParsed = returnFields ? parseJsonArray(returnFields) : [];
+    if (!fieldsParsed) {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid type for argument "fields"',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const typesParsed = types ? parseJsonArray(types) : defaultTypes;
+    if (!typesParsed) {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid type for argument "array"',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    if (!validBranches[branch]) {
+        log.info(`Invalid branch specified: ${branch}`);
+        return {
+            status: 400,
+            body: {
+                message: `Invalid "branch"-parameter specified, must be one of ${Object.keys(
+                    validBranches
+                ).join(', ')}`,
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const result = runQuery({
+        query,
+        branch,
+        start,
+        returnFields: fieldsParsed,
+        types: typesParsed,
+    });
+
     return {
         status: 200,
-        body: {
-            ...result,
-            hits: result.hits.map((hit) =>
-                includedFieldKeys.reduce((acc, key) => {
-                    const value = getNestedValue(hit, key);
-
-                    return value
-                        ? {
-                              ...acc,
-                              [key]: value,
-                          }
-                        : acc;
-                }, {})
-            ),
-        },
+        body: result,
         contentType: 'application/json',
     };
 };
