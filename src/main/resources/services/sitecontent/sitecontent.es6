@@ -10,7 +10,7 @@ const handleGet = (req) => {
         return {
             status: 401,
             body: {
-                message: 'Invalid secret',
+                message: 'Not authorized',
             },
             contentType: 'application/json',
         };
