@@ -21,7 +21,7 @@ const getOfficeInfo = () =>
 
         return officeInfoContent.map((item) => ({
             name: item.data.enhet.navn,
-            url: item._path.replace('/www.nav.no', frontendOrigin),
+            url: item._path.replace(/^\/www.nav.no/, frontendOrigin),
             path: item._path.replace('/www.nav.no', ''), // TODO: remove this after frontend update
             enhetNr: item.data.enhet.enhetNr,
         }));
