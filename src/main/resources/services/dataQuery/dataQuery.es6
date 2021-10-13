@@ -32,7 +32,21 @@ const parseJsonArray = (str) => {
     }
 };
 
-const runQuery = ({ query, start, branch, types, returnFields }) => {
+const hitsWithRequestedFields = (hits, fieldKeys) =>
+    hits.map((hit) =>
+        fieldKeys.reduce((acc, key) => {
+            const value = getNestedValue(hit, key);
+
+            return value
+                ? {
+                      ...acc,
+                      [key]: value,
+                  }
+                : acc;
+        }, {})
+    );
+
+const runQuery = ({ query, start, branch, types, fieldKeys }) => {
     const result = runInBranchContext(
         () =>
             contentLib.query({
@@ -40,42 +54,31 @@ const runQuery = ({ query, start, branch, types, returnFields }) => {
                 start: start,
                 count: batchMaxSize,
                 contentTypes: types,
-                filter: {
-                    boolean: {
-                        ...(branch === 'unpublished' && {
+                ...(branch === 'unpublished' && {
+                    filter: {
+                        boolean: {
                             mustNot: {
                                 exists: {
                                     field: 'publish.from',
                                 },
                             },
-                        }),
+                        },
                     },
-                },
+                }),
             }),
         branch === 'published' ? 'master' : 'draft'
     );
 
-    return returnFields
+    return fieldKeys?.length > 0
         ? {
               ...result,
-              hits: result.hits.map((hit) =>
-                  returnFields.reduce((acc, key) => {
-                      const value = getNestedValue(hit, key);
-
-                      return value
-                          ? {
-                                ...acc,
-                                [key]: value,
-                            }
-                          : acc;
-                  }, {})
-              ),
+              hits: hitsWithRequestedFields(result.hits, fieldKeys),
           }
         : result;
 };
 
 const handleGet = (req) => {
-    const { query, branch = 'published', start = 0, types, returnFields } = req.params;
+    const { query, branch, start = 0, types, fieldKeys } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -88,8 +91,21 @@ const handleGet = (req) => {
         };
     }
 
-    const fieldsParsed = returnFields ? parseJsonArray(returnFields) : [];
-    if (!fieldsParsed) {
+    if (!validBranches[branch]) {
+        log.info(`Invalid branch specified: ${branch}`);
+        return {
+            status: 400,
+            body: {
+                message: `Invalid or missing parameter "branch" - must be one of ${Object.keys(
+                    validBranches
+                ).join(', ')}`,
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const fieldKeysParsed = fieldKeys ? parseJsonArray(fieldKeys) : [];
+    if (!fieldKeysParsed) {
         return {
             status: 400,
             body: {
@@ -110,24 +126,11 @@ const handleGet = (req) => {
         };
     }
 
-    if (!validBranches[branch]) {
-        log.info(`Invalid branch specified: ${branch}`);
-        return {
-            status: 400,
-            body: {
-                message: `Invalid "branch"-parameter specified, must be one of ${Object.keys(
-                    validBranches
-                ).join(', ')}`,
-            },
-            contentType: 'application/json',
-        };
-    }
-
     const result = runQuery({
         query,
         branch,
         start,
-        returnFields: fieldsParsed,
+        fieldKeys: fieldKeysParsed,
         types: typesParsed,
     });
 
