@@ -136,7 +136,15 @@ const handleGet = (req) => {
 
     return {
         status: 200,
-        body: result,
+        body: {
+            branch,
+            ...(query && { query }),
+            ...(typesParsed.length > 0 && { types: typesParsed }),
+            ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
+            count: result.count,
+            total: result.total,
+            hits: result.hits,
+        },
         contentType: 'application/json',
     };
 };
