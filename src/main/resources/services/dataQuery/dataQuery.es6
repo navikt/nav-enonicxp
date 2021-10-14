@@ -141,8 +141,6 @@ const handleGet = (req) => {
             ...(query && { query }),
             ...(typesParsed.length > 0 && { types: typesParsed }),
             ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
-            start,
-            count: result.count,
             total: result.total,
             hits: result.hits,
         },
