@@ -1,6 +1,5 @@
 const contentLib = require('/lib/xp/content');
 const cacheLib = require('/lib/cache');
-const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const officeContentType = `${app.name}:office-information`;
 
@@ -20,9 +19,7 @@ const getOfficeInfo = () =>
         }).hits;
 
         return officeInfoContent.map((item) => ({
-            name: item.data.enhet.navn,
-            url: item._path.replace(/^\/www.nav.no/, frontendOrigin),
-            path: item._path.replace('/www.nav.no', ''), // TODO: remove this after frontend update
+            path: item._path.replace('/www.nav.no', ''),
             enhetNr: item.data.enhet.enhetNr,
         }));
     });
