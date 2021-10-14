@@ -3,7 +3,7 @@ const { getNestedValue } = require('/lib/nav-utils');
 const { pageContentTypes } = require('/lib/sitemap/sitemap');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const batchMaxSize = 1000;
+const batchMaxSize = 100000;
 
 const defaultTypes = [
     ...pageContentTypes,
