@@ -126,26 +126,36 @@ const handleGet = (req) => {
         };
     }
 
-    const result = runQuery({
-        query,
-        branch,
-        start,
-        fieldKeys: fieldKeysParsed,
-        types: typesParsed,
-    });
-
-    return {
-        status: 200,
-        body: {
+    try {
+        const result = runQuery({
+            query,
             branch,
-            ...(query && { query }),
-            ...(typesParsed.length > 0 && { types: typesParsed }),
-            ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
-            total: result.total,
-            hits: result.hits,
-        },
-        contentType: 'application/json',
-    };
+            start,
+            fieldKeys: fieldKeysParsed,
+            types: typesParsed,
+        });
+
+        return {
+            status: 200,
+            body: {
+                branch,
+                ...(query && { query }),
+                ...(typesParsed.length > 0 && { types: typesParsed }),
+                ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
+                total: result.total,
+                hits: result.hits,
+            },
+            contentType: 'application/json',
+        };
+    } catch (e) {
+        return {
+            status: 500,
+            body: {
+                message: `Query error: ${e}`,
+            },
+            contentType: 'application/json',
+        };
+    }
 };
 
 exports.get = handleGet;
