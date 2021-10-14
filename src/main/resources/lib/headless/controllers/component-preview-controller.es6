@@ -44,8 +44,6 @@ const getComponentProps = () => {
     const content = portalLib.getContent();
     const component = portalLib.getComponent();
 
-    log.info(JSON.stringify(content));
-
     if (component.type === 'layout') {
         return getLayoutComponentProps(content, component.path);
     }
