@@ -78,7 +78,7 @@ const runQuery = ({ query, start, branch, types, fieldKeys }) => {
 };
 
 const handleGet = (req) => {
-    const { query, branch, start = 0, types, fieldKeys } = req.params;
+    const { branch, query, types, fields, start = 0 } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -104,7 +104,7 @@ const handleGet = (req) => {
         };
     }
 
-    const fieldKeysParsed = fieldKeys ? parseJsonArray(fieldKeys) : [];
+    const fieldKeysParsed = fields ? parseJsonArray(fields) : [];
     if (!fieldKeysParsed) {
         return {
             status: 400,
@@ -141,6 +141,7 @@ const handleGet = (req) => {
             ...(query && { query }),
             ...(typesParsed.length > 0 && { types: typesParsed }),
             ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
+            start,
             count: result.count,
             total: result.total,
             hits: result.hits,
