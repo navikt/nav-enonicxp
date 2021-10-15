@@ -32,7 +32,7 @@ const sitemapData = {
     },
 };
 
-const includedContentTypes = [
+const pageContentTypes = [
     'situation-page',
     'dynamic-page',
     'content-page-with-sidemenus',
@@ -45,8 +45,7 @@ const includedContentTypes = [
     'large-table',
 ].map((contentType) => `${app.name}:${contentType}`);
 
-const isIncludedType = (type) =>
-    !!includedContentTypes.find((includedType) => includedType === type);
+const isIncludedType = (type) => !!pageContentTypes.find((includedType) => includedType === type);
 
 const validateContent = (content) => {
     if (!content) {
@@ -138,7 +137,7 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
         .query({
             start,
             count: batchCount,
-            contentTypes: includedContentTypes,
+            contentTypes: pageContentTypes,
             filters: {
                 boolean: {
                     mustNot: {
@@ -246,4 +245,5 @@ module.exports = {
     generateDataAndActivateSchedule,
     updateSitemapEntry,
     activateDataUpdateEventListener,
+    pageContentTypes,
 };
