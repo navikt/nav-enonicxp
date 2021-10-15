@@ -16,7 +16,6 @@ const defaultTypes = [
 const validBranches = {
     published: true,
     unpublished: true,
-    all: true,
 };
 
 const parseJsonArray = (str) => {
