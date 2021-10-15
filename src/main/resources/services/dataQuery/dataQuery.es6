@@ -54,7 +54,7 @@ const runQuery = ({ query, start, branch, types, fieldKeys }) => {
                 count: batchMaxSize,
                 contentTypes: types,
                 ...(branch === 'unpublished' && {
-                    filter: {
+                    filters: {
                         boolean: {
                             mustNot: {
                                 exists: {
