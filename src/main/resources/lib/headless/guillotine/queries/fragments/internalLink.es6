@@ -7,7 +7,7 @@ const internalLinkFragment = `
             target {
                 ${globalFragment}
             }
-            tempRedirect
+            permanentRedirect
         }
     }
 `;

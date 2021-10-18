@@ -1,6 +1,7 @@
 const nodeLib = require('/lib/xp/node');
 const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { getNodeKey } = require('/lib/time-travel/version-utils');
 const { forceArray, getNestedValue, getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
@@ -83,34 +84,35 @@ const getFragmentIdsFromContent = (contentRef, branch) => {
 
 // Returns the most recent modifiedTime value, taking into account both the content
 // itself and any fragments used in the content
-const getModifiedTimeIncludingFragments = (contentRef, branch) => {
-    const content = contentLib.get({ key: contentRef });
+const getModifiedTimeIncludingFragments = (contentRef, branch) =>
+    runInBranchContext(() => {
+        const content = contentLib.get({ key: contentRef });
 
-    if (!content) {
-        return null;
-    }
-
-    const contentModifiedTime = content.modifiedTime || content.createdTime;
-
-    const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
-
-    return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
-        const fragment = contentLib.get({ key: fragmentId });
-        if (!fragment) {
-            log.error(
-                `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
-            );
-            return latestModifiedTime;
+        if (!content) {
+            return null;
         }
 
-        const modifiedTime = fragment.modifiedTime;
+        const contentModifiedTime = content.modifiedTime || content.createdTime;
 
-        return getUnixTimeFromDateTimeString(modifiedTime) >
-            getUnixTimeFromDateTimeString(latestModifiedTime)
-            ? modifiedTime
-            : latestModifiedTime;
-    }, contentModifiedTime);
-};
+        const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
+
+        return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
+            const fragment = contentLib.get({ key: fragmentId });
+            if (!fragment) {
+                log.error(
+                    `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
+                );
+                return latestModifiedTime;
+            }
+
+            const modifiedTime = fragment.modifiedTime;
+
+            return getUnixTimeFromDateTimeString(modifiedTime) >
+                getUnixTimeFromDateTimeString(latestModifiedTime)
+                ? modifiedTime
+                : latestModifiedTime;
+        }, contentModifiedTime);
+    }, branch);
 
 module.exports = {
     getModifiedTimeIncludingFragments,

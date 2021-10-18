@@ -67,6 +67,7 @@ const getComponentProps = () => {
     }
 
     return {
+        language: content.language,
         ...component,
         ...destructureComponent(deepJsonParser(componentFromGuillotine, ['config'])),
     };
