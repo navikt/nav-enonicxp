@@ -1,3 +1,14 @@
+/*
+ * NOTE:
+ *
+ * This functionality alters database retrieval functions in order to retrieve content from a certain
+ * timestamp, with all references correctly resolved to this timestamp. This is a very scary hack
+ * which can result in outdated content being served if proper cleanup is not done after every
+ * thread which uses the time travel functionality. Make sure you understand what you're doing if
+ * you make any changes. :D
+ *
+ * */
+
 const contentLib = require('/lib/xp/content');
 const contextLib = require('/lib/xp/context');
 const nodeLib = require('/lib/xp/node');
@@ -213,6 +224,7 @@ const hookLibsWithTimeTravel = () => {
     };
 };
 
+// Restore standard functionality (disables all time travel)
 const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
     timeTravelConfig.clear();
