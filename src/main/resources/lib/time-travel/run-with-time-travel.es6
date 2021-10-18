@@ -206,8 +206,14 @@ const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
 };
 
-//
 const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
+    if (!timeTravelHooksEnabled) {
+        log.error(
+            `Time travel: got request for ${baseContentKey} but time travel is disabled on this node`
+        );
+        return callback();
+    }
+
     const threadId = getCurrentThreadId();
     const sessionId = generateUUID();
 

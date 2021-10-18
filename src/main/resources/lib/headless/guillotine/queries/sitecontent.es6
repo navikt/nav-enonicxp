@@ -1,3 +1,4 @@
+const contentLib = require('/lib/xp/content');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
@@ -223,7 +224,7 @@ const getContentOrRedirect = (contentRef, branch, retries = 2) => {
 const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
-    if (time && timeTravelEnabled) {
+    if (time) {
         return getContentVersionFromTime(contentRef, branch, time);
     }
 

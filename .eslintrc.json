@@ -5,7 +5,13 @@
         "prettier/prettier": ["warn"],
         "comma-dangle": ["error", "only-multiline"],
         "no-cond-assign": ["error", "except-parens"],
-        "no-unused-vars": ["error", { "vars": "all", "args": "none"}],
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "args": "none"
+            }
+        ],
         "prefer-template": "off",
         "no-console": "off",
         "global-require": "off",
@@ -22,7 +28,8 @@
         "dot-notation": "off",
         "no-param-reassign": "off",
         "no-extend-native": "off",
-        "no-restricted-globals": "off"
+        "no-restricted-globals": "off",
+        "no-else-return": "off"
     },
     "globals": {
         "require": true,
