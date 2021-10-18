@@ -37,7 +37,7 @@ const selectorHandler = (req) => {
     }
 
     const htmlFragments = contentLib.query({
-        ...(query && { query: `fulltext("displayName, _path", "${query}", "AND")` }),
+        ...(query && { query: `displayName LIKE "*${query}*"` }),
         start: 0,
         count: 10000,
         contentTypes: ['portal:fragment'],
