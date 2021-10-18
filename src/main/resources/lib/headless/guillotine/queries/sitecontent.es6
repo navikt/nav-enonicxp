@@ -205,12 +205,12 @@ const getContentOrRedirect = (contentRef, branch, retries = 2) => {
             // normal requests to retrieve old data, retry the request
             log.error(`Retrying ${retries} more time${retries > 1 ? 's' : ''}`);
             return getContentOrRedirect(contentRef, branch, retries - 1);
-        } else {
-            // If retry didn't help, disable time travel functionality
-            unhookTimeTravel();
-            log.error(`Time travel permanently disabled on this node`);
-            return getContentOrRedirect(contentRef, branch);
         }
+
+        // If no retries left, disable time travel functionality
+        log.error(`Time travel permanently disabled on this node`);
+        unhookTimeTravel();
+        return getContentOrRedirect(contentRef, branch);
     }
 
     return content

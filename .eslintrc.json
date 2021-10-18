@@ -28,8 +28,7 @@
         "dot-notation": "off",
         "no-param-reassign": "off",
         "no-extend-native": "off",
-        "no-restricted-globals": "off",
-        "no-else-return": "off"
+        "no-restricted-globals": "off"
     },
     "globals": {
         "require": true,

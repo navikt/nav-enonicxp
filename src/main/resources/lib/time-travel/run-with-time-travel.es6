@@ -200,10 +200,10 @@ const hookLibsWithTimeTravel = () => {
 };
 
 const unhookTimeTravel = () => {
+    timeTravelHooksEnabled = false;
     timeTravelConfig.clear();
     contentLib.get = contentLibGetOriginal;
     nodeLib.connect = nodeLibConnectOriginal;
-    timeTravelHooksEnabled = false;
 };
 
 const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
