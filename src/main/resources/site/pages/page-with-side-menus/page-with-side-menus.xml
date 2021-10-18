@@ -53,5 +53,6 @@
         <region name="topPageContent"/>
         <region name="pageContent"/>
         <region name="rightMenu"/>
+        <region name="bottomRow"/>
     </regions>
 </page>
