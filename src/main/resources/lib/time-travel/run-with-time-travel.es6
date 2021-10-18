@@ -85,7 +85,7 @@ const timeTravelConfig = {
 
         // Check for 'undefined' to account for a strange nashorn behaviour where a deleted object
         // entry sometimes returns an object of the Undefined Java class, which evalutes to true
-        if (config.toString() === 'undefined') {
+        if (config?.toString() === 'undefined') {
             log.error('WTF');
             return undefined;
         }
