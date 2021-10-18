@@ -10,6 +10,8 @@ const { runInBranchContext } = require('/lib/headless/branch-context');
 
 const Thread = Java.type('java.lang.Thread');
 
+let timeTravelHooksEnabled = false;
+
 const contentLibGetOriginal = contentLib.get;
 const nodeLibConnectOriginal = nodeLib.connect;
 
@@ -72,6 +74,8 @@ const timeTravelConfig = {
 // the version at the requested timestamp. Only calls from threads currently
 // registered with a time travel config will be affected.
 const hookLibsWithTimeTravel = () => {
+    timeTravelHooksEnabled = true;
+
     contentLib.get = function (args) {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
@@ -199,6 +203,7 @@ const unhookTimeTravel = () => {
     timeTravelConfig.clear();
     contentLib.get = contentLibGetOriginal;
     nodeLib.connect = nodeLibConnectOriginal;
+    timeTravelHooksEnabled = false;
 };
 
 //
@@ -227,4 +232,5 @@ module.exports = {
     runWithTimeTravel,
     contentLibGetOriginal,
     nodeLibConnectOriginal,
+    timeTravelHooksEnabled,
 };

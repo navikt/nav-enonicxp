@@ -11,12 +11,9 @@ const {
     getInternalContentPathFromCustomPath,
     getPathMapForReferences,
 } = require('/lib/custom-paths/custom-paths');
-const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
+const { runWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
-
-let timeTravelEnabled = true;
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -38,7 +35,8 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
-const { contentLibGetOriginal } = require('/lib/time-travel/run-with-time-travel');
+const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+const { validateTimestampConsistency } = require('/lib/time-travel/consistency-check');
 
 const queryFragments = [
     globalFragment,
@@ -197,41 +195,18 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
     }
 };
 
-const getContentOrRedirect = (contentRef, branch, retry = true) => {
+const getContentOrRedirect = (contentRef, branch, retries = 2) => {
     const content = getContent(contentRef, branch);
 
-    // Peace-of-mind checks to see if hooks for time-specific content retrieval is
-    // causing unexpected side-effects. Can be removed once peace of mind has been
-    // attained :D
-    if (timeTravelEnabled && content) {
-        const contentRaw = runInBranchContext(
-            () => contentLibGetOriginal({ key: contentRef }),
-            branch
-        );
-
-        const rawTime = contentRaw?.modifiedTime || contentRaw?.createdTime;
-        const guillotineTime = content.modifiedTime || content.createdTime;
-
-        const rawTimestamp = getUnixTimeFromDateTimeString(rawTime);
-        const guillotineTimestamp = getUnixTimeFromDateTimeString(guillotineTime);
-
-        if (rawTimestamp !== guillotineTimestamp) {
-            // In the (hopefully impossible!) event that time travel functionality is causing
+    if (!validateTimestampConsistency(contentRef, content, branch)) {
+        if (retries > 0) {
+            // In the event that time travel functionality is causing
             // normal requests to retrieve old data, retry the request
-            // Note: this has false positives if the content is updated and requested within
-            // a short period of time
-            log.error(
-                `Time travel: bad response for content ${contentRef} - got timestamp: ${guillotineTimestamp} - should be: ${rawTimestamp}${
-                    retry ? ' - retrying one more time' : ''
-                }`
-            );
-            if (retry) {
-                return getContentOrRedirect(contentRef, branch, false);
-            }
-
-            // if retry didn't help, disable time travel functionality
+            log.error(`Retrying ${retries} more time${retries > 1 ? 's' : ''}`);
+            return getContentOrRedirect(contentRef, branch, retries - 1);
+        } else {
+            // If retry didn't help, disable time travel functionality
             unhookTimeTravel();
-            timeTravelEnabled = false;
             log.error(`Time travel permanently disabled on this node`);
             return getContentOrRedirect(contentRef, branch);
         }
