@@ -1,6 +1,8 @@
-const { timeTravelHooksEnabled } = require('/lib/time-travel/run-with-time-travel');
+const {
+    timeTravelHooksEnabled,
+    contentLibGetOriginal,
+} = require('/lib/time-travel/run-with-time-travel');
 const { runInBranchContext } = require('/lib/headless/branch-context');
-const { contentLibGetOriginal } = require('/lib/time-travel/run-with-time-travel');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 
 // Peace-of-mind checks to see if hooks for time-specific content retrieval is
