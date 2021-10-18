@@ -10,11 +10,15 @@ const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 // Note: this has false positives if the content is updated and requested within
 // a short period of time
 const validateTimestampConsistency = (contentRef, contentFromGuillotine, branch) => {
-    if (!timeTravelHooksEnabled || !contentFromGuillotine) {
+    if (!timeTravelHooksEnabled) {
         return true;
     }
 
     const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
+
+    if (!contentRaw && !contentFromGuillotine) {
+        return true;
+    }
 
     if (!contentRaw) {
         log.error(
