@@ -6,7 +6,6 @@ const { runInBranchContext } = require('/lib/headless/branch-context');
 const menuUtils = require('/lib/menu-utils');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
-const contentLib = require('/lib/xp/content');
 const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
 const {
     getInternalContentPathFromCustomPath,
@@ -17,7 +16,6 @@ const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
 
-const contentLibGetOriginal = contentLib.get;
 let timeTravelEnabled = true;
 
 const globalFragment = require('./fragments/_global');
@@ -40,6 +38,7 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
+const { contentLibGetOriginal } = require('/lib/time-travel/run-with-time-travel');
 
 const queryFragments = [
     globalFragment,
@@ -187,7 +186,10 @@ const getContentVersionFromTime = (contentRef, branch, time) => {
                 return null;
             }
 
-            return { ...content, livePath: contentRaw._path };
+            return {
+                ...content,
+                livePath: contentRaw._path,
+            };
         });
     } catch (e) {
         log.warning(`Time travel: Error retrieving data from version history: ${e}`);
@@ -236,7 +238,10 @@ const getContentOrRedirect = (contentRef, branch, retry = true) => {
     }
 
     return content
-        ? { ...content, modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch) }
+        ? {
+              ...content,
+              modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch),
+          }
         : getRedirectContent(contentRef, branch);
 };
 
@@ -275,4 +280,8 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
     };
 };
 
-module.exports = { getSiteContent, getContent, getRedirectContent };
+module.exports = {
+    getSiteContent,
+    getContent,
+    getRedirectContent,
+};

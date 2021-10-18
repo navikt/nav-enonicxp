@@ -10,8 +10,8 @@ const { runInBranchContext } = require('/lib/headless/branch-context');
 
 const Thread = Java.type('java.lang.Thread');
 
-const contentLibGet = contentLib.get;
-const nodeLibConnect = nodeLib.connect;
+const contentLibGetOriginal = contentLib.get;
+const nodeLibConnectOriginal = nodeLib.connect;
 
 const getCurrentThreadId = () => Number(Thread.currentThread().getId());
 
@@ -38,7 +38,7 @@ const timeTravelConfig = {
     configs: {},
     add: function ({ threadId, requestedDateTime, branch = 'master', baseContentKey }) {
         const context = contextLib.get();
-        const repo = nodeLibConnect({
+        const repo = nodeLibConnectOriginal({
             repoId: context.repository,
             branch: branch,
         });
@@ -85,13 +85,13 @@ const hookLibsWithTimeTravel = () => {
                 log.error('WTF');
             }
 
-            return contentLibGet(args);
+            return contentLibGetOriginal(args);
         }
 
         const key = args?.key;
 
         if (!key) {
-            return contentLibGet(args);
+            return contentLibGetOriginal(args);
         }
 
         const { repo, branch, baseContentKey, targetUnixTime } = configForThread;
@@ -110,7 +110,7 @@ const hookLibsWithTimeTravel = () => {
 
         return runInBranchContext(
             () =>
-                contentLibGet({
+                contentLibGetOriginal({
                     key: requestedVersion.nodeId,
                     versionId: requestedVersion.versionId,
                 }),
@@ -127,12 +127,12 @@ const hookLibsWithTimeTravel = () => {
             if (configForThread) {
                 log.error('WTF 2');
             }
-            return nodeLibConnect(connectArgs);
+            return nodeLibConnectOriginal(connectArgs);
         }
 
         const { branch, targetUnixTime, baseNodeKey } = configForThread;
 
-        const repoConnection = nodeLibConnect(connectArgs);
+        const repoConnection = nodeLibConnectOriginal(connectArgs);
         const repoGet = repoConnection.get.bind(repoConnection);
 
         // repo.get args can be a single key, or an array of keys, or an object
@@ -197,8 +197,8 @@ const hookLibsWithTimeTravel = () => {
 
 const unhookTimeTravel = () => {
     timeTravelConfig.clear();
-    contentLib.get = contentLibGet;
-    nodeLib.connect = nodeLibConnect;
+    contentLib.get = contentLibGetOriginal;
+    nodeLib.connect = nodeLibConnectOriginal;
 };
 
 //
@@ -225,4 +225,6 @@ module.exports = {
     hookLibsWithTimeTravel,
     unhookTimeTravel,
     runWithTimeTravel,
+    contentLibGetOriginal,
+    nodeLibConnectOriginal,
 };
