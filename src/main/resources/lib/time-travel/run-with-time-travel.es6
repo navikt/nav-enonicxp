@@ -12,8 +12,8 @@ const Thread = Java.type('java.lang.Thread');
 
 let timeTravelHooksEnabled = false;
 
-const contentLibGetOriginal = contentLib.get;
-const nodeLibConnectOriginal = nodeLib.connect;
+const contentLibGetStandard = contentLib.get;
+const nodeLibConnectStandard = nodeLib.connect;
 
 const getCurrentThreadId = () => Number(Thread.currentThread().getId());
 
@@ -24,7 +24,11 @@ const getTargetUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
         return requestedUnixTime;
     }
 
-    const nodeVersions = getNodeVersions({ nodeKey, repo, branch });
+    const nodeVersions = getNodeVersions({
+        nodeKey,
+        repo,
+        branch,
+    });
     const length = nodeVersions?.length;
     if (!length) {
         return requestedUnixTime;
@@ -40,7 +44,7 @@ const timeTravelConfig = {
     configs: {},
     add: function ({ threadId, requestedDateTime, branch = 'master', baseContentKey }) {
         const context = contextLib.get();
-        const repo = nodeLibConnectOriginal({
+        const repo = nodeLibConnectStandard({
             repoId: context.repository,
             branch: branch,
         });
@@ -57,9 +61,24 @@ const timeTravelConfig = {
 
         log.info(`Adding time travel config for thread ${threadId}}`);
 
-        this.configs[threadId] = { repo, branch, baseNodeKey, baseContentKey, targetUnixTime };
+        this.configs[threadId] = {
+            repo,
+            branch,
+            baseNodeKey,
+            baseContentKey,
+            targetUnixTime,
+        };
     },
     get: function (threadId) {
+        const config = this.configs[threadId];
+
+        // Check for 'undefined' to account for a strange nashorn behaviour where a deleted object
+        // entry sometimes returns an object of the Undefined Java class, which evalutes to true
+        if (config.toString() === 'undefined') {
+            log.error('WTF');
+            return undefined;
+        }
+
         return this.configs[threadId];
     },
     remove: function (threadId) {
@@ -82,20 +101,15 @@ const hookLibsWithTimeTravel = () => {
 
         // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
-        // Check for 'undefined' to account for a strange nashorn behaviour where a deleted object
-        // entry sometimes returns an object of the Undefined Java class, which evalutes to true
-        if (!configForThread || configForThread.toString() === 'undefined') {
-            if (configForThread) {
-                log.error('WTF');
-            }
-
-            return contentLibGetOriginal(args);
+        if (!configForThread) {
+            return contentLibGetStandard(args);
         }
 
         const key = args?.key;
 
+        // If the key is not defined, use standard functionality for error handling
         if (!key) {
-            return contentLibGetOriginal(args);
+            return contentLibGetStandard(args);
         }
 
         const { repo, branch, baseContentKey, targetUnixTime } = configForThread;
@@ -112,9 +126,11 @@ const hookLibsWithTimeTravel = () => {
             return null;
         }
 
+        // If a content node version from the requested time was found, retrieve this
+        // content with standard functionality
         return runInBranchContext(
             () =>
-                contentLibGetOriginal({
+                contentLibGetStandard({
                     key: requestedVersion.nodeId,
                     versionId: requestedVersion.versionId,
                 }),
@@ -123,24 +139,22 @@ const hookLibsWithTimeTravel = () => {
     };
 
     nodeLib.connect = function (connectArgs) {
-        const configForThread = timeTravelConfig.get(getCurrentThreadId());
+        const threadId = getCurrentThreadId();
+        const configForThread = timeTravelConfig.get(threadId);
 
         // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
-        if (!configForThread || configForThread.toString() === 'undefined') {
-            if (configForThread) {
-                log.error('WTF 2');
-            }
-            return nodeLibConnectOriginal(connectArgs);
+        if (!configForThread) {
+            return nodeLibConnectStandard(connectArgs);
         }
 
         const { branch, targetUnixTime, baseNodeKey } = configForThread;
 
-        const repoConnection = nodeLibConnectOriginal(connectArgs);
+        const repoConnection = nodeLibConnectStandard(connectArgs);
         const repoGet = repoConnection.get.bind(repoConnection);
 
         // repo.get args can be a single key, or an array of keys, or an object
-        // or array of objects of the shape { key: <id or path> }
+        // (or array of objects) with the shape { key: <id or path> }
         const getNodeKeysFromArgs = (args) => {
             if (typeof args === 'string') {
                 return args;
@@ -202,8 +216,8 @@ const hookLibsWithTimeTravel = () => {
 const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
     timeTravelConfig.clear();
-    contentLib.get = contentLibGetOriginal;
-    nodeLib.connect = nodeLibConnectOriginal;
+    contentLib.get = contentLibGetStandard;
+    nodeLib.connect = nodeLibConnectStandard;
 };
 
 const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
@@ -221,7 +235,12 @@ const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) 
         log.info(
             `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId}`
         );
-        timeTravelConfig.add({ threadId, requestedDateTime, branch, baseContentKey });
+        timeTravelConfig.add({
+            threadId,
+            requestedDateTime,
+            branch,
+            baseContentKey,
+        });
         return callback();
     } catch (e) {
         log.info(`Time travel: Error occured during session ${sessionId} - ${e}`);
@@ -236,7 +255,7 @@ module.exports = {
     hookLibsWithTimeTravel,
     unhookTimeTravel,
     runWithTimeTravel,
-    contentLibGetOriginal,
-    nodeLibConnectOriginal,
+    contentLibGetStandard,
+    nodeLibConnectStandard,
     timeTravelHooksEnabled,
 };

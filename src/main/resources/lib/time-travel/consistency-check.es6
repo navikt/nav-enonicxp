@@ -1,6 +1,6 @@
 const {
     timeTravelHooksEnabled,
-    contentLibGetOriginal,
+    contentLibGetStandard,
 } = require('/lib/time-travel/run-with-time-travel');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
@@ -16,7 +16,7 @@ const validateTimestampConsistency = (contentRef, contentFromGuillotine, branch)
         return true;
     }
 
-    const contentRaw = runInBranchContext(() => contentLibGetOriginal({ key: contentRef }), branch);
+    const contentRaw = runInBranchContext(() => contentLibGetStandard({ key: contentRef }), branch);
 
     if (!contentRaw && !contentFromGuillotine) {
         return true;
