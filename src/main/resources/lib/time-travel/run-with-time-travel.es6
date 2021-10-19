@@ -1,11 +1,10 @@
 /*
  * NOTE:
  *
- * This functionality alters database retrieval functions in order to retrieve content from a certain
+ * This functionality alters content retrieval functions in order to get content from a certain
  * timestamp, with all references also correctly resolved to this timestamp. This is a very scary hack
  * which can result in outdated content being served if proper cleanup is not done after every
- * thread which uses the time travel functionality. Make sure you understand what you're doing if
- * you make any changes. :D
+ * requesting thread. Make sure you understand what you're doing if you make any changes. :D
  *
  * */
 
@@ -83,10 +82,10 @@ const timeTravelConfig = {
     get: function (threadId) {
         const config = this.configs[threadId];
 
-        // Check for 'undefined' to account for a strange nashorn behaviour where a deleted object
+        // Check for 'undefined' to account for a rare/strange nashorn behaviour where a deleted object
         // entry sometimes returns an object of the Undefined Java class, which evalutes to true
         if (config?.toString() === 'undefined') {
-            log.error('WTF');
+            log.error(`Time travel config returned an unexpected object for thread ${threadId}`);
             return undefined;
         }
 
