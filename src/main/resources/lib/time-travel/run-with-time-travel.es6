@@ -1,10 +1,14 @@
 /*
- * NOTE:
+ * WARNING:
  *
- * This functionality alters content retrieval functions in order to get content from a certain
- * timestamp, with all references also correctly resolved to this timestamp. This is a very scary hack
- * which can result in outdated content being served if proper cleanup is not done after every
- * requesting thread. Make sure you understand what you're doing if you make any changes. :D
+ * The function hooks in this file alters content retrieval functions, adding the option to get content from
+ * a certain timestamp, with all references also correctly resolved to this timestamp. This "time travel"
+ * functionality should only be enabled for threads spawned from requests where the "time" parameter to the
+ * sitecontent service was set. All other requests should get standard functionality.
+ *
+ * This is a very scary hack which can result in outdated content being served if proper cleanup is not done
+ * after every "time travel"-requesting thread. Keep in mind thread-ids are reused and the http-server is
+ * multithreaded. Make sure you understand what you're doing if you make any changes. :)
  *
  * */
 
@@ -50,7 +54,10 @@ const getTargetUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
     return Math.max(oldestUnixTime, requestedUnixTime);
 };
 
-const timeTravelConfig = {
+// Stores config-objects for time travel for threads that requested content from
+// a certain timestamp. Keyed with thread-id. Any thread with an entry in this map
+// will retrieve all content from the specified timestamp.
+const timeTravelConfigMap = {
     configs: {},
     add: function ({ threadId, requestedDateTime, branch = 'master', baseContentKey }) {
         const context = contextLib.get();
@@ -99,7 +106,7 @@ const timeTravelConfig = {
     },
 };
 
-// This function will hook database retrieval functions to retrieve data from
+// This function will hook content retrieval functions to retrieve data from
 // the version at the requested timestamp. Only calls from threads currently
 // registered with a time travel config will be affected.
 const hookLibsWithTimeTravel = () => {
@@ -107,7 +114,7 @@ const hookLibsWithTimeTravel = () => {
 
     contentLib.get = function (args) {
         const threadId = getCurrentThreadId();
-        const configForThread = timeTravelConfig.get(threadId);
+        const configForThread = timeTravelConfigMap.get(threadId);
 
         // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
@@ -150,7 +157,7 @@ const hookLibsWithTimeTravel = () => {
 
     nodeLib.connect = function (connectArgs) {
         const threadId = getCurrentThreadId();
-        const configForThread = timeTravelConfig.get(threadId);
+        const configForThread = timeTravelConfigMap.get(threadId);
 
         // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
@@ -226,7 +233,7 @@ const hookLibsWithTimeTravel = () => {
 // Restore standard functionality (disables time travel)
 const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
-    timeTravelConfig.clear();
+    timeTravelConfigMap.clear();
     contentLib.get = contentLibGetStandard;
     nodeLib.connect = nodeLibConnectStandard;
 };
@@ -246,7 +253,7 @@ const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) 
         log.info(
             `Time travel: Starting session ${sessionId} - base content: ${baseContentKey} / time: ${requestedDateTime} / branch: ${branch} / thread: ${threadId}`
         );
-        timeTravelConfig.add({
+        timeTravelConfigMap.add({
             threadId,
             requestedDateTime,
             branch,
@@ -257,7 +264,7 @@ const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) 
         log.info(`Time travel: Error occured during session ${sessionId} - ${e}`);
         throw e;
     } finally {
-        timeTravelConfig.remove(threadId);
+        timeTravelConfigMap.remove(threadId);
         log.info(`Time travel: Ending session ${sessionId} for thread ${threadId}`);
     }
 };
