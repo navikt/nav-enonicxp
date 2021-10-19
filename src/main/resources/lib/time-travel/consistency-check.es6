@@ -9,7 +9,7 @@ const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
 // causing unexpected side-effects. Can be removed once peace of mind has been
 // attained :D
 //
-// Note: this has false positives if the content is updated and requested within
+// Note: this has false negatives if the content is updated and then requested within
 // a short period of time
 const validateTimestampConsistency = (contentRef, contentFromGuillotine, branch) => {
     if (!timeTravelHooksEnabled) {
@@ -24,7 +24,7 @@ const validateTimestampConsistency = (contentRef, contentFromGuillotine, branch)
 
     if (!contentRaw) {
         log.error(
-            `Time travel consistency check could not complete, could not retrieve raw content (this should not be possible!)`
+            `Time travel consistency check could not complete, could not retrieve raw content for ${contentRef} (this should not be possible!)`
         );
         return false;
     }
