@@ -69,7 +69,7 @@ const timeTravelConfig = {
             branch,
         });
 
-        log.info(`Adding time travel config for thread ${threadId}}`);
+        log.info(`Adding time travel config for thread ${threadId}`);
 
         this.configs[threadId] = {
             repo,
