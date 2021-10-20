@@ -7,6 +7,7 @@ const officeInformation = require('/lib/officeInformation');
 const clusterLib = require('/lib/xp/cluster');
 const facetLib = require('/lib/facets');
 const sitemap = require('/lib/sitemap/sitemap');
+const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 
 let appIsRunning = true;
 
@@ -21,6 +22,9 @@ sitemap.activateDataUpdateEventListener();
 
 // generate initial sitemap data and start periodic regeneration
 sitemap.generateDataAndActivateSchedule();
+
+// enable retrieval of version history data from a specified date-time
+hookLibsWithTimeTravel();
 
 // start task for handling caching of expired and prepublished content
 if (clusterLib.isMaster()) {
