@@ -9,7 +9,13 @@ const globalValueMacroConfigCallback = (context, params) => {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
-            return runInBranchContext(() => getGlobalTextValue(gvKey, contentId), 'master');
+            return runInBranchContext(() => {
+                // Attempt to prioritize the number value, as this needs to be formatted depending on
+                // content language by frontend.
+                return (
+                    getGlobalNumberValue(gvKey, contentId) || getGlobalTextValue(gvKey, contentId)
+                );
+            }, 'master');
         },
     };
 };
