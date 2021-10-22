@@ -41,8 +41,6 @@ const selectorQuerySimpleRequest = (req) => {
 const selectorQuery = (req) => {
     const response = selectorQueryRequest(req);
 
-    log.info(`Response: ${JSON.stringify(response)}`);
-
     if (response.status >= 500) {
         log.info(
             `Error from selectorQuery, trying fallback - ${response.status} ${response.message}`
