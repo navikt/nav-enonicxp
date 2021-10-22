@@ -16,7 +16,7 @@ const modifyGlobalValueItemService = (req) => {
         return errorResponse;
     }
 
-    const { contentId, key, itemName, textValue, numberValue } = req.params;
+    const { contentId, key, itemName, numberValue } = req.params;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
@@ -43,7 +43,6 @@ const modifyGlobalValueItemService = (req) => {
         const modifiedItem = {
             key,
             itemName,
-            ...(textValue && { textValue }),
             ...(numberValue !== undefined && { numberValue }),
         };
 

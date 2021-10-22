@@ -13,7 +13,6 @@ const globalValuesCallback = (context, params) => {
                 fields: {
                     key: { type: graphQlLib.GraphQLString },
                     itemName: { type: graphQlLib.GraphQLString },
-                    textValue: { type: graphQlLib.GraphQLString },
                     numberValue: { type: graphQlLib.GraphQLFloat },
                 },
             })

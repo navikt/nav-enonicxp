@@ -1,7 +1,7 @@
 const graphQlLib = require('/lib/guillotine/graphql');
 const { getGvKeyAndContentIdFromUniqueKey } = require('/lib/global-values/global-values');
 const { runInBranchContext } = require('/lib/headless/branch-context');
-const { getGlobalNumberValue, getGlobalTextValue } = require('/lib/global-values/global-values');
+const { getGlobalNumberValue } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 
 const globalValueMacroConfigCallback = (context, params) => {
@@ -9,13 +9,7 @@ const globalValueMacroConfigCallback = (context, params) => {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
-            return runInBranchContext(() => {
-                // Attempt to prioritize the number value, as this needs to be formatted depending on
-                // content language by frontend.
-                return (
-                    getGlobalNumberValue(gvKey, contentId) || getGlobalTextValue(gvKey, contentId)
-                );
-            }, 'master');
+            return runInBranchContext(() => getGlobalNumberValue(gvKey, contentId), 'master');
         },
     };
 };
