@@ -1,3 +1,10 @@
-const { frontendOrigin, xpOrigin, revalidatorProxyOrigin } = app.config;
+const { frontendOrigin, xpOrigin, revalidatorProxyOrigin, env } = app.config;
 
-module.exports = { frontendOrigin, xpOrigin, revalidatorProxyOrigin };
+const portalAdminOrigin = {
+    p: 'https://portal-admin.oera.no',
+    dev: 'https://portal-admin-dev.oera.no',
+    q6: 'https://portal-admin-q6.oera.no',
+    localhost: 'http://localhost:8080',
+}[env];
+
+module.exports = { frontendOrigin, xpOrigin, revalidatorProxyOrigin, portalAdminOrigin };
