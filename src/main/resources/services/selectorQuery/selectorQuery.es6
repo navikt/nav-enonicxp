@@ -24,6 +24,9 @@ const selectorQueryRequest = (req) =>
 const selectorQuerySimpleRequest = (req) => {
     const body = JSON.parse(req.body);
     const { queryExpr } = body;
+    // The query from content studio looks something like this:
+    // (((fulltext('displayName^5,_name^3,_alltext', 'My search term', 'AND') OR ngram('displayName^5,_nam...<etc>
+    // We want to extract the search term
     const searchTerm = queryExpr.split("', '")[1];
 
     return selectorQueryRequest({
