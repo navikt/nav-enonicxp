@@ -15,7 +15,6 @@ const selectorQueryRequest = (req) =>
     httpClient.request({
         ...req,
         url: selectorQueryContentStudioUrl,
-        connectionTimeout: 5000,
     });
 
 const selectorQuerySimpleRequest = (req) => {
@@ -36,21 +35,23 @@ const selectorQuerySimpleRequest = (req) => {
 };
 
 const selectorQuery = (req) => {
-    const response = selectorQueryRequest(req);
+    try {
+        const response = selectorQueryRequest(req);
 
-    if (response.status >= 500) {
-        log.info(
-            `Error from selectorQuery, trying fallback - ${response.status} ${response.message}`
-        );
+        if (response.status >= 500) {
+            log.info(
+                `Error from selectorQuery, trying fallback - ${response.status} ${response.message}`
+            );
 
-        const simpleResponse = selectorQuerySimpleRequest(req);
+            return selectorQuerySimpleRequest(req);
+        }
 
-        log.info(`Fallback response: ${JSON.stringify(simpleResponse)}`);
+        return response;
+    } catch (e) {
+        log.info(`Exception from selectorQuery, trying fallback - ${e}`);
 
-        return simpleResponse;
+        return selectorQuerySimpleRequest(req);
     }
-
-    return response;
 };
 
 exports.post = selectorQuery;
