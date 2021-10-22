@@ -13,12 +13,9 @@ const selectorQueryContentStudioUrl = `${portalAdminOrigin}/selectorQuery`;
 
 const selectorQueryRequest = (req) =>
     httpClient.request({
-        method: 'POST',
+        ...req,
         url: selectorQueryContentStudioUrl,
         connectionTimeout: 5000,
-        contentType: 'application/json',
-        headers: req.headers,
-        body: req.body,
     });
 
 const selectorQuerySimpleRequest = (req) => {
