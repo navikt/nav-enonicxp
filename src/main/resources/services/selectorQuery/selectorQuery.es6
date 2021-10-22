@@ -7,7 +7,6 @@
  * */
 
 const httpClient = require('/lib/http-client');
-const { runInBranchContext } = require('/lib/headless/branch-context');
 const { xpOrigin } = require('/lib/headless/url-origin');
 
 const selectorQueryContentStudioUrl = `${xpOrigin}/selectorQuery`;
@@ -40,7 +39,7 @@ const selectorQuerySimpleRequest = (req) => {
 };
 
 const selectorQuery = (req) => {
-    const response = runInBranchContext(() => selectorQueryRequest(req), req.branch);
+    const response = selectorQueryRequest(req);
 
     log.info(`Response: ${JSON.stringify(response)}`);
 
