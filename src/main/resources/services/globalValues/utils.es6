@@ -3,24 +3,19 @@ const {
     insufficientPermissionResponse,
 } = require('/lib/auth/auth-utils');
 
-const validateGlobalValueInputAndGetErrorResponse = ({
-    contentId,
-    itemName,
-    textValue,
-    numberValue,
-}) => {
+const validateGlobalValueInputAndGetErrorResponse = ({ contentId, itemName, numberValue }) => {
     if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
         return insufficientPermissionResponse('MODIFY');
     }
 
-    const hasValue = textValue || numberValue !== undefined;
+    const hasValue = numberValue !== undefined;
 
     if (!contentId || !itemName || !hasValue) {
         return gvServiceInvalidRequestResponse(
             'Missing parameters:' +
                 `${!contentId && ' contentId'}` +
                 `${!itemName && ' itemName'}` +
-                `${!hasValue && ' textValue or numberValue'}`
+                `${!hasValue && ' numberValue'}`
         );
     }
 

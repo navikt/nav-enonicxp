@@ -4,7 +4,6 @@ const globalValueSetFragment = `
             valueItems {
                 key
                 itemName
-                textValue
                 numberValue
             }
         }
