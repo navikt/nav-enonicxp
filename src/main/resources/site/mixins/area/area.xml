@@ -4,8 +4,12 @@
         <label>Områdekategori</label>
         <occurrences minimum="0" maximum="99"/>
         <config>
+            <option value="work">Arbeid</option>
             <option value="family">Familie og barn</option>
             <option value="health">Helse og sykdom</option>
+            <option value="accessibility">Hjelpemidler og tilrettelegging</option>
+            <option value="pension">Pensjon</option>
+            <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
         </config>
     </input>
   </form>
