@@ -246,4 +246,5 @@ module.exports = {
     updateSitemapEntry,
     activateDataUpdateEventListener,
     pageContentTypes,
+    getExternalUrl: getUrl,
 };
