@@ -1,8 +1,22 @@
 <content-type>
-    <display-name>Globale verdier</display-name>
+    <display-name>Global verdi</display-name>
     <description>Verdier som kan benyttes i tekster eller kalkulatorer</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Verdi</label>
+            <items>
+                <input name="numberValue" type="TextLine">
+                    <label>Verdien må være et tall</label>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <regexp>^([0-9]+)$</regexp>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
 </content-type>
