@@ -4,7 +4,7 @@ const { findContentsWithHtmlAreaText } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 
 const globalValuesContentType = `${app.name}:global-value-set`;
-const validTypes = { textValue: true, numberValue: true };
+const validTypes = { numberValue: true };
 
 const uniqueKeySeparator = '::';
 
@@ -216,15 +216,12 @@ const getGlobalValue = (gvKey, contentId, type) => {
     return value[type] || value.numberValue;
 };
 
-const getGlobalTextValue = (gvKey, contentId) => getGlobalValue(gvKey, contentId, 'textValue');
-
 const getGlobalNumberValue = (gvKey, contentId) => getGlobalValue(gvKey, contentId, 'numberValue');
 
 module.exports = {
     getGlobalValueUsage,
     getGlobalValueUsageLegacy,
     getGlobalValueSet,
-    getGlobalTextValue,
     getGlobalNumberValue,
     globalValuesContentType,
     getGlobalValueUniqueKey,

@@ -83,7 +83,7 @@ const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
     }, []);
 
 const globalValueSelectorService = (req) => {
-    const { valueType = 'textValue', withDescription, query, ids } = req.params;
+    const { valueType = 'numberValue', withDescription, query, ids } = req.params;
 
     const hits = runInBranchContext(
         () =>

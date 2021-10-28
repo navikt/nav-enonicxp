@@ -16,7 +16,7 @@ const addGlobalValueItemService = (req) => {
         return errorResponse;
     }
 
-    const { contentId, itemName, textValue, numberValue } = req.params;
+    const { contentId, itemName, numberValue } = req.params;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
@@ -41,7 +41,6 @@ const addGlobalValueItemService = (req) => {
         const newItem = {
             key: generateKey(),
             itemName,
-            ...(textValue && { textValue }),
             ...(numberValue !== undefined && { numberValue }),
         };
 
