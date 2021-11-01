@@ -57,8 +57,8 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
                 return [];
             }
 
-            const values = forceArray(variables).reduce((acc, valueContent) => {
-                const value = getGlobalValue(valueContent._id);
+            const values = forceArray(variables).reduce((acc, valueContentId) => {
+                const value = getGlobalValue(valueContentId);
 
                 return value ? [...acc, value] : acc;
             }, []);
