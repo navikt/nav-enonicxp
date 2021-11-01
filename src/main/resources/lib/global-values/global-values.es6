@@ -4,7 +4,6 @@ const { findContentsWithHtmlAreaText } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 
 const globalValuesContentType = `${app.name}:global-value-set`;
-const validTypes = { numberValue: true };
 
 const uniqueKeySeparator = '::';
 
@@ -25,7 +24,7 @@ const getGvKeyAndContentIdFromUniqueKey = (key) => {
     const [gvKey, contentId] = getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
 
     return {
-        contentId: contentId || getContentIdFromgvKeyLegacy(gvKey),
+        contentId: contentId,
         gvKey,
     };
 };
@@ -60,18 +59,7 @@ const getGlobalValueCalcUsage = (key) =>
         },
     }).hits;
 
-const getGlobalValueItem = (gvKey, contentId) => {
-    const valueSet = contentLib.get({ key: contentId });
-
-    if (!valueSet || valueSet.type !== globalValuesContentType) {
-        log.info(`No global value set found for contentId ${contentId}`);
-        return null;
-    }
-
-    return forceArray(valueSet.data?.valueItems).find((item) => item.key === gvKey);
-};
-
-const getGlobalValueSet = (contentId) => {
+const getGlobalValueContent = (contentId) => {
     if (!contentId) {
         return null;
     }
@@ -84,32 +72,20 @@ const getGlobalValueSet = (contentId) => {
     return content;
 };
 
-const getGlobalValue = (gvKey, contentId, type) => {
-    if (!gvKey) {
-        log.info(`Invalid global value key requested from ${contentId}`);
-        return null;
-    }
-
+const getGlobalValue = (contentId) => {
     if (!contentId) {
-        log.info(
-            `Invalid contentId provided for global value key ${gvKey} - trying backwards-compatible retrieval`
-        );
-        return getGlobalValueLegacy(gvKey, type);
-    }
-
-    if (!validTypes[type]) {
-        log.info(`Invalid type ${type} specified for global value ${gvKey}`);
+        log.error('Global values: No content id was provided');
         return null;
     }
 
-    const valueSet = getGlobalValueSet(contentId);
+    const content = getGlobalValueContent(contentId);
 
-    if (!valueSet) {
-        log.info(`No value set found for contentRef ${contentId}`);
+    if (!content) {
+        log.info(`Global value: No content found for ${contentId}`);
         return null;
     }
 
-    const valuesFound = forceArray(valueSet.data.valueItems).filter((value) => value.key === gvKey);
+    const valuesFound = forceArray(content.data.valueItems).filter((value) => value.key === gvKey);
 
     if (valuesFound.length === 0) {
         log.error(`Value not found for global value key ${gvKey}`);
@@ -123,17 +99,15 @@ const getGlobalValue = (gvKey, contentId, type) => {
 
     const value = valuesFound[0];
 
-    return value[type] || value.numberValue;
+    return value.numberValue;
 };
-
-const getGlobalNumberValue = (gvKey, contentId) => getGlobalValue(gvKey, contentId, 'numberValue');
 
 module.exports = {
     getGlobalValueUsage,
-    getGlobalValueSet,
-    getGlobalNumberValue,
+    getGlobalValueSet: getGlobalValueContent,
     globalValuesContentType,
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
     getGlobalValueItem,
+    getGlobalValue,
 };

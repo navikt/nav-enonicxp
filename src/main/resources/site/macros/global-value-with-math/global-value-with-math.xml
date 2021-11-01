@@ -2,13 +2,11 @@
     <display-name>Globale verdier med utregning</display-name>
     <description>Bruk denne ved behov for matematiske operasjoner på verdier</description>
     <form>
-        <input name="keys" type="CustomSelector">
+        <input name="variables" type="ContentSelector">
             <label>Velg verdier</label>
             <occurrences minimum="0" maximum="0"/>
             <config>
-                <service>globalValues</service>
-                <param value="valueType">numberValue</param>
-                <param value="withDescription">true</param>
+                <allowContentType>${app}:global-value-set</allowContentType>
             </config>
         </input>
         <input name="expression" type="TextLine">
@@ -25,11 +23,6 @@
                 <min>0</min>
                 <max>2</max>
             </config>
-        </input>
-        <!-- Dummy value to prevent graphql-errors for undefined field -->
-        <input name="variables" type="RadioButton">
-            <label>-</label>
-            <occurrences minimum="0" maximum="1"/>
         </input>
     </form>
 </macro>

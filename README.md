@@ -29,11 +29,6 @@ git clone https://github.com/navikt/nav-enonicxp.git
 ```
 cp no.nav.navno.cfg.sample /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
 ```
-6. Start dekoratøren med
-```
-docker login docker.pkg.github.com -u GITHUB_USERNAME -p GITHUB_PERSONAL_ACCESS_TOKEN
-docker-compose up -d
-```
 
 ## Development
 
