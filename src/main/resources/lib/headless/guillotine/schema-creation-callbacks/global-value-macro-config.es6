@@ -4,41 +4,22 @@ const { getGlobalValueContentIdFromMacroKey } = require('/lib/global-values/glob
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 
-const getValueFromLegacyKey = (key) => {
-    log.info(`GV macro key (old): ${key}`);
-
+const getValue = (key) => {
     const contentId = getGlobalValueContentIdFromMacroKey(key);
     return runInBranchContext(() => getGlobalValue(contentId), 'master');
-};
-
-const getMathVariablesFromLegacyKeys = (keys) => {
-    const variables = runInBranchContext(
-        () =>
-            keys.reduce((acc, key) => {
-                const value = getValueFromLegacyKey(key);
-                return value ? [...acc, value] : acc;
-            }, []),
-        'master'
-    );
-
-    // If any specified variables are missing, we return nothing to ensure
-    // inconsistent/unintended calculations does not happen
-    const hasMissingValues = keys.length !== variables.length;
-
-    return hasMissingValues ? [] : variables;
 };
 
 const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            const { key, value } = env.source;
+            const { key } = env.source;
 
             if (key) {
-                return getValueFromLegacyKey(key);
+                return getValue(key);
             }
 
-            return getGlobalValue(value);
+            return null;
         },
     };
 };
@@ -47,25 +28,26 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
     params.fields.variables = {
         type: graphQlLib.list(graphQlLib.GraphQLFloat),
         resolve: (env) => {
-            const { keys, variables } = env.source;
+            const { keys } = env.source;
 
             if (keys) {
-                return getMathVariablesFromLegacyKeys(forceArray(keys));
+                const variables = runInBranchContext(
+                    () =>
+                        forceArray(keys).reduce((acc, key) => {
+                            const value = getValue(key);
+                            return value ? [...acc, value] : acc;
+                        }, []),
+                    'master'
+                );
+
+                // If any specified variables are missing, we return nothing to ensure
+                // inconsistent/unintended calculations does not happen
+                const hasMissingValues = keys.length !== variables.length;
+
+                return hasMissingValues ? [] : variables;
             }
 
-            if (!variables) {
-                return [];
-            }
-
-            const values = forceArray(variables).reduce((acc, valueContentId) => {
-                const value = getGlobalValue(valueContentId);
-
-                return value ? [...acc, value] : acc;
-            }, []);
-
-            log.info(`Values for math macro: ${JSON.stringify(values)}`);
-
-            return values;
+            return null;
         },
     };
 };

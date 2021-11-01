@@ -2,7 +2,7 @@
     <display-name>Globale verdier med utregning</display-name>
     <description>Bruk denne ved behov for matematiske operasjoner på verdier</description>
     <form>
-        <input name="variables" type="ContentSelector">
+        <input name="keys" type="ContentSelector">
             <label>Velg verdier</label>
             <occurrences minimum="0" maximum="0"/>
             <config>
@@ -23,6 +23,11 @@
                 <min>0</min>
                 <max>2</max>
             </config>
+        </input>
+        <!-- Dummy value to prevent graphql-errors for undefined field -->
+        <input name="variables" type="RadioButton">
+            <label>-</label>
+            <occurrences minimum="0" maximum="1"/>
         </input>
     </form>
 </macro>
