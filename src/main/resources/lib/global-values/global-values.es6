@@ -5,35 +5,23 @@ const { forceArray } = require('/lib/nav-utils');
 
 const globalValuesContentType = `${app.name}:global-value-set`;
 
-const uniqueKeySeparator = '::';
+const legacyKeySeparator = '::';
 
-// Creates a globally unique key for a global value, as a composite of
-// the global value key and the id of the content it belongs to
-const getGlobalValueUniqueKey = (gvKey, contentId) => {
-    return `${gvKey}${uniqueKeySeparator}${contentId}`;
-};
-
-const getGvKeyAndContentIdFromUniqueKey = (key) => {
+const getGlobalValueContentIdFromMacroKey = (key) => {
     if (!key) {
-        return {
-            contentId: null,
-            gvKey: null,
-        };
+        return null;
     }
 
-    const [gvKey, contentId] = getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
+    const [contentId, contentIdLegacy] = getKeyWithoutMacroDescription(key).split(
+        legacyKeySeparator
+    );
 
-    return {
-        contentId: contentId,
-        gvKey,
-    };
+    return contentIdLegacy || contentId;
 };
 
-const getGlobalValueUsage = (gvKey, contentId) => {
-    const key = getGlobalValueUniqueKey(gvKey, contentId);
-
-    const macroUsage = findContentsWithHtmlAreaText(key);
-    const calcUsage = getGlobalValueCalcUsage(key);
+const getGlobalValueUsage = (contentId) => {
+    const macroUsage = findContentsWithHtmlAreaText(contentId);
+    const calcUsage = getGlobalValueCalcUsage(contentId);
 
     return [...macroUsage, ...calcUsage].map((content) => ({
         id: content._id,
@@ -85,29 +73,25 @@ const getGlobalValue = (contentId) => {
         return null;
     }
 
-    const valuesFound = forceArray(content.data.valueItems).filter((value) => value.key === gvKey);
+    const values = forceArray(content.data.valueItems);
 
-    if (valuesFound.length === 0) {
-        log.error(`Value not found for global value key ${gvKey}`);
+    if (values.length === 0) {
+        log.error(`Global value not found for ${contentId}`);
         return null;
     }
 
-    if (valuesFound.length > 1) {
-        log.error(`Found multiple values with global value key ${gvKey}!`);
+    if (values.length > 1) {
+        log.error(`Multiple global values found for ${contentId}!`);
         return null;
     }
 
-    const value = valuesFound[0];
-
-    return value.numberValue;
+    return values[0].numberValue;
 };
 
 module.exports = {
     getGlobalValueUsage,
-    getGlobalValueSet: getGlobalValueContent,
+    getGlobalValueContent,
     globalValuesContentType,
-    getGlobalValueUniqueKey,
-    getGvKeyAndContentIdFromUniqueKey,
-    getGlobalValueItem,
+    getGlobalValueContentIdFromMacroKey,
     getGlobalValue,
 };

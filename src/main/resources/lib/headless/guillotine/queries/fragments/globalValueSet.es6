@@ -4,6 +4,11 @@ const globalValueSetFragment = `
             valueItems {
                 numberValue
             }
+            valueUsage(contentRef:$ref) {
+                id
+                path
+                displayName
+            }
         }
     }
 `;
