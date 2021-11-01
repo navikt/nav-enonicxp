@@ -29,7 +29,7 @@ const getMathVariablesFromLegacyKeys = (keys) => {
 };
 
 const globalValueMacroConfigCallback = (context, params) => {
-    params.fields.value.resolve = {
+    params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
             const { key, value } = env.source;
