@@ -8,8 +8,14 @@ const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
-            return runInBranchContext(() => getGlobalNumberValue(gvKey, contentId), 'master');
+            if (env.source.key) {
+                log.info(`GV macro key: ${env.source.key}`);
+
+                const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
+                return runInBranchContext(() => getGlobalNumberValue(gvKey, contentId), 'master');
+            }
+
+            return env.source.value;
         },
     };
 };

@@ -1,7 +1,4 @@
-const {
-    getGlobalValueUsage,
-    getGlobalValueUsageLegacy,
-} = require('/lib/global-values/global-values');
+const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { gvServiceInvalidRequestResponse } = require('../utils');
 
 const getGlobalValueUsageService = (req) => {
@@ -18,7 +15,6 @@ const getGlobalValueUsageService = (req) => {
         contentType: 'application/json',
         body: {
             usage: getGlobalValueUsage(key, contentId),
-            legacyUsage: getGlobalValueUsageLegacy(key),
         },
     };
 };
