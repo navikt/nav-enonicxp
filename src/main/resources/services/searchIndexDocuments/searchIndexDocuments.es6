@@ -1,6 +1,7 @@
 const contentLib = require('/lib/xp/content');
 const { getExternalUrl } = require('/lib/sitemap/sitemap');
 
+// Temporary service for populating an external search index
 const searchIndexDocuments = () => {
     const result = contentLib
         .query({
