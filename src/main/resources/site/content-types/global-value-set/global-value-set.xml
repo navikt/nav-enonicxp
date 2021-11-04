@@ -19,5 +19,8 @@
                 </input>
             </items>
         </item-set>
+        <input name="description" type="TextArea">
+            <label>Beskrivelse (vises ikke for bruker)</label>
+        </input>
     </form>
 </content-type>
