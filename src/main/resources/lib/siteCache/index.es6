@@ -1,13 +1,6 @@
-const contentLib = require('/lib/xp/content');
 const { getParentPath } = require('/lib/nav-utils');
 const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
 const { removeDuplicates } = require('/lib/nav-utils');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { globalValuesContentType } = require('/lib/global-values/global-values');
-const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
-const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
-const { forceArray } = require('/lib/nav-utils');
-const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
@@ -190,6 +183,8 @@ function findReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
+    const fragmentReferences = getFragmentMacroReferences(id);
+
     // if there are references which have indirect references we need to invalidate their
     // references as well
     const deepTypes = [
@@ -205,6 +200,7 @@ function findReferences(id, path, depth) {
         }
         return acc;
     }, []);
+
     references = [...references, ...deepReferences];
 
     // get parent
@@ -240,66 +236,6 @@ function findReferences(id, path, depth) {
     );
 }
 
-function clearFragmentMacroReferences(content) {
-    if (content.type !== 'portal:fragment') {
-        return;
-    }
-
-    const { _id } = content;
-
-    const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
-    if (!contentsWithFragmentId?.length > 0) {
-        return;
-    }
-
-    log.info(
-        `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${_id}`
-    );
-
-    contentsWithFragmentId.forEach((contentWithFragment) =>
-        wipeOnChange(contentWithFragment._path)
-    );
-}
-
-const productCardTargetTypes = {
-    [`${app.name}:content-page-with-sidemenus`]: true,
-    [`${app.name}:situation-page`]: true,
-    [`${app.name}:tools-page`]: true,
-};
-
-function clearProductCardMacroReferences(content) {
-    if (!productCardTargetTypes[content.type]) {
-        return;
-    }
-
-    const { _id } = content;
-
-    const contentsWithProductCardMacro = findContentsWithProductCardMacro(_id);
-    if (!contentsWithProductCardMacro?.length > 0) {
-        return;
-    }
-
-    log.info(
-        `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
-    );
-
-    contentsWithProductCardMacro.forEach((contentWithMacro) =>
-        wipeOnChange(contentWithMacro._path)
-    );
-}
-
-function clearGlobalValueReferences(content) {
-    if (content.type !== globalValuesContentType) {
-        return;
-    }
-
-    forceArray(content.data?.valueItems).forEach((item) => {
-        getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
-            wipeOnChange(contentWithValues.path);
-        });
-    });
-}
-
 function wipeNotificationsEntry(path) {
     log.info(`Clearing notifications from ${path}`);
     wipe('notifications')(path);
@@ -320,15 +256,6 @@ function clearReferences(id, path, depth, event) {
         references.forEach((el) => {
             wipeOnChange(el._path);
         });
-    }
-
-    const content = runInBranchContext(
-        () => contentLib.get({ key: id }),
-        event === 'node.deleted' ? 'draft' : 'master'
-    );
-
-    if (!content) {
-        return;
     }
 
     clearFragmentMacroReferences(content);
