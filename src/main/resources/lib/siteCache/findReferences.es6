@@ -1,8 +1,16 @@
 const contentLib = require('/lib/xp/content');
+const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
+const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
+
+const productCardTargetTypes = {
+    [`${app.name}:content-page-with-sidemenus`]: true,
+    [`${app.name}:situation-page`]: true,
+    [`${app.name}:tools-page`]: true,
+};
 
 function getFragmentMacroReferences(content) {
     if (content.type !== 'portal:fragment') {
@@ -23,31 +31,18 @@ function getFragmentMacroReferences(content) {
     return contentsWithFragmentId;
 }
 
-const productCardTargetTypes = {
-    [`${app.name}:content-page-with-sidemenus`]: true,
-    [`${app.name}:situation-page`]: true,
-    [`${app.name}:tools-page`]: true,
-};
-
-function clearProductCardMacroReferences(content) {
+function getProductCardMacroReferences(content) {
     if (!productCardTargetTypes[content.type]) {
         return;
     }
 
     const { _id } = content;
 
-    const contentsWithProductCardMacro = findContentsWithProductCardMacro(_id);
-    if (!contentsWithProductCardMacro?.length > 0) {
-        return;
-    }
+    const references = findContentsWithProductCardMacro(_id);
 
-    log.info(
-        `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
-    );
+    log.info(`Found ${references.length} pages with references to product page ${_id}`);
 
-    contentsWithProductCardMacro.forEach((contentWithMacro) =>
-        wipeOnChange(contentWithMacro._path)
-    );
+    return references;
 }
 
 const getGlobalValueReferences = (content) => {
@@ -55,9 +50,15 @@ const getGlobalValueReferences = (content) => {
         return;
     }
 
-    return forceArray(content.data?.valueItems).flatMap((item) => {
-        getGlobalValueUsage(item.key, content._id);
-    });
+    const references = forceArray(content.data?.valueItems)
+        .map((item) => {
+            getGlobalValueUsage(item.key, content._id);
+        })
+        .flat();
+
+    log.info(`Found ${references.length} pages with references to product page ${_id}`);
+
+    return references;
 };
 
 const findMacroReferences = (id, branch) => {
@@ -66,6 +67,16 @@ const findMacroReferences = (id, branch) => {
     if (!content) {
         return [];
     }
+
+    return [
+        ...getGlobalValueReferences(content),
+        ...getProductCardMacroReferences(content),
+        ...getFragmentMacroReferences(content),
+    ];
 };
 
-module.exports = { findMacroReferences };
+const findReferences = (id, branch) => {
+    return findMacroReferences(id, branch);
+};
+
+module.exports = { findReferences };

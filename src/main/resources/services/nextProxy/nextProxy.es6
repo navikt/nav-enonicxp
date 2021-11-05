@@ -1,3 +1,4 @@
+const httpClient = require('/lib/http-client');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const nextApiUrl = `${frontendOrigin}/api/json-proxy`;
@@ -7,9 +8,10 @@ const handleGet = (req) => {
     const url = `${nextApiUrl}?path=${path}`;
     log.info(`Requesting frontend asset from: ${url}`);
 
-    return {
-        status: 200,
-    };
+    return httpClient.request({
+        method: 'GET',
+        url: url,
+    });
 };
 
 exports.get = handleGet;
