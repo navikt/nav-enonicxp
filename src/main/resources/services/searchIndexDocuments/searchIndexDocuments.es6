@@ -6,7 +6,7 @@ const searchIndexDocuments = () => {
     const result = contentLib
         .query({
             start: 0,
-            count: 1000,
+            count: 5000,
             contentTypes: ['no.nav.navno:main-article'],
             filters: {
                 boolean: {
