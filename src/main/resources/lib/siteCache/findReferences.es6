@@ -118,8 +118,8 @@ const getReferencesFromParent = (path) => {
 // If the parent is a main-article, we need wipe this article, any chapters under that article
 // and the articles referenced by those chapters. Chapters are attached to an article only via
 // the parent/children relation, not with an explicit content reference
-const addMainArticleChapterReferences = (prevAcc, content, _, initialAcc) => {
-    const acc = prevAcc || initialAcc;
+const addMainArticleChapterReferences = (prevAcc, content, _, initialArray) => {
+    const acc = prevAcc || initialArray;
 
     if (content.type === mainArticleType) {
         const chapters = contentLib
@@ -131,7 +131,7 @@ const addMainArticleChapterReferences = (prevAcc, content, _, initialAcc) => {
                 contentLib.get({ key: chapter.data.article })
             );
 
-            return [...acc, content, ...chapters, ...chapterArticles];
+            return [...acc, ...chapters, ...chapterArticles];
         }
     }
 
