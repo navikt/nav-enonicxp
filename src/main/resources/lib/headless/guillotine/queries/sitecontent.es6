@@ -21,6 +21,7 @@ const componentsFragment = require('./fragments/_components');
 const sectionPage = require('./fragments/sectionPage');
 const contentList = require('./fragments/contentList');
 const calculator = require('./fragments/calculator');
+const contactInformation = require('./fragments/contactInformation');
 const internalLink = require('./fragments/internalLink');
 const transportPage = require('./fragments/transportPage');
 const externalLink = require('./fragments/externalLink');
@@ -44,6 +45,7 @@ const queryFragments = [
     componentsFragment,
     contentList.fragment,
     calculator.fragment,
+    contactInformation.fragment,
     externalLink.fragment,
     internalLink.fragment,
     urlFragment.fragment,

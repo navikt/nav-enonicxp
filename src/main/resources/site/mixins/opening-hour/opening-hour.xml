@@ -1,0 +1,12 @@
+<mixin>
+    <form>
+        <input name="from" type="Time" >
+            <label>Fra klokken</label>
+            <help-text>Feks "08:00"</help-text>
+        </input>
+        <input name="to" type="Time" >
+            <label>Til klokken</label>
+            <help-text>Feks "16:00"</help-text>
+        </input>
+    </form>
+</mixin>
