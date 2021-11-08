@@ -145,6 +145,7 @@ const getNotificationsCache = (idOrPath, callback) => {
     if (isUUID(idOrPath)) {
         return callback();
     }
+
     try {
         return caches.notifications.get(getPathname(idOrPath), callback);
     } catch (e) {
@@ -159,8 +160,12 @@ const wipeNotificationsEntry = (nodePath) => {
     frontendCacheRevalidate(path);
 };
 
-const clearReferences = (id, nodePath, depth, event) => {
-    const references = findReferences(id, nodePath, event === 'node.deleted' ? 'draft' : 'master');
+const clearReferences = (id, nodePath, eventType) => {
+    const references = findReferences(
+        id,
+        nodePath,
+        eventType === 'node.deleted' ? 'draft' : 'master'
+    );
 
     if (references && references.length > 0) {
         log.info(
@@ -186,11 +191,18 @@ const nodeListenerCallback = (event) => {
             wipeNotificationsEntry(node.path);
 
             runInBranchContext(() => {
-                clearReferences(node.id, node.path, 0, event.type);
+                clearReferences(node.id, node.path, event.type);
             }, 'master');
         } else if (node.path.includes('/dekorator-meny/')) {
             wipe('decorator')();
         }
+    });
+};
+
+const prepublishListenerCallback = (event) => {
+    event.data.prepublished.forEach((item) => {
+        wipeCacheForNodePath(item._path);
+        clearReferences(item._id, item._path);
     });
 };
 
@@ -203,17 +215,12 @@ const activateCacheEventListeners = () => {
             localOnly: false,
             callback: nodeListenerCallback,
         });
-        log.info('Started: Cache eventListener on node.updated');
+        log.info('Started: Cache eventListener on node events');
 
         libs.event.listener({
             type: 'custom.prepublish',
             localOnly: false,
-            callback: (e) => {
-                e.data.prepublished.forEach((el) => {
-                    wipeCacheForNodePath(el._path);
-                    clearReferences(el._id, el._path, 0);
-                });
-            },
+            callback: prepublishListenerCallback,
         });
         log.info('Started: Cache eventListener on custom.prepublish');
 

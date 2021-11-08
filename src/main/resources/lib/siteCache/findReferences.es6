@@ -12,6 +12,11 @@ const mainArticleType = `${app.name}:main-article`;
 const mainArticleChapterType = `${app.name}:main-article-chapter`;
 const publishingCalendarType = `${app.name}:publishing-calendar`;
 
+const typesWithContentGeneratedFromChildren = {
+    [mainArticleType]: true,
+    [publishingCalendarType]: true,
+};
+
 const productCardTargetTypes = {
     [`${app.name}:content-page-with-sidemenus`]: true,
     [`${app.name}:situation-page`]: true,
@@ -79,7 +84,7 @@ const getMacroReferences = (id, branch) => {
     ];
 };
 
-const getDirectReferences = (id) => {
+const getContentReferences = (id) => {
     const references = contentLib.query({
         start: 0,
         count: 2,
@@ -103,36 +108,46 @@ const getDirectReferences = (id) => {
 const getReferencesFromParent = (path) => {
     const parent = contentLib.get({ key: getParentPath(path) });
 
-    if (!parent) {
-        return [];
-    }
-
-    const { type } = parent;
-
-    if (type === mainArticleType) {
-        const chapters = contentLib
-            .getChildren({ key: parent._id })
-            .hits.filter((child) => child.type === mainArticleChapterType);
-
-        return [parent, ...chapters];
-    }
-
-    if (type === publishingCalendarType) {
+    if (parent && typesWithContentGeneratedFromChildren[parent.type]) {
         return [parent];
     }
 
     return [];
 };
 
+// If the parent is a main-article, we need wipe this article, any chapters under that article
+// and the articles referenced by those chapters. Chapters are attached to an article only via
+// the parent/children relation, not with an explicit content reference
+const addMainArticleChapterReferences = (prevAcc, content, _, initialAcc) => {
+    const acc = prevAcc || initialAcc;
+
+    if (content.type === mainArticleType) {
+        const chapters = contentLib
+            .getChildren({ key: content._id })
+            .hits.filter((child) => child.type === mainArticleChapterType);
+
+        if (chapters.length > 0) {
+            const chapterArticles = chapters.map((chapter) =>
+                contentLib.get({ key: chapter.data.article })
+            );
+
+            return [...acc, content, ...chapters, ...chapterArticles];
+        }
+    }
+
+    return acc;
+};
+
 const findReferences = (id, nodePath, branch) => {
     const contentPath = nodePath.replace(/^\/content/, '');
 
-    // Do not include the source content id
     const references = [
-        ...getDirectReferences(id, branch),
+        ...getContentReferences(id, branch),
         ...getMacroReferences(id, branch),
         ...getReferencesFromParent(contentPath),
-    ].filter((content) => content.id !== id);
+    ]
+        .reduce(addMainArticleChapterReferences, null)
+        .filter((content) => content.id !== id);
 
     return removeDuplicates(references, (a, b) => a._path === b._path);
 };
