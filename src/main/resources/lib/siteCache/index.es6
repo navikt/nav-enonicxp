@@ -80,9 +80,9 @@ function wipe(name) {
     };
 }
 
-function wipeAll() {
+const wipeAll = () => {
     Object.keys(caches).forEach((name) => wipe(name)());
-}
+};
 
 function getPathname(path) {
     return path.replace(pathnameFilter, '/');
@@ -183,16 +183,9 @@ function findReferences(id, path, depth) {
         query: `_references LIKE "${id}"`,
     }).hits;
 
-    const fragmentReferences = getFragmentMacroReferences(id);
-
     // if there are references which have indirect references we need to invalidate their
     // references as well
-    const deepTypes = [
-        `${app.name}:notification`,
-        `${app.name}:main-article-chapter`,
-        `${app.name}:content-list`,
-        `${app.name}:breaking-news`,
-    ];
+    const deepTypes = [`${app.name}:notification`, `${app.name}:main-article-chapter`];
 
     const deepReferences = references.reduce((acc, ref) => {
         if (ref?.type && deepTypes.indexOf(ref.type) !== -1) {
@@ -202,33 +195,6 @@ function findReferences(id, path, depth) {
     }, []);
 
     references = [...references, ...deepReferences];
-
-    // get parent
-    const parent = libs.content.get({
-        key: getParentPath(path.replace(/\/content/, '')),
-    });
-
-    // remove parents cache if its of a type that autogenerates content based on
-    // children and not reference
-    const parentTypesToClear = [
-        `${app.name}:page-list`,
-        `${app.name}:main-article`,
-        `${app.name}:publishing-calendar`,
-        `${app.name}:section-page`,
-    ];
-
-    if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
-        references.push(parent);
-        // If the parent has chapters we need to clear the cache of all other chapters as well
-        const chapters = libs.content
-            .getChildren({ key: parent._id })
-            .hits.filter((item) => item.type === `${app.name}:main-article-chapter`);
-        chapters.forEach((chapter) => {
-            if (chapter._id !== id) {
-                references.push(chapter);
-            }
-        });
-    }
 
     return removeDuplicates(
         references.filter((ref) => !!ref._path),
@@ -257,18 +223,18 @@ function clearReferences(id, path, depth, event) {
             wipeOnChange(el._path);
         });
     }
-
-    clearFragmentMacroReferences(content);
-    clearProductCardMacroReferences(content);
-    clearGlobalValueReferences(content);
 }
 
 function nodeListenerCallback(event) {
+    log.info(`Event: ${event}`);
+
     // Stop execution if not valid event type.
     const shouldRun = cacheInvalidatorEvents.filter((eventType) => event.type === eventType);
     if (!shouldRun) {
         return false;
     }
+
+    log.info(`Event 2: ${event}`);
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
@@ -297,8 +263,9 @@ function nodeListenerCallback(event) {
     return true;
 }
 
-function activateEventListener() {
+const activateCacheEventListener = () => {
     wipeAll();
+
     if (!hasSetupListeners) {
         libs.event.listener({
             type: 'node.*',
@@ -321,12 +288,12 @@ function activateEventListener() {
     } else {
         log.info('Cache node listeners already running');
     }
-}
+};
 
 module.exports = {
     getDecorator: getSome('decorator'),
     getDriftsmeldinger: getSome('driftsmeldinger'),
     getSitecontent,
     getNotifications,
-    activateEventListener,
+    activateCacheEventListener,
 };
