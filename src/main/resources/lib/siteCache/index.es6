@@ -27,7 +27,6 @@ const myHash =
     Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 log.info(`Creating new cache: ${myHash}`);
-const cacheInvalidatorEvents = ['node.pushed', 'node.deleted'];
 const caches = {
     decorator: libs.cache.newCache({
         size: 50,
@@ -226,15 +225,7 @@ function clearReferences(id, path, depth, event) {
 }
 
 function nodeListenerCallback(event) {
-    log.info(`Event: ${event}`);
-
-    // Stop execution if not valid event type.
-    const shouldRun = cacheInvalidatorEvents.filter((eventType) => event.type === eventType);
-    if (!shouldRun) {
-        return false;
-    }
-
-    log.info(`Event 2: ${event}`);
+    log.info(`Event: ${JSON.stringify(event)}`);
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
@@ -263,16 +254,17 @@ function nodeListenerCallback(event) {
     return true;
 }
 
-const activateCacheEventListener = () => {
+const activateCacheEventListeners = () => {
     wipeAll();
 
     if (!hasSetupListeners) {
         libs.event.listener({
-            type: 'node.*',
+            type: '(node.pushed|node.deleted)',
             localOnly: false,
             callback: nodeListenerCallback,
         });
         log.info('Started: Cache eventListener on node.updated');
+
         libs.event.listener({
             type: 'custom.prepublish',
             localOnly: false,
@@ -284,6 +276,7 @@ const activateCacheEventListener = () => {
             },
         });
         log.info('Started: Cache eventListener on custom.prepublish');
+
         hasSetupListeners = true;
     } else {
         log.info('Cache node listeners already running');
@@ -295,5 +288,5 @@ module.exports = {
     getDriftsmeldinger: getSome('driftsmeldinger'),
     getSitecontent,
     getNotifications,
-    activateCacheEventListener,
+    activateCacheEventListeners,
 };

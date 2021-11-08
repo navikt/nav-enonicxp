@@ -18,20 +18,16 @@ const productCardTargetTypes = {
     [`${app.name}:tools-page`]: true,
 };
 
-const typesWithReferenceFromParent = {
-    [`${app.name}:notification`]: true,
-};
-
 const getFragmentMacroReferences = (content) => {
     if (content.type !== 'portal:fragment') {
-        return;
+        return [];
     }
 
     const { _id } = content;
 
     const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
     if (!contentsWithFragmentId?.length > 0) {
-        return;
+        return [];
     }
 
     log.info(`Found ${contentsWithFragmentId.length} pages with references to fragment id ${_id}`);
@@ -41,7 +37,7 @@ const getFragmentMacroReferences = (content) => {
 
 const getProductCardMacroReferences = (content) => {
     if (!productCardTargetTypes[content.type]) {
-        return;
+        return [];
     }
 
     const { _id } = content;
@@ -55,16 +51,16 @@ const getProductCardMacroReferences = (content) => {
 
 const getGlobalValueReferences = (content) => {
     if (content.type !== globalValuesContentType) {
-        return;
+        return [];
     }
 
     const references = forceArray(content.data?.valueItems)
         .map((item) => {
-            getGlobalValueUsage(item.key, content._id);
+            return getGlobalValueUsage(item.key, content._id);
         })
         .flat();
 
-    log.info(`Found ${references.length} pages with references to global value id ${_id}`);
+    log.info(`Found ${references.length} pages with references to global value id ${content._id}`);
 
     return references;
 };
@@ -115,7 +111,7 @@ const getReferencesFromParent = (path) => {
 
     if (type === mainArticleType) {
         const chapters = contentLib
-            .getChildren({ key: content._id })
+            .getChildren({ key: parent._id })
             .hits.filter((child) => child.type === mainArticleChapterType);
 
         return [parent, ...chapters];

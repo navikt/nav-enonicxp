@@ -618,7 +618,7 @@ exports.handle = (s) => {
     });
     socket.on('clearAndStartCache', () => {
         libs.tools.runInContext(socket, () => {
-            libs.cache.activateCacheEventListener();
+            libs.cache.activateCacheEventListeners();
             libs.unpublish.start();
             libs.officeInformation.startCronJob();
         });
