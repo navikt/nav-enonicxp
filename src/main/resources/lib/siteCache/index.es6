@@ -65,16 +65,16 @@ const wipeAll = () => {
 
 const getPathname = (path) => path.replace(pathnameFilter, '/');
 
-const wipeOnChange = (path) => {
-    if (!path) {
+const wipeCacheForNodePath = (nodePath) => {
+    if (!nodePath) {
         return false;
     }
 
-    const pathname = getPathname(path);
-    log.info(`Clearing: ${pathname}`);
+    const pathname = getPathname(nodePath);
+    log.info(`Clearing cache for ${pathname}`);
 
     // When a template is updated we need to wipe all caches
-    if (path.indexOf('_templates/') !== -1) {
+    if (nodePath.includes('_templates/')) {
         wipeAll();
         log.info(
             `WIPED: [${pathname}] - All caches cleared due to updated template on [${myHash}]`
@@ -83,21 +83,18 @@ const wipeOnChange = (path) => {
     }
 
     // Wipe cache for decorator services
-    if (path.indexOf('/driftsmeldinger/') !== -1) {
-        const w = wipe('driftsmeldinger');
-        w('driftsmelding-heading-no');
-        w('driftsmelding-heading-en');
-        w('driftsmelding-heading-se');
+    if (nodePath.includes('/driftsmeldinger/')) {
+        wipe('driftsmeldinger')();
         return true;
     }
-    if (path.indexOf('/dekorator-meny/') !== -1) {
+    if (nodePath.includes('/dekorator-meny/')) {
         wipe('decorator')();
         return true;
     }
 
     // If global notifications are modified, every page is potentially affected
     // Wipe the whole cache
-    if (path.includes('/global-notifications/')) {
+    if (nodePath.includes('/global-notifications/')) {
         log.info(`Global notification modified, wiping notifications cache and frontend cache`);
         wipe('notifications')();
         frontendCacheWipeAll();
@@ -108,13 +105,13 @@ const wipeOnChange = (path) => {
     wipe('sitecontent')(pathname);
     frontendCacheRevalidate(pathname);
 
-    const xpPath = path.replace(/^\/content/, '');
+    const xpPath = nodePath.replace(/^\/content/, '');
     updateSitemapEntry(xpPath);
 
     return true;
 };
 
-const getDecorator = (branch, callback) => {
+const getDecoratorMenuCache = (branch, callback) => {
     if (branch === 'draft') {
         return callback();
     }
@@ -122,7 +119,7 @@ const getDecorator = (branch, callback) => {
     return caches.decorator.get('decorator', callback);
 };
 
-const getDriftsmeldinger = (language, branch, callback) => {
+const getDriftsmeldingerCache = (language, branch, callback) => {
     if (branch === 'draft') {
         return callback();
     }
@@ -130,7 +127,7 @@ const getDriftsmeldinger = (language, branch, callback) => {
     return caches.driftsmeldinger.get(`driftsmelding-heading-${language}`, callback);
 };
 
-const getSitecontent = (idOrPath, branch, callback) => {
+const getSitecontentCache = (idOrPath, branch, callback) => {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
@@ -144,12 +141,12 @@ const getSitecontent = (idOrPath, branch, callback) => {
     }
 };
 
-const getNotifications = (idOrPath, callback) => {
+const getNotificationsCache = (idOrPath, callback) => {
     if (isUUID(idOrPath)) {
         return callback();
     }
     try {
-        return caches['notifications'].get(getPathname(idOrPath), callback);
+        return caches.notifications.get(getPathname(idOrPath), callback);
     } catch (e) {
         return null;
     }
@@ -174,8 +171,8 @@ const clearReferences = (id, nodePath, depth, event) => {
             )}`
         );
 
-        references.forEach((el) => {
-            wipeOnChange(el._path);
+        references.forEach((item) => {
+            wipeCacheForNodePath(item._path);
         });
     }
 };
@@ -185,13 +182,13 @@ const nodeListenerCallback = (event) => {
 
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            wipeOnChange(node.path);
+            wipeCacheForNodePath(node.path);
             wipeNotificationsEntry(node.path);
 
             runInBranchContext(() => {
                 clearReferences(node.id, node.path, 0, event.type);
             }, 'master');
-        } else if (node.path.indexOf('/dekorator-meny/') !== -1) {
+        } else if (node.path.includes('/dekorator-meny/')) {
             wipe('decorator')();
         }
     });
@@ -213,7 +210,7 @@ const activateCacheEventListeners = () => {
             localOnly: false,
             callback: (e) => {
                 e.data.prepublished.forEach((el) => {
-                    wipeOnChange(el._path);
+                    wipeCacheForNodePath(el._path);
                     clearReferences(el._id, el._path, 0);
                 });
             },
@@ -227,9 +224,9 @@ const activateCacheEventListeners = () => {
 };
 
 module.exports = {
-    getDecorator,
-    getDriftsmeldinger,
-    getSitecontent,
-    getNotifications,
+    getDecoratorMenuCache,
+    getDriftsmeldingerCache,
+    getSitecontentCache,
+    getNotificationsCache,
     activateCacheEventListeners,
 };
