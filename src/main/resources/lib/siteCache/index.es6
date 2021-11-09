@@ -5,7 +5,6 @@ const { findReferences } = require('/lib/siteCache/findReferences');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getParentPath } = require('/lib/nav-utils');
 const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
-const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
 
@@ -103,7 +102,7 @@ const wipeCacheEntry = (name, key) => {
     caches[name].remove(key);
 };
 
-const wipeSitecontent = (nodePath) => {
+const wipeSitecontentEntry = (nodePath) => {
     if (!nodePath) {
         return false;
     }
@@ -114,10 +113,14 @@ const wipeSitecontent = (nodePath) => {
     wipeCacheEntry('sitecontent', pathname);
     frontendCacheRevalidate(pathname);
 
-    const xpPath = nodePath.replace(/^\/content/, '');
-    updateSitemapEntry(xpPath);
-
     return true;
+};
+
+const wipeNotificationsEntry = (nodePath) => {
+    const parentCacheKey = getPathname(getParentPath(nodePath));
+    log.info(`Clearing notifications from ${parentCacheKey}`);
+    wipeCacheEntry('notifications', parentCacheKey);
+    frontendCacheRevalidate(parentCacheKey);
 };
 
 const wipeSpecialCases = (nodePath) => {
@@ -152,18 +155,11 @@ const wipeSpecialCases = (nodePath) => {
     return false;
 };
 
-const wipeNotifications = (nodePath) => {
-    const parentCacheKey = getPathname(getParentPath(nodePath));
-    log.info(`Clearing notifications from ${parentCacheKey}`);
-    wipeCacheEntry('notifications', parentCacheKey);
-    frontendCacheRevalidate(parentCacheKey);
-};
-
-const wipeWithReferences = (node) => {
+const wipeSitecontentEntryWithReferences = (node) => {
     const { id, path } = node;
 
-    wipeSitecontent(path);
-    wipeNotifications(path);
+    wipeSitecontentEntry(path);
+    wipeNotificationsEntry(path);
 
     runInBranchContext(() => {
         const references = findReferences(id, path);
@@ -178,15 +174,13 @@ const wipeWithReferences = (node) => {
             );
 
             references.forEach((item) => {
-                wipeSitecontent(item._path);
+                wipeSitecontentEntry(item._path);
             });
         }
     }, 'master');
 };
 
 const nodeListenerCallback = (event) => {
-    log.info(`Event: ${JSON.stringify(event)}`);
-
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             const didWipe = wipeSpecialCases(node.path);
@@ -195,7 +189,7 @@ const nodeListenerCallback = (event) => {
             }
 
             runInBranchContext(
-                () => wipeWithReferences(node),
+                () => wipeSitecontentEntryWithReferences(node),
                 event.type === 'node.deleted' ? 'draft' : 'master'
             );
         }
@@ -204,7 +198,7 @@ const nodeListenerCallback = (event) => {
 
 const prepublishListenerCallback = (event) => {
     event.data.prepublished.forEach((node) => {
-        wipeWithReferences(node);
+        wipeSitecontentEntryWithReferences(node);
     });
 };
 

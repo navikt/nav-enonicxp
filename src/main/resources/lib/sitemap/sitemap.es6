@@ -230,7 +230,7 @@ const updateSitemapData = (entries) => {
     });
 };
 
-const activateDataUpdateEventListener = () => {
+const activateEventListeners = () => {
     eventLib.listener({
         type: `custom.${eventType}`,
         callback: (event) => {
@@ -238,12 +238,24 @@ const activateDataUpdateEventListener = () => {
             updateSitemapData(event.data.entries);
         },
     });
+
+    eventLib.listener({
+        type: '(node.pushed|node.deleted)',
+        localOnly: false,
+        callback: (event) => {
+            event.data.nodes.forEach((node) => {
+                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+                    const xpPath = node.path.replace(/^\/content/, '');
+                    updateSitemapEntry(xpPath);
+                }
+            });
+        },
+    });
 };
 
 module.exports = {
     getAllSitemapEntries,
     generateDataAndActivateSchedule,
-    updateSitemapEntry,
-    activateDataUpdateEventListener,
+    activateEventListeners,
     pageContentTypes,
 };
