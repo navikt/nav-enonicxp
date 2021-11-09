@@ -112,7 +112,7 @@ const getReferencesFromParent = (path) => {
     return [];
 };
 
-// If the parent is a main-article, we need wipe this article, any chapters under that article
+// If the parent is a main-article, we need to wipe this article, any chapters under that article
 // and the articles referenced by those chapters. Chapters are attached to an article only via
 // the parent/children relation, not with an explicit content reference
 const addMainArticleChapterReferences = (prevAcc, content, _, initialArray) => {
@@ -156,7 +156,7 @@ const findReferences = (id, path, depth = 0) => {
         .map((reference) => findReferences(reference._id, reference._path, depth + 1))
         .flat();
 
-    return removeDuplicates([...references, ...deepReferences], (a, b) => a._path === b._path);
+    return removeDuplicates([...references, ...deepReferences], (a, b) => a._id === b._id);
 };
 
 module.exports = { findReferences };
