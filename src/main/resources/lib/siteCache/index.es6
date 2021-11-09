@@ -1,7 +1,7 @@
 const cacheLib = require('/lib/cache');
 const eventLib = require('/lib/xp/event');
 const { generateUUID } = require('/lib/headless/uuid');
-const { findReferences } = require('/lib/siteCache/findReferences');
+const { findReferences } = require('/lib/siteCache/references');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getParentPath } = require('/lib/nav-utils');
 const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
