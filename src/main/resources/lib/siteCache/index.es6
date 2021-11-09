@@ -104,7 +104,7 @@ const wipeCacheEntry = (name, key) => {
 
 const wipeSitecontentEntry = (nodePath) => {
     if (!nodePath) {
-        return false;
+        return;
     }
 
     const pathname = getPathname(nodePath);
@@ -112,8 +112,6 @@ const wipeSitecontentEntry = (nodePath) => {
 
     wipeCacheEntry('sitecontent', pathname);
     frontendCacheRevalidate(pathname);
-
-    return true;
 };
 
 const wipeNotificationsEntry = (nodePath) => {
