@@ -9,13 +9,9 @@ const { globalValuesContentType } = require('/lib/global-values/global-values');
 
 const MAX_DEPTH = 3;
 
-const mainArticleType = `${app.name}:main-article`;
-const mainArticleChapterType = `${app.name}:main-article-chapter`;
-const publishingCalendarType = `${app.name}:publishing-calendar`;
-
 const typesWithContentGeneratedFromChildren = {
-    [mainArticleType]: true,
-    [publishingCalendarType]: true,
+    [`${app.name}:main-article`]: true,
+    [`${app.name}:publishing-calendar`]: true,
 };
 
 const productCardTargetTypes = {
@@ -122,10 +118,10 @@ const getReferencesFromParent = (path) => {
 const addMainArticleChapterReferences = (prevAcc, content, _, initialArray) => {
     const acc = prevAcc?.length > 0 ? prevAcc : initialArray;
 
-    if (content.type === mainArticleType) {
+    if (content.type === `${app.name}:main-article`) {
         const chapters = contentLib
             .getChildren({ key: content._id })
-            .hits.filter((child) => child.type === mainArticleChapterType);
+            .hits.filter((child) => child.type === `${app.name}:main-article-chapter`);
 
         if (chapters.length > 0) {
             const chapterArticles = chapters.map((chapter) =>
