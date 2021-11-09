@@ -3,10 +3,11 @@ const { getParentPath } = require('/lib/nav-utils');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
-const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
+
+const MAX_DEPTH = 3;
 
 const mainArticleType = `${app.name}:main-article`;
 const mainArticleChapterType = `${app.name}:main-article-chapter`;
@@ -70,8 +71,8 @@ const getGlobalValueReferences = (content) => {
     return references;
 };
 
-const getMacroReferences = (id, branch) => {
-    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+const getMacroReferences = (id) => {
+    const content = contentLib.get({ key: id });
 
     if (!content) {
         return [];
@@ -87,7 +88,7 @@ const getMacroReferences = (id, branch) => {
 const getContentReferences = (id) => {
     const references = contentLib.query({
         start: 0,
-        count: 2,
+        count: 1000,
         filters: {
             boolean: {
                 must: {
@@ -119,7 +120,7 @@ const getReferencesFromParent = (path) => {
 // and the articles referenced by those chapters. Chapters are attached to an article only via
 // the parent/children relation, not with an explicit content reference
 const addMainArticleChapterReferences = (prevAcc, content, _, initialArray) => {
-    const acc = prevAcc || initialArray;
+    const acc = prevAcc?.length > 0 ? prevAcc : initialArray;
 
     if (content.type === mainArticleType) {
         const chapters = contentLib
@@ -138,18 +139,28 @@ const addMainArticleChapterReferences = (prevAcc, content, _, initialArray) => {
     return acc;
 };
 
-const findReferences = (id, nodePath, branch) => {
-    const contentPath = nodePath.replace(/^\/content/, '');
+const findReferences = (id, path, depth = 0) => {
+    if (depth > MAX_DEPTH) {
+        log.info(`Reached max reference depth of ${MAX_DEPTH}`);
+        return [];
+    }
+
+    // If the path was retrieved from a nodelib query, it will have the "/content" prefix
+    const contentPath = path.replace(/^\/content/, '');
 
     const references = [
-        ...getContentReferences(id, branch),
-        ...getMacroReferences(id, branch),
+        ...getContentReferences(id),
+        ...getMacroReferences(id),
         ...getReferencesFromParent(contentPath),
     ]
-        .reduce(addMainArticleChapterReferences, null)
-        .filter((content) => content.id !== id);
+        .reduce(addMainArticleChapterReferences, [])
+        .filter((content) => content._id !== id);
 
-    return removeDuplicates(references, (a, b) => a._path === b._path);
+    const deepReferences = references
+        .map((reference) => findReferences(reference._id, reference._path, depth + 1))
+        .flat();
+
+    return removeDuplicates([...references, ...deepReferences], (a, b) => a._path === b._path);
 };
 
 module.exports = { findReferences };
