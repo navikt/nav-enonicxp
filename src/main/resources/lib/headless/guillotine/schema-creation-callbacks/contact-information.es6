@@ -1,8 +1,9 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
 
-/* When a shared referance is made, only the id will come in as part of the object,
- * so retrieve the content manually. Otherwise, just return the original object.
+/* When a shared referance is made, only the id will come in as part of the object.
+ * If this is the case, retrieve the content manually. Otherwise,
+ * just return the original  specialOpeningHoursobject.
  */
 const getSpecialOpeningHoursObject = (specialOpeningHours) => {
     if (specialOpeningHours._selected === 'shared') {
@@ -18,8 +19,6 @@ const getSpecialOpeningHoursObject = (specialOpeningHours) => {
 };
 
 const contactInformationCallback = (context, params) => {
-    log.info('contactInfoHere');
-    log.info(JSON.stringify(context));
     const RegularOpeningHour = graphQlLib.createObjectType(context, {
         name: 'regularOpeningHour',
         fields: {
@@ -58,7 +57,6 @@ const contactInformationCallback = (context, params) => {
                 'saturday',
                 'sunday',
             ];
-            log.info(JSON.stringify(env));
 
             return {
                 hours: days.map((day) => {
@@ -88,14 +86,25 @@ const contactInformationCallback = (context, params) => {
                 env.source.specialOpeningHours
             );
 
-            // If the specialOpeningHours was originally a reference to another content ("shared"),
-            // the getSpecialOpeningHoursObject will have retireved the actual content,
-            // which will always be put in the "custom" key.
+            // No specialOpeningHours are actually set by the editors.
             if (!(specialOpeningHours || specialOpeningHours.custom)) {
                 return {};
             }
 
             const { title, text, footNote, validFrom, validTo, hours } = specialOpeningHours.custom;
+
+            const normalizedHours = hours.map(({ status, date }) => {
+                const openTime =
+                    status._selected === 'open'
+                        ? { from: status.open.from, to: status.open.to }
+                        : {};
+
+                return {
+                    date,
+                    ...openTime,
+                    status: status._selected.toUpperCase(),
+                };
+            });
 
             return {
                 title,
@@ -103,20 +112,7 @@ const contactInformationCallback = (context, params) => {
                 footNote,
                 validFrom,
                 validTo,
-                hours: hours.map((hour) => {
-                    const { status, date } = hour;
-
-                    const open =
-                        status._selected === 'open'
-                            ? { from: status.open.from, to: status.open.to }
-                            : {};
-
-                    return {
-                        date,
-                        ...open,
-                        status: status._selected.toUpperCase(),
-                    };
-                }),
+                hours: normalizedHours,
             };
         },
     };

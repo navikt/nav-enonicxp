@@ -124,12 +124,7 @@
                                                         <option name="open">
                                                             <label>Åpent</label>
                                                             <items>
-                                                                <input name="from" type="Time" >
-                                                                    <label>Fra klokken</label>
-                                                                </input>
-                                                                <input name="to" type="Time" >
-                                                                    <label>Til klokken</label>
-                                                                </input>
+                                                                <mixin name="opening-hour" />
                                                             </items>
                                                         </option>
                                                     </options>
