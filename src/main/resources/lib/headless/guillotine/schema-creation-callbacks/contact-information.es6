@@ -18,8 +18,20 @@ const getSpecialOpeningHoursObject = (specialOpeningHours) => {
 };
 
 const contactInformationCallback = (context, params) => {
-    const OpeningHour = graphQlLib.createObjectType(context, {
-        name: 'openingHour',
+    log.info('contactInfoHere');
+    log.info(JSON.stringify(context));
+    const RegularOpeningHour = graphQlLib.createObjectType(context, {
+        name: 'regularOpeningHour',
+        fields: {
+            day: { type: graphQlLib.GraphQLString },
+            from: { type: graphQlLib.GraphQLString },
+            to: { type: graphQlLib.GraphQLString },
+            status: { type: graphQlLib.GraphQLString },
+        },
+    });
+
+    const SpecialOpeningHour = graphQlLib.createObjectType(context, {
+        name: 'specialOpeningHour',
         fields: {
             date: { type: graphQlLib.GraphQLString },
             from: { type: graphQlLib.GraphQLString },
@@ -27,6 +39,37 @@ const contactInformationCallback = (context, params) => {
             status: { type: graphQlLib.GraphQLString },
         },
     });
+
+    params.fields.regularOpeningHours = {
+        type: graphQlLib.createObjectType(context, {
+            name: 'regularOpeningHours',
+            fields: {
+                hours: { type: graphQlLib.list(RegularOpeningHour) },
+            },
+        }),
+        resolve: (env) => {
+            const { regularOpeningHours = {} } = env.source;
+            const days = [
+                'monday',
+                'tuesday',
+                'wednesday',
+                'thursday',
+                'friday',
+                'saturday',
+                'sunday',
+            ];
+            log.info(JSON.stringify(env));
+
+            return {
+                hours: days.map((day) => {
+                    if (!regularOpeningHours[day]) {
+                        return { day, status: 'CLOSED' };
+                    }
+                    return { day, ...regularOpeningHours[day], status: 'OPEN' };
+                }),
+            };
+        },
+    };
 
     params.fields.specialOpeningHours = {
         type: graphQlLib.createObjectType(context, {
@@ -37,7 +80,7 @@ const contactInformationCallback = (context, params) => {
                 footNote: { type: graphQlLib.GraphQLString },
                 validFrom: { type: graphQlLib.GraphQLString },
                 validTo: { type: graphQlLib.GraphQLString },
-                hours: { type: graphQlLib.list(OpeningHour) },
+                hours: { type: graphQlLib.list(SpecialOpeningHour) },
             },
         }),
         resolve: (env) => {
@@ -75,13 +118,6 @@ const contactInformationCallback = (context, params) => {
                     };
                 }),
             };
-        },
-    };
-
-    params.fields.foo = {
-        type: graphQlLib.GraphQLFloat,
-        resolve: () => {
-            return 3.222;
         },
     };
 };
