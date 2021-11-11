@@ -1,17 +1,7 @@
-const httpClient = require('/lib/http-client');
-const { frontendOrigin } = require('/lib/headless/url-origin');
-
-const nextApiUrl = `${frontendOrigin}/api/json-proxy`;
-
 const handleGet = (req) => {
-    const { path } = req;
-    const url = `${nextApiUrl}?path=${path}`;
-    log.info(`Requesting frontend asset from: ${url}`);
+    log.info(`NOT requesting frontend asset from: ${req.path}`);
 
-    return httpClient.request({
-        method: 'GET',
-        url: url,
-    });
+    return { status: 204 };
 };
 
 exports.get = handleGet;
