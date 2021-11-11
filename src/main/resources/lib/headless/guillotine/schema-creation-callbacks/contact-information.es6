@@ -93,18 +93,20 @@ const contactInformationCallback = (context, params) => {
 
             const { title, text, footNote, validFrom, validTo, hours } = specialOpeningHours.custom;
 
-            const normalizedHours = hours.map(({ status, date }) => {
-                const openTime =
-                    status._selected === 'open'
-                        ? { from: status.open.from, to: status.open.to }
-                        : {};
+            const normalizedHours = hours
+                .map(({ status, date }) => {
+                    const openTime =
+                        status._selected === 'open'
+                            ? { from: status.open.from, to: status.open.to }
+                            : {};
 
-                return {
-                    date,
-                    ...openTime,
-                    status: status._selected.toUpperCase(),
-                };
-            });
+                    return {
+                        date,
+                        ...openTime,
+                        status: status._selected.toUpperCase(),
+                    };
+                })
+                .sort((a, b) => (a < b ? -1 : 1));
 
             return {
                 title,

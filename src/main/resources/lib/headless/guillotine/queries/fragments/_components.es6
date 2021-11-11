@@ -14,6 +14,8 @@ const {
 } = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/calculator-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
 
+const contactInformationFragment = require('./contactInformation');
+
 const partsFragment = `
     config {
         no_nav_navno {
@@ -130,7 +132,9 @@ const partsFragment = `
                     }
                     call {
                         ingress
-                        phoneNumber
+                        sharedContactInformation {
+                            ${contactInformationFragment.fragment}
+                        }
                     }
                 }
             }

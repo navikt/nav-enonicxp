@@ -1,4 +1,4 @@
-const ContactInformationFragment = `
+const contactInformationFragment = `
     ...on no_nav_navno_ContactInformation{
         data {
             contactType {
@@ -34,5 +34,5 @@ const ContactInformationFragment = `
 `;
 
 module.exports = {
-    fragment: ContactInformationFragment,
+    fragment: contactInformationFragment,
 };
