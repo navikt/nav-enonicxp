@@ -9,10 +9,16 @@ const getSpecialOpeningHoursObject = (specialOpeningHours) => {
     if (specialOpeningHours._selected === 'shared') {
         const id = specialOpeningHours.shared.sharedSpecialOpeningHours;
         const openingHoursDocument = contentLib.get({ key: id });
-        if (!(openingHoursDocument || openingHoursDocument.data)) {
+        if (
+            !(
+                openingHoursDocument ||
+                openingHoursDocument.data ||
+                openingHoursDocument.data.contactType
+            )
+        ) {
             return null;
         }
-        return openingHoursDocument.data.specialOpeningHours;
+        return openingHoursDocument.data.contactType.telephone.specialOpeningHours;
     }
 
     return specialOpeningHours;
@@ -48,6 +54,9 @@ const contactInformationCallback = (context, params) => {
         }),
         resolve: (env) => {
             const { regularOpeningHours = {} } = env.source;
+            if (Object.keys(regularOpeningHours).length === 0) {
+                return null;
+            }
             const days = [
                 'monday',
                 'tuesday',

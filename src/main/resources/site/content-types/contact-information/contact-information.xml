@@ -70,7 +70,7 @@
                         </item-set>
                         <option-set name="specialOpeningHours">
                             <label>Spesielle åpningstider</label>
-                            <occurrences minimum="1" maximum="1"/>
+                            <occurrences minimum="0" maximum="1"/>
                             <options minimum="1" maximum="1">
                                 <option name="shared">
                                     <label>Referer til annen åpningstid</label>
