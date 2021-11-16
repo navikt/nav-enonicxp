@@ -23,7 +23,7 @@
                         </input>
                         <input name="alertText" type="TextArea" >
                             <label>Avvikstekst</label>
-                            <help-text></help-text>
+                            <help-text>Brukes kun dersom det finnes avvik på telefonnr, feks ved midlertidige tekniske problemer.</help-text>
                         </input>
                         <item-set name="regularOpeningHours">
                             <label>Ordinære åpningstider</label>
