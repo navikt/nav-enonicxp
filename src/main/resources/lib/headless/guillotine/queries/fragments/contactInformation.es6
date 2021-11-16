@@ -6,6 +6,7 @@ const contactInformationFragment = `
                     phoneNumber
                     title
                     text
+                    alertText
                     regularOpeningHours {
                         hours {
                             day

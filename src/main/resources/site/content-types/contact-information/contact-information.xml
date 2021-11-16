@@ -21,6 +21,10 @@
                         <input name="text" type="TextArea" >
                             <label>Tekst</label>
                         </input>
+                        <input name="alertText" type="TextArea" >
+                            <label>Avvikstekst</label>
+                            <help-text></help-text>
+                        </input>
                         <item-set name="regularOpeningHours">
                             <label>Ordinære åpningstider</label>
                             <items>
