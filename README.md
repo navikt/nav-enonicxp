@@ -76,6 +76,10 @@ To be able to navigate the site as in production ie. http://localhost:8080/sok, 
     mapping.admin.source = /admin
     mapping.admin.target = /admin
     mapping.admin.idProvider.system = default
+    mapping.webapp.host = localhost
+    mapping.webapp.source = /webapp
+    mapping.webapp.target = /webapp
+    mapping.admin2.idProvider.system = default
 
 ## Useful Enonic XP tools
 Document describing useful tools to query the database and look for changes in the case of user errors.
