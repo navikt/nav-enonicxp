@@ -8,7 +8,7 @@ const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { forceArray } = require('/lib/nav-utils');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
-const { updateSitemapEntry } = require('/lib/sitemap/sitemap');
+const { updateSitemapEntry } = require('/lib/content-indexing/sitemap');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
 

@@ -6,7 +6,7 @@ const invalidator = require('/lib/siteCache/invalidator');
 const officeInformation = require('/lib/officeInformation');
 const clusterLib = require('/lib/xp/cluster');
 const facetLib = require('/lib/facets');
-const sitemap = require('/lib/sitemap/sitemap');
+const sitemap = require('/lib/content-indexing/sitemap');
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 
 let appIsRunning = true;

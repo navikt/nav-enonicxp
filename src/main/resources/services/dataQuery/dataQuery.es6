@@ -1,6 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const { getNestedValue } = require('/lib/nav-utils');
-const { pageContentTypes } = require('/lib/sitemap/sitemap');
+const { pageContentTypes } = require('/lib/content-indexing/sitemap');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
 const batchMaxSize = 1000;

@@ -3,11 +3,9 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
-const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
-const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -61,19 +59,6 @@ const validateContent = (content) => {
     }
 
     return true;
-};
-
-const getUrl = (content) => {
-    if (content.data?.canonicalUrl) {
-        return content.data.canonicalUrl;
-    }
-
-    const customPath = content.data?.customPath;
-
-    const pathname = isValidCustomPath(customPath)
-        ? customPath
-        : content._path.replace(/^\/www.nav.no/, '');
-    return `${frontendOrigin}${pathname}`;
 };
 
 const getAlternativeLanguageVersions = (content) =>
@@ -246,5 +231,4 @@ module.exports = {
     updateSitemapEntry,
     activateDataUpdateEventListener,
     pageContentTypes,
-    getExternalUrl: getUrl,
 };

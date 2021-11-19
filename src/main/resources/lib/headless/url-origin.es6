@@ -7,4 +7,15 @@ const portalAdminOrigin = {
     localhost: 'http://localhost:8080',
 }[env];
 
-module.exports = { frontendOrigin, xpOrigin, revalidatorProxyOrigin, portalAdminOrigin };
+const searchIndexerBaseUrl = {
+    dev: 'https://person.dev.nav.no/search-index',
+    localhost: 'http://localhost:3011/search-index',
+}[env];
+
+module.exports = {
+    frontendOrigin,
+    xpOrigin,
+    revalidatorProxyOrigin,
+    portalAdminOrigin,
+    searchIndexerBaseUrl,
+};

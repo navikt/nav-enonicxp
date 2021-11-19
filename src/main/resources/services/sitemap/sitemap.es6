@@ -1,4 +1,4 @@
-const { getAllSitemapEntries } = require('/lib/sitemap/sitemap');
+const { getAllSitemapEntries } = require('/lib/content-indexing/sitemap');
 
 const handleGet = (req) => {
     const { secret } = req.headers;
