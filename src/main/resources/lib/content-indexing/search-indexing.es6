@@ -5,6 +5,9 @@ const { searchIndexerBaseUrl } = require('/lib/headless/url-origin');
 const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
 
 const addDocumentApiUrl = `${searchIndexerBaseUrl}/addDocument`;
+const deleteDocumentApiUrl = `${searchIndexerBaseUrl}/deleteDocument`;
+
+const searchIndex = 'nav-enonicxp';
 
 const contentTypesToIndex = {
     [`${app.name}:situation-page`]: true,
@@ -13,7 +16,7 @@ const contentTypesToIndex = {
     [`${app.name}:office-information`]: true,
 };
 
-const sendDocumentToIndexer = (document) => {
+const sendDocumentToIndex = (document) => {
     try {
         const response = httpClient.request({
             url: addDocumentApiUrl,
@@ -21,16 +24,38 @@ const sendDocumentToIndexer = (document) => {
             contentType: 'application/json',
             body: JSON.stringify({
                 document: document,
-                index: 'nav-enonicxp',
+                index: searchIndex,
             }),
         });
 
         log.info(
-            `Sent document for ${document.url} to indexer - response: ${JSON.stringify(response)}`
+            `Sent document for ${document.url} to indexer - response: ${response.status} ${response.message}`
         );
         return response;
     } catch (e) {
         log.error(`Error while sending document for ${document.url} to indexer - ${e}`);
+        return null;
+    }
+};
+
+const deleteDocumentFromIndex = (id) => {
+    try {
+        const response = httpClient.request({
+            url: deleteDocumentApiUrl,
+            method: 'GET',
+            contentType: 'application/json',
+            queryParams: {
+                index: searchIndex,
+                id,
+            },
+        });
+
+        log.info(
+            `Sent delete request to index for id ${id} - response: ${response.status} ${response.message}`
+        );
+        return response;
+    } catch (e) {
+        log.error(`Error while deleting document with id ${id} from index - ${e}`);
         return null;
     }
 };
@@ -40,7 +65,7 @@ const indexContent = (content) => {
         return null;
     }
 
-    const { _id, _path, type, displayName, data } = content;
+    const { _id, type, displayName, data } = content;
 
     if (!data || !contentTypesToIndex[type]) {
         return null;
@@ -52,20 +77,16 @@ const indexContent = (content) => {
         return null;
     }
 
-    log.info(`Indexing content ${_path}`);
-
-    const url = getExternalUrl(content);
-
     const indexDocument = {
         id: _id,
-        url,
+        url: getExternalUrl(content),
         header: displayName,
         description: metaDescription || data.ingress || 'Descriptiony McDescriptionface',
         content: data.text || 'Contenty McContentface',
         keywords,
     };
 
-    return sendDocumentToIndexer(indexDocument);
+    return sendDocumentToIndex(indexDocument);
 };
 
 const repopulateSearchIndex = () => {
@@ -79,16 +100,23 @@ const repopulateSearchIndex = () => {
         'master'
     );
 
+    const startTimeMs = Date.now();
+
     log.info(`Found ${contentToIndex.length} contents to index`);
 
     contentToIndex.forEach((content) => {
         indexContent(content);
     });
+
+    const timeElapsedSec = (Date.now() - startTimeMs) / 1000;
+
+    log.info(`Finished indexing content. Time elapsed: ${timeElapsedSec} sec`);
 };
 
 const noop = () => {};
 
 module.exports = {
-    indexContent: searchIndexerBaseUrl ? indexContent : noop,
+    updateIndexForContent: searchIndexerBaseUrl ? indexContent : noop,
     repopulateSearchIndex,
+    deleteDocumentFromIndex,
 };

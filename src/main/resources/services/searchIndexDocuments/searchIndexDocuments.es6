@@ -1,5 +1,5 @@
 const contentLib = require('/lib/xp/content');
-const { indexContent } = require('/lib/content-indexing/search-indexing');
+const { updateIndexForContent } = require('/lib/content-indexing/search-indexing');
 
 // Temporary service for populating an external search index
 const searchIndexDocuments = (req) => {
@@ -23,7 +23,7 @@ const searchIndexDocuments = (req) => {
         };
     }
 
-    const indexerResponse = indexContent(content);
+    const indexerResponse = updateIndexForContent(content);
 
     if (!indexerResponse) {
         return {
