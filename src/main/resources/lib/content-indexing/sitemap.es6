@@ -3,6 +3,7 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
+const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
@@ -71,7 +72,7 @@ const getAlternativeLanguageVersions = (content) =>
                   ...acc,
                   {
                       language: altContent.language,
-                      url: getUrl(altContent),
+                      url: getExternalUrl(altContent),
                   },
               ]
             : acc;
@@ -82,7 +83,7 @@ const getSitemapEntry = (content) => {
 
     return {
         id: content._id,
-        url: getUrl(content),
+        url: getExternalUrl(content),
         modifiedTime: content.modifiedTime,
         language: content.language,
         ...(languageVersions?.length > 0 && { languageVersions }),
