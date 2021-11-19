@@ -1,4 +1,6 @@
 const httpClient = require('/lib/http-client');
+const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { searchIndexerBaseUrl } = require('/lib/headless/url-origin');
 const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
 
@@ -59,15 +61,34 @@ const indexContent = (content) => {
         url,
         header: displayName,
         description: metaDescription,
-        content: 'Placeholder McPlaceholderface',
+        content: data.text || 'Placeholder McPlaceholderface',
         keywords,
     };
 
     return sendDocumentToIndexer(indexDocument);
 };
 
+const repopulateSearchIndex = () => {
+    const contentToIndex = runInBranchContext(
+        () =>
+            contentLib.query({
+                start: 0,
+                count: 10000,
+                contentTypes: Object.keys(contentTypesToIndex),
+            }).hits,
+        'master'
+    );
+
+    log.info(`Found ${contentToIndex.length} contents to index`);
+
+    contentToIndex.forEach((content) => {
+        indexContent(content);
+    });
+};
+
 const noop = () => {};
 
 module.exports = {
     indexContent: searchIndexerBaseUrl ? indexContent : noop,
+    repopulateSearchIndex,
 };

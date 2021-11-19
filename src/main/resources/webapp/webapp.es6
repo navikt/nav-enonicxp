@@ -2,10 +2,18 @@ const taskLib = require('/lib/xp/task');
 const thymeleafLib = require('/lib/thymeleaf');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const officeInformation = require('/lib/officeInformation');
+const { repopulateSearchIndex } = require('/lib/content-indexing/search-indexing');
 
 const view = resolve('webapp.html');
 const validActions = {
-    norg: { description: 'Importerer NORG', callback: officeInformation.runOneTimeJob },
+    norg: {
+        description: 'Importerer NORG',
+        callback: officeInformation.runOneTimeJob,
+    },
+    indexContent: {
+        description: 'Repopulate the search index',
+        callback: repopulateSearchIndex,
+    },
 };
 
 exports.get = (req) => {
