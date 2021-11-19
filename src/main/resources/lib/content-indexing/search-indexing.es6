@@ -16,32 +16,38 @@ const sendDocumentToIndexer = (document) => {
         const response = httpClient.request({
             url: addDocumentApiUrl,
             method: 'POST',
-            body: JSON.stringify(document),
+            contentType: 'application/json',
+            body: JSON.stringify({
+                document: document,
+                index: 'nav-enonicxp',
+            }),
         });
 
         log.info(
             `Sent document for ${document.url} to indexer - response: ${JSON.stringify(response)}`
         );
+        return response;
     } catch (e) {
         log.error(`Error while sending document for ${document.url} to indexer - ${e}`);
+        return null;
     }
 };
 
 const indexContent = (content) => {
     if (!content) {
-        return;
+        return null;
     }
 
-    const { _id, _path, type, displayName, modifiedTime, publish, data } = content;
+    const { _id, _path, type, displayName, data } = content;
 
     if (!data || !contentTypesToIndex[type]) {
-        return;
+        return null;
     }
 
     const { noindex, metaDescription, keywords } = data;
 
     if (noindex) {
-        return;
+        return null;
     }
 
     log.info(`Indexing content ${_path}`);
@@ -57,11 +63,11 @@ const indexContent = (content) => {
         keywords,
     };
 
-    sendDocumentToIndexer(indexDocument);
+    return sendDocumentToIndexer(indexDocument);
 };
 
-const indexContentNoop = () => {};
+const noop = () => {};
 
 module.exports = {
-    indexContent: !!searchIndexerBaseUrl ? indexContent : indexContentNoop,
+    indexContent: searchIndexerBaseUrl ? indexContent : noop,
 };
