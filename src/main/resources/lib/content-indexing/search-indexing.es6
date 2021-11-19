@@ -60,7 +60,7 @@ const indexContent = (content) => {
         id: _id,
         url,
         header: displayName,
-        description: metaDescription || 'Descriptiony McDescriptionface',
+        description: metaDescription || data.ingress || 'Descriptiony McDescriptionface',
         content: data.text || 'Contenty McContentface',
         keywords,
     };
