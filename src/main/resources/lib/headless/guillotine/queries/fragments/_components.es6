@@ -127,6 +127,8 @@ const partsFragment = `
                     }
                     write {
                         ingress
+                        title
+                        url
                     }
                     call {
                         ingress
