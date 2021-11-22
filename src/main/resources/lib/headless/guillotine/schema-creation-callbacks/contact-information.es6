@@ -6,6 +6,9 @@ const graphQlLib = require('/lib/guillotine/graphql');
  * just return the original  specialOpeningHoursobject.
  */
 const getSpecialOpeningHoursObject = (specialOpeningHours) => {
+    if (!specialOpeningHours) {
+        return null;
+    }
     if (specialOpeningHours._selected === 'shared') {
         const id = specialOpeningHours.shared.sharedSpecialOpeningHours;
         const openingHoursDocument = contentLib.get({ key: id });
@@ -97,6 +100,10 @@ const contactInformationCallback = (context, params) => {
 
             // No specialOpeningHours are actually set by the editors.
             if (!(specialOpeningHours || specialOpeningHours.custom)) {
+                return {};
+            }
+
+            if (!specialOpeningHours) {
                 return {};
             }
 
