@@ -3,6 +3,7 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
+const { getIndexableContent } = require('/lib/content-indexing/indexing-utils');
 const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -119,26 +120,9 @@ const updateSitemapEntry = (path) => {
 };
 
 const getSitemapEntries = (start = 0, previousEntries = []) => {
-    const entriesBatch = contentLib
-        .query({
-            start,
-            count: batchCount,
-            contentTypes: pageContentTypes,
-            filters: {
-                boolean: {
-                    mustNot: {
-                        hasValue: {
-                            field: 'data.noindex',
-                            values: ['true'],
-                        },
-                        exists: {
-                            field: 'data.externalProductUrl',
-                        },
-                    },
-                },
-            },
-        })
-        .hits.map(getSitemapEntry);
+    const entriesBatch = getIndexableContent(pageContentTypes, start, batchCount).map(
+        getSitemapEntry
+    );
 
     const currentEntries = [...entriesBatch, ...previousEntries];
 

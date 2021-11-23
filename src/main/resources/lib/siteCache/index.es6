@@ -331,14 +331,12 @@ function clearReferences(id, path, depth, event) {
 
     if (event === 'node.deleted') {
         deleteDocumentFromIndex(id);
+    } else {
+        updateIndexForContent(content);
     }
 
     if (!content) {
         return;
-    }
-
-    if (event !== 'node.deleted') {
-        updateIndexForContent(content);
     }
 
     clearFragmentMacroReferences(content);

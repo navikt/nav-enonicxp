@@ -1,5 +1,5 @@
 const httpClient = require('/lib/http-client');
-const contentLib = require('/lib/xp/content');
+const { getIndexableContent } = require('/lib/content-indexing/indexing-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { searchIndexerBaseUrl } = require('/lib/headless/url-origin');
 const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
@@ -90,15 +90,7 @@ const indexContent = (content) => {
 };
 
 const repopulateSearchIndex = () => {
-    const contentToIndex = runInBranchContext(
-        () =>
-            contentLib.query({
-                start: 0,
-                count: 10000,
-                contentTypes: Object.keys(contentTypesToIndex),
-            }).hits,
-        'master'
-    );
+    const contentToIndex = runInBranchContext(() => getIndexableContent(contentToIndex), 'master');
 
     const startTimeMs = Date.now();
 
@@ -113,10 +105,10 @@ const repopulateSearchIndex = () => {
     log.info(`Finished indexing content. Time elapsed: ${timeElapsedSec} sec`);
 };
 
-const noop = () => {};
+const updateIndexForContent = searchIndexerBaseUrl ? indexContent : () => {};
 
 module.exports = {
-    updateIndexForContent: searchIndexerBaseUrl ? indexContent : noop,
+    updateIndexForContent,
     repopulateSearchIndex,
     deleteDocumentFromIndex,
 };
