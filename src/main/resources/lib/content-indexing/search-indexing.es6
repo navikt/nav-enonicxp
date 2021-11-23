@@ -63,7 +63,39 @@ const deleteIndexDocument = (id) => {
     }
 };
 
-const updateIndexDocument = (contentId) => {
+const updateIndexFromContent = (content) => {
+    if (!content) {
+        log.info('Missing parameter "content"');
+        return null;
+    }
+
+    const { _id, displayName, data } = content;
+
+    if (!data) {
+        log.info(`Invalid data object for ${_id}`);
+        return null;
+    }
+
+    const { noindex, metaDescription, keywords, ingress } = data;
+
+    if (noindex) {
+        log.info(`${_id} has noindex flag, skipping`);
+        return null;
+    }
+
+    const indexDocument = {
+        id: _id,
+        url: getExternalUrl(content),
+        title: displayName,
+        description: metaDescription || ingress || 'Descriptiony McDescriptionface',
+        content: data.text || 'Contenty McContentface',
+        keywords,
+    };
+
+    return sendDocumentToIndex(indexDocument);
+};
+
+const updateIndexFromContentId = (contentId) => {
     if (!contentId) {
         log.info(`No content id provided`);
         return null;
@@ -76,30 +108,7 @@ const updateIndexDocument = (contentId) => {
         return null;
     }
 
-    const { _id, displayName, data } = content;
-
-    if (!data) {
-        log.info(`Invalid data object for ${contentId}`);
-        return null;
-    }
-
-    const { noindex, metaDescription, keywords, ingress } = data;
-
-    if (noindex) {
-        log.info(`${contentId} has noindex flag, skipping`);
-        return null;
-    }
-
-    const indexDocument = {
-        id: _id,
-        url: getExternalUrl(content),
-        header: displayName,
-        description: metaDescription || ingress || 'Descriptiony McDescriptionface',
-        content: data.text || 'Contenty McContentface',
-        keywords,
-    };
-
-    return sendDocumentToIndex(indexDocument);
+    return updateIndexFromContent(content);
 };
 
 const indexApiLivenessCheck = () => {
@@ -129,7 +138,7 @@ const repopulateSearchIndex = () => {
     log.info(`Found ${contentToIndex.length} contents to index`);
 
     contentToIndex.forEach((content) => {
-        updateIndexDocument(content);
+        updateIndexFromContent(content);
     });
 
     const timeElapsedSec = (Date.now() - startTimeMs) / 1000;
@@ -160,7 +169,7 @@ const startSearchIndexEventListener = () => {
                     if (event.type === 'node.deleted') {
                         deleteIndexDocument(id);
                     } else {
-                        updateIndexDocument(id);
+                        updateIndexFromContentId(id);
                     }
                 });
             }
