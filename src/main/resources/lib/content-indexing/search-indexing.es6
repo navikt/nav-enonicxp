@@ -158,18 +158,14 @@ const startSearchIndexEventListener = () => {
         type: '(node.pushed|node.deleted)',
         localOnly: false,
         callback: (event) => {
-            log.info(`New event: ${event.type}`);
-            log.info(`Is master? ${clusterLib.isMaster()}`);
             if (clusterLib.isMaster()) {
                 event.data.nodes.forEach((node) => {
-                    const { id } = node;
-
-                    log.info(`Updating index for ${id}`);
+                    log.info(`Updating index for ${node.id} - event type ${event.type}`);
 
                     if (event.type === 'node.deleted') {
-                        deleteIndexDocument(id);
+                        deleteIndexDocument(node.id);
                     } else {
-                        updateIndexFromContentId(id);
+                        updateIndexFromContentId(node.id);
                     }
                 });
             }
