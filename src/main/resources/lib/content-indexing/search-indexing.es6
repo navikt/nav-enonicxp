@@ -69,14 +69,14 @@ const updateIndexDocument = (contentId) => {
         return null;
     }
 
-    const content = getIndexableContent({ ids: contentId, contentTypes: contentTypesToIndex });
+    const content = getIndexableContent({ ids: contentId, contentTypes: contentTypesToIndex })[0];
 
     if (!content) {
         log.info(`No indexable content found for id ${contentId}`);
         return null;
     }
 
-    const { _id, displayName, data } = content[0];
+    const { _id, displayName, data } = content;
 
     if (!data) {
         log.info(`Invalid data object for ${contentId}`);
@@ -92,7 +92,7 @@ const updateIndexDocument = (contentId) => {
 
     const indexDocument = {
         id: _id,
-        url: getExternalUrl(contentId),
+        url: getExternalUrl(content),
         header: displayName,
         description: metaDescription || ingress || 'Descriptiony McDescriptionface',
         content: data.text || 'Contenty McContentface',
