@@ -113,20 +113,31 @@ const updateIndexFromContentId = (contentId) => {
 
 const indexApiLivenessCheck = () => {
     if (!searchIndexerBaseUrl) {
-        return;
+        log.info('No search indexer defined for the current environment');
+        return false;
     }
 
-    const response = httpClient.request({
-        url: indexApiLiveness,
-        method: 'GET',
-        contentType: 'application/json',
-    });
+    try {
+        const response = httpClient.request({
+            url: indexApiLiveness,
+            method: 'GET',
+            contentType: 'application/json',
+        });
 
-    log.info(JSON.stringify(response));
+        log.info(`Search indexer liveness responded with status ${response.status}`);
+
+        return response.status === 200;
+    } catch (e) {
+        log.error(`Search indexer liveness check failed - ${e}`);
+
+        return false;
+    }
 };
 
 const repopulateSearchIndex = () => {
-    indexApiLivenessCheck();
+    if (!indexApiLivenessCheck()) {
+        return;
+    }
 
     const contentToIndex = runInBranchContext(
         () => getIndexableContent({ contentTypes: contentToIndex }),

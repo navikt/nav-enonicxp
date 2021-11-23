@@ -8,7 +8,7 @@ const portalAdminOrigin = {
 }[env];
 
 const searchIndexerBaseUrl = {
-    dev: 'https://person.dev.intern.nav.no/search-index',
+    dev: 'https://person.dev.nav.no/search-index',
     localhost: 'http://localhost:3011/search-index',
 }[env];
 
