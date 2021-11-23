@@ -4,7 +4,7 @@ const { runInBranchContext } = require('/lib/headless/branch-context');
 const { searchIndexerBaseUrl } = require('/lib/headless/url-origin');
 const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
 
-const addDocumentApiUrl = `${searchIndexerBaseUrl}/addDocument`;
+const addDocumentApiUrl = `${searchIndexerBaseUrl}/indexDocument`;
 const deleteDocumentApiUrl = `${searchIndexerBaseUrl}/deleteDocument`;
 
 const searchIndex = 'nav-enonicxp';
