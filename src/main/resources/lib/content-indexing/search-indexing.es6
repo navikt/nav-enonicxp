@@ -1,9 +1,12 @@
 const httpClient = require('/lib/http-client');
+const eventLib = require('/lib/xp/event');
+const clusterLib = require('/lib/xp/cluster');
 const { getIndexableContent } = require('/lib/content-indexing/indexing-utils');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { searchIndexerBaseUrl } = require('/lib/headless/url-origin');
 const { getExternalUrl } = require('/lib/content-indexing/indexing-utils');
 
+const indexApiLiveness = `${searchIndexerBaseUrl}/internal/isAlive`;
 const addDocumentApiUrl = `${searchIndexerBaseUrl}/indexDocument`;
 const deleteDocumentApiUrl = `${searchIndexerBaseUrl}/deleteDocument`;
 
@@ -38,7 +41,7 @@ const sendDocumentToIndex = (document) => {
     }
 };
 
-const deleteDocumentFromIndex = (id) => {
+const deleteIndexDocument = (id) => {
     try {
         const response = httpClient.request({
             url: deleteDocumentApiUrl,
@@ -60,14 +63,23 @@ const deleteDocumentFromIndex = (id) => {
     }
 };
 
-const indexContent = (content) => {
+const updateIndexDocument = (contentId) => {
+    if (!contentId) {
+        log.info(`No content id provided`);
+        return null;
+    }
+
+    const content = getIndexableContent({ ids: contentId, contentTypes: contentTypesToIndex });
+
     if (!content) {
+        log.info(`No content found for id ${contentId}`);
         return null;
     }
 
     const { _id, type, displayName, data } = content;
 
     if (!data || !contentTypesToIndex[type]) {
+        log.info(`Invalid data or type for ${contentId}`);
         return null;
     }
 
@@ -79,7 +91,7 @@ const indexContent = (content) => {
 
     const indexDocument = {
         id: _id,
-        url: getExternalUrl(content),
+        url: getExternalUrl(contentId),
         header: displayName,
         description: metaDescription || data.ingress || 'Descriptiony McDescriptionface',
         content: data.text || 'Contenty McContentface',
@@ -89,15 +101,34 @@ const indexContent = (content) => {
     return sendDocumentToIndex(indexDocument);
 };
 
+const indexApiLivenessCheck = () => {
+    if (!searchIndexerBaseUrl) {
+        return;
+    }
+
+    const response = httpClient.request({
+        url: indexApiLiveness,
+        method: 'GET',
+        contentType: 'application/json',
+    });
+
+    log.info(JSON.stringify(response));
+};
+
 const repopulateSearchIndex = () => {
-    const contentToIndex = runInBranchContext(() => getIndexableContent(contentToIndex), 'master');
+    indexApiLivenessCheck();
+
+    const contentToIndex = runInBranchContext(
+        () => getIndexableContent({ contentTypes: contentToIndex }),
+        'master'
+    );
 
     const startTimeMs = Date.now();
 
     log.info(`Found ${contentToIndex.length} contents to index`);
 
     contentToIndex.forEach((content) => {
-        indexContent(content);
+        updateIndexDocument(content);
     });
 
     const timeElapsedSec = (Date.now() - startTimeMs) / 1000;
@@ -105,10 +136,38 @@ const repopulateSearchIndex = () => {
     log.info(`Finished indexing content. Time elapsed: ${timeElapsedSec} sec`);
 };
 
-const updateIndexForContent = searchIndexerBaseUrl ? indexContent : () => {};
+const startSearchIndexEventListener = () => {
+    if (!searchIndexerBaseUrl) {
+        log.info('No search indexer is configured for this environment');
+        return;
+    }
+
+    log.info('Starting event listener for search indexing');
+
+    eventLib.listener({
+        type: '(node.pushed|node.deleted)',
+        localOnly: false,
+        callback: (event) => {
+            log.info(`New event: ${event.type}`);
+            log.info(`Is master? ${clusterLib.isMaster()}`);
+            if (clusterLib.isMaster()) {
+                event.data.nodes.forEach((node) => {
+                    const { id } = node;
+
+                    log.info(`Updating index for ${id}`);
+
+                    if (event.type === 'node.deleted') {
+                        deleteIndexDocument(id);
+                    } else {
+                        updateIndexDocument(id);
+                    }
+                });
+            }
+        },
+    });
+};
 
 module.exports = {
-    updateIndexForContent,
     repopulateSearchIndex,
-    deleteDocumentFromIndex,
+    startSearchIndexEventListener,
 };

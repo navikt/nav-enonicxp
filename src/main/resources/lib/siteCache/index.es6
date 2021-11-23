@@ -1,6 +1,4 @@
 const contentLib = require('/lib/xp/content');
-const { updateIndexForContent } = require('/lib/content-indexing/search-indexing');
-const { deleteDocumentFromIndex } = require('/lib/content-indexing/search-indexing');
 const { getParentPath } = require('/lib/nav-utils');
 const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
 const { removeDuplicates } = require('/lib/nav-utils');
@@ -328,12 +326,6 @@ function clearReferences(id, path, depth, event) {
         () => contentLib.get({ key: id }),
         event === 'node.deleted' ? 'draft' : 'master'
     );
-
-    if (event === 'node.deleted') {
-        deleteDocumentFromIndex(id);
-    } else {
-        updateIndexForContent(content);
-    }
 
     if (!content) {
         return;

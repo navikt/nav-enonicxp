@@ -7,6 +7,7 @@ const officeInformation = require('/lib/officeInformation');
 const clusterLib = require('/lib/xp/cluster');
 const facetLib = require('/lib/facets');
 const sitemap = require('/lib/content-indexing/sitemap');
+const { startSearchIndexEventListener } = require('/lib/content-indexing/search-indexing');
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 
 let appIsRunning = true;
@@ -22,6 +23,9 @@ sitemap.activateDataUpdateEventListener();
 
 // generate initial sitemap data and start periodic regeneration
 sitemap.generateDataAndActivateSchedule();
+
+// start event listener for search index updates
+startSearchIndexEventListener();
 
 // enable retrieval of version history data from a specified date-time
 hookLibsWithTimeTravel();

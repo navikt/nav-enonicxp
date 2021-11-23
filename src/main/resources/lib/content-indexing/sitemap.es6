@@ -120,9 +120,11 @@ const updateSitemapEntry = (path) => {
 };
 
 const getSitemapEntries = (start = 0, previousEntries = []) => {
-    const entriesBatch = getIndexableContent(pageContentTypes, start, batchCount).map(
-        getSitemapEntry
-    );
+    const entriesBatch = getIndexableContent({
+        contentTypes: pageContentTypes,
+        start,
+        count: batchCount,
+    }).map(getSitemapEntry);
 
     const currentEntries = [...entriesBatch, ...previousEntries];
 
