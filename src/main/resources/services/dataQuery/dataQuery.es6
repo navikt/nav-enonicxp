@@ -181,6 +181,10 @@ const handleGet = (req) => {
             branch === 'published' ? 'master' : 'draft'
         );
 
+        log.info(
+            `Data query: successfully ran query for request id ${requestId}, start index ${start}`
+        );
+
         return {
             status: 200,
             body: {
@@ -195,6 +199,10 @@ const handleGet = (req) => {
             contentType: 'application/json',
         };
     } catch (e) {
+        log.info(
+            `Data query: error while running query for request id ${requestId}, start index ${start} - ${e}`
+        );
+
         return {
             status: 500,
             body: {
