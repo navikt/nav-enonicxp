@@ -1,5 +1,6 @@
 const cacheLib = require('/lib/cache');
 const contentLib = require('/lib/xp/content');
+const nodeLib = require('/lib/xp/node');
 const { getNestedValue } = require('/lib/nav-utils');
 const { pageContentTypes } = require('/lib/sitemap/sitemap');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -53,7 +54,12 @@ const hitsWithRequestedFields = (hits, fieldKeys) =>
     );
 
 const getContentIdsFromQuery = ({ query, branch, types }) => {
-    return contentLib
+    const repo = nodeLib.connect({
+        repoId: 'com.enonic.cms.default',
+        branch: branch === 'published' ? 'master' : 'draft',
+    });
+
+    return repo
         .query({
             ...(query && { query }),
             start: 0,
@@ -71,7 +77,7 @@ const getContentIdsFromQuery = ({ query, branch, types }) => {
                 },
             }),
         })
-        .hits.map((hit) => hit._id);
+        .hits.map((hit) => hit.id);
 };
 
 const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
