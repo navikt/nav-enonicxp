@@ -1,3 +1,4 @@
+const cacheLib = require('/lib/cache');
 const contentLib = require('/lib/xp/content');
 const { getNestedValue } = require('/lib/nav-utils');
 const { pageContentTypes } = require('/lib/sitemap/sitemap');
@@ -17,6 +18,12 @@ const validBranches = {
     published: true,
     unpublished: true,
 };
+
+// Cache the content-ids per request on the first batch, to ensure batched responses are consistent
+const contentIdCacheByRequest = cacheLib.newCache({
+    size: 10,
+    expire: 3600,
+});
 
 const parseJsonArray = (str) => {
     try {
@@ -45,28 +52,47 @@ const hitsWithRequestedFields = (hits, fieldKeys) =>
         }, {})
     );
 
-const runQuery = ({ query, start, branch, types, fieldKeys }) => {
-    const result = runInBranchContext(
-        () =>
-            contentLib.query({
-                query: query || '_path LIKE "*"',
-                start: start,
-                count: batchMaxSize,
-                contentTypes: types,
-                ...(branch === 'unpublished' && {
-                    filters: {
-                        boolean: {
-                            mustNot: {
-                                exists: {
-                                    field: 'publish.from',
-                                },
+const getContentIdsFromQuery = ({ query, branch, types }) => {
+    return contentLib
+        .query({
+            ...(query && { query }),
+            start: 0,
+            count: 100000,
+            contentTypes: types,
+            ...(branch === 'unpublished' && {
+                filters: {
+                    boolean: {
+                        mustNot: {
+                            exists: {
+                                field: 'publish.from',
                             },
                         },
                     },
-                }),
+                },
             }),
-        branch === 'published' ? 'master' : 'draft'
-    );
+        })
+        .hits.map((hit) => hit._id);
+};
+
+const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
+    const contentIdsBatch = contentIdCacheByRequest
+        .get(requestId, () =>
+            getContentIdsFromQuery({
+                query,
+                branch,
+                types,
+            })
+        )
+        .slice(start, start + batchMaxSize);
+
+    const result = contentLib.query({
+        filters: {
+            count: batchMaxSize,
+            ids: {
+                values: contentIdsBatch,
+            },
+        },
+    });
 
     return fieldKeys?.length > 0
         ? {
@@ -77,7 +103,6 @@ const runQuery = ({ query, start, branch, types, fieldKeys }) => {
 };
 
 const handleGet = (req) => {
-    const { branch, query, types, fields, start = 0 } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -85,6 +110,19 @@ const handleGet = (req) => {
             status: 401,
             body: {
                 message: 'Not authorized',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const { branch, requestId, query, types, fields, start = 0 } = req.params;
+
+    if (!requestId) {
+        log.info('No request id specified');
+        return {
+            status: 400,
+            body: {
+                message: 'Missing parameter "requestId"',
             },
             contentType: 'application/json',
         };
@@ -126,17 +164,25 @@ const handleGet = (req) => {
     }
 
     try {
-        const result = runQuery({
-            query,
-            branch,
-            start,
-            fieldKeys: fieldKeysParsed,
-            types: typesParsed,
-        });
+        log.info(`Data query: running query for request id ${requestId}, start index ${start}`);
+
+        const result = runInBranchContext(
+            () =>
+                runQuery({
+                    requestId,
+                    query,
+                    branch,
+                    start,
+                    fieldKeys: fieldKeysParsed,
+                    types: typesParsed,
+                }),
+            branch === 'published' ? 'master' : 'draft'
+        );
 
         return {
             status: 200,
             body: {
+                requestId,
                 branch,
                 ...(query && { query }),
                 ...(typesParsed.length > 0 && { types: typesParsed }),
@@ -150,7 +196,7 @@ const handleGet = (req) => {
         return {
             status: 500,
             body: {
-                message: `Query error: ${e}`,
+                message: `Query error for request id ${requestId} - ${e}`,
             },
             contentType: 'application/json',
         };
