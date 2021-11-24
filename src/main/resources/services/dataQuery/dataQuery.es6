@@ -75,31 +75,33 @@ const getContentIdsFromQuery = ({ query, branch, types }) => {
 };
 
 const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
-    const contentIdsBatch = contentIdCacheByRequest
-        .get(requestId, () =>
-            getContentIdsFromQuery({
-                query,
-                branch,
-                types,
-            })
-        )
-        .slice(start, start + batchMaxSize);
+    const contentIds = contentIdCacheByRequest.get(requestId, () =>
+        getContentIdsFromQuery({
+            query,
+            branch,
+            types,
+        })
+    );
+
+    const contentIdsBatch = contentIds.slice(start, start + batchMaxSize);
 
     const result = contentLib.query({
+        count: batchMaxSize,
         filters: {
-            count: batchMaxSize,
             ids: {
                 values: contentIdsBatch,
             },
         },
     });
 
-    return fieldKeys?.length > 0
-        ? {
-              ...result,
-              hits: hitsWithRequestedFields(result.hits, fieldKeys),
-          }
-        : result;
+    const hits =
+        fieldKeys?.length > 0 ? hitsWithRequestedFields(result.hits, fieldKeys) : result.hits;
+
+    return {
+        ...result,
+        hits,
+        total: contentIds.length,
+    };
 };
 
 const handleGet = (req) => {
