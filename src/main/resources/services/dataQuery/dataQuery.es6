@@ -82,7 +82,8 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
                 },
             },
         })
-        .hits.map((hit) => hit.id);
+        .hits.map((hit) => hit.id)
+        .sort();
 
     log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
 
