@@ -34,7 +34,7 @@ const parseJsonArray = (str) => {
         }
         return null;
     } catch (e) {
-        log.info(`Failed to parse JSON string - ${e}`);
+        log.info(`Data query: Failed to parse JSON string - ${e}`);
         return null;
     }
 };
@@ -53,31 +53,40 @@ const hitsWithRequestedFields = (hits, fieldKeys) =>
         }, {})
     );
 
-const getContentIdsFromQuery = ({ query, branch, types }) => {
+const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
     const repo = nodeLib.connect({
         repoId: 'com.enonic.cms.default',
         branch: branch === 'published' ? 'master' : 'draft',
     });
 
-    return repo
+    const result = repo
         .query({
             ...(query && { query }),
             start: 0,
             count: 100000,
-            contentTypes: types,
-            ...(branch === 'unpublished' && {
-                filters: {
-                    boolean: {
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'type',
+                            values: types,
+                        },
+                    },
+                    ...(branch === 'unpublished' && {
                         mustNot: {
                             exists: {
                                 field: 'publish.from',
                             },
                         },
-                    },
+                    }),
                 },
-            }),
+            },
         })
         .hits.map((hit) => hit.id);
+
+    log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
+
+    return result;
 };
 
 const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
@@ -86,6 +95,7 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
             query,
             branch,
             types,
+            requestId,
         })
     );
 
@@ -205,7 +215,7 @@ const handleGet = (req) => {
             contentType: 'application/json',
         };
     } catch (e) {
-        log.info(
+        log.error(
             `Data query: error while running query for request id ${requestId}, start index ${start} - ${e}`
         );
 
