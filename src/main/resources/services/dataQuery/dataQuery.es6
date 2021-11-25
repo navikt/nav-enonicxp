@@ -111,11 +111,17 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
         })
     );
 
+    log.info(`Number of content ids total: ${contentIds.length}`);
+
     const contentIdsBatch = contentIds.slice(start, start + batchMaxSize);
+
+    log.info(
+        `Number of content ids for this batch, starting from index ${start}: ${contentIdsBatch.length}`
+    );
 
     const result = contentLib.query({
         start: 0,
-        count: batchMaxSize,
+        count: 100000,
         filters: {
             ids: {
                 values: contentIdsBatch,
