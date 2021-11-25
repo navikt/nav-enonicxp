@@ -21,7 +21,7 @@ const validBranches = {
 };
 
 // Cache the content-ids per request on the first batch, to ensure batched responses are consistent
-const contentIdCacheByRequest = cacheLib.newCache({
+const contentIdsCache = cacheLib.newCache({
     size: 10,
     expire: 3600,
 });
@@ -87,13 +87,22 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
         .hits.map((hit) => hit.id)
         .sort();
 
+    result.forEach((id, index, array) => {
+        const indexFound = array.indexOf(id);
+        if (indexFound !== index) {
+            log.info(
+                `Found duplicate id ${id} - expected index ${index}, found index ${indexFound}`
+            );
+        }
+    });
+
     log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
 
     return result;
 };
 
 const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
-    const contentIds = contentIdCacheByRequest.get(requestId, () =>
+    const contentIds = contentIdsCache.get(requestId, () =>
         getContentIdsFromQuery({
             query,
             branch,
@@ -105,6 +114,7 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
     const contentIdsBatch = contentIds.slice(start, start + batchMaxSize);
 
     const result = contentLib.query({
+        start: 0,
         count: batchMaxSize,
         filters: {
             ids: {
@@ -198,7 +208,7 @@ const handleGet = (req) => {
         );
 
         log.info(
-            `Data query: successfully ran query for request id ${requestId}, start index ${start}`
+            `Data query: successfully ran query batch for request id ${requestId}, start index ${start}`
         );
 
         return {
