@@ -87,15 +87,6 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
         .hits.map((hit) => hit.id)
         .sort();
 
-    result.forEach((id, index, array) => {
-        const indexFound = array.indexOf(id);
-        if (indexFound !== index) {
-            log.info(
-                `Found duplicate id ${id} - expected index ${index}, found index ${indexFound}`
-            );
-        }
-    });
-
     log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
 
     return result;
@@ -111,13 +102,7 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
         })
     );
 
-    log.info(`Number of content ids total: ${contentIds.length}`);
-
     const contentIdsBatch = contentIds.slice(start, start + batchMaxSize);
-
-    log.info(
-        `Number of content ids for this batch, starting from index ${start}: ${contentIdsBatch.length}`
-    );
 
     const result = contentLib.query({
         start: 0,
@@ -206,7 +191,7 @@ const handleGet = (req) => {
                     requestId,
                     query,
                     branch,
-                    start,
+                    start: Number(start),
                     fieldKeys: fieldKeysParsed,
                     types: typesParsed,
                 }),
