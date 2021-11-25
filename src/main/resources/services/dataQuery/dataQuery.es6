@@ -5,7 +5,7 @@ const { getNestedValue } = require('/lib/nav-utils');
 const { pageContentTypes } = require('/lib/sitemap/sitemap');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 
-const batchMaxSize = 1000;
+const batchSize = 1000;
 
 const defaultTypes = [
     ...pageContentTypes,
@@ -92,7 +92,7 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
     return result;
 };
 
-const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
+const runQuery = ({ requestId, query, batch, branch, types, fieldKeys }) => {
     const contentIds = contentIdsCache.get(requestId, () =>
         getContentIdsFromQuery({
             query,
@@ -102,7 +102,10 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
         })
     );
 
-    const contentIdsBatch = contentIds.slice(start, start + batchMaxSize);
+    const start = batch * batchSize;
+    const end = start + batchSize;
+
+    const contentIdsBatch = contentIds.slice(start, end);
 
     const result = contentLib.query({
         start: 0,
@@ -118,6 +121,7 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
         ...result,
         hits: hitsWithRequestedFields(result.hits, fieldKeys),
         total: contentIds.length,
+        hasMore: contentIds.length >= end,
     };
 };
 
@@ -134,7 +138,7 @@ const handleGet = (req) => {
         };
     }
 
-    const { branch, requestId, query, types, fields, start = 0 } = req.params;
+    const { branch, requestId, query, types, fields, batch = 0 } = req.params;
 
     if (!requestId) {
         log.info('No request id specified');
@@ -183,7 +187,7 @@ const handleGet = (req) => {
     }
 
     try {
-        log.info(`Data query: running query for request id ${requestId}, start index ${start}`);
+        log.info(`Data query: running query for request id ${requestId}, batch ${batch}`);
 
         const result = runInBranchContext(
             () =>
@@ -191,7 +195,7 @@ const handleGet = (req) => {
                     requestId,
                     query,
                     branch,
-                    start: Number(start),
+                    batch,
                     fieldKeys: fieldKeysParsed,
                     types: typesParsed,
                 }),
@@ -199,7 +203,7 @@ const handleGet = (req) => {
         );
 
         log.info(
-            `Data query: successfully ran query batch for request id ${requestId}, start index ${start}`
+            `Data query: successfully ran query batch for request id ${requestId}, batch ${batch}`
         );
 
         return {
@@ -212,12 +216,13 @@ const handleGet = (req) => {
                 ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
                 total: result.total,
                 hits: result.hits,
+                hasMore: result.hasMore,
             },
             contentType: 'application/json',
         };
     } catch (e) {
         log.error(
-            `Data query: error while running query for request id ${requestId}, start index ${start} - ${e}`
+            `Data query: error while running query for request id ${requestId}, batch ${batch} - ${e}`
         );
 
         return {
