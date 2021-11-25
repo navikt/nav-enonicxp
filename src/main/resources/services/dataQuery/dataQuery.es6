@@ -40,18 +40,20 @@ const parseJsonArray = (str) => {
 };
 
 const hitsWithRequestedFields = (hits, fieldKeys) =>
-    hits.map((hit) =>
-        fieldKeys.reduce((acc, key) => {
-            const value = getNestedValue(hit, key);
+    fieldKeys?.length > 0
+        ? hits.map((hit) =>
+              fieldKeys.reduce((acc, key) => {
+                  const value = getNestedValue(hit, key);
 
-            return value
-                ? {
-                      ...acc,
-                      [key]: value,
-                  }
-                : acc;
-        }, {})
-    );
+                  return value
+                      ? {
+                            ...acc,
+                            [key]: value,
+                        }
+                      : acc;
+              }, {})
+          )
+        : hits;
 
 const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
     const repo = nodeLib.connect({
@@ -111,12 +113,9 @@ const runQuery = ({ requestId, query, start, branch, types, fieldKeys }) => {
         },
     });
 
-    const hits =
-        fieldKeys?.length > 0 ? hitsWithRequestedFields(result.hits, fieldKeys) : result.hits;
-
     return {
         ...result,
-        hits,
+        hits: hitsWithRequestedFields(result.hits, fieldKeys),
         total: contentIds.length,
     };
 };
