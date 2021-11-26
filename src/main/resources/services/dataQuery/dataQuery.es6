@@ -117,10 +117,10 @@ const runQuery = ({ requestId, query, batch, branch, types, fieldKeys }) => {
         },
     });
 
-    if (result.hits.length !== contentIdsBatch.length) {
-        const diff = contentIdsBatch.filter((id) => !result.hits.includes((hit) => hit._id === id));
-        log.info(`Data query: missing results from contentLib query: ${JSON.stringify(diff)}`);
-    }
+    // if (result.hits.length !== contentIdsBatch.length) {
+    const diff = contentIdsBatch.filter((id) => !result.hits.find((hit) => hit._id === id));
+    log.info(`Data query: missing results from contentLib query: ${JSON.stringify(diff)}`);
+    // }
 
     return {
         ...result,
