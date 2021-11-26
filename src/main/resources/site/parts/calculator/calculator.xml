@@ -12,5 +12,6 @@
                 <mixin name="calculator-target-selector"/>
             </items>
         </field-set>
+        <mixin name="filter-selector"/>
     </form>
 </part>

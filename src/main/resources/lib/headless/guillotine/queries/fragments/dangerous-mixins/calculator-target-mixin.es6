@@ -6,6 +6,7 @@ const calculatorTargetMixin = `
     targetCalculator {
         ${calculatorFragment.fragment}
     }
+    filters
 `;
 
 module.exports = { calculatorTargetMixin };
