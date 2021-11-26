@@ -2,10 +2,15 @@ const taskLib = require('/lib/xp/task');
 const thymeleafLib = require('/lib/thymeleaf');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const officeInformation = require('/lib/officeInformation');
+const { globalValueMacrosMigration } = require('/lib/globalValueMacrosMigration');
 
 const view = resolve('webapp.html');
 const validActions = {
     norg: { description: 'Importerer NORG', callback: officeInformation.runOneTimeJob },
+    globaleVerdierMigrering: {
+        description: 'Migrerer macroer for globale verdier til nytt format',
+        callback: globalValueMacrosMigration,
+    },
 };
 
 exports.get = (req) => {
