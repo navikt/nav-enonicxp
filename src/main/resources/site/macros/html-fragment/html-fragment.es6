@@ -14,7 +14,7 @@ const macroPreview = (context) => {
     }
 
     return {
-        body: `<a href='/admin/tool/com.enonic.app.contentstudio/main#/default/edit/${contentId}' target='_blank'>Rediger verdi</a>`,
+        body: `<a href='/admin/tool/com.enonic.app.contentstudio/main#/default/edit/${contentId}' target='_blank'>Rediger fragment</a>`,
     };
 };
 
