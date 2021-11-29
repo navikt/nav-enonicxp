@@ -1,5 +1,6 @@
 const contactInformationFragment = `
     ...on no_nav_navno_ContactInformation{
+        _path
         data {
             contactType {
                 telephone {
