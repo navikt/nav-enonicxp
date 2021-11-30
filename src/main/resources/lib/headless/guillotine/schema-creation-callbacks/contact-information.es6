@@ -1,5 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
+const navUtils = require('/lib/nav-utils');
 
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,
@@ -107,7 +108,9 @@ const contactInformationCallback = (context, params) => {
                 return {};
             }
 
-            const { title, text, footNote, validFrom, validTo, hours } = specialOpeningHours.custom;
+            const { title, text, footNote, validFrom, validTo } = specialOpeningHours.custom;
+
+            const hours = navUtils.forceArray(specialOpeningHours.custom.hours);
 
             const normalizedHours = hours
                 .map(({ status, date }) => {
@@ -122,7 +125,7 @@ const contactInformationCallback = (context, params) => {
                         status: status._selected.toUpperCase(),
                     };
                 })
-                .sort((a, b) => (a < b ? -1 : 1));
+                .sort((a, b) => (a.date < b.date ? -1 : 1));
 
             return {
                 title,
