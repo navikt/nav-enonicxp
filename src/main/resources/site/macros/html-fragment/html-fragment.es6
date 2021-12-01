@@ -11,13 +11,13 @@ const previewController = (context) => {
     const contentId = getKeyWithoutMacroDescription(fragmentId);
 
     if (!contentId) {
-        return { body: '<span>Macroen har en feil referanse - forsøk å opprette på nytt</span>' };
+        return { body: `<span>Feil: Ugyldig format på fragment id: ${fragmentId}</span>` };
     }
 
     const content = contentLib.get({ key: contentId });
 
     if (!content || content.type !== 'portal:fragment') {
-        return { body: '<span>Macroen har en feil referanse - forsøk å opprette på nytt</span>' };
+        return { body: `<span>Feil: ${contentId} er ikke en gyldig fragment-referanse</span>` };
     }
 
     const { displayName, _path } = content;
