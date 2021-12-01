@@ -2,9 +2,15 @@
     <display-name>Sett inn varselboks</display-name>
     <description>Sett inn varselboks i brødteksten</description>
     <form>
-        <input name="varselBoks" type="TextLine">
-            <label>Teksten som skal legges inn</label>
-            <occurrences minimum="1" maximum="1"/>
+        <input name="body" type="HtmlArea">
+            <label>Innhold i boksen</label>
+            <occurrences minimum="1" maximum="1"/></input>
+        <input name="infoBoks" type="TextLine">
+            <label>(Deprecated - Bruk "Innhold" feltet)</label>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <regexp>^$</regexp>
+            </config>
         </input>
     </form>
 </macro>
