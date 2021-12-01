@@ -34,6 +34,9 @@ const {
 } = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
 
 const commonLib = require('/lib/xp/common');
+const {
+    macroAlertboxCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-alert-box');
 
 const sanitizeOld = commonLib.sanitize;
 
@@ -74,6 +77,7 @@ const schemaContextOptions = {
         Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
         Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
         Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
+        Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     }),
     applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
     allowPaths: ['/redirects'],
