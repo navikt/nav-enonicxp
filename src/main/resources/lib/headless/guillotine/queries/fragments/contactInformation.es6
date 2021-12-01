@@ -10,7 +10,7 @@ const contactInformationFragment = `
                     alertText
                     regularOpeningHours {
                         hours {
-                            day
+                            dayName
                             from
                             to
                             status

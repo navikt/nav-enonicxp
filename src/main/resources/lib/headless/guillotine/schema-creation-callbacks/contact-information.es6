@@ -32,7 +32,7 @@ const contactInformationCallback = (context, params) => {
     const RegularOpeningHour = graphQlLib.createObjectType(context, {
         name: 'regularOpeningHour',
         fields: {
-            day: { type: graphQlLib.GraphQLString },
+            dayName: { type: graphQlLib.GraphQLString },
             from: { type: graphQlLib.GraphQLString },
             to: { type: graphQlLib.GraphQLString },
             status: { type: graphQlLib.GraphQLString },
@@ -61,7 +61,7 @@ const contactInformationCallback = (context, params) => {
             if (Object.keys(regularOpeningHours).length === 0) {
                 return null;
             }
-            const days = [
+            const dayNames = [
                 'monday',
                 'tuesday',
                 'wednesday',
@@ -72,11 +72,11 @@ const contactInformationCallback = (context, params) => {
             ];
 
             return {
-                hours: days.map((day) => {
-                    if (!regularOpeningHours[day]) {
-                        return { day, status: 'CLOSED' };
+                hours: dayNames.map((dayName) => {
+                    if (!regularOpeningHours[dayName]) {
+                        return { dayName, status: 'CLOSED' };
                     }
-                    return { day, ...regularOpeningHours[day], status: 'OPEN' };
+                    return { dayName, ...regularOpeningHours[dayName], status: 'OPEN' };
                 }),
             };
         },
@@ -112,28 +112,30 @@ const contactInformationCallback = (context, params) => {
 
             const hours = navUtils.forceArray(specialOpeningHours.custom.hours);
 
+            // We want the special opening hours to have the same schema as regular
+            // opening hours and also (just in case) to be sorted by date.
             const normalizedHours = hours
                 .map(({ status, date }) => {
-                    const openTime =
+                    const openHours =
                         status._selected === 'open'
                             ? { from: status.open.from, to: status.open.to }
                             : {};
 
                     return {
                         date,
-                        ...openTime,
+                        ...openHours,
                         status: status._selected.toUpperCase(),
                     };
                 })
                 .sort((a, b) => (a.date < b.date ? -1 : 1));
 
             return {
-                title,
-                text,
                 footNote,
+                hours: normalizedHours,
+                text,
+                title,
                 validFrom,
                 validTo,
-                hours: normalizedHours,
             };
         },
     };
