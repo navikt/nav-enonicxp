@@ -1,34 +1,7 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>_Varselstripe</display-name>
-    <description>https://design.nav.no/components/alertstripe</description>
     <form>
-        <input type="ComboBox" name="type">
-            <label>Type</label>
-            <occurrences minimum="0" maximum="1"/>
-            <default>info</default>
-            <config>
-                <option value="info">Info</option>
-                <option value="suksess">Suksess</option>
-                <option value="advarsel">Advarsel</option>
-                <option value="feil">Feil</option>
-            </config>
-        </input>
-        <input type="RadioButton" name="inline">
-            <label>Inline</label>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <option value="true">På</option>
-                <option value="false">Av</option>
-            </config>
-            <default>true</default>
-        </input>
-        <input type="HtmlArea" name="content">
-            <label>Innhold</label>
-        </input>
-        <input type="TextArea" name="margin">
-            <label>Margin på containeren</label>
-            <default>1rem 0 1rem 0</default>
-        </input>
+        <mixin name="alert-box"/>
         <mixin name="auth-render-option"/>
     </form>
 </part>
