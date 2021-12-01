@@ -1,6 +1,7 @@
+const contentLib = require('/lib/xp/content');
 const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
 
-const macroPreview = (context) => {
+const previewController = (context) => {
     const { fragmentId } = context.params;
 
     if (!fragmentId) {
@@ -13,9 +14,23 @@ const macroPreview = (context) => {
         return { body: '<span>Macroen har en feil referanse - forsøk å opprette på nytt</span>' };
     }
 
+    const content = contentLib.get({ key: contentId });
+
+    if (!content || content.type !== 'portal:fragment') {
+        return { body: '<span>Macroen har en feil referanse - forsøk å opprette på nytt</span>' };
+    }
+
+    const { displayName, _path } = content;
+
     return {
-        body: `<a href='/admin/tool/com.enonic.app.contentstudio/main#/default/edit/${contentId}' target='_blank'>Rediger fragment</a>`,
+        body: `
+            <div>
+                <span style='font-size:20px'>${displayName}</span><br/>
+                <span style='color:#888888'>${_path}</span><br/>
+                <a href='/admin/tool/com.enonic.app.contentstudio/main#/default/edit/${contentId}' target='_blank'>[Åpne i editoren]</a>
+            </div>
+            `,
     };
 };
 
-exports.macro = macroPreview;
+exports.macro = previewController;
