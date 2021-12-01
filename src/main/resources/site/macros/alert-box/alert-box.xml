@@ -1,6 +1,6 @@
 <macro>
-    <display-name>Sett inn varselboks</display-name>
-    <description>Sett inn varselboks med riktekst</description>
+    <display-name>Varselboks</display-name>
+    <description>Varselboks med riktekst</description>
     <form>
         <mixin name="alert-box"/>
     </form>

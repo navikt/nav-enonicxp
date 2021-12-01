@@ -95,6 +95,11 @@ const processedHtmlFragment = `(processHtml:{type:server}) {
                     }
                 }
             }
+            alert_box {
+                type
+                size
+                body
+            }
         }
     }
 }`;
