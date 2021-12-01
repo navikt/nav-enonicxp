@@ -1,5 +1,5 @@
 <macro>
-    <display-name>Sett inn video</display-name>
+    <display-name>Video</display-name>
     <description>Legg inn URL og beskrivende tittel</description>
     <form>
         <input name="video" type="TextLine">
