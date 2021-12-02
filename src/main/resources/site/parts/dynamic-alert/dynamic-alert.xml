@@ -1,7 +1,11 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Varselstripe</display-name>
+    <display-name>Varselboks</display-name>
+    <description>Varselboks med rik tekst</description>
     <form>
-        <input type="ComboBox" name="type">
+        <input type="HtmlArea" name="content">
+            <label>Innhold</label>
+        </input>
+        <input type="Radio" name="type">
             <label>Type</label>
             <occurrences minimum="0" maximum="1"/>
             <default>info</default>
@@ -20,9 +24,6 @@
                 <option value="small">Liten</option>
             </config>
             <default>medium</default>
-        </input>
-        <input type="HtmlArea" name="content">
-            <label>Innhold</label>
         </input>
         <input type="TextArea" name="margin">
             <label>Margin på containeren</label>
