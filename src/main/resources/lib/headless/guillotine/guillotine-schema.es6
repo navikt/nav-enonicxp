@@ -33,26 +33,6 @@ const {
     applyMacroCreationCallbacksToHtmlFragmentTypes,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
 
-const commonLib = require('/lib/xp/common');
-const {
-    macroAlertboxCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-alert-box');
-
-const sanitizeOld = commonLib.sanitize;
-
-commonLib.sanitize = (text) => {
-    try {
-        // Ensure blank strings aren't sent to the sanitize function
-        // (prevents crash during guillotine schema creation)
-        const textTrimmed = text.trim();
-
-        return sanitizeOld(textTrimmed ? text : '');
-    } catch (e) {
-        log.error(`Failed to sanitize: "${text}"`);
-        throw e;
-    }
-};
-
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
         Attachment: attachmentCallback,
