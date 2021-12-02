@@ -6,10 +6,10 @@
             <occurrences minimum="0" maximum="1"/>
             <default>info</default>
             <config>
-                <option value="info">Info</option>
-                <option value="suksess">Suksess</option>
-                <option value="advarsel">Advarsel</option>
-                <option value="feil">Feil</option>
+                <option value="info">Info (blå)</option>
+                <option value="suksess">Suksess (grønn)</option>
+                <option value="advarsel">Advarsel (oransje)</option>
+                <option value="feil">Feil (rød)</option>
             </config>
         </input>
         <input type="RadioButton" name="size">
