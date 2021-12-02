@@ -7,6 +7,9 @@ const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscript
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
+const {
+    macroAlertboxCallback,
+} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-alert-box');
 const { mediaCodeCallback } = require('./schema-creation-callbacks/media');
 const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
