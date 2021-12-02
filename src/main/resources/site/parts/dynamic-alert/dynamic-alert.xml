@@ -5,7 +5,7 @@
         <input type="HtmlArea" name="content">
             <label>Innhold</label>
         </input>
-        <input type="Radio" name="type">
+        <input type="RadioButton" name="type">
             <label>Type</label>
             <occurrences minimum="0" maximum="1"/>
             <default>info</default>
