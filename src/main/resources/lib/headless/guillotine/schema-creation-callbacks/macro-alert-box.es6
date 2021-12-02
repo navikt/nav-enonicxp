@@ -7,14 +7,12 @@ const macroAlertboxCallback = (context, params) => {
         // buggy behaviour in the content-studio rich-text editor
         const debuggifiedHtml = env.source.body.replace(/<\/?p>/g, '');
 
-        // Htmlarea code is encoded as html-entities, decode to proper html
+        // Htmlarea code itself encoded with html-entities, decode to proper html characters
         const decodedHtml = decode(debuggifiedHtml);
-
-        log.info(decodedHtml.length);
 
         const processedHtml = macroLib.processHtml({
             type: 'server',
-            value: debuggifiedHtml,
+            value: decodedHtml,
         });
 
         log.info(processedHtml.processedHtml);
