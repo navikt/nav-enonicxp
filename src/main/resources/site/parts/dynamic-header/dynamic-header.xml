@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Header</display-name>
+    <display-name>Header</display-name>
     <description>H2-H6 header</description>
     <form>
         <input name="title" type="TextLine">

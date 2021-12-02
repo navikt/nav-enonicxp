@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Meny for intern-navigasjon</display-name>
+    <display-name>Meny for intern-navigasjon</display-name>
     <form>
         <input type="TextLine" name="title">
             <label>Tittel</label>

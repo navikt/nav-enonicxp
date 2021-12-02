@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Varselstripe</display-name>
+    <display-name>Varselstripe</display-name>
     <form>
         <input type="ComboBox" name="type">
             <label>Type</label>
