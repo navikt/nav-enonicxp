@@ -33,7 +33,7 @@ const partsFragment = `
             }
             dynamic_alert {
                 type
-                inline
+                size
                 content ${processedHtmlFragment}
                 margin
             }
