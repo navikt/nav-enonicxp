@@ -36,6 +36,33 @@ const {
     applyMacroCreationCallbacksToHtmlFragmentTypes,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
 
+// Temporary workaround for compatibility with XP 7.8.0 beta versions
+// (excluding prod just in case this has unintentional side-effects)
+//
+// This ensures blank strings aren't used with the sanitize function,
+// preventing "NamePrettifier" from throwing errors. This is used during
+// schema creation, and causes errors with descriptors with newline-characters
+if (app.config.env !== 'p') {
+    log.info(`Fixing commonLib.sanitize...`);
+
+    const commonLib = require('/lib/xp/common');
+
+    const sanitizeOld = commonLib.sanitize;
+
+    commonLib.sanitize = (text) => {
+        try {
+            if (!text.trim()) {
+                return '';
+            }
+
+            return sanitizeOld(text);
+        } catch (e) {
+            log.error(`Failed to sanitize: "${text}"`);
+            throw e;
+        }
+    };
+}
+
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
         Attachment: attachmentCallback,
