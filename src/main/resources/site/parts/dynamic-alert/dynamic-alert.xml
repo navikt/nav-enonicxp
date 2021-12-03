@@ -24,13 +24,9 @@
             </config>
             <default>medium</default>
         </input>
-        <input type="RadioButton" name="inline">
-            <label>Bakgrunn</label>
-            <config>
-                <option value="false">På</option>
-                <option value="true">Av</option>
-            </config>
-            <default>false</default>
+        <input type="CheckBox" name="inline">
+            <label>Med bakgrunnsfarge</label>
+            <default>true</default>
         </input>
         <input type="TextArea" name="margin">
             <label>Margin på containeren</label>

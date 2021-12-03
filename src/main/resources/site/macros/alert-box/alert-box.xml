@@ -17,8 +17,8 @@
             <default>info</default>
             <config>
                 <option value="info">Info (blå)</option>
-                <option value="warning">Advarsel (oransje)</option>
                 <option value="success">Suksess (grønn)</option>
+                <option value="warning">Advarsel (oransje)</option>
                 <option value="error">Feil (rød)</option>
             </config>
         </input>
@@ -30,13 +30,9 @@
                 <option value="small">Liten</option>
             </config>
         </input>
-        <input type="RadioButton" name="inline">
-            <label>Bakgrunn</label>
-            <config>
-                <option value="false">På</option>
-                <option value="true">Av</option>
-            </config>
-            <default>false</default>
+        <input type="CheckBox" name="inline">
+            <label>Med bakgrunnsfarge</label>
+            <default>true</default>
         </input>
     </form>
 </macro>
