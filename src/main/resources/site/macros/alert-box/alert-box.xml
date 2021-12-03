@@ -31,8 +31,11 @@
             </config>
         </input>
         <input type="CheckBox" name="inline">
-            <label>Med bakgrunnsfarge</label>
-            <default>true</default>
+            <label>Uten bakgrunn</label>
+            <default>false</default>
+            <config>
+                <alignment>right</alignment>
+            </config>
         </input>
     </form>
 </macro>
