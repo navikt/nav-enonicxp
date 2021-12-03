@@ -30,5 +30,13 @@
                 <option value="small">Liten</option>
             </config>
         </input>
+        <input type="RadioButton" name="inline">
+            <label>Bakgrunn</label>
+            <config>
+                <option value="false">På</option>
+                <option value="true">Av</option>
+            </config>
+            <default>false</default>
+        </input>
     </form>
 </macro>

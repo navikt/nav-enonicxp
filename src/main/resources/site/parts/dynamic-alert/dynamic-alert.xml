@@ -17,13 +17,20 @@
             </config>
         </input>
         <input type="RadioButton" name="size">
-            <label>Inline</label>
-            <occurrences minimum="1" maximum="1"/>
+            <label>Størrelse</label>
             <config>
                 <option value="medium">Normal</option>
                 <option value="small">Liten</option>
             </config>
             <default>medium</default>
+        </input>
+        <input type="RadioButton" name="inline">
+            <label>Bakgrunn</label>
+            <config>
+                <option value="false">På</option>
+                <option value="true">Av</option>
+            </config>
+            <default>false</default>
         </input>
         <input type="TextArea" name="margin">
             <label>Margin på containeren</label>
