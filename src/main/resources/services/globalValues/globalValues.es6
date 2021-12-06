@@ -1,4 +1,4 @@
-const { reorderValues } = require('./reorderValues/reorderValues');
+const { reorderGlobalValuesService } = require('./reorderValues/reorderGlobalValuesService');
 const { getSubPath } = require('../service-utils');
 const { getGlobalValueSetService } = require('./getSet/getSet');
 const { removeGlobalValueItemService } = require('./remove/remove');
@@ -26,7 +26,7 @@ const globalValues = (req) => {
         case 'remove':
             return removeGlobalValueItemService(req);
         case 'reorder':
-            return reorderValues(req);
+            return reorderGlobalValuesService(req);
         default:
             break;
     }

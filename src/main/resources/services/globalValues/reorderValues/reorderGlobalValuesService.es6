@@ -4,7 +4,7 @@ const { gvServiceInvalidRequestResponse } = require('../utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 
-// Verify that the keys-array from the request matches the keys in the global value set
+// Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam, valueItems) => {
     return (
         keysFromParam.length === valueItems.length &&
@@ -12,13 +12,12 @@ const validateKeys = (keysFromParam, valueItems) => {
     );
 };
 
-const reorderValues = (req) => {
+const reorderGlobalValuesService = (req) => {
     const { contentId, keys: keysParam } = req.params;
 
     const keys = parseJsonArray(keysParam);
-
-    if (!keys || !Array.isArray(keys)) {
-        return gvServiceInvalidRequestResponse('Required parameter "keys" missing or invalid');
+    if (!keys) {
+        return gvServiceInvalidRequestResponse('Required parameter "keys" is missing or invalid');
     }
 
     const content = getGlobalValueSet(contentId);
@@ -72,4 +71,4 @@ const reorderValues = (req) => {
     }
 };
 
-module.exports = { reorderValues };
+module.exports = { reorderGlobalValuesService };
