@@ -13,11 +13,13 @@ const validateKeys = (keysFromParam, valueItems) => {
 };
 
 const reorderGlobalValuesService = (req) => {
-    const { contentId, orderedKeys: keysParam } = req.params;
+    const { contentId, orderedKeys } = req.params;
 
-    const keys = parseJsonArray(keysParam);
-    if (!keys) {
-        return gvServiceInvalidRequestResponse('Required parameter "keys" is missing or invalid');
+    const keysParsed = parseJsonArray(orderedKeys);
+    if (!keysParsed) {
+        return gvServiceInvalidRequestResponse(
+            'Required parameter "orderedKeys" is missing or invalid'
+        );
     }
 
     const content = getGlobalValueSet(contentId);
@@ -26,13 +28,13 @@ const reorderGlobalValuesService = (req) => {
     }
 
     const items = forceArray(content.data.valueItems);
-    if (!validateKeys(keys, items)) {
+    if (!validateKeys(keysParsed, items)) {
         return gvServiceInvalidRequestResponse(
             `Keys provided does not match keys in global value set ${contentId}`
         );
     }
 
-    const reorderedItems = keys.map((key) => items.find((item) => item.key === key));
+    const reorderedItems = keysParsed.map((key) => items.find((item) => item.key === key));
 
     try {
         const repo = nodeLib.connect({
