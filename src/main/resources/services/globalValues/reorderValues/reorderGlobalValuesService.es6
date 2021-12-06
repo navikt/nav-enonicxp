@@ -13,7 +13,7 @@ const validateKeys = (keysFromParam, valueItems) => {
 };
 
 const reorderGlobalValuesService = (req) => {
-    const { contentId, keys: keysParam } = req.params;
+    const { contentId, orderedKeys: keysParam } = req.params;
 
     const keys = parseJsonArray(keysParam);
     if (!keys) {
