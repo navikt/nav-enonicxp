@@ -19,6 +19,12 @@
                         <regexp>^[0-9a-zA-Z-_]+$</regexp>
                     </config>
                 </input>
+                <input name="hideFromInternalNavigation" type="CheckBox">
+                    <label>Skjul i intern-navigasjon</label>
+                    <config>
+                        <alignment>left</alignment>
+                    </config>
+                </input>
                 <input type="CheckBox" name="toggleCopyButton">
                     <label>Toggle "kopier lenke" knapp</label>
                     <help-text>Skjuler "kopier lenke" dersom den er default på for denne komponenten, eller vice versa</help-text>
