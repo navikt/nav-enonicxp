@@ -19,6 +19,12 @@
                 <regexp>^[0-9a-zA-Z-_]*$</regexp>
             </config>
         </input>
+        <input name="hideFromInternalNavigation" type="CheckBox">
+            <label>Skjul i intern-navigasjon</label>
+            <config>
+                <alignment>left</alignment>
+            </config>
+        </input>
         <input name="titleTag" type="RadioButton">
             <label>Heading tag</label>
             <occurrences minimum="1" maximum="1" />

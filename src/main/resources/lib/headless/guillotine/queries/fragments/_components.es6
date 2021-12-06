@@ -20,6 +20,7 @@ const partsFragment = `
             dynamic_header {
                 title
                 anchorId
+                hideFromInternalNavigation
                 ${headerCommonMixin}
             }
             dynamic_link_panel {
