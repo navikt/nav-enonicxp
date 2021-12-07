@@ -11,7 +11,7 @@ const richTextCallback = (context, params) => {
         const { processedHtml } = env.source;
 
         return processedHtml
-            ? env.source.processedHtml
+            ? processedHtml
                   // Strip linebreaks, as it may cause errors in the frontend parser
                   .replace(linebreakFilter, ' ')
                   // Strip html tags from the body of macro-tags. Fixes invalid html-nesting caused by the CS editor
