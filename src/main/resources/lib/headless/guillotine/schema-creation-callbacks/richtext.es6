@@ -1,5 +1,3 @@
-const macroTagName = 'editor-macro';
-
 const linebreaksFilter = new RegExp(/(\r\n|\n|\r|\s)/gi);
 
 const richTextCallback = (context, params) => {
