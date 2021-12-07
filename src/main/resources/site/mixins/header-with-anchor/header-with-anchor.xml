@@ -20,7 +20,7 @@
                     </config>
                 </input>
                 <input name="hideFromInternalNavigation" type="CheckBox">
-                    <label>Skjul i intern-navigasjon</label>
+                    <label>Ikke vis under innhold</label>
                     <config>
                         <alignment>left</alignment>
                     </config>
