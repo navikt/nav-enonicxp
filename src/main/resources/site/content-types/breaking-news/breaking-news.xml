@@ -1,58 +1,10 @@
 <content-type>
-    <display-name>Kampanje - Skal kun brukes sentralt</display-name>
-    <description>Kampanje eller innhold som skal gis spesiell oppmerksomhet</description>
+    <display-name>Kampanje - Skal ikke brukes</display-name>
+    <description>
+        Utgått innholdstype - må være definert for å unngå krasj i Content Studio
+    </description>
     <super-type>base:unstructured</super-type>
-    <is-abstract>false</is-abstract>
-    <is-final>true</is-final>
-    <allow-child-content>true</allow-child-content>
+    <is-abstract>true</is-abstract>
     <form>
-        <field-set>
-            <label>Kampanje - Skal kun brukes sentralt</label>
-            <items>
-                <input type="RadioButton" name="severity">
-                    <label>Synlighet</label>
-                    <help-text>
-                        Velg synlighet. Dette påvirker effektene i visningen av kampanjen.
-                    </help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <option value="1">Høy</option>
-                        <option value="2">Middels</option>
-                        <option value="3">Lav</option>
-                    </config>
-                    <default>2</default>
-                </input>
-                <input name="target" type="ContentSelector">
-                    <label>Innhold det skal henvises til</label>
-                    <help-text>Velg innhold som det skal henvises til</help-text>
-                    <occurrences maximum="1" minimum="1"/>
-                    <config>
-                        <allowPath>/www.nav.no/*</allowPath>
-                        <showStatus>true</showStatus>
-                    </config>
-                </input>
-                <input name="title" type="TextLine">
-                    <label>Tittel (overstyrer sidetittel fra valgt innhold)</label>
-                    <help-text>
-                        Fylles ut hvis du vil overstyre visning av tittel fra innhold
-                        det henvises til.
-                    </help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-                <input name="description" type="TextArea">
-                    <label>Beskrivelse (overstyrer ingress fra valgt innhold)</label>
-                    <help-text>
-                        Fylles ut hvis du vil overstyre visning av ingress fra innhold
-                        det henvises til.
-                    </help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-                <input name="timestamp" type="DateTime">
-                    <label>Oppdatert tidspunkt</label>
-                    <help-text>Ingen verdi her vil skjule dette i visningen</help-text>
-                    <occurrences maximum="1" minimum="0"/>
-                </input>
-            </items>
-        </field-set>
     </form>
 </content-type>
