@@ -1,8 +1,8 @@
 <content-type>
     <display-name>Publiseringskalender</display-name>
-    <description>Brukes i forbindelse med publiseringskalender</description>
+    <description>Brukes til publiseringskalender - Skal ikke opprettes nye</description>
     <super-type>base:unstructured</super-type>
-    <is-abstract>false</is-abstract>
+    <is-abstract>true</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
