@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Kort mini</display-name>
+    <display-name>Kort mini</display-name>
     <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
         <mixin name="product-card-mini"/>

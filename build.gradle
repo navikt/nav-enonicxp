@@ -79,8 +79,10 @@ dependencies {
     include 'com.enonic.lib:lib-cron:1.1.1'
     include "com.enonic.lib:lib-guillotine:5.2.1"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
-    webjar "org.webjars:momentjs:2.14.1"
     include "org.jsoup:jsoup:1.13.1"
+    webjar "org.webjars:momentjs:2.14.1"
+    webjar "org.webjars.npm:html-entities:2.1.0"
+    webjar "org.webjars.npm:striptags:3.1.1"
 }
 
 // Tasks

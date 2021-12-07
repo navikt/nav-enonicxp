@@ -1,10 +1,12 @@
 <macro>
-    <display-name>Sett inn varselboks</display-name>
-    <description>Sett inn varselboks i brødteksten</description>
+    <display-name>~(Deprecated - bruk Varselboks)</display-name>
     <form>
         <input name="varselBoks" type="TextLine">
-            <label>Teksten som skal legges inn</label>
+            <label>Deprecated - bruk Varselboks</label>
             <occurrences minimum="1" maximum="1"/>
+            <config>
+                <regexp>^$</regexp>
+            </config>
         </input>
     </form>
 </macro>

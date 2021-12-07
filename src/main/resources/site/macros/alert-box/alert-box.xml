@@ -1,28 +1,34 @@
-<part xmlns="urn:enonic:xp:model:1.0">
+<macro>
     <display-name>Varselboks</display-name>
     <description>Varselboks med rik tekst</description>
     <form>
-        <input type="HtmlArea" name="content">
+        <input type="HtmlArea" name="body">
             <label>Innhold</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <include>Undo Redo</include>
+                <exclude>JustifyBlock Underline Macro Image</exclude>
+                <allowHeadings>h3 h4 normal</allowHeadings>
+            </config>
         </input>
         <input type="RadioButton" name="type">
             <label>Type</label>
-            <occurrences minimum="0" maximum="1"/>
+            <occurrences minimum="1" maximum="1"/>
             <default>info</default>
             <config>
                 <option value="info">Info (blå)</option>
-                <option value="suksess">Suksess (grønn)</option>
-                <option value="advarsel">Advarsel (oransje)</option>
-                <option value="feil">Feil (rød)</option>
+                <option value="success">Suksess (grønn)</option>
+                <option value="warning">Advarsel (oransje)</option>
+                <option value="error">Feil (rød)</option>
             </config>
         </input>
         <input type="RadioButton" name="size">
             <label>Størrelse</label>
+            <default>medium</default>
             <config>
                 <option value="medium">Normal</option>
                 <option value="small">Liten</option>
             </config>
-            <default>medium</default>
         </input>
         <input type="CheckBox" name="inline">
             <label>Uten bakgrunn (inline)</label>
@@ -31,10 +37,5 @@
                 <alignment>right</alignment>
             </config>
         </input>
-        <input type="TextArea" name="margin">
-            <label>Margin på containeren</label>
-            <default>1rem 0 1rem 0</default>
-        </input>
-        <mixin name="auth-render-option"/>
     </form>
-</part>
+</macro>
