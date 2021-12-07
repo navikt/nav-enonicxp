@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
 const { forceArray } = require('/lib/nav-utils');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
@@ -96,20 +97,22 @@ const getFragmentUsage = (req) => {
 const htmlFragmentSelector = (req) => {
     const subPath = getSubPath(req);
 
-    if (subPath === 'fragmentUsage') {
-        return getFragmentUsage(req);
-    }
+    return runInBranchContext(() => {
+        if (subPath === 'fragmentUsage') {
+            return getFragmentUsage(req);
+        }
 
-    const hits = selectorHandler(req);
+        const hits = selectorHandler(req);
 
-    return {
-        status: 200,
-        body: {
-            total: hits.length,
-            count: hits.length,
-            hits: hits,
-        },
-    };
+        return {
+            status: 200,
+            body: {
+                total: hits.length,
+                count: hits.length,
+                hits: hits,
+            },
+        };
+    }, 'master');
 };
 
 exports.get = htmlFragmentSelector;
