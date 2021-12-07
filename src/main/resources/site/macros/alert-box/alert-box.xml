@@ -31,7 +31,7 @@
             </config>
         </input>
         <input type="CheckBox" name="inline">
-            <label>Uten bakgrunn</label>
+            <label>Uten bakgrunn (inline)</label>
             <default>false</default>
             <config>
                 <alignment>right</alignment>
