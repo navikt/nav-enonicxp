@@ -22,6 +22,20 @@ const getUnixTimeFromDateTimeString = (datetime) => {
     return new Date(validDateTime).getTime();
 };
 
+const parseJsonArray = (json) => {
+    try {
+        const array = JSON.parse(json);
+        if (Array.isArray(array)) {
+            return array;
+        }
+        log.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
+        return null;
+    } catch (e) {
+        log.error(`Failed to parse JSON string ${json} - ${e}`);
+        return null;
+    }
+};
+
 /**
  * @description Date formats on content created in XP7 is not necessarily
  * supported in the Date wrapper in XP7 (but it does work in browsers)
@@ -203,4 +217,5 @@ module.exports = {
     getUnixTimeFromDateTimeString,
     removeDuplicates,
     getParentPath,
+    parseJsonArray,
 };

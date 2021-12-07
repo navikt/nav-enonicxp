@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, nav-enonicxp-actions-runner-prod]
     environment: prod-sbs:default
     steps:
       - name: Cleanup
