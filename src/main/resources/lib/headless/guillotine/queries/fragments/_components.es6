@@ -20,6 +20,7 @@ const partsFragment = `
             dynamic_header {
                 title
                 anchorId
+                hideFromInternalNavigation
                 ${headerCommonMixin}
             }
             dynamic_link_panel {
@@ -145,6 +146,7 @@ const layoutsFragment = `
         no_nav_navno {
             section_with_header {
                 anchorId
+                hideFromInternalNavigation
                 icon {
                     color
                     size
@@ -154,6 +156,7 @@ const layoutsFragment = `
                 }
             }
             situation_flex_cols {
+                hideFromInternalNavigation
                 anchorId
             }
         }
