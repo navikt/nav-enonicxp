@@ -1,6 +1,7 @@
 const cacheLib = require('/lib/cache');
 const contentLib = require('/lib/xp/content');
 const nodeLib = require('/lib/xp/node');
+const { parseJsonArray } = require('/lib/nav-utils');
 const { getNestedValue } = require('/lib/nav-utils');
 const { pageContentTypes } = require('/lib/sitemap/sitemap');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -25,19 +26,6 @@ const contentIdsCache = cacheLib.newCache({
     size: 10,
     expire: 3600,
 });
-
-const parseJsonArray = (str) => {
-    try {
-        const array = JSON.parse(str);
-        if (Array.isArray(array)) {
-            return array;
-        }
-        return null;
-    } catch (e) {
-        log.info(`Data query: Failed to parse JSON string - ${e}`);
-        return null;
-    }
-};
 
 const hitsWithRequestedFields = (hits, fieldKeys) =>
     fieldKeys?.length > 0
