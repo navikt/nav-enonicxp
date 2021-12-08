@@ -12,8 +12,10 @@ const htmlAreaNodePaths = [
     ...htmlAreaComponentPaths.map((path) => `components.${path}`),
 ];
 
+const htmlAreaNodePathsString = htmlAreaNodePaths.join(',');
+
 const findContentsWithHtmlAreaText = (text) => {
-    const query = htmlAreaNodePaths.map((objPath) => `${objPath} LIKE "*${text}*"`).join(' OR ');
+    const query = `fulltext('${htmlAreaNodePathsString}', '"${text}"', 'AND')`;
 
     const queryHits = contentLib.query({
         start: 0,
