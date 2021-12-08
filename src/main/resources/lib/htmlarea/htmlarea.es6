@@ -15,6 +15,10 @@ const htmlAreaNodePaths = [
 const htmlAreaNodePathsString = htmlAreaNodePaths.join(',');
 
 const findContentsWithHtmlAreaText = (text) => {
+    if (!text) {
+        return [];
+    }
+
     const queryHits = contentLib.query({
         start: 0,
         count: 1000,
