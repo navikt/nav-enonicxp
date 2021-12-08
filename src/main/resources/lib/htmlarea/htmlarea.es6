@@ -15,12 +15,10 @@ const htmlAreaNodePaths = [
 const htmlAreaNodePathsString = htmlAreaNodePaths.join(',');
 
 const findContentsWithHtmlAreaText = (text) => {
-    const query = `fulltext('${htmlAreaNodePathsString}', '"${text}"', 'AND')`;
-
     const queryHits = contentLib.query({
         start: 0,
         count: 1000,
-        query: query,
+        query: `fulltext('${htmlAreaNodePathsString}', '"${text}"', 'AND')`,
     }).hits;
 
     // Workaround for searching htmlarea fragments. Query strings or filters don't seem to pick
