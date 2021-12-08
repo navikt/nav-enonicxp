@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Formattert innhold</display-name>
+    <display-name>Formattert innhold</display-name>
     <description>Komponent for rikt tekstinnhold, bilder, mm</description>
     <form>
         <input type="HtmlArea" name="html">

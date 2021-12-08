@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Tilbyderkort</display-name>
+    <display-name>Tilbyderkort</display-name>
     <description>Benyttes på livssituasjonssider for lenking til eksterne tilbydere.</description>
     <form>
         <mixin name="link"/>

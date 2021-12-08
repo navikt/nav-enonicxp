@@ -1,5 +1,5 @@
 <macro>
-    <display-name> Sett inn lang tankestrek</display-name>
+    <display-name>Tankestrek</display-name>
     <description>Sett inn lang tankestrek – i brødteksten</description>
     <form>
         <!-- Dummy value to prevent graphql-errors for empty form item -->

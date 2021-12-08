@@ -18,6 +18,12 @@
                 <option name="write">
                     <label>Skriv til oss</label>
                     <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                        </input>
+                        <input name="url" type="TextLine">
+                            <label>Overstyr URL</label>
+                        </input>
                         <input name="ingress" type="TextArea">
                             <label>Overstyr ingress</label>
                         </input>
