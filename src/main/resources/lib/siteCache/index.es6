@@ -256,9 +256,9 @@ function clearFragmentMacroReferences(content) {
         `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${_id}`
     );
 
-    contentsWithFragmentId.forEach((contentWithFragment) =>
-        wipeOnChange(contentWithFragment._path)
-    );
+    contentsWithFragmentId.forEach((contentWithFragment) => {
+        wipeWithReferences(contentWithFragment);
+    });
 }
 
 const productCardTargetTypes = {
@@ -283,9 +283,9 @@ function clearProductCardMacroReferences(content) {
         `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
     );
 
-    contentsWithProductCardMacro.forEach((contentWithMacro) =>
-        wipeOnChange(contentWithMacro._path)
-    );
+    contentsWithProductCardMacro.forEach((contentWithMacro) => {
+        wipeWithReferences(contentWithMacro);
+    });
 }
 
 function clearGlobalValueReferences(content) {
@@ -295,7 +295,7 @@ function clearGlobalValueReferences(content) {
 
     forceArray(content.data?.valueItems).forEach((item) => {
         getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
-            wipeOnChange(contentWithValues.path);
+            wipeWithReferences(contentWithValues);
         });
     });
 }
@@ -334,6 +334,12 @@ function clearReferences(id, path, depth, event) {
     clearFragmentMacroReferences(content);
     clearProductCardMacroReferences(content);
     clearGlobalValueReferences(content);
+}
+
+function wipeWithReferences(content) {
+    const { _path, _id } = content;
+    wipeOnChange(_path);
+    clearReferences(_id, _path, 0);
 }
 
 function nodeListenerCallback(event) {
