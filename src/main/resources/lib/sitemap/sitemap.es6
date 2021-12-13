@@ -34,6 +34,7 @@ const sitemapData = {
 
 const pageContentTypes = [
     'situation-page',
+    'employer-situation-page',
     'dynamic-page',
     'content-page-with-sidemenus',
     'main-article',

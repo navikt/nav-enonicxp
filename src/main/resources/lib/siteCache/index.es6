@@ -240,7 +240,7 @@ function findReferences(id, path, depth) {
     );
 }
 
-function clearFragmentMacroReferences(content) {
+function clearFragmentMacroReferences(content, depth) {
     if (content.type !== 'portal:fragment') {
         return;
     }
@@ -256,18 +256,19 @@ function clearFragmentMacroReferences(content) {
         `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${_id}`
     );
 
-    contentsWithFragmentId.forEach((contentWithFragment) =>
-        wipeOnChange(contentWithFragment._path)
-    );
+    contentsWithFragmentId.forEach((contentWithFragment) => {
+        wipeWithReferences(contentWithFragment, depth);
+    });
 }
 
 const productCardTargetTypes = {
     [`${app.name}:content-page-with-sidemenus`]: true,
     [`${app.name}:situation-page`]: true,
+    [`${app.name}:employer-situation-page`]: true,
     [`${app.name}:tools-page`]: true,
 };
 
-function clearProductCardMacroReferences(content) {
+function clearProductCardMacroReferences(content, depth) {
     if (!productCardTargetTypes[content.type]) {
         return;
     }
@@ -283,19 +284,19 @@ function clearProductCardMacroReferences(content) {
         `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
     );
 
-    contentsWithProductCardMacro.forEach((contentWithMacro) =>
-        wipeOnChange(contentWithMacro._path)
-    );
+    contentsWithProductCardMacro.forEach((contentWithMacro) => {
+        wipeWithReferences(contentWithMacro, depth);
+    });
 }
 
-function clearGlobalValueReferences(content) {
+function clearGlobalValueReferences(content, depth) {
     if (content.type !== globalValuesContentType) {
         return;
     }
 
     forceArray(content.data?.valueItems).forEach((item) => {
         getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
-            wipeOnChange(contentWithValues.path);
+            wipeWithReferences(contentWithValues, depth);
         });
     });
 }
@@ -331,9 +332,15 @@ function clearReferences(id, path, depth, event) {
         return;
     }
 
-    clearFragmentMacroReferences(content);
-    clearProductCardMacroReferences(content);
-    clearGlobalValueReferences(content);
+    clearFragmentMacroReferences(content, depth);
+    clearProductCardMacroReferences(content, depth);
+    clearGlobalValueReferences(content, depth);
+}
+
+function wipeWithReferences(content, depth) {
+    const { _path, _id } = content;
+    wipeOnChange(_path);
+    clearReferences(_id, _path, depth);
 }
 
 function nodeListenerCallback(event) {
