@@ -240,7 +240,7 @@ function findReferences(id, path, depth) {
     );
 }
 
-function clearFragmentMacroReferences(content) {
+function clearFragmentMacroReferences(content, depth) {
     if (content.type !== 'portal:fragment') {
         return;
     }
@@ -257,7 +257,7 @@ function clearFragmentMacroReferences(content) {
     );
 
     contentsWithFragmentId.forEach((contentWithFragment) => {
-        wipeWithReferences(contentWithFragment);
+        wipeWithReferences(contentWithFragment, depth);
     });
 }
 
@@ -268,7 +268,7 @@ const productCardTargetTypes = {
     [`${app.name}:tools-page`]: true,
 };
 
-function clearProductCardMacroReferences(content) {
+function clearProductCardMacroReferences(content, depth) {
     if (!productCardTargetTypes[content.type]) {
         return;
     }
@@ -285,18 +285,18 @@ function clearProductCardMacroReferences(content) {
     );
 
     contentsWithProductCardMacro.forEach((contentWithMacro) => {
-        wipeWithReferences(contentWithMacro);
+        wipeWithReferences(contentWithMacro, depth);
     });
 }
 
-function clearGlobalValueReferences(content) {
+function clearGlobalValueReferences(content, depth) {
     if (content.type !== globalValuesContentType) {
         return;
     }
 
     forceArray(content.data?.valueItems).forEach((item) => {
         getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
-            wipeWithReferences(contentWithValues);
+            wipeWithReferences(contentWithValues, depth);
         });
     });
 }
@@ -332,15 +332,15 @@ function clearReferences(id, path, depth, event) {
         return;
     }
 
-    clearFragmentMacroReferences(content);
-    clearProductCardMacroReferences(content);
-    clearGlobalValueReferences(content);
+    clearFragmentMacroReferences(content, depth);
+    clearProductCardMacroReferences(content, depth);
+    clearGlobalValueReferences(content, depth);
 }
 
-function wipeWithReferences(content) {
+function wipeWithReferences(content, depth) {
     const { _path, _id } = content;
     wipeOnChange(_path);
-    clearReferences(_id, _path, 0);
+    clearReferences(_id, _path, depth);
 }
 
 function nodeListenerCallback(event) {
