@@ -256,8 +256,8 @@ function clearFragmentMacroReferences(content, depth) {
         `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${_id}`
     );
 
-    contentsWithFragmentId.forEach((content) => {
-        wipeWithReferences(content, depth);
+    contentsWithFragmentId.forEach((contentWithFragment) => {
+        wipeWithReferences(contentWithFragment, depth);
     });
 }
 
@@ -284,8 +284,8 @@ function clearProductCardMacroReferences(content, depth) {
         `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
     );
 
-    contentsWithProductCardMacro.forEach((content) => {
-        wipeWithReferences(content, depth);
+    contentsWithProductCardMacro.forEach((contentWithMacro) => {
+        wipeWithReferences(contentWithMacro, depth);
     });
 }
 
@@ -295,8 +295,8 @@ function clearGlobalValueReferences(content, depth) {
     }
 
     forceArray(content.data?.valueItems).forEach((item) => {
-        getGlobalValueUsage(item.key, content._id).forEach((content) => {
-            wipeWithReferences(content, depth);
+        getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
+            wipeWithReferences(contentWithValues, depth);
         });
     });
 }
