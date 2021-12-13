@@ -1,7 +1,7 @@
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { gvServiceInvalidRequestResponse } = require('../utils');
 
-const transformToUsageItem = (content) => ({
+const transformToResponseItem = (content) => ({
     id: content._id,
     path: content._path,
     displayName: content.displayName,
@@ -20,7 +20,7 @@ const getGlobalValueUsageService = (req) => {
         status: 200,
         contentType: 'application/json',
         body: {
-            usage: transformToUsageItem(getGlobalValueUsage(key, contentId)),
+            usage: getGlobalValueUsage(key, contentId).map(transformToResponseItem),
         },
     };
 };
