@@ -4,6 +4,12 @@ const {
 } = require('/lib/global-values/global-values');
 const { gvServiceInvalidRequestResponse } = require('../utils');
 
+const transformToUsageItem = (content) => ({
+    id: content._id,
+    path: content._path,
+    displayName: content.displayName,
+});
+
 const getGlobalValueUsageService = (req) => {
     const { key, contentId } = req.params;
 
@@ -17,8 +23,8 @@ const getGlobalValueUsageService = (req) => {
         status: 200,
         contentType: 'application/json',
         body: {
-            usage: getGlobalValueUsage(key, contentId),
-            legacyUsage: getGlobalValueUsageLegacy(key),
+            usage: transformToUsageItem(getGlobalValueUsage(key, contentId)),
+            legacyUsage: transformToUsageItem(getGlobalValueUsageLegacy(key)),
         },
     };
 };

@@ -44,11 +44,7 @@ const getGlobalValueUsageLegacy = (gvKey) => {
     const macroUsage2 = findContentsWithHtmlAreaText(`${gvKey}\\"`);
     const calcUsage = getGlobalValueCalcUsage(gvKey);
 
-    return [...macroUsage1, ...macroUsage2, ...calcUsage].map((content) => ({
-        id: content._id,
-        path: content._path,
-        displayName: content.displayName,
-    }));
+    return [...macroUsage1, ...macroUsage2, ...calcUsage];
 };
 const getGlobalValueLegacy = (key, type) => {
     if (!key) {
@@ -126,11 +122,7 @@ const getGlobalValueUsage = (gvKey, contentId) => {
     const macroUsage = findContentsWithHtmlAreaText(key);
     const calcUsage = getGlobalValueCalcUsage(key);
 
-    return [...macroUsage, ...calcUsage].map((content) => ({
-        id: content._id,
-        path: content._path,
-        displayName: content.displayName,
-    }));
+    return [...macroUsage, ...calcUsage];
 };
 
 const getGlobalValueCalcUsage = (key) =>
