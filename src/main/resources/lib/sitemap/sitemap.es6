@@ -178,27 +178,30 @@ const generateAndBroadcastSitemapData = () => {
         taskLib.submit({
             description: 'sitemap-generator-task',
             task: () => {
-                log.info('Started generating sitemap data');
+                try {
+                    log.info('Started generating sitemap data');
+                    const startTime = Date.now();
+                    const sitemapEntries = getSitemapEntries();
 
-                const startTime = Date.now();
-                const sitemapEntries = getSitemapEntries();
+                    eventLib.send({
+                        type: eventTypeSitemapGenerated,
+                        distributed: true,
+                        data: { entries: sitemapEntries },
+                    });
 
-                eventLib.send({
-                    type: eventTypeSitemapGenerated,
-                    distributed: true,
-                    data: { entries: sitemapEntries },
-                });
+                    log.info(
+                        `Finished generating sitemap data with ${
+                            sitemapEntries.length
+                        } entries after ${Date.now() - startTime}ms`
+                    );
 
-                isGenerating = false;
-
-                log.info(
-                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-                        Date.now() - startTime
-                    }ms`
-                );
-
-                if (sitemapEntries.length > maxCount) {
-                    log.warning(`Sitemap entries count exceeds recommended maximum`);
+                    if (sitemapEntries.length > maxCount) {
+                        log.warning(`Sitemap entries count exceeds recommended maximum`);
+                    }
+                } catch (e) {
+                    log.error(`Error while generating sitemap - ${e}`);
+                } finally {
+                    isGenerating = false;
                 }
             },
         });
