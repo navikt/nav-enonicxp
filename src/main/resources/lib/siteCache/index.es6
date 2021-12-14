@@ -178,7 +178,93 @@ function getNotifications(idOrPath, callback) {
     }
 }
 
-function findReferences(id, path, depth) {
+function getFragmentMacroReferences(content) {
+    if (content.type !== 'portal:fragment') {
+        return [];
+    }
+
+    const { _id } = content;
+
+    const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
+
+    log.info(`Found ${contentsWithFragmentId.length} pages with references to fragment id ${_id}`);
+
+    return contentsWithFragmentId;
+}
+
+const productCardTargetTypes = {
+    [`${app.name}:content-page-with-sidemenus`]: true,
+    [`${app.name}:situation-page`]: true,
+    [`${app.name}:employer-situation-page`]: true,
+    [`${app.name}:tools-page`]: true,
+};
+
+function getProductCardMacroReferences(content) {
+    if (!productCardTargetTypes[content.type]) {
+        return [];
+    }
+
+    const { _id } = content;
+
+    const contentsWithProductCardMacro = findContentsWithProductCardMacro(_id);
+
+    log.info(
+        `Found ${contentsWithProductCardMacro.length} pages with references to product page ${_id}`
+    );
+
+    return contentsWithProductCardMacro;
+}
+
+function getGlobalValueReferences(content) {
+    if (content.type !== globalValuesContentType) {
+        return [];
+    }
+
+    const { _id } = content;
+
+    const contentsWithGlobalValues = forceArray(content.data?.valueItems)
+        .map((item) => getGlobalValueUsage(item.key, _id))
+        .flat();
+
+    log.info(
+        `Found ${contentsWithGlobalValues.length} pages with references to global value set ${_id}`
+    );
+
+    return contentsWithGlobalValues;
+}
+
+function findMacroReferences(id, event) {
+    const content = runInBranchContext(
+        () => contentLib.get({ key: id }),
+        event === 'node.deleted' ? 'draft' : 'master'
+    );
+
+    if (!content) {
+        return [];
+    }
+
+    return [
+        ...getFragmentMacroReferences(content),
+        ...getProductCardMacroReferences(content),
+        ...getGlobalValueReferences(content),
+    ];
+}
+
+const deepReferenceTypes = [
+    `${app.name}:notification`,
+    `${app.name}:main-article-chapter`,
+    `${app.name}:content-list`,
+    `${app.name}:breaking-news`,
+];
+
+const parentTypesToClear = [
+    `${app.name}:page-list`,
+    `${app.name}:main-article`,
+    `${app.name}:publishing-calendar`,
+    `${app.name}:section-page`,
+];
+
+function findReferences(id, path, depth, event) {
     log.info(`Find references for: ${path}`);
     if (depth > 10) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
@@ -192,20 +278,16 @@ function findReferences(id, path, depth) {
 
     // if there are references which have indirect references we need to invalidate their
     // references as well
-    const deepTypes = [
-        `${app.name}:notification`,
-        `${app.name}:main-article-chapter`,
-        `${app.name}:content-list`,
-        `${app.name}:breaking-news`,
-    ];
-
     const deepReferences = references.reduce((acc, ref) => {
-        if (ref?.type && deepTypes.indexOf(ref.type) !== -1) {
+        if (ref?.type && deepReferenceTypes.indexOf(ref.type) !== -1) {
             return [...acc, ...findReferences(ref._id, ref._path, depth + 1)];
         }
         return acc;
     }, []);
-    references = [...references, ...deepReferences];
+
+    const macroReferences = findMacroReferences(id, event);
+
+    references = [...references, ...deepReferences, ...macroReferences];
 
     // get parent
     const parent = libs.content.get({
@@ -214,13 +296,6 @@ function findReferences(id, path, depth) {
 
     // remove parents cache if its of a type that autogenerates content based on
     // children and not reference
-    const parentTypesToClear = [
-        `${app.name}:page-list`,
-        `${app.name}:main-article`,
-        `${app.name}:publishing-calendar`,
-        `${app.name}:section-page`,
-    ];
-
     if (parent && parentTypesToClear.indexOf(parent.type) !== -1) {
         references.push(parent);
         // If the parent has chapters we need to clear the cache of all other chapters as well
@@ -240,67 +315,6 @@ function findReferences(id, path, depth) {
     );
 }
 
-function clearFragmentMacroReferences(content, depth) {
-    if (content.type !== 'portal:fragment') {
-        return;
-    }
-
-    const { _id } = content;
-
-    const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
-    if (!contentsWithFragmentId?.length > 0) {
-        return;
-    }
-
-    log.info(
-        `Wiping ${contentsWithFragmentId.length} cached pages with references to fragment id ${_id}`
-    );
-
-    contentsWithFragmentId.forEach((contentWithFragment) => {
-        wipeWithReferences(contentWithFragment, depth);
-    });
-}
-
-const productCardTargetTypes = {
-    [`${app.name}:content-page-with-sidemenus`]: true,
-    [`${app.name}:situation-page`]: true,
-    [`${app.name}:employer-situation-page`]: true,
-    [`${app.name}:tools-page`]: true,
-};
-
-function clearProductCardMacroReferences(content, depth) {
-    if (!productCardTargetTypes[content.type]) {
-        return;
-    }
-
-    const { _id } = content;
-
-    const contentsWithProductCardMacro = findContentsWithProductCardMacro(_id);
-    if (!contentsWithProductCardMacro?.length > 0) {
-        return;
-    }
-
-    log.info(
-        `Wiping ${contentsWithProductCardMacro.length} cached pages with references to product page ${_id}`
-    );
-
-    contentsWithProductCardMacro.forEach((contentWithMacro) => {
-        wipeWithReferences(contentWithMacro, depth);
-    });
-}
-
-function clearGlobalValueReferences(content, depth) {
-    if (content.type !== globalValuesContentType) {
-        return;
-    }
-
-    forceArray(content.data?.valueItems).forEach((item) => {
-        getGlobalValueUsage(item.key, content._id).forEach((contentWithValues) => {
-            wipeWithReferences(contentWithValues, depth);
-        });
-    });
-}
-
 function wipeNotificationsEntry(path) {
     log.info(`Clearing notifications from ${path}`);
     wipe('notifications')(path);
@@ -308,7 +322,7 @@ function wipeNotificationsEntry(path) {
 }
 
 function clearReferences(id, path, depth, event) {
-    const references = findReferences(id, path, depth);
+    const references = findReferences(id, path, depth, event);
     if (references && references.length > 0) {
         log.info(
             `Clear references: ${JSON.stringify(
@@ -322,25 +336,6 @@ function clearReferences(id, path, depth, event) {
             wipeOnChange(el._path);
         });
     }
-
-    const content = runInBranchContext(
-        () => contentLib.get({ key: id }),
-        event === 'node.deleted' ? 'draft' : 'master'
-    );
-
-    if (!content) {
-        return;
-    }
-
-    clearFragmentMacroReferences(content, depth);
-    clearProductCardMacroReferences(content, depth);
-    clearGlobalValueReferences(content, depth);
-}
-
-function wipeWithReferences(content, depth) {
-    const { _path, _id } = content;
-    wipeOnChange(_path);
-    clearReferences(_id, _path, depth);
 }
 
 function nodeListenerCallback(event) {
