@@ -11,7 +11,10 @@ const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const batchCount = 1000;
 const maxCount = 50000;
-const eventType = 'sitemap-generated';
+const eventTypeSitemapGenerated = 'sitemap-generated';
+const eventTypeSitemapRequested = 'sitemap-requested';
+
+let isGenerating = false;
 
 const sitemapData = {
     entries: {},
@@ -168,8 +171,10 @@ const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateSitemapData = () => {
-    if (clusterLib.isMaster()) {
+const generateAndBroadcastSitemapData = () => {
+    if (clusterLib.isMaster() && !isGenerating) {
+        isGenerating = true;
+
         taskLib.submit({
             description: 'sitemap-generator-task',
             task: () => {
@@ -179,10 +184,12 @@ const generateSitemapData = () => {
                 const sitemapEntries = getSitemapEntries();
 
                 eventLib.send({
-                    type: eventType,
+                    type: eventTypeSitemapGenerated,
                     distributed: true,
                     data: { entries: sitemapEntries },
                 });
+
+                isGenerating = false;
 
                 log.info(
                     `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
@@ -199,7 +206,7 @@ const generateSitemapData = () => {
 };
 
 const generateDataAndActivateSchedule = () => {
-    runInBranchContext(generateSitemapData, 'master');
+    runInBranchContext(generateAndBroadcastSitemapData, 'master');
 
     // Regenerate sitemap from scratch at 06:00 daily
     cronLib.schedule({
@@ -214,7 +221,7 @@ const generateDataAndActivateSchedule = () => {
             },
             principals: ['role:system.admin'],
         },
-        callback: generateSitemapData,
+        callback: generateAndBroadcastSitemapData,
     });
 };
 
@@ -231,12 +238,28 @@ const updateSitemapData = (entries) => {
     });
 };
 
+const requestSitemapUpdate = () => {
+    eventLib.send({
+        type: eventTypeSitemapRequested,
+        distributed: true,
+        data: {},
+    });
+};
+
 const activateDataUpdateEventListener = () => {
     eventLib.listener({
-        type: `custom.${eventType}`,
+        type: `custom.${eventTypeSitemapGenerated}`,
         callback: (event) => {
             log.info('Received sitemap data from master, updating...');
             updateSitemapData(event.data.entries);
+        },
+    });
+
+    eventLib.listener({
+        type: `custom.${eventTypeSitemapRequested}`,
+        callback: () => {
+            log.info('Received request for sitemap regeneration');
+            generateAndBroadcastSitemapData();
         },
     });
 };
@@ -247,4 +270,5 @@ module.exports = {
     updateSitemapEntry,
     activateDataUpdateEventListener,
     pageContentTypes,
+    requestSitemapUpdate,
 };
