@@ -220,9 +220,17 @@ function getGlobalValueReferences(content) {
         return [];
     }
 
-    return forceArray(content.data?.valueItems)
-        .map((item) => getGlobalValueUsage(item.key, content._id))
+    const { _id } = content;
+
+    const contentsWithGlobalValues = forceArray(content.data?.valueItems)
+        .map((item) => getGlobalValueUsage(item.key, _id))
         .flat();
+
+    log.info(
+        `Found ${contentsWithGlobalValues.length} pages with references to global value set ${_id}`
+    );
+
+    return contentsWithGlobalValues;
 }
 
 function findMacroReferences(id, event) {
