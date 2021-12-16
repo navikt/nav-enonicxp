@@ -234,6 +234,14 @@ function getGlobalValueReferences(content) {
     return contentsWithGlobalValues;
 }
 
+function findDirectReferences(id) {
+    return libs.content.query({
+        start: 0,
+        count: 1000,
+        query: `_references LIKE "${id}"`,
+    }).hits;
+}
+
 function findMacroReferences(id, event) {
     const content = runInBranchContext(
         () => contentLib.get({ key: id }),
@@ -271,11 +279,8 @@ function findReferences(id, path, depth, event) {
         log.info('REACHED MAX DEPTH OF 10 IN CACHE CLEARING');
         return [];
     }
-    let references = libs.content.query({
-        start: 0,
-        count: 1000,
-        query: `_references LIKE "${id}"`,
-    }).hits;
+
+    let references = [...findDirectReferences(id), ...findMacroReferences(id, event)];
 
     // if there are references which have indirect references we need to invalidate their
     // references as well
@@ -286,9 +291,7 @@ function findReferences(id, path, depth, event) {
         return acc;
     }, []);
 
-    const macroReferences = findMacroReferences(id, event);
-
-    references = [...references, ...deepReferences, ...macroReferences];
+    references = [...references, ...deepReferences];
 
     // get parent
     const parent = libs.content.get({
