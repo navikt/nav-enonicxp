@@ -163,21 +163,19 @@ const wipeSitecontentEntryWithReferences = (node) => {
     wipeSitecontentEntry(path);
     wipeNotificationsEntry(path);
 
-    runInBranchContext(() => {
-        const references = findReferences(id);
+    const references = findReferences(id);
 
-        log.info(
-            `Clearing ${references.length} references for ${path}: ${JSON.stringify(
-                references.map((item) => item._path),
-                null,
-                4
-            )}`
-        );
+    log.info(
+        `Clearing ${references.length} references for ${path}: ${JSON.stringify(
+            references.map((item) => item._path),
+            null,
+            4
+        )}`
+    );
 
-        references.forEach((item) => {
-            wipeSitecontentEntry(item._path);
-        });
-    }, 'master');
+    references.forEach((item) => {
+        wipeSitecontentEntry(item._path);
+    });
 };
 
 const nodeListenerCallback = (event) => {
@@ -198,7 +196,7 @@ const nodeListenerCallback = (event) => {
 
 const prepublishListenerCallback = (event) => {
     event.data.prepublished.forEach((node) => {
-        wipeSitecontentEntryWithReferences(node);
+        runInBranchContext(() => wipeSitecontentEntryWithReferences(node), 'master');
     });
 };
 

@@ -192,17 +192,22 @@ const findReferences = (id, depth = 0, prevReferences = []) => {
                         : []),
                 ];
             }, [])
-            .filter((refContent) => refContent._id !== id)
+            .filter(
+                (refContent) =>
+                    refContent._id !== id &&
+                    !prevReferences.some((prevRef) => prevRef._id === reference._id)
+            )
     );
 
     const deepReferences = references.reduce((acc, reference) => {
-        return typesWithDeepReferences[reference.type] &&
-            !prevReferences.some((prevRef) => prevRef._id === reference._id)
-            ? [
-                  ...acc,
-                  ...findReferences(reference._id, depth + 1, [...references, ...prevReferences]),
-              ]
-            : acc;
+        if (!typesWithDeepReferences[reference.type]) {
+            return acc;
+        }
+
+        return [
+            ...acc,
+            ...findReferences(reference._id, depth + 1, [...references, ...prevReferences]),
+        ];
     }, []);
 
     return removeDuplicatesById([...references, ...deepReferences]);
