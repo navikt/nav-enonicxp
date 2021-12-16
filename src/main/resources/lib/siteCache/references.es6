@@ -17,6 +17,7 @@ const typesWithContentGeneratedFromChildren = {
 const productCardTargetTypes = {
     [`${app.name}:content-page-with-sidemenus`]: true,
     [`${app.name}:situation-page`]: true,
+    [`${app.name}:employer-situation-page`]: true,
     [`${app.name}:tools-page`]: true,
 };
 
@@ -26,7 +27,6 @@ const typesWithDeepReferences = {
     [`${app.name}:notification`]: true,
     [`${app.name}:main-article-chapter`]: true,
     [`${app.name}:content-list`]: true,
-    [`${app.name}:breaking-news`]: true,
 };
 
 const getFragmentMacroReferences = (content) => {
@@ -124,25 +124,25 @@ const getReferencesFromParent = (path) => {
 // If the parent is a main-article, we need to wipe this article, any chapters under that article
 // and the articles referenced by those chapters. Chapters are attached to an article only via
 // the parent/children relation, not with an explicit content reference
-// const addMainArticleChapterReferences = (prevAcc, content, _, initialArray) => {
-//     const acc = prevAcc?.length > 0 ? prevAcc : initialArray;
-//
-//     if (content.type === `${app.name}:main-article`) {
-//         const chapters = contentLib
-//             .getChildren({ key: content._id })
-//             .hits.filter((child) => child.type === `${app.name}:main-article-chapter`);
-//
-//         if (chapters.length > 0) {
-//             const chapterArticles = chapters.map((chapter) =>
-//                 contentLib.get({ key: chapter.data.article }),
-//             );
-//
-//             return [...acc, ...chapters, ...chapterArticles];
-//         }
-//     }
-//
-//     return acc;
-// };
+const getMainArticleChapterReferences = (content) => {
+    if (content.type !== `${app.name}:main-article`) {
+        return [];
+    }
+
+    const chapters = contentLib
+        .getChildren({ key: content._id })
+        .hits.filter((child) => child.type === `${app.name}:main-article-chapter`);
+
+    if (chapters.length === 0) {
+        return [];
+    }
+
+    const chapterArticles = chapters
+        .map((chapter) => contentLib.get({ key: chapter.data.article }))
+        .filter(Boolean);
+
+    return [...chapters, ...chapterArticles];
+};
 
 const removeDuplicatesById = (array) => removeDuplicates(array, (a, b) => a._id === b._id);
 
@@ -160,7 +160,15 @@ const findReferences = (id, path, depth = 0) => {
             ...getContentReferences(id),
             ...getMacroReferences(id),
             ...getReferencesFromParent(contentPath),
-        ].filter((content) => content._id !== id)
+        ]
+            .reduce((acc, content) => {
+                const mainArticleChapterReferences = getMainArticleChapterReferences(content);
+
+                return mainArticleChapterReferences.length > 0
+                    ? [...acc, ...mainArticleChapterReferences]
+                    : acc;
+            })
+            .filter((content) => content._id !== id)
     );
 
     const deepReferences = references
