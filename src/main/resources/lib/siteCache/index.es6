@@ -164,7 +164,7 @@ const wipeSitecontentEntryWithReferences = (node) => {
     wipeNotificationsEntry(path);
 
     runInBranchContext(() => {
-        const references = findReferences(id, path);
+        const references = findReferences(id);
 
         if (references && references.length > 0) {
             log.info(

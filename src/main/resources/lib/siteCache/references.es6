@@ -164,7 +164,7 @@ const getMainArticleChapterReferences = (content) => {
 
 const removeDuplicatesById = (array) => removeDuplicates(array, (a, b) => a._id === b._id);
 
-const findReferences = (id, path, depth = 0) => {
+const findReferences = (id, depth = 0) => {
     if (depth > MAX_DEPTH) {
         log.info(`Reached max reference depth of ${MAX_DEPTH}`);
         return [];
@@ -192,7 +192,7 @@ const findReferences = (id, path, depth = 0) => {
 
     const deepReferences = references
         .filter((reference) => typesWithDeepReferences[reference.type])
-        .map((reference) => findReferences(reference._id, reference._path, depth + 1))
+        .map((reference) => findReferences(reference._id, depth + 1))
         .flat();
 
     return removeDuplicatesById([...references, ...deepReferences]);
