@@ -157,9 +157,7 @@ const wipeSpecialCases = (nodePath) => {
     return false;
 };
 
-const wipeSitecontentEntryWithReferences = (node) => {
-    const { id, path } = node;
-
+const wipeSitecontentEntryWithReferences = ({ id, path }) => {
     wipeSitecontentEntry(path);
     wipeNotificationsEntry(path);
 
@@ -230,4 +228,5 @@ module.exports = {
     getSitecontentCache,
     getNotificationsCache,
     activateCacheEventListeners,
+    wipeSitecontentEntryWithReferences,
 };
