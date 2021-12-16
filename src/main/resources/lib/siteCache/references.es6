@@ -9,11 +9,6 @@ const { globalValuesContentType } = require('/lib/global-values/global-values');
 
 const MAX_DEPTH = 4;
 
-const typesWithContentGeneratedFromChildren = {
-    [`${app.name}:main-article`]: true,
-    [`${app.name}:publishing-calendar`]: true,
-};
-
 const productCardTargetTypes = {
     [`${app.name}:content-page-with-sidemenus`]: true,
     [`${app.name}:situation-page`]: true,
@@ -76,9 +71,7 @@ const getGlobalValueReferences = (content) => {
     return references;
 };
 
-const getMacroReferences = (id) => {
-    const content = contentLib.get({ key: id });
-
+const getMacroReferences = (content) => {
     if (!content) {
         return [];
     }
@@ -111,11 +104,25 @@ const getContentReferences = (id) => {
     return references;
 };
 
-const getReferencesFromParent = (path) => {
-    const parent = contentLib.get({ key: getParentPath(path) });
+const getReferencesFromParent = (content) => {
+    if (!content) {
+        return [];
+    }
 
-    if (parent && typesWithContentGeneratedFromChildren[parent.type]) {
+    const { _path, type } = content;
+
+    const parent = contentLib.get({ key: getParentPath(_path) });
+
+    if (!parent) {
+        return [];
+    }
+
+    if (parent.type === `${app.name}:publishing-calendar`) {
         return [parent];
+    }
+
+    if (type === `${app.name}:main-article-chapter` && parent.type === `${app.name}:main-article`) {
+        return [parent, ...getMainArticleChapterReferences(parent)];
     }
 
     return [];
@@ -125,23 +132,34 @@ const getReferencesFromParent = (path) => {
 // and the articles referenced by those chapters. Chapters are attached to an article only via
 // the parent/children relation, not with an explicit content reference
 const getMainArticleChapterReferences = (content) => {
-    if (content.type !== `${app.name}:main-article`) {
-        return [];
-    }
+    const { _id } = content;
 
-    const chapters = contentLib
-        .getChildren({ key: content._id })
+    const referencedChapters = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: [`${app.name}:main-article-chapter`],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.article',
+                        values: [_id],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    const childChapters = contentLib
+        .getChildren({ key: _id })
         .hits.filter((child) => child.type === `${app.name}:main-article-chapter`);
 
-    if (chapters.length === 0) {
-        return [];
-    }
+    const childChapterArticles = childChapters.reduce((acc, chapter) => {
+        const article = contentLib.get({ key: chapter.data.article });
+        return article ? [...acc, article] : acc;
+    }, []);
 
-    const chapterArticles = chapters
-        .map((chapter) => contentLib.get({ key: chapter.data.article }))
-        .filter(Boolean);
-
-    return [...chapters, ...chapterArticles];
+    return [...referencedChapters, ...childChapters, ...childChapterArticles];
 };
 
 const removeDuplicatesById = (array) => removeDuplicates(array, (a, b) => a._id === b._id);
@@ -152,21 +170,24 @@ const findReferences = (id, path, depth = 0) => {
         return [];
     }
 
-    // If the path was retrieved from a nodelib query, it will have the "/content" prefix
-    const contentPath = path.replace(/^\/content/, '');
+    const content = contentLib.get({ key: id });
 
     const references = removeDuplicatesById(
         [
             ...getContentReferences(id),
-            ...getMacroReferences(id),
-            ...getReferencesFromParent(contentPath),
-        ].reduce((acc, content) => {
-            if (content._id === id) {
-                return acc;
-            }
-
-            return [...acc, ...getMainArticleChapterReferences(content), content];
-        }, [])
+            ...getMacroReferences(content),
+            ...getReferencesFromParent(content),
+        ]
+            .reduce((acc, refContent) => {
+                return [
+                    refContent,
+                    ...acc,
+                    ...(refContent.type === `${app.name}:main-article`
+                        ? getMainArticleChapterReferences(refContent)
+                        : []),
+                ];
+            }, [])
+            .filter((refContent) => refContent._id !== id)
     );
 
     const deepReferences = references
