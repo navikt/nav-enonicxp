@@ -183,19 +183,19 @@ const findReferences = (id, depth = 0, prevReferences = []) => {
             ...getMacroReferences(content),
             ...getReferencesFromParent(content),
         ]
-            .reduce((acc, refContent) => {
+            .reduce((acc, reference) => {
                 return [
-                    refContent,
+                    reference,
                     ...acc,
-                    ...(refContent.type === `${app.name}:main-article`
-                        ? getMainArticleChapterReferences(refContent)
+                    ...(reference.type === `${app.name}:main-article`
+                        ? getMainArticleChapterReferences(reference)
                         : []),
                 ];
             }, [])
             .filter(
-                (refContent) =>
-                    refContent._id !== id &&
-                    !prevReferences.some((prevRef) => prevRef._id === reference._id)
+                (reference) =>
+                    reference._id !== id &&
+                    !prevReferences.some((prevReference) => prevReference._id === reference._id)
             )
     );
 
