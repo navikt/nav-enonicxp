@@ -19,6 +19,7 @@ exports.getBreadcrumbMenu = function (id) {
         app.name + ':dynamic-page',
         app.name + ':content-page-with-sidemenus',
         app.name + ':situation-page',
+        app.name + ':guide-page',
         app.name + ':employer-situation-page',
         app.name + ':large-table',
     ];
