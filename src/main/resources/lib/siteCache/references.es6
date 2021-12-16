@@ -7,7 +7,7 @@ const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
 
-const MAX_DEPTH = 3;
+const MAX_DEPTH = 4;
 
 const typesWithContentGeneratedFromChildren = {
     [`${app.name}:main-article`]: true,

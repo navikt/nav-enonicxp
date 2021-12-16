@@ -18,7 +18,7 @@ officeInformation.startCronJob();
 cache.activateCacheEventListeners();
 
 // listen for updated sitemap-data from master
-sitemap.activateEventListeners();
+sitemap.activateDataUpdateEventListener();
 
 // generate initial sitemap data and start periodic regeneration
 sitemap.generateDataAndActivateSchedule();
