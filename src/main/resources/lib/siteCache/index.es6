@@ -195,6 +195,7 @@ function getFragmentMacroReferences(content) {
 const productCardTargetTypes = {
     [`${app.name}:content-page-with-sidemenus`]: true,
     [`${app.name}:situation-page`]: true,
+    [`${app.name}:guide-page`]: true,
     [`${app.name}:employer-situation-page`]: true,
     [`${app.name}:tools-page`]: true,
 };
