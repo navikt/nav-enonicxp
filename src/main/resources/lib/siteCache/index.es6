@@ -115,6 +115,10 @@ const wipeSitecontentEntry = (nodePath) => {
 };
 
 const wipeNotificationsEntry = (nodePath) => {
+    if (!nodePath) {
+        return;
+    }
+
     const parentCacheKey = getPathname(getParentPath(nodePath));
     log.info(`Clearing notifications from ${parentCacheKey}`);
     wipeCacheEntry('notifications', parentCacheKey);
