@@ -71,6 +71,8 @@ const getGlobalValueReferences = (content) => {
     return references;
 };
 
+// "References" from macros does not create explicit references in the content structure
+// We must use our own implementations to find references via macros
 const getMacroReferences = (content) => {
     if (!content) {
         return [];
@@ -104,6 +106,7 @@ const getContentReferences = (id) => {
     return references;
 };
 
+// Handles types which generates content from their children without explicit references
 const getReferencesFromParent = (content) => {
     if (!content) {
         return [];
@@ -128,11 +131,11 @@ const getReferencesFromParent = (content) => {
     return [];
 };
 
-// If the parent is a main-article, we need to wipe this article, any chapters under that article
-// and the articles referenced by those chapters. Chapters are attached to an article only via
-// the parent/children relation, not with an explicit content reference
-const getMainArticleChapterReferences = (content) => {
-    const { _id } = content;
+// Chapters are attached to an article only via the parent/children relation, not with explicit
+// content references. Find any chapters which references the article, as well as the articles
+// child chapters and their references articles
+const getMainArticleChapterReferences = (mainArticleContent) => {
+    const { _id } = mainArticleContent;
 
     const referencedChapters = contentLib.query({
         start: 0,
