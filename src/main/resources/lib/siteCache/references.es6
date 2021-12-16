@@ -36,7 +36,9 @@ const getFragmentMacroReferences = (content) => {
         return [];
     }
 
-    log.info(`Found ${contentsWithFragmentId.length} pages with references to fragment id ${_id}`);
+    log.info(
+        `Found ${contentsWithFragmentId.length} pages with macro-references to fragment id ${_id}`
+    );
 
     return contentsWithFragmentId;
 };
@@ -72,7 +74,7 @@ const getGlobalValueReferences = (content) => {
 };
 
 // "References" from macros does not create explicit references in the content structure
-// We must use our own implementations to find references via macros
+// We must use our own implementations to find such references
 const getMacroReferences = (content) => {
     if (!content) {
         return [];
