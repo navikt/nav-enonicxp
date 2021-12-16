@@ -1,4 +1,4 @@
-const { getAllSitemapEntries } = require('/lib/sitemap/sitemap');
+const { requestSitemapUpdate, getAllSitemapEntries } = require('/lib/sitemap/sitemap');
 
 const handleGet = (req) => {
     const { secret } = req.headers;
@@ -17,6 +17,9 @@ const handleGet = (req) => {
 
     if (!response || response.length === 0) {
         log.error('Sitemap data was requested but is not available!');
+
+        requestSitemapUpdate();
+
         return {
             status: 500,
             body: { message: 'Internal server error - sitemap data not available' },

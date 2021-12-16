@@ -8,96 +8,6 @@ const validTypes = { numberValue: true };
 
 const uniqueKeySeparator = '::';
 
-//
-// TODO: remove this when macros have been updated
-const getContentIdFromgvKeyLegacy = (gvKey) => {
-    const legacyQueryRes = contentLib.query({
-        start: 0,
-        count: 2,
-        contentTypes: [globalValuesContentType],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.valueItems.key',
-                        values: [gvKey],
-                    },
-                },
-            },
-        },
-    }).hits;
-
-    if (legacyQueryRes.length > 1) {
-        log.error(`Multiple global values with key ${gvKey} found!`);
-        return null;
-    }
-
-    if (legacyQueryRes.length === 0) {
-        log.info(`No value found for key ${gvKey}`);
-        return null;
-    }
-
-    return legacyQueryRes[0]._id;
-};
-const getGlobalValueUsageLegacy = (gvKey) => {
-    const macroUsage1 = findContentsWithHtmlAreaText(`${gvKey} `);
-    const macroUsage2 = findContentsWithHtmlAreaText(`${gvKey}\\"`);
-    const calcUsage = getGlobalValueCalcUsage(gvKey);
-
-    return [...macroUsage1, ...macroUsage2, ...calcUsage].map((content) => ({
-        id: content._id,
-        path: content._path,
-        displayName: content.displayName,
-    }));
-};
-const getGlobalValueLegacy = (key, type) => {
-    if (!key) {
-        log.info(`Invalid global value key: ${key}`);
-        return null;
-    }
-
-    if (!validTypes[type]) {
-        log.info(`Invalid type ${type} specified for global value ${key}`);
-        return null;
-    }
-
-    const valueSets = contentLib.query({
-        start: 0,
-        count: 2,
-        contentTypes: [globalValuesContentType],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.valueItems.key',
-                        values: [key],
-                    },
-                },
-            },
-        },
-    }).hits;
-
-    if (valueSets.length === 0) {
-        log.error(`Value not found for global value key ${key}`);
-        return null;
-    }
-
-    if (valueSets.length > 1) {
-        log.error(`Found multiple values with global value key ${key}!`);
-        return null;
-    }
-
-    const foundValue = forceArray(valueSets[0].data.valueItems).find((value) => value.key === key);
-    if (!foundValue) {
-        log.error(`Value not found for global value key ${key}`);
-        return null;
-    }
-
-    return foundValue[type] || foundValue.numberValue;
-};
-//
-//
-
 // Creates a globally unique key for a global value, as a composite of
 // the global value key and the id of the content it belongs to
 const getGlobalValueUniqueKey = (gvKey, contentId) => {
@@ -115,7 +25,7 @@ const getGvKeyAndContentIdFromUniqueKey = (key) => {
     const [gvKey, contentId] = getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
 
     return {
-        contentId: contentId || getContentIdFromgvKeyLegacy(gvKey),
+        contentId,
         gvKey,
     };
 };
@@ -126,11 +36,7 @@ const getGlobalValueUsage = (gvKey, contentId) => {
     const macroUsage = findContentsWithHtmlAreaText(key);
     const calcUsage = getGlobalValueCalcUsage(key);
 
-    return [...macroUsage, ...calcUsage].map((content) => ({
-        id: content._id,
-        path: content._path,
-        displayName: content.displayName,
-    }));
+    return [...macroUsage, ...calcUsage];
 };
 
 const getGlobalValueCalcUsage = (key) =>
@@ -181,10 +87,8 @@ const getGlobalValue = (gvKey, contentId, type) => {
     }
 
     if (!contentId) {
-        log.info(
-            `Invalid contentId provided for global value key ${gvKey} - trying backwards-compatible retrieval`
-        );
-        return getGlobalValueLegacy(gvKey, type);
+        log.info(`Invalid contentId provided for global value key ${gvKey}`);
+        return null;
     }
 
     if (!validTypes[type]) {
@@ -220,7 +124,6 @@ const getGlobalNumberValue = (gvKey, contentId) => getGlobalValue(gvKey, content
 
 module.exports = {
     getGlobalValueUsage,
-    getGlobalValueUsageLegacy,
     getGlobalValueSet,
     getGlobalNumberValue,
     globalValuesContentType,

@@ -1,4 +1,4 @@
-const { productDataMixin, situationDataMixin } = require('./_mixins');
+const { productDataMixin, situationDataMixin, guideDataMixin } = require('./_mixins');
 const { decoratorTogglesMixinFragment } = require('./_mixins');
 const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
@@ -24,6 +24,15 @@ const productPageFragment = `
         ${commonDataObject}
         data {
             ${productDataMixin}
+        }
+    }
+`;
+
+const guidePageFragment = `
+    ...on no_nav_navno_GuidePage {
+        ${commonDataObject}
+        data {
+            ${guideDataMixin}
         }
     }
 `;
@@ -56,6 +65,7 @@ const toolsPageFragment = `
 
 const dynamicPageFragment = `
     ${productPageFragment}
+    ${guidePageFragment}
     ${situationPageFragment}
     ${employerSituationPageFragment}
     ${toolsPageFragment}
@@ -80,6 +90,13 @@ const dynamicPageShortFragment = `
         }
     }
     ...on no_nav_navno_ContentPageWithSidemenus {
+        ${commonDataObjectShort}
+        data {
+            title
+            ingress
+        }
+    }
+    ...on no_nav_navno_GuidePage {
         ${commonDataObjectShort}
         data {
             title
