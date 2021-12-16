@@ -167,7 +167,7 @@ const wipeSitecontentEntryWithReferences = (node) => {
         const references = findReferences(id);
 
         log.info(
-            `Clearing ${references.length} references: ${JSON.stringify(
+            `Clearing ${references.length} references for ${path}: ${JSON.stringify(
                 references.map((item) => item._path),
                 null,
                 4

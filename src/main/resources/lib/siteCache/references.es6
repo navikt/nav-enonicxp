@@ -199,7 +199,7 @@ const findReferences = (id, depth = 0) => {
         return typesWithDeepReferences[reference.type]
             ? [...acc, ...findReferences(reference._id, depth + 1)]
             : acc;
-    });
+    }, []);
 
     return removeDuplicatesById([...references, ...deepReferences]);
 };
