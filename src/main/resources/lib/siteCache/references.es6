@@ -161,7 +161,7 @@ const findReferences = (id, path, depth = 0) => {
             ...getMacroReferences(id),
             ...getReferencesFromParent(contentPath),
         ].reduce((acc, content) => {
-            if (!content._id === id) {
+            if (content._id === id) {
                 return acc;
             }
 
