@@ -167,7 +167,7 @@ const findReferences = (id, path, depth = 0) => {
                 return mainArticleChapterReferences.length > 0
                     ? [...acc, ...mainArticleChapterReferences]
                     : acc;
-            })
+            }, [])
             .filter((content) => content._id !== id)
     );
 
