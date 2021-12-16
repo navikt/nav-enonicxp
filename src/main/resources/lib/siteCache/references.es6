@@ -193,10 +193,11 @@ const findReferences = (id, depth = 0) => {
             .filter((refContent) => refContent._id !== id)
     );
 
-    const deepReferences = references
-        .filter((reference) => typesWithDeepReferences[reference.type])
-        .map((reference) => findReferences(reference._id, depth + 1))
-        .flat();
+    const deepReferences = references.reduce((acc, reference) => {
+        return typesWithDeepReferences[reference.type]
+            ? [...acc, ...findReferences(reference._id, depth + 1)]
+            : acc;
+    });
 
     return removeDuplicatesById([...references, ...deepReferences]);
 };
