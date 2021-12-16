@@ -160,15 +160,13 @@ const findReferences = (id, path, depth = 0) => {
             ...getContentReferences(id),
             ...getMacroReferences(id),
             ...getReferencesFromParent(contentPath),
-        ]
-            .reduce((acc, content) => {
-                const mainArticleChapterReferences = getMainArticleChapterReferences(content);
+        ].reduce((acc, content) => {
+            if (!content._id === id) {
+                return acc;
+            }
 
-                return mainArticleChapterReferences.length > 0
-                    ? [...acc, ...mainArticleChapterReferences]
-                    : acc;
-            }, [])
-            .filter((content) => content._id !== id)
+            return [...acc, ...getMainArticleChapterReferences(content), content];
+        }, [])
     );
 
     const deepReferences = references
