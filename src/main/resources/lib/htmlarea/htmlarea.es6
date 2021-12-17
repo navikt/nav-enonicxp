@@ -5,7 +5,7 @@ const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.dynamic-alert.content',
 ];
 
-const htmlAreaDataPaths = ['text', 'fact'];
+const htmlAreaDataPaths = ['text', 'fact', 'article.data.text', 'article.data.fact'];
 
 const htmlAreaNodePaths = [
     ...htmlAreaDataPaths.map((path) => `data.${path}`),

@@ -1,0 +1,12 @@
+<widget>
+  <iframe id="iframe" name="hidden-iframe" style='display: none'></iframe>
+  <form method="get" data-th-action="${invalidate}" style="padding: 1rem;" target='hidden-iframe'>
+    <button type="submit" style="margin-top: 0.75rem;">Slett cachet innhold</button>
+    <input type="hidden" name="contentId" data-th-value="${contentId}" />
+    <div style="margin-top: 0.75rem;">
+      Dersom nylig publisert innhold ikke vises umiddelbart på nav.no kan du forsøke å slette cachen for denne siden.
+      <br/><br/>
+      Obs: Dette er kun ment som en nødløsning! Ved problemer med caching, kontakt team personbruker.
+    </div>
+  </form>
+</widget>

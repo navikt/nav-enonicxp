@@ -45,6 +45,6 @@ const getNotifications = (path) => {
     return [...globalNotifications, ...localNotifications];
 };
 
-const getFromCache = (path) => cache.getNotifications(path, () => getNotifications(path));
+const getFromCache = (path) => cache.getNotificationsCache(path, () => getNotifications(path));
 
 module.exports = { getNotifications: getFromCache };

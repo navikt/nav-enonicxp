@@ -230,7 +230,9 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time, nocache) => 
 
     const content = nocache
         ? getContentOrRedirect(contentRef, branch)
-        : cache.getSitecontent(contentRef, branch, () => getContentOrRedirect(contentRef, branch));
+        : cache.getSitecontentCache(contentRef, branch, () =>
+              getContentOrRedirect(contentRef, branch)
+          );
 
     if (!content) {
         return null;
