@@ -192,7 +192,7 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
         ]
             .reduce((acc, reference) => {
                 // Handle main-article-chapter references. There is a unique system of relations between
-                // articles/chapters which is most reliably handled as a separate step.
+                // articles/chapters which is most effectively handled as a separate step.
                 return [
                     reference,
                     ...acc,
@@ -203,9 +203,9 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
             }, [])
             .filter(
                 (reference) =>
-                    // don't include the root content as a reference (may happen in some cases with indirect circular references
+                    // Don't include the root content as a reference (may happen in some cases with indirect circular references
                     reference._id !== id &&
-                    // discard any references that were previously found, in order to prevent circular reference searches
+                    // Discard any references that were previously found, in order to prevent circular deep reference searches
                     !prevReferences.some((prevReference) => prevReference._id === reference._id)
             )
     );
