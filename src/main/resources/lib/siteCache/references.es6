@@ -74,9 +74,9 @@ const getGlobalValueReferences = (content) => {
     return references;
 };
 
-// "References" from macros does not create explicit references in the content structure
-// We must use our own implementations to find such references
-const getMacroReferences = (content) => {
+// "References" from macros and global value keys does not create explicit references in the content
+// structure. We must use our own implementations to find such references.
+const getIndirectReferences = (content) => {
     if (!content) {
         return [];
     }
@@ -187,7 +187,7 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
     const references = removeDuplicatesById(
         [
             ...getExplicitReferences(id),
-            ...getMacroReferences(content),
+            ...getIndirectReferences(content),
             ...getReferencesFromParent(content),
         ]
             .reduce((acc, reference) => {
