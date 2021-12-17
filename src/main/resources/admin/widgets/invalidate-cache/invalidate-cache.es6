@@ -8,6 +8,13 @@ const view = resolve('./invalidate-cache.html');
 const handleGet = (req) => {
     const { contentId } = req.params;
 
+    if (!contentId) {
+        return {
+            body: '<widget>Ikke tilgjengelig</widget>',
+            contentType: 'text/html',
+        };
+    }
+
     const content = runInBranchContext(() => contentLib.get({ key: contentId }), 'master');
 
     if (!content) {
