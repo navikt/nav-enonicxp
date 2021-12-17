@@ -1,7 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const eventLib = require('/lib/xp/event');
 const { cacheInvalidateEventName } = require('/lib/siteCache');
-const { wipeSitecontentEntryWithReferences } = require('/lib/siteCache');
 
 const handleGet = (req) => {
     const { contentId } = req.params;
