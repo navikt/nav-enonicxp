@@ -15,7 +15,7 @@ let appIsRunning = true;
 officeInformation.startCronJob();
 
 // start cache invalidator
-cache.activateEventListener();
+cache.activateCacheEventListeners();
 
 // listen for updated sitemap-data from master
 sitemap.activateDataUpdateEventListener();

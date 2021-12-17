@@ -42,6 +42,7 @@
                         <allowContentType>${app}:dynamic-page</allowContentType>
                         <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                         <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
                         <allowContentType>media:video</allowContentType>
                         <showStatus>true</showStatus>
                     </config>

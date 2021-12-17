@@ -1,0 +1,12 @@
+<content-type>
+    <display-name>Guide ("Slik gjør du")</display-name>
+    <description>En guide som beskriver hvordan man sender inn melding, frister og med lenker til søknadsskjemaer etc.</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="guide-data"/>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>
