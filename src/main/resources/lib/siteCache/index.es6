@@ -35,6 +35,8 @@ const caches = {
     }),
 };
 
+const cacheInvalidateEventName = 'invalidate-cache';
+
 // Define site path as a literal, because portal.getSite() cant´t be called from main.js
 const sitePath = '/www.nav.no/';
 const redirectPath = '/redirects/';
@@ -218,6 +220,19 @@ const activateCacheEventListeners = () => {
         });
         log.info('Started: Cache eventListener on custom.prepublish');
 
+        eventLib.listener({
+            type: `custom.${cacheInvalidateEventName}`,
+            localOnly: false,
+            callback: (event) => {
+                const { id, path } = event.data;
+                log.info(`Received event for cache invalidating of ${path} - ${id}`);
+                runInBranchContext(
+                    () => wipeSitecontentEntryWithReferences({ id, path }),
+                    'master'
+                );
+            },
+        });
+
         hasSetupListeners = true;
     } else {
         log.info('Cache node listeners already running');
@@ -231,4 +246,5 @@ module.exports = {
     getNotificationsCache,
     activateCacheEventListeners,
     wipeSitecontentEntryWithReferences,
+    cacheInvalidateEventName,
 };
