@@ -13,6 +13,8 @@ const handleGet = (req) => {
 
     const content = contentLib.get({ key: contentId });
 
+    log.info(`Manually triggered cache invalidation for ${contentId}`);
+
     wipeSitecontentEntryWithReferences({ id: content._id, path: content._path });
 
     return { status: 204 };
