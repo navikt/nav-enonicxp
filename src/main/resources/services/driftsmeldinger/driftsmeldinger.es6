@@ -20,8 +20,9 @@ const constructMessage = (message) => {
 
 const handleGet = (req) => {
     const content = libs.portal.getContent();
+    const language = content?.language || 'no';
 
-    const body = libs.cache.getDriftsmeldingerCache(content?.language || 'no', req.branch, () => {
+    const body = libs.cache.getDriftsmeldingerCache(language, req.branch, () => {
         const result = libs.content.getChildren({
             key: '/www.nav.no/no/driftsmeldinger',
             start: 0,
