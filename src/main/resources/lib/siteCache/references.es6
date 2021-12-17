@@ -176,6 +176,10 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
         return [];
     }
 
+    if (!id) {
+        return [];
+    }
+
     // If the root content of the reference-tree was deleted, we must check in the draft branch
     // for the content data used to find indirect references (as the master is presumable deleted!) .
     // For deep references we always use master.
