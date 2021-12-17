@@ -1,4 +1,5 @@
 const contentLib = require('/lib/xp/content');
+const { runInBranchContext } = require('/lib/headless/branch-context');
 const { getParentPath } = require('/lib/nav-utils');
 const { removeDuplicates } = require('/lib/nav-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
@@ -169,13 +170,19 @@ const getMainArticleChapterReferences = (mainArticleContent) => {
 
 const removeDuplicatesById = (array) => removeDuplicates(array, (a, b) => a._id === b._id);
 
-const findReferences = (id, depth = 0, prevReferences = []) => {
+const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
     if (depth > MAX_DEPTH) {
         log.info(`Reached max reference depth of ${MAX_DEPTH}`);
         return [];
     }
 
-    const content = contentLib.get({ key: id });
+    // If the root content of the reference-tree was deleted, we must check in the draft branch
+    // for the content data (as the master is presumable deleted!) used to find indirect refernes.
+    // For deep references we always use master.
+    const content = runInBranchContext(
+        () => contentLib.get({ key: id }),
+        eventType === 'deleted' ? 'draft' : 'master'
+    );
 
     const references = removeDuplicatesById(
         [
@@ -206,7 +213,11 @@ const findReferences = (id, depth = 0, prevReferences = []) => {
 
         return [
             ...acc,
-            ...findReferences(reference._id, depth + 1, [...references, ...prevReferences]),
+            ...findReferences({
+                id: reference._id,
+                depth: depth + 1,
+                prevReferences: [...references, ...prevReferences],
+            }),
         ];
     }, []);
 

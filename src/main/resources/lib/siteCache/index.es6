@@ -157,11 +157,13 @@ const wipeSpecialCases = (nodePath) => {
     return false;
 };
 
-const wipeSitecontentEntryWithReferences = ({ id, path }) => {
+const wipeSitecontentEntryWithReferences = (node, eventType) => {
+    const { id, path } = node;
+
     wipeSitecontentEntry(path);
     wipeNotificationsEntry(path);
 
-    const references = findReferences(id);
+    const references = findReferences({ id, eventType });
 
     log.info(
         `Clearing ${references.length} references for ${path}: ${JSON.stringify(
@@ -185,8 +187,8 @@ const nodeListenerCallback = (event) => {
             }
 
             runInBranchContext(
-                () => wipeSitecontentEntryWithReferences(node),
-                event.type === 'node.deleted' ? 'draft' : 'master'
+                () => wipeSitecontentEntryWithReferences(node, event.type),
+                'master'
             );
         }
     });
