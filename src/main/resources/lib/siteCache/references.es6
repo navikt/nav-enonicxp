@@ -8,7 +8,7 @@ const { getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { forceArray } = require('/lib/nav-utils');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
 
-const MAX_DEPTH = 4;
+const MAX_DEPTH = 5;
 
 const productCardTargetTypes = {
     [`${app.name}:content-page-with-sidemenus`]: true,
@@ -88,7 +88,7 @@ const getMacroReferences = (content) => {
     ];
 };
 
-const getContentReferences = (id) => {
+const getExplicitReferences = (id) => {
     const references = contentLib.query({
         start: 0,
         count: 1000,
@@ -172,12 +172,12 @@ const removeDuplicatesById = (array) => removeDuplicates(array, (a, b) => a._id 
 
 const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
     if (depth > MAX_DEPTH) {
-        log.info(`Reached max reference depth of ${MAX_DEPTH}`);
+        log.info(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
         return [];
     }
 
     // If the root content of the reference-tree was deleted, we must check in the draft branch
-    // for the content data (as the master is presumable deleted!) used to find indirect refernes.
+    // for the content data used to find indirect references (as the master is presumable deleted!) .
     // For deep references we always use master.
     const content = runInBranchContext(
         () => contentLib.get({ key: id }),
@@ -186,11 +186,13 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
 
     const references = removeDuplicatesById(
         [
-            ...getContentReferences(id),
+            ...getExplicitReferences(id),
             ...getMacroReferences(content),
             ...getReferencesFromParent(content),
         ]
             .reduce((acc, reference) => {
+                // Handle main-article-chapter references. There is a unique system of relations between
+                // articles/chapters which is most reliably handled as a separate step.
                 return [
                     reference,
                     ...acc,
@@ -201,7 +203,9 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
             }, [])
             .filter(
                 (reference) =>
+                    // don't include the root content as a reference (may happen in some cases with indirect circular references
                     reference._id !== id &&
+                    // discard any references that were previously found, in order to prevent circular reference searches
                     !prevReferences.some((prevReference) => prevReference._id === reference._id)
             )
     );
