@@ -69,12 +69,12 @@ function setIsRunning(isRunning, clearLock = false) {
     navRepo.modify({
         key: '/unpublish',
         editor: (el) => {
-            const data = {...el.data};
+            const data = { ...el.data };
             if (isRunning === false && !clearLock) {
                 data.lastRun = now;
             }
             data.isRunning = isRunning;
-            return {...el, data};
+            return { ...el, data };
         },
     });
     return isRunning ? null : now;
@@ -118,7 +118,7 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
         () => {
             const prepublished = prepublishedContent
                 .reduce((acc, el) => {
-                    const content = libs.content.get({key: el.id});
+                    const content = libs.content.get({ key: el.id });
                     return content ? [...acc, { path: content._path, id: content._id }] : acc
                 }, []);
             if (prepublished.length > 0) {
@@ -291,7 +291,7 @@ function theJob() {
     // reschedule to for TIME_BETWEEN_CHECKS or less if publishing
     // events are scheduled before that time
     if (sleepFor !== TIME_BETWEEN_CHECKS) {
-        libs.cron.reschedule({...CRON_CONFIG, delay: sleepFor, callback: theJob});
+        libs.cron.reschedule({ ...CRON_CONFIG, delay: sleepFor, callback: theJob });
     }
 }
 
@@ -299,7 +299,7 @@ exports.start = (appIsRunning) => {
     log.info(`Starting: ${TASK_DESCRIPTION}`);
     if (!taskHasStarted && appIsRunning) {
         taskHasStarted = true;
-        return libs.cron.schedule({...CRON_CONFIG, callback: theJob});
+        return libs.cron.schedule({ ...CRON_CONFIG, callback: theJob });
     }
 
     log.info(`Task ${TASK_DESCRIPTION} already running or app has shut down`);
