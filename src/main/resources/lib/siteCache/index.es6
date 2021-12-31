@@ -198,6 +198,7 @@ const nodeListenerCallback = (event) => {
 
 const prepublishListenerCallback = (event) => {
     event.data.prepublished.forEach((node) => {
+        log.info(`Invalidating cache for prepublished content ${node.path}`);
         runInBranchContext(() => wipeSitecontentEntryWithReferences(node), 'master');
     });
 };
