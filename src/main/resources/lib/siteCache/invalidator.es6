@@ -114,19 +114,24 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            const content = prepublishedContent
-                .map((el) => libs.content.get({ key: el.id }))
-                .filter((s) => !!s);
-            if (content.length > 0) {
+            const prepublished = prepublishedContent
+                .reduce((acc, el) => {
+                    const content = libs.content.get({key: el.id});
+                    if (!content) {
+                        return acc;
+                    }
+                    return [...acc, { path: content._path, id: content._id }]
+                }, []);
+            if (prepublished.length > 0) {
                 libs.event.send({
                     type: 'prepublish',
                     distributed: true,
                     data: {
-                        prepublished: content,
+                        prepublished,
                     },
                 });
-                content.forEach((item) => {
-                    log.info(`PREPUBLISHED: ${item._path}`);
+                prepublished.forEach((item) => {
+                    log.info(`PREPUBLISHED: ${item.path}`);
                 });
             }
         }
