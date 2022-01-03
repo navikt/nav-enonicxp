@@ -180,18 +180,22 @@ const wipeSitecontentEntryWithReferences = (node, eventType) => {
     });
 };
 
+const wipeCacheForNode = (node, event) => {
+    const didWipe = wipeSpecialCases(node.path);
+    if (didWipe) {
+        return;
+    }
+
+    runInBranchContext(
+        () => wipeSitecontentEntryWithReferences(node, event.type),
+        'master'
+    );
+}
+
 const nodeListenerCallback = (event) => {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            const didWipe = wipeSpecialCases(node.path);
-            if (didWipe) {
-                return;
-            }
-
-            runInBranchContext(
-                () => wipeSitecontentEntryWithReferences(node, event.type),
-                'master'
-            );
+            wipeCacheForNode(node, event);
         }
     });
 };
@@ -199,7 +203,7 @@ const nodeListenerCallback = (event) => {
 const prepublishListenerCallback = (event) => {
     event.data.prepublished.forEach((node) => {
         log.info(`Invalidating cache for prepublished content ${node.path}`);
-        runInBranchContext(() => wipeSitecontentEntryWithReferences(node), 'master');
+        wipeCacheForNode(node, event);
     });
 };
 
