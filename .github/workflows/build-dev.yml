@@ -1,7 +1,12 @@
 name: Build to dev
 
 on:
-  workflow_dispatch
+  push:
+    tags:
+      - "v*-*"
+      - "!v*-*-*"
+    branches:
+      - develop
 
 jobs:
   build:
@@ -9,7 +14,8 @@ jobs:
     environment: dev-sbs:personbruker
     steps:
       - uses: actions/checkout@v2
-      - name: Define build environment
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Define variables
         id: vars
         run: |
           echo ::set-output name=VERSION::$(git tag | grep -E '^v[0-9]' | grep -v '-' | sort -V | tail -1)-$(git rev-parse --short HEAD)

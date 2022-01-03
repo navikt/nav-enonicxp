@@ -1,10 +1,8 @@
-name: Build to prod
+name: Build to prod v2
 
 on:
-  push:
-    tags:
-      - "v*"
-      - "!v*-*"
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -12,7 +10,6 @@ jobs:
     environment: prod-sbs:default
     steps:
       - uses: actions/checkout@v2
-      - run: git fetch --prune --unshallow
       - name: Define variables
         id: vars
         run: |
