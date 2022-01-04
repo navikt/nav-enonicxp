@@ -1,0 +1,66 @@
+name: Build to prod v2
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: prod-sbs:default
+    steps:
+      - uses: actions/checkout@v2
+      - name: Define variables
+        id: vars
+        run: |
+          echo ::set-output name=VERSION::${GITHUB_REF##*/}
+          echo ::set-output name=RUN_ID::${GITHUB_RUN_ID}
+      - name: Check if tag exists on master
+        run: |
+          if git branch -r --contains ${{ steps.vars.outputs.VERSION }} | grep master>/dev/null 2>&1
+          then echo "Tag ${{ steps.vars.outputs.VERSION }} verified on master";
+          else echo "Tag ${{ steps.vars.outputs.VERSION }} not found on master"; exit 1; fi
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build application
+        id: build
+        run: |
+          version=${{ steps.vars.outputs.VERSION }}
+          gradle clean build deploy
+          echo ::set-output name=FILENAME::navno.jar
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Application
+          path: build/libs
+      - name: Fetch release
+        id: fetch_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ secrets.GITHUB_REPOSITORY }}
+        run: |
+          echo ::set-output name=UPLOAD_URL::"$(curl \
+          -H "authorization: Bearer ${GITHUB_TOKEN}" \
+          -s https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${{ steps.vars.outputs.VERSION }} \
+          | jq -r '.upload_url')"
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.fetch_release.outputs.upload_url }}
+          asset_path: build/libs/${{ steps.build.outputs.FILENAME }}
+          asset_name: ${{ steps.build.outputs.FILENAME }}
+          asset_content_type: application/java-archive
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          event-type: deploy-to-prod
+          token: ${{ secrets.DEPLOY_PAT }}
+          client-payload: '{"RUN_ID": "${{ steps.vars.outputs.RUN_ID }}"}'

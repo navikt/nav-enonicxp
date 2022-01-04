@@ -1,0 +1,31 @@
+name: Build and test v2
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Define build environment
+        id: vars
+        run: |
+          echo ::set-output name=VERSION::$(git tag | grep -E '^v[0-9]' | grep -v '-' | sort -V | tail -1)-$(git rev-parse --short HEAD)
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build application
+        id: build
+        run: |
+          version=${{ steps.vars.outputs.VERSION }}
+          gradle clean build deploy -Pversion=${version//v}
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Application
+          path: build/libs
