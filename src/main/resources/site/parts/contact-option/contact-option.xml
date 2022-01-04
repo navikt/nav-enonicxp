@@ -1,0 +1,53 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Kontakt-oss kanal</display-name>
+    <description>Chat, skriv til oss eller telefon</description>
+    <form>
+        <option-set name="contactOptions">
+            <label>Kontakt-oss kanaler</label>
+            <expanded>true</expanded>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="chat">
+                    <label>Chat</label>
+                    <items>
+                        <input name="ingress" type="TextArea">
+                            <label>Overstyr ingress</label>
+                        </input>
+                    </items>
+                </option>
+                <option name="write">
+                    <label>Skriv til oss</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                        </input>
+                        <input name="url" type="TextLine">
+                            <label>Overstyr URL</label>
+                        </input>
+                        <input name="ingress" type="TextArea">
+                            <label>Overstyr ingress</label>
+                        </input>
+                    </items>
+                </option>
+                <option name="call">
+                    <label>Ring oss</label>
+                    <items>
+                        <input name="phoneNumber" type="TextLine">
+                            <label>Telefonnummer</label>
+                            <default>55 55 33 33</default>
+                            <config>
+                                <regexp>
+                                    ^[0-9+ ]+$
+                                </regexp>
+                            </config>
+                        </input>
+                        <input name="ingress" type="TextArea">
+                            <label>Overstyr ingress</label>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+        <mixin name="auth-render-option"/>
+    </form>
+</part>

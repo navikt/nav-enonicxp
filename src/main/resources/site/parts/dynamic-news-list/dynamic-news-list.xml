@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Nyhetsliste</display-name>
+    <display-name>Nyhetsliste</display-name>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
@@ -29,5 +29,6 @@
             </items>
         </item-set>
         <mixin name="expandable"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

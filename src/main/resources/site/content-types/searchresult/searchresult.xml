@@ -1,7 +1,8 @@
 <content-type>
     <display-name>Søkeresultat</display-name>
-    <description>Søkeresultat</description>
+    <description>Søkeresultat - skal aldri opprettes fra CS</description>
     <super-type>base:structured</super-type>
+    <is-abstract>true</is-abstract>
     <form>
     </form>
 </content-type>

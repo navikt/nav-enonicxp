@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Filtreringsmeny</display-name>
+    <display-name>Filtreringsmeny</display-name>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
@@ -20,9 +20,8 @@
                     <items>
                         <input name="filterName" type="TextLine">
                             <label>Filter-navn</label>
-                        </input>
-                        <input name="id" type="TextLine">
-                            <label>id (autogenereres)</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <default>Nytt filter</default>
                         </input>
                     </items>
                 </item-set>

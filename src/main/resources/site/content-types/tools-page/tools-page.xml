@@ -1,0 +1,12 @@
+<content-type>
+    <display-name>Verktøy-side</display-name>
+    <description>Side-type for kalkulatorer, veivisere, osv [ikke implementert]</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="product-data"/>
+        <mixin name="custom-path-selector"/>
+    </form>
+</content-type>

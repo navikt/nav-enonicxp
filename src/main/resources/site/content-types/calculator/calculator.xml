@@ -1,0 +1,93 @@
+<content-type>
+    <display-name>Kalkulator</display-name>
+    <description>Kalkulator som kan settes inn i produktsider</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <option-set name="fields">
+            <label>Variabel</label>
+            <occurrences minimum="0" maximum="0"/>
+            <help-text>Definer variabler som brukeren skal kunne oppgi eller global verdi som skal brukes i utregningen.</help-text>
+            <options minimum="1" maximum="1">
+                <option name="inputField">
+                    <label>Nummerfelt</label>
+                    <help-text>Alle inputfelt blir automatisk begrenset til å kun inneholde tall.</help-text>
+                    <items>
+                        <input name="label" type="TextLine">
+                            <label>Tittel på felt</label>
+                        </input>
+                        <input name="explanation" type="TextArea">
+                            <label>Forklaring</label>
+                            <help-text>Oppgi en ekstra forklaring til feltet dersom det er nødvendig.</help-text>
+                        </input>
+                        <input name="variableName" type="TextLine">
+                            <label>Javascript variabelnavn (skal normalt ikke endres)</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
+                    </items>
+                </option>
+                <option name="dropdownField">
+                    <label>Listevalg</label>
+                    <items>
+                        <input name="label" type="TextLine">
+                            <label>Tittel på felt</label>
+                        </input>
+                        <item-set name="optionItems">
+                            <label>Valg</label>
+                            <occurrences minimum="1" maximum="0"/>
+                            <items>
+                                <input name="label" type="TextLine">
+                                    <label>Tittel</label>
+                                </input>
+                                <input name="value" type="Double">
+                                    <label>Tallverdi</label>
+                                </input>
+                            </items>
+                        </item-set>
+                        <input name="explanation" type="TextArea">
+                            <label>Forklaring</label>
+                            <help-text>Oppgi en ekstra forklaring til feltet dersom det er nødvendig.</help-text>
+                        </input>
+                        <input name="variableName" type="TextLine">
+                            <label>Javascript variabelnavn (skal normalt ikke endres)</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
+                    </items>
+                </option>
+                <option name="globalValue">
+                    <label>Global verdi</label>
+                    <items>
+                        <input name="key" type="CustomSelector">
+                            <label>Velg verdier</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <service>globalValues</service>
+                                <param value="valueType">numberValue</param>
+                            </config>
+                        </input>
+                        <input name="variableName" type="TextLine">
+                            <label>Javascript variabelnavn (skal normalt ikke endres)</label>
+                            <help-text>Brukes til å henvise referanse i selve utregningen nedenfor.</help-text>
+                        </input>
+                        <!-- Dummy value to prevent graphql-errors for undefined field -->
+                        <input name="value" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+        <input name="calculationScript" type="TextArea" >
+            <label>Beregning</label>
+            <help-text>Variabler må være like navnet som variabelnavn ovenfor. Du kan kun benytte javascript.</help-text>
+        </input>
+        <input name="useThousandSeparator" type="Checkbox">
+            <label>Legg inn tusenskille i svaret</label>
+            <help-text>Nyttig når svaret feks gis i kroner</help-text>
+        </input>
+        <input name="summaryText" type="TextArea" >
+            <label>Tekst for beregingsresultat</label>
+            <help-text>Skriv inn tekst eller forklarende tekst som skal vises i forbindelse av beregningsresultatet. For å sette inn selve resultatet, sett inn kortkoden "[resultat]" i teksten.</help-text>
+        </input>
+    </form>
+</content-type>

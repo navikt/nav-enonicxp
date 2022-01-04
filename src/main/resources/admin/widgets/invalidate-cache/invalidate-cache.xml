@@ -1,0 +1,10 @@
+<widget>
+    <display-name>Slett cache</display-name>
+    <description>Manuell cache-invalidering</description>
+    <interfaces>
+        <interface>contentstudio.contextpanel</interface>
+    </interfaces>
+    <allow>
+        <principal>role:system.authenticated</principal>
+    </allow>
+</widget>

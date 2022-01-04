@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Knapp</display-name>
+    <display-name>Knapp</display-name>
     <form>
         <mixin name="link"/>
         <input name="type" type="RadioButton">
@@ -27,5 +27,6 @@
             <label>Full bredde</label>
         </input>
         <mixin name="icon-selector"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

@@ -21,14 +21,20 @@ const getComponentsOnPage = (contentId) => {
 const getComponentAnchorLink = (component) => {
     const dynamicHeader = component.part?.config?.['no-nav-navno']?.['dynamic-header'];
     if (dynamicHeader) {
-        const { anchorId, title } = dynamicHeader;
-        return anchorId && { anchorId, linkText: title };
+        const { anchorId, title, hideFromInternalNavigation } = dynamicHeader;
+        return anchorId && { anchorId, linkText: title, hideFromInternalNavigation };
     }
 
     const sectionWithHeader = component.layout?.config?.['no-nav-navno']?.['section-with-header'];
     if (sectionWithHeader) {
-        const { anchorId, title } = sectionWithHeader;
-        return anchorId && { anchorId, linkText: title };
+        const { anchorId, title, hideFromInternalNavigation } = sectionWithHeader;
+        return anchorId && { anchorId, linkText: title, hideFromInternalNavigation };
+    }
+
+    const situationFlexCols = component.layout?.config?.['no-nav-navno']?.['situation-flex-cols'];
+    if (situationFlexCols) {
+        const { anchorId, title, hideFromInternalNavigation } = situationFlexCols;
+        return anchorId && { anchorId, linkText: title, hideFromInternalNavigation };
     }
 
     return null;
@@ -55,7 +61,11 @@ const pageNavigationMenuCallback = (context, params) => {
                 return acc;
             }
 
-            const { anchorId } = anchorLink;
+            const { anchorId, hideFromInternalNavigation } = anchorLink;
+
+            if (hideFromInternalNavigation) {
+                return acc;
+            }
 
             if (acc.find((_anchorLink) => _anchorLink.anchorId === anchorId)) {
                 log.warning(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);

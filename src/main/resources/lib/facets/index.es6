@@ -5,6 +5,7 @@ const navUtils = require('/lib/nav-utils');
 const nodeLib = require('/lib/xp/node');
 const taskLib = require('/lib/xp/task');
 const repoLib = require('/lib/xp/repo');
+const { removeDuplicates } = require('/lib/nav-utils');
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -100,6 +101,21 @@ const setUpdateAll = (updateAll) => {
     });
 };
 
+const clearUpdateState = () => {
+    getNavRepo().modify({
+        key: getFacetValidation()._path,
+        editor: (facetValidation) => {
+            return {
+                ...facetValidation,
+                data: {
+                    updateAll: false,
+                    justValidatedNodes: [],
+                },
+            };
+        },
+    });
+};
+
 const isUpdatingAll = () => {
     return getFacetValidation().data.updateAll;
 };
@@ -155,7 +171,6 @@ const updateFacets = (fasetter, ids) => {
                 t.push({
                     fasett: el.name,
                     underfasett: value.name,
-                    className: value.className,
                     query:
                         el.rulekey +
                         ' LIKE "' +
@@ -197,7 +212,6 @@ const updateFacets = (fasetter, ids) => {
             fasett: value.fasett,
         };
         if (value.underfasett) fasett.underfasett = value.underfasett;
-        if (value.className) fasett.className = value.className;
         let start = 0;
         let count = 1000;
         let hits = [];
@@ -343,10 +357,7 @@ const facetHandler = (event) => {
         })
     );
 
-    // remove duplicates
-    toCheckOnNext = toCheckOnNext.filter((nodeId, index, self) => {
-        return self.indexOf(nodeId) === index;
-    });
+    toCheckOnNext = removeDuplicates(toCheckOnNext);
 
     // run task to check for facet update after 5 seconds after last update
     if (!currentTask) {
@@ -393,9 +404,10 @@ const activateEventListener = () => {
     });
     log.info('Started: facet-handler listening on node.pushed');
 };
+
 module.exports = {
     activateEventListener,
     checkIfUpdateNeeded,
-    setUpdateAll,
     getFacetValidation,
+    clearUpdateState,
 };

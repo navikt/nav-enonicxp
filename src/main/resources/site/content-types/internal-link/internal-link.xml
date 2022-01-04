@@ -15,6 +15,7 @@
                 <showStatus>true</showStatus>
             </config>
         </input>
+        <mixin name="type-of-redirect"/>
         <mixin name="keywords"/>
     </form>
 </content-type>

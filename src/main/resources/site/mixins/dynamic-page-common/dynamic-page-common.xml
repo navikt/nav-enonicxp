@@ -1,12 +1,20 @@
 <mixin>
     <form>
-        <input type="TextArea" name="description">
-            <label>Oppsummering/ingress</label>
-            <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i søkeresultater. Bør være maks 240 tegn.</help-text>
-        </input>
         <mixin name="languages-legacy"/>
+        <mixin name="custom-path-selector"/>
         <mixin name="decorator-toggles"/>
+        <field-set>
+            <label>For internt søk</label>
+            <items>
+                <input type="TextArea" name="description">
+                    <label>Oppsummering</label>
+                    <help-text>Vises når denne siden lenkes til fra enkelte andre sider, og i
+                        søkeresultater. Bør være maks 240 tegn.
+                    </help-text>
+                </input>
+                <mixin name="keywords"/>
+            </items>
+        </field-set>
         <mixin name="seo"/>
-        <mixin name="keywords"/>
     </form>
 </mixin>

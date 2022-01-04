@@ -1,9 +1,13 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Lenkeliste</display-name>
+    <display-name>Lenkeliste</display-name>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
             <default>Lenker</default>
+        </input>
+        <input name="chevron" type="CheckBox">
+            <label>Lenker med chevron</label>
+            <default>unchecked</default>
         </input>
         <option-set name="list">
             <label>Lenker</label>
@@ -44,5 +48,6 @@
             </options>
         </option-set>
         <mixin name="expandable"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>

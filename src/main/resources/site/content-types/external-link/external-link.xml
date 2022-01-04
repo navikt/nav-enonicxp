@@ -18,6 +18,7 @@
                     <help-text>Benytt fullstendig URL. Eksempelvis slik: https://skatteetaten.no</help-text>
                     <occurrences maximum="1" minimum="1"/>
                 </input>
+                <mixin name="type-of-redirect"/>
             </items>
         </field-set>
         <mixin name="keywords"/>

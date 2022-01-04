@@ -2,10 +2,17 @@ const {
     linkWithIngressMixinFragment,
     linkSelectableMixin,
     pageNavigationMenuMixinFragment,
+    headerCommonMixin,
 } = require('./_mixins');
 const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
-const { headerCommonMixin } = require('/lib/headless/guillotine/queries/fragments/_mixins');
+const {
+    productTargetMixin,
+} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-target-mixin');
+const {
+    calculatorTargetMixin,
+} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/calculator-target-mixin');
+const { processedHtmlFragment } = require('./_processedHtml');
 
 const partsFragment = `
     config {
@@ -13,6 +20,7 @@ const partsFragment = `
             dynamic_header {
                 title
                 anchorId
+                hideFromInternalNavigation
                 ${headerCommonMixin}
             }
             dynamic_link_panel {
@@ -24,20 +32,11 @@ const partsFragment = `
                     ${imageFragment}
                 }
             }
-            dynamic_supervisor_panel {
-                content
-                margin
-            }
             dynamic_alert {
                 type
+                size
                 inline
-                content
-                margin
-            }
-            dynamic_read_more_panel {
-                ingress
-                content
-                border
+                content ${processedHtmlFragment}
                 margin
             }
             dynamic_link_list {
@@ -66,7 +65,7 @@ const partsFragment = `
             }
             html_area {
                 filters
-                html(processHtml:{type: server})
+                html ${processedHtmlFragment}
             }
             page_header {
                 title
@@ -78,9 +77,6 @@ const partsFragment = `
                 link {
                     ${linkSelectableMixin}
                 }
-            }
-            html_area {
-                html(processHtml:{type: server})
             }
             page_header {
                 title
@@ -110,6 +106,38 @@ const partsFragment = `
                     }
                 }
             }
+            product_card {
+                ingressOverride
+                ${productTargetMixin}
+            }
+            product_card_micro {
+                card_list {
+                    ${productTargetMixin}
+                }
+            }
+            product_card_mini {
+                ${productTargetMixin}
+            }
+            calculator {
+                ${calculatorTargetMixin}
+            }
+            contact_option {
+                contactOptions {
+                    _selected
+                    chat {
+                        ingress
+                    }
+                    write {
+                        ingress
+                        title
+                        url
+                    }
+                    call {
+                        ingress
+                        phoneNumber
+                    }
+                }
+            }
         }
     }
 `;
@@ -119,12 +147,18 @@ const layoutsFragment = `
         no_nav_navno {
             section_with_header {
                 anchorId
+                hideFromInternalNavigation
                 icon {
                     color
+                    size
                     icon {
                         ${imageFragment}
                     }
                 }
+            }
+            situation_flex_cols {
+                hideFromInternalNavigation
+                anchorId
             }
         }
     }

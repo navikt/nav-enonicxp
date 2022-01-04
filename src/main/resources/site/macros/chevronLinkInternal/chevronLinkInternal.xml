@@ -1,6 +1,0 @@
-<macro>
-    <display-name>Lenke med chevron (intern)</display-name>
-    <form>
-        <mixin name="link-internal" />
-    </form>
-</macro>

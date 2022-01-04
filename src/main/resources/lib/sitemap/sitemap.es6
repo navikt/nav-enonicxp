@@ -3,14 +3,18 @@ const taskLib = require('/lib/xp/task');
 const cronLib = require('/lib/cron');
 const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
+const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
+const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
 const { frontendOrigin } = require('/lib/headless/url-origin');
 
 const batchCount = 1000;
 const maxCount = 50000;
-const pathPrefix = '/www.nav.no';
-const eventType = 'sitemap-generated';
+const eventTypeSitemapGenerated = 'sitemap-generated';
+const eventTypeSitemapRequested = 'sitemap-requested';
+
+let isGenerating = false;
 
 const sitemapData = {
     entries: {},
@@ -31,7 +35,10 @@ const sitemapData = {
     },
 };
 
-const includedContentTypes = [
+const pageContentTypes = [
+    'situation-page',
+    'guide-page',
+    'employer-situation-page',
     'dynamic-page',
     'content-page-with-sidemenus',
     'main-article',
@@ -43,11 +50,36 @@ const includedContentTypes = [
     'large-table',
 ].map((contentType) => `${app.name}:${contentType}`);
 
-const isIncludedType = (type) =>
-    !!includedContentTypes.find((includedType) => includedType === type);
+const isIncludedType = (type) => !!pageContentTypes.find((includedType) => includedType === type);
 
-const getUrl = (content) =>
-    content.data?.canonicalUrl || content._path.replace(pathPrefix, frontendOrigin);
+const validateContent = (content) => {
+    if (!content) {
+        return false;
+    }
+
+    if (!isIncludedType(content.type)) {
+        return false;
+    }
+
+    if (content.data?.externalProductUrl || content.data?.noindex) {
+        return false;
+    }
+
+    return true;
+};
+
+const getUrl = (content) => {
+    if (content.data?.canonicalUrl) {
+        return content.data.canonicalUrl;
+    }
+
+    const customPath = content.data?.customPath;
+
+    const pathname = isValidCustomPath(customPath)
+        ? customPath
+        : content._path.replace(/^\/www.nav.no/, '');
+    return `${frontendOrigin}${pathname}`;
+};
 
 const getAlternativeLanguageVersions = (content) =>
     content.data?.languages &&
@@ -69,6 +101,7 @@ const getSitemapEntry = (content) => {
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
+        id: content._id,
         url: getUrl(content),
         modifiedTime: content.modifiedTime,
         language: content.language,
@@ -76,15 +109,31 @@ const getSitemapEntry = (content) => {
     };
 };
 
-const updateSitemapEntry = (pathname) => {
-    const url = `${frontendOrigin}${pathname}`;
-    const path = `${pathPrefix}${pathname}`;
-    const content = runInBranchContext(() => contentLib.get({ key: path }), 'master');
+const getContent = (path) => {
+    const contentFromCustomPath = getContentFromCustomPath(path);
+    if (contentFromCustomPath.length > 0) {
+        if (contentFromCustomPath.length === 1) {
+            return contentFromCustomPath[0];
+        }
+        log.warning(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
+        return null;
+    }
 
-    if (content && isIncludedType(content.type)) {
-        sitemapData.set(url, getSitemapEntry(content));
-    } else if (sitemapData.get(url)) {
-        sitemapData.remove(url);
+    return runInBranchContext(() => contentLib.get({ key: path }), 'master');
+};
+
+const updateSitemapEntry = (path) => {
+    const content = getContent(path);
+    if (!content) {
+        return;
+    }
+
+    const key = content._id;
+
+    if (validateContent(content)) {
+        sitemapData.set(key, getSitemapEntry(content));
+    } else if (sitemapData.get(key)) {
+        sitemapData.remove(key);
     }
 };
 
@@ -93,13 +142,16 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
         .query({
             start,
             count: batchCount,
-            contentTypes: includedContentTypes,
+            contentTypes: pageContentTypes,
             filters: {
                 boolean: {
                     mustNot: {
                         hasValue: {
                             field: 'data.noindex',
                             values: ['true'],
+                        },
+                        exists: {
+                            field: 'data.externalProductUrl',
                         },
                     },
                 },
@@ -120,30 +172,37 @@ const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateSitemapData = () => {
-    if (clusterLib.isMaster()) {
+const generateAndBroadcastSitemapData = () => {
+    if (clusterLib.isMaster() && !isGenerating) {
+        isGenerating = true;
+
         taskLib.submit({
             description: 'sitemap-generator-task',
             task: () => {
-                log.info('Started generating sitemap data');
+                try {
+                    log.info('Started generating sitemap data');
+                    const startTime = Date.now();
+                    const sitemapEntries = getSitemapEntries();
 
-                const startTime = Date.now();
-                const sitemapEntries = getSitemapEntries();
+                    eventLib.send({
+                        type: eventTypeSitemapGenerated,
+                        distributed: true,
+                        data: { entries: sitemapEntries },
+                    });
 
-                eventLib.send({
-                    type: eventType,
-                    distributed: true,
-                    data: { entries: sitemapEntries },
-                });
+                    log.info(
+                        `Finished generating sitemap data with ${
+                            sitemapEntries.length
+                        } entries after ${Date.now() - startTime}ms`
+                    );
 
-                log.info(
-                    `Finished generating sitemap data with ${sitemapEntries.length} entries after ${
-                        Date.now() - startTime
-                    }ms`
-                );
-
-                if (sitemapEntries.length > maxCount) {
-                    log.warning(`Sitemap entries count exceeds recommended maximum`);
+                    if (sitemapEntries.length > maxCount) {
+                        log.warning(`Sitemap entries count exceeds recommended maximum`);
+                    }
+                } catch (e) {
+                    log.error(`Error while generating sitemap - ${e}`);
+                } finally {
+                    isGenerating = false;
                 }
             },
         });
@@ -151,7 +210,7 @@ const generateSitemapData = () => {
 };
 
 const generateDataAndActivateSchedule = () => {
-    runInBranchContext(generateSitemapData, 'master');
+    runInBranchContext(generateAndBroadcastSitemapData, 'master');
 
     // Regenerate sitemap from scratch at 06:00 daily
     cronLib.schedule({
@@ -166,7 +225,7 @@ const generateDataAndActivateSchedule = () => {
             },
             principals: ['role:system.admin'],
         },
-        callback: generateSitemapData,
+        callback: generateAndBroadcastSitemapData,
     });
 };
 
@@ -179,16 +238,45 @@ const updateSitemapData = (entries) => {
     sitemapData.clear();
 
     entries.forEach((entry) => {
-        sitemapData.set(entry.url, entry);
+        sitemapData.set(entry.id, entry);
+    });
+};
+
+const requestSitemapUpdate = () => {
+    eventLib.send({
+        type: eventTypeSitemapRequested,
+        distributed: true,
+        data: {},
     });
 };
 
 const activateDataUpdateEventListener = () => {
     eventLib.listener({
-        type: `custom.${eventType}`,
+        type: `custom.${eventTypeSitemapGenerated}`,
         callback: (event) => {
             log.info('Received sitemap data from master, updating...');
             updateSitemapData(event.data.entries);
+        },
+    });
+
+    eventLib.listener({
+        type: `custom.${eventTypeSitemapRequested}`,
+        callback: () => {
+            log.info('Received request for sitemap regeneration');
+            generateAndBroadcastSitemapData();
+        },
+    });
+
+    eventLib.listener({
+        type: '(node.pushed|node.deleted)',
+        localOnly: false,
+        callback: (event) => {
+            event.data.nodes.forEach((node) => {
+                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+                    const xpPath = node.path.replace(/^\/content/, '');
+                    updateSitemapEntry(xpPath);
+                }
+            });
         },
     });
 };
@@ -198,4 +286,6 @@ module.exports = {
     generateDataAndActivateSchedule,
     updateSitemapEntry,
     activateDataUpdateEventListener,
+    pageContentTypes,
+    requestSitemapUpdate,
 };

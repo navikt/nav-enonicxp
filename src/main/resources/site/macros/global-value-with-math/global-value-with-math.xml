@@ -1,0 +1,35 @@
+<macro>
+    <display-name>Globale verdier med utregning</display-name>
+    <description>Bruk denne ved behov for matematiske operasjoner på verdier</description>
+    <form>
+        <input name="keys" type="CustomSelector">
+            <label>Velg verdier</label>
+            <occurrences minimum="0" maximum="0"/>
+            <config>
+                <service>globalValues</service>
+                <param value="valueType">numberValue</param>
+                <param value="withDescription">true</param>
+            </config>
+        </input>
+        <input name="expression" type="TextLine">
+            <label>Skriv inn et matematisk uttrykk</label>
+            <help-text>'$n' erstattes av valgt verdi n over. F.eks: '$1 * 5 + $2' vil gange den
+                første valgte verdien med 5, og legge til den andre valgte verdien
+            </help-text>
+        </input>
+        <input name="decimals" type="Long">
+            <label>Avrunding</label>
+            <help-text>Antall desimaler resultatet skal avrundes til (0 for kun heltall)</help-text>
+            <default>0</default>
+            <config>
+                <min>0</min>
+                <max>2</max>
+            </config>
+        </input>
+        <!-- Dummy value to prevent graphql-errors for undefined field -->
+        <input name="variables" type="RadioButton">
+            <label>-</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</macro>

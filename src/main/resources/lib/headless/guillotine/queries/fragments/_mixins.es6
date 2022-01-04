@@ -1,6 +1,8 @@
 const globalFragment = require('./_global');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
+const url = require('./url');
+const animatedIconsFragment = require('./animatedIcons');
 
 const languagesMixinFragment = `
     languages {
@@ -41,6 +43,8 @@ const decoratorTogglesMixinFragment = `
 const linkInternalMixinFragment = `
     target {
         ${globalFragment}
+        ${externalLink.fragment}
+        ${url.fragment}
     }
     text
 `;
@@ -84,6 +88,36 @@ const headerCommonMixin = `
     }
 `;
 
+const productDataMixin = `
+    title
+    ingress
+    taxonomy
+    illustration {
+        ${globalFragment}
+        ${animatedIconsFragment.fragment}
+    }
+    externalProductUrl
+`;
+
+const situationDataMixin = `
+    title
+    ingress
+    illustration {
+        ${globalFragment}
+        ${animatedIconsFragment.fragment}
+    }
+    externalProductUrl
+`;
+
+const guideDataMixin = `
+    title
+    ingress
+    illustration {
+        ${globalFragment}
+        ${animatedIconsFragment.fragment}
+    }
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
@@ -95,4 +129,7 @@ module.exports = {
     headerCommonMixin,
     languagesMixinFragment,
     decoratorTogglesMixinFragment,
+    productDataMixin,
+    situationDataMixin,
+    guideDataMixin,
 };
