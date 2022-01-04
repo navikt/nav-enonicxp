@@ -1,4 +1,3 @@
-import { tstest } from '/lib/tstest';
 const { isValidBranch } = require('/lib/headless/branch-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
@@ -6,8 +5,6 @@ const handleGet = (req) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
     const { id: idOrPath, branch, time, nocache } = req.params;
     const { secret } = req.headers;
-
-    tstest();
 
     if (secret !== app.config.serviceSecret) {
         return {
