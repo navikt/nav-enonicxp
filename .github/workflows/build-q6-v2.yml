@@ -9,6 +9,7 @@ jobs:
     environment: dev-sbs:q6
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Define build environment
         id: vars
         run: |
