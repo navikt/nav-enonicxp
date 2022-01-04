@@ -2,7 +2,7 @@ name: Build to prod v2
 
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   build:
