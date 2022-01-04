@@ -1,11 +1,7 @@
 name: Build to Q6
 
 on:
-  push:
-    tags:
-      - "v*-*-*"
-    branches:
-      - develop
+  workflow_dispatch
 
 jobs:
   build:
@@ -14,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-      - name: Define variables
+      - name: Define build environment
         id: vars
         run: |
           echo ::set-output name=VERSION::$(git tag | grep -E '^v[0-9]' | grep -v '-' | sort -V | tail -1)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)

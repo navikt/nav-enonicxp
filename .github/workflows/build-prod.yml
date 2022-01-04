@@ -1,10 +1,8 @@
 name: Build to prod
 
 on:
-  push:
-    tags:
-      - "v*"
-      - "!v*-*"
+  release:
+    types: [created]
 
 jobs:
   build:
