@@ -1,12 +1,7 @@
 name: Build to dev
 
 on:
-  push:
-    tags:
-      - "v*-*"
-      - "!v*-*-*"
-    branches:
-      - develop
+  workflow_dispatch
 
 jobs:
   build:
