@@ -11,9 +11,6 @@ const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-trave
 
 let appIsRunning = true;
 
-// start pull from NORG
-officeInformation.startCronJob();
-
 // start cache invalidator
 cache.activateCacheEventListeners();
 
@@ -26,21 +23,26 @@ sitemap.generateDataAndActivateSchedule();
 // enable retrieval of version history data from a specified date-time
 hookLibsWithTimeTravel();
 
-// start task for handling caching of expired and prepublished content
-if (clusterLib.isMaster()) {
-    // make sure the lock is released on startup
-    invalidator.releaseInvalidatorLock();
+if (app.config.env !== 'localhost') {
+    // start pull from NORG
+    officeInformation.startCronJob();
 
-    // make sure the updateAll lock is released on startup, and clear the
-    // list of recently validated nodes
-    const facetValidation = facetLib.getFacetValidation();
-    if (facetValidation) {
-        facetLib.clearUpdateState();
+    // start task for handling caching of expired and prepublished content
+    if (clusterLib.isMaster()) {
+        // make sure the lock is released on startup
+        invalidator.releaseInvalidatorLock();
+
+        // make sure the updateAll lock is released on startup, and clear the
+        // list of recently validated nodes
+        const facetValidation = facetLib.getFacetValidation();
+        if (facetValidation) {
+            facetLib.clearUpdateState();
+        }
     }
-}
 
-invalidator.start(appIsRunning);
-facetLib.activateEventListener();
+    invalidator.start(appIsRunning);
+    facetLib.activateEventListener();
+}
 
 log.info('Finished running main');
 

@@ -116,11 +116,10 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
             principals: ['role:system.admin'],
         },
         () => {
-            const prepublished = prepublishedContent
-                .reduce((acc, el) => {
-                    const content = libs.content.get({ key: el.id });
-                    return content ? [...acc, { path: content._path, id: content._id }] : acc
-                }, []);
+            const prepublished = prepublishedContent.reduce((acc, el) => {
+                const content = libs.content.get({ key: el.id });
+                return content ? [...acc, { path: content._path, id: content._id }] : acc;
+            }, []);
             if (prepublished.length > 0) {
                 libs.event.send({
                     type: 'prepublish',
