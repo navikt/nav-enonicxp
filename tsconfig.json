@@ -1,24 +1,16 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "sourceMap": true,
-    "allowJs": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node"
-  },
-  "files": [
-    "node_modules/enonic-types/index.d.ts",
-    "src/main/resources/types.ts"
-  ],
-  "include": [
-    "src/main/resources/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "target": "es6",
+        "sourceMap": true,
+        "allowJs": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
+        "types": ["node", "enonic-types"]
+    },
+    "include": ["src/main/resources/**/*.ts"]
 }
