@@ -1,16 +1,11 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "sourceMap": true,
         "allowJs": true,
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
-        "types": ["node", "enonic-types"]
+        "types": ["node", "enonic-types"],
+        "strict": true
     },
     "include": ["src/main/resources/**/*.ts"]
 }
