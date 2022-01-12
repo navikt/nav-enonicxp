@@ -40,4 +40,5 @@ const handleGet = (req) => {
         contentType: 'application/json',
     };
 };
+
 exports.get = handleGet;

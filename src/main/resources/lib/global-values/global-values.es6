@@ -25,11 +25,7 @@ const getGvKeyAndContentIdFromUniqueKey = (key) => {
     const [gvKey, contentId] = getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
 
     return {
-<<<<<<< HEAD
         contentId,
-=======
-        contentId: contentId || getContentIdFromgvKeyLegacy(gvKey),
->>>>>>> livssituasjonssider-gjenbrukbar-kontaktinformasjon
         gvKey,
     };
 };
@@ -40,15 +36,7 @@ const getGlobalValueUsage = (gvKey, contentId) => {
     const macroUsage = findContentsWithHtmlAreaText(key);
     const calcUsage = getGlobalValueCalcUsage(key);
 
-<<<<<<< HEAD
     return [...macroUsage, ...calcUsage];
-=======
-    return [...macroUsage, ...calcUsage].map((content) => ({
-        id: content._id,
-        path: content._path,
-        displayName: content.displayName,
-    }));
->>>>>>> livssituasjonssider-gjenbrukbar-kontaktinformasjon
 };
 
 const getGlobalValueCalcUsage = (key) =>
@@ -99,15 +87,8 @@ const getGlobalValue = (gvKey, contentId, type) => {
     }
 
     if (!contentId) {
-<<<<<<< HEAD
         log.info(`Invalid contentId provided for global value key ${gvKey}`);
         return null;
-=======
-        log.info(
-            `Invalid contentId provided for global value key ${gvKey} - trying backwards-compatible retrieval`
-        );
-        return getGlobalValueLegacy(gvKey, type);
->>>>>>> livssituasjonssider-gjenbrukbar-kontaktinformasjon
     }
 
     if (!validTypes[type]) {
@@ -143,10 +124,6 @@ const getGlobalNumberValue = (gvKey, contentId) => getGlobalValue(gvKey, content
 
 module.exports = {
     getGlobalValueUsage,
-<<<<<<< HEAD
-=======
-    getGlobalValueUsageLegacy,
->>>>>>> livssituasjonssider-gjenbrukbar-kontaktinformasjon
     getGlobalValueSet,
     getGlobalNumberValue,
     globalValuesContentType,
