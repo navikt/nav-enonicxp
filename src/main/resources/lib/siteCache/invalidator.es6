@@ -61,7 +61,6 @@ function getState() {
     }
     return unpublishContent.data;
 }
-
 exports.getInvalidatorState = getState;
 
 function setIsRunning(isRunning, clearLock = false) {
@@ -84,7 +83,6 @@ function releaseInvalidatorLock() {
     // releasing the lock and setting clearLock to true, to prevent overwriting of the lastRun date
     setIsRunning(false, true);
 }
-
 exports.releaseInvalidatorLock = releaseInvalidatorLock;
 
 function getPrepublishedContent(fromDate, toDate) {

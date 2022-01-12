@@ -6,7 +6,7 @@ const libs = {
 };
 
 const handleGet = () => {
-    const menu = libs.cache.getDecoratorMenuCache('master', () => {
+    const menu = libs.cache.getDecorator('decorator', undefined, 'master', () => {
         return libs.menuUtils.getMegaMenu({
             content: libs.content.get({ key: '/www.nav.no/dekorator-meny/' }),
             levels: 10,

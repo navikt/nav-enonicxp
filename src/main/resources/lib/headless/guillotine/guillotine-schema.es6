@@ -15,6 +15,7 @@ const { mediaCodeCallback } = require('./schema-creation-callbacks/media');
 const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
+const { contactInformationCallback } = require('./schema-creation-callbacks/contact-information');
 const {
     globalValueMacroConfigCallback,
     globalValueWithMathMacroConfigCallback,
@@ -47,6 +48,7 @@ const schemaContextOptions = {
         no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
         no_nav_navno_SectionPage_Data: sectionPageDataCallback,
         no_nav_navno_ContentList_Data: contentListDataCallback,
+        no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
         no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_GlobalValueSet: globalValuesCallback,

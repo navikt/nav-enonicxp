@@ -32,13 +32,10 @@
                 <option name="call">
                     <label>Ring oss</label>
                     <items>
-                        <input name="phoneNumber" type="TextLine">
-                            <label>Telefonnummer</label>
-                            <default>55 55 33 33</default>
+                        <input name="sharedContactInformation" type="ContentSelector">
+                            <label>Velg telefonnummer</label>
                             <config>
-                                <regexp>
-                                    ^[0-9+ ]+$
-                                </regexp>
+                                <allowContentType>${app}:contact-information</allowContentType>
                             </config>
                         </input>
                         <input name="ingress" type="TextArea">

@@ -1,0 +1,147 @@
+<content-type>
+    <display-name>Kontaktinformasjon</display-name>
+    <description>Informasjon om kontaktpunkt som kan brukes på tvers av nav.no</description>
+    <super-type>base:unstructured</super-type>
+    <form>
+        <option-set name="contactType">
+            <label>Kontakttype</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="telephone">
+                    <label>Telefonnummer</label>
+                    <items>
+                        <input name="phoneNumber" type="TextLine" >
+                            <label>Telefonnr</label>
+                            <help-text>Det faktiske telefonnr som skal ringes, feks ("+4755553333")</help-text>
+                        </input>
+                        <input name="title" type="TextLine" >
+                            <label>Tittel</label>
+                            <help-text>Tittelen som skal vises i overskriften feks ("Ring telefon 55 55 33 33")</help-text>
+                        </input>
+                        <input name="text" type="TextArea" >
+                            <label>Tekst</label>
+                        </input>
+                        <input name="alertText" type="TextArea" >
+                            <label>Avvikstekst</label>
+                            <help-text>Brukes kun dersom det finnes avvik på telefonnr, feks ved midlertidige tekniske problemer.</help-text>
+                        </input>
+                        <item-set name="regularOpeningHours">
+                            <label>Ordinære åpningstider</label>
+                            <items>
+                                <item-set name="monday">
+                                    <label>Mandag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                                <item-set name="tuesday">
+                                    <label>Tirsdag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                                <item-set name="wednesday">
+                                    <label>Onsdag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                                <item-set name="thursday">
+                                    <label>Torsdag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                                <item-set name="friday">
+                                    <label>Fredag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                                <item-set name="saturday">
+                                    <label>Lørdag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                                <item-set name="sunday">
+                                    <label>Søndag</label>
+                                    <items>
+                                        <mixin name="opening-hour" />
+                                    </items>
+                                </item-set>
+                            </items>
+                        </item-set>
+                        <option-set name="specialOpeningHours">
+                            <label>Spesielle åpningstider</label>
+                            <occurrences minimum="0" maximum="1"/>
+                            <options minimum="0" maximum="1">
+                                <option name="shared">
+                                    <label>Referer til annen åpningstid</label>
+                                    <items>
+                                        <input name="sharedSpecialOpeningHours" type="ContentSelector">
+                                            <label>Referer til felles spesielle åpningstider</label>
+                                            <help-text>Dette vil overstyre eventuelle spesielle åpningstider som du har lagt til nedenfor.</help-text>
+                                            <config>
+                                                <allowContentType>${app}:contact-information</allowContentType>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </option>
+                                <option name="custom">
+                                    <label>Tilpass spesielle åpningstider</label>
+                                    <items>
+                                        <input name="title" type="TextLine">
+                                            <label>Tittel</label>
+                                            <help-text>Feks: "Åpningstider i julen"</help-text>
+                                        </input>
+                                        <input name="text" type="TextArea">
+                                            <label>Beskrivelse</label>
+                                            <help-text>En kort beskrivelse eller introduksjon til de spesielle åpningstidene.</help-text>
+                                            <default>I denne perioden vil det kunne være andre åpningstider enn det som er vanlig. Se dagene som har spesielle åpningstider nedenfor:</default>
+                                        </input>
+                                        <input name="footNote" type="TextArea">
+                                            <label>Fotnote</label>
+                                            <help-text>Ekstra informasjon nedenfor åpningstidene</help-text>
+                                        </input>
+                                        <input name="validFrom" type="DateTime">
+                                            <label>Synlig fra</label>
+                                        </input>
+                                        <input name="validTo" type="DateTime">
+                                            <label>Synlig til</label>
+                                        </input>
+                                        <item-set name="hours">
+                                            <label>Dag</label>
+                                            <occurrences minimum="1" maximum="0"/>
+                                            <items>
+                                                <input name="date" type="Date" >
+                                                    <label>Dato</label>
+                                                    <occurrences minimum="1" maximum="1"/>
+                                                </input>
+                                                <option-set name="status">
+                                                    <label>Åpent/Stengt</label>
+                                                    <occurrences minimum="1" maximum="1" />
+                                                    <options minimum="1" maximum="1">
+                                                        <option name="closed">
+                                                            <label>Stengt</label>
+                                                        </option>
+                                                        <option name="open">
+                                                            <label>Åpent</label>
+                                                            <items>
+                                                                <mixin name="opening-hour" />
+                                                            </items>
+                                                        </option>
+                                                    </options>
+                                                </option-set>
+                                            </items>
+                                        </item-set>
+                                    </items>
+                                </option>
+                            </options>
+                        </option-set>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</content-type>
