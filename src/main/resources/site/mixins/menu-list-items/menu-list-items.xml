@@ -47,10 +47,7 @@
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
-<<<<<<< HEAD
                                 <allowContentType>${app}:guide-page</allowContentType>
-=======
->>>>>>> livssituasjonssider-gjenbrukbar-kontaktinformasjon
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
