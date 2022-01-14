@@ -1,4 +1,9 @@
 <html lang="no">
-    <h1 data-th-text="'Error code ' + ${status}"></h1>
-    <p data-th-text="${message}"></p>
+    <head>
+        <title>Oops, noe gikk galt!</title>
+    </head>
+    <body>
+        <h1 data-th-text="'Feilkode: ' + ${status}"></h1>
+        <p data-th-text="${message}"></p>
+    </body>
 </html>
