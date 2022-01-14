@@ -184,7 +184,7 @@ const wipeSitecontentEntryWithReferences = (node, eventType) => {
 
 const wipePreviousIfPathChanged = (node) => {
     const repo = nodeLib.connect({
-        repoId: node.repo,
+        repoId: node.repo || 'com.enonic.cms.default',
         branch: 'master',
     });
 
