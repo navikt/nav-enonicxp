@@ -1,7 +1,18 @@
+const thymeleafLib = require('/lib/thymeleaf');
+
+const view = resolve('error.html');
+
+// TODO: implementer error-api i frontend som kan kalles her
 exports.handleError = (err) => {
-    // TODO: implementer error-api i frontend som kan kalles her
+    log.info(JSON.stringify(err));
+
+    const model = {
+        status: err.status,
+        message: err.message,
+    };
+
     return {
         contentType: 'text/html',
-        body: `<html lang="no"><body><h1>Error code ${err.status}</h1><p>${err.message}</p></body></html>`,
+        body: thymeleafLib.render(view, model),
     };
 };
