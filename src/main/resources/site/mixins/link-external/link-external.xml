@@ -6,9 +6,7 @@
             <default>https://</default>
             <occurrences minimum="1" maximum="1"/>
             <config>
-                <regexp>
-                    ^https?:\/\/.*
-                </regexp>
+                <regexp>^https?:\/\/</regexp>
             </config>
         </input>
         <input name="text" type="TextLine">
