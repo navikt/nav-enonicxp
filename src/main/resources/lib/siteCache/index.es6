@@ -1,5 +1,6 @@
 const cacheLib = require('/lib/cache');
 const eventLib = require('/lib/xp/event');
+const nodeLib = require('/lib/xp/node');
 const { generateUUID } = require('/lib/headless/uuid');
 const { findReferences } = require('/lib/siteCache/references');
 const { runInBranchContext } = require('/lib/headless/branch-context');
@@ -7,6 +8,7 @@ const { getParentPath } = require('/lib/nav-utils');
 const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
 const { isUUID } = require('/lib/headless/uuid');
 const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
+const { getNodeVersions } = require('/lib/time-travel/version-utils');
 
 let hasSetupListeners = false;
 
@@ -180,17 +182,35 @@ const wipeSitecontentEntryWithReferences = (node, eventType) => {
     });
 };
 
+const wipePreviousIfPathChanged = (node) => {
+    const repo = nodeLib.connect({
+        repoId: node.repo || 'com.enonic.cms.default',
+        branch: 'master',
+    });
+
+    const previousPath = getNodeVersions({ nodeKey: node.id, repo, branch: 'master' })?.[1]
+        ?.nodePath;
+
+    if (previousPath && previousPath !== node.path) {
+        log.info(
+            `Node path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${node.path}`
+        );
+        wipeSitecontentEntry(previousPath);
+        wipeNotificationsEntry(previousPath);
+    }
+};
+
 const wipeCacheForNode = (node, event) => {
     const didWipe = wipeSpecialCases(node.path);
     if (didWipe) {
         return;
     }
 
-    runInBranchContext(
-        () => wipeSitecontentEntryWithReferences(node, event.type),
-        'master'
-    );
-}
+    runInBranchContext(() => {
+        wipePreviousIfPathChanged(node);
+        wipeSitecontentEntryWithReferences(node, event.type);
+    }, 'master');
+};
 
 const nodeListenerCallback = (event) => {
     event.data.nodes.forEach((node) => {
