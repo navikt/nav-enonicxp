@@ -31,6 +31,12 @@ const getComponentAnchorLink = (component) => {
         return anchorId && { anchorId, linkText: title, hideFromInternalNavigation };
     }
 
+    const fragmentSectionWithHeader = component.fragment?.config;
+    if (fragmentSectionWithHeader) {
+        const { anchorId, title, hideFromInternalNavigation } = fragmentSectionWithHeader;
+        return anchorId && { anchorId, linkText: title, hideFromInternalNavigation };
+    }
+
     const situationFlexCols = component.layout?.config?.['no-nav-navno']?.['situation-flex-cols'];
     if (situationFlexCols) {
         const { anchorId, title, hideFromInternalNavigation } = situationFlexCols;
@@ -55,7 +61,14 @@ const pageNavigationMenuCallback = (context, params) => {
         const components = getComponentsOnPage(contentId);
 
         const anchorLinksResolved = components.reduce((acc, component) => {
-            const anchorLink = getComponentAnchorLink(component);
+            let anchorLink;
+            if (component.type === 'fragment') {
+                const { id } = component?.fragment;
+                const fragmentContent = contentLib.get({ key: id });
+                anchorLink = fragmentContent && getComponentAnchorLink(fragmentContent);
+            } else {
+                anchorLink = getComponentAnchorLink(component);
+            }
 
             if (!anchorLink) {
                 return acc;
