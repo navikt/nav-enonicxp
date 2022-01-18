@@ -10,13 +10,13 @@
                 <option name="telephone">
                     <label>Telefonnummer</label>
                     <items>
-                        <input name="phoneNumber" type="TextLine" >
-                            <label>Telefonnr</label>
-                            <help-text>Det faktiske telefonnr som skal ringes, feks ("+4755553333")</help-text>
-                        </input>
                         <input name="title" type="TextLine" >
                             <label>Tittel</label>
                             <help-text>Tittelen som skal vises i overskriften feks ("Ring telefon 55 55 33 33")</help-text>
+                        </input>
+                        <input name="phoneNumber" type="TextLine" >
+                            <label>Telefonnummer</label>
+                            <help-text>Kun tall og uten mellomrom, feks ("+4755553333")</help-text>
                         </input>
                         <input name="text" type="TextArea" >
                             <label>Tekst</label>
@@ -91,19 +91,6 @@
                                 <option name="custom">
                                     <label>Tilpass spesielle åpningstider</label>
                                     <items>
-                                        <input name="title" type="TextLine">
-                                            <label>Tittel</label>
-                                            <help-text>Feks: "Åpningstider i julen"</help-text>
-                                        </input>
-                                        <input name="text" type="TextArea">
-                                            <label>Beskrivelse</label>
-                                            <help-text>En kort beskrivelse eller introduksjon til de spesielle åpningstidene.</help-text>
-                                            <default>I denne perioden vil det kunne være andre åpningstider enn det som er vanlig. Se dagene som har spesielle åpningstider nedenfor:</default>
-                                        </input>
-                                        <input name="footNote" type="TextArea">
-                                            <label>Fotnote</label>
-                                            <help-text>Ekstra informasjon nedenfor åpningstidene</help-text>
-                                        </input>
                                         <input name="validFrom" type="DateTime">
                                             <label>Synlig fra</label>
                                         </input>
