@@ -91,15 +91,14 @@ dependencies {
 
 // Tasks
 task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
-    if (project.hasProperty( 'watch' )) {
-        args = ['run', 'dev']
-    } else {
-        args = ['run', 'build']
-    }
+    dependsOn(generateTypeScript)
+    dependsOn(processResources)
+
+    args = ['run', 'build']
 
     inputs.dir 'src/main/resources'
     outputs.dir "$buildDir/resources/main"
 }
 
-jar.dependsOn += generateTypeScript
-jar.dependsOn += babelJs
+jar.dependsOn(babelJs)
+processResources.dependsOn(generateTypeScript)

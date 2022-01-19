@@ -1,6 +1,7 @@
 {
     "extends": ["airbnb-base", "prettier"],
-    "plugins": ["prettier"],
+    "plugins": ["prettier", "@typescript-eslint"],
+    "parser": "@typescript-eslint/parser",
     "rules": {
         "prettier/prettier": ["warn"],
         "comma-dangle": ["error", "only-multiline"],
@@ -28,7 +29,8 @@
         "dot-notation": "off",
         "no-param-reassign": "off",
         "no-extend-native": "off",
-        "no-restricted-globals": "off"
+        "no-restricted-globals": "off",
+        "camelcase": "off"
     },
     "globals": {
         "require": true,
