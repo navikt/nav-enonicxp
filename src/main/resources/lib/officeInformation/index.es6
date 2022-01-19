@@ -56,7 +56,6 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
 }
 
 function refreshOfficeInformation(officeInformationList) {
-    // find all existing offices
     const existingOffices = libs.content
         .getChildren({
             key: parentFolder,
@@ -64,23 +63,23 @@ function refreshOfficeInformation(officeInformationList) {
         })
         .hits.filter((office) => office.type === officeInfoContentType);
 
-    // map over offices in norg2, so we can delete old offices
     const officesInNorg = {};
 
     const newOffices = [];
     const updated = [];
     const deleted = [];
+
     // update office information or create new
     officeInformationList.forEach((officeInformation) => {
         const { enhet } = officeInformation;
 
         // ignore closed offices and include only selected types
         if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
-            // check if the office already exists
             const existingOffice = existingOffices.find(
                 (office) => office.data?.enhet?.enhetId === enhet.enhetId
             );
 
+            // if the office page already exists, update the existing content
             if (existingOffice) {
                 const existing = libs.utils.createObjectChecksum(existingOffice.data);
                 const fetched = libs.utils.createObjectChecksum(officeInformation);
@@ -133,6 +132,7 @@ function refreshOfficeInformation(officeInformationList) {
                 });
                 newOffices.push(result._path);
             }
+
             officesInNorg[enhet.enhetId] = true;
         }
     });
@@ -148,11 +148,9 @@ function refreshOfficeInformation(officeInformationList) {
         }
     });
 
-    // log info
     logger.info(
         `NORG - Updated: ${updated.length} New: ${newOffices.length} Deleted: ${deleted.length}`
     );
-    // extra logging
     if (updated.length > 0) {
         logger.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
     }
