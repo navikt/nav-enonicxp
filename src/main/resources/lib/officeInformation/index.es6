@@ -7,6 +7,32 @@ const libs = {
     cluster: require('/lib/xp/cluster'),
     context: require('/lib/xp/context'),
     utils: require('/lib/nav-utils'),
+    common: require('/lib/xp/common'),
+};
+
+const parentFolder = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
+
+const selectedEnhetTypes = {
+    ALS: true,
+    ARK: true,
+    FPY: true,
+    FYLKE: true,
+    HMS: true,
+    INTRO: true,
+    KLAGE: true,
+    KONTAKT: true,
+    KONTROLL: true,
+    LOKAL: true,
+    OKONOMI: true,
+    TILTAK: true,
+    YTA: true,
+    OPPFUTLAND: true,
+};
+
+const logger = {
+    info: (message) => log.info(`[office information] ${message}`),
+    warning: (message) => log.warning(`'[office information]' ${message}`),
+    error: (message) => log.error(`'[office information]' ${message}`),
 };
 
 function setIsRefreshing(navRepo, isRefreshing, failed) {
@@ -30,9 +56,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
 
 function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
-    const officeFolder = libs.content.get({
-        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer',
-    });
+    const officeFolder = libs.content.get({ key: parentFolder });
 
     const existingOffices = libs.content.getChildren({
         key: officeFolder._id,
@@ -48,64 +72,75 @@ function refreshOfficeInformation(officeInformationList) {
     const deleted = [];
     // update office information or create new
     officeInformationList.forEach((officeInformation) => {
+        const { enhet } = officeInformation;
+
         // ignore closed offices and include only selected types
-        if (
-            officeInformation.enhet.status !== 'Nedlagt' &&
-            (officeInformation.enhet.type === 'ALS' ||
-                officeInformation.enhet.type === 'ARK' ||
-                officeInformation.enhet.type === 'FPY' ||
-                officeInformation.enhet.type === 'FYLKE' ||
-                officeInformation.enhet.type === 'HMS' ||
-                officeInformation.enhet.type === 'INTRO' ||
-                officeInformation.enhet.type === 'KLAGE' ||
-                officeInformation.enhet.type === 'KONTAKT' ||
-                officeInformation.enhet.type === 'KONTROLL' ||
-                officeInformation.enhet.type === 'LOKAL' ||
-                officeInformation.enhet.type === 'OKONOMI' ||
-                officeInformation.enhet.type === 'TILTAK' ||
-                officeInformation.enhet.type === 'YTA' ||
-                officeInformation.enhet.type === 'OPPFUTLAND')
-        ) {
+        if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
             // check if the office already exists
             const existingOffice = existingOffices.find((o) => {
                 return o.data && o.data.enhet && o.data.enhet.enhetId
-                    ? o.data.enhet.enhetId === officeInformation.enhet.enhetId
+                    ? o.data.enhet.enhetId === enhet.enhetId
                     : false;
             });
             if (existingOffice) {
                 const existing = libs.utils.createObjectChecksum(existingOffice.data);
                 const fetched = libs.utils.createObjectChecksum(officeInformation);
+
                 if (existing !== fetched) {
                     updated.push(existingOffice._path);
                     libs.content.modify({
                         key: existingOffice._id,
-                        editor: (o) => ({ ...o, data: officeInformation }),
+                        editor: (content) => ({
+                            ...content,
+                            displayName: enhet.navn,
+                            data: officeInformation,
+                        }),
                     });
+                }
+
+                const currentName = existingOffice._name;
+                const updatedName = libs.common.sanitize(enhet.navn);
+
+                if (updatedName !== currentName) {
+                    try {
+                        logger.info(`Updating name/path: ${currentName} -> ${updatedName}`);
+
+                        // Move the office info page to a new path if the name changed
+                        libs.content.move({
+                            source: existingOffice._path,
+                            target: updatedName,
+                        });
+
+                        // Create a redirect from the old path
+                        libs.content.create({
+                            name: currentName,
+                            parentPath: parentFolder,
+                            displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
+                            contentType: `${app.name}:internal-link`,
+                            data: {
+                                target: existingOffice._id,
+                            },
+                        });
+                    } catch (e) {
+                        logger.error(`Failed to updated office information path: ${e}`);
+                    }
                 }
             } else {
                 const result = libs.content.create({
                     parentPath: officeFolder._path,
-                    displayName: officeInformation.enhet.navn,
+                    displayName: enhet.navn,
                     contentType: app.name + ':office-information',
                     data: officeInformation,
                 });
                 newOffices.push(result._path);
             }
-            officesInNorg[officeInformation.enhet.enhetId] = true;
+            officesInNorg[enhet.enhetId] = true;
         }
     });
 
     // delete old offices
     existingOffices.forEach((existingOffice) => {
-        let enhetId;
-        if (
-            existingOffice &&
-            existingOffice.data &&
-            existingOffice.data.enhet &&
-            existingOffice.data.enhet.enhetId
-        ) {
-            enhetId = existingOffice.data.enhet.enhetId;
-        }
+        const enhetId = existingOffice?.data?.enhet?.enhetId;
         if (!officesInNorg[enhetId]) {
             deleted.push(existingOffice._path);
             libs.content.delete({
@@ -115,17 +150,17 @@ function refreshOfficeInformation(officeInformationList) {
     });
 
     // log info
-    log.info(
+    logger.info(
         `NORG - Updated: ${updated.length} New: ${newOffices.length} Deleted: ${deleted.length}`
     );
     // extra logging
     if (updated.length > 0) {
-        log.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
+        logger.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
     }
 }
 
 function checkForRefresh(oneTimeRun = false) {
-    log.info('NORG - Start update');
+    logger.info('NORG - Start update');
     const startBackupJob = () => {
         // stop cron job first, just in case it has been failing for more than a day
         libs.cron.unschedule({
@@ -161,7 +196,7 @@ function checkForRefresh(oneTimeRun = false) {
 
     const hasNavRepo = libs.repo.get('no.nav.navno');
     if (!hasNavRepo) {
-        log.info('NORG - Create no.nav.navno repo');
+        logger.info('NORG - Create no.nav.navno repo');
         libs.repo.create({
             id: 'no.nav.navno',
         });
@@ -177,7 +212,7 @@ function checkForRefresh(oneTimeRun = false) {
     });
 
     if (!navRepo.get('/officeInformation')) {
-        log.info('NORG - Create office information node');
+        logger.info('NORG - Create office information node');
         navRepo.create({
             _name: 'officeInformation',
             parentPath: '/',
@@ -209,7 +244,7 @@ function checkForRefresh(oneTimeRun = false) {
         const officeInformationList = JSON.parse(response.body);
         refreshOfficeInformation(officeInformationList);
 
-        log.info('NORG - Publish office information');
+        logger.info('NORG - Publish office information');
         libs.content.publish({
             keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
             sourceBranch: 'draft',
@@ -217,8 +252,8 @@ function checkForRefresh(oneTimeRun = false) {
             includeDependencies: true,
         });
     } catch (e) {
-        log.error('NORG - Failed to get office information from norg2');
-        log.error(e);
+        logger.error('NORG - Failed to get office information from norg2');
+        logger.error(e);
         failedToRefresh = true;
     }
 
@@ -245,15 +280,12 @@ exports.runOneTimeJob = () => {
             const timerStart = Date.now();
             checkForRefresh(true);
             const mills = Date.now() - timerStart;
-            log.info(`NORG: time elapsed: ${mills / 1000}s`);
+            logger.info(`NORG: time elapsed: ${mills / 1000}s`);
         }
     );
 };
 
 exports.startCronJob = () => {
-    libs.cron.unschedule({
-        name: 'office_info_norg2_daily',
-    });
     libs.cron.unschedule({
         name: 'office_info_norg2_hourly',
     });
