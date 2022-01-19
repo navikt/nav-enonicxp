@@ -31,8 +31,8 @@ const selectedEnhetTypes = {
 
 const logger = {
     info: (message) => log.info(`[office information] ${message}`),
-    warning: (message) => log.warning(`'[office information]' ${message}`),
-    error: (message) => log.error(`'[office information]' ${message}`),
+    warning: (message) => log.warning(`[office information] ${message}`),
+    error: (message) => log.error(`[office information] ${message}`),
 };
 
 function setIsRefreshing(navRepo, isRefreshing, failed) {
@@ -77,11 +77,10 @@ function refreshOfficeInformation(officeInformationList) {
         // ignore closed offices and include only selected types
         if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
             // check if the office already exists
-            const existingOffice = existingOffices.find((o) => {
-                return o.data && o.data.enhet && o.data.enhet.enhetId
-                    ? o.data.enhet.enhetId === enhet.enhetId
-                    : false;
-            });
+            const existingOffice = existingOffices.find(
+                (office) => office.data?.enhet?.enhetId === enhet.enhetId
+            );
+
             if (existingOffice) {
                 const existing = libs.utils.createObjectChecksum(existingOffice.data);
                 const fetched = libs.utils.createObjectChecksum(officeInformation);
@@ -122,7 +121,7 @@ function refreshOfficeInformation(officeInformationList) {
                             },
                         });
                     } catch (e) {
-                        logger.error(`Failed to updated office information path: ${e}`);
+                        logger.error(`Failed to updated office information name: ${e}`);
                     }
                 }
             } else {
