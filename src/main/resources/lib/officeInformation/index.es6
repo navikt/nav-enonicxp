@@ -55,7 +55,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
     });
 }
 
-function refreshOfficeInformation(officeInformationList) {
+function refreshOfficeInformation(officeInformationUpdated) {
     const existingOffices = libs.content
         .getChildren({
             key: parentFolder,
@@ -70,28 +70,31 @@ function refreshOfficeInformation(officeInformationList) {
     const deleted = [];
 
     // update office information or create new
-    officeInformationList.forEach((officeInformation) => {
-        const { enhet } = officeInformation;
+    officeInformationUpdated.forEach((updatedOfficeData) => {
+        const { enhet } = updatedOfficeData;
 
         // ignore closed offices and include only selected types
         if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
             const existingOffice = existingOffices.find(
-                (office) => office.data?.enhet?.enhetId === enhet.enhetId
+                (content) => content.data?.enhet?.enhetId === enhet.enhetId
             );
 
             // if the office page already exists, update the existing content
             if (existingOffice) {
-                const existing = libs.utils.createObjectChecksum(existingOffice.data);
-                const fetched = libs.utils.createObjectChecksum(officeInformation);
+                const existingChecksum = libs.utils.createObjectChecksum(existingOffice.data);
+                const updatedChecksum = libs.utils.createObjectChecksum(updatedOfficeData);
 
-                if (existing !== fetched) {
+                if (
+                    existingChecksum !== updatedChecksum ||
+                    existingOffice.displayName !== enhet.navn
+                ) {
                     updated.push(existingOffice._path);
                     libs.content.modify({
                         key: existingOffice._id,
                         editor: (content) => ({
                             ...content,
                             displayName: enhet.navn,
-                            data: officeInformation,
+                            data: updatedOfficeData,
                         }),
                     });
                 }
@@ -128,7 +131,7 @@ function refreshOfficeInformation(officeInformationList) {
                     parentPath: parentFolder,
                     displayName: enhet.navn,
                     contentType: officeInfoContentType,
-                    data: officeInformation,
+                    data: updatedOfficeData,
                 });
                 newOffices.push(result._path);
             }
