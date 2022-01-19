@@ -36,9 +36,7 @@
                             <label>Telefonnummer</label>
                             <default>55 55 33 33</default>
                             <config>
-                                <regexp>
-                                    ^[0-9+ ]+$
-                                </regexp>
+                                <regexp>^[0-9+ ]+$</regexp>
                             </config>
                         </input>
                         <input name="ingress" type="TextArea">
