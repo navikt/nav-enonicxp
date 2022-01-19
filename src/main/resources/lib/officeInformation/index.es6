@@ -10,7 +10,7 @@ const libs = {
     common: require('/lib/xp/common'),
 };
 
-const parentFolder = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
+const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
 const officeInfoContentType = `${app.name}:office-information`;
 
 const selectedEnhetTypes = {
@@ -58,7 +58,7 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
 function refreshOfficeInformation(officeInformationUpdated) {
     const existingOffices = libs.content
         .getChildren({
-            key: parentFolder,
+            key: parentPath,
             count: 2000,
         })
         .hits.filter((office) => office.type === officeInfoContentType);
@@ -115,7 +115,7 @@ function refreshOfficeInformation(officeInformationUpdated) {
                         // Create a redirect from the old path
                         libs.content.create({
                             name: currentName,
-                            parentPath: parentFolder,
+                            parentPath: parentPath,
                             displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
                             contentType: `${app.name}:internal-link`,
                             data: {
@@ -128,7 +128,7 @@ function refreshOfficeInformation(officeInformationUpdated) {
                 }
             } else {
                 const result = libs.content.create({
-                    parentPath: parentFolder,
+                    parentPath: parentPath,
                     displayName: enhet.navn,
                     contentType: officeInfoContentType,
                     data: updatedOfficeData,
