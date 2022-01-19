@@ -13,7 +13,7 @@
   },
   "files": [
     "node_modules/enonic-types/index.d.ts",
-    "src/main/resources/types.ts"
+    "src/main/resources/global.d.ts"
   ],
   "include": [
     "src/main/resources/**/*.ts"

@@ -1,1 +1,18 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri('https://maven.pkg.github.com/navikt/nav-enonicxp-codegen-plugin')
+            credentials {
+                username = ""
+                password = ""
+            }
+        }
+        maven {
+            url 'maven-repo'
+        }
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = projectName
