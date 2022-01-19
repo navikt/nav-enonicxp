@@ -11,6 +11,7 @@ const libs = {
 };
 
 const parentFolder = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
+const officeInfoContentType = `${app.name}:office-information`;
 
 const selectedEnhetTypes = {
     ALS: true,
@@ -56,16 +57,15 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
 
 function refreshOfficeInformation(officeInformationList) {
     // find all existing offices
-    const officeFolder = libs.content.get({ key: parentFolder });
+    const existingOffices = libs.content
+        .getChildren({
+            key: parentFolder,
+            count: 2000,
+        })
+        .hits.filter((office) => office.type === officeInfoContentType);
 
-    const existingOffices = libs.content.getChildren({
-        key: officeFolder._id,
-        count: 2000,
-    }).hits;
-
-    const officesInNorg = {
-        // map over offices in norg2, so we can delete old offices
-    };
+    // map over offices in norg2, so we can delete old offices
+    const officesInNorg = {};
 
     const newOffices = [];
     const updated = [];
@@ -126,9 +126,9 @@ function refreshOfficeInformation(officeInformationList) {
                 }
             } else {
                 const result = libs.content.create({
-                    parentPath: officeFolder._path,
+                    parentPath: parentFolder,
                     displayName: enhet.navn,
-                    contentType: app.name + ':office-information',
+                    contentType: officeInfoContentType,
                     data: officeInformation,
                 });
                 newOffices.push(result._path);
