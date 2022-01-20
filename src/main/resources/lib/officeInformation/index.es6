@@ -66,6 +66,11 @@ const deleteIfContentExists = (name) => {
         logger.info(
             `Content already exists on path ${updatedPath} - deleting to make room for office page`
         );
+
+        // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
+        // We want to free up the source path immediately
+        libs.content.move({ source: existingContentOnPath._id, target: `${updatedPath}-delete` });
+
         libs.content.delete({
             key: existingContentOnPath._id,
         });
@@ -148,13 +153,18 @@ const refreshOfficeInformation = (officeInformationUpdated) => {
                     }
                 }
             } else {
-                const result = libs.content.create({
-                    parentPath: parentPath,
-                    displayName: enhet.navn,
-                    contentType: officeInfoContentType,
-                    data: updatedOfficeData,
-                });
-                newOffices.push(result._path);
+                try {
+                    const result = libs.content.create({
+                        name: updatedName,
+                        parentPath: parentPath,
+                        displayName: enhet.navn,
+                        contentType: officeInfoContentType,
+                        data: updatedOfficeData,
+                    });
+                    newOffices.push(result._path);
+                } catch (e) {
+                    logger.error(`Failed to create new office page - ${e}`);
+                }
             }
         }
     });
@@ -175,6 +185,12 @@ const refreshOfficeInformation = (officeInformationUpdated) => {
     );
     if (updated.length > 0) {
         logger.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
+    }
+    if (newOffices.length > 0) {
+        logger.info(`New: ${JSON.stringify(newOffices, null, 4)}`);
+    }
+    if (deleted.length > 0) {
+        logger.info(`Deleted: ${JSON.stringify(deleted, null, 4)}`);
     }
 };
 
