@@ -1,8 +1,8 @@
-const contextLib = require('/lib/xp/context');
-const contentLib = require('/lib/xp/content');
-const authLib = require('/lib/xp/auth');
+import authLib from '*/lib/xp/auth';
+import contentLib, { Permission } from '*/lib/xp/content';
+import contextLib from '*/lib/xp/context';
 
-const insufficientPermissionResponse = (requiredPermission) => ({
+export const insufficientPermissionResponse = (requiredPermission: string) => ({
     status: 403,
     contentType: 'application/json',
     body: {
@@ -11,9 +11,12 @@ const insufficientPermissionResponse = (requiredPermission) => ({
     },
 });
 
-const userIsAdmin = () => authLib.hasRole('role:system.admin');
+export const userIsAdmin = () => authLib.hasRole('role:system.admin');
 
-const validateCurrentUserPermissionForContent = (contentId, requiredPermission) => {
+export const validateCurrentUserPermissionForContent = (
+    contentId: string,
+    requiredPermission: Permission
+) => {
     const contentPermissions = contentLib.getPermissions({ key: contentId });
     if (!contentPermissions) {
         return {
@@ -38,23 +41,22 @@ const validateCurrentUserPermissionForContent = (contentId, requiredPermission) 
         };
     }
 
-    const allowedPrincipals = contentPermissions.permissions.reduce((acc, principal) => {
-        const hasPermission = principal.allow.some(
-            (permission) => permission === requiredPermission
-        );
+    const allowedPrincipals = contentPermissions.permissions.reduce(
+        (acc, principal) => {
+            const hasPermission = principal.allow.some(
+                (permission) => permission === requiredPermission
+            );
 
-        return hasPermission ? [...acc, principal.principal] : acc;
-    }, []);
+            return hasPermission ? [...acc, principal.principal] : acc;
+        },
+        []
+    );
 
     const currentUserHasAccess = allowedPrincipals.some((allowedPrincipal) =>
-        currentUserPrincipals.some((currentPrincipal) => currentPrincipal === allowedPrincipal)
+        currentUserPrincipals.some(
+            (currentPrincipal) => currentPrincipal === allowedPrincipal
+        )
     );
 
     return currentUserHasAccess;
-};
-
-module.exports = {
-    validateCurrentUserPermissionForContent,
-    insufficientPermissionResponse,
-    userIsAdmin,
 };
