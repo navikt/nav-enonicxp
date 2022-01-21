@@ -16,29 +16,18 @@ export const userIsAdmin = () => authLib.hasRole('role:system.admin');
 export const validateCurrentUserPermissionForContent = (
     contentId: string,
     requiredPermission: Permission
-) => {
+): boolean => {
     const contentPermissions = contentLib.getPermissions({ key: contentId });
     if (!contentPermissions) {
-        return {
-            status: 400,
-            contentType: 'application/json',
-            body: {
-                message: 'Invalid content id',
-                level: 'error',
-            },
-        };
+        return false;
     }
 
     const currentUserPrincipals = contextLib.get()?.authInfo?.principals;
     if (!currentUserPrincipals) {
-        return {
-            status: 500,
-            contentType: 'application/json',
-            body: {
-                message: 'Error: could not retrieve user permissions',
-                level: 'error',
-            },
-        };
+        log.warning(
+            `Could not retrieve user principals in current context for content ${contentId}`
+        );
+        return false;
     }
 
     const allowedPrincipals = contentPermissions.permissions.reduce(
