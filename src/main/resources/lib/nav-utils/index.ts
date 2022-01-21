@@ -1,34 +1,39 @@
-const libs = {
-    content: require('/lib/xp/content'),
-    node: require('/lib/xp/node'),
-    moment: require('/assets/momentjs/2.14.1/min/moment-with-locales.min.js'),
-};
+import nodeLib from '/lib/xp/node';
 
-const getParentPath = (path) => path.split('/').slice(0, -1).join('/');
+export const getParentPath = (path: string) =>
+    path.split('/').slice(0, -1).join('/');
 
-const removeDuplicates = (array, isEqualPredicate) =>
+export const removeDuplicates = <Type>(
+    array: Type[],
+    isEqualPredicate?: (a: Type, b: Type) => boolean
+) =>
     isEqualPredicate
         ? array.filter((aItem, aIndex) => {
-              const bIndex = array.findIndex((bItem) => isEqualPredicate(aItem, bItem));
+              const bIndex = array.findIndex((bItem) =>
+                  isEqualPredicate(aItem, bItem)
+              );
               return aIndex === bIndex;
           })
         : array.filter((item, index) => array.indexOf(item) === index);
 
-const getUnixTimeFromDateTimeString = (datetime) => {
-    if (typeof datetime !== 'string') {
+export const getUnixTimeFromDateTimeString = (datetime?: string): number => {
+    if (!datetime) {
         return 0;
     }
+
     const validDateTime = datetime.split('.')[0];
     return new Date(validDateTime).getTime();
 };
 
-const parseJsonArray = (json) => {
+export const parseJsonArray = (json: string): any[] | null => {
     try {
         const array = JSON.parse(json);
         if (Array.isArray(array)) {
             return array;
         }
-        log.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
+        log.error(
+            `Expected JSON string to be array, got ${typeof array} - JSON: ${json}`
+        );
         return null;
     } catch (e) {
         log.error(`Failed to parse JSON string ${json} - ${e}`);
@@ -36,82 +41,32 @@ const parseJsonArray = (json) => {
     }
 };
 
-/**
- * @description Date formats on content created in XP7 is not necessarily
- * supported in the Date wrapper in XP7 (but it does work in browsers)
- * @param {string} date Date
- * @returns {string} Correctly formated date
- */
-function fixDateFormat(date) {
+// Date formats on content created in XP7 is not necessarily
+// supported in the Date wrapper in XP7 (but it does work in browsers)
+export const fixDateFormat = (date: string) => {
     if (date.indexOf('.') !== -1) {
         return date.split('.')[0] + 'Z';
     }
     return date;
-}
-function formatDateTime(date, language = 'nb') {
-    // use nb(DD.MM.YYYY) for everything except for english content(DD/MM/YYYY)
-    return libs
-        .moment(fixDateFormat(date))
-        .locale(language === 'en' ? 'en-gb' : 'nb')
-        .format('lll');
-}
+};
 
-/**
- * @description get all children of content
- * @param {object} content content to find all children of
- */
-function getAllChildren(content) {
-    let children = [];
-    if (content.hasChildren) {
-        let start = 0;
-        const count = 100;
-        let length = count;
-        while (count === length) {
-            const hits = libs.content.getChildren({
-                key: content._id,
-                start: start,
-                count: count,
-            }).hits;
+export const forceArray = (item: any) => {
+    return Array.isArray(item) ? item : [item];
+};
 
-            length = hits.length;
-            start += length;
-
-            children = children.concat(hits);
-        }
-    }
-
-    return children;
-}
-
-/**
- * Make sure the content is an array.
- * @param {*} content Whatever is passed in
- * @returns {Object[]} Array containing the content or just content
- */
-function forceArray(content) {
-    if (content) {
-        return Array.isArray(content) ? content : [content];
-    }
-    return [];
-}
-
-/**
- * Pushes nodes from draft to master, checking if theire already live
- * @param {*} targetIds ids of content to be pushed to master
- * @returns {Object} PushNodeResult
- */
-function pushLiveElements(targetIds) {
+// Pushes nodes from draft to master, checking if theire already live
+export const pushLiveElements = (targetIds: string[]) => {
     // publish changes
     const targets = targetIds.filter((elem) => {
         return !!elem;
     });
 
-    const repoDraft = libs.node.connect({
+    const repoDraft = nodeLib.connect({
         repoId: 'com.enonic.cms.default',
         branch: 'draft',
         principals: ['role:system.admin'],
     });
-    const repoMaster = libs.node.connect({
+    const repoMaster = nodeLib.connect({
         repoId: 'com.enonic.cms.default',
         branch: 'master',
         principals: ['role:system.admin'],
@@ -129,6 +84,8 @@ function pushLiveElements(targetIds) {
     // important that we use resolve false when pushing objects to master, else we can get objects
     // which were unpublished back to master without a published.from property
     if (masterIds.length > 0) {
+        // PushNodeParams type is incorrect, should be key | keys
+        // @ts-ignore
         const pushResult = repoDraft.push({
             keys: masterIds,
             resolve: false,
@@ -141,10 +98,13 @@ function pushLiveElements(targetIds) {
     }
     log.info('No content was updated in master');
     return [];
-}
+};
 
 // Get a nested object value from an array of keys
-const getNestedValueFromKeyArray = (obj, keys) => {
+export const getNestedValueFromKeyArray = (
+    obj: Record<string, any>,
+    keys: string[]
+): any => {
     if (!keys || keys.length === 0 || !obj || typeof obj !== 'object') {
         return null;
     }
@@ -160,11 +120,14 @@ const getNestedValueFromKeyArray = (obj, keys) => {
 };
 
 // Get a nested object value from a dot-delimited string of keys
-const getNestedValue = (obj, keysString) => {
+export const getNestedValue = (
+    obj: Record<string, any>,
+    keysString: string
+) => {
     return getNestedValueFromKeyArray(obj, keysString?.split('.'));
 };
 
-const hashCode = (str) => {
+const hashCode = (str: string) => {
     let hash = 0;
     if (str.length === 0) return hash;
     for (let i = 0; i < str.length; i++) {
@@ -177,7 +140,7 @@ const hashCode = (str) => {
     return hash;
 };
 
-const removeNullProperties = (obj) => {
+const removeNullProperties = (obj: Record<string, any>) => {
     return Object.keys(obj).reduce((acc, key) => {
         const value = obj[key];
         if (typeof value === 'object' && value !== null) {
@@ -197,25 +160,11 @@ const removeNullProperties = (obj) => {
             acc[key] = typeof value === 'string' ? value : `${value}`;
         }
         return acc;
-    }, {});
+    }, {} as Record<string, any>);
 };
 
-const createObjectChecksum = (obj) => {
+export const createObjectChecksum = (obj: Record<string, any>) => {
     const cleanObj = removeNullProperties(obj);
     const serializedObj = JSON.stringify(cleanObj).split('').sort().join();
     return hashCode(serializedObj);
-};
-
-module.exports = {
-    forceArray,
-    getAllChildren,
-    pushLiveElements,
-    formatDateTime,
-    fixDateFormat,
-    getNestedValue,
-    createObjectChecksum,
-    getUnixTimeFromDateTimeString,
-    removeDuplicates,
-    getParentPath,
-    parseJsonArray,
 };

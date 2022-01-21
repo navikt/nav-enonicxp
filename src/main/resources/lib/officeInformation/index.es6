@@ -62,14 +62,20 @@ const deleteIfContentExists = (name) => {
     const updatedPath = `${parentPath}/${name}`;
     const existingContentOnPath = libs.content.get({ key: updatedPath });
 
-    if (existingContentOnPath && existingContentOnPath.type !== officeInfoContentType) {
+    if (
+        existingContentOnPath &&
+        existingContentOnPath.type !== officeInfoContentType
+    ) {
         logger.info(
             `Content already exists on path ${updatedPath} - deleting to make room for office page`
         );
 
         // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
         // We want to free up the source path immediately
-        libs.content.move({ source: existingContentOnPath._id, target: `${updatedPath}-delete` });
+        libs.content.move({
+            source: existingContentOnPath._id,
+            target: `${updatedPath}-delete`,
+        });
 
         libs.content.delete({
             key: existingContentOnPath._id,
@@ -108,8 +114,12 @@ const refreshOfficeInformation = (officeInformationUpdated) => {
 
             // if the office page already exists, update the existing content
             if (existingOffice) {
-                const existingChecksum = libs.utils.createObjectChecksum(existingOffice.data);
-                const updatedChecksum = libs.utils.createObjectChecksum(updatedOfficeData);
+                const existingChecksum = libs.utils.createObjectChecksum(
+                    existingOffice.data
+                );
+                const updatedChecksum = libs.utils.createObjectChecksum(
+                    updatedOfficeData
+                );
 
                 if (
                     existingChecksum !== updatedChecksum ||
@@ -130,7 +140,9 @@ const refreshOfficeInformation = (officeInformationUpdated) => {
 
                 if (updatedName !== currentName) {
                     try {
-                        logger.info(`Updating name/path: ${currentName} -> ${updatedName}`);
+                        logger.info(
+                            `Updating name/path: ${currentName} -> ${updatedName}`
+                        );
 
                         // Move the office info page to a new path if the name changed
                         libs.content.move({
@@ -149,7 +161,9 @@ const refreshOfficeInformation = (officeInformationUpdated) => {
                             },
                         });
                     } catch (e) {
-                        logger.error(`Failed to updated office information name: ${e}`);
+                        logger.error(
+                            `Failed to updated office information name: ${e}`
+                        );
                     }
                 }
             } else {
@@ -210,7 +224,7 @@ const checkForRefresh = (oneTimeRun = false) => {
                 branch: 'draft',
                 user: {
                     login: 'su',
-                    userStore: 'system',
+                    idProvider: 'system',
                 },
                 principals: ['role:system.admin'],
             },
@@ -307,7 +321,7 @@ exports.runOneTimeJob = () => {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
@@ -332,7 +346,7 @@ exports.startCronJob = () => {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },

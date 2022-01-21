@@ -1,6 +1,6 @@
-import authLib from '*/lib/xp/auth';
-import contentLib, { Permission } from '*/lib/xp/content';
-import contextLib from '*/lib/xp/context';
+import authLib from '/lib/xp/auth';
+import contentLib, { Permission } from '/lib/xp/content';
+import contextLib from '/lib/xp/context';
 
 export const insufficientPermissionResponse = (requiredPermission: string) => ({
     status: 403,

@@ -111,14 +111,16 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
             branch: 'master',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
         () => {
             const prepublished = prepublishedContent.reduce((acc, el) => {
                 const content = libs.content.get({ key: el.id });
-                return content ? [...acc, { path: content._path, id: content._id }] : acc;
+                return content
+                    ? [...acc, { path: content._path, id: content._id }]
+                    : acc;
             }, []);
             if (prepublished.length > 0) {
                 libs.event.send({
@@ -163,7 +165,7 @@ function removeExpiredContentFromMaster(expiredContent) {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
@@ -208,7 +210,9 @@ function theJob() {
         }
     } catch (e) {
         log.error(
-            `Could not start the invalidator, trying again in ${TIME_BETWEEN_CHECKS / 1000} seconds`
+            `Could not start the invalidator, trying again in ${
+                TIME_BETWEEN_CHECKS / 1000
+            } seconds`
         );
         log.error(e);
         return;
@@ -227,7 +231,10 @@ function theJob() {
         }
 
         // remove cache for prepublished content
-        const prepublishedContent = getPrepublishedContent(prevTestDate, testDate);
+        const prepublishedContent = getPrepublishedContent(
+            prevTestDate,
+            testDate
+        );
         removeCacheOnPrepublishedContent(prepublishedContent);
 
         // unpublish expired content
@@ -260,7 +267,9 @@ function theJob() {
             numberOfRetries += 1;
             try {
                 const updatedLastRun = setIsRunning(false);
-                prevTestDate = updatedLastRun ? new Date(updatedLastRun) : prevTestDate;
+                prevTestDate = updatedLastRun
+                    ? new Date(updatedLastRun)
+                    : prevTestDate;
                 successfulRelease = true;
             } catch (e) {
                 if (numberOfRetries === numberOfTimesToTry) {
@@ -290,7 +299,11 @@ function theJob() {
     // reschedule to for TIME_BETWEEN_CHECKS or less if publishing
     // events are scheduled before that time
     if (sleepFor !== TIME_BETWEEN_CHECKS) {
-        libs.cron.reschedule({ ...CRON_CONFIG, delay: sleepFor, callback: theJob });
+        libs.cron.reschedule({
+            ...CRON_CONFIG,
+            delay: sleepFor,
+            callback: theJob,
+        });
     }
 }
 

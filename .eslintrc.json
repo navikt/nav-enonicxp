@@ -1,5 +1,5 @@
 {
-    "extends": ["airbnb-base", "prettier"],
+    "extends": ["prettier"],
     "plugins": ["prettier", "@typescript-eslint"],
     "parser": "@typescript-eslint/parser",
     "rules": {
@@ -7,14 +7,14 @@
         "comma-dangle": ["error", "only-multiline"],
         "no-cond-assign": ["error", "except-parens"],
         "no-unused-vars": [
-            "error",
+            "warn",
             {
                 "vars": "all",
                 "args": "none"
             }
         ],
         "prefer-template": "off",
-        "no-console": "off",
+        "no-console": "error",
         "global-require": "off",
         "import/extensions": "off",
         "import/no-unresolved": "off",

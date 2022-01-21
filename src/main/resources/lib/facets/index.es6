@@ -20,19 +20,27 @@ let currentTask = null;
 
 const getLastFacetConfig = (contentId) => {
     const versionFinder = __.newBean('tools.PublishedVersions');
-    const versionTimestamps = JSON.parse(versionFinder.getLiveVersions(contentId));
+    const versionTimestamps = JSON.parse(
+        versionFinder.getLiveVersions(contentId)
+    );
 
     const allVersions = repo.findVersions({ key: contentId, count: 1000 });
     const content = allVersions.hits
         .filter((version) => 'commitId' in version)
         .map((version) => {
-            const article = repo.get({ key: contentId, versionId: version.versionId });
+            const article = repo.get({
+                key: contentId,
+                versionId: version.versionId,
+            });
             const timestamp = versionTimestamps[version.versionId] ?? '';
             // adding timestamp massage since nashorn Date can't handle ms
             return { article, timestamp: navUtils.fixDateFormat(timestamp) };
         })
         .filter(({ article }) => {
-            return article.workflow?.state !== 'IN_PROGRESS' && article.timestamp !== '';
+            return (
+                article.workflow?.state !== 'IN_PROGRESS' &&
+                article.timestamp !== ''
+            );
         })
         .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
         .reverse();
@@ -46,7 +54,7 @@ const getNavRepo = () => {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
@@ -96,7 +104,10 @@ const setUpdateAll = (updateAll) => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
-            return { ...facetValidation, data: { ...facetValidation.data, updateAll: updateAll } };
+            return {
+                ...facetValidation,
+                data: { ...facetValidation.data, updateAll: updateAll },
+            };
         },
     });
 };
@@ -126,10 +137,15 @@ const addValidatedNodes = (ids) => {
         editor: (facetValidation) => {
             let justValidatedNodes = [];
             if (facetValidation.data.justValidatedNodes) {
-                justValidatedNodes = navUtils.forceArray(facetValidation.data.justValidatedNodes);
+                justValidatedNodes = navUtils.forceArray(
+                    facetValidation.data.justValidatedNodes
+                );
             }
             justValidatedNodes = justValidatedNodes.concat(ids);
-            return { ...facetValidation, data: { ...facetValidation.data, justValidatedNodes } };
+            return {
+                ...facetValidation,
+                data: { ...facetValidation.data, justValidatedNodes },
+            };
         },
     });
 };
@@ -140,12 +156,17 @@ const removeValidatedNodes = (ids) => {
         editor: (facetValidation) => {
             let justValidatedNodes = [];
             if (facetValidation.data.justValidatedNodes) {
-                justValidatedNodes = navUtils.forceArray(facetValidation.data.justValidatedNodes);
+                justValidatedNodes = navUtils.forceArray(
+                    facetValidation.data.justValidatedNodes
+                );
             }
             ids.forEach((id) => {
                 justValidatedNodes.splice(justValidatedNodes.indexOf(id), 1);
             });
-            return { ...facetValidation, data: { ...facetValidation.data, justValidatedNodes } };
+            return {
+                ...facetValidation,
+                data: { ...facetValidation.data, justValidatedNodes },
+            };
         },
     });
 };
@@ -229,14 +250,18 @@ const updateFacets = (fasetter, ids) => {
 
         addValidatedNodes(hits.map((c) => c.id));
         const modifiedContent = hits.map((hit) => {
-            log.info(`adding ${fasett.fasett} and ${fasett.underfasett} to ${hit.id}`);
+            log.info(
+                `adding ${fasett.fasett} and ${fasett.underfasett} to ${hit.id}`
+            );
 
             const modifiedNode = repo.modify({
                 key: hit.id,
                 editor: (elem) => {
                     const n = elem;
                     n.x = !n.x ? {} : n.x;
-                    n.x['no-nav-navno'] = !n.x['no-nav-navno'] ? {} : n.x['no-nav-navno'];
+                    n.x['no-nav-navno'] = !n.x['no-nav-navno']
+                        ? {}
+                        : n.x['no-nav-navno'];
                     n.x['no-nav-navno'].fasetter = fasett;
                     return n;
                 },
@@ -261,10 +286,14 @@ const bulkUpdateFacets = (facetConfig, ids) => {
         log.info('TAG ALL FACETS');
         const previousFacetConfig = getLastFacetConfig(facetConfig._id);
         if (previousFacetConfig) {
-            const previous = navUtils.forceArray(previousFacetConfig.data.fasetter);
+            const previous = navUtils.forceArray(
+                previousFacetConfig.data.fasetter
+            );
             fasetter = fasetter.reduce((acc, rule, ix) => {
                 const current = navUtils.createObjectChecksum(rule);
-                const previousRule = navUtils.createObjectChecksum(previous[ix]);
+                const previousRule = navUtils.createObjectChecksum(
+                    previous[ix]
+                );
                 if (current !== previousRule) {
                     acc.push(rule);
                 }
@@ -390,7 +419,7 @@ const activateEventListener = () => {
                         branch: 'draft',
                         user: {
                             login: 'su',
-                            userStore: 'system',
+                            idProvider: 'system',
                         },
                         principals: ['role:system.admin'],
                     },

@@ -7,4 +7,9 @@ const portalAdminOrigin = {
     localhost: 'http://localhost:8080',
 }[env];
 
-module.exports = { frontendOrigin, xpOrigin, revalidatorProxyOrigin, portalAdminOrigin };
+export default {
+    frontendOrigin,
+    xpOrigin,
+    revalidatorProxyOrigin,
+    portalAdminOrigin,
+};
