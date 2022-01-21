@@ -50,9 +50,6 @@ repositories {
     maven {
         url "https://maven.adeo.no/nexus/content/groups/public"
     }
-    maven {
-        url  "https://dl.bintray.com/ljl/maven"
-    }
 }
 
 dependencies {
