@@ -1,5 +1,5 @@
 declare const app: {
-    name: string;
+    name: 'no.nav.navno';
     version: string;
     config: {
         env: string;

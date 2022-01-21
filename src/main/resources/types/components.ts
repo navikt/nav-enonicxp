@@ -10,6 +10,8 @@ export type ComponentType =
     | 'text'
     | 'fragment';
 
+// This type is returned when getting a component from the current context
+// through portalLib.getComponent()
 export type PortalComponent<Config = any> = Exclude<
     Component<Config>,
     'type' | 'descriptor'
@@ -18,6 +20,8 @@ export type PortalComponent<Config = any> = Exclude<
     descriptor: Descriptor;
 };
 
+// This type is returned from the components array retrieved from a raw node
+// through a nodeLib repo connection
 export type NodeComponent<
     Type extends ComponentType | unknown = unknown,
     Config = any
