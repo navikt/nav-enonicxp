@@ -51,6 +51,9 @@ export const fixDateFormat = (date: string) => {
 };
 
 export const forceArray = (item: any) => {
+    if (item === undefined || item === null) {
+        return [];
+    }
     return Array.isArray(item) ? item : [item];
 };
 
