@@ -36,7 +36,7 @@ const logger = {
     error: (message) => log.error(`[office information] ${message}`),
 };
 
-function setIsRefreshing(navRepo, isRefreshing, failed) {
+const setIsRefreshing = (navRepo, isRefreshing, failed) => {
     navRepo.modify({
         key: '/officeInformation',
         editor: (o) => {
@@ -53,9 +53,31 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
             return object;
         },
     });
-}
+};
 
-function refreshOfficeInformation(officeInformationUpdated) {
+// If non-office information content already exists on the path for an office, delete it
+// (the main purpose of this is to get rid of redirects in the event of an office changing name
+// to a name that was previously in use)
+const deleteIfContentExists = (name) => {
+    const updatedPath = `${parentPath}/${name}`;
+    const existingContentOnPath = libs.content.get({ key: updatedPath });
+
+    if (existingContentOnPath && existingContentOnPath.type !== officeInfoContentType) {
+        logger.info(
+            `Content already exists on path ${updatedPath} - deleting to make room for office page`
+        );
+
+        // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
+        // We want to free up the source path immediately
+        libs.content.move({ source: existingContentOnPath._id, target: `${updatedPath}-delete` });
+
+        libs.content.delete({
+            key: existingContentOnPath._id,
+        });
+    }
+};
+
+const refreshOfficeInformation = (officeInformationUpdated) => {
     const existingOffices = libs.content
         .getChildren({
             key: parentPath,
@@ -75,6 +97,11 @@ function refreshOfficeInformation(officeInformationUpdated) {
 
         // ignore closed offices and include only selected types
         if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
+            officesInNorg[enhet.enhetId] = true;
+
+            const updatedName = libs.common.sanitize(enhet.navn);
+            deleteIfContentExists(updatedName);
+
             const existingOffice = existingOffices.find(
                 (content) => content.data?.enhet?.enhetId === enhet.enhetId
             );
@@ -100,7 +127,6 @@ function refreshOfficeInformation(officeInformationUpdated) {
                 }
 
                 const currentName = existingOffice._name;
-                const updatedName = libs.common.sanitize(enhet.navn);
 
                 if (updatedName !== currentName) {
                     try {
@@ -127,16 +153,19 @@ function refreshOfficeInformation(officeInformationUpdated) {
                     }
                 }
             } else {
-                const result = libs.content.create({
-                    parentPath: parentPath,
-                    displayName: enhet.navn,
-                    contentType: officeInfoContentType,
-                    data: updatedOfficeData,
-                });
-                newOffices.push(result._path);
+                try {
+                    const result = libs.content.create({
+                        name: updatedName,
+                        parentPath: parentPath,
+                        displayName: enhet.navn,
+                        contentType: officeInfoContentType,
+                        data: updatedOfficeData,
+                    });
+                    newOffices.push(result._path);
+                } catch (e) {
+                    logger.error(`Failed to create new office page - ${e}`);
+                }
             }
-
-            officesInNorg[enhet.enhetId] = true;
         }
     });
 
@@ -157,9 +186,15 @@ function refreshOfficeInformation(officeInformationUpdated) {
     if (updated.length > 0) {
         logger.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
     }
-}
+    if (newOffices.length > 0) {
+        logger.info(`New: ${JSON.stringify(newOffices, null, 4)}`);
+    }
+    if (deleted.length > 0) {
+        logger.info(`Deleted: ${JSON.stringify(deleted, null, 4)}`);
+    }
+};
 
-function checkForRefresh(oneTimeRun = false) {
+const checkForRefresh = (oneTimeRun = false) => {
     logger.info('NORG - Start update');
     const startBackupJob = () => {
         // stop cron job first, just in case it has been failing for more than a day
@@ -263,7 +298,7 @@ function checkForRefresh(oneTimeRun = false) {
     if (failedToRefresh && !oneTimeRun) {
         startBackupJob();
     }
-}
+};
 
 exports.runOneTimeJob = () => {
     libs.context.run(
