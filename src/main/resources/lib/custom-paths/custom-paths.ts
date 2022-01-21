@@ -1,31 +1,43 @@
-const contentLib = require('/lib/xp/content');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+import contentLib, { Content } from '/lib/xp/content';
+import { Branch } from '../../types/branch';
+import { runInBranchContext } from '../headless/branch-context';
+
+type ContentWithCustomPath = Content<{ customPath: string }>;
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
-const isValidCustomPath = (path) => path && validCustomPathPattern.test(path);
+const isValidCustomPath = (path: string) =>
+    !!path && validCustomPathPattern.test(path);
 
-const xpPathToPathname = (xpPath) => xpPath?.replace(/^\/www\.nav\.no/, '');
+const xpPathToPathname = (xpPath: string) =>
+    xpPath?.replace(/^\/www\.nav\.no/, '');
+
+const hasCustomPath = (
+    content: Content<any>
+): content is ContentWithCustomPath => {
+    return isValidCustomPath(content.data?.customPath);
+};
 
 // If the content has a custom path and it is not the requested path
 // we should redirect to the custom path
-const shouldRedirectToCustomPath = (content, requestedPathOrId, branch) => {
-    const customPath = content?.data?.customPath;
-
+export const shouldRedirectToCustomPath = (
+    content: Content<any>,
+    requestedPathOrId: string,
+    branch: Branch
+) => {
     return (
-        customPath &&
-        isValidCustomPath(customPath) &&
-        xpPathToPathname(requestedPathOrId) !== customPath &&
+        hasCustomPath(content) &&
+        xpPathToPathname(requestedPathOrId) !== content.data.customPath &&
         branch === 'master'
     );
 };
 
-const getCustomPathFromContent = (contentId) => {
-    const customPath = contentLib.get({ key: contentId })?.data?.customPath;
-    return isValidCustomPath(customPath) ? customPath : null;
+export const getCustomPathFromContent = (contentId: string) => {
+    const content = contentLib.get({ key: contentId }) as Content<any>;
+    return hasCustomPath(content) ? content.data.customPath : null;
 };
 
-const getContentFromCustomPath = (path) => {
+export const getContentFromCustomPath = (path: string) => {
     const customPath = xpPathToPathname(path);
     if (!isValidCustomPath(customPath)) {
         return [];
@@ -33,7 +45,7 @@ const getContentFromCustomPath = (path) => {
 
     return runInBranchContext(
         () =>
-            contentLib.query({
+            contentLib.query<ContentWithCustomPath['data']>({
                 start: 0,
                 count: 2,
                 filters: {
@@ -53,7 +65,7 @@ const getContentFromCustomPath = (path) => {
 
 // Looks for content where 'path' is set as a valid custom public-facing path
 // and if found, returns the actual content path
-const getInternalContentPathFromCustomPath = (xpPath) => {
+export const getInternalContentPathFromCustomPath = (xpPath: string) => {
     const path = xpPathToPathname(xpPath);
     if (!isValidCustomPath(path)) {
         return null;
@@ -66,14 +78,16 @@ const getInternalContentPathFromCustomPath = (xpPath) => {
     }
 
     if (content.length > 1) {
-        log.error(`Custom public path ${path} exists on multiple content objects!`);
+        log.error(
+            `Custom public path ${path} exists on multiple content objects!`
+        );
         return null;
     }
 
     return content[0]._path;
 };
 
-const getPathMapForReferences = (contentId) => {
+export const getPathMapForReferences = (contentId: string) => {
     // getOutboundDependencies throws an error if the key does not exist
     try {
         return contentLib
@@ -81,13 +95,15 @@ const getPathMapForReferences = (contentId) => {
                 key: contentId,
             })
             .reduce((pathMapAcc, dependencyId) => {
-                const dependencyContent = contentLib.get({ key: dependencyId });
-                const customPath = dependencyContent?.data?.customPath;
+                const dependencyContent = contentLib.get({
+                    key: dependencyId,
+                }) as Content<any>;
 
-                if (isValidCustomPath(customPath)) {
+                if (hasCustomPath(dependencyContent)) {
                     return {
                         ...pathMapAcc,
-                        [xpPathToPathname(dependencyContent._path)]: customPath,
+                        [xpPathToPathname(dependencyContent._path)]:
+                            dependencyContent.data.customPath,
                     };
                 }
                 return pathMapAcc;
@@ -95,13 +111,4 @@ const getPathMapForReferences = (contentId) => {
     } catch (e) {
         return {};
     }
-};
-
-module.exports = {
-    getInternalContentPathFromCustomPath,
-    getPathMapForReferences,
-    getContentFromCustomPath,
-    isValidCustomPath,
-    shouldRedirectToCustomPath,
-    getCustomPathFromContent,
 };

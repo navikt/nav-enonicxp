@@ -18,6 +18,21 @@ export type PortalComponent<Config = any> = Exclude<
     descriptor: Descriptor;
 };
 
+export type NodeComponent<
+    Type extends ComponentType | unknown = unknown,
+    Config = any
+> = { path: string } & (Type extends ComponentType
+    ? TypedNodeComponent<Type, Config>
+    : UnknownNodeComponent);
+
+type TypedNodeComponent<Type extends ComponentType, Config = any> = {
+    type: Type;
+} & Record<Type, ComponentProps<Config>>;
+
+type UnknownNodeComponent = { type: ComponentType } & Partial<{
+    [key in ComponentType]: ComponentProps<any>;
+}>;
+
 type ComponentProps<
     ComponentName extends string | unknown,
     Config = any
@@ -36,18 +51,3 @@ type UnknownComponentProps = {
     descriptor: Descriptor;
     config: { 'no-nav-navno': Record<string, { [key: string]: any }> };
 };
-
-export type NodeComponent<
-    Type extends ComponentType | unknown = unknown,
-    Config = any
-> = { path: string } & (Type extends ComponentType
-    ? TypedNodeComponent<Type, Config>
-    : UnknownNodeComponent);
-
-type TypedNodeComponent<Type extends ComponentType, Config = any> = {
-    type: Type;
-} & Record<Type, ComponentProps<Config>>;
-
-type UnknownNodeComponent = { type: ComponentType } & Partial<{
-    [key in ComponentType]: ComponentProps<any>;
-}>;

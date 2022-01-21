@@ -12,12 +12,7 @@ export const isValidBranch = (branch: Branch): branch is Branch =>
 export const runInBranchContext = <ReturnType>(
     func: () => ReturnType,
     branch: Branch = 'master'
-): ReturnType | null => {
-    if (!isValidBranch(branch)) {
-        log.info(`Attempted to run in an invalid branch context: ${branch}`);
-        return null;
-    }
-
+): ReturnType => {
     return contextLib.run<ReturnType, ContextAttributes>(
         {
             repository: 'com.enonic.cms.default',
