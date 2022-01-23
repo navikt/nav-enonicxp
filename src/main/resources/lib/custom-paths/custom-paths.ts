@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { Branch } from '../../types/branch';
+import { RepoBranch } from '../../types/content';
 import { runInBranchContext } from '../headless/branch-context';
 
 type ContentWithCustomPath = Content<{ customPath: string }>;
@@ -23,7 +23,7 @@ const hasCustomPath = (
 export const shouldRedirectToCustomPath = (
     content: Content<any>,
     requestedPathOrId: string,
-    branch: Branch
+    branch: RepoBranch
 ) => {
     return (
         hasCustomPath(content) &&

@@ -22,13 +22,17 @@ import { ProductCardPartConfig } from '../../site/parts/product-card/product-car
 import { ProductCardMicroPartConfig } from '../../site/parts/product-card-micro/product-card-micro-part-config';
 import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/product-card-mini-part-config';
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
-import { ComponentType } from './components';
 
-export type PageConfigTypes = {
+export type ComponentType = 'page' | 'layout' | 'part';
+// | 'fragment'
+// | 'image'
+// | 'text';
+
+type PageConfigs = {
     'page-with-side-menus': PageWithSideMenusPageConfig;
 };
 
-export type LayoutConfigTypes = {
+type LayoutConfigs = {
     'dynamic-1-col': Dynamic1ColConfig;
     'dynamic-2-col': Dynamic2ColConfig;
     'dynamic-3-col': Dynamic3ColConfig;
@@ -38,7 +42,7 @@ export type LayoutConfigTypes = {
     'situation-flex-cols': SituationFlexColsConfig;
 };
 
-export type PartConfigTypes = {
+type PartConfigs = {
     button: ButtonPartConfig;
     calculator: CalculatorPartConfig;
     'contact-option': ContactOptionPartConfig;
@@ -58,30 +62,22 @@ export type PartConfigTypes = {
 };
 
 export type ComponentConfigs = {
-    page: PageConfigTypes;
-    layout: LayoutConfigTypes;
-    part: PartConfigTypes;
+    page: PageConfigs;
+    layout: LayoutConfigs;
+    part: PartConfigs;
 };
 
-type ConfigMapper<Name, Type> = Type extends 'part'
-    ? Name extends PartComponentName
-        ? PartConfigTypes[Name]
-        : never
-    : Type extends 'layout'
-    ? Name extends LayoutComponentName
-        ? LayoutConfigTypes[Name]
-        : never
-    : Type extends 'page'
-    ? Name extends PageComponentName
-        ? PageConfigTypes[Name]
+type ConfigMapper<Name, Type> = Type extends keyof ComponentConfigs
+    ? Name extends keyof ComponentConfigs[Type]
+        ? ComponentConfigs[Type][Name]
         : never
     : never;
 
-export type ComponentConfig = ConfigMapper<ComponentName, ComponentType>;
+export type ComponentConfigAll = ConfigMapper<ComponentName, ComponentType>;
 
-export type PageComponentName = keyof PageConfigTypes;
-export type LayoutComponentName = keyof LayoutConfigTypes;
-export type PartComponentName = keyof PartConfigTypes;
+type PageComponentName = keyof ComponentConfigs['page'];
+type LayoutComponentName = keyof ComponentConfigs['layout'];
+type PartComponentName = keyof ComponentConfigs['part'];
 export type ComponentName =
     | PageComponentName
     | LayoutComponentName

@@ -1,7 +1,7 @@
 import contextLib from '/lib/xp/context';
 import nodeLib from '/lib/xp/node';
 import contentLib from '/lib/xp/content';
-import { Branch } from '../../types/branch';
+import { RepoBranch } from '../../types/content';
 import {
     forceArray,
     getNestedValue,
@@ -22,7 +22,7 @@ const htmlFragmentMacroPattern = new RegExp(
     'gi'
 );
 
-const getContentNode = (contentRef: string, branch: Branch) => {
+const getContentNode = (contentRef: string, branch: RepoBranch) => {
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,
@@ -45,7 +45,10 @@ const getFragmentIdsFromHtmlArea = (htmlAreaString: string): string[] => {
 };
 
 // Gets fragment ids from fragment components in a content
-const getFragmentIdsFromComponents = (contentRef: string, branch: Branch) => {
+const getFragmentIdsFromComponents = (
+    contentRef: string,
+    branch: RepoBranch
+) => {
     const contentNode = getContentNode(contentRef, branch);
 
     if (!contentNode) {
@@ -64,7 +67,7 @@ const getFragmentIdsFromComponents = (contentRef: string, branch: Branch) => {
 };
 
 // Gets fragment ids referenced from HtmlFragment macros in a content
-const getFragmentIdsFromMacros = (contentRef: string, branch: Branch) => {
+const getFragmentIdsFromMacros = (contentRef: string, branch: RepoBranch) => {
     const contentNode = getContentNode(contentRef, branch);
 
     if (!contentNode) {
@@ -97,7 +100,7 @@ const getFragmentIdsFromMacros = (contentRef: string, branch: Branch) => {
     return [...fragmentIdsFromData, ...fragmentIdsFromComponents];
 };
 
-const getFragmentIdsFromContent = (contentRef: string, branch: Branch) => {
+const getFragmentIdsFromContent = (contentRef: string, branch: RepoBranch) => {
     const fragmentIdsFromMacros = getFragmentIdsFromMacros(contentRef, branch);
     const fragmentIdsFromComponents = getFragmentIdsFromComponents(
         contentRef,
@@ -114,7 +117,7 @@ const getFragmentIdsFromContent = (contentRef: string, branch: Branch) => {
 // itself and any fragments used in the content
 export const getModifiedTimeIncludingFragments = (
     contentRef: string,
-    branch: Branch
+    branch: RepoBranch
 ) =>
     runInBranchContext(() => {
         const content = contentLib.get({ key: contentRef });

@@ -1,17 +1,17 @@
 import contextLib, { ContextAttributes } from '/lib/xp/context';
-import { Branch } from '../../types/branch';
+import { RepoBranch } from '../../types/content';
 
 const branches = {
     master: true,
     draft: true,
 };
 
-export const isValidBranch = (branch: Branch): branch is Branch =>
+export const isValidBranch = (branch: RepoBranch): branch is RepoBranch =>
     branches[branch];
 
 export const runInBranchContext = <ReturnType>(
     func: () => ReturnType,
-    branch: Branch = 'master'
+    branch: RepoBranch = 'master'
 ): ReturnType => {
     return contextLib.run<ReturnType, ContextAttributes>(
         {

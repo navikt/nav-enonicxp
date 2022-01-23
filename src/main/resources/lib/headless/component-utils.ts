@@ -1,20 +1,15 @@
-import {
-    NodeComponentAny,
-    PortalComponent,
-    PortalComponentAny,
-} from '../../types/components/components';
+import { PortalComponent } from '../../types/components/component-portal';
 import { forceArray } from '../nav-utils';
 import portalLib from '/lib/xp/portal';
 import nodeLib from '/lib/xp/node';
 import commonLib from '/lib/xp/common';
 import contentLib from '/lib/xp/content';
-import {
-    ComponentConfig,
-    ComponentName,
-} from '../../types/components/component-configs';
+import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
-
-const appKey = 'no-nav-navno';
+import {
+    componentAppKey,
+    NodeComponent,
+} from '../../types/components/component-node';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -25,7 +20,7 @@ export const getKeyWithoutMacroDescription = (key: string) =>
 export const appendMacroDescriptionToKey = (key: string, description: string) =>
     `${key}${macroDescriptionSeparator}${description}`;
 
-export const getComponentConfig = (component?: NodeComponentAny) => {
+export const getComponentConfig = (component?: NodeComponent) => {
     if (!component) {
         return null;
     }
@@ -45,14 +40,16 @@ export const getComponentConfig = (component?: NodeComponentAny) => {
         return null;
     }
 
-    const componentKey = descriptor.split(':')[1] as ComponentName;
+    const componentKey = descriptor.split(':')[1];
 
-    return config[appKey]?.[componentKey];
+    // @ts-ignore
+    // Typescript can't infer the split literal type for componentKey
+    return config?.[componentAppKey]?.[componentKey];
 };
 
 export const getComponentConfigByPath = (
     path: string,
-    components: NodeComponentAny[]
+    components: NodeComponent[]
 ) => {
     const foundComponent = forceArray(components).find(
         (component) => component.path === path
@@ -60,15 +57,19 @@ export const getComponentConfigByPath = (
     return getComponentConfig(foundComponent);
 };
 
-const configHasAnchorIdField = (config: any): config is { anchorId: string } =>
-    !!config?.anchorId;
+type ConfigWithAnchorId = PortalComponent['config'] & {
+    anchorId?: string;
+};
+const configHasAnchorId = (
+    config: ConfigWithAnchorId
+): config is ConfigWithAnchorId => !!config?.anchorId;
 
 const componentHasUniqueAnchorId = (
     content: any,
-    currentComponent: PortalComponentAny
+    currentComponent: PortalComponent
 ) => {
     const config = currentComponent?.config;
-    if (!configHasAnchorIdField(config)) {
+    if (!configHasAnchorId(config)) {
         return false;
     }
 
@@ -80,7 +81,7 @@ const componentHasUniqueAnchorId = (
         const config = getComponentConfig(component);
 
         return (
-            configHasAnchorIdField(config) &&
+            configHasAnchorId(config) &&
             config.anchorId === currentAnchorId &&
             component.path !== currentComponent.path
         );
@@ -90,7 +91,7 @@ const componentHasUniqueAnchorId = (
 };
 
 export const generateAnchorIdField = <
-    Config extends ComponentConfig & { anchorId?: string }
+    Config extends ComponentConfigAll & { anchorId?: string }
 >(
     req: XP.Request,
     idSourceField: keyof Omit<
@@ -132,15 +133,16 @@ export const generateAnchorIdField = <
                 const fieldValue = config[idSourceField] as unknown as string;
 
                 if (fieldValue && fieldValue !== idSourceDefaultValue) {
-                    const id = commonLib.sanitize(fieldValue);
+                    const newId = commonLib.sanitize(fieldValue);
+
                     const idExists = components.some((component) => {
                         const _config = getComponentConfig(component);
-                        if (configHasAnchorIdField(_config)) {
-                            _config.anchorId === id;
+                        if (configHasAnchorId(_config)) {
+                            return _config.anchorId === newId;
                         }
                     });
 
-                    config.anchorId = idExists ? undefined : id;
+                    config.anchorId = idExists ? undefined : newId;
                 }
 
                 return content;

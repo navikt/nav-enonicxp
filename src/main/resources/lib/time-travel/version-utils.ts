@@ -2,7 +2,7 @@ import { getUnixTimeFromDateTimeString } from '../nav-utils';
 import contextLib from '/lib/xp/context';
 import nodeLib from '/lib/xp/node';
 import { RepoConnection } from '/lib/xp/node';
-import { Branch } from '../../types/branch';
+import { RepoBranch } from '../../types/content';
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
@@ -14,7 +14,7 @@ export const getNodeVersions = ({
 }: {
     nodeKey: string;
     repo: RepoConnection;
-    branch: Branch;
+    branch: RepoBranch;
 }) => {
     const versions = repo.findVersions({
         key: nodeKey,
@@ -37,7 +37,7 @@ export const getVersionFromTime = ({
     nodeKey: string;
     unixTime: number;
     repo: RepoConnection;
-    branch: Branch;
+    branch: RepoBranch;
     getOldestIfNotFound: boolean;
 }) => {
     const contentVersions = getNodeVersions({ nodeKey, repo, branch });
@@ -63,7 +63,7 @@ export const getVersionFromTime = ({
 
 export const getVersionTimestamps = (
     contentRef: string,
-    branch: Branch = 'master'
+    branch: RepoBranch = 'master'
 ) => {
     const context = contextLib.get();
     const repo = nodeLib.connect({
