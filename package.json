@@ -3,9 +3,8 @@
     "version": "1.0.0",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npm-run-all eslint tsclint babel",
-        "eslint": "eslint ./src/main/resources --ext=ts --ext=es6 --quiet",
-        "tsclint": "tsc --noemit",
+        "build": "npm-run-all lint babel",
+        "lint": "eslint ./src/main/resources --ext=ts --ext=es6 --quiet && tsc --noemit",
         "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\" --extensions \".ts,.es6\""
     },
     "repository": {

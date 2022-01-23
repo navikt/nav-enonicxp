@@ -2,7 +2,7 @@ import { getUnixTimeFromDateTimeString } from '../nav-utils';
 import contextLib from '/lib/xp/context';
 import nodeLib from '/lib/xp/node';
 import { RepoConnection } from '/lib/xp/node';
-import { RepoBranch } from '../../types/content';
+import { RepoBranch } from '../../types/common';
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');

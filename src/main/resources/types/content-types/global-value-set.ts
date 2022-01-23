@@ -10,7 +10,7 @@ type GlobalValueItem = {
     numberValue: number;
 };
 
-type GlobalValueSetData = {
+export type GlobalValueSetData = {
     valueItems?: GlobalValueItem[] | GlobalValueItem;
 };
 

@@ -5,3 +5,5 @@ export type PickByFieldType<ObjectType, FieldType> = {
         ? Key
         : never]: ObjectType[Key];
 };
+
+export type EmptyObject = Record<string, never>;

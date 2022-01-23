@@ -1,7 +1,7 @@
 import contextLib from '/lib/xp/context';
 import nodeLib from '/lib/xp/node';
 import contentLib from '/lib/xp/content';
-import { RepoBranch } from '../../types/content';
+import { RepoBranch } from '../../types/common';
 import {
     forceArray,
     getNestedValue,

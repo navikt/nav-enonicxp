@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { RepoBranch } from '../../types/content';
+import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../headless/branch-context';
 
 type ContentWithCustomPath = Content<{ customPath: string }>;

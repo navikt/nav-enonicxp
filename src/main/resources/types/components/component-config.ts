@@ -67,13 +67,13 @@ export type ComponentConfigs = {
     part: PartConfigs;
 };
 
-type ConfigMapper<Name, Type> = Type extends keyof ComponentConfigs
+type ConfigMapper<Type, Name> = Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type]
         ? ComponentConfigs[Type][Name]
         : never
     : never;
 
-export type ComponentConfigAll = ConfigMapper<ComponentName, ComponentType>;
+export type ComponentConfigAll = ConfigMapper<ComponentType, ComponentName>;
 
 type PageComponentName = keyof ComponentConfigs['page'];
 type LayoutComponentName = keyof ComponentConfigs['layout'];

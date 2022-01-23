@@ -3,13 +3,13 @@ import {
     ComponentName,
     ComponentType,
 } from './component-config';
-import { Descriptor } from '../content';
+import { Descriptor } from '../common';
 
 export const componentAppKey = 'no-nav-navno';
 
 // This type is used in the components array retrieved from a raw node
 // through a nodeLib repo connection
-type NodeComponentMapper<Name, Type> = Type extends keyof ComponentConfigs
+type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
               [type in Type]: {
@@ -27,8 +27,8 @@ type NodeComponentMapper<Name, Type> = Type extends keyof ComponentConfigs
     : never;
 
 export type NodeComponent = NodeComponentMapper<
-    ComponentName,
-    ComponentType
+    ComponentType,
+    ComponentName
 > & { path: string };
 
 const test = {} as NodeComponent;

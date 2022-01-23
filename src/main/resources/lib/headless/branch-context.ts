@@ -1,5 +1,5 @@
 import contextLib, { ContextAttributes } from '/lib/xp/context';
-import { RepoBranch } from '../../types/content';
+import { RepoBranch } from '../../types/common';
 
 const branches = {
     master: true,

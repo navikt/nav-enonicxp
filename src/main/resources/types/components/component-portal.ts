@@ -5,10 +5,10 @@ import {
     ComponentName,
     ComponentType,
 } from './component-config';
-import { Descriptor } from '../content';
+import { Descriptor } from '../common';
 
-// This type is returned when using portalLib.getComponent()
-type PortalComponentMapper<Name, Type> = Type extends keyof ComponentConfigs
+// This type is used in the page object on a content, and when using portalLib.getComponent()
+type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
               type: Type;
@@ -18,8 +18,8 @@ type PortalComponentMapper<Name, Type> = Type extends keyof ComponentConfigs
         : never
     : never;
 
-export type PortalComponent = PortalComponentMapper<
-    ComponentName,
-    ComponentType
-> &
-    XpPortalComponent<ComponentConfigAll>;
+export type PortalComponent<Type extends ComponentType = ComponentType> =
+    PortalComponentMapper<Type, ComponentName> &
+        XpPortalComponent<ComponentConfigAll>;
+
+// TODO: add regions

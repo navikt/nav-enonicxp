@@ -1,5 +1,5 @@
 import contentLib from '/lib/xp/content';
-import { isFragment } from '../../types/type-guards/portal-fragment';
+import { isFragment } from '../../types/content-types/portal-fragment';
 
 export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.html-area.html',
