@@ -1,6 +1,7 @@
 import authLib from '/lib/xp/auth';
 import contentLib, { Permission } from '/lib/xp/content';
 import contextLib from '/lib/xp/context';
+import { PrincipalKey } from '*/lib/xp/auth';
 
 export const insufficientPermissionResponse = (requiredPermission: string) => ({
     status: 403,
@@ -38,7 +39,7 @@ export const validateCurrentUserPermissionForContent = (
 
             return hasPermission ? [...acc, principal.principal] : acc;
         },
-        []
+        [] as PrincipalKey[]
     );
 
     const currentUserHasAccess = allowedPrincipals.some((allowedPrincipal) =>

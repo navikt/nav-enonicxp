@@ -1,13 +1,18 @@
 import {
-    NodeComponent,
-    ComponentType,
+    NodeComponentAny,
     PortalComponent,
-} from '../../types/components';
+    PortalComponentAny,
+} from '../../types/components/components';
 import { forceArray } from '../nav-utils';
 import portalLib from '/lib/xp/portal';
 import nodeLib from '/lib/xp/node';
 import commonLib from '/lib/xp/common';
 import contentLib from '/lib/xp/content';
+import {
+    ComponentConfig,
+    ComponentName,
+} from '../../types/components/component-configs';
+import { PickByFieldType } from '../../types/util-types';
 
 const appKey = 'no-nav-navno';
 
@@ -20,9 +25,7 @@ export const getKeyWithoutMacroDescription = (key: string) =>
 export const appendMacroDescriptionToKey = (key: string, description: string) =>
     `${key}${macroDescriptionSeparator}${description}`;
 
-export const getComponentConfig = <Type extends ComponentType | unknown>(
-    component: NodeComponent<Type>
-) => {
+export const getComponentConfig = (component?: NodeComponentAny) => {
     if (!component) {
         return null;
     }
@@ -42,14 +45,14 @@ export const getComponentConfig = <Type extends ComponentType | unknown>(
         return null;
     }
 
-    const componentKey = descriptor.split(':')[1];
+    const componentKey = descriptor.split(':')[1] as ComponentName;
 
-    return config?.[appKey]?.[componentKey];
+    return config[appKey]?.[componentKey];
 };
 
 export const getComponentConfigByPath = (
     path: string,
-    components: NodeComponent[]
+    components: NodeComponentAny[]
 ) => {
     const foundComponent = forceArray(components).find(
         (component) => component.path === path
@@ -57,21 +60,28 @@ export const getComponentConfigByPath = (
     return getComponentConfig(foundComponent);
 };
 
+const configHasAnchorIdField = (config: any): config is { anchorId: string } =>
+    !!config?.anchorId;
+
 const componentHasUniqueAnchorId = (
     content: any,
-    currentComponent: PortalComponent
+    currentComponent: PortalComponentAny
 ) => {
-    const currentAnchorId = currentComponent?.config?.anchorId;
-    if (!currentAnchorId) {
+    const config = currentComponent?.config;
+    if (!configHasAnchorIdField(config)) {
         return false;
     }
+
+    const currentAnchorId = config.anchorId;
 
     const components = forceArray(content.components);
 
     const isDuplicate = components.some((component) => {
         const config = getComponentConfig(component);
+
         return (
-            config?.anchorId === currentAnchorId &&
+            configHasAnchorIdField(config) &&
+            config.anchorId === currentAnchorId &&
             component.path !== currentComponent.path
         );
     });
@@ -79,42 +89,15 @@ const componentHasUniqueAnchorId = (
     return !isDuplicate;
 };
 
-const generateAnchorIdFromFieldValue =
-    (componentPath: string, fieldKey: string, fieldDefaultValue: string) =>
-    (content: any) => {
-        const components = forceArray(content.components);
-
-        const config = getComponentConfigByPath(componentPath, components);
-
-        if (!config) {
-            return content;
-        }
-
-        const fieldValue = config[fieldKey];
-
-        if (!fieldValue && fieldDefaultValue) {
-            config[fieldKey] = fieldDefaultValue;
-        }
-
-        if (fieldValue && fieldValue !== fieldDefaultValue) {
-            const id = commonLib.sanitize(fieldValue);
-            const idExists = components.some(
-                (component) => getComponentConfig(component)?.anchorId === id
-            );
-            if (idExists) {
-                config.anchorId = undefined;
-            } else {
-                config.anchorId = id;
-            }
-        }
-
-        return content;
-    };
-
-export const generateAnchorIdField = (
+export const generateAnchorIdField = <
+    Config extends ComponentConfig & { anchorId?: string }
+>(
     req: XP.Request,
-    fieldKey: string,
-    fieldDefaultValue: string
+    idSourceField: keyof Omit<
+        PickByFieldType<Required<Config>, string>,
+        'anchorId'
+    >,
+    idSourceDefaultValue?: string
 ) => {
     const contentId = portalLib.getContent()._id;
     const component = portalLib.getComponent() as PortalComponent;
@@ -129,11 +112,39 @@ export const generateAnchorIdField = (
     if (!componentHasUniqueAnchorId(content, component)) {
         repo.modify({
             key: contentId,
-            editor: generateAnchorIdFromFieldValue(
-                component.path,
-                fieldKey,
-                fieldDefaultValue
-            ),
+            editor: (content: any) => {
+                const components = forceArray(content.components);
+
+                const config = getComponentConfigByPath(
+                    component.path,
+                    components
+                ) as Config;
+
+                if (!config) {
+                    return content;
+                }
+
+                if (!config[idSourceField]) {
+                    // @ts-ignore
+                    config[idSourceField] = idSourceDefaultValue;
+                }
+
+                const fieldValue = config[idSourceField] as unknown as string;
+
+                if (fieldValue && fieldValue !== idSourceDefaultValue) {
+                    const id = commonLib.sanitize(fieldValue);
+                    const idExists = components.some((component) => {
+                        const _config = getComponentConfig(component);
+                        if (configHasAnchorIdField(_config)) {
+                            _config.anchorId === id;
+                        }
+                    });
+
+                    config.anchorId = idExists ? undefined : id;
+                }
+
+                return content;
+            },
         });
     }
 };

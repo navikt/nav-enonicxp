@@ -1,9 +1,8 @@
-const getServiceName = (req) => req.contextPath.split('/').slice(-1)[0];
+const getServiceName = (req: XP.Request) =>
+    req.contextPath.split('/').slice(-1)[0];
 
-const getSubPath = (req) =>
+export const getSubPath = (req: XP.Request) =>
     req.path
         .split(getServiceName(req))
         .slice(-1)[0]
         .replace(/(^\/)|(\/$)/, ''); // Trim leading/trailing slash
-
-module.exports = { getSubPath };
