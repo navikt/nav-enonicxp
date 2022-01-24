@@ -3,8 +3,6 @@ import { runInBranchContext } from '../headless/branch-context';
 import { contentLib } from '../xp-libs';
 import { Content } from '../../types/content-types/content-config';
 
-type ContentWithCustomPath = Content & { data: { customPath: string } };
-
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
 const isValidCustomPath = (path: string) =>
@@ -15,7 +13,7 @@ const xpPathToPathname = (xpPath: string) =>
 
 const hasCustomPath = (
     content: Content<any>
-): content is ContentWithCustomPath => {
+): content is Content & { data: { customPath: string } } => {
     return isValidCustomPath(content.data?.customPath);
 };
 

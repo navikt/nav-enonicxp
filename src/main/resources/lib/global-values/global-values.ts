@@ -56,19 +56,6 @@ const getGlobalValueCalcUsage = (key: string) =>
         },
     }).hits;
 
-const getGlobalValueSet = (contentId: string) => {
-    if (!contentId) {
-        return null;
-    }
-
-    const content = contentLib.get({ key: contentId });
-    if (content?.type !== 'no.nav.navno:global-value-set') {
-        return null;
-    }
-
-    return content;
-};
-
 const getGlobalValueItem = (gvKey: string, contentId: string) => {
     const globalValueSet = getGlobalValueSet(contentId);
 
@@ -80,6 +67,19 @@ const getGlobalValueItem = (gvKey: string, contentId: string) => {
     return forceArray(globalValueSet.data.valueItems).find(
         (item) => item.key === gvKey
     );
+};
+
+const getGlobalValueSet = (contentId: string) => {
+    if (!contentId) {
+        return null;
+    }
+
+    const content = contentLib.get({ key: contentId });
+    if (content?.type !== 'no.nav.navno:global-value-set') {
+        return null;
+    }
+
+    return content;
 };
 
 const getGlobalValue = (gvKey: string, contentId: string) => {
