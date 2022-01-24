@@ -7,8 +7,6 @@ import { Descriptor } from '../common';
 
 export const componentAppKey = 'no-nav-navno';
 
-// This type is used in the components array retrieved from a raw node
-// through a nodeLib repo connection
 type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
@@ -20,22 +18,15 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
                       };
                   };
               };
-          } & { [notType in Exclude<ComponentType, Type>]: undefined } & {
+          } & { [NotType in Exclude<ComponentType, Type>]: undefined } & {
               type: Type;
           }
         : never
     : never;
 
+// This type is used in the components array retrieved from a raw node
+// through a nodeLib repo connection
 export type NodeComponent = NodeComponentMapper<
     ComponentType,
     ComponentName
 > & { path: string };
-
-const test = {} as NodeComponent;
-
-if (
-    test.type === 'layout' &&
-    test.layout.descriptor === 'no.nav.navno:section-with-header'
-) {
-    test.layout.config?.[componentAppKey]['section-with-header'].bgColor;
-}
