@@ -82,3 +82,5 @@ export type ComponentName =
     | PageComponentName
     | LayoutComponentName
     | PartComponentName;
+
+// TODO: add fragment, image and text components
