@@ -1,7 +1,7 @@
 import contextLib, { ContextAttributes } from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
 
-const branches = {
+const branches: { [key in RepoBranch]: boolean } = {
     master: true,
     draft: true,
 };
