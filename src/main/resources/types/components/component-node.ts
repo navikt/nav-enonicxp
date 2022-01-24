@@ -14,7 +14,7 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
         ? {
               [type in Type]: {
                   descriptor: Descriptor<Name>;
-                  config: {
+                  config?: {
                       [componentAppKey]: {
                           [key in Name]: ComponentConfigs[Type][Name];
                       };
@@ -37,5 +37,5 @@ if (
     test.type === 'layout' &&
     test.layout.descriptor === 'no.nav.navno:section-with-header'
 ) {
-    test.layout.config[componentAppKey]['section-with-header'].bgColor;
+    test.layout.config?.[componentAppKey]['section-with-header'].bgColor;
 }

@@ -12,7 +12,7 @@ type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
               type: Type;
-              config: ComponentConfigs[Type][Name];
+              config?: ComponentConfigs[Type][Name];
               descriptor: Descriptor<Name>;
           }
         : never

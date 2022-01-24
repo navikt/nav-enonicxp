@@ -1,5 +1,4 @@
-import contentLib from '/lib/xp/content';
-import { isFragment } from '../../types/content-types/portal-fragment';
+import contentLib from '../xplibs/content';
 
 export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.html-area.html',
@@ -41,7 +40,8 @@ export const findContentsWithHtmlAreaText = (text: string) => {
         })
         .hits.filter(
             (hit) =>
-                isFragment(hit) && hit.fragment.config?.html?.includes(text)
+                hit.fragment.type === 'part' &&
+                hit.fragment.descriptor === 'no.nav.navno:html-area'
         );
 
     return [...queryHits, ...fragmentHits];

@@ -26,7 +26,7 @@ import { PortalComponent } from '../components/component-portal';
 import { EmptyObject } from '../util-types';
 import { Descriptor } from '../common';
 
-export type ContentDataConfigs = {
+type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
     calculator: Calculator;
     'content-list': ContentList;
@@ -52,16 +52,40 @@ export type ContentDataConfigs = {
     'transport-page': TransportPage;
 };
 
-export type ContentType = keyof ContentDataConfigs;
+// Add the app-specific descriptor prefix to all content types
+export type CustomContentDataConfigs = {
+    [Type in keyof CustomContentDataConfigsWithoutDescriptor as Descriptor<Type>]: CustomContentDataConfigsWithoutDescriptor[Type];
+};
 
-type ContentDataMapper<Type> = Type extends keyof ContentDataConfigs
-    ? {
-          type: Descriptor<Type>;
-          data: ContentDataConfigs[Type];
-          page: PortalComponent<'page'> | EmptyObject;
-      }
-    : never;
+type ContentDataMapper<Type extends ContentDescriptor> = XpContent &
+    (Type extends CustomContentDescriptor
+        ? {
+              type: Type;
+              data: CustomContentDataConfigs[Type];
+              page: PortalComponent<'page'> | EmptyObject;
+          }
+        : Type extends 'portal:fragment'
+        ? {
+              type: 'portal:fragment';
+              fragment: PortalComponent<'part' | 'layout'>;
+          }
+        : never);
 
-export type Content = XpContent & ContentDataMapper<ContentType>;
+export type BuiltinContentDescriptor = 'portal:fragment';
+// | 'portal:template-folder'
+// | 'portal:page-template'
+// | 'portal:site';
+
+export type Content<Type extends ContentDescriptor = ContentDescriptor> =
+    ContentDataMapper<Type>;
+
+export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
+
+export type CustomContentDescriptor = keyof CustomContentDataConfigs;
+
+export type ContentDescriptor =
+    | CustomContentDescriptor
+    | BuiltinContentDescriptor;
 
 // TODO: add x-data
+// TODO: add media/portal/base types
