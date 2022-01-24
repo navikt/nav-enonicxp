@@ -14,6 +14,11 @@ buildscript {
             classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
         }
     }
+
+    dependencies {
+        // Remove this if/when the bug is fixed in the official repo version
+        classpath files('xp-codegen-plugin-1.1.9-bugfix.jar')
+    }
 }
 
 // Build plugins
@@ -37,7 +42,6 @@ app {
 
 // Project dependencies
 repositories {
-
     // External dependencies
     if (!project.hasProperty('build-inside-firewall')) {
         mavenLocal()
