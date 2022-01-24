@@ -1,4 +1,4 @@
-import contentLib from '../xplibs/content';
+import { contentLib } from '../xp-libs';
 
 export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.html-area.html',

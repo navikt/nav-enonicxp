@@ -3,7 +3,7 @@ import { forceArray } from '../nav-utils';
 import portalLib from '/lib/xp/portal';
 import nodeLib from '/lib/xp/node';
 import commonLib from '/lib/xp/common';
-import contentLib from '/lib/xp/content';
+import { contentLib } from '../xp-libs';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
 import {

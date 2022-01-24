@@ -1,8 +1,9 @@
-import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../headless/branch-context';
+import { contentLib } from '../xp-libs';
+import { Content } from '../../types/content-types/content-config';
 
-type ContentWithCustomPath = Content<{ customPath: string }>;
+type ContentWithCustomPath = Content & { data: { customPath: string } };
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
@@ -33,8 +34,8 @@ export const shouldRedirectToCustomPath = (
 };
 
 export const getCustomPathFromContent = (contentId: string) => {
-    const content = contentLib.get({ key: contentId }) as Content<any>;
-    return hasCustomPath(content) ? content.data.customPath : null;
+    const content = contentLib.get({ key: contentId });
+    return content && hasCustomPath(content) ? content.data.customPath : null;
 };
 
 export const getContentFromCustomPath = (path: string) => {
@@ -45,7 +46,7 @@ export const getContentFromCustomPath = (path: string) => {
 
     return runInBranchContext(
         () =>
-            contentLib.query<ContentWithCustomPath['data']>({
+            contentLib.query({
                 start: 0,
                 count: 2,
                 filters: {
@@ -97,15 +98,16 @@ export const getPathMapForReferences = (contentId: string) => {
             .reduce((pathMapAcc, dependencyId) => {
                 const dependencyContent = contentLib.get({
                     key: dependencyId,
-                }) as Content<any>;
+                });
 
-                if (hasCustomPath(dependencyContent)) {
+                if (dependencyContent && hasCustomPath(dependencyContent)) {
                     return {
                         ...pathMapAcc,
                         [xpPathToPathname(dependencyContent._path)]:
                             dependencyContent.data.customPath,
                     };
                 }
+
                 return pathMapAcc;
             }, {});
     } catch (e) {

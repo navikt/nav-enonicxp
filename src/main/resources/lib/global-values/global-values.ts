@@ -1,9 +1,7 @@
-import { Calculator } from '../../site/content-types/calculator/calculator';
-import contentLib, { Content } from '/lib/xp/content';
+import { contentLib } from '../xp-libs';
 import { getKeyWithoutMacroDescription } from '../headless/component-utils';
 import { findContentsWithHtmlAreaText } from '../htmlarea/htmlarea';
 import { forceArray } from '../nav-utils';
-import { isGlobalValueSet } from '../../types/content-types/global-value-set';
 
 const globalValuesContentType = `${app.name}:global-value-set`;
 
@@ -42,7 +40,7 @@ const getGlobalValueUsage = (gvKey: string, contentId: string) => {
 };
 
 const getGlobalValueCalcUsage = (key: string) =>
-    contentLib.query<Calculator>({
+    contentLib.query({
         start: 0,
         count: 10000,
         contentTypes: ['no.nav.navno:calculator'],
@@ -63,8 +61,8 @@ const getGlobalValueSet = (contentId: string) => {
         return null;
     }
 
-    const content = contentLib.get({ key: contentId }) as Content<any>;
-    if (!isGlobalValueSet(content)) {
+    const content = contentLib.get({ key: contentId });
+    if (content?.type !== 'no.nav.navno:global-value-set') {
         return null;
     }
 

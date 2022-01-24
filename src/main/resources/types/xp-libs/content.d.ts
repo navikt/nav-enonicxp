@@ -1,4 +1,9 @@
-import * as xpContentLib from '/lib/xp/content';
+import {
+    Content,
+    ContentDescriptor,
+    CustomContentDataConfigs,
+    CustomContentDescriptor,
+} from '../content-types/content-config';
 import {
     CreateContentParams,
     GetChildrenParams,
@@ -10,13 +15,8 @@ import {
     QueryContentParamsWithSort,
     QueryResponse as _QueryResponse,
 } from '*/lib/xp/content';
-import {
-    Content,
-    ContentDescriptor,
-    CustomContentDataConfigs,
-    CustomContentDescriptor,
-} from '../../types/content-types/content-config';
-import { RepoBranch } from '../../types/common';
+import { RepoBranch } from '../common';
+import * as xpContentLib from '/lib/xp/content';
 
 type QueryParams<
     ContentType extends ContentDescriptor = ContentDescriptor,
@@ -80,5 +80,5 @@ interface ContentLibOverride {
     getChildren(params: GetChildrenParams): QueryResponse;
 }
 
-export default xpContentLib as ContentLibOverride &
+export type ContentLibrary = ContentLibOverride &
     Omit<xpContentLib.ContentLibrary, keyof ContentLibOverride>;
