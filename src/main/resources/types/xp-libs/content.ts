@@ -63,6 +63,8 @@ interface ContentLibOverride {
         params: QueryParams<ContentType, AggregationKeys>
     ): QueryResponse<ContentType, AggregationKeys>;
 
+    // Dummy definition to prevent type errors, as the original definition
+    // for this interface has an overloaded query function
     query(): never;
 
     create<
