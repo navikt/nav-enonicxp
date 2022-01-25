@@ -1,8 +1,7 @@
 import nodeLib from '/lib/xp/node';
 import { NotUndefinedOrNull } from '../../types/util-types';
 
-export const getParentPath = (path: string) =>
-    path.split('/').slice(0, -1).join('/');
+export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
 export const removeDuplicates = <Type>(
     array: Type[],
@@ -10,9 +9,7 @@ export const removeDuplicates = <Type>(
 ) =>
     isEqualPredicate
         ? array.filter((aItem, aIndex) => {
-              const bIndex = array.findIndex((bItem) =>
-                  isEqualPredicate(aItem, bItem)
-              );
+              const bIndex = array.findIndex((bItem) => isEqualPredicate(aItem, bItem));
               return aIndex === bIndex;
           })
         : array.filter((item, index) => array.indexOf(item) === index);
@@ -32,9 +29,7 @@ export const parseJsonArray = (json: string): any[] | null => {
         if (Array.isArray(array)) {
             return array;
         }
-        log.error(
-            `Expected JSON string to be array, got ${typeof array} - JSON: ${json}`
-        );
+        log.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
         return null;
     } catch (e) {
         log.error(`Failed to parse JSON string ${json} - ${e}`);
@@ -103,10 +98,7 @@ export const pushLiveElements = (targetIds: string[]) => {
 };
 
 // Get a nested object value from an array of keys
-export const getNestedValueFromKeyArray = (
-    obj: Record<string, any>,
-    keys: string[]
-): any => {
+export const getNestedValueFromKeyArray = (obj: Record<string, any>, keys: string[]): any => {
     if (!keys || keys.length === 0 || !obj || typeof obj !== 'object') {
         return null;
     }
@@ -122,10 +114,7 @@ export const getNestedValueFromKeyArray = (
 };
 
 // Get a nested object value from a dot-delimited string of keys
-export const getNestedValue = (
-    obj: Record<string, any>,
-    keysString: string
-) => {
+export const getNestedValue = (obj: Record<string, any>, keysString: string) => {
     return getNestedValueFromKeyArray(obj, keysString?.split('.'));
 };
 

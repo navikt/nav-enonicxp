@@ -18,8 +18,10 @@ type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
         : never
     : never;
 
-export type PortalComponent<Type extends ComponentType = ComponentType> =
-    PortalComponentMapper<Type, ComponentName> &
-        XpPortalComponent<ComponentConfigAll>;
+export type PortalComponent<Type extends ComponentType = ComponentType> = PortalComponentMapper<
+    Type,
+    ComponentName
+> &
+    XpPortalComponent<ComponentConfigAll>;
 
 // TODO: add regions

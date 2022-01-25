@@ -32,21 +32,16 @@ export const validateCurrentUserPermissionForContent = (
         return false;
     }
 
-    const allowedPrincipals = contentPermissions.permissions.reduce(
-        (acc, principal) => {
-            const hasPermission = principal.allow.some(
-                (permission) => permission === requiredPermission
-            );
+    const allowedPrincipals = contentPermissions.permissions.reduce((acc, principal) => {
+        const hasPermission = principal.allow.some(
+            (permission) => permission === requiredPermission
+        );
 
-            return hasPermission ? [...acc, principal.principal] : acc;
-        },
-        [] as PrincipalKey[]
-    );
+        return hasPermission ? [...acc, principal.principal] : acc;
+    }, [] as PrincipalKey[]);
 
     const currentUserHasAccess = allowedPrincipals.some((allowedPrincipal) =>
-        currentUserPrincipals.some(
-            (currentPrincipal) => currentPrincipal === allowedPrincipal
-        )
+        currentUserPrincipals.some((currentPrincipal) => currentPrincipal === allowedPrincipal)
     );
 
     return currentUserHasAccess;

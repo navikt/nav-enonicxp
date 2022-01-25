@@ -76,16 +76,13 @@ export type BuiltinContentDescriptor = 'portal:fragment';
 // | 'portal:page-template'
 // | 'portal:site';
 
-export type Content<Type extends ContentDescriptor = ContentDescriptor> =
-    ContentDataMapper<Type>;
+export type Content<Type extends ContentDescriptor = ContentDescriptor> = ContentDataMapper<Type>;
 
 export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
 
 export type CustomContentDescriptor = keyof CustomContentDataConfigs;
 
-export type ContentDescriptor =
-    | CustomContentDescriptor
-    | BuiltinContentDescriptor;
+export type ContentDescriptor = CustomContentDescriptor | BuiltinContentDescriptor;
 
 // TODO: add x-data
 // TODO: add media/portal/base types

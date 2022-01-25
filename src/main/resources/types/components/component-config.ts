@@ -78,9 +78,6 @@ export type ComponentConfigAll = ConfigMapper<ComponentType, ComponentName>;
 type PageComponentName = keyof ComponentConfigs['page'];
 type LayoutComponentName = keyof ComponentConfigs['layout'];
 type PartComponentName = keyof ComponentConfigs['part'];
-export type ComponentName =
-    | PageComponentName
-    | LayoutComponentName
-    | PartComponentName;
+export type ComponentName = PageComponentName | LayoutComponentName | PartComponentName;
 
 // TODO: add fragment, image and text components

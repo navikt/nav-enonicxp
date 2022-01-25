@@ -48,9 +48,7 @@ export const getVersionFromTime = ({
 
     // Return the newest version which is equal to or older than the requested time
     const foundVersion = contentVersions.find((version) => {
-        const versionUnixTime = getUnixTimeFromDateTimeString(
-            version.timestamp
-        );
+        const versionUnixTime = getUnixTimeFromDateTimeString(version.timestamp);
         return unixTime >= versionUnixTime;
     });
 
@@ -61,10 +59,7 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
-export const getVersionTimestamps = (
-    contentRef: string,
-    branch: RepoBranch = 'master'
-) => {
+export const getVersionTimestamps = (contentRef: string, branch: RepoBranch = 'master') => {
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,

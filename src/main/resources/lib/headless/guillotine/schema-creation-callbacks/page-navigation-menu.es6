@@ -19,8 +19,7 @@ const getComponentsOnPage = (contentId) => {
 };
 
 const getComponentAnchorLink = (component) => {
-    const dynamicHeader =
-        component.part?.config?.['no-nav-navno']?.['dynamic-header'];
+    const dynamicHeader = component.part?.config?.['no-nav-navno']?.['dynamic-header'];
     if (dynamicHeader) {
         const { anchorId, title, hideFromInternalNavigation } = dynamicHeader;
         return (
@@ -32,11 +31,9 @@ const getComponentAnchorLink = (component) => {
         );
     }
 
-    const sectionWithHeader =
-        component.layout?.config?.['no-nav-navno']?.['section-with-header'];
+    const sectionWithHeader = component.layout?.config?.['no-nav-navno']?.['section-with-header'];
     if (sectionWithHeader) {
-        const { anchorId, title, hideFromInternalNavigation } =
-            sectionWithHeader;
+        const { anchorId, title, hideFromInternalNavigation } = sectionWithHeader;
         return (
             anchorId && {
                 anchorId,
@@ -48,8 +45,7 @@ const getComponentAnchorLink = (component) => {
 
     const fragmentSectionWithHeader = component.fragment?.config;
     if (fragmentSectionWithHeader) {
-        const { anchorId, title, hideFromInternalNavigation } =
-            fragmentSectionWithHeader;
+        const { anchorId, title, hideFromInternalNavigation } = fragmentSectionWithHeader;
         return (
             anchorId && {
                 anchorId,
@@ -59,11 +55,9 @@ const getComponentAnchorLink = (component) => {
         );
     }
 
-    const situationFlexCols =
-        component.layout?.config?.['no-nav-navno']?.['situation-flex-cols'];
+    const situationFlexCols = component.layout?.config?.['no-nav-navno']?.['situation-flex-cols'];
     if (situationFlexCols) {
-        const { anchorId, title, hideFromInternalNavigation } =
-            situationFlexCols;
+        const { anchorId, title, hideFromInternalNavigation } = situationFlexCols;
         return (
             anchorId && {
                 anchorId,
@@ -95,8 +89,7 @@ const pageNavigationMenuCallback = (context, params) => {
             if (component.type === 'fragment') {
                 const { id } = component.fragment;
                 const fragmentContent = contentLib.get({ key: id });
-                anchorLink =
-                    fragmentContent && getComponentAnchorLink(fragmentContent);
+                anchorLink = fragmentContent && getComponentAnchorLink(fragmentContent);
             } else {
                 anchorLink = getComponentAnchorLink(component);
             }
@@ -112,15 +105,11 @@ const pageNavigationMenuCallback = (context, params) => {
             }
 
             if (acc.find((_anchorLink) => _anchorLink.anchorId === anchorId)) {
-                log.warning(
-                    `Duplicate anchor id ${anchorId} found under content id ${contentId}`
-                );
+                log.warning(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
                 return acc;
             }
 
-            const linkOverride = anchorLinkOverrides.find(
-                (link) => link.anchorId === anchorId
-            );
+            const linkOverride = anchorLinkOverrides.find((link) => link.anchorId === anchorId);
 
             return [
                 ...acc,

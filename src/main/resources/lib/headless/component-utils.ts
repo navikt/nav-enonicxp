@@ -6,10 +6,7 @@ import commonLib from '/lib/xp/common';
 import { contentLib } from '../xp-libs';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
-import {
-    componentAppKey,
-    NodeComponent,
-} from '../../types/components/component-node';
+import { componentAppKey, NodeComponent } from '../../types/components/component-node';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -47,27 +44,18 @@ export const getComponentConfig = (component?: NodeComponent) => {
     return config?.[componentAppKey]?.[componentKey];
 };
 
-export const getComponentConfigByPath = (
-    path: string,
-    components: NodeComponent[]
-) => {
-    const foundComponent = forceArray(components).find(
-        (component) => component.path === path
-    );
+export const getComponentConfigByPath = (path: string, components: NodeComponent[]) => {
+    const foundComponent = forceArray(components).find((component) => component.path === path);
     return getComponentConfig(foundComponent);
 };
 
 type ConfigWithAnchorId = PortalComponent['config'] & {
     anchorId?: string;
 };
-const configHasAnchorId = (
-    config: ConfigWithAnchorId
-): config is ConfigWithAnchorId => !!config?.anchorId;
+const configHasAnchorId = (config: ConfigWithAnchorId): config is ConfigWithAnchorId =>
+    !!config?.anchorId;
 
-const componentHasUniqueAnchorId = (
-    content: any,
-    currentComponent: PortalComponent
-) => {
+const componentHasUniqueAnchorId = (content: any, currentComponent: PortalComponent) => {
     const config = currentComponent?.config;
     if (!configHasAnchorId(config)) {
         return false;
@@ -90,14 +78,9 @@ const componentHasUniqueAnchorId = (
     return !isDuplicate;
 };
 
-export const generateAnchorIdField = <
-    Config extends ComponentConfigAll & { anchorId?: string }
->(
+export const generateAnchorIdField = <Config extends ComponentConfigAll & { anchorId?: string }>(
     req: XP.Request,
-    idSourceField: keyof Omit<
-        PickByFieldType<Required<Config>, string>,
-        'anchorId'
-    >,
+    idSourceField: keyof Omit<PickByFieldType<Required<Config>, string>, 'anchorId'>,
     idSourceDefaultValue?: string
 ) => {
     const contentId = portalLib.getContent()._id;
@@ -116,10 +99,7 @@ export const generateAnchorIdField = <
             editor: (content: any) => {
                 const components = forceArray(content.components);
 
-                const config = getComponentConfigByPath(
-                    component.path,
-                    components
-                ) as Config;
+                const config = getComponentConfigByPath(component.path, components) as Config;
 
                 if (!config) {
                     return content;

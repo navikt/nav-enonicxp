@@ -9,18 +9,12 @@ import {
     removeDuplicates,
 } from '../nav-utils';
 import { runInBranchContext } from '../headless/branch-context';
-import {
-    htmlAreaComponentPaths,
-    htmlAreaDataPaths,
-} from '../htmlarea/htmlarea';
+import { htmlAreaComponentPaths, htmlAreaDataPaths } from '../htmlarea/htmlarea';
 import { getNodeKey } from '../time-travel/version-utils';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
-const htmlFragmentMacroPattern = new RegExp(
-    `${htmlFragmentMacroPrefix}[0-9a-z-]+`,
-    'gi'
-);
+const htmlFragmentMacroPattern = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]+`, 'gi');
 
 const getContentNode = (contentRef: string, branch: RepoBranch) => {
     const context = contextLib.get();
@@ -39,31 +33,23 @@ const getFragmentIdsFromHtmlArea = (htmlAreaString: string): string[] => {
 
     const fragmentIds = htmlAreaString.match(htmlFragmentMacroPattern);
 
-    return fragmentIds
-        ? fragmentIds.map((id) => id.replace(htmlFragmentMacroPrefix, ''))
-        : [];
+    return fragmentIds ? fragmentIds.map((id) => id.replace(htmlFragmentMacroPrefix, '')) : [];
 };
 
 // Gets fragment ids from fragment components in a content
-const getFragmentIdsFromComponents = (
-    contentRef: string,
-    branch: RepoBranch
-) => {
+const getFragmentIdsFromComponents = (contentRef: string, branch: RepoBranch) => {
     const contentNode = getContentNode(contentRef, branch);
 
     if (!contentNode) {
         return [];
     }
 
-    return forceArray(contentNode.components).reduce(
-        (fragmentIds, component) => {
-            const fragmentId = component.fragment?.id;
-            return fragmentId && !fragmentIds.includes(fragmentId)
-                ? [...fragmentIds, fragmentId]
-                : fragmentIds;
-        },
-        []
-    );
+    return forceArray(contentNode.components).reduce((fragmentIds, component) => {
+        const fragmentId = component.fragment?.id;
+        return fragmentId && !fragmentIds.includes(fragmentId)
+            ? [...fragmentIds, fragmentId]
+            : fragmentIds;
+    }, []);
 };
 
 // Gets fragment ids referenced from HtmlFragment macros in a content
@@ -74,23 +60,17 @@ const getFragmentIdsFromMacros = (contentRef: string, branch: RepoBranch) => {
         return [];
     }
 
-    const fragmentIdsFromData = htmlAreaDataPaths.reduce(
-        (fragmentIdsAcc, dataPath) => {
-            const htmlArea = getNestedValue(contentNode.data, dataPath);
-            return [...fragmentIdsAcc, ...getFragmentIdsFromHtmlArea(htmlArea)];
-        },
-        [] as string[]
-    );
+    const fragmentIdsFromData = htmlAreaDataPaths.reduce((fragmentIdsAcc, dataPath) => {
+        const htmlArea = getNestedValue(contentNode.data, dataPath);
+        return [...fragmentIdsAcc, ...getFragmentIdsFromHtmlArea(htmlArea)];
+    }, [] as string[]);
 
     const fragmentIdsFromComponents = htmlAreaComponentPaths.reduce(
         (fragmentIdsAcc, componentPath) => {
-            const fragmentIds = forceArray(contentNode.components).reduce(
-                (acc, component) => {
-                    const htmlArea = getNestedValue(component, componentPath);
-                    return [...acc, ...getFragmentIdsFromHtmlArea(htmlArea)];
-                },
-                [] as string[]
-            );
+            const fragmentIds = forceArray(contentNode.components).reduce((acc, component) => {
+                const htmlArea = getNestedValue(component, componentPath);
+                return [...acc, ...getFragmentIdsFromHtmlArea(htmlArea)];
+            }, [] as string[]);
 
             return [...fragmentIdsAcc, ...fragmentIds];
         },
@@ -102,23 +82,14 @@ const getFragmentIdsFromMacros = (contentRef: string, branch: RepoBranch) => {
 
 const getFragmentIdsFromContent = (contentRef: string, branch: RepoBranch) => {
     const fragmentIdsFromMacros = getFragmentIdsFromMacros(contentRef, branch);
-    const fragmentIdsFromComponents = getFragmentIdsFromComponents(
-        contentRef,
-        branch
-    );
+    const fragmentIdsFromComponents = getFragmentIdsFromComponents(contentRef, branch);
 
-    return removeDuplicates([
-        ...fragmentIdsFromMacros,
-        ...fragmentIdsFromComponents,
-    ]);
+    return removeDuplicates([...fragmentIdsFromMacros, ...fragmentIdsFromComponents]);
 };
 
 // Returns the most recent modifiedTime value, taking into account both the content
 // itself and any fragments used in the content
-export const getModifiedTimeIncludingFragments = (
-    contentRef: string,
-    branch: RepoBranch
-) =>
+export const getModifiedTimeIncludingFragments = (contentRef: string, branch: RepoBranch) =>
     runInBranchContext(() => {
         const content = contentLib.get({ key: contentRef });
 

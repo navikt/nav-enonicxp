@@ -50,8 +50,7 @@ const pageContentTypes = [
     'large-table',
 ].map((contentType) => `${app.name}:${contentType}`);
 
-const isIncludedType = (type) =>
-    !!pageContentTypes.find((includedType) => includedType === type);
+const isIncludedType = (type) => !!pageContentTypes.find((includedType) => includedType === type);
 
 const validateContent = (content) => {
     if (!content) {
@@ -116,9 +115,7 @@ const getContent = (path) => {
         if (contentFromCustomPath.length === 1) {
             return contentFromCustomPath[0];
         }
-        log.warning(
-            `Multiple entries found for custom path ${path} - skipping sitemap entry`
-        );
+        log.warning(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
         return null;
     }
 
@@ -200,9 +197,7 @@ const generateAndBroadcastSitemapData = () => {
                     );
 
                     if (sitemapEntries.length > maxCount) {
-                        log.warning(
-                            `Sitemap entries count exceeds recommended maximum`
-                        );
+                        log.warning(`Sitemap entries count exceeds recommended maximum`);
                     }
                 } catch (e) {
                     log.error(`Error while generating sitemap - ${e}`);
@@ -277,10 +272,7 @@ const activateDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (
-                    node.branch === 'master' &&
-                    node.repo === 'com.enonic.cms.default'
-                ) {
+                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
                     const xpPath = node.path.replace(/^\/content/, '');
                     updateSitemapEntry(xpPath);
                 }

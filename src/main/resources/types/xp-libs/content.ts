@@ -21,10 +21,7 @@ import * as xpContentLib from '/lib/xp/content';
 type QueryParams<
     ContentType extends ContentDescriptor = ContentDescriptor,
     AggregationKeys extends string = never
-> = (
-    | QueryContentParams<AggregationKeys>
-    | QueryContentParamsWithSort<AggregationKeys>
-) & {
+> = (QueryContentParams<AggregationKeys> | QueryContentParamsWithSort<AggregationKeys>) & {
     contentTypes?: ContentType[];
 };
 
@@ -36,17 +33,20 @@ type QueryResponse<
         hits: ReadonlyArray<Content<ContentType>>;
     }>;
 
-type CreateParams<
-    ContentType extends CustomContentDescriptor = CustomContentDescriptor
-> = Omit<CreateContentParams<any>, 'contentType' | 'data'> & {
+type CreateParams<ContentType extends CustomContentDescriptor = CustomContentDescriptor> = Omit<
+    CreateContentParams<any>,
+    'contentType' | 'data'
+> & {
     contentType: ContentType;
     data: CustomContentDataConfigs[ContentType];
 };
 
-type ModifyParams<ContentType extends ContentDescriptor = ContentDescriptor> =
-    Omit<ModifyContentParams<any>, 'editor'> & {
-        editor: (content: Content<ContentType>) => Content<ContentType>;
-    };
+type ModifyParams<ContentType extends ContentDescriptor = ContentDescriptor> = Omit<
+    ModifyContentParams<any>,
+    'editor'
+> & {
+    editor: (content: Content<ContentType>) => Content<ContentType>;
+};
 
 type PublishParams = PublishContentParams & {
     sourceBranch: RepoBranch;
@@ -67,9 +67,7 @@ interface ContentLibOverride {
     // for this interface has an overloaded query function
     query(): never;
 
-    create<
-        ContentType extends CustomContentDescriptor = CustomContentDescriptor
-    >(
+    create<ContentType extends CustomContentDescriptor = CustomContentDescriptor>(
         params: CreateParams<ContentType>
     ): Content<ContentType>;
 

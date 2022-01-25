@@ -5,11 +5,9 @@ import { Content } from '../../types/content-types/content-config';
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
-const isValidCustomPath = (path: string) =>
-    !!path && validCustomPathPattern.test(path);
+const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
 
-const xpPathToPathname = (xpPath: string) =>
-    xpPath?.replace(/^\/www\.nav\.no/, '');
+const xpPathToPathname = (xpPath: string) => xpPath?.replace(/^\/www\.nav\.no/, '');
 
 const hasCustomPath = (
     content: Content<any>
@@ -77,9 +75,7 @@ export const getInternalContentPathFromCustomPath = (xpPath: string) => {
     }
 
     if (content.length > 1) {
-        log.error(
-            `Custom public path ${path} exists on multiple content objects!`
-        );
+        log.error(`Custom public path ${path} exists on multiple content objects!`);
         return null;
     }
 

@@ -1,8 +1,4 @@
-import {
-    ComponentConfigs,
-    ComponentName,
-    ComponentType,
-} from './component-config';
+import { ComponentConfigs, ComponentName, ComponentType } from './component-config';
 import { Descriptor } from '../common';
 
 export const componentAppKey = 'no-nav-navno';
@@ -26,7 +22,4 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
 
 // This type is used in the components array retrieved from a raw node
 // through a nodeLib repo connection
-export type NodeComponent = NodeComponentMapper<
-    ComponentType,
-    ComponentName
-> & { path: string };
+export type NodeComponent = NodeComponentMapper<ComponentType, ComponentName> & { path: string };

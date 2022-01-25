@@ -21,8 +21,7 @@ const getGvKeyAndContentIdFromUniqueKey = (key: string) => {
         };
     }
 
-    const [gvKey, contentId] =
-        getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
+    const [gvKey, contentId] = getKeyWithoutMacroDescription(key).split(uniqueKeySeparator);
 
     return {
         contentId,
@@ -64,9 +63,7 @@ const getGlobalValueItem = (gvKey: string, contentId: string) => {
         return null;
     }
 
-    return forceArray(globalValueSet.data.valueItems).find(
-        (item) => item.key === gvKey
-    );
+    return forceArray(globalValueSet.data.valueItems).find((item) => item.key === gvKey);
 };
 
 const getGlobalValueSet = (contentId: string) => {
@@ -119,8 +116,7 @@ const getGlobalValue = (gvKey: string, contentId: string) => {
     return value.numberValue;
 };
 
-const getGlobalNumberValue = (gvKey: string, contentId: string) =>
-    getGlobalValue(gvKey, contentId);
+const getGlobalNumberValue = (gvKey: string, contentId: string) => getGlobalValue(gvKey, contentId);
 
 module.exports = {
     getGlobalValueUsage,

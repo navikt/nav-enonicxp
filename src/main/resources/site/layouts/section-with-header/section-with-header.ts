@@ -6,11 +6,7 @@ const controller = require('/lib/headless/controllers/component-preview-controll
 exports.get = (req: XP.Request) => {
     if (req.mode === 'edit') {
         // the fieldDefaultValue parameter must match the default title set in the xml file
-        generateAnchorIdField<SectionWithHeaderConfig>(
-            req,
-            'title',
-            'Seksjonstittel'
-        );
+        generateAnchorIdField<SectionWithHeaderConfig>(req, 'title', 'Seksjonstittel');
     }
 
     return controller(req);
