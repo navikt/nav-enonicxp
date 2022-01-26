@@ -14,7 +14,7 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
                       };
                   };
               };
-          } & { [NotType in Exclude<ComponentType, Type>]: undefined } & {
+          } & { [notType in Exclude<ComponentType, Type>]: undefined } & {
               type: Type;
           }
         : never
