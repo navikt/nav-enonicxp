@@ -35,7 +35,9 @@ export const findContentsWithHtmlAreaText = (text: string) => {
         })
         .hits.filter(
             (hit) =>
-                hit.fragment.type === 'part' && hit.fragment.descriptor === 'no.nav.navno:html-area'
+                hit.fragment.type === 'part' &&
+                hit.fragment.descriptor === 'no.nav.navno:html-area' &&
+                hit.fragment.config?.html?.includes(text),
         );
 
     return [...queryHits, ...fragmentHits];
