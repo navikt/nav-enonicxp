@@ -17,6 +17,7 @@ import {
 } from '*/lib/xp/content';
 import { RepoBranch } from '../common';
 import * as xpContentLib from '/lib/xp/content';
+import { Override } from '../util-types';
 
 type QueryParams<
     ContentType extends ContentDescriptor = ContentDescriptor,
@@ -80,5 +81,4 @@ interface ContentLibOverride {
     getChildren(params: GetChildrenParams): QueryResponse;
 }
 
-export type ContentLibrary = ContentLibOverride &
-    Omit<xpContentLib.ContentLibrary, keyof ContentLibOverride>;
+export type ContentLibrary = Override<xpContentLib.ContentLibrary, ContentLibOverride>;

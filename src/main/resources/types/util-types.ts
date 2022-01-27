@@ -5,3 +5,6 @@ export type PickByFieldType<ObjectType, FieldType> = {
 };
 
 export type EmptyObject = Record<string, never>;
+
+export type Override<SourceType, OverrideType> = OverrideType &
+    Omit<SourceType, keyof OverrideType>;

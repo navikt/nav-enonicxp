@@ -1,9 +1,8 @@
 import { PortalComponent } from '../../types/components/component-portal';
 import { forceArray } from '../nav-utils';
-import portalLib from '/lib/xp/portal';
 import nodeLib from '/lib/xp/node';
 import commonLib from '/lib/xp/common';
-import { contentLib } from '../xp-libs';
+import { contentLib, portalLib } from '../xp-libs';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
 import { componentAppKey, NodeComponent } from '../../types/components/component-node';
@@ -84,7 +83,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
     idSourceDefaultValue?: string
 ) => {
     const contentId = portalLib.getContent()._id;
-    const component = portalLib.getComponent() as PortalComponent;
+    const component = portalLib.getComponent();
 
     const repo = nodeLib.connect({
         repoId: req.repositoryId,
