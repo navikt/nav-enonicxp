@@ -1,5 +1,5 @@
 import { ComponentConfigs, ComponentName, ComponentType } from './component-config';
-import { Descriptor } from '../common';
+import { NavNoDescriptor } from '../common';
 
 export const componentAppKey = 'no-nav-navno';
 
@@ -7,7 +7,7 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
               [type in Type]: {
-                  descriptor: Descriptor<Name>;
+                  descriptor: NavNoDescriptor<Name>;
                   config?: {
                       [componentAppKey]: {
                           [key in Name]: ComponentConfigs[Type][Name];

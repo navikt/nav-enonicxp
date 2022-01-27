@@ -3,5 +3,5 @@ import { CustomContentName } from './content-types/content-config';
 
 export type RepoBranch = 'master' | 'draft';
 
-export type Descriptor<Name extends string | ComponentName | CustomContentName = string> =
+export type NavNoDescriptor<Name extends string | ComponentName | CustomContentName = string> =
     `no.nav.navno:${Name}`;

@@ -5,7 +5,7 @@ import {
     ComponentName,
     ComponentType,
 } from './component-config';
-import { Descriptor } from '../common';
+import { NavNoDescriptor } from '../common';
 
 // This type is used in the page object on a content, and when using portalLib.getComponent()
 type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
@@ -13,7 +13,7 @@ type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
         ? {
               type: Type;
               config?: ComponentConfigs[Type][Name];
-              descriptor: Descriptor<Name>;
+              descriptor: NavNoDescriptor<Name>;
           }
         : never
     : never;

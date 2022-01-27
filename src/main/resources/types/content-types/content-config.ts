@@ -24,7 +24,7 @@ import { TransportPage } from '../../site/content-types/transport-page/transport
 import { Content as XpContent } from '/lib/xp/content';
 import { PortalComponent } from '../components/component-portal';
 import { EmptyObject } from '../util-types';
-import { Descriptor } from '../common';
+import { NavNoDescriptor } from '../common';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -54,7 +54,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
 
 // Add the app-specific descriptor prefix to all content types
 export type CustomContentDataConfigs = {
-    [Type in keyof CustomContentDataConfigsWithoutDescriptor as Descriptor<Type>]: CustomContentDataConfigsWithoutDescriptor[Type];
+    [Type in keyof CustomContentDataConfigsWithoutDescriptor as NavNoDescriptor<Type>]: CustomContentDataConfigsWithoutDescriptor[Type];
 };
 
 type ContentDataMapper<Type extends ContentDescriptor> = XpContent &
