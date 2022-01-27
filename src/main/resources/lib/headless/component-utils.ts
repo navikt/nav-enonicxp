@@ -104,7 +104,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
                     return content;
                 }
 
-                if (!config[idSourceField]) {
+                if (!config[idSourceField] && idSourceDefaultValue !== undefined) {
                     // @ts-ignore
                     config[idSourceField] = idSourceDefaultValue;
                 }
