@@ -33,7 +33,7 @@ export interface ButtonPartConfig {
   /**
    * Størrelse
    */
-  size: "normal" | "kompakt" | "mini";
+  size: "normal" | "small";
 
   /**
    * Full bredde
