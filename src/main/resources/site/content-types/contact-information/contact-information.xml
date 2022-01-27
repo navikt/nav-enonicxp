@@ -17,6 +17,9 @@
                         <input name="phoneNumber" type="TextLine" >
                             <label>Telefonnummer</label>
                             <help-text>Kun tall og uten mellomrom, feks ("+4755553333")</help-text>
+                            <config>
+                                <regexp>^[0-9+]+$</regexp>
+                            </config>
                         </input>
                         <input name="text" type="TextArea" >
                             <label>Tekst</label>
