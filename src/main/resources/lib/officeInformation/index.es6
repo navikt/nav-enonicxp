@@ -7,9 +7,36 @@ const libs = {
     cluster: require('/lib/xp/cluster'),
     context: require('/lib/xp/context'),
     utils: require('/lib/nav-utils'),
+    common: require('/lib/xp/common'),
 };
 
-function setIsRefreshing(navRepo, isRefreshing, failed) {
+const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
+const officeInfoContentType = `${app.name}:office-information`;
+
+const selectedEnhetTypes = {
+    ALS: true,
+    ARK: true,
+    FPY: true,
+    FYLKE: true,
+    HMS: true,
+    INTRO: true,
+    KLAGE: true,
+    KONTAKT: true,
+    KONTROLL: true,
+    LOKAL: true,
+    OKONOMI: true,
+    TILTAK: true,
+    YTA: true,
+    OPPFUTLAND: true,
+};
+
+const logger = {
+    info: (message) => log.info(`[office information] ${message}`),
+    warning: (message) => log.warning(`[office information] ${message}`),
+    error: (message) => log.error(`[office information] ${message}`),
+};
+
+const setIsRefreshing = (navRepo, isRefreshing, failed) => {
     navRepo.modify({
         key: '/officeInformation',
         editor: (o) => {
@@ -26,86 +53,125 @@ function setIsRefreshing(navRepo, isRefreshing, failed) {
             return object;
         },
     });
-}
+};
 
-function refreshOfficeInformation(officeInformationList) {
-    // find all existing offices
-    const officeFolder = libs.content.get({
-        key: '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer',
-    });
+// If non-office information content already exists on the path for an office, delete it
+// (the main purpose of this is to get rid of redirects in the event of an office changing name
+// to a name that was previously in use)
+const deleteIfContentExists = (name) => {
+    const updatedPath = `${parentPath}/${name}`;
+    const existingContentOnPath = libs.content.get({ key: updatedPath });
 
-    const existingOffices = libs.content.getChildren({
-        key: officeFolder._id,
-        count: 2000,
-    }).hits;
+    if (existingContentOnPath && existingContentOnPath.type !== officeInfoContentType) {
+        logger.info(
+            `Content already exists on path ${updatedPath} - deleting to make room for office page`
+        );
 
-    const officesInNorg = {
-        // map over offices in norg2, so we can delete old offices
-    };
+        // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
+        // We want to free up the source path immediately
+        libs.content.move({ source: existingContentOnPath._id, target: `${updatedPath}-delete` });
+
+        libs.content.delete({
+            key: existingContentOnPath._id,
+        });
+    }
+};
+
+const refreshOfficeInformation = (officeInformationUpdated) => {
+    const existingOffices = libs.content
+        .getChildren({
+            key: parentPath,
+            count: 2000,
+        })
+        .hits.filter((office) => office.type === officeInfoContentType);
+
+    const officesInNorg = {};
 
     const newOffices = [];
     const updated = [];
     const deleted = [];
+
     // update office information or create new
-    officeInformationList.forEach((officeInformation) => {
+    officeInformationUpdated.forEach((updatedOfficeData) => {
+        const { enhet } = updatedOfficeData;
+
         // ignore closed offices and include only selected types
-        if (
-            officeInformation.enhet.status !== 'Nedlagt' &&
-            (officeInformation.enhet.type === 'ALS' ||
-                officeInformation.enhet.type === 'ARK' ||
-                officeInformation.enhet.type === 'FPY' ||
-                officeInformation.enhet.type === 'FYLKE' ||
-                officeInformation.enhet.type === 'HMS' ||
-                officeInformation.enhet.type === 'INTRO' ||
-                officeInformation.enhet.type === 'KLAGE' ||
-                officeInformation.enhet.type === 'KONTAKT' ||
-                officeInformation.enhet.type === 'KONTROLL' ||
-                officeInformation.enhet.type === 'LOKAL' ||
-                officeInformation.enhet.type === 'OKONOMI' ||
-                officeInformation.enhet.type === 'TILTAK' ||
-                officeInformation.enhet.type === 'YTA' ||
-                officeInformation.enhet.type === 'OPPFUTLAND')
-        ) {
-            // check if the office already exists
-            const existingOffice = existingOffices.find((o) => {
-                return o.data && o.data.enhet && o.data.enhet.enhetId
-                    ? o.data.enhet.enhetId === officeInformation.enhet.enhetId
-                    : false;
-            });
+        if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
+            officesInNorg[enhet.enhetId] = true;
+
+            const updatedName = libs.common.sanitize(enhet.navn);
+            deleteIfContentExists(updatedName);
+
+            const existingOffice = existingOffices.find(
+                (content) => content.data?.enhet?.enhetId === enhet.enhetId
+            );
+
+            // if the office page already exists, update the existing content
             if (existingOffice) {
-                const existing = libs.utils.createObjectChecksum(existingOffice.data);
-                const fetched = libs.utils.createObjectChecksum(officeInformation);
-                if (existing !== fetched) {
+                const existingChecksum = libs.utils.createObjectChecksum(existingOffice.data);
+                const updatedChecksum = libs.utils.createObjectChecksum(updatedOfficeData);
+
+                if (
+                    existingChecksum !== updatedChecksum ||
+                    existingOffice.displayName !== enhet.navn
+                ) {
                     updated.push(existingOffice._path);
                     libs.content.modify({
                         key: existingOffice._id,
-                        editor: (o) => ({ ...o, data: officeInformation }),
+                        editor: (content) => ({
+                            ...content,
+                            displayName: enhet.navn,
+                            data: updatedOfficeData,
+                        }),
                     });
                 }
+
+                const currentName = existingOffice._name;
+
+                if (updatedName !== currentName) {
+                    try {
+                        logger.info(`Updating name/path: ${currentName} -> ${updatedName}`);
+
+                        // Move the office info page to a new path if the name changed
+                        libs.content.move({
+                            source: existingOffice._path,
+                            target: updatedName,
+                        });
+
+                        // Create a redirect from the old path
+                        libs.content.create({
+                            name: currentName,
+                            parentPath: parentPath,
+                            displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
+                            contentType: `${app.name}:internal-link`,
+                            data: {
+                                target: existingOffice._id,
+                            },
+                        });
+                    } catch (e) {
+                        logger.error(`Failed to updated office information name: ${e}`);
+                    }
+                }
             } else {
-                const result = libs.content.create({
-                    parentPath: officeFolder._path,
-                    displayName: officeInformation.enhet.navn,
-                    contentType: app.name + ':office-information',
-                    data: officeInformation,
-                });
-                newOffices.push(result._path);
+                try {
+                    const result = libs.content.create({
+                        name: updatedName,
+                        parentPath: parentPath,
+                        displayName: enhet.navn,
+                        contentType: officeInfoContentType,
+                        data: updatedOfficeData,
+                    });
+                    newOffices.push(result._path);
+                } catch (e) {
+                    logger.error(`Failed to create new office page - ${e}`);
+                }
             }
-            officesInNorg[officeInformation.enhet.enhetId] = true;
         }
     });
 
     // delete old offices
     existingOffices.forEach((existingOffice) => {
-        let enhetId;
-        if (
-            existingOffice &&
-            existingOffice.data &&
-            existingOffice.data.enhet &&
-            existingOffice.data.enhet.enhetId
-        ) {
-            enhetId = existingOffice.data.enhet.enhetId;
-        }
+        const enhetId = existingOffice?.data?.enhet?.enhetId;
         if (!officesInNorg[enhetId]) {
             deleted.push(existingOffice._path);
             libs.content.delete({
@@ -114,18 +180,22 @@ function refreshOfficeInformation(officeInformationList) {
         }
     });
 
-    // log info
-    log.info(
+    logger.info(
         `NORG - Updated: ${updated.length} New: ${newOffices.length} Deleted: ${deleted.length}`
     );
-    // extra logging
     if (updated.length > 0) {
-        log.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
+        logger.info(`Updated: ${JSON.stringify(updated, null, 4)}`);
     }
-}
+    if (newOffices.length > 0) {
+        logger.info(`New: ${JSON.stringify(newOffices, null, 4)}`);
+    }
+    if (deleted.length > 0) {
+        logger.info(`Deleted: ${JSON.stringify(deleted, null, 4)}`);
+    }
+};
 
-function checkForRefresh(oneTimeRun = false) {
-    log.info('NORG - Start update');
+const checkForRefresh = (oneTimeRun = false) => {
+    logger.info('NORG - Start update');
     const startBackupJob = () => {
         // stop cron job first, just in case it has been failing for more than a day
         libs.cron.unschedule({
@@ -161,7 +231,7 @@ function checkForRefresh(oneTimeRun = false) {
 
     const hasNavRepo = libs.repo.get('no.nav.navno');
     if (!hasNavRepo) {
-        log.info('NORG - Create no.nav.navno repo');
+        logger.info('NORG - Create no.nav.navno repo');
         libs.repo.create({
             id: 'no.nav.navno',
         });
@@ -177,7 +247,7 @@ function checkForRefresh(oneTimeRun = false) {
     });
 
     if (!navRepo.get('/officeInformation')) {
-        log.info('NORG - Create office information node');
+        logger.info('NORG - Create office information node');
         navRepo.create({
             _name: 'officeInformation',
             parentPath: '/',
@@ -209,7 +279,7 @@ function checkForRefresh(oneTimeRun = false) {
         const officeInformationList = JSON.parse(response.body);
         refreshOfficeInformation(officeInformationList);
 
-        log.info('NORG - Publish office information');
+        logger.info('NORG - Publish office information');
         libs.content.publish({
             keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
             sourceBranch: 'draft',
@@ -217,8 +287,8 @@ function checkForRefresh(oneTimeRun = false) {
             includeDependencies: true,
         });
     } catch (e) {
-        log.error('NORG - Failed to get office information from norg2');
-        log.error(e);
+        logger.error('NORG - Failed to get office information from norg2');
+        logger.error(e);
         failedToRefresh = true;
     }
 
@@ -228,7 +298,7 @@ function checkForRefresh(oneTimeRun = false) {
     if (failedToRefresh && !oneTimeRun) {
         startBackupJob();
     }
-}
+};
 
 exports.runOneTimeJob = () => {
     libs.context.run(
@@ -245,15 +315,12 @@ exports.runOneTimeJob = () => {
             const timerStart = Date.now();
             checkForRefresh(true);
             const mills = Date.now() - timerStart;
-            log.info(`NORG: time elapsed: ${mills / 1000}s`);
+            logger.info(`NORG: time elapsed: ${mills / 1000}s`);
         }
     );
 };
 
 exports.startCronJob = () => {
-    libs.cron.unschedule({
-        name: 'office_info_norg2_daily',
-    });
     libs.cron.unschedule({
         name: 'office_info_norg2_hourly',
     });
