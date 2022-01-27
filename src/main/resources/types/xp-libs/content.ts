@@ -13,7 +13,7 @@ import {
     PublishResponse,
     QueryContentParams,
     QueryContentParamsWithSort,
-    QueryResponse as _QueryResponse,
+    QueryResponse,
 } from '*/lib/xp/content';
 import { RepoBranch } from '../common';
 import * as xpContentLib from '/lib/xp/content';
@@ -26,33 +26,41 @@ type QueryParams<
     contentTypes?: ContentType[];
 };
 
-type QueryResponse<
+type QueryResponseOverride<
     ContentType extends ContentDescriptor = ContentDescriptor,
     AggregationKeys extends string = never
-> = Omit<_QueryResponse<any, AggregationKeys>, 'hits'> &
+> = Override<
+    QueryResponse<any, AggregationKeys>,
     Readonly<{
         hits: ReadonlyArray<Content<ContentType>>;
-    }>;
+    }>
+>;
 
-type CreateParams<ContentType extends CustomContentDescriptor = CustomContentDescriptor> = Omit<
+type CreateContentParamsOverride<
+    ContentType extends CustomContentDescriptor = CustomContentDescriptor
+> = Override<
     CreateContentParams<any>,
-    'contentType' | 'data'
-> & {
-    contentType: ContentType;
-    data: CustomContentDataConfigs[ContentType];
-};
+    {
+        contentType: ContentType;
+        data: CustomContentDataConfigs[ContentType];
+    }
+>;
 
-type ModifyParams<ContentType extends ContentDescriptor = ContentDescriptor> = Omit<
-    ModifyContentParams<any>,
-    'editor'
-> & {
-    editor: (content: Content<ContentType>) => Content<ContentType>;
-};
+type ModifyContentParamsOverride<ContentType extends ContentDescriptor = ContentDescriptor> =
+    Override<
+        ModifyContentParams<any>,
+        {
+            editor: (content: Content<ContentType>) => Content<ContentType>;
+        }
+    >;
 
-type PublishParams = PublishContentParams & {
-    sourceBranch: RepoBranch;
-    targetBranch: RepoBranch;
-};
+type PublishContentParamsOverride = Override<
+    PublishContentParams,
+    {
+        sourceBranch: RepoBranch;
+        targetBranch: RepoBranch;
+    }
+>;
 
 interface ContentLibOverride {
     get(params: GetContentParams): Content | null;
@@ -62,23 +70,23 @@ interface ContentLibOverride {
         AggregationKeys extends string = never
     >(
         params: QueryParams<ContentType, AggregationKeys>
-    ): QueryResponse<ContentType, AggregationKeys>;
+    ): QueryResponseOverride<ContentType, AggregationKeys>;
 
     // Dummy definition to prevent type errors, as the original definition
     // for this interface has an overloaded query function
     query(): never;
 
     create<ContentType extends CustomContentDescriptor = CustomContentDescriptor>(
-        params: CreateParams<ContentType>
+        params: CreateContentParamsOverride<ContentType>
     ): Content<ContentType>;
 
     modify<ContentType extends ContentDescriptor = ContentDescriptor>(
-        params: ModifyParams<ContentType>
+        params: ModifyContentParamsOverride<ContentType>
     ): Content;
 
-    publish(params: PublishParams): PublishResponse;
+    publish(params: PublishContentParamsOverride): PublishResponse;
 
-    getChildren(params: GetChildrenParams): QueryResponse;
+    getChildren(params: GetChildrenParams): QueryResponseOverride;
 }
 
 export type ContentLibrary = Override<xpContentLib.ContentLibrary, ContentLibOverride>;
