@@ -3,7 +3,15 @@ import { NavNoDescriptor } from '../common';
 
 export const componentAppKey = 'no-nav-navno';
 
-type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
+type NodeComponentMapper<Type, Name> = Type extends 'fragment'
+    ? {
+          type: Type;
+          path: string;
+          fragment?: {
+              id: string;
+          };
+      }
+    : Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
               [type in Type]: {
@@ -14,7 +22,7 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
                       };
                   };
               };
-          } & { [notType in Exclude<ComponentType, Type>]: undefined } & {
+          } & {
               type: Type;
           }
         : never
@@ -22,4 +30,6 @@ type NodeComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
 
 // This type is used in the components array retrieved from a raw node
 // through a nodeLib repo connection
-export type NodeComponent = NodeComponentMapper<ComponentType, ComponentName> & { path: string };
+export type NodeComponent = NodeComponentMapper<ComponentType, ComponentName> & {
+    path: string;
+};

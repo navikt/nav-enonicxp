@@ -1,6 +1,5 @@
 import contextLib from '/lib/xp/context';
-import nodeLib from '/lib/xp/node';
-import { contentLib } from '../xp-libs';
+import { contentLib, nodeLib } from '../xp-libs';
 import { RepoBranch } from '../../types/common';
 import {
     forceArray,
@@ -23,7 +22,7 @@ const getContentNode = (contentRef: string, branch: RepoBranch) => {
         branch: branch || context.branch,
     });
 
-    return repo.get<any>(getNodeKey(contentRef));
+    return repo.get(getNodeKey(contentRef));
 };
 
 const getFragmentIdsFromHtmlArea = (htmlAreaString: string): string[] => {
@@ -45,11 +44,15 @@ const getFragmentIdsFromComponents = (contentRef: string, branch: RepoBranch) =>
     }
 
     return forceArray(contentNode.components).reduce((fragmentIds, component) => {
+        if (component.type !== 'fragment') {
+            return fragmentIds;
+        }
+
         const fragmentId = component.fragment?.id;
         return fragmentId && !fragmentIds.includes(fragmentId)
             ? [...fragmentIds, fragmentId]
             : fragmentIds;
-    }, []);
+    }, [] as string[]);
 };
 
 // Gets fragment ids referenced from HtmlFragment macros in a content

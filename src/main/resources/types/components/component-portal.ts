@@ -8,7 +8,14 @@ import {
 import { NavNoDescriptor } from '../common';
 
 // This type is used in the page object on a content, and when using portalLib.getComponent()
-type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
+type PortalComponentMapper<Type, Name> = Type extends 'fragment'
+    ? {
+          type: Type;
+          fragment?: string;
+          config: undefined;
+          descriptor: undefined;
+      }
+    : Type extends keyof ComponentConfigs
     ? Name extends keyof ComponentConfigs[Type] & ComponentName
         ? {
               type: Type;
@@ -21,6 +28,7 @@ type PortalComponentMapper<Type, Name> = Type extends keyof ComponentConfigs
 export type PortalComponent<
     Type extends ComponentType = ComponentType,
     Name extends ComponentName = ComponentName
-> = PortalComponentMapper<Type, Name> & XpPortalComponent<ComponentConfigAll>;
+> = PortalComponentMapper<Type, Name> &
+    Omit<XpPortalComponent<ComponentConfigAll>, 'type' | 'descriptor' | 'config'>;
 
 // TODO: add regions

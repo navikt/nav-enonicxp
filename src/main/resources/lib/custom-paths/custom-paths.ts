@@ -5,7 +5,7 @@ import { Content } from '../../types/content-types/content-config';
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
-const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
+export const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
 
 const xpPathToPathname = (xpPath: string) => xpPath?.replace(/^\/www\.nav\.no/, '');
 
@@ -90,9 +90,7 @@ export const getPathMapForReferences = (contentId: string) => {
                 key: contentId,
             })
             .reduce((pathMapAcc, dependencyId) => {
-                const dependencyContent = contentLib.get({
-                    key: dependencyId,
-                });
+                const dependencyContent = contentLib.get({ key: dependencyId });
 
                 if (dependencyContent && hasCustomPath(dependencyContent)) {
                     return {

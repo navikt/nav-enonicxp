@@ -23,8 +23,7 @@ import { ProductCardMicroPartConfig } from '../../site/parts/product-card-micro/
 import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/product-card-mini-part-config';
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
 
-export type ComponentType = 'page' | 'layout' | 'part';
-// | 'fragment'
+export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 // | 'image'
 // | 'text';
 
@@ -80,4 +79,4 @@ type LayoutComponentName = keyof ComponentConfigs['layout'];
 type PartComponentName = keyof ComponentConfigs['part'];
 export type ComponentName = PageComponentName | LayoutComponentName | PartComponentName;
 
-// TODO: add fragment, image and text components
+// TODO: add image and text components?

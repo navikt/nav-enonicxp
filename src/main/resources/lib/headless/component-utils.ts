@@ -26,7 +26,9 @@ export const getComponentConfig = (component?: NodeComponent) => {
         return null;
     }
 
-    const componentProps = component[type];
+    // @ts-ignore
+    // component[component.type] is always a valid field
+    const componentProps = component[component.type];
     if (!componentProps) {
         return null;
     }
@@ -51,7 +53,7 @@ export const getComponentConfigByPath = (path: string, components: NodeComponent
 type ConfigWithAnchorId = PortalComponent['config'] & {
     anchorId?: string;
 };
-const configHasAnchorId = (config: ConfigWithAnchorId): config is ConfigWithAnchorId =>
+const configHasAnchorId = (config?: ConfigWithAnchorId): config is ConfigWithAnchorId =>
     !!config?.anchorId;
 
 const componentHasUniqueAnchorId = (content: any, currentComponent: PortalComponent) => {
