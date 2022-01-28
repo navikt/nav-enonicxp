@@ -5,57 +5,57 @@ import {
     CustomContentDescriptor,
 } from '../content-types/content-config';
 import {
-    CreateContentParams,
-    GetChildrenParams,
-    GetContentParams,
-    ModifyContentParams,
-    PublishContentParams,
-    PublishResponse,
-    QueryContentParams,
-    QueryContentParamsWithSort,
-    QueryResponse,
+    CreateContentParams as XpCreateContentParams,
+    GetChildrenParams as XpGetChildrenParams,
+    GetContentParams as XpGetContentParams,
+    ModifyContentParams as XpModifyContentParams,
+    PublishContentParams as XpPublishContentParams,
+    PublishResponse as XpPublishResponse,
+    QueryContentParams as XpQueryContentParams,
+    QueryContentParamsWithSort as XpQueryContentParamsWithSort,
+    QueryResponse as XpQueryResponse,
 } from '*/lib/xp/content';
 import { RepoBranch } from '../common';
 import * as xpContentLib from '/lib/xp/content';
 import { Override } from '../util-types';
 
-type QueryParams<
+export type QueryParams<
     ContentType extends ContentDescriptor = ContentDescriptor,
     AggregationKeys extends string = never
-> = (QueryContentParams<AggregationKeys> | QueryContentParamsWithSort<AggregationKeys>) & {
+> = (XpQueryContentParams<AggregationKeys> | XpQueryContentParamsWithSort<AggregationKeys>) & {
     contentTypes?: ContentType[];
 };
 
-type QueryResponseOverride<
+export type QueryResponse<
     ContentType extends ContentDescriptor = ContentDescriptor,
     AggregationKeys extends string = never
 > = Override<
-    QueryResponse<any, AggregationKeys>,
+    XpQueryResponse<any, AggregationKeys>,
     Readonly<{
         hits: ReadonlyArray<Content<ContentType>>;
     }>
 >;
 
-type CreateContentParamsOverride<
+export type CreateContentParams<
     ContentType extends CustomContentDescriptor = CustomContentDescriptor
 > = Override<
-    CreateContentParams<any>,
+    XpCreateContentParams<any>,
     {
         contentType: ContentType;
         data: CustomContentDataConfigs[ContentType];
     }
 >;
 
-type ModifyContentParamsOverride<ContentType extends ContentDescriptor = ContentDescriptor> =
+export type ModifyContentParams<ContentType extends ContentDescriptor = ContentDescriptor> =
     Override<
-        ModifyContentParams<any>,
+        XpModifyContentParams<any>,
         {
             editor: (content: Content<ContentType>) => Content<ContentType>;
         }
     >;
 
-type PublishContentParamsOverride = Override<
-    PublishContentParams,
+export type PublishContentParams = Override<
+    XpPublishContentParams,
     {
         sourceBranch: RepoBranch;
         targetBranch: RepoBranch;
@@ -63,7 +63,7 @@ type PublishContentParamsOverride = Override<
 >;
 
 interface ContentLibOverride {
-    get(params: GetContentParams): Content | null;
+    get(params: XpGetContentParams): Content | null;
 
     // TODO: add typing for filters
     query<
@@ -71,23 +71,23 @@ interface ContentLibOverride {
         AggregationKeys extends string = never
     >(
         params: QueryParams<ContentType, AggregationKeys>
-    ): QueryResponseOverride<ContentType, AggregationKeys>;
+    ): QueryResponse<ContentType, AggregationKeys>;
 
     // Dummy definition to prevent type errors, as the original definition
     // for this interface has an overloaded query function
     query(): never;
 
     create<ContentType extends CustomContentDescriptor = CustomContentDescriptor>(
-        params: CreateContentParamsOverride<ContentType>
+        params: CreateContentParams<ContentType>
     ): Content<ContentType>;
 
     modify<ContentType extends ContentDescriptor = ContentDescriptor>(
-        params: ModifyContentParamsOverride<ContentType>
+        params: ModifyContentParams<ContentType>
     ): Content;
 
-    publish(params: PublishContentParamsOverride): PublishResponse;
+    publish(params: PublishContentParams): XpPublishResponse;
 
-    getChildren(params: GetChildrenParams): QueryResponseOverride;
+    getChildren(params: XpGetChildrenParams): QueryResponse;
 }
 
 export type ContentLibrary = Override<xpContentLib.ContentLibrary, ContentLibOverride>;

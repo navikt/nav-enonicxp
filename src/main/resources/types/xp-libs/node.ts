@@ -1,19 +1,25 @@
 import { Content } from '../content-types/content-config';
 import { Override } from '../util-types';
 import nodeLib from '/lib/xp/node';
-import { NodeGetParams, NodeModifyParams, RepoConnection, RepoNode, Source } from '*/lib/xp/node';
+import {
+    NodeGetParams as XpNodeGetParams,
+    NodeModifyParams as XpNodeModifyParams,
+    RepoConnection as XpRepoConnection,
+    RepoNode as XpRepoNode,
+    Source as XpSource,
+} from '*/lib/xp/node';
 import { RepoBranch } from '../common';
 import { NodeComponent } from '../components/component-node';
 
-type SourceOverride = Override<
-    Source,
+export type Source = Override<
+    XpSource,
     {
         branch: RepoBranch;
     }
 >;
 
-type NodeGetParamsOverride = Override<
-    NodeGetParams,
+type NodeGetParams = Override<
+    XpNodeGetParams,
     {
         versionId?: string;
     }
@@ -21,36 +27,34 @@ type NodeGetParamsOverride = Override<
 
 type FieldsOmittedFromNodeContent = 'attachment' | 'page' | 'childOrder';
 
-type NodeContent<Content> = Omit<RepoNode, FieldsOmittedFromNodeContent> &
+export type NodeContent<Content> = Omit<XpRepoNode, FieldsOmittedFromNodeContent> &
     Content & {
         components: NodeComponent[];
     };
 
-type RepoNodeOverride<NodeData> = NodeData extends Content
+export type RepoNode<NodeData> = NodeData extends Content
     ? NodeContent<NodeData>
-    : NodeData & RepoNode;
+    : NodeData & XpRepoNode;
 
-type NodeModifyParamsOverride<NodeData = Content> = Override<
-    NodeModifyParams<NodeData>,
-    { editor: (node: RepoNodeOverride<NodeData>) => RepoNodeOverride<NodeData> }
+export type NodeModifyParams<NodeData = Content> = Override<
+    XpNodeModifyParams<NodeData>,
+    { editor: (node: RepoNode<NodeData>) => RepoNode<NodeData> }
 >;
 
 // TODO: add more function overrides as needed
-type RepoConnectionOverride = Override<
-    RepoConnection,
+export type RepoConnection = Override<
+    XpRepoConnection,
     {
         get<NodeData = any>(
-            keys: string | string[] | NodeGetParamsOverride | NodeGetParamsOverride[]
-        ): RepoNodeOverride<NodeData> | null;
+            keys: string | string[] | NodeGetParams | NodeGetParams[]
+        ): RepoNode<NodeData> | null;
 
-        modify<NodeData = any>(
-            params: NodeModifyParamsOverride<NodeData>
-        ): RepoNodeOverride<NodeData>;
+        modify<NodeData = any>(params: NodeModifyParams<NodeData>): RepoNode<NodeData>;
     }
 >;
 
 interface NodeLibOverride {
-    connect(params: SourceOverride): RepoConnectionOverride;
+    connect(params: Source): RepoConnection;
 }
 
 export type NodeLibrary = Override<nodeLib.NodeLibrary, NodeLibOverride>;
