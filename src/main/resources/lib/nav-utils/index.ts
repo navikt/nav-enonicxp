@@ -1,5 +1,5 @@
-import nodeLib from '/lib/xp/node';
 import { NotUndefinedOrNull } from '../../types/util-types';
+import { nodeLib } from '../xp-libs';
 
 export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
