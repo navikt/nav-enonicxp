@@ -1,4 +1,3 @@
-import { NotUndefinedOrNull } from '../../types/util-types';
 import { nodeLib } from '../xp-libs';
 
 export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
@@ -46,10 +45,13 @@ export const fixDateFormat = (date: string) => {
     return date;
 };
 
-export const forceArray = <Type>(arrayOrNot: Type | Type[]) =>
-    (Array.isArray(arrayOrNot) ? arrayOrNot : [arrayOrNot]).filter(
-        (item) => item !== null && item !== undefined
-    ) as NotUndefinedOrNull<Type>[];
+export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {
+    if (arrayOrNot === undefined || arrayOrNot === null) {
+        return [];
+    }
+
+    return Array.isArray(arrayOrNot) ? arrayOrNot : [arrayOrNot];
+};
 
 // Pushes nodes from draft to master, checking if theire already live
 export const pushLiveElements = (targetIds: string[]) => {
