@@ -67,7 +67,7 @@ export const getGlobalValueItem = (gvKey: string, contentId: string) => {
     return forceArray(globalValueSet.data.valueItems).find((item) => item.key === gvKey);
 };
 
-export const getGlobalValueSet = (contentId: string) => {
+export const getGlobalValueSet = (contentId?: string) => {
     if (!contentId) {
         return null;
     }

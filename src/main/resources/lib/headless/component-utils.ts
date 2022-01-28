@@ -1,11 +1,11 @@
 import { PortalComponent } from '../../types/components/component-portal';
 import { forceArray } from '../nav-utils';
-import nodeLib from '/lib/xp/node';
 import commonLib from '/lib/xp/common';
-import { contentLib, portalLib } from '../xp-libs';
+import { contentLib, nodeLib, portalLib } from '../xp-libs';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
 import { componentAppKey, NodeComponent } from '../../types/components/component-node';
+import { Content } from '../../types/content-types/content-config';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -79,9 +79,14 @@ const componentHasUniqueAnchorId = (content: any, currentComponent: PortalCompon
     return !isDuplicate;
 };
 
+type StringFieldsExcludingAnchorId<Config> = keyof Omit<
+    PickByFieldType<Required<Config>, string>,
+    'anchorId'
+>;
+
 export const generateAnchorIdField = <Config extends ComponentConfigAll & { anchorId?: string }>(
     req: XP.Request,
-    idSourceField: keyof Omit<PickByFieldType<Required<Config>, string>, 'anchorId'>,
+    idSourceField: StringFieldsExcludingAnchorId<Config>,
     idSourceDefaultValue?: string
 ) => {
     const contentId = portalLib.getContent()._id;
@@ -95,9 +100,9 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
     const content = repo.get(contentId);
 
     if (!componentHasUniqueAnchorId(content, component)) {
-        repo.modify({
+        repo.modify<Content>({
             key: contentId,
-            editor: (content: any) => {
+            editor: (content) => {
                 const components = forceArray(content.components);
 
                 const config = getComponentConfigByPath(component.path, components) as Config;

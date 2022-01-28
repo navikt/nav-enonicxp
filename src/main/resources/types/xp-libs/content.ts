@@ -65,6 +65,7 @@ type PublishContentParamsOverride = Override<
 interface ContentLibOverride {
     get(params: GetContentParams): Content | null;
 
+    // TODO: add typing for filters
     query<
         ContentType extends ContentDescriptor = ContentDescriptor,
         AggregationKeys extends string = never

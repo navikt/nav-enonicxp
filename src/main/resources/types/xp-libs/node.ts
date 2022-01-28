@@ -1,7 +1,7 @@
-import { Content, ContentDescriptor } from '../content-types/content-config';
+import { Content } from '../content-types/content-config';
 import { Override } from '../util-types';
 import nodeLib from '/lib/xp/node';
-import { NodeGetParams, RepoConnection, RepoNode, Source } from '*/lib/xp/node';
+import { NodeGetParams, NodeModifyParams, RepoConnection, RepoNode, Source } from '*/lib/xp/node';
 import { RepoBranch } from '../common';
 import { NodeComponent } from '../components/component-node';
 
@@ -19,28 +19,33 @@ type NodeGetParamsOverride = Override<
     }
 >;
 
-type FieldsOmittedFromNodeContent = 'attachment' | 'page' | 'childOrder' | 'type';
+type FieldsOmittedFromNodeContent = 'attachment' | 'page' | 'childOrder';
 
-type RepoContent<ContentType extends ContentDescriptor = ContentDescriptor> = Omit<
-    Content<ContentType>,
-    FieldsOmittedFromNodeContent
-> & {
-    type: ContentType;
-    components: NodeComponent[];
-};
+type NodeContent<Content> = Omit<RepoNode, FieldsOmittedFromNodeContent> &
+    Content & {
+        components: NodeComponent[];
+    };
 
-type RepoNodeOverride<ContentType extends ContentDescriptor = ContentDescriptor> = Override<
-    RepoNode,
-    ContentType extends ContentDescriptor ? RepoContent<ContentType> : RepoContent
+type RepoNodeOverride<NodeData> = NodeData extends Content
+    ? NodeContent<NodeData>
+    : NodeData & RepoNode;
+
+type NodeModifyParamsOverride<NodeData = Content> = Override<
+    NodeModifyParams<NodeData>,
+    { editor: (node: RepoNodeOverride<NodeData>) => RepoNodeOverride<NodeData> }
 >;
 
 // TODO: add more function overrides as needed
 type RepoConnectionOverride = Override<
     RepoConnection,
     {
-        get(
+        get<NodeData = any>(
             keys: string | string[] | NodeGetParamsOverride | NodeGetParamsOverride[]
-        ): RepoNodeOverride | null;
+        ): RepoNodeOverride<NodeData> | null;
+
+        modify<NodeData = any>(
+            params: NodeModifyParamsOverride<NodeData>
+        ): RepoNodeOverride<NodeData>;
     }
 >;
 
