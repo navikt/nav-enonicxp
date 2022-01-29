@@ -1,7 +1,6 @@
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../headless/branch-context';
-import { contentLib } from '../xp-libs';
-import { Content } from '../../types/content-types/content-config';
+import contentLib, { Content } from '/lib/xp/content';
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
@@ -9,16 +8,16 @@ export const isValidCustomPath = (path: string) => !!path && validCustomPathPatt
 
 const xpPathToPathname = (xpPath: string) => xpPath?.replace(/^\/www\.nav\.no/, '');
 
-const hasCustomPath = (
-    content: Content<any>
-): content is Content & { data: { customPath: string } } => {
-    return isValidCustomPath(content.data?.customPath);
+type ContentWithCustomPath = Content & { data: { customPath: string } };
+
+const hasCustomPath = (content: Content): content is ContentWithCustomPath => {
+    return isValidCustomPath((content as ContentWithCustomPath).data?.customPath);
 };
 
 // If the content has a custom path and it is not the requested path
 // we should redirect to the custom path
 export const shouldRedirectToCustomPath = (
-    content: Content<any>,
+    content: Content,
     requestedPathOrId: string,
     branch: RepoBranch
 ) => {

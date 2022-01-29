@@ -1,5 +1,4 @@
 import contextLib from '/lib/xp/context';
-import { contentLib, nodeLib } from '../xp-libs';
 import { RepoBranch } from '../../types/common';
 import {
     forceArray,
@@ -10,6 +9,8 @@ import {
 import { runInBranchContext } from '../headless/branch-context';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from '../htmlarea/htmlarea';
 import { getNodeKey } from '../time-travel/version-utils';
+import nodeLib from '/lib/xp/node';
+import contentLib from '/lib/xp/content';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 

@@ -21,10 +21,9 @@ import { SectionPage } from '../../site/content-types/section-page/section-page'
 import { SituationPage } from '../../site/content-types/situation-page/situation-page';
 import { ToolsPage } from '../../site/content-types/tools-page/tools-page';
 import { TransportPage } from '../../site/content-types/transport-page/transport-page';
-import { Content as XpContent } from '/lib/xp/content';
-import { PortalComponent } from '../components/component-portal';
 import { EmptyObject } from '../util-types';
 import { NavNoDescriptor } from '../common';
+import { Component } from '/lib/xp/portal';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -57,26 +56,23 @@ export type CustomContentDataConfigs = {
     [Type in keyof CustomContentDataConfigsWithoutDescriptor as NavNoDescriptor<Type>]: CustomContentDataConfigsWithoutDescriptor[Type];
 };
 
-type ContentDataMapper<Type extends ContentDescriptor> = XpContent &
-    (Type extends CustomContentDescriptor
-        ? {
-              type: Type;
-              data: CustomContentDataConfigs[Type];
-              page: PortalComponent<'page'> | EmptyObject;
-          }
-        : Type extends 'portal:fragment'
-        ? {
-              type: 'portal:fragment';
-              fragment: PortalComponent<'part' | 'layout'>;
-          }
-        : never);
+export type ContentDataMapper<Type extends ContentDescriptor> = Type extends CustomContentDescriptor
+    ? {
+          type: Type;
+          data: CustomContentDataConfigs[Type];
+          page: Component<'page'> | EmptyObject;
+      }
+    : Type extends 'portal:fragment'
+    ? {
+          type: 'portal:fragment';
+          fragment: Component<'part' | 'layout'>;
+      }
+    : never;
 
 export type BuiltinContentDescriptor = 'portal:fragment';
 // | 'portal:template-folder'
 // | 'portal:page-template'
 // | 'portal:site';
-
-export type Content<Type extends ContentDescriptor = ContentDescriptor> = ContentDataMapper<Type>;
 
 export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
 

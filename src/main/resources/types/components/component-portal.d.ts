@@ -1,14 +1,8 @@
-import { Component as XpPortalComponent } from '/lib/xp/portal';
-import {
-    ComponentConfigAll,
-    ComponentConfigs,
-    ComponentName,
-    ComponentType,
-} from './component-config';
+import { ComponentConfigs, ComponentName } from './component-config';
 import { NavNoDescriptor } from '../common';
 
 // This type is used in the page object on a content, and when using portalLib.getComponent()
-type PortalComponentMapper<Type, Name> = Type extends 'fragment'
+export type PortalComponentMapper<Type, Name> = Type extends 'fragment'
     ? {
           type: Type;
           fragment?: string;
@@ -24,11 +18,5 @@ type PortalComponentMapper<Type, Name> = Type extends 'fragment'
           }
         : never
     : never;
-
-export type PortalComponent<
-    Type extends ComponentType = ComponentType,
-    Name extends ComponentName = ComponentName
-> = PortalComponentMapper<Type, Name> &
-    Omit<XpPortalComponent<ComponentConfigAll>, 'type' | 'descriptor' | 'config'>;
 
 // TODO: add regions

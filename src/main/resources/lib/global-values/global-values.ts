@@ -1,7 +1,7 @@
-import { contentLib } from '../xp-libs';
 import { getKeyWithoutMacroDescription } from '../headless/component-utils';
 import { findContentsWithHtmlAreaText } from '../htmlarea/htmlarea';
 import { forceArray } from '../nav-utils';
+import contentLib from '/lib/xp/content';
 
 export const globalValuesContentType = `${app.name}:global-value-set`;
 

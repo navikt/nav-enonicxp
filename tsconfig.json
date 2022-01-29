@@ -6,8 +6,14 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
-        "noEmit": true
+        "noEmit": true,
+        "baseUrl": "./src/main/resources"
     },
-    "files": ["node_modules/enonic-types/index.d.ts"],
-    "include": ["src/main/resources/**/*.ts"]
+    "include": ["src/main/resources/**/*.ts", "node_modules/enonic-types/*.d.ts"],
+    "exclude": [
+        "node_modules/enonic-types/index.d.ts",
+        "node_modules/enonic-types/content.d.ts",
+        "node_modules/enonic-types/portal.d.ts",
+        "node_modules/enonic-types/node.d.ts"
+    ]
 }

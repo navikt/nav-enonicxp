@@ -1,6 +1,5 @@
 import authLib from '/lib/xp/auth';
-import { Permission } from '*/lib/xp/content';
-import { contentLib } from '../xp-libs';
+import contentLib, { Permission } from '*/lib/xp/content';
 import contextLib from '/lib/xp/context';
 import { PrincipalKey } from '*/lib/xp/auth';
 

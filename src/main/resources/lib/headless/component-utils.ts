@@ -1,11 +1,11 @@
-import { PortalComponent } from '../../types/components/component-portal';
 import { forceArray } from '../nav-utils';
 import commonLib from '/lib/xp/common';
-import { contentLib, nodeLib, portalLib } from '../xp-libs';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
 import { componentAppKey, NodeComponent } from '../../types/components/component-node';
-import { Content } from '../../types/content-types/content-config';
+import portalLib, { Component } from '/lib/xp/portal';
+import nodeLib from '/lib/xp/node';
+import contentLib, { Content } from '/lib/xp/content';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -50,13 +50,13 @@ export const getComponentConfigByPath = (path: string, components: NodeComponent
     return getComponentConfig(foundComponent);
 };
 
-type ConfigWithAnchorId = PortalComponent['config'] & {
+type ConfigWithAnchorId = Component['config'] & {
     anchorId?: string;
 };
 const configHasAnchorId = (config?: ConfigWithAnchorId): config is ConfigWithAnchorId =>
     !!config?.anchorId;
 
-const componentHasUniqueAnchorId = (content: any, currentComponent: PortalComponent) => {
+const componentHasUniqueAnchorId = (content: any, currentComponent: Component) => {
     const config = currentComponent?.config;
     if (!configHasAnchorId(config)) {
         return false;

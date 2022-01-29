@@ -1,4 +1,4 @@
-import { nodeLib } from '../xp-libs';
+import nodeLib from '/lib/xp/node';
 
 export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
