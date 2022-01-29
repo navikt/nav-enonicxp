@@ -2,10 +2,11 @@ import { forceArray } from '../nav-utils';
 import commonLib from '/lib/xp/common';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { PickByFieldType } from '../../types/util-types';
-import { componentAppKey, NodeComponent } from '../../types/components/component-node';
+import { NodeComponent } from '../../types/components/component-node';
 import portalLib, { Component } from '/lib/xp/portal';
 import nodeLib from '/lib/xp/node';
 import contentLib, { Content } from '/lib/xp/content';
+import { componentAppKey } from '../constants';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';

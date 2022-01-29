@@ -1,7 +1,6 @@
 import { ComponentConfigs, ComponentName, ComponentType } from './component-config';
 import { NavNoDescriptor } from '../common';
-
-export const componentAppKey = 'no-nav-navno';
+import { componentAppKey } from '../../lib/constants';
 
 type NodeComponentMapper<Type, Name> = Type extends 'fragment'
     ? {
