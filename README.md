@@ -30,7 +30,6 @@ git clone https://github.com/navikt/nav-enonicxp.git
 cp no.nav.navno.cfg /YOUR_SANDBOX_PATH/home/config/no.nav.navno.cfg
 cp com.enonic.xp.web.vhost.cfg /YOUR_SANDBOX_PATH/home/config/com.enonic.xp.web.vhost.cfg
 ```
-6. Update the copied no.nav.navno.cfg with the correct service secret. Ask a colleague!
 
 ## Development
 
