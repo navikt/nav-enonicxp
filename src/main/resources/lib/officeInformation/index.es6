@@ -69,7 +69,10 @@ const deleteIfContentExists = (name) => {
 
         // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
         // We want to free up the source path immediately
-        libs.content.move({ source: existingContentOnPath._id, target: `${updatedPath}-delete` });
+        libs.content.move({
+            source: existingContentOnPath._id,
+            target: `${updatedPath}-delete`,
+        });
 
         libs.content.delete({
             key: existingContentOnPath._id,
@@ -210,7 +213,7 @@ const checkForRefresh = (oneTimeRun = false) => {
                 branch: 'draft',
                 user: {
                     login: 'su',
-                    userStore: 'system',
+                    idProvider: 'system',
                 },
                 principals: ['role:system.admin'],
             },
@@ -307,7 +310,7 @@ exports.runOneTimeJob = () => {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
@@ -332,7 +335,7 @@ exports.startCronJob = () => {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },

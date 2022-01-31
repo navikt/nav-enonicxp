@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "allowJs": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
+        "noEmit": true,
+        "baseUrl": "./src/main/resources"
+    },
+    "include": ["src/main/resources/**/*.ts", "node_modules/enonic-types/*.d.ts"],
+    "exclude": [
+        "node_modules/enonic-types/index.d.ts",
+        "node_modules/enonic-types/content.d.ts",
+        "node_modules/enonic-types/portal.d.ts",
+        "node_modules/enonic-types/node.d.ts"
+    ]
+}

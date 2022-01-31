@@ -221,7 +221,7 @@ const generateDataAndActivateSchedule = () => {
             branch: 'master',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
