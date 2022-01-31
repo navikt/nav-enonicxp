@@ -1,3 +1,5 @@
+import { GlobalValueSetData } from './global-value-set';
+import { Component } from '/lib/xp/portal';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 import { Calculator } from '../../site/content-types/calculator/calculator';
 import { ContentList } from '../../site/content-types/content-list/content-list';
@@ -5,14 +7,12 @@ import { ContentPageWithSidemenus } from '../../site/content-types/content-page-
 import { DynamicPage } from '../../site/content-types/dynamic-page/dynamic-page';
 import { EmployerSituationPage } from '../../site/content-types/employer-situation-page/employer-situation-page';
 import { ExternalLink } from '../../site/content-types/external-link/external-link';
-import { GlobalValueSetData } from './global-value-set';
 import { GuidePage } from '../../site/content-types/guide-page/guide-page';
 import { InternalLink } from '../../site/content-types/internal-link/internal-link';
 import { LargeTable } from '../../site/content-types/large-table/large-table';
 import { MainArticle } from '../../site/content-types/main-article/main-article';
 import { MainArticleChapter } from '../../site/content-types/main-article-chapter/main-article-chapter';
 import { MegamenuItem } from '../../site/content-types/megamenu-item/megamenu-item';
-import { Notification } from '../../site/content-types/notification/notification';
 import { Melding } from '../../site/content-types/melding/melding';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { PageList } from '../../site/content-types/page-list/page-list';
@@ -21,9 +21,8 @@ import { SectionPage } from '../../site/content-types/section-page/section-page'
 import { SituationPage } from '../../site/content-types/situation-page/situation-page';
 import { ToolsPage } from '../../site/content-types/tools-page/tools-page';
 import { TransportPage } from '../../site/content-types/transport-page/transport-page';
-import { EmptyObject } from '../util-types';
 import { NavNoDescriptor } from '../common';
-import { Component } from '/lib/xp/portal';
+import { EmptyObject } from '../util-types';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;

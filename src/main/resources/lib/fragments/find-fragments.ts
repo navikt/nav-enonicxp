@@ -1,16 +1,16 @@
 import contextLib from '/lib/xp/context';
+import nodeLib from '/lib/xp/node';
+import contentLib from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
+import { getNodeKey } from '../time-travel/version-utils';
 import {
     forceArray,
     getNestedValue,
     getUnixTimeFromDateTimeString,
     removeDuplicates,
 } from '../nav-utils';
-import { runInBranchContext } from '../headless/branch-context';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from '../htmlarea/htmlarea';
-import { getNodeKey } from '../time-travel/version-utils';
-import nodeLib from '/lib/xp/node';
-import contentLib from '/lib/xp/content';
+import { runInBranchContext } from '../headless/branch-context';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 

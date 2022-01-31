@@ -1,6 +1,6 @@
+import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../headless/branch-context';
-import contentLib, { Content } from '/lib/xp/content';
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
