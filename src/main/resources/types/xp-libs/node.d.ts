@@ -60,6 +60,13 @@ declare module '*/lib/xp/node' {
 
             setRootPermission<NodeData>(params: SetRootPermissionParams): RepoNode<NodeData>;
         }
+
+        type PushNodeParams = {
+            target: string;
+            includeChildren?: boolean;
+            resolve?: boolean;
+            exclude?: Array<string>;
+        } & ({ key: string } | { keys: string[] });
     }
 
     // Definitions from enonic-types v0.3.12
@@ -71,6 +78,7 @@ declare module '*/lib/xp/node' {
             // connect(params: Source): RepoConnection;
             multiRepoConnect(params: MultiRepoConnectParams): MultiRepoConnection;
         }
+
         type PrincipalKey = import('/lib/xp/auth').PrincipalKey;
         // interface Source {
         //     repoId: string;
@@ -84,29 +92,35 @@ declare module '*/lib/xp/node' {
         type SourceWithPrincipals = Omit<Source, 'principals'> & {
             principals: Array<PrincipalKey>;
         };
+
         interface MultiRepoConnectParams {
             sources: Array<SourceWithPrincipals>;
         }
+
         interface NodeQueryHit {
             readonly id: string;
             readonly score: number;
         }
+
         interface MultiRepoNodeQueryHit extends NodeQueryHit {
             readonly repoId: string;
             readonly branch: string;
         }
+
         interface NodeQueryResponse<AggregationKeys extends string = never> {
             readonly total: number;
             readonly count: number;
             readonly hits: ReadonlyArray<NodeQueryHit>;
             readonly aggregations: import('/lib/xp/content').AggregationsResponse<AggregationKeys>;
         }
+
         type MultiRepoNodeQueryResponse<AggregationKeys extends string = never> = Omit<
             NodeQueryResponse<AggregationKeys>,
             'hits'
         > & {
             hits: ReadonlyArray<MultiRepoNodeQueryHit>;
         };
+
         interface GetBinaryParams {
             /**
              * Path or id to the node.
@@ -117,6 +131,7 @@ declare module '*/lib/xp/node' {
              */
             binaryReference: string;
         }
+
         interface NodeQueryParams<AggregationKeys extends string = never> {
             /**
              * Start index (used for paging).
@@ -153,6 +168,7 @@ declare module '*/lib/xp/node' {
              */
             explain?: boolean;
         }
+
         interface IndexConfigEntry {
             /**
              * If true, indexing is done based on valueType, according to the table above. I.e. numeric values are indexed as
@@ -182,7 +198,9 @@ declare module '*/lib/xp/node' {
             indexValueProcessors: ReadonlyArray<any>;
             languages: ReadonlyArray<any>;
         }
+
         type IndexConfigTemplates = 'none' | 'byType' | 'fulltext' | 'path' | 'minimal';
+
         interface IndexConfig {
             default: IndexConfigEntry | IndexConfigTemplates;
             configs?: ReadonlyArray<{
@@ -190,6 +208,7 @@ declare module '*/lib/xp/node' {
                 config: IndexConfigEntry | IndexConfigTemplates;
             }>;
         }
+
         interface NodeCreateParams {
             /**
              * Name of content.
@@ -220,6 +239,7 @@ declare module '*/lib/xp/node' {
              */
             _childOrder?: string;
         }
+
         // interface NodeModifyParams<NodeData> {
         //     /**
         //      * Path or ID of the node
@@ -241,6 +261,7 @@ declare module '*/lib/xp/node' {
              */
             target: string;
         }
+
         interface NodeFindChildrenParams {
             /**
              * Path or ID of parent to get children of
@@ -267,6 +288,7 @@ declare module '*/lib/xp/node' {
              */
             recursive?: boolean;
         }
+
         // interface RepoNode {
         //     readonly _id: string;
         //     readonly _childOrder: string;
@@ -281,33 +303,41 @@ declare module '*/lib/xp/node' {
                 params: NodeQueryParams<AggregationKeys>
             ): MultiRepoNodeQueryResponse<AggregationKeys>;
         }
+
         interface RepoConnection {
             /**
              * Commits the active version of nodes.
              */
             commit(params: CommitParams): CommitResponse;
+
             commit(params: MultiCommitParams): ReadonlyArray<CommitResponse>;
+
             /**
              * Creating a node. To create a content where the name is not important and there could be multiple instances under the
              * same parent content, skip the name parameter and specify a displayName.
              */
+
             // create<NodeData>(a: NodeData & NodeCreateParams): NodeData & RepoNode;
             /**
              * Deleting a node or nodes.
              */
             delete(keys: string | ReadonlyArray<string>): ReadonlyArray<string>;
+
             /**
              * Resolves the differences for a node between current and given branch.
              */
             diff(params: DiffParams): DiffResponse;
+
             /**
              * Checking if a node or nodes exist for the current context.
              */
             exists(keys: string | ReadonlyArray<string>): ReadonlyArray<string>;
+
             /**
              * Fetch the versions of a node.
              */
             findVersions(params: FindVersionsParams): NodeVersionQueryResult;
+
             /**
              * Fetches a specific node by path or ID.
              */
@@ -329,40 +359,49 @@ declare module '*/lib/xp/node' {
              * @since 7.7.0
              */
             getCommit(params: GetCommitParams): CommitResponse;
+
             /**
              * This function returns the active version of a node.
              */
             getActiveVersion(params: GetActiveVersionParams): any;
+
             /**
              * This function sets the active version of a node.
              */
             setActiveVersion(params: SetActiveVersionParams): boolean;
+
             /**
              * This function returns a binary stream.
              */
             getBinary(params: GetBinaryParams): import('/lib/xp/content').ByteSource;
+
             /**
              * This command queries nodes.
              */
             query<AggregationKeys extends string = never>(
                 params: NodeQueryParams<AggregationKeys>
             ): NodeQueryResponse<AggregationKeys>;
+
             /**
              * Refresh the index for the current repoConnection
              */
             refresh(mode?: 'ALL' | 'SEARCH' | 'STORAGE'): void;
+
             /**
              * This function modifies a node.
              */
+
             // modify<NodeData>(params: NodeModifyParams<NodeData>): NodeData & RepoNode;
             /**
              * Rename a node or move it to a new path.
              */
             move(params: NodeMoveParams): boolean;
+
             /**
              * Pushes a node to a given branch.
              */
             push(params: PushNodeParams): PushNodeResult;
+
             /**
              * Set the order of the node’s children.
              */
@@ -370,40 +409,42 @@ declare module '*/lib/xp/node' {
             /**
              * Set the root node permissions and inheritance.
              */
+
             // setRootPermission<NodeData>(params: SetRootPermissionParams): NodeData & RepoNode;
             /**
              * Get children for given node.
              */
             findChildren(params: NodeFindChildrenParams): NodeQueryResponse;
         }
-        interface PushNodeParams {
-            /**
-             * Id or path to the nodes
-             */
-            key: string;
-            /**
-             * Array of ids or paths to the nodes
-             */
-            keys: Array<string>;
-            /**
-             * Branch to push to
-             */
-            target: string;
-            /**
-             * Also push children of given nodes. Default is false.
-             */
-            includeChildren?: boolean;
-            /**
-             * Resolve dependencies before pushing, meaning that references will also be pushed. Default is true.
-             */
-            resolve?: boolean;
-            /**
-             * Optional array of ids or paths to nodes not to be pushed.
-             * If using this, be aware that nodes need to maintain data integrity (e.g parents must be present in target).
-             * If data integrity is not maintained with excluded nodes, they will be pushed anyway.
-             */
-            exclude?: Array<string>;
-        }
+
+        // interface PushNodeParams {
+        //     /**
+        //      * Id or path to the nodes
+        //      */
+        //     key: string;
+        //     /**
+        //      * Array of ids or paths to the nodes
+        //      */
+        //     keys: Array<string>;
+        //     /**
+        //      * Branch to push to
+        //      */
+        //     target: string;
+        //     /**
+        //      * Also push children of given nodes. Default is false.
+        //      */
+        //     includeChildren?: boolean;
+        //     /**
+        //      * Resolve dependencies before pushing, meaning that references will also be pushed. Default is true.
+        //      */
+        //     resolve?: boolean;
+        //     /**
+        //      * Optional array of ids or paths to nodes not to be pushed.
+        //      * If using this, be aware that nodes need to maintain data integrity (e.g parents must be present in target).
+        //      * If data integrity is not maintained with excluded nodes, they will be pushed anyway.
+        //      */
+        //     exclude?: Array<string>;
+        // }
         interface PushNodeResult {
             readonly success: ReadonlyArray<string>;
             readonly failed: ReadonlyArray<{
@@ -412,14 +453,17 @@ declare module '*/lib/xp/node' {
             }>;
             readonly deleted: ReadonlyArray<string>;
         }
+
         interface SetChildOrderParams {
             key: string;
             childOrder: string;
         }
+
         interface SetRootPermissionParams {
             _permissions: ReadonlyArray<import('/lib/xp/content').PermissionsParams>;
             _inheritsPermissions: boolean;
         }
+
         interface CommitParams {
             /**
              * Node key to commit. It could be an id or a path. Prefer the usage of ID rather than paths.
@@ -430,6 +474,7 @@ declare module '*/lib/xp/node' {
              */
             message?: string;
         }
+
         interface MultiCommitParams {
             /**
              * Node keys to commit. Each argument could be an array of the ids and paths. Prefer the usage of ID rather than paths.
@@ -440,12 +485,14 @@ declare module '*/lib/xp/node' {
              */
             message?: string;
         }
+
         interface CommitResponse {
             readonly id: string;
             readonly message: string;
             readonly committer: string;
             readonly timestamp: string;
         }
+
         // interface NodeGetParams {
         //     /**
         //      * Path or ID of the node.
@@ -459,12 +506,14 @@ declare module '*/lib/xp/node' {
         interface GetCommitParams {
             id: string;
         }
+
         interface GetActiveVersionParams {
             /**
              * Path or ID of the node
              */
             key: string;
         }
+
         interface SetActiveVersionParams {
             /**
              * Path or ID of the node.
@@ -475,6 +524,7 @@ declare module '*/lib/xp/node' {
              */
             versionId: string;
         }
+
         interface FindVersionsParams {
             /**
              * Path or ID of parent to get children of
@@ -489,11 +539,13 @@ declare module '*/lib/xp/node' {
              */
             count?: number;
         }
+
         interface NodeVersionQueryResult {
             readonly total: number;
             readonly count: number;
             readonly hits: ReadonlyArray<NodeVersionMetadata>;
         }
+
         interface NodeVersionMetadata {
             readonly versionId: string;
             readonly nodeId: string;
@@ -501,6 +553,7 @@ declare module '*/lib/xp/node' {
             readonly timestamp: string;
             readonly commitId: string;
         }
+
         interface DiffParams {
             /**
              * Path or id to resolve diff for
@@ -515,6 +568,7 @@ declare module '*/lib/xp/node' {
              */
             includeChildren?: boolean;
         }
+
         type CompareStatus =
             | 'NEW'
             | 'NEW_TARGET'
@@ -526,10 +580,12 @@ declare module '*/lib/xp/node' {
             | 'MOVED'
             | 'CONFLICT_PATH_EXISTS'
             | 'CONFLICT_VERSION_BRANCH_DIVERGS';
+
         interface NodeComparison {
             readonly id: string;
             readonly status: CompareStatus;
         }
+
         interface DiffResponse {
             diff: ReadonlyArray<NodeComparison>;
         }

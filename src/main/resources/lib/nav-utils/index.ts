@@ -83,8 +83,6 @@ export const pushLiveElements = (targetIds: string[]) => {
     // important that we use resolve false when pushing objects to master, else we can get objects
     // which were unpublished back to master without a published.from property
     if (masterIds.length > 0) {
-        // PushNodeParams type is incorrect, should be key | keys
-        // @ts-ignore
         const pushResult = repoDraft.push({
             keys: masterIds,
             resolve: false,
