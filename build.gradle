@@ -14,12 +14,19 @@ buildscript {
             classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
         }
     }
+
+    dependencies {
+        // Remove this if/when the bug is fixed in the official repo version
+        classpath files('xp-codegen-plugin-1.1.9-bugfix.jar')
+    }
 }
 
 // Build plugins
 plugins {
     id 'com.enonic.xp.app' version '3.0.0'
     id "com.moowork.node" version '1.3.1'
+    id 'java'
+    id 'no.item.xp.codegen' version '1.1.9'
 }
 node {
     version = '10.15.3'
@@ -35,7 +42,6 @@ app {
 
 // Project dependencies
 repositories {
-
     // External dependencies
     if (!project.hasProperty('build-inside-firewall')) {
         mavenLocal()
@@ -43,11 +49,10 @@ repositories {
         xp.enonicRepo()
     }
 
+    mavenLocal()
+
     maven {
         url "https://maven.adeo.no/nexus/content/groups/public"
-    }
-    maven {
-        url  "https://dl.bintray.com/ljl/maven"
     }
 }
 
@@ -87,16 +92,14 @@ dependencies {
 
 // Tasks
 task babelJs(type: NpmTask, dependsOn: 'npmInstall') {
-    if (project.hasProperty( 'watch' )) {
-        args = ['run', 'dev']
-    } else {
-        args = ['run', 'build']
-    }
+    dependsOn(generateTypeScript)
+    dependsOn(processResources)
+
+    args = ['run', 'build']
 
     inputs.dir 'src/main/resources'
     outputs.dir "$buildDir/resources/main"
 }
 
-
-
-jar.dependsOn += babelJs
+jar.dependsOn(babelJs)
+processResources.dependsOn(generateTypeScript)

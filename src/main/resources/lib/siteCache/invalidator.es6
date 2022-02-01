@@ -111,16 +111,15 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
             branch: 'master',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
         () => {
-            const prepublished = prepublishedContent
-                .reduce((acc, el) => {
-                    const content = libs.content.get({ key: el.id });
-                    return content ? [...acc, { path: content._path, id: content._id }] : acc
-                }, []);
+            const prepublished = prepublishedContent.reduce((acc, el) => {
+                const content = libs.content.get({ key: el.id });
+                return content ? [...acc, { path: content._path, id: content._id }] : acc;
+            }, []);
             if (prepublished.length > 0) {
                 libs.event.send({
                     type: 'prepublish',
@@ -164,7 +163,7 @@ function removeExpiredContentFromMaster(expiredContent) {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
@@ -291,7 +290,11 @@ function theJob() {
     // reschedule to for TIME_BETWEEN_CHECKS or less if publishing
     // events are scheduled before that time
     if (sleepFor !== TIME_BETWEEN_CHECKS) {
-        libs.cron.reschedule({ ...CRON_CONFIG, delay: sleepFor, callback: theJob });
+        libs.cron.reschedule({
+            ...CRON_CONFIG,
+            delay: sleepFor,
+            callback: theJob,
+        });
     }
 }
 
