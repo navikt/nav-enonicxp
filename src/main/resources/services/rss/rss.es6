@@ -28,7 +28,7 @@ const handleGet = (req) => {
             if (content) {
                 return {
                     title: content.displayName,
-                    link: content._path,
+                    url: content._path.replace(/^\/www.nav.no/, 'https://www.nav.no'),
                     pubDate: content.publish.first,
                     description: content.data.ingress,
                 };
