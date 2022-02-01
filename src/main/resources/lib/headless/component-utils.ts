@@ -41,7 +41,6 @@ export const getComponentConfig = (component?: NodeComponent) => {
 
     const componentKey = descriptor.split(':')[1];
 
-    // Typescript can't infer the split literal type for componentKey
     return config?.[componentAppKey]?.[componentKey];
 };
 
