@@ -12,7 +12,7 @@ const handleGet = (req) => {
     if (contentLists) {
         // Get the IDs to the content lists for the feed
         const listIDs = contentLists.map((key) => {
-            return getContentList(key, 3);
+            return getContentList(key, 3, 'publish.first');
         });
         // Get contentIDs and put all in the same list
         const content4Feed = [];
