@@ -3,8 +3,13 @@
     <description>Legg inn URL og beskrivende tittel</description>
     <form>
         <input name="video" type="TextLine">
-            <label>URL</label>
+            <label>URL til video</label>
+            <help-text>Kun video fra Qbrick kan embeddes på nav.no</help-text>
             <occurrences minimum="1" maximum="1"/>
+            <default>https://video.qbrick.com/</default>
+            <config>
+                <regexp>^https:\/\/video\.qbrick\.com\/.+</regexp>
+            </config>
         </input>
         <input name="title" type="TextLine">
             <label>Beskrivende tittel</label>

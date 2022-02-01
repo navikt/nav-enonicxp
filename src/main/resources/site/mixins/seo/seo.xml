@@ -24,9 +24,7 @@
                     </help-text>
                     <occurrences minimum="0" maximum="1"/>
                     <config>
-                        <regexp>
-                            (?:https:\/\/)[\w.-]+(?:\.nav\.no\/)[\w\-\._~:\/?#\[\]@!\$\&amp;\'\(\)\*\+,;=.]*
-                        </regexp>
+                        <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
                     </config>
                 </input>
                 <input name="noindex" type="CheckBox">

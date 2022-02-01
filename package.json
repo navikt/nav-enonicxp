@@ -1,47 +1,39 @@
 {
     "name": "navno-enonicxp",
     "version": "1.0.0",
-    "description": "## Building",
-    "main": "createPhrases.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "babel:watch": "babel src/main/resources --watch --extensions '.es6' --out-dir=build/resources/main",
         "build": "npm-run-all lint babel",
-        "lint:watch": "onchange \"src/main/resources/**/*.es6\" -- npm run lint --silent",
-        "lint": "eslint --ext=js --ext=es6 ./src/main/resources --quiet",
-        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\"",
-        "dev": "npm-run-all -p lint:watch babel:watch"
+        "lint": "eslint ./src/main/resources --ext=ts --ext=es6 --quiet && tsc --noemit",
+        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\" --extensions \".ts,.es6\""
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/navikt/nav-enonicxp.git"
     },
-    "author": "",
-    "license": "ISC",
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/navikt/nav-enonicxp/issues"
     },
     "homepage": "https://github.com/navikt/nav-enonicxp#readme",
     "devDependencies": {
-        "@babel/cli": "^7.10.1",
-        "@babel/core": "^7.10.2",
-        "@babel/preset-env": "^7.10.2",
+        "@babel/cli": "^7.16.8",
+        "@babel/core": "^7.16.12",
+        "@babel/preset-env": "^7.16.11",
+        "@babel/preset-typescript": "^7.16.7",
+        "@types/node": "^10.17.60",
+        "@typescript-eslint/eslint-plugin": "^5.10.1",
+        "@typescript-eslint/parser": "^5.10.1",
         "core-js": "^3.8.0",
-        "eslint": "^7.7.0",
-        "eslint-config-airbnb-base": "^14.2.1",
-        "eslint-config-prettier": "^6.11.0",
-        "eslint-config-standard": "^14.1.1",
-        "eslint-plugin-import": "^2.25.2",
-        "eslint-plugin-jsx-a11y": "^6.2.3",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^3.1.4",
-        "eslint-plugin-promise": "^4.2.1",
-        "eslint-plugin-standard": "^4.0.1",
+        "enonic-types": "^0.3.12",
+        "eslint": "^7.32.0",
+        "eslint-config-prettier": "^7.2.0",
+        "eslint-import-resolver-typescript": "^2.5.0",
+        "eslint-plugin-import": "2.24.2",
+        "eslint-plugin-prettier": "^4.0.0",
         "npm-run-all": "^4.1.5",
-        "onchange": "^7.0.2",
-        "prettier": "^2.0.5",
-        "prompt": "^1.0.0",
-        "replace": "^1.2.0",
-        "serve": "^11.3.2"
+        "onchange": "^7.1.0",
+        "prettier": "^2.5.1",
+        "typescript": "^4.5.5"
     }
 }

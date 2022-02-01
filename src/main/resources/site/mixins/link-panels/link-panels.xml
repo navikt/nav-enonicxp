@@ -36,9 +36,7 @@
                                         Legg url på formen https://*.nav.no/* - Hvis innhold velges under, vil dette overstyre url
                                     </help-text>
                                     <config>
-                                        <regexp>
-                                            (?:https:\/\/)[\w.-]+(?:\.nav\.no\/)[\w\-\._~:\/?#\[\]@!\$\&amp;\'\(\)\*\+,;=.]*
-                                        </regexp>
+                                        <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
                                     </config>
                                 </input>
                                 <input name="ref" type="ContentSelector">
