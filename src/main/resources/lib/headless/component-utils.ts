@@ -6,6 +6,7 @@ import { NodeComponent } from '../../types/components/component-node';
 import { forceArray } from '../nav-utils';
 import { PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
+import { componentAppKey } from '../constants';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -28,7 +29,7 @@ export const getComponentConfig = (component?: NodeComponent) => {
 
     // @ts-ignore
     // component[component.type] is always a valid field
-    const componentProps = component[component.type];
+    const componentProps = component[type];
     if (!componentProps) {
         return null;
     }
@@ -40,8 +41,6 @@ export const getComponentConfig = (component?: NodeComponent) => {
 
     const componentKey = descriptor.split(':')[1];
 
-    // @ts-ignore
-    // Typescript can't infer the split literal type for componentKey
     return config?.[componentAppKey]?.[componentKey];
 };
 
