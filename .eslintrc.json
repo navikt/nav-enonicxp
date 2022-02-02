@@ -1,34 +1,61 @@
 {
-    "extends": ["airbnb-base", "prettier"],
-    "plugins": ["prettier"],
+    "extends": [
+        "prettier",
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/recommended",
+        "plugin:import/typescript"
+    ],
+    "plugins": ["prettier", "@typescript-eslint", "import"],
+    "parser": "@typescript-eslint/parser",
     "rules": {
-        "prettier/prettier": ["warn"],
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "camelcase": "off",
         "comma-dangle": ["error", "only-multiline"],
-        "no-cond-assign": ["error", "except-parens"],
-        "no-unused-vars": [
+        "dot-notation": "off",
+        "func-names": "off",
+        "global-require": "off",
+        "import/no-absolute-path": "off",
+        "import/no-unresolved": [
             "error",
+            {
+                "ignore": ["^/lib/xp"]
+            }
+        ],
+        "no-cond-assign": ["error", "except-parens"],
+        "no-console": "error",
+        "no-extend-native": "off",
+        "no-param-reassign": "off",
+        "no-plusplus": "off",
+        "no-restricted-globals": "off",
+        "no-restricted-imports": [
+            "error",
+            {
+                "patterns": [
+                    {
+                        "group": ["?/lib/xp/*"],
+                        "message": "Imports from /lib/xp/* must not be prefixed with anything"
+                    }
+                ]
+            }
+        ],
+        "no-underscore-dangle": "off",
+        "no-unsafe-optional-chaining": "off",
+        "no-unused-vars": [
+            "warn",
             {
                 "vars": "all",
                 "args": "none"
             }
         ],
-        "prefer-template": "off",
-        "no-console": "off",
-        "global-require": "off",
-        "import/extensions": "off",
-        "import/no-unresolved": "off",
-        "import/no-absolute-path": "off",
-        "no-underscore-dangle": "off",
+        "no-use-before-define": "off",
         "object-shorthand": "off",
         "prefer-destructuring": "off",
-        "radix": ["error", "as-needed"],
-        "no-plusplus": "off",
-        "func-names": "off",
-        "no-use-before-define": "off",
-        "dot-notation": "off",
-        "no-param-reassign": "off",
-        "no-extend-native": "off",
-        "no-restricted-globals": "off"
+        "prefer-template": "off",
+        "prettier/prettier": ["warn"],
+        "radix": ["error", "as-needed"]
     },
     "globals": {
         "require": true,
@@ -41,7 +68,8 @@
         "window": true,
         "__": true,
         "__FILE__": true,
-        "Java": true
+        "Java": true,
+        "module": true
     },
     "parserOptions": {
         "ecmaVersion": 2020
@@ -52,6 +80,36 @@
             "rules": {
                 "max-len": "off"
             }
+        },
+        {
+            "files": [
+                "src/main/resources/site/layouts/**/*-config.ts",
+                "src/main/resources/site/parts/**/*-config.ts",
+                "src/main/resources/site/content-types/**/*.ts"
+            ],
+            "rules": {
+                "@typescript-eslint/ban-types": "off"
+            }
+        },
+        {
+            "files": ["src/main/resources/types/**/*.d.ts"],
+            "rules": {
+                "import/no-unresolved": [
+                    "off",
+                    {
+                        "ignore": ["/lib/xp"]
+                    }
+                ],
+                "no-restricted-imports": "off"
+            }
         }
-    ]
+    ],
+    "settings": {
+        "import/parsers": {
+            "@typescript-eslint/parser": [".ts"]
+        },
+        "import/resolver": {
+            "typescript": {}
+        }
+    }
 }
