@@ -5,20 +5,28 @@ const { getContentList } = require('/lib/contentlists/contentlists');
 const contentLists = [
     '/www.nav.no/no/person/innhold-til-person-forside/nyheter',
     '/www.nav.no/no/bedrift/innhold-til-bedrift-forside/nyheter',
-    '/www.nav.no/no/nav-og-samfunn/innhold-til-nav-og-samfunn-forside/nyheter',
+    '/www.nav.no/no/samarbeidspartner/nyheter',
+    '/www.nav.no/no/nav-og-samfunn/kunnskap/fou-midler/nyheter',
 ];
 
-const handleGet = (req) => {
+type newsItem = {
+    title: string,
+    url: string,
+    date: Date,
+    description: string,
+}
+
+const handleGet = () => {
     if (contentLists) {
         // Get the IDs to the content lists for the feed
         const listIDs = contentLists.map((key) => {
             return getContentList(key, 3, 'publish.first');
         });
         // Get contentIDs and put all in the same list
-        const content4Feed = [];
+        const content4Feed: newsItem[] = [];
         listIDs.forEach((list) => {
             const contentIDs = list.data.sectionContents;
-            contentIDs.forEach((id) => {
+            contentIDs.forEach((id: newsItem) => {
                 content4Feed.push(id);
             });
         });
