@@ -57,14 +57,19 @@ export interface ContactOptionPartConfig {
          */
         call: {
           /**
-           * Telefonnummer
+           * Velg telefonnummer
            */
-          phoneNumber?: string;
+          sharedContactInformation?: string;
 
           /**
            * Overstyr ingress
            */
           ingress?: string;
+
+          /**
+           * -
+           */
+          phoneNumber?: undefined;
         };
       };
 

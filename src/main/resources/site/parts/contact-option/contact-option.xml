@@ -41,6 +41,11 @@
                         <input name="ingress" type="TextArea">
                             <label>Overstyr ingress</label>
                         </input>
+                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
+                        <input name="phoneNumber" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
                     </items>
                 </option>
             </options>
