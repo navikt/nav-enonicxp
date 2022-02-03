@@ -23,10 +23,12 @@ import { ToolsPage } from '../../site/content-types/tools-page/tools-page';
 import { TransportPage } from '../../site/content-types/transport-page/transport-page';
 import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
+import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
     calculator: Calculator;
+    'contact-information': ContactInformation;
     'content-list': ContentList;
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;

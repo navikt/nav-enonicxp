@@ -136,6 +136,7 @@ const partsFragment = `
                     }
                     call {
                         ingress
+                        phoneNumber
                         sharedContactInformation {
                             ${contactInformationFragment.fragment}
                         }
