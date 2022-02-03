@@ -1,6 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
-const navUtils = require('/lib/nav-utils');
+const { forceArray } = require('../../../nav-utils');
 
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,
@@ -13,13 +13,7 @@ const getSpecialOpeningHoursObject = (specialOpeningHours) => {
     if (specialOpeningHours._selected === 'shared') {
         const id = specialOpeningHours.shared.sharedSpecialOpeningHours;
         const openingHoursDocument = contentLib.get({ key: id });
-        if (
-            !(
-                openingHoursDocument ||
-                openingHoursDocument.data ||
-                openingHoursDocument.data.contactType
-            )
-        ) {
+        if (!openingHoursDocument?.data?.contactType) {
             return null;
         }
         return openingHoursDocument.data.contactType.telephone.specialOpeningHours;
@@ -100,21 +94,15 @@ const contactInformationCallback = (context, params) => {
             );
 
             // No specialOpeningHours are actually set by the editors.
-            if (!(specialOpeningHours || specialOpeningHours.custom)) {
+            if (!specialOpeningHours?.custom) {
                 return {};
             }
 
-            if (!specialOpeningHours) {
-                return {};
-            }
-
-            const { title, text, footNote, validFrom, validTo } = specialOpeningHours.custom;
-
-            const hours = navUtils.forceArray(specialOpeningHours.custom.hours);
+            const { title, text, footNote, validFrom, validTo, hours } = specialOpeningHours.custom;
 
             // We want the special opening hours to have the same schema as regular
             // opening hours and also (just in case) to be sorted by date.
-            const normalizedHours = hours
+            const normalizedHours = forceArray(hours)
                 .map(({ status, date }) => {
                     const openHours =
                         status._selected === 'open'
