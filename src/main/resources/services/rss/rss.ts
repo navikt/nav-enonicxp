@@ -1,4 +1,4 @@
-const contentLib = require('/lib/xp/content');
+import contentLib from '/lib/xp/content';
 const { getContentList } = require('/lib/contentlists/contentlists');
 
 // Urls to content lists to include in the RSS-feed
@@ -12,9 +12,9 @@ const contentLists = [
 type newsItem = {
     title: string,
     url: string,
-    date: Date,
-    description: string,
-}
+    date?: string,
+    description?: string,
+} | null;
 
 const handleGet = () => {
     if (contentLists) {
@@ -23,30 +23,32 @@ const handleGet = () => {
             return getContentList(key, 3, 'publish.first');
         });
         // Get contentIDs and put all in the same list
-        const content4Feed: newsItem[] = [];
+        const content4Feed: string[] = [];
         listIDs.forEach((list) => {
-            const contentIDs = list.data.sectionContents;
-            contentIDs.forEach((id: newsItem) => {
+            const contentIDs = list.data?.sectionContents;
+            contentIDs.forEach((id: string) => {
                 content4Feed.push(id);
             });
         });
         // Get selected data from contents into the feed
-        const rssFeed = content4Feed.map((item) => {
-            const content = contentLib.get({ key: item });
-            if (content) {
+        const rssFeed: newsItem[] = content4Feed.map((item: string) => {
+            const content = contentLib.get({key: item});
+            if (content && content.type === "no.nav.navno:main-article") {
                 return {
                     title: content.displayName,
                     url: content._path.replace(/^\/www.nav.no/, 'https://www.nav.no'),
-                    date: content.publish.first,
-                    description: content.data.ingress,
+                    date: content?.publish?.first,
+                    description: content.data?.ingress,
                 };
             }
             return null;
         });
-        return {
-            body: rssFeed,
-            contentType: 'application/json',
-        };
+        if (rssFeed) {
+            return {
+                body: rssFeed,
+                contentType: 'application/json',
+            };
+        }
     }
     return {
         status: 500,
