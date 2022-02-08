@@ -1,5 +1,6 @@
 import contentLib from '/lib/xp/content';
-const { getContentList } = require('/lib/contentlists/contentlists');
+import {getContentList} from '../../lib/contentlists/contentlists';
+import {forceArray, notEmpty} from "../../lib/nav-utils";
 
 // Urls to content lists to include in the RSS-feed
 const contentLists = [
@@ -17,44 +18,28 @@ type newsItem = {
 } | null;
 
 const handleGet = () => {
-    if (contentLists) {
-        // Get the IDs to the content lists for the feed
-        const listIDs = contentLists.map((key) => {
-            return getContentList(key, 3, 'publish.first');
-        });
-        // Get contentIDs and put all in the same list
-        const content4Feed: string[] = [];
-        listIDs.forEach((list) => {
-            const contentIDs = list.data?.sectionContents;
-            contentIDs.forEach((id: string) => {
-                content4Feed.push(id);
-            });
-        });
-        // Get selected data from contents into the feed
-        const rssFeed: newsItem[] = content4Feed.map((item: string) => {
-            const content = contentLib.get({key: item});
+    // Get the IDs to the content lists for the feed
+    const listIDs = contentLists
+        .map((key) => getContentList(key, 3, 'publish.first'))
+        .filter(notEmpty);
+    // Create the rssFeed based on content-list-IDs
+    const rssFeed: newsItem[] = [];
+    listIDs.forEach((list) => {
+        const contentIDs = forceArray(list.data?.sectionContents);
+        contentIDs.forEach((id: string) => {
+            const content = contentLib.get({key: id});
             if (content && content.type === "no.nav.navno:main-article") {
-                return {
+                rssFeed.push({
                     title: content.displayName,
                     url: content._path.replace(/^\/www.nav.no/, 'https://www.nav.no'),
                     date: content?.publish?.first,
                     description: content.data?.ingress,
-                };
+                });
             }
-            return null;
         });
-        if (rssFeed) {
-            return {
-                body: rssFeed,
-                contentType: 'application/json',
-            };
-        }
-    }
+    });
     return {
-        status: 500,
-        body: {
-            message: 'Ingen nyheter funnet',
-        },
+        body: rssFeed,
         contentType: 'application/json',
     };
 };

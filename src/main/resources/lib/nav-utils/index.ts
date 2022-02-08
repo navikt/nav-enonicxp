@@ -53,6 +53,10 @@ export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {
     return Array.isArray(arrayOrNot) ? arrayOrNot : [arrayOrNot];
 };
 
+export const notEmpty = <TValue>(value: TValue | null | undefined): value is TValue => {
+    return value !== null && value !== undefined;
+};
+
 // Pushes nodes from draft to master, checking if theire already live
 export const pushLiveElements = (targetIds: string[]) => {
     // publish changes
