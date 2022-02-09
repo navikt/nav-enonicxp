@@ -15,14 +15,14 @@ type newsItem = {
     url: string,
     date?: string,
     description?: string,
-} | null;
+};
 
 const handleGet = () => {
-    // Get the IDs to the content lists for the feed
+    // Get the IDs to relevant content from given content-lists
     const listIDs = contentLists
         .map((key) => getContentList(key, 3, 'publish.first'))
         .filter(notEmpty);
-    // Create the rssFeed based on content-list-IDs
+    // Create the rssFeed based on content IDs
     const rssFeed: newsItem[] = [];
     listIDs.forEach((list) => {
         const contentIDs = forceArray(list.data?.sectionContents);
@@ -33,7 +33,7 @@ const handleGet = () => {
                     title: content.displayName,
                     url: content._path.replace(/^\/www.nav.no/, 'https://www.nav.no'),
                     date: content?.publish?.first,
-                    description: content.data?.ingress,
+                    description: content?.data?.ingress,
                 });
             }
         });
