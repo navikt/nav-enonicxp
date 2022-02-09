@@ -1,0 +1,26 @@
+<mixin>
+    <form>
+        <field-set>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress" />
+                <field-set>
+                <label>Kategori</label>
+                    <items>
+                        <mixin name="taxonomy" />
+                        <input name="customCategory" type="TextLine">
+                            <label>Tilleggskategori</label>
+                            <help-text>Du kan også bruke denne dersom ingen kategorier i listen ovenfor er relevante.</help-text>
+                            <config>
+                                <max-length>40</max-length>
+                                <show-counter>true</show-counter>
+                            </config>
+                        </input>
+                    </items>
+                </field-set>
+                <mixin name="area" />
+                <mixin name="illustration" />
+            </items>
+        </field-set>
+    </form>
+</mixin>

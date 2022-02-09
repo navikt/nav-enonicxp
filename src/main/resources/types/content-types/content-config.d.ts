@@ -8,6 +8,7 @@ import { DynamicPage } from '../../site/content-types/dynamic-page/dynamic-page'
 import { EmployerSituationPage } from '../../site/content-types/employer-situation-page/employer-situation-page';
 import { ExternalLink } from '../../site/content-types/external-link/external-link';
 import { GuidePage } from '../../site/content-types/guide-page/guide-page';
+import { ThemedArticlePage } from '../../site/content-types/themed-article-page/themed-article-page';
 import { InternalLink } from '../../site/content-types/internal-link/internal-link';
 import { LargeTable } from '../../site/content-types/large-table/large-table';
 import { MainArticle } from '../../site/content-types/main-article/main-article';
@@ -36,6 +37,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'external-link': ExternalLink;
     'global-value-set': GlobalValueSetData;
     'guide-page': GuidePage;
+    'themed-article-page': ThemedArticlePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;
     'main-article': MainArticle;

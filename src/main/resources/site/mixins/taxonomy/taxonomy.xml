@@ -1,0 +1,14 @@
+<mixin>
+    <display-name>Kategori</display-name>
+    <form>
+        <input name="taxonomy" type="ComboBox">
+            <label>Kategori</label>
+            <occurrences minimum="0" maximum="8"/>
+            <config>
+                <option value="benefits">Pengestøtte</option>
+                <option value="followup">Oppfølging</option>
+                <option value="rights">Veiledning</option>
+            </config>
+        </input>
+    </form>
+</mixin>
