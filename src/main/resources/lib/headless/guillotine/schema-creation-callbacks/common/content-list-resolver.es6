@@ -1,6 +1,4 @@
-const contentLib = require('/lib/xp/content');
-const utils = require('/lib/nav-utils');
-const { sortByDateTimeField } = require('/lib/headless/sort');
+const { getContentList } = require('/lib/contentlists/contentlists');
 
 // Sorts and slices content lists
 const contentListResolver = (contentListKey, maxItemsKey, sortByKey) => (env) => {
@@ -9,30 +7,7 @@ const contentListResolver = (contentListKey, maxItemsKey, sortByKey) => (env) =>
         return null;
     }
 
-    const contentList = contentLib.get({ key: contentListId });
-
-    if (!contentList) {
-        return null;
-    }
-
-    const sectionContentsRefs = utils.forceArray(contentList?.data?.sectionContents);
-    const maxItems = env.source[maxItemsKey];
-    const sortFunc = sortByKey ? sortByDateTimeField(sortByKey) : undefined;
-
-    const sectionContents = sectionContentsRefs
-        .map((item) => contentLib.get({ key: item }))
-        .filter(Boolean)
-        .sort(sortFunc)
-        .slice(0, maxItems)
-        .map((item) => item._id);
-
-    return {
-        ...contentList,
-        data: {
-            sectionContents,
-            ...(sortByKey && { sortedBy: sortByKey }),
-        },
-    };
+    return getContentList(contentListId, env.source[maxItemsKey], sortByKey);
 };
 
 module.exports = { contentListResolver };
