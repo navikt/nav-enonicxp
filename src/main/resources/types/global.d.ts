@@ -9,6 +9,7 @@ declare const app: {
         frontendOrigin: string;
         xpOrigin: string;
         revalidatorProxyOrigin: string;
+        serviceSecret: string;
     };
 };
 
