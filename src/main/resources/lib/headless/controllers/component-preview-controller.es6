@@ -89,6 +89,9 @@ const componentPreviewController = () => {
             method: 'POST',
             body: JSON.stringify({ props: componentProps }),
             contentType: 'application/json',
+            headers: {
+                secret: app.config.serviceSecret,
+            },
         });
 
         if (componentHtml?.body) {
