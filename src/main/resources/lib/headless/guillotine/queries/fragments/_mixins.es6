@@ -118,6 +118,15 @@ const guideDataMixin = `
     }
 `;
 
+const themedArticleDataMixin = `
+    title
+    ingress
+    illustration {
+        ${globalFragment}
+        ${animatedIconsFragment.fragment}
+    }
+`;
+
 module.exports = {
     linkPanelsMixinFragment,
     seoMixinFragment,
@@ -132,4 +141,5 @@ module.exports = {
     productDataMixin,
     situationDataMixin,
     guideDataMixin,
+    themedArticleDataMixin,
 };

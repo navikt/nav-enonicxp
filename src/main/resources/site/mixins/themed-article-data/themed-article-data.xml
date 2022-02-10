@@ -5,7 +5,7 @@
                 <mixin name="page-header"/>
                 <mixin name="ingress" />
                 <field-set>
-                <label>Kategori</label>
+                    <label>Kategori</label>
                     <items>
                         <mixin name="taxonomy" />
                         <input name="customCategory" type="TextLine">
