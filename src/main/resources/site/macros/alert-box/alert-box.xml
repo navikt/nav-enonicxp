@@ -1,0 +1,41 @@
+<macro>
+    <display-name>Varselboks</display-name>
+    <description>Varselboks med rik tekst</description>
+    <form>
+        <input type="HtmlArea" name="body">
+            <label>Innhold</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <include>Undo Redo</include>
+                <exclude>JustifyBlock Underline Macro Image</exclude>
+                <allowHeadings>h3 h4 normal</allowHeadings>
+            </config>
+        </input>
+        <input type="RadioButton" name="type">
+            <label>Type</label>
+            <occurrences minimum="1" maximum="1"/>
+            <default>info</default>
+            <config>
+                <option value="info">Info (blå)</option>
+                <option value="success">Suksess (grønn)</option>
+                <option value="warning">Advarsel (oransje)</option>
+                <option value="error">Feil (rød)</option>
+            </config>
+        </input>
+        <input type="RadioButton" name="size">
+            <label>Størrelse</label>
+            <default>medium</default>
+            <config>
+                <option value="medium">Normal</option>
+                <option value="small">Liten</option>
+            </config>
+        </input>
+        <input type="CheckBox" name="inline">
+            <label>Uten bakgrunn (inline)</label>
+            <default>false</default>
+            <config>
+                <alignment>right</alignment>
+            </config>
+        </input>
+    </form>
+</macro>

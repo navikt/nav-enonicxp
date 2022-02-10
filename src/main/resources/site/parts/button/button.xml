@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Knapp</display-name>
+    <display-name>Knapp</display-name>
     <form>
         <mixin name="link"/>
         <input name="type" type="RadioButton">
@@ -18,8 +18,7 @@
             <occurrences minimum="1" maximum="1" />
             <config>
                 <option value="normal">Normal</option>
-                <option value="kompakt">Kompakt</option>
-                <option value="mini">Mini</option>
+                <option value="small">Liten</option>
             </config>
             <default>normal</default>
         </input>

@@ -1,7 +1,7 @@
 <mixin>
   <form>
     <input name="illustration" type="ContentSelector">
-        <label>Velg illustrasjon</label>
+        <label>Velg piktogram</label>
         <occurrences minimum="0" maximum="1"/>
         <config>
             <allowContentType>${app}:animated-icons</allowContentType>

@@ -1,5 +1,5 @@
 <macro>
-    <display-name>Sett inn sitat</display-name>
+    <display-name>Sitat</display-name>
     <description>Sett inn sitat i brødteksten</description>
     <form>
         <input name="quote" type="TextLine">

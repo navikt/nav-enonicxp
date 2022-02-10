@@ -14,12 +14,15 @@ const {
 } = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/calculator-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
 
+const contactInformationFragment = require('./contactInformation');
+
 const partsFragment = `
     config {
         no_nav_navno {
             dynamic_header {
                 title
                 anchorId
+                hideFromInternalNavigation
                 ${headerCommonMixin}
             }
             dynamic_link_panel {
@@ -33,6 +36,7 @@ const partsFragment = `
             }
             dynamic_alert {
                 type
+                size
                 inline
                 content ${processedHtmlFragment}
                 margin
@@ -127,10 +131,15 @@ const partsFragment = `
                     }
                     write {
                         ingress
+                        title
+                        url
                     }
                     call {
                         ingress
                         phoneNumber
+                        sharedContactInformation {
+                            ${contactInformationFragment.fragment}
+                        }
                     }
                 }
             }
@@ -143,6 +152,7 @@ const layoutsFragment = `
         no_nav_navno {
             section_with_header {
                 anchorId
+                hideFromInternalNavigation
                 icon {
                     color
                     size
@@ -152,6 +162,7 @@ const layoutsFragment = `
                 }
             }
             situation_flex_cols {
+                hideFromInternalNavigation
                 anchorId
             }
         }

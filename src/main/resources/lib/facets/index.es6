@@ -5,6 +5,7 @@ const navUtils = require('/lib/nav-utils');
 const nodeLib = require('/lib/xp/node');
 const taskLib = require('/lib/xp/task');
 const repoLib = require('/lib/xp/repo');
+const { removeDuplicates } = require('/lib/nav-utils');
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -25,7 +26,10 @@ const getLastFacetConfig = (contentId) => {
     const content = allVersions.hits
         .filter((version) => 'commitId' in version)
         .map((version) => {
-            const article = repo.get({ key: contentId, versionId: version.versionId });
+            const article = repo.get({
+                key: contentId,
+                versionId: version.versionId,
+            });
             const timestamp = versionTimestamps[version.versionId] ?? '';
             // adding timestamp massage since nashorn Date can't handle ms
             return { article, timestamp: navUtils.fixDateFormat(timestamp) };
@@ -45,7 +49,7 @@ const getNavRepo = () => {
             branch: 'draft',
             user: {
                 login: 'su',
-                userStore: 'system',
+                idProvider: 'system',
             },
             principals: ['role:system.admin'],
         },
@@ -95,7 +99,10 @@ const setUpdateAll = (updateAll) => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
-            return { ...facetValidation, data: { ...facetValidation.data, updateAll: updateAll } };
+            return {
+                ...facetValidation,
+                data: { ...facetValidation.data, updateAll: updateAll },
+            };
         },
     });
 };
@@ -128,7 +135,10 @@ const addValidatedNodes = (ids) => {
                 justValidatedNodes = navUtils.forceArray(facetValidation.data.justValidatedNodes);
             }
             justValidatedNodes = justValidatedNodes.concat(ids);
-            return { ...facetValidation, data: { ...facetValidation.data, justValidatedNodes } };
+            return {
+                ...facetValidation,
+                data: { ...facetValidation.data, justValidatedNodes },
+            };
         },
     });
 };
@@ -144,7 +154,10 @@ const removeValidatedNodes = (ids) => {
             ids.forEach((id) => {
                 justValidatedNodes.splice(justValidatedNodes.indexOf(id), 1);
             });
-            return { ...facetValidation, data: { ...facetValidation.data, justValidatedNodes } };
+            return {
+                ...facetValidation,
+                data: { ...facetValidation.data, justValidatedNodes },
+            };
         },
     });
 };
@@ -356,10 +369,7 @@ const facetHandler = (event) => {
         })
     );
 
-    // remove duplicates
-    toCheckOnNext = toCheckOnNext.filter((nodeId, index, self) => {
-        return self.indexOf(nodeId) === index;
-    });
+    toCheckOnNext = removeDuplicates(toCheckOnNext);
 
     // run task to check for facet update after 5 seconds after last update
     if (!currentTask) {
@@ -392,7 +402,7 @@ const activateEventListener = () => {
                         branch: 'draft',
                         user: {
                             login: 'su',
-                            userStore: 'system',
+                            idProvider: 'system',
                         },
                         principals: ['role:system.admin'],
                     },

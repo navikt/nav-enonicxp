@@ -22,6 +22,7 @@
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
@@ -46,6 +47,7 @@
                                 <allowContentType>${app}:dynamic-page</allowContentType>
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>

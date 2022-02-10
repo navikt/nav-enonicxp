@@ -18,6 +18,12 @@
                 <option name="write">
                     <label>Skriv til oss</label>
                     <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                        </input>
+                        <input name="url" type="TextLine">
+                            <label>Overstyr URL</label>
+                        </input>
                         <input name="ingress" type="TextArea">
                             <label>Overstyr ingress</label>
                         </input>
@@ -26,17 +32,19 @@
                 <option name="call">
                     <label>Ring oss</label>
                     <items>
-                        <input name="phoneNumber" type="TextLine">
-                            <label>Telefonnummer</label>
-                            <default>55 55 33 33</default>
+                        <input name="sharedContactInformation" type="ContentSelector">
+                            <label>Velg telefonnummer</label>
                             <config>
-                                <regexp>
-                                    ^[0-9+ ]+$
-                                </regexp>
+                                <allowContentType>${app}:contact-information</allowContentType>
                             </config>
                         </input>
                         <input name="ingress" type="TextArea">
                             <label>Overstyr ingress</label>
+                        </input>
+                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
+                        <input name="phoneNumber" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
                         </input>
                     </items>
                 </option>

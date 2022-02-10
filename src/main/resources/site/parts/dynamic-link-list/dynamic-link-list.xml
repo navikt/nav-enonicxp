@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>_Lenkeliste</display-name>
+    <display-name>Lenkeliste</display-name>
     <form>
         <input name="title" type="TextLine">
             <label>Tittel</label>
