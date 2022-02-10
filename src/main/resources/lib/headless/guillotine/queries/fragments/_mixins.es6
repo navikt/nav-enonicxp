@@ -121,6 +121,9 @@ const guideDataMixin = `
 const themedArticleDataMixin = `
     title
     ingress
+    taxonomy
+    customCategory
+    area
     illustration {
         ${globalFragment}
         ${animatedIconsFragment.fragment}
