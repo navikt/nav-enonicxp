@@ -7,7 +7,7 @@
         "plugin:import/recommended",
         "plugin:import/typescript"
     ],
-    "plugins": ["prettier", "@typescript-eslint", "import"],
+    "plugins": ["@typescript-eslint", "import"],
     "parser": "@typescript-eslint/parser",
     "rules": {
         "@typescript-eslint/ban-ts-comment": "off",
@@ -22,7 +22,7 @@
         "import/no-unresolved": [
             "error",
             {
-                "ignore": ["^/lib/xp"]
+                "ignore": ["^/lib/xp", "^/lib/thymeleaf"]
             }
         ],
         "no-cond-assign": ["error", "except-parens"],
@@ -55,7 +55,6 @@
         "object-shorthand": "off",
         "prefer-destructuring": "off",
         "prefer-template": "off",
-        "prettier/prettier": ["warn"],
         "radix": ["error", "as-needed"]
     },
     "globals": {

@@ -1,5 +1,5 @@
 const httpClient = require('/lib/http-client');
-const { frontendOrigin } = require('/lib/headless/url-origin');
+const { urls } = require('/lib/headless/url-origin');
 
 const loopbackCheckParam = 'fromXp';
 
@@ -31,7 +31,9 @@ const adminFrontendProxy = (req) => {
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
-    const frontendUrl = `${frontendOrigin}${req.branch === 'draft' ? '/draft' : ''}${contentPath}`;
+    const frontendUrl = `${urls.frontendOrigin}${
+        req.branch === 'draft' ? '/draft' : ''
+    }${contentPath}`;
 
     try {
         const response = httpClient.request({
