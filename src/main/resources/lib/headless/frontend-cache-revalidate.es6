@@ -2,7 +2,7 @@ const httpClient = require('/lib/http-client');
 const clusterLib = require('/lib/xp/cluster');
 const taskLib = require('/lib/xp/task');
 const { getCustomPathFromContent } = require('/lib/custom-paths/custom-paths');
-const { revalidatorProxyOrigin } = require('/lib/headless/url-origin');
+const { urls } = require('/lib/constants');
 
 const numRetries = 2;
 const timeoutMs = 5000;
@@ -10,7 +10,7 @@ const timeoutMs = 5000;
 const requestRevalidate = (path, retriesLeft = numRetries) => {
     try {
         httpClient.request({
-            url: `${revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(path)}`,
+            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(path)}`,
             method: 'GET',
             connectionTimeout: timeoutMs,
             contentType: 'application/json',
@@ -31,7 +31,7 @@ const requestRevalidate = (path, retriesLeft = numRetries) => {
 const requestWipeAll = (retriesLeft = numRetries) => {
     try {
         httpClient.request({
-            url: `${revalidatorProxyOrigin}/revalidator-proxy/wipe-all`,
+            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`,
             method: 'GET',
             connectionTimeout: timeoutMs,
             contentType: 'application/json',

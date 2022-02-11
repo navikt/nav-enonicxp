@@ -3,7 +3,7 @@ import nodeLib from '/lib/xp/node';
 import { sanitize } from '/lib/xp/common';
 import contentLib from '/lib/xp/content';
 import { forceArray } from '../../../lib/nav-utils';
-import { urls } from '../../../lib/headless/url-origin';
+import { urls } from '../../../lib/constants';
 import { validateCurrentUserPermissionForContent } from '../../../lib/auth/auth-utils';
 
 const mainView = resolve('./views/index.html');

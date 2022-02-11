@@ -1,5 +1,5 @@
 const httpClient = require('/lib/http-client');
-const { urls } = require('/lib/headless/url-origin');
+const { urls } = require('/lib/constants');
 
 const loopbackCheckParam = 'fromXp';
 
