@@ -7,7 +7,7 @@ import { urls } from '../../../lib/constants';
 import { validateCurrentUserPermissionForContent } from '../../../lib/auth/auth-utils';
 
 const mainView = resolve('./views/index.html');
-const restoreView = resolve('./views/restore-select.html');
+const selectView = resolve('./views/restore-select.html');
 const resultView = resolve('./views/restore-result.html');
 
 type ArchiveEntry = {
@@ -86,7 +86,10 @@ export const get = (req: XP.Request) => {
     const widgetUrl = `${urls.portalAdminOrigin}${path}`;
 
     if (!contentId) {
-        return { body: '<widget>Ukjent feil!</widget>', contentType: 'text/html' };
+        return {
+            body: '<widget>Ukjent feil - forsøk å laste inn på nytt</widget>',
+            contentType: 'text/html',
+        };
     }
 
     if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
@@ -106,7 +109,7 @@ export const get = (req: XP.Request) => {
         };
 
         return {
-            body: thymeleafLib.render(restoreView, model),
+            body: thymeleafLib.render(selectView, model),
             contentType: 'text/html',
         };
     }
