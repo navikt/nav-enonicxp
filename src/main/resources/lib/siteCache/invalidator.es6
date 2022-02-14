@@ -118,7 +118,17 @@ function removeCacheOnPrepublishedContent(prepublishedContent) {
         () => {
             const prepublished = prepublishedContent.reduce((acc, el) => {
                 const content = libs.content.get({ key: el.id });
-                return content ? [...acc, { path: content._path, id: content._id }] : acc;
+                return content
+                    ? [
+                          ...acc,
+                          {
+                              path: content._path,
+                              id: content._id,
+                              branch: 'master',
+                              repo: 'com.enonic.cms.default',
+                          },
+                      ]
+                    : acc;
             }, []);
             if (prepublished.length > 0) {
                 libs.event.send({
