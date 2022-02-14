@@ -39,7 +39,7 @@ const caches = {
 
 const cacheInvalidateEventName = 'invalidate-cache';
 
-// Define site path as a literal, because portal.getSite() cant´t be called from main.js
+// Define site path as a literal, because portal.getSite() can't be called from main.js
 const sitePath = '/www.nav.no/';
 const redirectPath = '/redirects/';
 
@@ -213,6 +213,7 @@ const wipeCacheForNode = (node, event) => {
 };
 
 const nodeListenerCallback = (event) => {
+    log.info(`Event: ${JSON.stringify(event)}`);
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeCacheForNode(node, event);
