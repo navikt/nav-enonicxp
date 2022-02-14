@@ -217,15 +217,19 @@ const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
         branch: 'master',
     });
 
-    const previousPath = getNodeVersions({ nodeKey: node.id, repo, branch: 'master' })?.[1]
-        ?.nodePath;
+    const previousVersion = getNodeVersions({ nodeKey: node.id, repo, branch: 'master' })?.[1];
 
-    if (previousPath && previousPath !== node.path) {
-        log.info(
-            `Node path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${node.path}`
-        );
-        wipeSitecontentEntry(previousPath, eventId);
-        wipeNotificationsEntry(previousPath, eventId);
+    if (previousVersion) {
+        const previousPath = getPathname(previousVersion.nodePath);
+        const currentPath = getPathname(node.path);
+
+        if (previousPath !== currentPath) {
+            log.info(
+                `Path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${currentPath}`
+            );
+            wipeSitecontentEntry(previousPath, eventId);
+            wipeNotificationsEntry(previousPath, eventId);
+        }
     }
 };
 
