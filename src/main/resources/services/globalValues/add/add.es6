@@ -4,9 +4,9 @@ const {
     gvServiceInvalidRequestResponse,
 } = require('../utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/nav-utils');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { generateUUID } = require('/lib/headless/uuid');
+const { forceArray } = require('/lib/utils/nav-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
+const { generateUUID } = require('/lib/utils/uuid');
 
 const generateKey = () => `gv_${generateUUID()}`;
 

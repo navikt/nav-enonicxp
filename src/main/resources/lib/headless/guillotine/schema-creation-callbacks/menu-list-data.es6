@@ -1,6 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql.js');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { sanitizeText } = require('/lib/guillotine/util/naming');
 
 const menuListDataCallback = (context, params) => {

@@ -1,6 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
-const { forceArray } = require('../../../nav-utils');
+const { forceArray } = require('../../../utils/nav-utils');
 
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,

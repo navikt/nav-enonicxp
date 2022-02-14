@@ -6,8 +6,8 @@ const {
     getGlobalValueItem,
 } = require('/lib/global-values/global-values');
 const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
-const { forceArray } = require('/lib/nav-utils');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { forceArray } = require('/lib/utils/nav-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 
 const hitFromValueItem = (valueItem, valueType, content, withDescription) => {
     const displayName = `${content.displayName} - ${valueItem.itemName}`;

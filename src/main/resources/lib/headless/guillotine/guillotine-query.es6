@@ -1,5 +1,5 @@
 const graphQlLib = require('/lib/graphql');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 
 const schema = require('/lib/headless/guillotine/guillotine-schema');
 

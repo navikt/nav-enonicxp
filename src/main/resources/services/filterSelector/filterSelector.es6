@@ -1,6 +1,6 @@
 const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { getComponentConfig } = require('/lib/headless/component-utils');
 
 const getFilterMenus = (req) => {

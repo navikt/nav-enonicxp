@@ -1,5 +1,7 @@
 import nodeLib from '/lib/xp/node';
 
+// TODO: rydd i denne fila
+
 export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
 export const removeDuplicates = <Type>(

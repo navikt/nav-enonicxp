@@ -18,9 +18,9 @@ const nodeLib = require('/lib/xp/node');
 const { getNodeKey } = require('/lib/time-travel/version-utils');
 const { getVersionFromTime } = require('/lib/time-travel/version-utils');
 const { getNodeVersions } = require('/lib/time-travel/version-utils');
-const { generateUUID } = require('/lib/headless/uuid');
-const { getUnixTimeFromDateTimeString } = require('/lib/nav-utils');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { generateUUID } = require('/lib/utils/uuid');
+const { getUnixTimeFromDateTimeString } = require('/lib/utils/nav-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 
 const Thread = Java.type('java.lang.Thread');
 

@@ -1,8 +1,8 @@
 const nodeLib = require('/lib/xp/node');
-const { userIsAdmin } = require('/lib/auth/auth-utils');
-const { insufficientPermissionResponse } = require('/lib/auth/auth-utils');
-const { validateCurrentUserPermissionForContent } = require('/lib/auth/auth-utils');
-const { forceArray } = require('/lib/nav-utils');
+const { userIsAdmin } = require('/lib/utils/auth-utils');
+const { insufficientPermissionResponse } = require('/lib/utils/auth-utils');
+const { validateCurrentUserPermissionForContent } = require('/lib/utils/auth-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
 const { gvServiceInvalidRequestResponse } = require('../utils');
 
