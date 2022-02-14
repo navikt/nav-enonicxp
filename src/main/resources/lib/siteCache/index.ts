@@ -28,15 +28,16 @@ const cacheId = generateUUID();
 log.info(`Cache ID for this instance: ${cacheId}`);
 
 const oneDay = 3600 * 24;
+const oneMinute = 60;
 
 const caches = {
     decorator: cacheLib.newCache({
         size: 50,
-        expire: oneDay,
+        expire: oneMinute,
     }),
     driftsmeldinger: cacheLib.newCache({
         size: 50,
-        expire: oneDay,
+        expire: oneMinute,
     }),
     sitecontent: cacheLib.newCache({
         size: 5000,
@@ -240,9 +241,6 @@ const wipeCacheForNode = (node: NodeEventData, event: EnonicEvent<any>) => {
     }
 
     const eventId = generateEventId(node, event);
-    log.info(
-        `Generated hashCode for cache wipe event with root content ${node.id} and timestamp ${event.timestamp}: ${eventId}`
-    );
 
     runInBranchContext(() => {
         wipePreviousIfPathChanged(node, eventId);
@@ -251,7 +249,6 @@ const wipeCacheForNode = (node: NodeEventData, event: EnonicEvent<any>) => {
 };
 
 const nodeListenerCallback = (event: EnonicEvent) => {
-    log.info(`Event: ${JSON.stringify(event)}`);
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeCacheForNode(node, event);
