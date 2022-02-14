@@ -7,9 +7,9 @@
  * */
 
 const httpClient = require('/lib/http-client');
-const { portalAdminOrigin } = require('/lib/headless/url-origin');
+const { urls } = require('/lib/constants');
 
-const selectorQueryContentStudioUrl = `${portalAdminOrigin}/selectorQuery`;
+const selectorQueryContentStudioUrl = `${urls.portalAdminOrigin}/selectorQuery`;
 
 const selectorQueryRequest = (req) =>
     httpClient.request({

@@ -7,7 +7,7 @@ const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { runInBranchContext } = require('/lib/headless/branch-context');
 const { forceArray } = require('/lib/nav-utils');
-const { frontendOrigin } = require('/lib/headless/url-origin');
+const { urls } = require('/lib/constants');
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -78,7 +78,7 @@ const getUrl = (content) => {
     const pathname = isValidCustomPath(customPath)
         ? customPath
         : content._path.replace(/^\/www.nav.no/, '');
-    return `${frontendOrigin}${pathname}`;
+    return `${urls.frontendOrigin}${pathname}`;
 };
 
 const getAlternativeLanguageVersions = (content) =>

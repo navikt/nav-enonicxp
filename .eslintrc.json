@@ -22,7 +22,7 @@
         "import/no-unresolved": [
             "error",
             {
-                "ignore": ["^/lib/xp"]
+                "ignore": ["^/lib/xp", "/lib/http-client"]
             }
         ],
         "no-cond-assign": ["error", "except-parens"],
@@ -55,7 +55,6 @@
         "object-shorthand": "off",
         "prefer-destructuring": "off",
         "prefer-template": "off",
-        "prettier/prettier": ["warn"],
         "radix": ["error", "as-needed"]
     },
     "globals": {

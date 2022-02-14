@@ -1,6 +1,6 @@
 const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
-const { frontendOrigin } = require('/lib/headless/url-origin');
+const { urls } = require('/lib/constants');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { getContent } = require('/lib/headless/guillotine/queries/sitecontent');
@@ -85,7 +85,7 @@ const componentPreviewController = () => {
 
     try {
         const componentHtml = httpClient.request({
-            url: `${frontendOrigin}/api/component-preview`,
+            url: `${urls.frontendOrigin}/api/component-preview`,
             method: 'POST',
             body: JSON.stringify({ props: componentProps }),
             contentType: 'application/json',
