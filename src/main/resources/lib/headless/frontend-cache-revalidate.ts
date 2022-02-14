@@ -6,10 +6,12 @@ import { urls } from '../constants';
 const numRetries = 2;
 const timeoutMs = 5000;
 
-const requestRevalidate = (path: string, retriesLeft = numRetries) => {
+const requestRevalidate = (path: string, eventId: string, retriesLeft = numRetries) => {
     try {
         httpClient.request({
-            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(path)}`,
+            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(
+                path
+            )}&eventId=${eventId}`,
             method: 'GET',
             connectionTimeout: timeoutMs,
             contentType: 'application/json',
@@ -20,7 +22,7 @@ const requestRevalidate = (path: string, retriesLeft = numRetries) => {
         log.info(`Revalidate request to frontend acknowledged for ${path}`);
     } catch (e) {
         if (retriesLeft > 0) {
-            requestRevalidate(path, retriesLeft - 1);
+            requestRevalidate(path, eventId, retriesLeft - 1);
         } else {
             log.error(`Revalidate request to frontend failed for ${path} - ${e}`);
         }
@@ -48,7 +50,7 @@ const requestWipeAll = (retriesLeft = numRetries) => {
     }
 };
 
-export const frontendCacheRevalidate = (pathname: string) => {
+export const frontendCacheRevalidate = (pathname: string, eventId: string) => {
     if (!pathname) {
         return;
     }
@@ -60,7 +62,7 @@ export const frontendCacheRevalidate = (pathname: string) => {
             // Make sure we send this path to the revalidator proxy
             const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
 
-            requestRevalidate(customPath || pathname);
+            requestRevalidate(customPath || pathname, eventId);
         },
     });
 };
