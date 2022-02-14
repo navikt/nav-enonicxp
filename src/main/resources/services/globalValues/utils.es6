@@ -1,7 +1,7 @@
 const {
     validateCurrentUserPermissionForContent,
     insufficientPermissionResponse,
-} = require('/lib/auth/auth-utils');
+} = require('/lib/utils/auth-utils');
 
 const validateGlobalValueInputAndGetErrorResponse = ({ contentId, itemName, numberValue }) => {
     if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {

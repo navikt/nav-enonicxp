@@ -1,5 +1,5 @@
 const { createGlobalValuePreview } = require('../global-value/global-value');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 const previewController = (context) => {
     const { keys } = context.params;

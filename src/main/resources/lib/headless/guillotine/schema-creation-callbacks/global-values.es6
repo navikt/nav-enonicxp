@@ -1,5 +1,5 @@
 const graphQlLib = require('/lib/guillotine/graphql');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 const globalValuesCallback = (context, params) => {
     const valueItems = {

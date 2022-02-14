@@ -1,6 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 const mainArticleChapterDataCallback = (context, params) => {
     params.fields.languages = {

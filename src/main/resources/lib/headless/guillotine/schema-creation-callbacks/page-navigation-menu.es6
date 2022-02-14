@@ -2,7 +2,7 @@ const contextLib = require('/lib/xp/context');
 const contentLib = require('/lib/xp/content');
 const nodeLib = require('/lib/xp/node');
 const graphQlLib = require('/lib/guillotine/graphql');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 const getComponentsOnPage = (contentId) => {
     const content = contentLib.get({ key: contentId });

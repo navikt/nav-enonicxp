@@ -1,8 +1,8 @@
 const graphQlLib = require('/lib/guillotine/graphql');
 const { getGvKeyAndContentIdFromUniqueKey } = require('/lib/global-values/global-values');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 const { getGlobalValue } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 const globalValueMacroConfigCallback = (context, params) => {
     params.fields.value = {

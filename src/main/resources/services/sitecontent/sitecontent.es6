@@ -1,4 +1,4 @@
-const { isValidBranch } = require('/lib/headless/branch-context');
+const { isValidBranch } = require('/lib/utils/branch-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
 const handleGet = (req) => {

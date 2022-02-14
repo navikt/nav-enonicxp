@@ -1,5 +1,5 @@
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { gvServiceInvalidRequestResponse } = require('../utils');
 
 const getGlobalValueSetService = (req) => {

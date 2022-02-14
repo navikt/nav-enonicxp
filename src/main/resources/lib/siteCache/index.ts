@@ -7,10 +7,11 @@ import {
     frontendCacheRevalidate,
     frontendCacheWipeAll,
 } from '../headless/frontend-cache-revalidate';
-import { getParentPath } from '../nav-utils';
+import { getParentPath } from '../utils/nav-utils';
 import { ArrayItem } from '../../types/util-types';
 import { getNodeVersions } from '../time-travel/version-utils';
-import { runInBranchContext } from '../headless/branch-context';
+import { runInBranchContext } from '../utils/branch-context';
+import { generateUUID, isUUID } from '../utils/uuid';
 
 const { findReferences } = require('/lib/siteCache/references');
 
@@ -187,6 +188,7 @@ export const wipeSitecontentEntryWithReferences = (node: NodeEventData, eventTyp
     wipeSitecontentEntry(path);
     wipeNotificationsEntry(path);
 
+    // TODO: remove type assertion when findReferences has been rewritten to TS
     const references = findReferences({ id, eventType }) as Content[];
 
     log.info(

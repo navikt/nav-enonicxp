@@ -5,8 +5,8 @@ const eventLib = require('/lib/xp/event');
 const clusterLib = require('/lib/xp/cluster');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { forceArray } = require('/lib/nav-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { urls } = require('/lib/constants');
 
 const batchCount = 1000;
