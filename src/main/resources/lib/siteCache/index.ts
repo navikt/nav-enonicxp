@@ -11,7 +11,7 @@ import { getParentPath } from '../utils/nav-utils';
 import { ArrayItem } from '../../types/util-types';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { generateHashCode, generateUUID, isUUID } from '../utils/uuid';
+import { generateUUID, isUUID } from '../utils/uuid';
 
 const { findReferences } = require('/lib/siteCache/references');
 
@@ -62,7 +62,7 @@ const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 
 const generateEventId = (nodeData: NodeEventData, event: EnonicEvent<any>) =>
-    generateHashCode(`${nodeData.id}${event.timestamp}`);
+    `${nodeData.id}-${event.timestamp}`;
 
 const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
     try {

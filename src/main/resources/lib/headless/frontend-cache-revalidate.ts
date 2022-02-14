@@ -8,7 +8,7 @@ const timeoutMs = 5000;
 
 const requestRevalidate = (path: string, eventId: string, retriesLeft = numRetries) => {
     try {
-        httpClient.request({
+        const response = httpClient.request({
             url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(
                 path
             )}&eventId=${eventId}`,
@@ -19,7 +19,16 @@ const requestRevalidate = (path: string, eventId: string, retriesLeft = numRetri
                 secret: app.config.serviceSecret,
             },
         });
-        log.info(`Revalidate request to frontend acknowledged for ${path}`);
+
+        if (response.status >= 400) {
+            if (retriesLeft > 0) {
+                requestRevalidate(path, eventId, retriesLeft - 1);
+            } else {
+                log.error(`Revalidate request to frontend failed for ${path} - ${response.body}`);
+            }
+        } else {
+            log.info(`Revalidate request to frontend acknowledged for ${path} - ${response.body}`);
+        }
     } catch (e) {
         if (retriesLeft > 0) {
             requestRevalidate(path, eventId, retriesLeft - 1);
