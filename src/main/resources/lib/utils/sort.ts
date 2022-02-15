@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { getNestedValue } from '../nav-utils';
+import { getNestedValue } from './nav-utils';
 
 const getTimeFromField = (content: Content, key: string) =>
     new Date(

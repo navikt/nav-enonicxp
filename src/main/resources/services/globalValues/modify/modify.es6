@@ -4,8 +4,8 @@ const {
     gvServiceInvalidRequestResponse,
 } = require('../utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { forceArray } = require('/lib/nav-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 const itemNameExists = (valueItems, itemName, key) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);

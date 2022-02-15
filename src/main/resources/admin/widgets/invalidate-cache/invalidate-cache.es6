@@ -1,7 +1,7 @@
 const portalLib = require('/lib/xp/portal');
 const contentLib = require('/lib/xp/content');
 const thymeleafLib = require('/lib/thymeleaf');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 
 const view = resolve('./invalidate-cache.html');
 

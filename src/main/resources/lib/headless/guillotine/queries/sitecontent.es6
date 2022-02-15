@@ -3,8 +3,8 @@ const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query')
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
 const { getPortalFragmentContent } = require('/lib/headless/process-components');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const menuUtils = require('/lib/menu-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
+const { getBreadcrumbMenu } = require('./breadcrumbs');
 const cache = require('/lib/siteCache');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
@@ -127,7 +127,7 @@ const getContent = (contentRef, branch) => {
         };
     }
 
-    const breadcrumbs = runInBranchContext(() => menuUtils.getBreadcrumbMenu(contentRef), branch);
+    const breadcrumbs = runInBranchContext(() => getBreadcrumbMenu(contentRef), branch);
 
     return {
         ...contentWithParsedData,

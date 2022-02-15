@@ -6,7 +6,7 @@ const libs = {
     cron: require('/lib/cron'),
     cluster: require('/lib/xp/cluster'),
     context: require('/lib/xp/context'),
-    utils: require('/lib/nav-utils'),
+    utils: require('/lib/utils/nav-utils'),
     common: require('/lib/xp/common'),
 };
 

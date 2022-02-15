@@ -1,10 +1,10 @@
 const controller = require('/lib/headless/controllers/component-preview-controller');
 const portalLib = require('/lib/xp/portal');
 const nodeLib = require('/lib/xp/node');
-const { forceArray } = require('/lib/nav-utils');
-const { isUUID } = require('/lib/headless/uuid');
+const { forceArray } = require('/lib/utils/nav-utils');
+const { isUUID } = require('/lib/utils/uuid');
 const { getComponentConfigByPath } = require('/lib/headless/component-utils');
-const { generateUUID } = require('/lib/headless/uuid');
+const { generateUUID } = require('/lib/utils/uuid');
 
 const insertIdIfNotExist = (obj) => {
     if (!isUUID(obj.id)) {

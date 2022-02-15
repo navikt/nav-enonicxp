@@ -20,3 +20,5 @@ declare const log: {
 };
 
 declare const Java: any;
+
+declare const resolve: any;

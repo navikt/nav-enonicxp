@@ -1,6 +1,6 @@
 import contentLib from '/lib/xp/content';
-import {getContentList} from '../../lib/contentlists/contentlists';
-import {forceArray, notEmpty} from "../../lib/nav-utils";
+import { getContentList } from '../../lib/contentlists/contentlists';
+import { forceArray, notEmpty } from '../../lib/utils/nav-utils';
 
 // Urls to content lists to include in the RSS-feed
 const contentLists = [
@@ -11,10 +11,10 @@ const contentLists = [
 ];
 
 type newsItem = {
-    title: string,
-    url: string,
-    date?: string,
-    description?: string,
+    title: string;
+    url: string;
+    date?: string;
+    description?: string;
 };
 
 const handleGet = () => {
@@ -27,8 +27,8 @@ const handleGet = () => {
     listIDs.forEach((list) => {
         const contentIDs = forceArray(list.data?.sectionContents);
         contentIDs.forEach((id: string) => {
-            const content = contentLib.get({key: id});
-            if (content && content.type === "no.nav.navno:main-article") {
+            const content = contentLib.get({ key: id });
+            if (content && content.type === 'no.nav.navno:main-article') {
                 rssFeed.push({
                     title: content.displayName,
                     url: content._path.replace(/^\/www.nav.no/, 'https://www.nav.no'),

@@ -1,4 +1,4 @@
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
 const { getGvKeyAndContentIdFromUniqueKey } = require('/lib/global-values/global-values');
 

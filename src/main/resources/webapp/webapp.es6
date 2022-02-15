@@ -1,6 +1,6 @@
 const taskLib = require('/lib/xp/task');
 const thymeleafLib = require('/lib/thymeleaf');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 const officeInformation = require('/lib/officeInformation');
 
 const view = resolve('webapp.html');
