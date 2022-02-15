@@ -4,15 +4,7 @@
             <items>
                 <mixin name="page-header"/>
                 <mixin name="ingress" />
-                <input name="taxonomy" type="ComboBox">
-                    <label>Kategori</label>
-                    <occurrences minimum="0" maximum="8"/>
-                    <config>
-                        <option value="benefits">Pengestøtte</option>
-                        <option value="followup">Oppfølging</option>
-                        <option value="rights">Veiledning</option>
-                    </config>
-                </input>
+                <mixin name="taxonomy" />
                 <mixin name="area" />
                 <mixin name="illustration" />
                 <mixin name="external-product-url" />
