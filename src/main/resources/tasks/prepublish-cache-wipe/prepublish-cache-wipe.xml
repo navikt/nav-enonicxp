@@ -1,0 +1,21 @@
+<task>
+    <description>Wipe cache on pre-publish</description>
+    <form>
+        <input type="TextLine" name="path">
+            <label>Node path</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextLine" name="id">
+            <label>Node id</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextLine" name="eventType">
+            <label>Event type</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="Long" name="timestamp">
+            <label>Event timestamp</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+</task>

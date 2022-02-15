@@ -1,4 +1,5 @@
 import nodeLib from '/lib/xp/node';
+import { contentRepo } from '../constants';
 
 // TODO: rydd i denne fila
 
@@ -67,12 +68,12 @@ export const pushLiveElements = (targetIds: string[]) => {
     });
 
     const repoDraft = nodeLib.connect({
-        repoId: 'com.enonic.cms.default',
+        repoId: contentRepo,
         branch: 'draft',
         principals: ['role:system.admin'],
     });
     const repoMaster = nodeLib.connect({
-        repoId: 'com.enonic.cms.default',
+        repoId: contentRepo,
         branch: 'master',
         principals: ['role:system.admin'],
     });

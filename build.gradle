@@ -75,6 +75,7 @@ dependencies {
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.xp:lib-cluster:${xpVersion}"
+    include "com.enonic.xp:lib-scheduler:${xpVersion}"
     include 'com.enonic.lib:lib-router:1.0.0'
     include 'com.enonic.lib:lib-menu:3.0.0'
     include 'com.enonic.lib:lib-util:3.0.0'

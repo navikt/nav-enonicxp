@@ -12,14 +12,14 @@ import { ArrayItem } from '../../types/util-types';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { generateUUID, isUUID } from '../utils/uuid';
+import { scheduleInvalidateIfPrepublish } from './prepublish';
+import { contentRepo } from '../constants';
 
 const { findReferences } = require('/lib/siteCache/references');
 
 type CallbackFunc = () => any;
-type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
-type PrepublishEventData = {
-    prepublished: NodeEventData[];
-};
+
+export type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
 
 let hasSetupListeners = false;
 
@@ -62,8 +62,8 @@ const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 
-const generateEventId = (nodeData: NodeEventData, event: EnonicEvent<any>) =>
-    `${nodeData.id}-${event.timestamp}`;
+const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
+    `${nodeData.id}-${timestamp}`;
 
 const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
     try {
@@ -214,7 +214,7 @@ export const wipeSitecontentEntryWithReferences = (
 
 const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
     const repo = nodeLib.connect({
-        repoId: node.repo || 'com.enonic.cms.default',
+        repoId: node.repo || contentRepo,
         branch: 'master',
     });
 
@@ -234,32 +234,30 @@ const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
     }
 };
 
-const wipeCacheForNode = (node: NodeEventData, event: EnonicEvent<any>) => {
+export const wipeCacheForNode = (node: NodeEventData, eventType: string, timestamp: number) => {
     const didWipe = wipeSpecialCases(node.path);
     if (didWipe) {
         return;
     }
 
-    const eventId = generateEventId(node, event);
+    const eventId = generateEventId(node, timestamp);
 
     runInBranchContext(() => {
         wipePreviousIfPathChanged(node, eventId);
-        wipeSitecontentEntryWithReferences(node, eventId, event.type);
+        wipeSitecontentEntryWithReferences(node, eventId, eventType);
     }, 'master');
 };
 
-const nodeListenerCallback = (event: EnonicEvent) => {
+const nodePushedCallback = (event: EnonicEvent) => {
+    log.info(`Node event: ${JSON.stringify(event)}`);
     event.data.nodes.forEach((node) => {
-        if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            wipeCacheForNode(node, event);
-        }
-    });
-};
+        if (node.branch === 'master' && node.repo === contentRepo) {
+            const isPrepublished = scheduleInvalidateIfPrepublish(node, event);
 
-const prepublishListenerCallback = (event: EnonicEvent<PrepublishEventData>) => {
-    event.data.prepublished.forEach((node) => {
-        log.info(`Invalidating cache for prepublished content ${node.path}`);
-        wipeCacheForNode(node, event);
+            if (!isPrepublished) {
+                wipeCacheForNode(node, event.type, event.timestamp);
+            }
+        }
     });
 };
 
@@ -268,18 +266,10 @@ export const activateCacheEventListeners = () => {
 
     if (!hasSetupListeners) {
         eventLib.listener({
-            type: '(node.pushed|node.deleted)',
+            type: 'node.pushed|node.deleted',
             localOnly: false,
-            callback: nodeListenerCallback,
+            callback: nodePushedCallback,
         });
-        log.info('Started: Cache eventListener on node events');
-
-        eventLib.listener({
-            type: 'custom.prepublish',
-            localOnly: false,
-            callback: prepublishListenerCallback,
-        });
-        log.info('Started: Cache eventListener on custom.prepublish');
 
         eventLib.listener<NodeEventData>({
             type: `custom.${cacheInvalidateEventName}`,
@@ -291,13 +281,14 @@ export const activateCacheEventListeners = () => {
                     () =>
                         wipeSitecontentEntryWithReferences(
                             event.data,
-                            generateEventId(event.data, event)
+                            generateEventId(event.data, event.timestamp)
                         ),
                     'master'
                 );
             },
         });
 
+        log.info('Started: Cache eventListener on node events');
         hasSetupListeners = true;
     } else {
         log.info('Cache node listeners already running');
