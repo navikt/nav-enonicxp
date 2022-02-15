@@ -14,6 +14,8 @@ import { runInBranchContext } from '../utils/branch-context';
 import { generateUUID, isUUID } from '../utils/uuid';
 import { scheduleInvalidateIfPrepublish } from './prepublish';
 import { contentRepo } from '../constants';
+import { prepublishInvalidateEvent } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe';
+import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 
 const { findReferences } = require('/lib/siteCache/references');
 
@@ -261,6 +263,15 @@ const nodePushedCallback = (event: EnonicEvent) => {
     });
 };
 
+const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
+    log.info(`Prepublish invalidate event: ${JSON.stringify(event)}`);
+    wipeCacheForNode(
+        { ...event.data, branch: 'master', repo: contentRepo },
+        event.type,
+        event.timestamp
+    );
+};
+
 export const activateCacheEventListeners = () => {
     wipeAll();
 
@@ -269,6 +280,12 @@ export const activateCacheEventListeners = () => {
             type: 'node.pushed|node.deleted',
             localOnly: false,
             callback: nodePushedCallback,
+        });
+
+        eventLib.listener({
+            type: `custom.${prepublishInvalidateEvent}`,
+            localOnly: false,
+            callback: prepublishCallback,
         });
 
         eventLib.listener<NodeEventData>({

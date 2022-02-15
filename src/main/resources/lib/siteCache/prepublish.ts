@@ -1,6 +1,7 @@
 import schedulerLib from '/lib/xp/scheduler';
 import { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
+import clusterLib from '/lib/xp/cluster';
 import { runInBranchContext } from '../utils/branch-context';
 import { NodeEventData } from './index';
 import { RepoBranch } from '../../types/common';
@@ -27,6 +28,48 @@ const isPrepublished = (publishFrom: string) => {
     return new Date(publishFrom).getTime() > Date.now();
 };
 
+const scheduleCacheInvalidation = (
+    nodeData: NodeEventData,
+    event: EnonicEvent,
+    publishFrom: string
+) =>
+    runInBranchContext(() => {
+        const jobName = `schedule-${nodeData.id}`;
+        const taskConfig = {
+            path: nodeData.path,
+            id: nodeData.id,
+            timestamp: event.timestamp,
+            eventType: event.type,
+        };
+
+        const existingJob = schedulerLib.get({ name: jobName });
+
+        if (existingJob) {
+            log.info(`Job modified: ${jobName}`);
+            return schedulerLib.modify<PrepublishCacheWipeConfig>({
+                name: jobName,
+                editor: (prevJob) => {
+                    prevJob.config = taskConfig;
+                    prevJob.schedule.value = publishFrom;
+                    return prevJob;
+                },
+            });
+        } else {
+            log.info(`Job created: ${jobName}`);
+            return schedulerLib.create<PrepublishCacheWipeConfig>({
+                name: jobName,
+                descriptor: `${appDescriptor}:prepublish-cache-wipe`,
+                schedule: {
+                    type: 'ONE_TIME',
+                    value: publishFrom,
+                },
+                enabled: true,
+                user: 'user:system:su',
+                config: taskConfig,
+            });
+        }
+    }, 'master');
+
 export const scheduleInvalidateIfPrepublish = (nodeData: NodeEventData, event: EnonicEvent) => {
     if (event.type !== 'node.pushed') {
         return false;
@@ -42,44 +85,9 @@ export const scheduleInvalidateIfPrepublish = (nodeData: NodeEventData, event: E
         return false;
     }
 
-    const jobName = `schedule-${nodeData.id}`;
-
-    const existingJob = schedulerLib.get({ name: jobName });
-
-    if (existingJob) {
-        const job = runInBranchContext(
-            () =>
-                schedulerLib.modify<PrepublishCacheWipeConfig>({
-                    name: jobName,
-                    editor: (prevJob) => {
-                        return prevJob;
-                    },
-                }),
-            'master'
-        );
-        log.info(`Job modified: ${JSON.stringify(job)}`);
-    } else {
-        const job = runInBranchContext(
-            () =>
-                schedulerLib.create<PrepublishCacheWipeConfig>({
-                    name: jobName,
-                    descriptor: `${appDescriptor}:prepublish-cache-wipe`,
-                    schedule: {
-                        type: 'ONE_TIME',
-                        value: publishFrom,
-                    },
-                    enabled: true,
-                    user: 'user:system:su',
-                    config: {
-                        path: nodeData.path,
-                        id: nodeData.id,
-                        timestamp: event.timestamp,
-                        eventType: event.type,
-                    },
-                }),
-            'master'
-        );
-        log.info(`Job created: ${JSON.stringify(job)}`);
+    if (clusterLib.isMaster()) {
+        scheduleCacheInvalidation(nodeData, event, publishFrom);
+        log.info(`Prepublish cache invalidation scheduled for ${nodeData.id} at ${publishFrom}`);
     }
 
     return true;

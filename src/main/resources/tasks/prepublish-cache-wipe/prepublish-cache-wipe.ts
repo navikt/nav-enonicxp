@@ -1,18 +1,14 @@
+import eventLib from '/lib/xp/event';
 import { PrepublishCacheWipeConfig } from './prepublish-cache-wipe-config';
-import { wipeCacheForNode } from '../../lib/siteCache';
-import { contentRepo } from '../../lib/constants';
 
-export const run = ({ path, id, timestamp, eventType }: PrepublishCacheWipeConfig) => {
-    log.info(`Running task for prepublish cache wipe - ${id}`);
+export const prepublishInvalidateEvent = 'prepublish-invalidate';
 
-    wipeCacheForNode(
-        {
-            path,
-            id,
-            repo: contentRepo,
-            branch: 'master',
-        },
-        eventType,
-        timestamp
-    );
+export const run = (params: PrepublishCacheWipeConfig) => {
+    log.info(`Running task for prepublish cache wipe - ${params.id}`);
+
+    eventLib.send({
+        type: prepublishInvalidateEvent,
+        distributed: true,
+        data: params,
+    });
 };
