@@ -21,14 +21,10 @@ export const createOrModifySchedule = ({
     jobDescription,
     jobSchedule,
     taskDescriptor,
-    taskConfig,
+    taskConfig = {},
     enabled = true,
     user = 'user:system:su',
 }: Props) => {
-    const existingJob = schedulerLib.get({ name: jobName });
-
-    log.info(`Existing job: ${JSON.stringify(existingJob)}`);
-
     const jobParams = {
         name: jobName,
         description: jobDescription,
@@ -40,8 +36,10 @@ export const createOrModifySchedule = ({
     };
 
     return runInBranchContext(() => {
+        const existingJob = schedulerLib.get({ name: jobName });
+
         if (existingJob) {
-            log.info(`Job modified: ${jobName}`);
+            log.info(`Scheduler job modified: ${jobName}`);
             return schedulerLib.modify<typeof taskConfig>({
                 name: jobName,
                 editor: (prevJobParams) => {
@@ -49,7 +47,7 @@ export const createOrModifySchedule = ({
                 },
             });
         } else {
-            log.info(`Job created: ${jobName}`);
+            log.info(`Scheduler job created: ${jobName}`);
             return schedulerLib.create<typeof taskConfig>(jobParams);
         }
     }, 'master');
