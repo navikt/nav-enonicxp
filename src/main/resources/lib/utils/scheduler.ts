@@ -4,6 +4,7 @@ import schedulerLib, {
     PrincipalKeyUser,
 } from '/lib/xp/scheduler';
 import { NavNoDescriptor } from '../../types/common';
+import { runInBranchContext } from './branch-context';
 
 type Props = {
     jobName: string;
@@ -26,6 +27,8 @@ export const createOrModifySchedule = ({
 }: Props) => {
     const existingJob = schedulerLib.get({ name: jobName });
 
+    log.info(`Existing job: ${JSON.stringify(existingJob)}`);
+
     const jobParams = {
         name: jobName,
         description: jobDescription,
@@ -36,16 +39,18 @@ export const createOrModifySchedule = ({
         enabled: enabled,
     };
 
-    if (existingJob) {
-        log.info(`Job modified: ${jobName}`);
-        return schedulerLib.modify<typeof taskConfig>({
-            name: jobName,
-            editor: (prevJobParams) => {
-                return { ...prevJobParams, ...jobParams };
-            },
-        });
-    } else {
-        log.info(`Job created: ${jobName}`);
-        return schedulerLib.create<typeof taskConfig>(jobParams);
-    }
+    return runInBranchContext(() => {
+        if (existingJob) {
+            log.info(`Job modified: ${jobName}`);
+            return schedulerLib.modify<typeof taskConfig>({
+                name: jobName,
+                editor: (prevJobParams) => {
+                    return { ...prevJobParams, ...jobParams };
+                },
+            });
+        } else {
+            log.info(`Job created: ${jobName}`);
+            return schedulerLib.create<typeof taskConfig>(jobParams);
+        }
+    }, 'master');
 };
