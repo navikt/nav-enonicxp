@@ -69,6 +69,7 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
     ? {
           type: 'portal:fragment';
           fragment: Component<'part' | 'layout'>;
+          data: undefined;
       }
     : never;
 
