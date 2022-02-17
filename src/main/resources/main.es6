@@ -12,7 +12,7 @@ const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-trave
 let appIsRunning = true;
 
 // start pull from NORG
-officeInformation.startCronJob();
+officeInformation.startOfficeInfoSchedule();
 
 // start cache invalidator
 cache.activateCacheEventListeners();
