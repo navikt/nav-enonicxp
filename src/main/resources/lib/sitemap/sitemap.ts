@@ -223,7 +223,7 @@ const generateAndBroadcastSitemapData = () => {
     }
 };
 
-export const generateDataAndActivateSchedule = () => {
+export const generateSitemapDataAndActivateSchedule = () => {
     runInBranchContext(generateAndBroadcastSitemapData, 'master');
 
     // Regenerate sitemap from scratch at 06:00 daily
@@ -260,7 +260,7 @@ export const requestSitemapUpdate = () => {
     });
 };
 
-export const activateDataUpdateEventListener = () => {
+export const activateSitemapDataUpdateEventListener = () => {
     eventLib.listener<{ entries: SitemapEntry[] }>({
         type: `custom.${eventTypeSitemapGenerated}`,
         callback: (event) => {
