@@ -1,22 +1,26 @@
-const taskLib = require('/lib/xp/task');
-const thymeleafLib = require('/lib/thymeleaf');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const officeInformation = require('/lib/officeInformation');
+import taskLib from '/lib/xp/task';
+import thymeleafLib from '/lib/thymeleaf';
+import { updateOfficeInfo } from '../lib/officeInformation';
+import { runInBranchContext } from '../lib/utils/branch-context';
 
 const view = resolve('webapp.html');
 const validActions = {
-    norg: { description: 'Importerer NORG', callback: officeInformation.runOneTimeJob },
+    norg: { description: 'Importerer NORG', callback: updateOfficeInfo },
 };
 
-exports.get = (req) => {
-    const { cmd } = req.params;
+type Params = {
+    cmd: keyof typeof validActions;
+};
+
+export const get = (req: XP.Request) => {
+    const { cmd } = req.params as Params;
 
     const actionToRun = validActions[cmd];
 
     if (actionToRun) {
-        taskLib.submit({
+        taskLib.executeFunction({
             description: actionToRun.description,
-            task: () => {
+            func: () => {
                 runInBranchContext(actionToRun.callback, 'master');
             },
         });

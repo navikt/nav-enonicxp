@@ -373,9 +373,9 @@ const facetHandler = (event) => {
 
     // run task to check for facet update after 5 seconds after last update
     if (!currentTask) {
-        currentTask = taskLib.submit({
+        currentTask = taskLib.executeFunction({
             description: 'facet task',
-            task: () => {
+            func: () => {
                 taskLib.sleep(debounceTime);
                 while (Date.now() - lastUpdate < debounceTime) {
                     taskLib.sleep(500);

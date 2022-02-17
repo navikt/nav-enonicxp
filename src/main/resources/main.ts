@@ -16,19 +16,14 @@ const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-trave
 
 let appIsRunning = true;
 
-// start pull from NORG
 startOfficeInfoSchedule();
 
-// start cache invalidator
 activateCacheEventListeners();
 
-// listen for updated sitemap-data from master
 activateSitemapDataUpdateEventListener();
 
-// generate initial sitemap data and start periodic regeneration
 generateSitemapDataAndActivateSchedule();
 
-// enable retrieval of version history data from a specified date-time
 hookLibsWithTimeTravel();
 
 // start task for handling caching of expired and prepublished content

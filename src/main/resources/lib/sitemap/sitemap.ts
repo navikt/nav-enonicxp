@@ -190,9 +190,9 @@ const generateAndBroadcastSitemapData = () => {
     if (clusterLib.isMaster() && !isGenerating) {
         isGenerating = true;
 
-        taskLib.submit({
+        taskLib.executeFunction({
             description: 'sitemap-generator-task',
-            task: () => {
+            func: () => {
                 try {
                     log.info('Started generating sitemap data');
                     const startTime = Date.now();

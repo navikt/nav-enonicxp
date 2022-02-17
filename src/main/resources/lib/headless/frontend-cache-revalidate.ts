@@ -64,9 +64,9 @@ export const frontendCacheRevalidate = (pathname: string, eventId: string) => {
         return;
     }
 
-    taskLib.submit({
+    taskLib.executeFunction({
         description: `Send revalidate on ${pathname}`,
-        task: () => {
+        func: () => {
             // If the content has a custom path, the frontend will use this as key for its cache
             // Make sure we send this path to the revalidator proxy
             const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
@@ -77,9 +77,9 @@ export const frontendCacheRevalidate = (pathname: string, eventId: string) => {
 };
 
 export const frontendCacheWipeAll = () => {
-    taskLib.submit({
+    taskLib.executeFunction({
         description: `Send wipe-all`,
-        task: () => {
+        func: () => {
             requestWipeAll();
         },
     });
