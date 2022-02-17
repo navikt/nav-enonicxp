@@ -198,14 +198,6 @@ const fetchOfficeInfo = () => {
 
         if (response.body) {
             return JSON.parse(response.body);
-
-            // logger.info('NORG - Publish office information');
-            // contentLib.publish({
-            //     keys: ['/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer'],
-            //     sourceBranch: 'draft',
-            //     targetBranch: 'master',
-            //     includeDependencies: true,
-            // });
         } else {
             logger.error(`Error response from norg2: ${response.status} - ${response.message}`);
             return null;
@@ -222,7 +214,8 @@ export const updateOfficeInfo = () => {
         logger.error('Failed to fetch office info!');
         return;
     }
-    logger.info('Fetch successful!');
+
+    logger.info('Fetched office info from norg2, updating site data...');
 
     refreshOfficeInfo(newOfficeInfo);
 };
