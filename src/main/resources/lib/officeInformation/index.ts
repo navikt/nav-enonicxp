@@ -233,7 +233,7 @@ export const startOfficeInfoSchedule = () => {
         jobDescription: 'Updates office information from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '* * * * *',
+            value: '15 * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: 'no.nav.navno:get-office-info',
