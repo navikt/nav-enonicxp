@@ -1,3 +1,5 @@
+log.info('Started running main');
+
 require('/lib/polyfills');
 
 import clusterLib from '/lib/xp/cluster';
@@ -11,8 +13,6 @@ import {
 const invalidator = require('/lib/siteCache/invalidator');
 const facetLib = require('/lib/facets');
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-
-log.info('Started running main');
 
 let appIsRunning = true;
 
