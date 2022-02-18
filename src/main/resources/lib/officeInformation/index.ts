@@ -1,15 +1,16 @@
 import contentLib, { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import commonLib from '/lib/xp/common';
-import { createOrModifySchedule } from '../utils/scheduler';
+import { createOrUpdateSchedule } from '../utils/scheduler';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';
-import { CustomContentDescriptor } from '../../types/content-types/content-config';
+import { NavNoDescriptor } from '../../types/common';
+
+type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
+
+const officeInfoContentType: OfficeInformationDescriptor = `no.nav.navno:office-information`;
 
 const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
-const officeInfoContentType: CustomContentDescriptor = `no.nav.navno:office-information`;
-
-type OfficeInformationType = typeof officeInfoContentType;
 
 const selectedEnhetTypes: { [key: string]: boolean } = {
     ALS: true,
@@ -67,7 +68,7 @@ const refreshOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
         })
         .hits.filter(
             (office) => office.type === officeInfoContentType
-        ) as Content<OfficeInformationType>[];
+        ) as Content<OfficeInformationDescriptor>[];
 
     const officesInNorg: { [key: number]: boolean } = {};
 
@@ -99,7 +100,7 @@ const refreshOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     existingOffice.displayName !== enhet.navn
                 ) {
                     updated.push(existingOffice._path);
-                    contentLib.modify<OfficeInformationType>({
+                    contentLib.modify<OfficeInformationDescriptor>({
                         key: existingOffice._id,
                         editor: (content) => ({
                             ...content,
@@ -220,8 +221,8 @@ export const updateOfficeInfo = () => {
     refreshOfficeInfo(newOfficeInfo);
 };
 
-export const startOfficeInfoSchedule = () => {
-    createOrModifySchedule({
+export const startOfficeInfoUpdateSchedule = () => {
+    createOrUpdateSchedule({
         jobName: 'office_info_norg2_hourly',
         jobDescription: 'Updates office information from norg2 every hour',
         jobSchedule: {
@@ -229,6 +230,6 @@ export const startOfficeInfoSchedule = () => {
             value: '15 * * * *',
             timeZone: 'GMT+2:00',
         },
-        taskDescriptor: 'no.nav.navno:get-office-info',
+        taskDescriptor: 'no.nav.navno:update-office-info',
     });
 };

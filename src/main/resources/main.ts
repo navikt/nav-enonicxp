@@ -3,7 +3,7 @@ log.info('Started running main');
 require('/lib/polyfills');
 
 import clusterLib from '/lib/xp/cluster';
-import { startOfficeInfoSchedule } from './lib/officeInformation';
+import { startOfficeInfoUpdateSchedule } from './lib/officeInformation';
 import { activateCacheEventListeners } from './lib/siteCache';
 import {
     activateSitemapDataUpdateEventListener,
@@ -16,7 +16,7 @@ const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-trave
 
 let appIsRunning = true;
 
-startOfficeInfoSchedule();
+startOfficeInfoUpdateSchedule();
 
 activateCacheEventListeners();
 

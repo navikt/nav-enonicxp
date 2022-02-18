@@ -16,7 +16,7 @@ type Props = {
     user?: PrincipalKeyUser;
 };
 
-export const createOrModifySchedule = ({
+export const createOrUpdateSchedule = ({
     jobName,
     jobDescription,
     jobSchedule,
@@ -39,7 +39,7 @@ export const createOrModifySchedule = ({
         const existingJob = schedulerLib.get({ name: jobName });
 
         if (existingJob) {
-            log.info(`Scheduler job modified: ${jobName}`);
+            log.info(`Scheduler job updated: ${jobName}`);
             return schedulerLib.modify<typeof taskConfig>({
                 name: jobName,
                 editor: (prevJobParams) => {

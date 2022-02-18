@@ -7,7 +7,7 @@ import { forceArray } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { urls } from '../constants';
-import { createOrModifySchedule } from '../utils/scheduler';
+import { createOrUpdateSchedule } from '../utils/scheduler';
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -227,7 +227,7 @@ export const generateSitemapDataAndActivateSchedule = () => {
     runInBranchContext(generateAndBroadcastSitemapData, 'master');
 
     // Regenerate sitemap from scratch at 06:00 daily
-    createOrModifySchedule({
+    createOrUpdateSchedule({
         jobName: 'sitemap-generator-schedule',
         jobDescription: 'Generate sitemap data',
         jobSchedule: {
