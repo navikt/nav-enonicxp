@@ -1,13 +1,13 @@
 import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
-import { updateOfficeInfo } from '../lib/officeInformation';
+import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
 import { wipeAllCaches } from '../lib/siteCache';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 
 const view = resolve('webapp.html');
 const validActions = {
-    norg: { description: 'Importerer NORG', callback: updateOfficeInfo },
+    norg: { description: 'Importerer NORG', callback: runOfficeInfoUpdateTask },
     wipeCache: {
         description: 'Slett cache (XP og frontend)',
         callback: () => {

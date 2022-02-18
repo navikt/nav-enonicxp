@@ -1,6 +1,6 @@
-import { updateOfficeInfo } from '../../lib/officeInformation';
+import { fetchAndUpdateOfficeInfo } from '../../lib/officeInformation';
 
 export const run = () => {
     log.info('Running task for updating office information');
-    updateOfficeInfo();
+    fetchAndUpdateOfficeInfo();
 };

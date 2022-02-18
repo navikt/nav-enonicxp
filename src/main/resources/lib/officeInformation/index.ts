@@ -1,6 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import commonLib from '/lib/xp/common';
+import taskLib from '/lib/xp/task';
 import { createOrUpdateSchedule } from '../utils/scheduler';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';
@@ -9,8 +10,9 @@ import { NavNoDescriptor } from '../../types/common';
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
 const officeInfoContentType: OfficeInformationDescriptor = `no.nav.navno:office-information`;
-
 const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
+const taskDescriptor = 'no.nav.navno:update-office-info';
+const fiveMinutes = 5 * 60 * 1000;
 
 const selectedEnhetTypes: { [key: string]: boolean } = {
     ALS: true,
@@ -60,7 +62,7 @@ const deleteIfContentExists = (name: string) => {
     }
 };
 
-const refreshOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
+const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
     const existingOffices = contentLib
         .getChildren({
             key: parentPath,
@@ -165,6 +167,7 @@ const refreshOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
         }
     });
 
+    // Publish updates
     contentLib.publish({
         keys: [parentPath],
         sourceBranch: 'draft',
@@ -209,19 +212,38 @@ const fetchOfficeInfo = () => {
     }
 };
 
-export const updateOfficeInfo = () => {
+export const fetchAndUpdateOfficeInfo = () => {
     const newOfficeInfo = fetchOfficeInfo();
     if (!newOfficeInfo) {
-        logger.error('Failed to fetch office info!');
+        logger.error('Failed to fetch office info, retrying in 5 minutes');
+        runOfficeInfoUpdateTask(new Date(Date.now() + fiveMinutes).toISOString());
         return;
     }
 
     logger.info('Fetched office info from norg2, updating site data...');
 
-    refreshOfficeInfo(newOfficeInfo);
+    updateOfficeInfo(newOfficeInfo);
 };
 
-export const startOfficeInfoUpdateSchedule = () => {
+export const runOfficeInfoUpdateTask = (scheduledTime?: string) => {
+    if (scheduledTime) {
+        createOrUpdateSchedule({
+            jobName: 'office_info_update',
+            jobDescription: 'Updates office info from norg',
+            taskDescriptor,
+            jobSchedule: {
+                type: 'ONE_TIME',
+                value: scheduledTime,
+            },
+        });
+    } else {
+        taskLib.submitTask({
+            descriptor: taskDescriptor,
+        });
+    }
+};
+
+export const startOfficeInfoPeriodicUpdateSchedule = () => {
     createOrUpdateSchedule({
         jobName: 'office_info_norg2_hourly',
         jobDescription: 'Updates office information from norg2 every hour',
@@ -230,6 +252,6 @@ export const startOfficeInfoUpdateSchedule = () => {
             value: '15 * * * *',
             timeZone: 'GMT+2:00',
         },
-        taskDescriptor: 'no.nav.navno:update-office-info',
+        taskDescriptor,
     });
 };
