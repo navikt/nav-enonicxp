@@ -1,8 +1,8 @@
 const nodeLib = require('/lib/xp/node');
-const { parseJsonArray } = require('/lib/nav-utils');
+const { parseJsonArray } = require('/lib/utils/nav-utils');
 const { gvServiceInvalidRequestResponse } = require('../utils');
 const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam, valueItems) => {

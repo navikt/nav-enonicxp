@@ -1,14 +1,25 @@
-const cacheLib = require('/lib/cache');
-const eventLib = require('/lib/xp/event');
-const nodeLib = require('/lib/xp/node');
-const { generateUUID } = require('/lib/headless/uuid');
+import cacheLib from '/lib/cache';
+import eventLib, { EnonicEventData, EnonicEvent } from '/lib/xp/event';
+import nodeLib from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
+import { RepoBranch } from '../../types/common';
+import {
+    frontendCacheRevalidate,
+    frontendCacheWipeAll,
+} from '../headless/frontend-cache-revalidate';
+import { getParentPath } from '../utils/nav-utils';
+import { ArrayItem } from '../../types/util-types';
+import { getNodeVersions } from '../time-travel/version-utils';
+import { runInBranchContext } from '../utils/branch-context';
+import { generateUUID, isUUID } from '../utils/uuid';
+
 const { findReferences } = require('/lib/siteCache/references');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { getParentPath } = require('/lib/nav-utils');
-const { frontendCacheWipeAll } = require('/lib/headless/frontend-cache-revalidate');
-const { isUUID } = require('/lib/headless/uuid');
-const { frontendCacheRevalidate } = require('/lib/headless/frontend-cache-revalidate');
-const { getNodeVersions } = require('/lib/time-travel/version-utils');
+
+type CallbackFunc = () => any;
+type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
+type PrepublishEventData = {
+    prepublished: NodeEventData[];
+};
 
 let hasSetupListeners = false;
 
@@ -17,15 +28,16 @@ const cacheId = generateUUID();
 log.info(`Cache ID for this instance: ${cacheId}`);
 
 const oneDay = 3600 * 24;
+const oneMinute = 60;
 
 const caches = {
     decorator: cacheLib.newCache({
         size: 50,
-        expire: oneDay,
+        expire: oneMinute,
     }),
     driftsmeldinger: cacheLib.newCache({
         size: 50,
-        expire: oneDay,
+        expire: oneMinute,
     }),
     sitecontent: cacheLib.newCache({
         size: 5000,
@@ -37,18 +49,23 @@ const caches = {
     }),
 };
 
-const cacheInvalidateEventName = 'invalidate-cache';
+type CacheName = keyof typeof caches;
 
-// Define site path as a literal, because portal.getSite() cant´t be called from main.js
+export const cacheInvalidateEventName = 'invalidate-cache';
+
+// Define site path as a literal, because portal.getSite() can't be called from main.js
 const sitePath = '/www.nav.no/';
 const redirectPath = '/redirects/';
 
 // Matches [/content]/www.nav.no/* and [/content]/redirects/*
 const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
-const getPathname = (path) => path.replace(pathnameFilter, '/');
+const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 
-const getCacheValue = (cacheName, key, callback) => {
+const generateEventId = (nodeData: NodeEventData, event: EnonicEvent<any>) =>
+    `${nodeData.id}-${event.timestamp}`;
+
+const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
     try {
         return caches[cacheName].get(key, callback);
     } catch (e) {
@@ -57,7 +74,7 @@ const getCacheValue = (cacheName, key, callback) => {
     }
 };
 
-const getDecoratorMenuCache = (branch, callback) => {
+export const getDecoratorMenuCache = (branch: RepoBranch, callback: CallbackFunc) => {
     if (branch === 'draft') {
         return callback();
     }
@@ -65,7 +82,11 @@ const getDecoratorMenuCache = (branch, callback) => {
     return getCacheValue('decorator', 'decorator', callback);
 };
 
-const getDriftsmeldingerCache = (language, branch, callback) => {
+export const getDriftsmeldingerCache = (
+    language: string,
+    branch: RepoBranch,
+    callback: CallbackFunc
+) => {
     if (branch === 'draft') {
         return callback();
     }
@@ -73,7 +94,11 @@ const getDriftsmeldingerCache = (language, branch, callback) => {
     return getCacheValue('driftsmeldinger', `driftsmelding-heading-${language}`, callback);
 };
 
-const getSitecontentCache = (idOrPath, branch, callback) => {
+export const getSitecontentCache = (
+    idOrPath: string,
+    branch: RepoBranch,
+    callback: CallbackFunc
+) => {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
@@ -83,7 +108,7 @@ const getSitecontentCache = (idOrPath, branch, callback) => {
     return getCacheValue('sitecontent', cacheKey, callback);
 };
 
-const getNotificationsCache = (idOrPath, callback) => {
+export const getNotificationsCache = (idOrPath: string, callback: CallbackFunc) => {
     if (isUUID(idOrPath)) {
         return callback();
     }
@@ -92,21 +117,21 @@ const getNotificationsCache = (idOrPath, callback) => {
     return getCacheValue('notifications', cacheKey, callback);
 };
 
-const wipeAll = () => {
+export const wipeAllCaches = () => {
     log.info(`Wiping all caches on [${cacheId}]`);
-    Object.keys(caches).forEach((name) => wipeCache(name));
+    Object.keys(caches).forEach((name) => wipeCache(name as CacheName));
 };
 
-const wipeCache = (name) => {
+const wipeCache = (name: CacheName) => {
     log.info(`Wiping all entries in [${name} (${caches[name].getSize()})] on [${cacheId}]`);
     caches[name].clear();
 };
 
-const wipeCacheEntry = (name, key) => {
+const wipeCacheEntry = (name: CacheName, key: string) => {
     caches[name].remove(key);
 };
 
-const wipeSitecontentEntry = (nodePath) => {
+const wipeSitecontentEntry = (nodePath: string, eventId: string) => {
     if (!nodePath) {
         return;
     }
@@ -115,10 +140,10 @@ const wipeSitecontentEntry = (nodePath) => {
     log.info(`Clearing cache for ${pathname}`);
 
     wipeCacheEntry('sitecontent', pathname);
-    frontendCacheRevalidate(pathname);
+    frontendCacheRevalidate(pathname, eventId);
 };
 
-const wipeNotificationsEntry = (nodePath) => {
+const wipeNotificationsEntry = (nodePath: string, eventId: string) => {
     if (!nodePath) {
         return;
     }
@@ -126,10 +151,10 @@ const wipeNotificationsEntry = (nodePath) => {
     const parentCacheKey = getPathname(getParentPath(nodePath));
     log.info(`Clearing notifications from ${parentCacheKey}`);
     wipeCacheEntry('notifications', parentCacheKey);
-    frontendCacheRevalidate(parentCacheKey);
+    frontendCacheRevalidate(parentCacheKey, eventId);
 };
 
-const wipeSpecialCases = (nodePath) => {
+const wipeSpecialCases = (nodePath: string) => {
     // When a template is updated we need to wipe all caches
     if (nodePath.includes('_templates/')) {
         log.info(`All caches cleared due to updated template on [${cacheId}]`);
@@ -161,13 +186,18 @@ const wipeSpecialCases = (nodePath) => {
     return false;
 };
 
-const wipeSitecontentEntryWithReferences = (node, eventType) => {
+export const wipeSitecontentEntryWithReferences = (
+    node: NodeEventData,
+    eventId: string,
+    eventType?: string
+) => {
     const { id, path } = node;
 
-    wipeSitecontentEntry(path);
-    wipeNotificationsEntry(path);
+    wipeSitecontentEntry(path, eventId);
+    wipeNotificationsEntry(path, eventId);
 
-    const references = findReferences({ id, eventType });
+    // TODO: remove type assertion when findReferences has been rewritten to TS
+    const references = findReferences({ id, eventType }) as Content[];
 
     log.info(
         `Clearing ${references.length} references for ${path}: ${JSON.stringify(
@@ -178,41 +208,47 @@ const wipeSitecontentEntryWithReferences = (node, eventType) => {
     );
 
     references.forEach((item) => {
-        wipeSitecontentEntry(item._path);
+        wipeSitecontentEntry(item._path, eventId);
     });
 };
 
-const wipePreviousIfPathChanged = (node) => {
+const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
     const repo = nodeLib.connect({
         repoId: node.repo || 'com.enonic.cms.default',
         branch: 'master',
     });
 
-    const previousPath = getNodeVersions({ nodeKey: node.id, repo, branch: 'master' })?.[1]
-        ?.nodePath;
+    const previousVersion = getNodeVersions({ nodeKey: node.id, repo, branch: 'master' })?.[1];
 
-    if (previousPath && previousPath !== node.path) {
-        log.info(
-            `Node path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${node.path}`
-        );
-        wipeSitecontentEntry(previousPath);
-        wipeNotificationsEntry(previousPath);
+    if (previousVersion) {
+        const previousPath = getPathname(previousVersion.nodePath);
+        const currentPath = getPathname(node.path);
+
+        if (previousPath !== currentPath) {
+            log.info(
+                `Path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${currentPath}`
+            );
+            wipeSitecontentEntry(previousPath, eventId);
+            wipeNotificationsEntry(previousPath, eventId);
+        }
     }
 };
 
-const wipeCacheForNode = (node, event) => {
+const wipeCacheForNode = (node: NodeEventData, event: EnonicEvent<any>) => {
     const didWipe = wipeSpecialCases(node.path);
     if (didWipe) {
         return;
     }
 
+    const eventId = generateEventId(node, event);
+
     runInBranchContext(() => {
-        wipePreviousIfPathChanged(node);
-        wipeSitecontentEntryWithReferences(node, event.type);
+        wipePreviousIfPathChanged(node, eventId);
+        wipeSitecontentEntryWithReferences(node, eventId, event.type);
     }, 'master');
 };
 
-const nodeListenerCallback = (event) => {
+const nodeListenerCallback = (event: EnonicEvent) => {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
             wipeCacheForNode(node, event);
@@ -220,15 +256,15 @@ const nodeListenerCallback = (event) => {
     });
 };
 
-const prepublishListenerCallback = (event) => {
+const prepublishListenerCallback = (event: EnonicEvent<PrepublishEventData>) => {
     event.data.prepublished.forEach((node) => {
         log.info(`Invalidating cache for prepublished content ${node.path}`);
         wipeCacheForNode(node, event);
     });
 };
 
-const activateCacheEventListeners = () => {
-    wipeAll();
+export const activateCacheEventListeners = () => {
+    wipeAllCaches();
 
     if (!hasSetupListeners) {
         eventLib.listener({
@@ -245,14 +281,18 @@ const activateCacheEventListeners = () => {
         });
         log.info('Started: Cache eventListener on custom.prepublish');
 
-        eventLib.listener({
+        eventLib.listener<NodeEventData>({
             type: `custom.${cacheInvalidateEventName}`,
             localOnly: false,
             callback: (event) => {
                 const { id, path } = event.data;
                 log.info(`Received event for cache invalidating of ${path} - ${id}`);
                 runInBranchContext(
-                    () => wipeSitecontentEntryWithReferences({ id, path }),
+                    () =>
+                        wipeSitecontentEntryWithReferences(
+                            event.data,
+                            generateEventId(event.data, event)
+                        ),
                     'master'
                 );
             },
@@ -262,14 +302,4 @@ const activateCacheEventListeners = () => {
     } else {
         log.info('Cache node listeners already running');
     }
-};
-
-module.exports = {
-    getDecoratorMenuCache,
-    getDriftsmeldingerCache,
-    getSitecontentCache,
-    getNotificationsCache,
-    activateCacheEventListeners,
-    wipeSitecontentEntryWithReferences,
-    cacheInvalidateEventName,
 };

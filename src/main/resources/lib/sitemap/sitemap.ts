@@ -1,22 +1,44 @@
-const contentLib = require('/lib/xp/content');
-const taskLib = require('/lib/xp/task');
-const cronLib = require('/lib/cron');
-const eventLib = require('/lib/xp/event');
-const clusterLib = require('/lib/xp/cluster');
-const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
-const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { forceArray } = require('/lib/nav-utils');
-const { urls } = require('/lib/constants');
+import contentLib, { Content } from '/lib/xp/content';
+import taskLib from '/lib/xp/task';
+import eventLib from '/lib/xp/event';
+import clusterLib from '/lib/xp/cluster';
+import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
+import { forceArray } from '../utils/nav-utils';
+import { runInBranchContext } from '../utils/branch-context';
+import { ContentDescriptor } from '../../types/content-types/content-config';
+import { urls } from '../constants';
+import { createOrUpdateSchedule } from '../utils/scheduler';
 
 const batchCount = 1000;
 const maxCount = 50000;
 const eventTypeSitemapGenerated = 'sitemap-generated';
 const eventTypeSitemapRequested = 'sitemap-requested';
 
+type LanguageVersion = {
+    language: string;
+    url: string;
+};
+
+type SitemapEntry = {
+    id: string;
+    url: string;
+    modifiedTime: string;
+    language?: string;
+    languageVersions?: LanguageVersion[];
+};
+
+type SitemapData = {
+    entries: { [key: string]: SitemapEntry };
+    clear: () => void;
+    get: (key: string) => SitemapEntry;
+    set: (key: string, value: SitemapEntry) => void;
+    remove: (key: string) => void;
+    getEntries: () => SitemapEntry[];
+};
+
 let isGenerating = false;
 
-const sitemapData = {
+const sitemapData: SitemapData = {
     entries: {},
     clear: function () {
         this.entries = {};
@@ -35,40 +57,32 @@ const sitemapData = {
     },
 };
 
-const pageContentTypes = [
-    'situation-page',
-    'guide-page',
-    'employer-situation-page',
-    'dynamic-page',
-    'content-page-with-sidemenus',
-    'main-article',
-    'section-page',
-    'page-list',
-    'transport-page',
-    'office-information',
-    'publishing-calendar',
-    'large-table',
-].map((contentType) => `${app.name}:${contentType}`);
+export const sitemapContentTypes: ContentDescriptor[] = [
+    `${app.name}:situation-page`,
+    `${app.name}:guide-page`,
+    `${app.name}:themed-article-page`,
+    `${app.name}:employer-situation-page`,
+    `${app.name}:dynamic-page`,
+    `${app.name}:content-page-with-sidemenus`,
+    `${app.name}:main-article`,
+    `${app.name}:section-page`,
+    `${app.name}:page-list`,
+    `${app.name}:transport-page`,
+    `${app.name}:office-information`,
+    `${app.name}:publishing-calendar`,
+    `${app.name}:large-table`,
+];
 
-const isIncludedType = (type) => !!pageContentTypes.find((includedType) => includedType === type);
+const isIncludedType = (type: string) =>
+    !!sitemapContentTypes.find((includedType) => includedType === type);
 
-const validateContent = (content) => {
-    if (!content) {
-        return false;
-    }
+const shouldIncludeContent = (content: Content<any>) =>
+    content &&
+    isIncludedType(content.type) &&
+    !content.data?.externalProductUrl &&
+    !content.data?.noindex;
 
-    if (!isIncludedType(content.type)) {
-        return false;
-    }
-
-    if (content.data?.externalProductUrl || content.data?.noindex) {
-        return false;
-    }
-
-    return true;
-};
-
-const getUrl = (content) => {
+const getUrl = (content: Content<any>) => {
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
     }
@@ -81,7 +95,7 @@ const getUrl = (content) => {
     return `${urls.frontendOrigin}${pathname}`;
 };
 
-const getAlternativeLanguageVersions = (content) =>
+const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[] | undefined =>
     content.data?.languages &&
     forceArray(content.data.languages).reduce((acc, id) => {
         const altContent = contentLib.get({ key: id });
@@ -97,7 +111,7 @@ const getAlternativeLanguageVersions = (content) =>
             : acc;
     }, []);
 
-const getSitemapEntry = (content) => {
+const getSitemapEntry = (content: Content): SitemapEntry => {
     const languageVersions = getAlternativeLanguageVersions(content);
 
     return {
@@ -105,11 +119,11 @@ const getSitemapEntry = (content) => {
         url: getUrl(content),
         modifiedTime: content.modifiedTime,
         language: content.language,
-        ...(languageVersions?.length > 0 && { languageVersions }),
+        ...(languageVersions && languageVersions.length > 0 && { languageVersions }),
     };
 };
 
-const getContent = (path) => {
+const getContent = (path: string) => {
     const contentFromCustomPath = getContentFromCustomPath(path);
     if (contentFromCustomPath.length > 0) {
         if (contentFromCustomPath.length === 1) {
@@ -122,7 +136,7 @@ const getContent = (path) => {
     return runInBranchContext(() => contentLib.get({ key: path }), 'master');
 };
 
-const updateSitemapEntry = (path) => {
+const updateSitemapEntry = (path: string) => {
     const content = getContent(path);
     if (!content) {
         return;
@@ -130,19 +144,19 @@ const updateSitemapEntry = (path) => {
 
     const key = content._id;
 
-    if (validateContent(content)) {
+    if (shouldIncludeContent(content)) {
         sitemapData.set(key, getSitemapEntry(content));
     } else if (sitemapData.get(key)) {
         sitemapData.remove(key);
     }
 };
 
-const getSitemapEntries = (start = 0, previousEntries = []) => {
+const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): SitemapEntry[] => {
     const entriesBatch = contentLib
         .query({
             start,
             count: batchCount,
-            contentTypes: pageContentTypes,
+            contentTypes: sitemapContentTypes,
             filters: {
                 boolean: {
                     mustNot: {
@@ -168,7 +182,7 @@ const getSitemapEntries = (start = 0, previousEntries = []) => {
     return getSitemapEntries(start + batchCount, currentEntries);
 };
 
-const getAllSitemapEntries = () => {
+export const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
@@ -176,9 +190,9 @@ const generateAndBroadcastSitemapData = () => {
     if (clusterLib.isMaster() && !isGenerating) {
         isGenerating = true;
 
-        taskLib.submit({
+        taskLib.executeFunction({
             description: 'sitemap-generator-task',
-            task: () => {
+            func: () => {
                 try {
                     log.info('Started generating sitemap data');
                     const startTime = Date.now();
@@ -209,29 +223,26 @@ const generateAndBroadcastSitemapData = () => {
     }
 };
 
-const generateDataAndActivateSchedule = () => {
+export const generateSitemapDataAndActivateSchedule = () => {
     runInBranchContext(generateAndBroadcastSitemapData, 'master');
 
     // Regenerate sitemap from scratch at 06:00 daily
-    cronLib.schedule({
-        name: 'sitemap-generator-schedule',
-        cron: '0 6 * * 1,2,3,4,5',
-        context: {
-            repository: 'com.enonic.cms.default',
-            branch: 'master',
-            user: {
-                login: 'su',
-                idProvider: 'system',
-            },
-            principals: ['role:system.admin'],
+    createOrUpdateSchedule({
+        jobName: 'sitemap-generator-schedule',
+        jobDescription: 'Generate sitemap data',
+        jobSchedule: {
+            type: 'CRON',
+            value: '0 6 * * *',
+            timeZone: 'GMT+2:00',
         },
-        callback: generateAndBroadcastSitemapData,
+        taskDescriptor: 'no.nav.navno:sitemap-generator',
+        taskConfig: {},
     });
 };
 
-const updateSitemapData = (entries) => {
+const updateSitemapData = (entries: SitemapEntry[]) => {
     if (!entries || !Array.isArray(entries) || entries.length === 0) {
-        log.info('Attempted to update sitemap with invalid data');
+        log.error('Attempted to update sitemap with invalid data');
         return;
     }
 
@@ -242,7 +253,7 @@ const updateSitemapData = (entries) => {
     });
 };
 
-const requestSitemapUpdate = () => {
+export const requestSitemapUpdate = () => {
     eventLib.send({
         type: eventTypeSitemapRequested,
         distributed: true,
@@ -250,8 +261,8 @@ const requestSitemapUpdate = () => {
     });
 };
 
-const activateDataUpdateEventListener = () => {
-    eventLib.listener({
+export const activateSitemapDataUpdateEventListener = () => {
+    eventLib.listener<{ entries: SitemapEntry[] }>({
         type: `custom.${eventTypeSitemapGenerated}`,
         callback: (event) => {
             log.info('Received sitemap data from master, updating...');
@@ -279,13 +290,4 @@ const activateDataUpdateEventListener = () => {
             });
         },
     });
-};
-
-module.exports = {
-    getAllSitemapEntries,
-    generateDataAndActivateSchedule,
-    updateSitemapEntry,
-    activateDataUpdateEventListener,
-    pageContentTypes,
-    requestSitemapUpdate,
 };

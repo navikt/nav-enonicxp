@@ -24,7 +24,6 @@ import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/pr
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
-// | 'image'
 // | 'text';
 
 type PageConfigs = {
@@ -79,4 +78,4 @@ type LayoutComponentName = keyof ComponentConfigs['layout'];
 type PartComponentName = keyof ComponentConfigs['part'];
 export type ComponentName = PageComponentName | LayoutComponentName | PartComponentName;
 
-// TODO: add image and text components?
+// TODO: add text components?

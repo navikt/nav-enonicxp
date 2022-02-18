@@ -1,11 +1,11 @@
 const contentLib = require('/lib/xp/content');
-const { runInBranchContext } = require('/lib/headless/branch-context');
-const { getParentPath } = require('/lib/nav-utils');
-const { removeDuplicates } = require('/lib/nav-utils');
+const { runInBranchContext } = require('/lib/utils/branch-context');
+const { getParentPath } = require('/lib/utils/nav-utils');
+const { removeDuplicates } = require('/lib/utils/nav-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
 const { getGlobalValueUsage } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/nav-utils');
+const { forceArray } = require('/lib/utils/nav-utils');
 const { globalValuesContentType } = require('/lib/global-values/global-values');
 
 const MAX_DEPTH = 5;

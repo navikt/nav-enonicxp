@@ -1,11 +1,11 @@
 const clusterLib = require('/lib/xp/cluster');
 const contextLib = require('/lib/xp/context');
 const eventLib = require('/lib/xp/event');
-const navUtils = require('/lib/nav-utils');
+const navUtils = require('/lib/utils/nav-utils');
 const nodeLib = require('/lib/xp/node');
 const taskLib = require('/lib/xp/task');
 const repoLib = require('/lib/xp/repo');
-const { removeDuplicates } = require('/lib/nav-utils');
+const { removeDuplicates } = require('/lib/utils/nav-utils');
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -373,9 +373,9 @@ const facetHandler = (event) => {
 
     // run task to check for facet update after 5 seconds after last update
     if (!currentTask) {
-        currentTask = taskLib.submit({
+        currentTask = taskLib.executeFunction({
             description: 'facet task',
-            task: () => {
+            func: () => {
                 taskLib.sleep(debounceTime);
                 while (Date.now() - lastUpdate < debounceTime) {
                     taskLib.sleep(500);

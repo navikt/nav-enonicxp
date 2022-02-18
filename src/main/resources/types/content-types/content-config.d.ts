@@ -8,6 +8,7 @@ import { DynamicPage } from '../../site/content-types/dynamic-page/dynamic-page'
 import { EmployerSituationPage } from '../../site/content-types/employer-situation-page/employer-situation-page';
 import { ExternalLink } from '../../site/content-types/external-link/external-link';
 import { GuidePage } from '../../site/content-types/guide-page/guide-page';
+import { ThemedArticlePage } from '../../site/content-types/themed-article-page/themed-article-page';
 import { InternalLink } from '../../site/content-types/internal-link/internal-link';
 import { LargeTable } from '../../site/content-types/large-table/large-table';
 import { MainArticle } from '../../site/content-types/main-article/main-article';
@@ -42,12 +43,13 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;
     melding: Melding;
-    notifications: Notification;
+    notification: Notification;
     'office-information': OfficeInformation;
     'page-list': PageList;
     'publishing-calendar': PublishingCalendar;
     'section-page': SectionPage;
     'situation-page': SituationPage;
+    'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
     'transport-page': TransportPage;
 };
@@ -67,6 +69,7 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
     ? {
           type: 'portal:fragment';
           fragment: Component<'part' | 'layout'>;
+          data: undefined;
       }
     : never;
 

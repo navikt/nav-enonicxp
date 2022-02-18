@@ -1,15 +1,15 @@
 const cacheLib = require('/lib/cache');
 const contentLib = require('/lib/xp/content');
 const nodeLib = require('/lib/xp/node');
-const { parseJsonArray } = require('/lib/nav-utils');
-const { getNestedValue } = require('/lib/nav-utils');
-const { pageContentTypes } = require('/lib/sitemap/sitemap');
-const { runInBranchContext } = require('/lib/headless/branch-context');
+const { parseJsonArray } = require('/lib/utils/nav-utils');
+const { getNestedValue } = require('/lib/utils/nav-utils');
+const { sitemapContentTypes } = require('/lib/sitemap/sitemap');
+const { runInBranchContext } = require('/lib/utils/branch-context');
 
 const batchSize = 1000;
 
 const defaultTypes = [
-    ...pageContentTypes,
+    ...sitemapContentTypes,
     'media:text',
     'media:document',
     'media:spreadsheet',

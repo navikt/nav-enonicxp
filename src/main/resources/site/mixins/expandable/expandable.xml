@@ -9,12 +9,6 @@
                         <default>unchecked</default>
                     </config>
                 </input>
-                <input name="expandableOpenByDefault" type="CheckBox">
-                    <label>Utvidet som standard</label>
-                    <config>
-                        <default>unchecked</default>
-                    </config>
-                </input>
                 <input name="expandableTitle" type="TextLine">
                     <label>Tittel på utvidbart panel</label>
                     <config>

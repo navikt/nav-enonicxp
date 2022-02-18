@@ -1,4 +1,9 @@
-const { productDataMixin, situationDataMixin, guideDataMixin } = require('./_mixins');
+const {
+    productDataMixin,
+    situationDataMixin,
+    guideDataMixin,
+    themedArticleDataMixin,
+} = require('./_mixins');
 const { decoratorTogglesMixinFragment } = require('./_mixins');
 const { languagesMixinFragment } = require('./_mixins');
 const { seoMixinFragment } = require('./_mixins');
@@ -37,6 +42,15 @@ const guidePageFragment = `
     }
 `;
 
+const themedArticlePageFragment = `
+    ...on no_nav_navno_ThemedArticlePage {
+        ${commonDataObject}
+        data {
+            ${themedArticleDataMixin}
+        }
+    }
+`;
+
 const situationPageFragment = `
     ...on no_nav_navno_SituationPage {
         ${commonDataObject}
@@ -66,6 +80,7 @@ const toolsPageFragment = `
 const dynamicPageFragment = `
     ${productPageFragment}
     ${guidePageFragment}
+    ${themedArticlePageFragment}
     ${situationPageFragment}
     ${employerSituationPageFragment}
     ${toolsPageFragment}
@@ -119,5 +134,6 @@ module.exports = {
     shortFragment: dynamicPageShortFragment,
     productPageFragment,
     situationPageFragment,
+    themedArticlePageFragment,
     toolsPageFragment,
 };
