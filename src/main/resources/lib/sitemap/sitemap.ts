@@ -232,7 +232,7 @@ export const generateSitemapDataAndActivateSchedule = () => {
         jobDescription: 'Generate sitemap data',
         jobSchedule: {
             type: 'CRON',
-            value: '0 6 * * 1,2,3,4,5',
+            value: '0 6 * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: 'no.nav.navno:sitemap-generator',
