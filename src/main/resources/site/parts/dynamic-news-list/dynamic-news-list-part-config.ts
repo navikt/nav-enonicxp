@@ -41,11 +41,6 @@ export interface DynamicNewsListPartConfig {
   expandable: boolean;
 
   /**
-   * Utvidet som standard
-   */
-  expandableOpenByDefault: boolean;
-
-  /**
    * Tittel på utvidbart panel
    */
   expandableTitle?: string;

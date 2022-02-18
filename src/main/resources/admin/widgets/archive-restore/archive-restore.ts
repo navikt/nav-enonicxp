@@ -2,9 +2,9 @@ import thymeleafLib from '/lib/thymeleaf';
 import nodeLib from '/lib/xp/node';
 import { sanitize } from '/lib/xp/common';
 import contentLib from '/lib/xp/content';
-import { forceArray } from '../../../lib/nav-utils';
 import { urls } from '../../../lib/constants';
-import { validateCurrentUserPermissionForContent } from '../../../lib/auth/auth-utils';
+import { forceArray } from '../../../lib/utils/nav-utils';
+import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 
 const mainView = resolve('./views/index.html');
 const selectView = resolve('./views/restore-select.html');
@@ -19,7 +19,7 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
     const repo = nodeLib.connect({ repoId, branch: 'draft' });
 
     const queryString = `_path LIKE "/archive/*"${
-        query ? ` AND fulltext("displayName, _path", "${sanitize(query)}", "AND")` : ''
+        query ? ` AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")` : ''
     }`;
 
     const archivedContentIds = repo
