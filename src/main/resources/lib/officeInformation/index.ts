@@ -260,7 +260,7 @@ export const startOfficeInfoPeriodicUpdateSchedule = () => {
         jobDescription: 'Updates office information from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '15,50 * * * *',
+            value: '15 * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeInfoUpdateTaskDescriptor,
