@@ -6,12 +6,13 @@ import { createOrUpdateSchedule } from '../utils/scheduler';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
+import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
 const officeInfoContentType: OfficeInformationDescriptor = `no.nav.navno:office-information`;
 const parentPath = '/www.nav.no/no/nav-og-samfunn/kontakt-nav/kontorer';
-const taskDescriptor = 'no.nav.navno:update-office-info';
+const officeInfoUpdateTaskDescriptor = 'no.nav.navno:update-office-info';
 const fiveMinutes = 5 * 60 * 1000;
 
 const selectedEnhetTypes: { [key: string]: boolean } = {
@@ -200,10 +201,10 @@ const fetchOfficeInfo = () => {
             },
         });
 
-        if (response.body) {
+        if (response.status === 200 && response.body) {
             return JSON.parse(response.body);
         } else {
-            logger.error(`Error response from norg2: ${response.status} - ${response.message}`);
+            logger.error(`Bad response from norg2: ${response.status} - ${response.message}`);
             return null;
         }
     } catch (e) {
@@ -212,11 +213,15 @@ const fetchOfficeInfo = () => {
     }
 };
 
-export const fetchAndUpdateOfficeInfo = () => {
+export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
     const newOfficeInfo = fetchOfficeInfo();
     if (!newOfficeInfo) {
-        logger.error('Failed to fetch office info, retrying in 5 minutes');
-        runOfficeInfoUpdateTask(new Date(Date.now() + fiveMinutes).toISOString());
+        if (retry) {
+            logger.error('Failed to fetch office info, retrying in 5 minutes');
+            runOfficeInfoUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
+        } else {
+            logger.error('Failed to fetch office info');
+        }
         return;
     }
 
@@ -225,33 +230,40 @@ export const fetchAndUpdateOfficeInfo = () => {
     updateOfficeInfo(newOfficeInfo);
 };
 
-export const runOfficeInfoUpdateTask = (scheduledTime?: string) => {
+export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) => {
     if (scheduledTime) {
-        createOrUpdateSchedule({
+        createOrUpdateSchedule<UpdateOfficeInfoConfig>({
             jobName: 'office_info_update',
             jobDescription: 'Updates office info from norg',
-            taskDescriptor,
+            taskDescriptor: officeInfoUpdateTaskDescriptor,
             jobSchedule: {
                 type: 'ONE_TIME',
                 value: scheduledTime,
             },
+            taskConfig: {
+                retry,
+            },
         });
     } else {
-        taskLib.submitTask({
-            descriptor: taskDescriptor,
+        taskLib.submitTask<UpdateOfficeInfoConfig>({
+            descriptor: officeInfoUpdateTaskDescriptor,
+            config: {
+                retry,
+            },
         });
     }
 };
 
 export const startOfficeInfoPeriodicUpdateSchedule = () => {
-    createOrUpdateSchedule({
+    createOrUpdateSchedule<UpdateOfficeInfoConfig>({
         jobName: 'office_info_norg2_hourly',
         jobDescription: 'Updates office information from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '15 * * * *',
+            value: '15,50 * * * *',
             timeZone: 'GMT+2:00',
         },
-        taskDescriptor,
+        taskDescriptor: officeInfoUpdateTaskDescriptor,
+        taskConfig: { retry: app.config.env !== 'localhost' },
     });
 };

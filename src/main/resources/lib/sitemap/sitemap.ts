@@ -236,6 +236,7 @@ export const generateSitemapDataAndActivateSchedule = () => {
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: 'no.nav.navno:sitemap-generator',
+        taskConfig: {},
     });
 };
 

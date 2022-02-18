@@ -2,6 +2,10 @@ log.info('Started running main');
 
 require('/lib/polyfills');
 
+const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+const invalidator = require('/lib/siteCache/invalidator');
+const facetLib = require('/lib/facets');
+
 import clusterLib from '/lib/xp/cluster';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateCacheEventListeners } from './lib/siteCache';
@@ -9,10 +13,6 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-
-const invalidator = require('/lib/siteCache/invalidator');
-const facetLib = require('/lib/facets');
-const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 
 let appIsRunning = true;
 

@@ -7,7 +7,10 @@ import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate'
 
 const view = resolve('webapp.html');
 const validActions = {
-    norg: { description: 'Importerer NORG', callback: runOfficeInfoUpdateTask },
+    norg: {
+        description: 'Oppdater kontor-info fra norg',
+        callback: () => runOfficeInfoUpdateTask(false),
+    },
     wipeCache: {
         description: 'Slett cache (XP og frontend)',
         callback: () => {
