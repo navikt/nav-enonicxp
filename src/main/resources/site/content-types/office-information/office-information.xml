@@ -9,15 +9,15 @@
             <items>
                 <input type="Long" name="enhetId">
                     <label>EnhetId</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextLine" name="navn">
                     <label>Navn</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextLine" name="enhetNr">
                     <label>EnhetNr</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="Long" name="antallRessurser">
                     <label>Antall Ressurser</label>
@@ -33,7 +33,7 @@
                 </input>
                 <input type="TextLine" name="type">
                     <label>Type</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextLine" name="organisasjonsnummer">
                     <label>Organisasjonsnummer</label>

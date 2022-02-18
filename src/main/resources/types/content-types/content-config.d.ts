@@ -37,19 +37,19 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'external-link': ExternalLink;
     'global-value-set': GlobalValueSetData;
     'guide-page': GuidePage;
-    'themed-article-page': ThemedArticlePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;
     'main-article': MainArticle;
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;
     melding: Melding;
-    notifications: Notification;
+    notification: Notification;
     'office-information': OfficeInformation;
     'page-list': PageList;
     'publishing-calendar': PublishingCalendar;
     'section-page': SectionPage;
     'situation-page': SituationPage;
+    'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
     'transport-page': TransportPage;
 };
@@ -69,6 +69,7 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
     ? {
           type: 'portal:fragment';
           fragment: Component<'part' | 'layout'>;
+          data: undefined;
       }
     : never;
 

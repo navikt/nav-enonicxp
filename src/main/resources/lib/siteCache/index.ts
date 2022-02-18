@@ -117,7 +117,7 @@ export const getNotificationsCache = (idOrPath: string, callback: CallbackFunc) 
     return getCacheValue('notifications', cacheKey, callback);
 };
 
-const wipeAll = () => {
+export const wipeAllCaches = () => {
     log.info(`Wiping all caches on [${cacheId}]`);
     Object.keys(caches).forEach((name) => wipeCache(name as CacheName));
 };
@@ -264,7 +264,7 @@ const prepublishListenerCallback = (event: EnonicEvent<PrepublishEventData>) => 
 };
 
 export const activateCacheEventListeners = () => {
-    wipeAll();
+    wipeAllCaches();
 
     if (!hasSetupListeners) {
         eventLib.listener({

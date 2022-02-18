@@ -1,6 +1,6 @@
-const { requestSitemapUpdate, getAllSitemapEntries } = require('/lib/sitemap/sitemap');
+import { getAllSitemapEntries, requestSitemapUpdate } from '../../lib/sitemap/sitemap';
 
-const handleGet = (req) => {
+export const get = (req: XP.Request) => {
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -33,5 +33,3 @@ const handleGet = (req) => {
         contentType: 'application/json',
     };
 };
-
-exports.get = handleGet;

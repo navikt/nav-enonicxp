@@ -7,17 +7,17 @@ export interface OfficeInformation {
     /**
      * EnhetId
      */
-    enhetId?: number;
+    enhetId: number;
 
     /**
      * Navn
      */
-    navn?: string;
+    navn: string;
 
     /**
      * EnhetNr
      */
-    enhetNr?: string;
+    enhetNr: string;
 
     /**
      * Antall Ressurser
@@ -37,7 +37,7 @@ export interface OfficeInformation {
     /**
      * Type
      */
-    type?: string;
+    type: string;
 
     /**
      * Organisasjonsnummer

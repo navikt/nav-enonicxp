@@ -1,29 +1,29 @@
 log.info('Started running main');
 
 require('/lib/polyfills');
-const cache = require('/lib/siteCache');
-const invalidator = require('/lib/siteCache/invalidator');
-const officeInformation = require('/lib/officeInformation');
-const clusterLib = require('/lib/xp/cluster');
-const facetLib = require('/lib/facets');
-const sitemap = require('/lib/sitemap/sitemap');
+
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+const invalidator = require('/lib/siteCache/invalidator');
+const facetLib = require('/lib/facets');
+
+import clusterLib from '/lib/xp/cluster';
+import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
+import { activateCacheEventListeners } from './lib/siteCache';
+import {
+    activateSitemapDataUpdateEventListener,
+    generateSitemapDataAndActivateSchedule,
+} from './lib/sitemap/sitemap';
 
 let appIsRunning = true;
 
-// start pull from NORG
-officeInformation.startCronJob();
+startOfficeInfoPeriodicUpdateSchedule();
 
-// start cache invalidator
-cache.activateCacheEventListeners();
+activateCacheEventListeners();
 
-// listen for updated sitemap-data from master
-sitemap.activateDataUpdateEventListener();
+activateSitemapDataUpdateEventListener();
 
-// generate initial sitemap data and start periodic regeneration
-sitemap.generateDataAndActivateSchedule();
+generateSitemapDataAndActivateSchedule();
 
-// enable retrieval of version history data from a specified date-time
 hookLibsWithTimeTravel();
 
 // start task for handling caching of expired and prepublished content

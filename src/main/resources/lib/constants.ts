@@ -1,4 +1,3 @@
-export const componentAppKey = 'no-nav-navno';
 const { frontendOrigin, xpOrigin, revalidatorProxyOrigin, env } = app.config;
 
 const portalAdminOrigin = {
@@ -14,5 +13,9 @@ export const urls = {
     revalidatorProxyOrigin,
     portalAdminOrigin,
 };
+
+export const componentAppKey = 'no-nav-navno';
+export const appDescriptor = 'no.nav.navno';
+export const contentRepo = 'com.enonic.cms.default';
 
 // TODO: find other constants currently repeated throughout the code base and add them here
