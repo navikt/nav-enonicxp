@@ -21,6 +21,8 @@ const commonDataObject = `
 const commonDataObjectShort = `
     data {
         description
+        title
+        ingress
     }
 `;
 
@@ -92,31 +94,18 @@ const dynamicPageFragment = `
 const dynamicPageShortFragment = `
     ...on no_nav_navno_SituationPage {
         ${commonDataObjectShort}
-        data {
-            title
-            ingress
-        }
     }
     ...on no_nav_navno_EmployerSituationPage {
         ${commonDataObjectShort}
-        data {
-            title
-            ingress
-        }
     }
     ...on no_nav_navno_ContentPageWithSidemenus {
         ${commonDataObjectShort}
-        data {
-            title
-            ingress
-        }
     }
     ...on no_nav_navno_GuidePage {
         ${commonDataObjectShort}
-        data {
-            title
-            ingress
-        }
+    }
+    ...on no_nav_navno_ThemedArticlePage {
+        ${commonDataObjectShort}
     }
     ...on no_nav_navno_ToolsPage {
         data {
@@ -125,7 +114,9 @@ const dynamicPageShortFragment = `
         }
     }
     ...on no_nav_navno_DynamicPage {
-        ${commonDataObjectShort}
+        data {
+            description
+        }
     }
 `;
 

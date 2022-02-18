@@ -101,11 +101,6 @@ export interface DynamicLinkListPartConfig {
   expandable: boolean;
 
   /**
-   * Utvidet som standard
-   */
-  expandableOpenByDefault: boolean;
-
-  /**
    * Tittel på utvidbart panel
    */
   expandableTitle?: string;
