@@ -3,6 +3,7 @@ import schedulerLib, {
     ScheduleTypeOneTime,
     PrincipalKeyUser,
 } from '/lib/xp/scheduler';
+import clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
 import { runInBranchContext } from './branch-context';
 
@@ -25,6 +26,10 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
     enabled = true,
     user = 'user:system:su',
 }: Props<TaskConfig>) => {
+    if (!clusterLib.isMaster()) {
+        return;
+    }
+
     const jobParams = {
         name: jobName,
         description: jobDescription,
