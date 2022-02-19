@@ -22,7 +22,7 @@
         "import/no-unresolved": [
             "error",
             {
-                "ignore": ["^/lib/xp", "/lib/http-client", "/lib/cache"]
+                "ignore": ["^/lib/xp", "^/lib/http-client", "^/lib/cache", "^/lib/thymeleaf"]
             }
         ],
         "no-cond-assign": ["error", "except-parens"],

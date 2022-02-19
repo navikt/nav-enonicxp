@@ -11,7 +11,7 @@ buildscript {
             }
         }
         dependencies {
-            classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:1.1.0"
+            classpath "gradle.plugin.com.enonic.gradle:xp-gradle-plugin:3.1.0"
         }
     }
 
@@ -23,13 +23,13 @@ buildscript {
 
 // Build plugins
 plugins {
-    id 'com.enonic.xp.app' version '3.0.0'
+    id 'com.enonic.xp.app' version '3.1.0'
     id "com.moowork.node" version '1.3.1'
     id 'java'
     id 'no.item.xp.codegen' version '1.1.9'
 }
 node {
-    version = '10.15.3'
+    version = '16.14.0'
 }
 apply plugin: "com.enonic.xp.app"
 
@@ -64,9 +64,8 @@ dependencies {
     include "com.enonic.xp:lib-common:${xpVersion}"
     include "com.enonic.xp:lib-event:${xpVersion}"
     include "com.enonic.xp:lib-auditlog:${xpVersion}"
-    include "com.enonic.lib:lib-thymeleaf:2.0.0"
+    include "com.enonic.lib:lib-thymeleaf:2.0.1"
     include "com.enonic.xp:lib-i18n:${xpVersion}"
-    include "com.enonic.lib:lib-mustache:2.0.0"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "com.enonic.xp:lib-context:${xpVersion}"
@@ -76,17 +75,12 @@ dependencies {
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.xp:lib-cluster:${xpVersion}"
     include "com.enonic.xp:lib-scheduler:${xpVersion}"
-    include 'com.enonic.lib:lib-router:1.0.0'
-    include 'com.enonic.lib:lib-menu:3.0.0'
-    include 'com.enonic.lib:lib-util:3.0.0'
     include 'com.enonic.lib:lib-urlredirect:3.0.0'
-    include "com.enonic.lib:lib-http-client:2.2.1"
-    include "com.enonic.lib:lib-cache:2.1.0"
-    include 'com.enonic.lib:lib-cron:1.1.1'
-    include "com.enonic.lib:lib-guillotine:5.0.1"
+    include "com.enonic.lib:lib-http-client:2.4.0"
+    include "com.enonic.lib:lib-cache:2.1.1"
+    include 'com.enonic.lib:lib-cron:1.1.1' // TODO: replace all usage of this with lib-scheduler
+    include "com.enonic.lib:lib-guillotine:5.0.1" // TODO: upgrade this after refactoring the sitecontent query
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
-    include "org.jsoup:jsoup:1.13.1"
-    webjar "org.webjars:momentjs:2.14.1"
     webjar "org.webjars.npm:html-entities:2.1.0"
     webjar "org.webjars.npm:striptags:3.1.1"
 }
