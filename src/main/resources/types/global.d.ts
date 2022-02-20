@@ -10,6 +10,8 @@ declare const app: {
         xpOrigin: string;
         revalidatorProxyOrigin: string;
         serviceSecret: string;
+        serverId: string;
+        numServers: number;
     };
 };
 

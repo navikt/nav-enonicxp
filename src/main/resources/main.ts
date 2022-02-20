@@ -13,8 +13,11 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
+import { startCustomEventAckListener } from './lib/events/reliable-event-ack';
 
 let appIsRunning = true;
+
+startCustomEventAckListener();
 
 startOfficeInfoPeriodicUpdateSchedule();
 
