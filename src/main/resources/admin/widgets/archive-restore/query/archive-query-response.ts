@@ -22,6 +22,7 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
         .query({
             count: 10000,
             query: queryString,
+            sort: '_path ASC',
         })
         .hits.map((node) => node.id);
 
