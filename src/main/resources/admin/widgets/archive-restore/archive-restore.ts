@@ -20,14 +20,14 @@ const widgetResponse = (req: XP.Request) => {
 
     if (!contentId) {
         return {
-            body: '<widget>Velg et innhold for å gjenopprette fra arkivet</widget>',
+            body: '<widget>Velg et innhold som mål for gjenoppretting fra arkivet</widget>',
             contentType: 'text/html; charset=UTF-8',
         };
     }
 
     if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
         return {
-            body: '<widget>Tilgangsfeil - Velg en mappe der du har publiseringstilgang.</widget>',
+            body: '<widget>Tilgangsfeil - Velg et innhold der du har publiseringstilgang.</widget>',
             contentType: 'text/html; charset=UTF-8',
         };
     }
