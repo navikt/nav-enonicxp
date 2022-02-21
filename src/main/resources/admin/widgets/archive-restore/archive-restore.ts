@@ -47,7 +47,7 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
 };
 
 const restoreFromArchive = (
-    archivedContentId: string,
+    selectedContentId: string,
     targetId: string
 ): { success: boolean; message: string } => {
     const targetPath = contentLib.get({ key: targetId })?._path;
@@ -58,7 +58,7 @@ const restoreFromArchive = (
     // contentLib.restore throws if content does not exist in the archive
     try {
         const restoredId = contentLib.restore({
-            content: archivedContentId,
+            content: selectedContentId,
             path: targetPath,
         })?.[0];
         if (!restoredId) {
@@ -69,6 +69,8 @@ const restoreFromArchive = (
         if (!restoredContent) {
             return { success: false, message: 'Feil: gjenoppretting fra arkiv mislykkes' };
         }
+
+        log.info(`Restored from archive: ${restoredContent._id} -> ${targetPath}`);
 
         return {
             success: true,
@@ -123,7 +125,9 @@ export const get = (req: XP.Request) => {
         };
 
         log.info(
-            `Restore from archive ${success ? 'succeeded' : 'failed'} for ${contentId} - ${message}`
+            `Restore from archive ${
+                success ? 'succeeded' : 'failed'
+            } for ${selectedContent} -> ${contentId} - ${message}`
         );
 
         return {
