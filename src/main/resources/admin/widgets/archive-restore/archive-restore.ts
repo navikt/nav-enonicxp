@@ -20,7 +20,7 @@ const widgetResponse = (req: XP.Request) => {
 
     if (!contentId) {
         return {
-            body: '<widget>Ukjent feil - forsøk å laste inn på nytt</widget>',
+            body: '<widget>Velg et innhold for å gjenopprette fra arkivet</widget>',
             contentType: 'text/html; charset=UTF-8',
         };
     }
