@@ -33,10 +33,10 @@ const restoreFromArchive = (
                 return { success: false, message: 'Feil: gjenoppretting fra arkiv mislykkes' };
             }
 
-            // The target path for restore seems to be inconsistently ignored. Workaround for this bug.
+            // Workaround for a bug where the target path for restore is occasionally ignored
             if (getParentPath(restoredContent._path) !== targetPath) {
                 log.warning(
-                    `Content (${restoredId}) was not restored to the selected path (${targetPath}), fixing...`
+                    `Content (${restoredId}) was not restored to the selected path (${targetPath}), moving the content...`
                 );
                 contentLib.move({
                     source: restoredContent._id,
@@ -49,7 +49,7 @@ const restoreFromArchive = (
                 message: `Gjenoppretting av "${restoredContent.displayName}" var vellykket`,
             };
         } catch (e) {
-            log.info(`Archive restore exception: ${e}`);
+            log.warning(`Archive restore exception: ${e}`);
             return {
                 success: false,
                 message: 'Feil: det valgte innholdet ble ikke funnet i arkivet',
