@@ -3,7 +3,7 @@ import nodeLib from '/lib/xp/node';
 import { sanitize } from '/lib/xp/common';
 import contentLib from '/lib/xp/content';
 import { urls } from '../../../lib/constants';
-import { forceArray } from '../../../lib/utils/nav-utils';
+import { forceArray, getParentPath } from '../../../lib/utils/nav-utils';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 
 const mainView = resolve('./views/index.html');
@@ -70,7 +70,15 @@ const restoreFromArchive = (
             return { success: false, message: 'Feil: gjenoppretting fra arkiv mislykkes' };
         }
 
-        log.info(`Restored from archive: ${restoredContent._id} -> ${targetPath}`);
+        // The target path for restore seems to be inconsistently ignored. Workaround for this bug.
+        if (getParentPath(restoredContent._path) !== targetPath) {
+            log.warning(
+                `Content (${restoredId}) was not restored to the selected path (${targetPath}), fixing...`
+            );
+            contentLib.move({ source: restoredContent._id, target: targetPath });
+        }
+
+        log.info(`Restored from archive: ${JSON.stringify(restoredContent)} -> ${targetPath}`);
 
         return {
             success: true,
