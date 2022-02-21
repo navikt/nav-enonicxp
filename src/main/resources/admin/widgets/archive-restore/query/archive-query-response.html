@@ -1,0 +1,18 @@
+<!--<input type="hidden" name="contentId" data-th-value="${contentId}" />-->
+<div data-th-if="${archiveEntries == null}">Ingen treff</div>
+<div data-th-if="${archiveEntries != null}">
+    <label for="restore-input" style="margin-bottom: 0.25rem">Velg innhold for gjenoppretting</label
+    ><br />
+    <select name="selectedContent" id="restore-input">
+        <option
+            data-th-each="entry : ${archiveEntries}"
+            data-th-text="${entry.name}"
+            data-th-value="${entry.id}"
+        ></option></select
+    ><br />
+    <button type="submit" th:attr="onclick='fetchArchiveRestore()'" style="margin-top: 0.5rem">
+        Gjenopprett
+    </button>
+
+    <div id="restore-result"></div>
+</div>
