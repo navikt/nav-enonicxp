@@ -47,11 +47,11 @@ const widgetResponse = (req: XP.Request) => {
 export const get = (req: XP.Request) => {
     const subPath = getSubPath(req);
 
-    if (subPath === 'query') {
+    if (subPath === queryPath) {
         return archiveQueryResponse(req);
     }
 
-    if (subPath === 'restore') {
+    if (subPath === restorePath) {
         return archiveRestoreResponse(req);
     }
 
