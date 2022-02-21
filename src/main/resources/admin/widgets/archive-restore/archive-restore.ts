@@ -7,13 +7,16 @@ import { archiveRestoreResponse } from './restore/archive-restore-response';
 
 const view = resolve('./archive-restore.html');
 
+const queryPath = 'query';
+const restorePath = 'restore';
+
 const widgetResponse = (req: XP.Request) => {
     const { contextPath } = req;
     const { contentId } = req.params;
 
     const widgetUrl = `${urls.portalAdminOrigin}${contextPath}`;
-    const queryUrl = `${widgetUrl}/query`;
-    const restoreUrl = `${widgetUrl}/restore`;
+    const queryUrl = `${widgetUrl}/${queryPath}`;
+    const restoreUrl = `${widgetUrl}/${restorePath}`;
 
     if (!contentId) {
         return {
@@ -43,8 +46,6 @@ const widgetResponse = (req: XP.Request) => {
 
 export const get = (req: XP.Request) => {
     const subPath = getSubPath(req);
-
-    log.info(`Sub path: ${subPath}`);
 
     if (subPath === 'query') {
         return archiveQueryResponse(req);

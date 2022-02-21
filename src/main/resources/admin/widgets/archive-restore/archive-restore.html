@@ -1,6 +1,7 @@
 <widget>
     <script th:inline="javascript">
-        function fetchArchiveQuery() {
+        function fetchArchiveQuery(event) {
+            event.preventDefault();
             const url = [[${queryUrl}]];
             const input = document.getElementById('query-input').value;
 
@@ -14,9 +15,12 @@
                 .then((html) => {
                     document.getElementById('query-result').innerHTML = html;
                 });
+
+            return false;
         }
 
-        function fetchArchiveRestore() {
+        function fetchArchiveRestore(event) {
+            event.preventDefault();
             const url = [[${restoreUrl}]];
             const contentId = [[${contentId}]];
             const input = document.getElementById('restore-input').value;
@@ -35,12 +39,20 @@
     </script>
 
     <div style="margin-bottom: 0.75rem; padding: 0.5rem">
-        <label for="query-input">Søk i arkivet</label><br />
-        <input type="text" id="query-input" />
-        <button type="button" th:attr="onclick='fetchArchiveQuery()'" style="margin-left: 0.25rem">
-            Søk
-        </button>
+        <form th:attr="onsubmit='fetchArchiveQuery(event)'">
+            <label for="query-input">Søk i arkivet</label><br />
+            <input type="text" id="query-input" class="xp-admin-common-text-input" />
+            <button
+                type="submit"
+                style="margin-top: 0.25rem; height: 32px"
+                class="xp-admin-common-button"
+            >
+                <span>Søk</span>
+            </button>
+        </form>
 
-        <div id="query-result"></div>
+        <div id="query-result" style="margin-top: 0.5rem"></div>
+
+        <div id="restore-result" style="margin-top: 0.5rem"></div>
     </div>
 </widget>
