@@ -1,7 +1,7 @@
-import nodeLib from '/lib/xp/node';
+import nodeLib, { RepoNode } from '/lib/xp/node';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
-import { forceArray } from '../../../../lib/utils/nav-utils';
+import { forceArray, getParentPath } from '../../../../lib/utils/nav-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
 
 type ArchiveEntry = {
@@ -28,19 +28,28 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
 
     const archivedContents = repo.get(archivedContentIds);
 
-    return forceArray(archivedContents).reduce((acc, content) => {
-        if (!validateCurrentUserPermissionForContent(undefined, 'PUBLISH', content._permissions)) {
-            return acc;
-        }
+    return forceArray(archivedContents)
+        .reduce((acc, content) => {
+            if (
+                !validateCurrentUserPermissionForContent(undefined, 'PUBLISH', content._permissions)
+            ) {
+                return acc;
+            }
 
-        return [
-            ...acc,
-            {
-                name: `${content.displayName} [${content._path.replace('/archive', '')}]`,
-                id: content._id,
-            },
-        ];
-    }, []);
+            const path = content._path.replace(/^\/archive/, '');
+
+            return [
+                ...acc,
+                {
+                    name: `${content.displayName} [${path}]`,
+                    id: content._id,
+                    path,
+                },
+            ];
+        }, [])
+        .sort((a: RepoNode<any>, b: RepoNode<any>) =>
+            getParentPath(a.path) || a.path < getParentPath(b.path) || b.path ? -1 : 1
+        );
 };
 
 export const archiveQueryResponse = (req: XP.Request) => {
