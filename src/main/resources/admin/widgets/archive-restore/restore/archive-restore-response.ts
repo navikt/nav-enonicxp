@@ -60,8 +60,6 @@ const restoreFromArchive = (
 export const archiveRestoreResponse = (req: XP.Request) => {
     const { contentId, selectedContent } = req.params;
 
-    log.info(`Restoring ${selectedContent} from ${contentId}`);
-
     if (!selectedContent || !contentId) {
         return {
             body: '<span>Ingen innhold valgt</span>',
