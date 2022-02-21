@@ -111,7 +111,7 @@ const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[
                   ]
                 : acc;
         } catch (e) {
-            log.error(`Could not retrieve alt language content for id ${id} - ${e}`);
+            log.error(`Could not retrieve alt language content for sitemap - root id: ${content._id} - alt id: ${id} - Error: ${e}`);
             return acc;
         }
     }, []);
