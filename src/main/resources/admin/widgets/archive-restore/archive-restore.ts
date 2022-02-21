@@ -122,6 +122,10 @@ export const get = (req: XP.Request) => {
             message,
         };
 
+        log.info(
+            `Restore from archive ${success ? 'succeeded' : 'failed'} for ${contentId} - ${message}`
+        );
+
         return {
             body: thymeleafLib.render(resultView, model),
             contentType: 'text/html',
