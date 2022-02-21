@@ -98,17 +98,22 @@ const getUrl = (content: Content<any>) => {
 const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[] | undefined =>
     content.data?.languages &&
     forceArray(content.data.languages).reduce((acc, id) => {
-        const altContent = contentLib.get({ key: id });
+        try {
+            const altContent = contentLib.get({ key: id });
 
-        return altContent?.language
-            ? [
-                  ...acc,
-                  {
-                      language: altContent.language,
-                      url: getUrl(altContent),
-                  },
-              ]
-            : acc;
+            return altContent?.language
+                ? [
+                      ...acc,
+                      {
+                          language: altContent.language,
+                          url: getUrl(altContent),
+                      },
+                  ]
+                : acc;
+        } catch (e) {
+            log.error(`Could not retrieve alt language content for id ${id} - ${e}`);
+            return acc;
+        }
     }, []);
 
 const getSitemapEntry = (content: Content): SitemapEntry => {
