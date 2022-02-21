@@ -33,7 +33,7 @@ const restoreFromArchive = (
             log.warning(
                 `Content (${restoredId}) was not restored to the selected path (${targetPath}), fixing...`
             );
-            // contentLib.move({ source: restoredContent._id, target: targetPath });
+            contentLib.move({ source: restoredContent._id, target: targetPath });
         }
 
         log.info(`Restored from archive: ${JSON.stringify(restoredContent)} -> ${targetPath}`);
