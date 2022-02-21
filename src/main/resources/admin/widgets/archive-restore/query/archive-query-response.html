@@ -8,7 +8,12 @@
             name="selectedContent"
             id="restore-input"
             class="xp-admin-common-text-input"
-            style="-moz-appearance: revert; -webkit-appearance: revert; max-width: 100%"
+            style="
+                -moz-appearance: revert;
+                -webkit-appearance: revert;
+                max-width: 100%;
+                white-space: nowrap;
+            "
         >
             <option
                 data-th-each="entry : ${archiveEntries}"
