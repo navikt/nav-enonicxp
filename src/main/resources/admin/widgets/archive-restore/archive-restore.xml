@@ -1,0 +1,10 @@
+<widget>
+    <display-name>Gjenopprett fra arkiv</display-name>
+    <description>Gjenoppretter innhold fra arkivet</description>
+    <interfaces>
+        <interface>contentstudio.contextpanel</interface>
+    </interfaces>
+    <allow>
+        <principal>role:system.authenticated</principal>
+    </allow>
+</widget>
