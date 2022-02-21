@@ -48,7 +48,10 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
             ];
         }, [])
         .sort((a: RepoNode<any>, b: RepoNode<any>) =>
-            (getParentPath(a.path) || a.path) < (getParentPath(b.path) || b.path) ? -1 : 1
+            (getParentPath(a.path) || a.path).toLowerCase() <
+            (getParentPath(b.path) || b.path).toLowerCase()
+                ? -1
+                : 1
         );
 };
 
