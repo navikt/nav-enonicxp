@@ -1,7 +1,9 @@
 <widget>
     <script th:inline="javascript">
         function fetchArchiveQuery(event) {
-            event.preventDefault();
+            if (event) {
+                event.preventDefault();
+            }
             const url = [[${queryUrl}]];
             const input = document.getElementById('query-input').value;
 
@@ -15,12 +17,12 @@
                 .then((html) => {
                     document.getElementById('query-result').innerHTML = html;
                 });
-
-            return false;
         }
 
         function fetchArchiveRestore(event) {
-            event.preventDefault();
+            if (event) {
+                event.preventDefault();
+            }
             const url = [[${restoreUrl}]];
             const contentId = [[${contentId}]];
             const input = document.getElementById('restore-input').value;
@@ -34,6 +36,7 @@
                 })
                 .then((html) => {
                     document.getElementById('restore-result').innerHTML = html;
+                    fetchArchiveQuery()
                 });
         }
     </script>
