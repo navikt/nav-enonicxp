@@ -13,14 +13,14 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-import { startCustomEventAckListener } from './lib/events/reliable-event-send';
+import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
 
 let appIsRunning = true;
 
 updateClusterInfo();
 
-startCustomEventAckListener();
+startReliableEventAckListener();
 
 startOfficeInfoPeriodicUpdateSchedule();
 

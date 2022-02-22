@@ -56,7 +56,7 @@ export const clusterInfo: { localServerName: string; nodeCount: number } = {
 export const updateClusterInfo = () => {
     const clusterInfoResponse = requestClusterInfo();
     if (!clusterInfoResponse) {
-        return null;
+        return;
     }
 
     const localMember = clusterInfoResponse.members.find(

@@ -1,7 +1,16 @@
-import eventLib from '/lib/xp/event';
+import eventLib, { EnonicEvent } from '/lib/xp/event';
 import taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
 import { clusterInfo } from '../cluster/cluster-utils';
+
+/*
+ * This system allows nodes in the server cluster to exchange reliable events
+ * Events received will be acknowledged by every node in the cluster, and will be resent should any
+ * servers fail to ack the event before the specified timeout, as long as the remaining retry count
+ * is >0. We do not handle ack-events being lost, so the event listener callbacks must be tolerant
+ * of repeated calls from the same event.
+ *
+ * */
 
 type AckEventData = {
     serverId: string;
@@ -13,7 +22,7 @@ type ReliableEventRetryProps = {
     prevEventId: string;
 };
 
-export type ReliableEventMetaData = {
+type ReliableEventMetaData = {
     eventId: string;
     retryProps?: ReliableEventRetryProps;
 };
@@ -97,15 +106,16 @@ export const sendAck = (eventId: string) => {
     });
 };
 
-export const startCustomEventAckListener = () => {
+export const startReliableEventAckListener = () => {
     eventLib.listener<AckEventData>({
         type: `custom.${ackEventType}`,
         callback: (event) => {
             const { serverId, eventId } = event.data;
             const ackedServerIds = eventIdToAckedServerIds[eventId];
 
+            // This entry only exists if the event originated on the current server
+            // The server should only handle acks for events which it sent out
             if (!ackedServerIds) {
-                log.info(`Event ${eventId} does not originate from this server, ignoring ack`);
                 return;
             }
 
@@ -144,7 +154,7 @@ export const sendReliableEvent = <EventData = undefined>({
         );
     }
 
-    const metaData = { eventId, retryProps };
+    const metaData: ReliableEventMetaData = { eventId, retryProps };
 
     handleAcks({ type, data, timeoutMs, retries, metaData });
 
@@ -152,5 +162,39 @@ export const sendReliableEvent = <EventData = undefined>({
         type,
         distributed: true,
         data: { ...data, ...metaData },
+    });
+};
+
+export const addReliableEventListener = <EventData = undefined>({
+    type,
+    callback,
+}: {
+    type: string;
+    callback: (event: EnonicEvent<ReliableEventMetaData & EventData>) => any;
+}) => {
+    eventLib.listener<ReliableEventMetaData & EventData>({
+        type: `custom.${type}`,
+        callback: (event) => {
+            const { eventId, retryProps } = event.data;
+
+            if (retryProps) {
+                const { prevEventId, prevEventServersAcked } = retryProps;
+
+                // Ignore the retry-event if this server had previously acknowledged it
+                if (prevEventServersAcked.includes(clusterInfo.localServerName)) {
+                    return;
+                }
+
+                log.warning(
+                    `Event ${eventId} received as repeat of previously missed event ${prevEventId}`
+                );
+            } else {
+                log.info(`Event ${eventId} received`);
+            }
+
+            sendAck(eventId);
+
+            callback(event);
+        },
     });
 };
