@@ -18,7 +18,7 @@ export interface ProductData {
   /**
    * Kategori
    */
-  taxonomy?: Array<"benefits" | "followup" | "rights">;
+  taxonomy?: Array<"benefits" | "followup" | "rights" | "measures">;
 
   /**
    * Områdekategori

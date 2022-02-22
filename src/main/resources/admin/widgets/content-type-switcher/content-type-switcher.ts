@@ -1,6 +1,6 @@
-const contentLib = require('/lib/xp/content');
-const portalLib = require('/lib/xp/portal');
-const thymeleafLib = require('/lib/thymeleaf');
+import contentLib from '/lib/xp/content';
+import portalLib from '/lib/xp/portal';
+import thymeleafLib from '/lib/thymeleaf';
 
 const view = resolve('./content-type-switcher.html');
 
@@ -25,7 +25,7 @@ const getAllowedTypes = () => {
         );
 };
 
-const handleGet = (req) => {
+export const get = (req: XP.Request) => {
     const { repositoryId } = req;
     const { contentId } = req.params;
 
@@ -41,5 +41,3 @@ const handleGet = (req) => {
         contentType: 'text/html',
     };
 };
-
-exports.get = handleGet;

@@ -34,12 +34,10 @@ declare module '*/lib/xp/node' {
             readonly _childOrder: string;
             readonly _indexConfig: IndexConfig;
             readonly _inheritsPermissions: boolean;
-            readonly _permissions: ReadonlyArray<import('/lib/xp/content').PermissionsParams>;
+            readonly _permissions: Array<import('/lib/xp/content').PermissionsParams>;
             readonly _state: string;
             readonly _nodeType: string;
-        } & NodeData extends Content
-            ? NodeContent<NodeData>
-            : NodeData;
+        } & (NodeData extends Content ? NodeContent<NodeData> : NodeData);
 
         type NodeModifyParams<NodeData = Content> = {
             key: string;

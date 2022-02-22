@@ -66,7 +66,7 @@ const schemaContextOptions = {
         Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
         RichText: richTextCallback,
     }),
-    applications: [app.name, 'navno.nav.no.search', 'com.enonic.app.rss'],
+    applications: [app.name, 'navno.nav.no.search'],
     allowPaths: ['/redirects'],
 };
 

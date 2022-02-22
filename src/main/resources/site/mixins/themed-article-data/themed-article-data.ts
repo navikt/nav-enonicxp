@@ -18,7 +18,7 @@ export interface ThemedArticleData {
   /**
    * Kategori
    */
-  taxonomy?: Array<"benefits" | "followup" | "rights">;
+  taxonomy?: Array<"benefits" | "followup" | "rights" | "measures">;
 
   /**
    * Tilleggskategori
