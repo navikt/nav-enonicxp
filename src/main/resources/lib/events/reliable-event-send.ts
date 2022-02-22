@@ -102,11 +102,18 @@ export const startCustomEventAckListener = () => {
         type: `custom.${ackEventType}`,
         callback: (event) => {
             const { serverId, eventId } = event.data;
+            const ackState = eventIdToServerAckedIdsMap[eventId];
+
+            if (!ackState) {
+                log.info(`Event ${eventId} does not originate from this server, ignoring ack`);
+                return;
+            }
+
             log.info(`Event ${eventId} acked by server ${serverId}`);
-            if (eventIdToServerAckedIdsMap[eventId].includes(serverId)) {
+            if (ackState.includes(serverId)) {
                 log.warning(`Server ${serverId} has already acked event ${eventId}!`);
             } else {
-                eventIdToServerAckedIdsMap[eventId].push(serverId);
+                ackState.push(serverId);
             }
         },
     });
