@@ -48,7 +48,10 @@ const requestClusterInfo = () => {
     }
 };
 
-export const clusterInfo: { localServerName?: string; nodeCount?: number } = {};
+export const clusterInfo: { localServerName: string; nodeCount: number } = {
+    localServerName: '',
+    nodeCount: 0,
+};
 
 export const updateClusterInfo = () => {
     const clusterInfoResponse = requestClusterInfo();
@@ -56,9 +59,10 @@ export const updateClusterInfo = () => {
         return null;
     }
 
-    const localId = clusterInfoResponse.localNode.id;
-    const localMember = clusterInfoResponse.members.find((member) => member.id === localId);
+    const localMember = clusterInfoResponse.members.find(
+        (member) => member.id === clusterInfoResponse.localNode.id
+    );
 
-    clusterInfo.localServerName = localMember?.name;
+    clusterInfo.localServerName = localMember?.name || clusterInfoResponse.localNode.id;
     clusterInfo.nodeCount = clusterInfoResponse.members.length;
 };

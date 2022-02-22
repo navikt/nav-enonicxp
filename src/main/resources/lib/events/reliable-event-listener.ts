@@ -1,7 +1,6 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import { ReliableEventMetaData, sendAck } from './reliable-event-send';
-
-const { serverId } = app.config;
+import { clusterInfo } from '../cluster/cluster-utils';
 
 export const addReliableEventListener = <EventData = undefined>({
     type,
@@ -18,7 +17,7 @@ export const addReliableEventListener = <EventData = undefined>({
             if (retryProps) {
                 const { prevEventId, prevEventServersAcked } = retryProps;
 
-                if (prevEventServersAcked.includes(serverId)) {
+                if (prevEventServersAcked.includes(clusterInfo.localServerName)) {
                     log.info(
                         `Event ${prevEventId} was already processed on this server - ignoring repeat event ${eventId}`
                     );
@@ -32,8 +31,13 @@ export const addReliableEventListener = <EventData = undefined>({
 
             log.info(`Event ${eventId} received, lets acknowledge and then do stuff!`);
 
-            if (Math.random() > 0.5) {
-                log.info(`[test] Not acking this event!`);
+            const random = Math.random();
+            log.info(`Random number: ${random}`);
+
+            if (random > 0.75) {
+                log.info(`NOT acking this event: ${eventId}`);
+            } else {
+                log.info(`Acking this event: ${eventId}`);
                 sendAck(eventId);
             }
 

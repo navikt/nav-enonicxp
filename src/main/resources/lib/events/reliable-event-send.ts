@@ -1,6 +1,7 @@
 import eventLib from '/lib/xp/event';
 import taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
+import { clusterInfo } from '../cluster/cluster-utils';
 
 type AckEventData = {
     serverId: string;
@@ -17,8 +18,7 @@ export type ReliableEventMetaData = {
     retryProps?: ReliableEventRetryProps;
 };
 
-const { serverId, numServers } = app.config;
-const ackEventType = 'custom.ack';
+const ackEventType = 'ack';
 const timeoutMsDefault = 5000;
 const retriesDefault = 10;
 
@@ -29,8 +29,8 @@ const getNumServersMissing = (eventData: ReliableEventMetaData) => {
     const serversAcked = eventIdToServerAckedIdsMap[eventId];
 
     return retryProps
-        ? numServers - serversAcked.length - retryProps.prevEventServersAcked.length
-        : numServers - serversAcked.length;
+        ? clusterInfo.nodeCount - serversAcked.length - retryProps.prevEventServersAcked.length
+        : clusterInfo.nodeCount - serversAcked.length;
 };
 
 const handleAcks = ({
@@ -91,7 +91,7 @@ export const sendAck = (eventId: string) => {
         type: ackEventType,
         distributed: true,
         data: {
-            serverId,
+            serverId: clusterInfo.localServerName,
             eventId,
         } as AckEventData,
     });
@@ -99,11 +99,15 @@ export const sendAck = (eventId: string) => {
 
 export const startCustomEventAckListener = () => {
     eventLib.listener<AckEventData>({
-        type: ackEventType,
+        type: `custom.${ackEventType}`,
         callback: (event) => {
             const { serverId, eventId } = event.data;
             log.info(`Event ${eventId} acked by server ${serverId}`);
-            eventIdToServerAckedIdsMap[eventId].push(serverId);
+            if (eventIdToServerAckedIdsMap[eventId].includes(serverId)) {
+                log.warning(`Server ${serverId} has already acked event ${eventId}!`);
+            } else {
+                eventIdToServerAckedIdsMap[eventId].push(serverId);
+            }
         },
     });
 };
