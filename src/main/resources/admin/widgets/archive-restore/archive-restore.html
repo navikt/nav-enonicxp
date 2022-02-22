@@ -1,0 +1,61 @@
+<widget>
+    <script th:inline="javascript">
+        function fetchArchiveQuery(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const url = [[${queryUrl}]];
+            const input = document.getElementById('query-input').value;
+
+            fetch(`${url}?input=${input}`)
+                .then((res) => {
+                    if (res.ok) {
+                        return res.text();
+                    }
+                    return 'Oi, noe gikk galt!';
+                })
+                .then((html) => {
+                    document.getElementById('query-result').innerHTML = html;
+                });
+        }
+
+        function fetchArchiveRestore(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const url = [[${restoreUrl}]];
+            const contentId = [[${contentId}]];
+            const input = document.getElementById('restore-input').value;
+
+            fetch(`${url}?selectedContent=${input}&contentId=${contentId}`)
+                .then((res) => {
+                    if (res.ok) {
+                        return res.text();
+                    }
+                    return 'Oi, noe gikk galt!';
+                })
+                .then((html) => {
+                    document.getElementById('restore-result').innerHTML = html;
+                    fetchArchiveQuery()
+                });
+        }
+    </script>
+
+    <div style="margin-bottom: 0.75rem; padding: 0.5rem">
+        <form th:attr="onsubmit='fetchArchiveQuery(event)'">
+            <label for="query-input">Søk i arkivet (ved tomt felt vises alt)</label><br />
+            <input type="text" id="query-input" class="xp-admin-common-text-input" />
+            <button
+                type="submit"
+                style="margin-top: 0.25rem; height: 32px"
+                class="xp-admin-common-button"
+            >
+                <span>Søk</span>
+            </button>
+        </form>
+
+        <div id="query-result" style="margin-top: 0.5rem"></div>
+
+        <div id="restore-result" style="margin-top: 0.5rem"></div>
+    </div>
+</widget>

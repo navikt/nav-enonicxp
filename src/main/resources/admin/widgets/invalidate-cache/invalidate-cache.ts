@@ -1,11 +1,11 @@
-const portalLib = require('/lib/xp/portal');
-const contentLib = require('/lib/xp/content');
-const thymeleafLib = require('/lib/thymeleaf');
-const { runInBranchContext } = require('/lib/utils/branch-context');
+import contentLib from '/lib/xp/content';
+import portalLib from '/lib/xp/portal';
+import thymeleafLib from '/lib/thymeleaf';
+import { runInBranchContext } from '../../../lib/utils/branch-context';
 
 const view = resolve('./invalidate-cache.html');
 
-const handleGet = (req) => {
+export const get = (req: XP.Request) => {
     const { contentId } = req.params;
 
     if (!contentId) {
@@ -34,5 +34,3 @@ const handleGet = (req) => {
         contentType: 'text/html',
     };
 };
-
-exports.get = handleGet;
