@@ -27,19 +27,11 @@ export const addReliableEventListener = <EventData = undefined>({
                         `Event ${eventId} received as repeat of previously missed event ${prevEventId}`
                     );
                 }
-            }
-
-            log.info(`Event ${eventId} received, lets acknowledge and then do stuff!`);
-
-            const random = Math.random();
-            log.info(`Random number: ${random}`);
-
-            if (random > 0.75) {
-                log.info(`NOT acking this event: ${eventId}`);
             } else {
-                log.info(`Acking this event: ${eventId}`);
-                sendAck(eventId);
+                log.info(`Event ${eventId} received`);
             }
+
+            sendAck(eventId);
 
             callback(event);
         },

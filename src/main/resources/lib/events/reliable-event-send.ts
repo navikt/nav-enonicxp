@@ -19,14 +19,14 @@ export type ReliableEventMetaData = {
 };
 
 const ackEventType = 'ack';
-const timeoutMsDefault = 5000;
+const timeoutMsDefault = 2000;
 const retriesDefault = 10;
 
-const eventIdToServerAckedIdsMap: { [eventId: string]: string[] } = {};
+const eventIdToAckedServerIds: { [eventId: string]: string[] } = {};
 
 const getNumServersMissing = (eventData: ReliableEventMetaData) => {
     const { eventId, retryProps } = eventData;
-    const serversAcked = eventIdToServerAckedIdsMap[eventId];
+    const serversAcked = eventIdToAckedServerIds[eventId];
 
     return retryProps
         ? clusterInfo.nodeCount - serversAcked.length - retryProps.prevEventServersAcked.length
@@ -48,7 +48,7 @@ const handleAcks = ({
 }) => {
     const { eventId } = metaData;
 
-    eventIdToServerAckedIdsMap[eventId] = [];
+    eventIdToAckedServerIds[eventId] = [];
 
     taskLib.executeFunction({
         description: `Await acknowledgements for event ${eventId}`,
@@ -69,7 +69,7 @@ const handleAcks = ({
                         retries: retries - 1,
                         retryProps: {
                             prevEventId: eventId,
-                            prevEventServersAcked: eventIdToServerAckedIdsMap[eventId],
+                            prevEventServersAcked: eventIdToAckedServerIds[eventId],
                         },
                     });
                 } else {
@@ -81,7 +81,7 @@ const handleAcks = ({
                 log.info(`Event ${eventId} acked by all servers`);
             }
 
-            delete eventIdToServerAckedIdsMap[eventId];
+            delete eventIdToAckedServerIds[eventId];
         },
     });
 };
@@ -102,18 +102,18 @@ export const startCustomEventAckListener = () => {
         type: `custom.${ackEventType}`,
         callback: (event) => {
             const { serverId, eventId } = event.data;
-            const ackState = eventIdToServerAckedIdsMap[eventId];
+            const ackedServerIds = eventIdToAckedServerIds[eventId];
 
-            if (!ackState) {
+            if (!ackedServerIds) {
                 log.info(`Event ${eventId} does not originate from this server, ignoring ack`);
                 return;
             }
 
             log.info(`Event ${eventId} acked by server ${serverId}`);
-            if (ackState.includes(serverId)) {
+            if (ackedServerIds.includes(serverId)) {
                 log.warning(`Server ${serverId} has already acked event ${eventId}!`);
             } else {
-                ackState.push(serverId);
+                ackedServerIds.push(serverId);
             }
         },
     });

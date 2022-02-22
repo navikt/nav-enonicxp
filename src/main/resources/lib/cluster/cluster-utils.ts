@@ -65,4 +65,8 @@ export const updateClusterInfo = () => {
 
     clusterInfo.localServerName = localMember?.name || clusterInfoResponse.localNode.id;
     clusterInfo.nodeCount = clusterInfoResponse.members.length;
+
+    log.info(
+        `Local server name: ${clusterInfo.localServerName} - Nodes in cluster: ${clusterInfo.nodeCount}`
+    );
 };
