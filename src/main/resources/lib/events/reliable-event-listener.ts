@@ -1,25 +1,35 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
-import { CustomEventData } from './reliable-event-send';
+import { ReliableEventMetaData } from './reliable-event-send';
 import { sendAck } from './reliable-event-ack';
 
 const { serverId } = app.config;
 
-export const reliableEventListener = (
+export const reliableEventListener = <EventData = undefined>(
     type: string,
-    callback: (event: EnonicEvent<CustomEventData>) => any
+    callback: (event: EnonicEvent<ReliableEventMetaData & EventData>) => any
 ) => {
-    eventLib.listener<CustomEventData>({
+    eventLib.listener<ReliableEventMetaData & EventData>({
         type: `custom.${type}`,
         callback: (event) => {
-            const { eventId, targetServers } = event.data;
-            if (targetServers && !targetServers.includes(serverId)) {
-                log.info(`Event ${eventId} is not targeted for this server - ignoring this event`);
-                return;
+            const { eventId, retryProps } = event.data;
+            if (retryProps) {
+                const { prevEventId, prevEventServersAcked } = retryProps;
+
+                if (prevEventServersAcked.includes(serverId)) {
+                    log.info(
+                        `Event ${prevEventId} was already processed on this server - ignoring repeat event ${eventId}`
+                    );
+                    return;
+                } else {
+                    log.warning(
+                        `Event ${eventId} received as repeat of previously missed event ${prevEventId}`
+                    );
+                }
             }
 
             log.info(`Event ${eventId} received, lets acknowledge and then do stuff!`);
-
             sendAck(eventId);
+
             callback(event);
         },
     });

@@ -2,31 +2,48 @@ import eventLib from '/lib/xp/event';
 import { generateUUID } from '../utils/uuid';
 import { handleAcks } from './reliable-event-ack';
 
-export type CustomEventData = {
-    eventId: string;
-    targetServers?: string[];
+type ReliableEventRetryProps = {
+    prevEventServersAcked: string[];
+    prevEventId: string;
 };
 
-export const sendReliableEvent = ({
+export type ReliableEventMetaData = {
+    eventId: string;
+    retryProps?: ReliableEventRetryProps;
+};
+
+export const sendReliableEvent = <EventData = undefined>({
     type,
     data,
     timeoutMs,
     retries,
-    targetServers,
+    retryProps,
 }: {
     type: string;
-    data?: Record<string, any>;
+    data?: EventData;
     timeoutMs?: number;
     retries?: number;
-    targetServers?: string[];
+    retryProps?: ReliableEventRetryProps;
 }) => {
     const eventId = `event-${type}-${generateUUID()}`;
 
-    handleAcks({ eventId, type: type, data: data, timeoutMs, retries });
+    if (retryProps) {
+        log.info(
+            `Retrying event ${
+                retryProps.prevEventId
+            } as new event ${eventId} - excluding servers ${retryProps.prevEventServersAcked.join(
+                ', '
+            )}`
+        );
+    }
+
+    const metaData = { eventId, retryProps };
+
+    handleAcks({ type, data, timeoutMs, retries, metaData });
 
     eventLib.send({
         type,
         distributed: true,
-        data: { ...data, eventId, targetServers },
+        data: { ...data, ...metaData },
     });
 };

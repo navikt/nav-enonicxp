@@ -1,6 +1,6 @@
 import eventLib from '/lib/xp/event';
 import taskLib from '/lib/xp/task';
-import { sendReliableEvent } from './reliable-event-send';
+import { ReliableEventMetaData, sendReliableEvent } from './reliable-event-send';
 
 type AckEventData = {
     serverId: string;
@@ -14,37 +14,66 @@ const ackEventType = 'custom.ack';
 const timeoutMsDefault = 5000;
 const retriesDefault = 10;
 
-const ackState: { [eventId: string]: string[] } = {};
+const eventIdToServerAckedIds: { [eventId: string]: string[] } = {};
+
+const getNumServersMissing = (eventData: ReliableEventMetaData) => {
+    const { eventId, retryProps } = eventData;
+    const serversAcked = eventIdToServerAckedIds[eventId];
+
+    return retryProps
+        ? numServers - serversAcked.length - retryProps.prevEventServersAcked.length
+        : numServers - serversAcked.length;
+};
 
 export const handleAcks = ({
-    eventId,
     type,
+    metaData,
     data,
     timeoutMs = timeoutMsDefault,
     retries = retriesDefault,
 }: {
-    eventId: string;
     type: string;
-    data: any;
+    data?: any;
     timeoutMs?: number;
     retries?: number;
+    metaData: ReliableEventMetaData;
 }) => {
-    ackState[eventId] = [];
+    const { eventId } = metaData;
+
+    eventIdToServerAckedIds[eventId] = [];
 
     taskLib.executeFunction({
         description: `Await acknowledgements for event ${eventId}`,
         func: () => {
             taskLib.sleep(timeoutMs);
 
-            if (ackState[eventId].length < numServers) {
-                log.warning(`Oh noes, someone didnt ack this event! Retries remaining: ${retries}`);
+            const numServersMissing = getNumServersMissing(metaData);
+
+            if (numServersMissing > 0) {
                 if (retries > 0) {
-                    sendReliableEvent({ type, data, timeoutMs, retries: retries - 1 });
+                    log.warning(
+                        `${numServersMissing} servers did not ack event ${eventId} before timeout - retries remaining: ${retries}`
+                    );
+                    sendReliableEvent({
+                        type,
+                        data,
+                        timeoutMs,
+                        retries: retries - 1,
+                        retryProps: {
+                            prevEventId: eventId,
+                            prevEventServersAcked: eventIdToServerAckedIds[eventId],
+                        },
+                    });
+                } else {
+                    log.error(
+                        `${numServersMissing} did not ack event ${eventId} before timeout - no retries remaining`
+                    );
                 }
             } else {
-                log.info(`All good!`);
-                delete ackState[eventId];
+                log.info(`Event ${eventId} acked by all servers`);
             }
+
+            delete eventIdToServerAckedIds[eventId];
         },
     });
 };
@@ -65,8 +94,8 @@ export const startCustomEventAckListener = () => {
         type: ackEventType,
         callback: (event) => {
             const { serverId, eventId } = event.data;
-            log.info(`Event acked!`);
-            ackState[eventId].push(serverId);
+            log.info(`Event ${eventId} acked by server ${serverId}`);
+            eventIdToServerAckedIds[eventId].push(serverId);
         },
     });
 };
