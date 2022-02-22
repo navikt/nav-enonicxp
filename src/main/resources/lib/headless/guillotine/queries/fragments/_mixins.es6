@@ -102,6 +102,7 @@ const productDataMixin = `
 const situationDataMixin = `
     title
     ingress
+    audience
     illustration {
         ${globalFragment}
         ${animatedIconsFragment.fragment}
