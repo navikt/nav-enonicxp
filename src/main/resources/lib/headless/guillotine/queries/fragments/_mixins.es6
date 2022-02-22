@@ -92,6 +92,7 @@ const productDataMixin = `
     title
     ingress
     taxonomy
+    audience
     illustration {
         ${globalFragment}
         ${animatedIconsFragment.fragment}
@@ -113,6 +114,7 @@ const situationDataMixin = `
 const guideDataMixin = `
     title
     ingress
+    audience
     illustration {
         ${globalFragment}
         ${animatedIconsFragment.fragment}
@@ -123,6 +125,7 @@ const themedArticleDataMixin = `
     title
     ingress
     taxonomy
+    audience
     customCategory
     area
     illustration {

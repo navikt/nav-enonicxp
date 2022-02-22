@@ -8,6 +8,8 @@
                 <option value="benefits">Pengestøtte</option>
                 <option value="followup">Oppfølging</option>
                 <option value="rights">Veiledning</option>
+                <option value="for_employers">For arbeidsgivere</option>
+                <option value="for_providers">For samhandlere</option>
             </config>
         </input>
     </form>
