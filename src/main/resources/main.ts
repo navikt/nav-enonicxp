@@ -1,3 +1,5 @@
+import { clusterInfo, updateClusterInfo } from './lib/cluster/cluster-utils';
+
 log.info('Started running main');
 
 require('/lib/polyfills');
@@ -13,11 +15,24 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-import { startCustomEventAckListener } from './lib/events/reliable-event-ack';
+import { startCustomEventAckListener } from './lib/events/reliable-event-send';
+import { addReliableEventListener } from './lib/events/reliable-event-listener';
 
 let appIsRunning = true;
 
+updateClusterInfo();
+
+log.info(
+    `Local server name: ${clusterInfo.localServerName} - Nodes in cluster: ${clusterInfo.nodeCount}`
+);
+
 startCustomEventAckListener();
+addReliableEventListener({
+    type: 'test-event',
+    callback: (event) => {
+        log.info(`Event received! ${event.type} - ${event.timestamp}`);
+    },
+});
 
 startOfficeInfoPeriodicUpdateSchedule();
 
