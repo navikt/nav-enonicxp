@@ -6,7 +6,7 @@ import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/cus
 import { forceArray } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { urls } from '../constants';
+import { contentRepo, urls } from '../constants';
 import { createOrUpdateSchedule } from '../utils/scheduler';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 
@@ -290,7 +290,7 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+                if (node.branch === 'master' && node.repo === contentRepo) {
                     const xpPath = node.path.replace(/^\/content/, '');
                     updateSitemapEntry(xpPath);
                 }
