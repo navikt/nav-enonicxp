@@ -1,6 +1,5 @@
 import { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
-import clusterLib from '/lib/xp/cluster';
 import { NodeEventData } from './index';
 import { RepoBranch } from '../../types/common';
 import { appDescriptor } from '../constants';
@@ -32,7 +31,7 @@ const scheduleCacheInvalidation = (
     publishFrom: string
 ) => {
     createOrUpdateSchedule({
-        jobName: `schedule-${nodeData.id}`,
+        jobName: `schedule-invalidate-${nodeData.id}`,
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishFrom,
@@ -54,18 +53,11 @@ export const scheduleInvalidateIfPrepublish = (nodeData: NodeEventData, event: E
 
     const publishFrom = getPublishFrom(nodeData);
 
-    if (!publishFrom) {
+    if (!publishFrom || !isPrepublished(publishFrom)) {
         return false;
     }
 
-    if (!isPrepublished(publishFrom)) {
-        return false;
-    }
-
-    if (clusterLib.isMaster()) {
-        scheduleCacheInvalidation(nodeData, event, publishFrom);
-        log.info(`Prepublish cache invalidation scheduled for ${nodeData.id} at ${publishFrom}`);
-    }
+    scheduleCacheInvalidation(nodeData, event, publishFrom);
 
     return true;
 };
