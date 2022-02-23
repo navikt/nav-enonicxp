@@ -19,6 +19,8 @@ import { addReliableEventListener } from '../events/reliable-custom-events';
 
 const { findReferences } = require('/lib/siteCache/references');
 
+type CallbackFunc = () => any;
+
 export type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
 
 const cacheId = generateUUID();
@@ -64,7 +66,7 @@ const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${timestamp}`;
 
-const getCacheValue = (cacheName: CacheName, key: string, callback: () => any) => {
+const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
     try {
         return caches[cacheName].get(key, callback);
     } catch (e) {
@@ -73,7 +75,7 @@ const getCacheValue = (cacheName: CacheName, key: string, callback: () => any) =
     }
 };
 
-export const getDecoratorMenuCache = (branch: RepoBranch, callback: () => any) => {
+export const getDecoratorMenuCache = (branch: RepoBranch, callback: CallbackFunc) => {
     if (branch === 'draft') {
         return callback();
     }
@@ -84,7 +86,7 @@ export const getDecoratorMenuCache = (branch: RepoBranch, callback: () => any) =
 export const getDriftsmeldingerCache = (
     language: string,
     branch: RepoBranch,
-    callback: () => any
+    callback: CallbackFunc
 ) => {
     if (branch === 'draft') {
         return callback();
@@ -93,7 +95,11 @@ export const getDriftsmeldingerCache = (
     return getCacheValue('driftsmeldinger', `driftsmelding-heading-${language}`, callback);
 };
 
-export const getSitecontentCache = (idOrPath: string, branch: RepoBranch, callback: () => any) => {
+export const getSitecontentCache = (
+    idOrPath: string,
+    branch: RepoBranch,
+    callback: CallbackFunc
+) => {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
@@ -103,7 +109,7 @@ export const getSitecontentCache = (idOrPath: string, branch: RepoBranch, callba
     return getCacheValue('sitecontent', cacheKey, callback);
 };
 
-export const getNotificationsCache = (idOrPath: string, callback: () => any) => {
+export const getNotificationsCache = (idOrPath: string, callback: CallbackFunc) => {
     if (isUUID(idOrPath)) {
         return callback();
     }
