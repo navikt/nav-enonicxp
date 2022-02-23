@@ -24,6 +24,8 @@ let appIsRunning = true;
 updateClusterInfo();
 
 startReliableEventAckListener();
+
+// TODO: remove this after verifying it works in prod :)
 addReliableEventListener({
     type: 'test-event',
     callback: (event) => {
