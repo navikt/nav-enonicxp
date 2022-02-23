@@ -129,7 +129,7 @@ export const startReliableEventAckListener = () => {
     });
 };
 
-export const sendReliableEvent = <EventData = undefined>({
+export const sendReliableEvent = <EventData = never>({
     type,
     data,
     timeoutMs,
