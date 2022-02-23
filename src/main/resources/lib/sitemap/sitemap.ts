@@ -98,17 +98,24 @@ const getUrl = (content: Content<any>) => {
 const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[] | undefined =>
     content.data?.languages &&
     forceArray(content.data.languages).reduce((acc, id) => {
-        const altContent = contentLib.get({ key: id });
+        try {
+            const altContent = contentLib.get({ key: id });
 
-        return altContent?.language
-            ? [
-                  ...acc,
-                  {
-                      language: altContent.language,
-                      url: getUrl(altContent),
-                  },
-              ]
-            : acc;
+            return altContent?.language
+                ? [
+                      ...acc,
+                      {
+                          language: altContent.language,
+                          url: getUrl(altContent),
+                      },
+                  ]
+                : acc;
+        } catch (e) {
+            log.error(
+                `Could not retrieve alt language content for sitemap - root id: ${content._id} - alt id: ${id} - Error: ${e}`
+            );
+            return acc;
+        }
     }, []);
 
 const getSitemapEntry = (content: Content): SitemapEntry => {
@@ -136,20 +143,21 @@ const getContent = (path: string) => {
     return runInBranchContext(() => contentLib.get({ key: path }), 'master');
 };
 
-const updateSitemapEntry = (path: string) => {
-    const content = getContent(path);
-    if (!content) {
-        return;
-    }
+const updateSitemapEntry = (path: string) =>
+    runInBranchContext(() => {
+        const content = getContent(path);
+        if (!content) {
+            return;
+        }
 
-    const key = content._id;
+        const key = content._id;
 
-    if (shouldIncludeContent(content)) {
-        sitemapData.set(key, getSitemapEntry(content));
-    } else if (sitemapData.get(key)) {
-        sitemapData.remove(key);
-    }
-};
+        if (shouldIncludeContent(content)) {
+            sitemapData.set(key, getSitemapEntry(content));
+        } else if (sitemapData.get(key)) {
+            sitemapData.remove(key);
+        }
+    }, 'master');
 
 const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): SitemapEntry[] => {
     const entriesBatch = contentLib
@@ -186,45 +194,46 @@ export const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateAndBroadcastSitemapData = () => {
-    if (clusterLib.isMaster() && !isGenerating) {
-        isGenerating = true;
+const generateAndBroadcastSitemapData = () =>
+    runInBranchContext(() => {
+        if (clusterLib.isMaster() && !isGenerating) {
+            isGenerating = true;
 
-        taskLib.executeFunction({
-            description: 'sitemap-generator-task',
-            func: () => {
-                try {
-                    log.info('Started generating sitemap data');
-                    const startTime = Date.now();
-                    const sitemapEntries = getSitemapEntries();
+            taskLib.executeFunction({
+                description: 'sitemap-generator-task',
+                func: () => {
+                    try {
+                        log.info('Started generating sitemap data');
+                        const startTime = Date.now();
+                        const sitemapEntries = getSitemapEntries();
 
-                    eventLib.send({
-                        type: eventTypeSitemapGenerated,
-                        distributed: true,
-                        data: { entries: sitemapEntries },
-                    });
+                        eventLib.send({
+                            type: eventTypeSitemapGenerated,
+                            distributed: true,
+                            data: { entries: sitemapEntries },
+                        });
 
-                    log.info(
-                        `Finished generating sitemap data with ${
-                            sitemapEntries.length
-                        } entries after ${Date.now() - startTime}ms`
-                    );
+                        log.info(
+                            `Finished generating sitemap data with ${
+                                sitemapEntries.length
+                            } entries after ${Date.now() - startTime}ms`
+                        );
 
-                    if (sitemapEntries.length > maxCount) {
-                        log.warning(`Sitemap entries count exceeds recommended maximum`);
+                        if (sitemapEntries.length > maxCount) {
+                            log.warning(`Sitemap entries count exceeds recommended maximum`);
+                        }
+                    } catch (e) {
+                        log.error(`Error while generating sitemap - ${e}`);
+                    } finally {
+                        isGenerating = false;
                     }
-                } catch (e) {
-                    log.error(`Error while generating sitemap - ${e}`);
-                } finally {
-                    isGenerating = false;
-                }
-            },
-        });
-    }
-};
+                },
+            });
+        }
+    }, 'master');
 
 export const generateSitemapDataAndActivateSchedule = () => {
-    runInBranchContext(generateAndBroadcastSitemapData, 'master');
+    generateAndBroadcastSitemapData();
 
     // Regenerate sitemap from scratch at 06:00 daily
     createOrUpdateSchedule({

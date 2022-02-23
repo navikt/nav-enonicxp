@@ -11,6 +11,11 @@ export interface EmployerSituationData {
   ingress?: string;
 
   /**
+   * Målgruppe
+   */
+  audience: "person" | "employer" | "provider";
+
+  /**
    * Områdekategori
    */
   area?: Array<undefined>;

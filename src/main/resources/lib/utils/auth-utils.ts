@@ -1,5 +1,5 @@
 import authLib, { PrincipalKey } from '/lib/xp/auth';
-import contentLib, { Permission } from '/lib/xp/content';
+import contentLib, { Permission, PermissionsParams } from '/lib/xp/content';
 import contextLib from '/lib/xp/context';
 
 export const insufficientPermissionResponse = (requiredPermission: string) => ({
@@ -14,10 +14,18 @@ export const insufficientPermissionResponse = (requiredPermission: string) => ({
 export const userIsAdmin = () => authLib.hasRole('role:system.admin');
 
 export const validateCurrentUserPermissionForContent = (
-    contentId: string,
-    requiredPermission: Permission
+    contentId: string | undefined = undefined,
+    requiredPermission: Permission,
+    permissions?: PermissionsParams[]
 ): boolean => {
-    const contentPermissions = contentLib.getPermissions({ key: contentId });
+    if (!contentId && !permissions) {
+        log.warning('contentId or permissions must be provided');
+        return false;
+    }
+
+    const contentPermissions =
+        permissions ||
+        (contentId ? contentLib.getPermissions({ key: contentId })?.permissions : null);
     if (!contentPermissions) {
         return false;
     }
@@ -30,7 +38,7 @@ export const validateCurrentUserPermissionForContent = (
         return false;
     }
 
-    const allowedPrincipals = contentPermissions.permissions.reduce((acc, principal) => {
+    const allowedPrincipals = contentPermissions.reduce((acc, principal) => {
         const hasPermission = principal.allow.some(
             (permission) => permission === requiredPermission
         );
