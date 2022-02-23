@@ -31,22 +31,19 @@ const scheduleCacheInvalidation = (
     event: EnonicEvent,
     publishFrom: string
 ) => {
-    const jobName = `schedule-${nodeData.id}`;
-    const taskConfig = {
-        path: nodeData.path,
-        id: nodeData.id,
-        timestamp: event.timestamp,
-        eventType: event.type,
-    };
-
     createOrUpdateSchedule({
-        jobName,
+        jobName: `schedule-${nodeData.id}`,
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishFrom,
         },
         taskDescriptor: `${appDescriptor}:prepublish-cache-wipe`,
-        taskConfig,
+        taskConfig: {
+            path: nodeData.path,
+            id: nodeData.id,
+            timestamp: event.timestamp,
+            eventType: event.type,
+        },
     });
 };
 

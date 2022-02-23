@@ -175,6 +175,7 @@ export const addReliableEventListener = <EventData = undefined>({
 }) => {
     eventLib.listener<ReliableEventMetaData & EventData>({
         type: `custom.${type}`,
+        localOnly: false,
         callback: (event) => {
             const { eventId, retryProps } = event.data;
 

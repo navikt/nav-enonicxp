@@ -14,16 +14,12 @@ import { runInBranchContext } from '../utils/branch-context';
 import { generateUUID, isUUID } from '../utils/uuid';
 import { scheduleInvalidateIfPrepublish } from './prepublish';
 import { contentRepo } from '../constants';
-import { prepublishInvalidateEvent } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
+import { addReliableEventListener } from '../events/reliable-custom-events';
 
 const { findReferences } = require('/lib/siteCache/references');
 
-type CallbackFunc = () => any;
-
 export type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
-
-let hasSetupListeners = false;
 
 const cacheId = generateUUID();
 
@@ -54,6 +50,7 @@ const caches = {
 type CacheName = keyof typeof caches;
 
 export const cacheInvalidateEventName = 'invalidate-cache';
+export const prepublishInvalidateEvent = 'prepublish-invalidate';
 
 // Define site path as a literal, because portal.getSite() can't be called from main.js
 const sitePath = '/www.nav.no/';
@@ -67,7 +64,7 @@ const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${timestamp}`;
 
-const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
+const getCacheValue = (cacheName: CacheName, key: string, callback: () => any) => {
     try {
         return caches[cacheName].get(key, callback);
     } catch (e) {
@@ -76,7 +73,7 @@ const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc
     }
 };
 
-export const getDecoratorMenuCache = (branch: RepoBranch, callback: CallbackFunc) => {
+export const getDecoratorMenuCache = (branch: RepoBranch, callback: () => any) => {
     if (branch === 'draft') {
         return callback();
     }
@@ -87,7 +84,7 @@ export const getDecoratorMenuCache = (branch: RepoBranch, callback: CallbackFunc
 export const getDriftsmeldingerCache = (
     language: string,
     branch: RepoBranch,
-    callback: CallbackFunc
+    callback: () => any
 ) => {
     if (branch === 'draft') {
         return callback();
@@ -96,11 +93,7 @@ export const getDriftsmeldingerCache = (
     return getCacheValue('driftsmeldinger', `driftsmelding-heading-${language}`, callback);
 };
 
-export const getSitecontentCache = (
-    idOrPath: string,
-    branch: RepoBranch,
-    callback: CallbackFunc
-) => {
+export const getSitecontentCache = (idOrPath: string, branch: RepoBranch, callback: () => any) => {
     // Do not cache draft branch or content id requests
     if (branch === 'draft' || isUUID(idOrPath)) {
         return callback();
@@ -110,7 +103,7 @@ export const getSitecontentCache = (
     return getCacheValue('sitecontent', cacheKey, callback);
 };
 
-export const getNotificationsCache = (idOrPath: string, callback: CallbackFunc) => {
+export const getNotificationsCache = (idOrPath: string, callback: () => any) => {
     if (isUUID(idOrPath)) {
         return callback();
     }
@@ -272,6 +265,8 @@ const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
     );
 };
 
+let hasSetupListeners = false;
+
 export const activateCacheEventListeners = () => {
     wipeAllCaches();
 
@@ -282,15 +277,13 @@ export const activateCacheEventListeners = () => {
             callback: nodePushedCallback,
         });
 
-        eventLib.listener({
-            type: `custom.${prepublishInvalidateEvent}`,
-            localOnly: false,
+        addReliableEventListener({
+            type: prepublishInvalidateEvent,
             callback: prepublishCallback,
         });
 
-        eventLib.listener<NodeEventData>({
-            type: `custom.${cacheInvalidateEventName}`,
-            localOnly: false,
+        addReliableEventListener<NodeEventData>({
+            type: cacheInvalidateEventName,
             callback: (event) => {
                 const { id, path } = event.data;
                 log.info(`Received event for cache invalidating of ${path} - ${id}`);

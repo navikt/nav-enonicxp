@@ -1,8 +1,8 @@
-const contentLib = require('/lib/xp/content');
-const eventLib = require('/lib/xp/event');
-const { cacheInvalidateEventName } = require('/lib/siteCache');
+import contentLib from '/lib/xp/content';
+import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
+import { cacheInvalidateEventName } from '../../lib/siteCache';
 
-const handleGet = (req) => {
+export const get = (req: XP.Request) => {
     const { contentId } = req.params;
 
     if (!contentId) {
@@ -25,9 +25,8 @@ const handleGet = (req) => {
         };
     }
 
-    eventLib.send({
+    sendReliableEvent({
         type: cacheInvalidateEventName,
-        distributed: true,
         data: { id: content._id, path: content._path },
     });
 
@@ -35,5 +34,3 @@ const handleGet = (req) => {
 
     return { status: 204 };
 };
-
-exports.get = handleGet;

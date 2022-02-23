@@ -1,14 +1,12 @@
-import eventLib from '/lib/xp/event';
 import { PrepublishCacheWipeConfig } from './prepublish-cache-wipe-config';
-
-export const prepublishInvalidateEvent = 'prepublish-invalidate';
+import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
+import { prepublishInvalidateEvent } from '../../lib/siteCache';
 
 export const run = (params: PrepublishCacheWipeConfig) => {
     log.info(`Running task for prepublish cache wipe - ${params.id}`);
 
-    eventLib.send({
+    sendReliableEvent({
         type: prepublishInvalidateEvent,
-        distributed: true,
         data: params,
     });
 };
