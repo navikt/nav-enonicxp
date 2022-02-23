@@ -85,12 +85,12 @@ const handleAcks = ({
                     log.error(
                         `${numServersMissing} did not ack event ${eventId} before timeout - no retries remaining`
                     );
+                    delete eventIdToAckedServerIds[eventId];
                 }
             } else {
                 log.info(`Event ${eventId} acked by all servers`);
+                delete eventIdToAckedServerIds[eventId];
             }
-
-            delete eventIdToAckedServerIds[eventId];
         },
     });
 };
@@ -142,13 +142,11 @@ export const sendReliableEvent = <EventData = never>({
     retries?: number;
     retryProps?: ReliableEventRetryProps;
 }) => {
-    const eventId = `event-${type}-${generateUUID()}`;
+    const eventId = retryProps?.prevEventId || `event-${type}-${generateUUID()}`;
 
     if (retryProps) {
         log.info(
-            `Retrying event ${
-                retryProps.prevEventId
-            } as new event ${eventId} - excluding servers ${retryProps.prevEventServersAcked.join(
+            `Retrying event ${eventId} - excluding servers ${retryProps.prevEventServersAcked.join(
                 ', '
             )}`
         );
@@ -178,23 +176,22 @@ export const addReliableEventListener = <EventData = undefined>({
             const { eventId, retryProps } = event.data;
 
             if (retryProps) {
-                const { prevEventId, prevEventServersAcked } = retryProps;
-
                 // Ignore the retry-event if this server had previously acknowledged it
-                if (prevEventServersAcked.includes(clusterInfo.localServerName)) {
+                if (retryProps.prevEventServersAcked.includes(clusterInfo.localServerName)) {
                     return;
                 }
 
-                log.warning(
-                    `Event ${eventId} received as repeat of previously missed event ${prevEventId}`
-                );
+                log.warning(`Retry event ${eventId} received`);
             } else {
                 log.info(`Event ${eventId} received`);
             }
 
-            sendAck(eventId);
-
-            callback(event);
+            if (Math.random() > 0.25) {
+                sendAck(eventId);
+                callback(event);
+            } else {
+                log.info(`Skipping this event! ${eventId}`);
+            }
         },
     });
 };

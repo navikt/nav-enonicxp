@@ -13,7 +13,10 @@ import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
+import {
+    addReliableEventListener,
+    startReliableEventAckListener,
+} from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
 
 let appIsRunning = true;
@@ -21,6 +24,12 @@ let appIsRunning = true;
 updateClusterInfo();
 
 startReliableEventAckListener();
+addReliableEventListener({
+    type: 'test-event',
+    callback: (event) => {
+        log.info(`Event received! ${event.type} - ${event.timestamp}`);
+    },
+});
 
 startOfficeInfoPeriodicUpdateSchedule();
 

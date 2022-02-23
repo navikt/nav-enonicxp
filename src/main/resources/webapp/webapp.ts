@@ -5,6 +5,7 @@ import { runInBranchContext } from '../lib/utils/branch-context';
 import { wipeAllCaches } from '../lib/siteCache';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
+import { sendReliableEvent } from '../lib/events/reliable-custom-events';
 
 const view = resolve('webapp.html');
 const validActions = {
@@ -22,6 +23,12 @@ const validActions = {
     generateSitemap: {
         description: 'Generer data for sitemap',
         callback: requestSitemapUpdate,
+    },
+    testReliableEvent: {
+        description: 'Kjør en test av pålitelige events',
+        callback: () => {
+            sendReliableEvent({ type: 'test-event' });
+        },
     },
 };
 
