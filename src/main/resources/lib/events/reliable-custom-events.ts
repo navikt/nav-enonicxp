@@ -189,12 +189,8 @@ export const addReliableEventListener = <EventData = undefined>({
                 log.info(`Event ${eventId} received`);
             }
 
-            if (Math.random() > 0.25) {
-                sendAck(eventId);
-                callback(event);
-            } else {
-                log.info(`Skipping this event! ${eventId}`);
-            }
+            sendAck(eventId);
+            callback(event);
         },
     });
 };

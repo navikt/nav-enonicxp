@@ -28,12 +28,12 @@ type ClusterInfo = {
     state: ClusterState;
 };
 
-const clusterManagementApi = 'http://localhost:2609/cluster.elasticsearch';
+const clusterStatisticsApi = 'http://localhost:2609/cluster.elasticsearch';
 
 const requestClusterInfo = () => {
     try {
         const response = httpClient.request({
-            url: clusterManagementApi,
+            url: clusterStatisticsApi,
         });
 
         if (response.status !== 200 || !response.body) {
