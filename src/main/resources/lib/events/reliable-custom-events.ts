@@ -33,15 +33,6 @@ const retriesDefault = 10;
 
 const eventIdToAckedServerIds: { [eventId: string]: string[] } = {};
 
-const getNumServersMissing = (eventData: ReliableEventMetaData) => {
-    const { eventId, retryProps } = eventData;
-    const serversAcked = eventIdToAckedServerIds[eventId];
-
-    return retryProps
-        ? clusterInfo.nodeCount - serversAcked.length - retryProps.prevEventServersAcked.length
-        : clusterInfo.nodeCount - serversAcked.length;
-};
-
 const handleAcks = ({
     type,
     metaData,
@@ -57,14 +48,17 @@ const handleAcks = ({
 }) => {
     const { eventId } = metaData;
 
-    eventIdToAckedServerIds[eventId] = [];
+    if (!eventIdToAckedServerIds[eventId]) {
+        eventIdToAckedServerIds[eventId] = [];
+    }
 
     taskLib.executeFunction({
         description: `Await acknowledgements for event ${eventId}`,
         func: () => {
             taskLib.sleep(timeoutMs);
 
-            const numServersMissing = getNumServersMissing(metaData);
+            const serversAcked = eventIdToAckedServerIds[eventId];
+            const numServersMissing = clusterInfo.nodeCount - serversAcked.length;
 
             if (numServersMissing > 0) {
                 if (retries > 0) {
@@ -78,7 +72,7 @@ const handleAcks = ({
                         retries: retries - 1,
                         retryProps: {
                             prevEventId: eventId,
-                            prevEventServersAcked: eventIdToAckedServerIds[eventId],
+                            prevEventServersAcked: serversAcked,
                         },
                     });
                 } else {
