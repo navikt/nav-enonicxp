@@ -1,9 +1,11 @@
-import contentLib from '/lib/xp/content';
+import contentLib, { Content } from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../headless/component-utils';
 import { findContentsWithHtmlAreaText } from '../htmlarea/htmlarea';
 import { forceArray } from '../utils/nav-utils';
+import { NavNoDescriptor } from '../../types/common';
 
-export const globalValuesContentType = `${app.name}:global-value-set`;
+export const globalValuesContentType: NavNoDescriptor<'global-value-set'> =
+    'no.nav.navno:global-value-set';
 
 const uniqueKeySeparator = '::';
 
@@ -67,13 +69,15 @@ export const getGlobalValueItem = (gvKey: string, contentId: string) => {
     return forceArray(globalValueSet.data.valueItems).find((item) => item.key === gvKey);
 };
 
-export const getGlobalValueSet = (contentId?: string) => {
+export const getGlobalValueSet = (
+    contentId?: string
+): Content<typeof globalValuesContentType> | null => {
     if (!contentId) {
         return null;
     }
 
     const content = contentLib.get({ key: contentId });
-    if (content?.type === 'no.nav.navno:global-value-set') {
+    if (content?.type === globalValuesContentType) {
         return content;
     }
 

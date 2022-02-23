@@ -44,13 +44,6 @@
         ],
         "no-underscore-dangle": "off",
         "no-unsafe-optional-chaining": "off",
-        "no-unused-vars": [
-            "warn",
-            {
-                "vars": "all",
-                "args": "none"
-            }
-        ],
         "no-use-before-define": "off",
         "object-shorthand": "off",
         "prefer-destructuring": "off",

@@ -1,7 +1,6 @@
 import cacheLib from '/lib/cache';
 import eventLib, { EnonicEventData, EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import {
     frontendCacheRevalidate,
@@ -16,8 +15,7 @@ import { scheduleInvalidateIfPrepublish } from './prepublish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-
-const { findReferences } = require('/lib/siteCache/references');
+import { findReferences } from './references';
 
 type CallbackFunc = () => any;
 
@@ -198,7 +196,7 @@ export const wipeSitecontentEntryWithReferences = (
     wipeNotificationsEntry(path, eventId);
 
     // TODO: remove type assertion when findReferences has been rewritten to TS
-    const references = findReferences({ id, eventType }) as Content[];
+    const references = findReferences({ id, eventType });
 
     log.info(
         `Clearing ${references.length} references for ${path}: ${JSON.stringify(
@@ -249,7 +247,7 @@ export const wipeCacheForNode = (node: NodeEventData, eventType: string, timesta
     }, 'master');
 };
 
-const nodePushedCallback = (event: EnonicEvent) => {
+const nodeListenerCallback = (event: EnonicEvent) => {
     log.info(`Node event: ${JSON.stringify(event)}`);
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === contentRepo) {
@@ -280,7 +278,7 @@ export const activateCacheEventListeners = () => {
         eventLib.listener({
             type: 'node.pushed|node.deleted',
             localOnly: false,
-            callback: nodePushedCallback,
+            callback: nodeListenerCallback,
         });
 
         addReliableEventListener({

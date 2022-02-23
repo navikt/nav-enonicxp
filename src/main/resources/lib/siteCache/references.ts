@@ -1,31 +1,31 @@
-const contentLib = require('/lib/xp/content');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getParentPath } = require('/lib/utils/nav-utils');
-const { removeDuplicates } = require('/lib/utils/nav-utils');
-const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
-const { findContentsWithProductCardMacro } = require('/lib/htmlarea/htmlarea');
-const { getGlobalValueUsage } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { globalValuesContentType } = require('/lib/global-values/global-values');
+import contentLib, { Content } from '/lib/xp/content';
+import {
+    findContentsWithFragmentMacro,
+    findContentsWithProductCardMacro,
+} from '../htmlarea/htmlarea';
+import { getGlobalValueUsage, globalValuesContentType } from '../global-values/global-values';
+import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils';
+import { runInBranchContext } from '../utils/branch-context';
+import { ContentDescriptor } from 'types/content-types/content-config';
 
 const MAX_DEPTH = 5;
 
-const productCardTargetTypes = {
-    [`${app.name}:content-page-with-sidemenus`]: true,
-    [`${app.name}:situation-page`]: true,
-    [`${app.name}:employer-situation-page`]: true,
-    [`${app.name}:tools-page`]: true,
+const productCardTargetTypes: { [type in ContentDescriptor]?: boolean } = {
+    'no.nav.navno:content-page-with-sidemenus': true,
+    'no.nav.navno:situation-page': true,
+    'no.nav.navno:employer-situation-page': true,
+    'no.nav.navno:tools-page': true,
 };
 
-const typesWithDeepReferences = {
+const typesWithDeepReferences: { [type in ContentDescriptor]?: boolean } = {
     'portal:fragment': true,
-    [`${app.name}:global-value-set`]: true,
-    [`${app.name}:notification`]: true,
-    [`${app.name}:main-article-chapter`]: true,
-    [`${app.name}:content-list`]: true,
+    'no.nav.navno:global-value-set': true,
+    'no.nav.navno:notification': true,
+    'no.nav.navno:main-article-chapter': true,
+    'no.nav.navno:content-list': true,
 };
 
-const getFragmentMacroReferences = (content) => {
+const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
         return [];
     }
@@ -33,7 +33,7 @@ const getFragmentMacroReferences = (content) => {
     const { _id } = content;
 
     const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
-    if (!contentsWithFragmentId?.length > 0) {
+    if (!contentsWithFragmentId || contentsWithFragmentId.length === 0) {
         return [];
     }
 
@@ -44,7 +44,7 @@ const getFragmentMacroReferences = (content) => {
     return contentsWithFragmentId;
 };
 
-const getProductCardMacroReferences = (content) => {
+const getProductCardMacroReferences = (content: Content) => {
     if (!productCardTargetTypes[content.type]) {
         return [];
     }
@@ -58,7 +58,7 @@ const getProductCardMacroReferences = (content) => {
     return references;
 };
 
-const getGlobalValueReferences = (content) => {
+const getGlobalValueReferences = (content: Content) => {
     if (content.type !== globalValuesContentType) {
         return [];
     }
@@ -76,7 +76,7 @@ const getGlobalValueReferences = (content) => {
 
 // "References" from macros and global value keys does not create explicit references in the content
 // structure. We must use our own implementations to find such references.
-const getIndirectReferences = (content) => {
+const getIndirectReferences = (content: Content | null) => {
     if (!content) {
         return [];
     }
@@ -88,7 +88,7 @@ const getIndirectReferences = (content) => {
     ];
 };
 
-const getExplicitReferences = (id) => {
+const getExplicitReferences = (id: string) => {
     const references = contentLib.query({
         start: 0,
         count: 1000,
@@ -110,7 +110,7 @@ const getExplicitReferences = (id) => {
 };
 
 // Handles types which generates content from their children without explicit references
-const getReferencesFromParent = (content) => {
+const getReferencesFromParent = (content: Content | null) => {
     if (!content) {
         return [];
     }
@@ -123,11 +123,14 @@ const getReferencesFromParent = (content) => {
         return [];
     }
 
-    if (parent.type === `${app.name}:publishing-calendar`) {
+    if (parent.type === `no.nav.navno:publishing-calendar`) {
         return [parent];
     }
 
-    if (type === `${app.name}:main-article-chapter` && parent.type === `${app.name}:main-article`) {
+    if (
+        type === `no.nav.navno:main-article-chapter` &&
+        parent.type === `no.nav.navno:main-article`
+    ) {
         return [parent, ...getMainArticleChapterReferences(parent)];
     }
 
@@ -137,13 +140,15 @@ const getReferencesFromParent = (content) => {
 // Chapters are attached to an article only via the parent/children relation, not with explicit
 // content references. Find any chapters which references the article, as well as the articles
 // child chapters and their references articles
-const getMainArticleChapterReferences = (mainArticleContent) => {
+const getMainArticleChapterReferences = (
+    mainArticleContent: Content<'no.nav.navno:main-article'>
+) => {
     const { _id } = mainArticleContent;
 
     const referencedChapters = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: [`${app.name}:main-article-chapter`],
+        contentTypes: [`no.nav.navno:main-article-chapter`],
         filters: {
             boolean: {
                 must: {
@@ -157,20 +162,36 @@ const getMainArticleChapterReferences = (mainArticleContent) => {
     }).hits;
 
     const childChapters = contentLib
-        .getChildren({ key: _id })
-        .hits.filter((child) => child.type === `${app.name}:main-article-chapter`);
+        .getChildren({ key: _id, count: 1000 })
+        .hits.filter(
+            (child) => child.type === `no.nav.navno:main-article-chapter`
+        ) as Content<'no.nav.navno:main-article-chapter'>[];
 
     const childChapterArticles = childChapters.reduce((acc, chapter) => {
         const article = contentLib.get({ key: chapter.data.article });
-        return article ? [...acc, article] : acc;
-    }, []);
+
+        return article && article.type === 'no.nav.navno:main-article-chapter'
+            ? [...acc, article]
+            : acc;
+    }, [] as Content<'no.nav.navno:main-article-chapter'>[]);
 
     return [...referencedChapters, ...childChapters, ...childChapterArticles];
 };
 
-const removeDuplicatesById = (array) => removeDuplicates(array, (a, b) => a._id === b._id);
+const removeDuplicatesById = (contentArray: Content[]) =>
+    removeDuplicates(contentArray, (a, b) => a._id === b._id);
 
-const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
+export const findReferences = ({
+    id,
+    eventType,
+    depth = 0,
+    prevReferences = [],
+}: {
+    id: string;
+    eventType?: string;
+    depth?: number;
+    prevReferences?: any[];
+}): Content[] => {
     if (depth > MAX_DEPTH) {
         log.info(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
         return [];
@@ -200,11 +221,11 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
                 return [
                     reference,
                     ...acc,
-                    ...(reference.type === `${app.name}:main-article`
+                    ...(reference.type === 'no.nav.navno:main-article'
                         ? getMainArticleChapterReferences(reference)
                         : []),
                 ];
-            }, [])
+            }, [] as Content[])
             .filter(
                 (reference) =>
                     // Don't include the root content as a reference (may happen in some cases with indirect circular references
@@ -227,9 +248,7 @@ const findReferences = ({ id, eventType, depth = 0, prevReferences = [] }) => {
                 prevReferences: [...references, ...prevReferences],
             }),
         ];
-    }, []);
+    }, [] as Content[]);
 
     return removeDuplicatesById([...references, ...deepReferences]);
 };
-
-module.exports = { findReferences };
