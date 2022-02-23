@@ -6,12 +6,6 @@ const { isUUID } = require('/lib/utils/uuid');
 const { getComponentConfigByPath } = require('/lib/headless/component-utils');
 const { generateUUID } = require('/lib/utils/uuid');
 
-/*
- * This part is deprecated in favor of the equivalent layout component
- * Can be removed once every instance of the part has been replaced
- *
- * */
-
 const insertIdIfNotExist = (obj) => {
     if (!isUUID(obj.id)) {
         obj.id = generateUUID();

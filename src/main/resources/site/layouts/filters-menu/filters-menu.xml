@@ -1,4 +1,4 @@
-<part xmlns="urn:enonic:xp:model:1.0">
+<layout xmlns="urn:enonic:xp:model:1.0">
     <display-name>Filtreringsmeny</display-name>
     <form>
         <input name="title" type="TextLine">
@@ -29,7 +29,4 @@
         </item-set>
         <mixin name="expandable"/>
     </form>
-    <config>
-        <allow-on-content-type>^$</allow-on-content-type>
-    </config>
-</part>
+</layout>
