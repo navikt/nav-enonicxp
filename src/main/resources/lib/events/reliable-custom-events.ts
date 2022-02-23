@@ -106,7 +106,16 @@ export const sendAck = (eventId: string) => {
     });
 };
 
+let ackListenerStarted = false;
+
 export const startReliableEventAckListener = () => {
+    if (ackListenerStarted) {
+        log.error(`Attempted to start event ack listener multiple times!`);
+        return;
+    }
+
+    ackListenerStarted = true;
+
     eventLib.listener<AckEventData>({
         type: `custom.${ackEventType}`,
         callback: (event) => {
