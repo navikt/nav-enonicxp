@@ -11,7 +11,7 @@ import { ArrayItem } from '../../types/util-types';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { generateUUID, isUUID } from '../utils/uuid';
-import { scheduleInvalidateIfPrepublish } from './prepublish';
+import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
@@ -250,7 +250,7 @@ export const wipeCacheForNode = (node: NodeEventData, eventType: string, timesta
 const nodeListenerCallback = (event: EnonicEvent) => {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === contentRepo) {
-            const isPrepublished = scheduleInvalidateIfPrepublish(node, event);
+            const isPrepublished = handleScheduledPublish(node, event);
 
             if (!isPrepublished) {
                 wipeCacheForNode(node, event.type, event.timestamp);
@@ -275,7 +275,7 @@ export const activateCacheEventListeners = () => {
 
     if (!hasSetupListeners) {
         eventLib.listener({
-            type: 'node.pushed|node.deleted',
+            type: '(node.pushed|node.deleted)',
             localOnly: false,
             callback: nodeListenerCallback,
         });
