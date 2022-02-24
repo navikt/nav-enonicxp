@@ -1,3 +1,4 @@
+import contentLib from '/lib/xp/content';
 import nodeLib from '/lib/xp/node';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
 import { scheduleUnpublish } from '../../lib/siteCache/scheduled-publish';
@@ -32,7 +33,7 @@ export const run = (params: UnpublishExpiredContentConfig) => {
     }
 
     try {
-        const unpublished = repo.delete(id);
+        const unpublished = contentLib.unpublish({ keys: [id] });
         if (unpublished) {
             log.info(`Unpublished content: ${unpublished.join(', ')}`);
         } else {

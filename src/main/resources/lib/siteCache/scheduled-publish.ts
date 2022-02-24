@@ -2,14 +2,13 @@ import { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { NodeEventData } from './index';
-import { RepoBranch } from '../../types/common';
 import { appDescriptor } from '../constants';
 import { createOrUpdateSchedule } from '../utils/scheduler';
 
 const getPublish = (node: NodeEventData) => {
     const repo = nodeLib.connect({
         repoId: node.repo,
-        branch: node.branch as RepoBranch,
+        branch: 'master',
     });
 
     const content = repo.get<Content>({ key: node.id });
