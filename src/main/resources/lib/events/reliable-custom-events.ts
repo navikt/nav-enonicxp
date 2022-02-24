@@ -27,6 +27,13 @@ type ReliableEventMetaData = {
     retryProps?: ReliableEventRetryProps;
 };
 
+type EventProps<EventData> = {
+    type: string;
+    data?: EventData;
+    timeoutMs?: number;
+    retries?: number;
+};
+
 const ackEventType = 'ack';
 const timeoutMsDefault = 2000;
 const retriesDefault = 10;
@@ -58,6 +65,11 @@ const handleAcks = ({
             taskLib.sleep(timeoutMs);
 
             const serversAcked = eventIdToAckedServerIds[eventId];
+            if (!serversAcked) {
+                log.error(`Acked list not found for event ${eventId}`);
+                return;
+            }
+
             const numServersMissing = clusterInfo.nodeCount - serversAcked.length;
 
             if (numServersMissing > 0) {
@@ -65,7 +77,7 @@ const handleAcks = ({
                     log.warning(
                         `${numServersMissing} servers did not ack event ${eventId} before timeout - retries remaining: ${retries}`
                     );
-                    sendReliableEvent({
+                    _sendReliableEvent({
                         type,
                         data,
                         timeoutMs,
@@ -89,7 +101,7 @@ const handleAcks = ({
     });
 };
 
-export const sendAck = (eventId: string) => {
+const sendAck = (eventId: string) => {
     eventLib.send({
         type: ackEventType,
         distributed: true,
@@ -97,6 +109,79 @@ export const sendAck = (eventId: string) => {
             serverId: clusterInfo.localServerName,
             eventId,
         } as AckEventData,
+    });
+};
+
+const _sendReliableEvent = <EventData = never>({
+    type,
+    data,
+    timeoutMs,
+    retries,
+    retryProps,
+}: EventProps<EventData> & {
+    retryProps?: ReliableEventRetryProps;
+}) => {
+    if (retryProps) {
+        log.info(
+            `Retrying event ${
+                retryProps.prevEventId
+            } - excluding servers ${retryProps.prevEventServersAcked.join(', ')}`
+        );
+    }
+
+    const eventId = retryProps?.prevEventId || `${type}-${generateUUID()}`;
+
+    const metaData: ReliableEventMetaData = { eventId, retryProps };
+
+    handleAcks({ type, data, timeoutMs, retries, metaData });
+
+    eventLib.send({
+        type,
+        distributed: true,
+        data: { ...data, ...metaData },
+    });
+};
+
+export const sendReliableEvent = <EventData = never>({
+    type,
+    data,
+    timeoutMs,
+    retries,
+}: EventProps<EventData>) =>
+    _sendReliableEvent<EventData>({
+        type,
+        data,
+        timeoutMs,
+        retries,
+    });
+
+export const addReliableEventListener = <EventData = never>({
+    type,
+    callback,
+}: {
+    type: string;
+    callback: (event: EnonicEvent<ReliableEventMetaData & EventData>) => any;
+}) => {
+    eventLib.listener<ReliableEventMetaData & EventData>({
+        type: `custom.${type}`,
+        localOnly: false,
+        callback: (event) => {
+            const { eventId, retryProps } = event.data;
+
+            if (retryProps) {
+                // Ignore the retry-event if this server had previously acknowledged it
+                if (retryProps.prevEventServersAcked.includes(clusterInfo.localServerName)) {
+                    return;
+                }
+
+                log.warning(`Retry event ${eventId} received`);
+            } else {
+                log.info(`Event ${eventId} received`);
+            }
+
+            sendAck(eventId);
+            callback(event);
+        },
     });
 };
 
@@ -128,69 +213,6 @@ export const startReliableEventAckListener = () => {
             } else {
                 ackedServerIds.push(serverId);
             }
-        },
-    });
-};
-
-export const sendReliableEvent = <EventData = never>({
-    type,
-    data,
-    timeoutMs,
-    retries,
-    retryProps,
-}: {
-    type: string;
-    data?: EventData;
-    timeoutMs?: number;
-    retries?: number;
-    retryProps?: ReliableEventRetryProps;
-}) => {
-    const eventId = retryProps?.prevEventId || `event-${type}-${generateUUID()}`;
-
-    if (retryProps) {
-        log.info(
-            `Retrying event ${eventId} - excluding servers ${retryProps.prevEventServersAcked.join(
-                ', '
-            )}`
-        );
-    }
-
-    const metaData: ReliableEventMetaData = { eventId, retryProps };
-
-    handleAcks({ type, data, timeoutMs, retries, metaData });
-
-    eventLib.send({
-        type,
-        distributed: true,
-        data: { ...data, ...metaData },
-    });
-};
-
-export const addReliableEventListener = <EventData = undefined>({
-    type,
-    callback,
-}: {
-    type: string;
-    callback: (event: EnonicEvent<ReliableEventMetaData & EventData>) => any;
-}) => {
-    eventLib.listener<ReliableEventMetaData & EventData>({
-        type: `custom.${type}`,
-        callback: (event) => {
-            const { eventId, retryProps } = event.data;
-
-            if (retryProps) {
-                // Ignore the retry-event if this server had previously acknowledged it
-                if (retryProps.prevEventServersAcked.includes(clusterInfo.localServerName)) {
-                    return;
-                }
-
-                log.warning(`Retry event ${eventId} received`);
-            } else {
-                log.info(`Event ${eventId} received`);
-            }
-
-            sendAck(eventId);
-            callback(event);
         },
     });
 };
