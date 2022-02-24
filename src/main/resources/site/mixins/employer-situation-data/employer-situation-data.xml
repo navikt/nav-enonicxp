@@ -4,6 +4,7 @@
             <items>
                 <mixin name="page-header"/>
                 <mixin name="ingress" />
+                <mixin name="audience" />
                 <mixin name="employer-area" />
                 <mixin name="illustration" />
                 <mixin name="external-product-url" />

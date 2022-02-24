@@ -11,9 +11,14 @@ export interface ProductData {
   ingress?: string;
 
   /**
+   * Målgruppe
+   */
+  audience: "person" | "employer" | "provider";
+
+  /**
    * Kategori
    */
-  taxonomy?: Array<"benefits" | "followup" | "rights">;
+  taxonomy?: Array<"benefits" | "followup" | "rights" | "measures" | "for_employers" | "for_providers">;
 
   /**
    * Områdekategori

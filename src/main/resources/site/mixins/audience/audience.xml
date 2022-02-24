@@ -1,0 +1,13 @@
+<mixin>
+  <form>
+    <input name="audience" type="ComboBox">
+        <label>Målgruppe</label>
+        <occurrences minimum="1" maximum="1"/>
+        <config>
+            <option value="person">Personbruker</option>
+            <option value="employer">Arbeidsgiver</option>
+            <option value="provider">Samhandler</option>
+        </config>
+    </input>
+  </form>
+</mixin>

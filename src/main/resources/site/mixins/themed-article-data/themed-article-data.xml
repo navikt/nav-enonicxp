@@ -4,6 +4,7 @@
             <items>
                 <mixin name="page-header"/>
                 <mixin name="ingress" />
+                <mixin name="audience" />
                 <field-set>
                     <label>Kategori</label>
                     <items>

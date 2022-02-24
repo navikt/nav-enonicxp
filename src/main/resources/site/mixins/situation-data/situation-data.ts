@@ -11,6 +11,11 @@ export interface SituationData {
   ingress?: string;
 
   /**
+   * Målgruppe
+   */
+  audience: "person" | "employer" | "provider";
+
+  /**
    * Områdekategori
    */
   area?: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling">;
