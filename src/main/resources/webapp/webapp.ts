@@ -6,6 +6,8 @@ import { wipeAllCaches } from '../lib/siteCache';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { sendReliableEvent } from '../lib/events/reliable-custom-events';
+import { generateUUID } from '../lib/utils/uuid';
+import contentLib from '/lib/xp/content';
 
 const view = resolve('webapp.html');
 const validActions = {
@@ -27,7 +29,13 @@ const validActions = {
     testReliableEvent: {
         description: 'Kjør en test av pålitelige events',
         callback: () => {
-            [...Array(100)].forEach(() => sendReliableEvent({ type: 'test-event' }));
+            const someContent = contentLib.get({ key: '/www.nav.no/no/person' });
+            [...Array(1000)].forEach(() =>
+                sendReliableEvent({
+                    type: 'test-event',
+                    data: { foo: `barinos ${generateUUID()}`, content: someContent },
+                })
+            );
         },
     },
 };
