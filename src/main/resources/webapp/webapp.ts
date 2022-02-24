@@ -27,7 +27,7 @@ const validActions = {
     testReliableEvent: {
         description: 'Kjør en test av pålitelige events',
         callback: () => {
-            sendReliableEvent({ type: 'test-event' });
+            [...Array(100)].forEach(() => sendReliableEvent({ type: 'test-event' }));
         },
     },
 };
