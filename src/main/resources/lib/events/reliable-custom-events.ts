@@ -2,6 +2,7 @@ import eventLib, { EnonicEvent } from '/lib/xp/event';
 import taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
 import { clusterInfo } from '../cluster/cluster-utils';
+import { EmptyObject } from '../../types/util-types';
 
 /*
  * This system allows nodes in the server cluster to exchange reliable events
@@ -112,7 +113,7 @@ const sendAck = (eventId: string) => {
     });
 };
 
-const _sendReliableEvent = <EventData = never>({
+const _sendReliableEvent = <EventData>({
     type,
     data,
     timeoutMs,
@@ -142,7 +143,7 @@ const _sendReliableEvent = <EventData = never>({
     });
 };
 
-export const sendReliableEvent = <EventData = never>({
+export const sendReliableEvent = <EventData = EmptyObject>({
     type,
     data,
     timeoutMs,
@@ -155,7 +156,7 @@ export const sendReliableEvent = <EventData = never>({
         retries,
     });
 
-export const addReliableEventListener = <EventData = never>({
+export const addReliableEventListener = <EventData = EmptyObject>({
     type,
     callback,
 }: {
