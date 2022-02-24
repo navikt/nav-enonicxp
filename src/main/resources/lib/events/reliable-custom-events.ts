@@ -36,8 +36,12 @@ type EventProps<EventData> = {
 };
 
 const ackEventType = 'ack';
+
 const timeoutMsDefault = 2000;
+const timeoutMsMax = 10000;
+
 const retriesDefault = 10;
+const retriesMax = 10;
 
 const eventIdToAckedServerIds: { [eventId: string]: string[] } = {};
 
@@ -148,13 +152,17 @@ export const sendReliableEvent = <EventData = EmptyObject>({
     data,
     timeoutMs,
     retries,
-}: EventProps<EventData>) =>
+}: EventProps<EventData>) => {
+    const _timeoutMs = timeoutMs && Math.min(timeoutMs, timeoutMsMax);
+    const _retries = retries && Math.min(retries, retriesMax);
+
     _sendReliableEvent<EventData>({
         type,
         data,
-        timeoutMs,
-        retries,
+        timeoutMs: _timeoutMs,
+        retries: _retries,
     });
+};
 
 export const addReliableEventListener = <EventData = EmptyObject>({
     type,
