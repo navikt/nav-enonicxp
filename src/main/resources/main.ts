@@ -28,7 +28,7 @@ startReliableEventAckListener();
 addReliableEventListener({
     type: 'test-event',
     callback: (event) => {
-        log.info(`Event received! ${event.type} - ${event.timestamp}`);
+        log.info(`Event received! ${event.type} - ${event.data.eventId}`);
     },
 });
 

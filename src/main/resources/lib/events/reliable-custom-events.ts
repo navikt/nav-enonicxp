@@ -2,6 +2,7 @@ import eventLib, { EnonicEvent } from '/lib/xp/event';
 import taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
 import { clusterInfo } from '../cluster/cluster-utils';
+import { EmptyObject } from '../../types/util-types';
 
 /*
  * This system allows nodes in the server cluster to exchange reliable events
@@ -35,8 +36,12 @@ type EventProps<EventData> = {
 };
 
 const ackEventType = 'ack';
+
 const timeoutMsDefault = 2000;
+const timeoutMsMax = 10000;
+
 const retriesDefault = 10;
+const retriesMax = 10;
 
 const eventIdToAckedServerIds: { [eventId: string]: string[] } = {};
 
@@ -89,7 +94,7 @@ const handleAcks = ({
                     });
                 } else {
                     log.error(
-                        `${numServersMissing} did not ack event ${eventId} before timeout - no retries remaining`
+                        `${numServersMissing} servers did not ack event ${eventId} before timeout - no retries remaining. This event may not have propagated fully!`
                     );
                     delete eventIdToAckedServerIds[eventId];
                 }
@@ -112,7 +117,7 @@ const sendAck = (eventId: string) => {
     });
 };
 
-const _sendReliableEvent = <EventData = never>({
+const _sendReliableEvent = <EventData>({
     type,
     data,
     timeoutMs,
@@ -142,20 +147,24 @@ const _sendReliableEvent = <EventData = never>({
     });
 };
 
-export const sendReliableEvent = <EventData = never>({
+export const sendReliableEvent = <EventData = EmptyObject>({
     type,
     data,
     timeoutMs,
     retries,
-}: EventProps<EventData>) =>
+}: EventProps<EventData>) => {
+    const _timeoutMs = timeoutMs && Math.min(timeoutMs, timeoutMsMax);
+    const _retries = retries && Math.min(retries, retriesMax);
+
     _sendReliableEvent<EventData>({
         type,
         data,
-        timeoutMs,
-        retries,
+        timeoutMs: _timeoutMs,
+        retries: _retries,
     });
+};
 
-export const addReliableEventListener = <EventData = never>({
+export const addReliableEventListener = <EventData = EmptyObject>({
     type,
     callback,
 }: {
@@ -207,10 +216,10 @@ export const startReliableEventAckListener = () => {
                 return;
             }
 
-            log.info(`Event ${eventId} acked by server ${serverId}`);
             if (ackedServerIds.includes(serverId)) {
-                log.warning(`Server ${serverId} has already acked event ${eventId}!`);
+                log.warning(`Event ${eventId} was already acked by server ${serverId}!`);
             } else {
+                log.info(`Event ${eventId} acked by server ${serverId}`);
                 ackedServerIds.push(serverId);
             }
         },
