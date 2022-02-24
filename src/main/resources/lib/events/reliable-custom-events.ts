@@ -94,7 +94,7 @@ const handleAcks = ({
                     });
                 } else {
                     log.error(
-                        `${numServersMissing} did not ack event ${eventId} before timeout - no retries remaining`
+                        `${numServersMissing} servers did not ack event ${eventId} before timeout - no retries remaining. This event may not have propagated fully!`
                     );
                     delete eventIdToAckedServerIds[eventId];
                 }
@@ -216,10 +216,10 @@ export const startReliableEventAckListener = () => {
                 return;
             }
 
-            log.info(`Event ${eventId} acked by server ${serverId}`);
             if (ackedServerIds.includes(serverId)) {
-                log.warning(`Server ${serverId} has already acked event ${eventId}!`);
+                log.warning(`Event ${eventId} was already acked by server ${serverId}!`);
             } else {
+                log.info(`Event ${eventId} acked by server ${serverId}`);
                 ackedServerIds.push(serverId);
             }
         },
