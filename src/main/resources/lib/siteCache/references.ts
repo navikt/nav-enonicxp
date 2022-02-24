@@ -33,7 +33,7 @@ const getFragmentMacroReferences = (content: Content) => {
     const { _id } = content;
 
     const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
-    if (!contentsWithFragmentId || contentsWithFragmentId.length === 0) {
+    if (contentsWithFragmentId.length === 0) {
         return [];
     }
 
@@ -123,13 +123,13 @@ const getReferencesFromParent = (content: Content | null) => {
         return [];
     }
 
-    if (parent.type === `no.nav.navno:publishing-calendar`) {
+    if (parent.type === 'no.nav.navno:publishing-calendar') {
         return [parent];
     }
 
     if (
-        type === `no.nav.navno:main-article-chapter` &&
-        parent.type === `no.nav.navno:main-article`
+        type === 'no.nav.navno:main-article-chapter' &&
+        parent.type === 'no.nav.navno:main-article'
     ) {
         return [parent, ...getMainArticleChapterReferences(parent)];
     }
@@ -138,7 +138,7 @@ const getReferencesFromParent = (content: Content | null) => {
 };
 
 // Chapters are attached to an article only via the parent/children relation, not with explicit
-// content references. Find any chapters which references the article, as well as the articles
+// content references. Find any chapters which references the article, as well as the article's
 // child chapters and their references articles
 const getMainArticleChapterReferences = (
     mainArticleContent: Content<'no.nav.navno:main-article'>
@@ -148,7 +148,7 @@ const getMainArticleChapterReferences = (
     const referencedChapters = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: [`no.nav.navno:main-article-chapter`],
+        contentTypes: ['no.nav.navno:main-article-chapter'],
         filters: {
             boolean: {
                 must: {
@@ -164,16 +164,14 @@ const getMainArticleChapterReferences = (
     const childChapters = contentLib
         .getChildren({ key: _id, count: 1000 })
         .hits.filter(
-            (child) => child.type === `no.nav.navno:main-article-chapter`
+            (child) => child.type === 'no.nav.navno:main-article-chapter'
         ) as Content<'no.nav.navno:main-article-chapter'>[];
 
     const childChapterArticles = childChapters.reduce((acc, chapter) => {
         const article = contentLib.get({ key: chapter.data.article });
 
-        return article && article.type === 'no.nav.navno:main-article-chapter'
-            ? [...acc, article]
-            : acc;
-    }, [] as Content<'no.nav.navno:main-article-chapter'>[]);
+        return article?.type === 'no.nav.navno:main-article' ? [...acc, article] : acc;
+    }, [] as Content<'no.nav.navno:main-article'>[]);
 
     return [...referencedChapters, ...childChapters, ...childChapterArticles];
 };
