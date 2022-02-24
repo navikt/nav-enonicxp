@@ -65,6 +65,11 @@ const handleAcks = ({
             taskLib.sleep(timeoutMs);
 
             const serversAcked = eventIdToAckedServerIds[eventId];
+            if (!serversAcked) {
+                log.error(`Acked list not found for event ${eventId}`);
+                return;
+            }
+
             const numServersMissing = clusterInfo.nodeCount - serversAcked.length;
 
             if (numServersMissing > 0) {
