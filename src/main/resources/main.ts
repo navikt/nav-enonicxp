@@ -3,7 +3,6 @@ log.info('Started running main');
 require('/lib/polyfills');
 
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-const invalidator = require('/lib/siteCache/invalidator');
 const facetLib = require('/lib/facets');
 
 import clusterLib from '/lib/xp/cluster';
@@ -43,11 +42,7 @@ generateSitemapDataAndActivateSchedule();
 
 hookLibsWithTimeTravel();
 
-// start task for handling caching of expired and prepublished content
 if (clusterLib.isMaster()) {
-    // make sure the lock is released on startup
-    invalidator.releaseInvalidatorLock();
-
     // make sure the updateAll lock is released on startup, and clear the
     // list of recently validated nodes
     const facetValidation = facetLib.getFacetValidation();
@@ -56,7 +51,6 @@ if (clusterLib.isMaster()) {
     }
 }
 
-invalidator.start(appIsRunning);
 facetLib.activateEventListener();
 
 log.info('Finished running main');

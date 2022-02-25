@@ -1,27 +1,29 @@
 import cacheLib from '/lib/cache';
-import eventLib, { EnonicEventData, EnonicEvent } from '/lib/xp/event';
+import eventLib, { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import {
     frontendCacheRevalidate,
     frontendCacheWipeAll,
 } from '../headless/frontend-cache-revalidate';
 import { getParentPath } from '../utils/nav-utils';
-import { ArrayItem } from '../../types/util-types';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { generateUUID, isUUID } from '../utils/uuid';
-
-const { findReferences } = require('/lib/siteCache/references');
+import { handleScheduledPublish } from './scheduled-publish';
+import { contentRepo } from '../constants';
+import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
+import { addReliableEventListener } from '../events/reliable-custom-events';
+import { findReferences } from './references';
 
 type CallbackFunc = () => any;
-type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
-type PrepublishEventData = {
-    prepublished: NodeEventData[];
-};
 
-let hasSetupListeners = false;
+export type NodeEventData = {
+    id: string;
+    path: string;
+    branch: string;
+    repo: string;
+};
 
 const cacheId = generateUUID();
 
@@ -52,6 +54,7 @@ const caches = {
 type CacheName = keyof typeof caches;
 
 export const cacheInvalidateEventName = 'invalidate-cache';
+export const prepublishInvalidateEvent = 'prepublish-invalidate';
 
 // Define site path as a literal, because portal.getSite() can't be called from main.js
 const sitePath = '/www.nav.no/';
@@ -62,8 +65,8 @@ const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 
-const generateEventId = (nodeData: NodeEventData, event: EnonicEvent<any>) =>
-    `${nodeData.id}-${event.timestamp}`;
+const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
+    `${nodeData.id}-${timestamp}`;
 
 const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
     try {
@@ -196,8 +199,7 @@ export const wipeSitecontentEntryWithReferences = (
     wipeSitecontentEntry(path, eventId);
     wipeNotificationsEntry(path, eventId);
 
-    // TODO: remove type assertion when findReferences has been rewritten to TS
-    const references = findReferences({ id, eventType }) as Content[];
+    const references = findReferences({ id, eventType });
 
     log.info(
         `Clearing ${references.length} references for ${path}: ${JSON.stringify(
@@ -214,7 +216,7 @@ export const wipeSitecontentEntryWithReferences = (
 
 const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
     const repo = nodeLib.connect({
-        repoId: node.repo || 'com.enonic.cms.default',
+        repoId: node.repo || contentRepo,
         branch: 'master',
     });
 
@@ -234,34 +236,42 @@ const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
     }
 };
 
-const wipeCacheForNode = (node: NodeEventData, event: EnonicEvent<any>) => {
+export const wipeCacheForNode = (node: NodeEventData, eventType: string, timestamp: number) => {
     const didWipe = wipeSpecialCases(node.path);
     if (didWipe) {
         return;
     }
 
-    const eventId = generateEventId(node, event);
+    const eventId = generateEventId(node, timestamp);
 
     runInBranchContext(() => {
         wipePreviousIfPathChanged(node, eventId);
-        wipeSitecontentEntryWithReferences(node, eventId, event.type);
+        wipeSitecontentEntryWithReferences(node, eventId, eventType);
     }, 'master');
 };
 
 const nodeListenerCallback = (event: EnonicEvent) => {
     event.data.nodes.forEach((node) => {
-        if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
-            wipeCacheForNode(node, event);
+        if (node.branch === 'master' && node.repo === contentRepo) {
+            const isPrepublished = handleScheduledPublish(node, event.type);
+
+            if (!isPrepublished) {
+                wipeCacheForNode(node, event.type, event.timestamp);
+            }
         }
     });
 };
 
-const prepublishListenerCallback = (event: EnonicEvent<PrepublishEventData>) => {
-    event.data.prepublished.forEach((node) => {
-        log.info(`Invalidating cache for prepublished content ${node.path}`);
-        wipeCacheForNode(node, event);
-    });
+const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
+    log.info(`Prepublish invalidate event: ${JSON.stringify(event)}`);
+    wipeCacheForNode(
+        { ...event.data, branch: 'master', repo: contentRepo },
+        event.type,
+        event.timestamp
+    );
 };
+
+let hasSetupListeners = false;
 
 export const activateCacheEventListeners = () => {
     wipeAllCaches();
@@ -272,32 +282,25 @@ export const activateCacheEventListeners = () => {
             localOnly: false,
             callback: nodeListenerCallback,
         });
-        log.info('Started: Cache eventListener on node events');
 
-        eventLib.listener({
-            type: 'custom.prepublish',
-            localOnly: false,
-            callback: prepublishListenerCallback,
+        addReliableEventListener({
+            type: prepublishInvalidateEvent,
+            callback: prepublishCallback,
         });
-        log.info('Started: Cache eventListener on custom.prepublish');
 
-        eventLib.listener<NodeEventData>({
-            type: `custom.${cacheInvalidateEventName}`,
-            localOnly: false,
+        addReliableEventListener<NodeEventData>({
+            type: cacheInvalidateEventName,
             callback: (event) => {
-                const { id, path } = event.data;
+                const { id, path, eventId } = event.data;
                 log.info(`Received event for cache invalidating of ${path} - ${id}`);
                 runInBranchContext(
-                    () =>
-                        wipeSitecontentEntryWithReferences(
-                            event.data,
-                            generateEventId(event.data, event)
-                        ),
+                    () => wipeSitecontentEntryWithReferences(event.data, eventId),
                     'master'
                 );
             },
         });
 
+        log.info('Started: Cache eventListener on node events');
         hasSetupListeners = true;
     } else {
         log.info('Cache node listeners already running');

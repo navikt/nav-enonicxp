@@ -1,0 +1,108 @@
+import nodeLib from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
+import { NodeEventData } from './index';
+import { appDescriptor } from '../constants';
+import { createOrUpdateSchedule } from '../utils/scheduler';
+import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
+import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
+
+const getPublish = (node: NodeEventData) => {
+    const repo = nodeLib.connect({
+        repoId: node.repo,
+        branch: 'master',
+    });
+
+    const content = repo.get<Content>({ key: node.id });
+
+    if (!content) {
+        log.error(`Content for ${node.id} not found!`);
+        return null;
+    }
+
+    if (!content.publish) {
+        log.error(`No publish object found for content ${node.id}!`);
+        return null;
+    }
+
+    return content.publish;
+};
+
+const isPrepublished = (publishFrom?: string): publishFrom is string => {
+    return publishFrom ? new Date(publishFrom).getTime() > Date.now() : false;
+};
+
+const scheduleCacheInvalidation = ({
+    id,
+    path,
+    publishFrom,
+}: {
+    id: string;
+    path: string;
+    publishFrom: string;
+}) => {
+    createOrUpdateSchedule<PrepublishCacheWipeConfig>({
+        jobName: `prepublish-invalidate-${id}`,
+        jobSchedule: {
+            type: 'ONE_TIME',
+            value: publishFrom,
+        },
+        taskDescriptor: `${appDescriptor}:prepublish-cache-wipe`,
+        taskConfig: {
+            path,
+            id,
+        },
+    });
+};
+
+export const scheduleUnpublish = ({
+    id,
+    path,
+    publishTo,
+}: {
+    id: string;
+    path: string;
+    publishTo: string;
+}) => {
+    createOrUpdateSchedule<UnpublishExpiredContentConfig>({
+        jobName: `unpublish-${id}`,
+        jobSchedule: {
+            type: 'ONE_TIME',
+            value: publishTo,
+        },
+        taskDescriptor: `${appDescriptor}:unpublish-expired-content`,
+        taskConfig: {
+            path,
+            id,
+        },
+    });
+};
+
+// Returns true if the content was scheduled for prepublishing
+export const handleScheduledPublish = (nodeData: NodeEventData, eventType: string) => {
+    if (eventType !== 'node.pushed') {
+        return false;
+    }
+
+    const publish = getPublish(nodeData);
+
+    if (!publish) {
+        return false;
+    }
+
+    const { id, path } = nodeData;
+
+    if (publish.to) {
+        scheduleUnpublish({ id, path, publishTo: publish.to });
+    }
+
+    if (isPrepublished(publish.from)) {
+        scheduleCacheInvalidation({
+            id,
+            path,
+            publishFrom: publish.from,
+        });
+        return true;
+    }
+
+    return false;
+};

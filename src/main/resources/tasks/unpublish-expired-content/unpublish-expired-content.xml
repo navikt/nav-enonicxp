@@ -1,0 +1,13 @@
+<task>
+    <description>Unpublish expired content</description>
+    <form>
+        <input type="TextLine" name="path">
+            <label>Node path</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextLine" name="id">
+            <label>Node id</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+</task>

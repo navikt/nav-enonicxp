@@ -6,8 +6,9 @@ import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/cus
 import { forceArray } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { urls } from '../constants';
+import { contentRepo, urls } from '../constants';
 import { createOrUpdateSchedule } from '../utils/scheduler';
+import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -207,9 +208,8 @@ const generateAndBroadcastSitemapData = () =>
                         const startTime = Date.now();
                         const sitemapEntries = getSitemapEntries();
 
-                        eventLib.send({
+                        sendReliableEvent({
                             type: eventTypeSitemapGenerated,
-                            distributed: true,
                             data: { entries: sitemapEntries },
                         });
 
@@ -220,7 +220,7 @@ const generateAndBroadcastSitemapData = () =>
                         );
 
                         if (sitemapEntries.length > maxCount) {
-                            log.warning(`Sitemap entries count exceeds recommended maximum`);
+                            log.error(`Sitemap entries count exceeds recommended maximum`);
                         }
                     } catch (e) {
                         log.error(`Error while generating sitemap - ${e}`);
@@ -260,29 +260,27 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
     entries.forEach((entry) => {
         sitemapData.set(entry.id, entry);
     });
+
+    log.info(`Updated sitemap data with ${entries.length} entries`);
 };
 
 export const requestSitemapUpdate = () => {
-    eventLib.send({
+    sendReliableEvent({
         type: eventTypeSitemapRequested,
-        distributed: true,
-        data: {},
     });
 };
 
 export const activateSitemapDataUpdateEventListener = () => {
-    eventLib.listener<{ entries: SitemapEntry[] }>({
-        type: `custom.${eventTypeSitemapGenerated}`,
+    addReliableEventListener<{ entries: SitemapEntry[] }>({
+        type: eventTypeSitemapGenerated,
         callback: (event) => {
-            log.info('Received sitemap data from master, updating...');
             updateSitemapData(event.data.entries);
         },
     });
 
-    eventLib.listener({
-        type: `custom.${eventTypeSitemapRequested}`,
+    addReliableEventListener({
+        type: eventTypeSitemapRequested,
         callback: () => {
-            log.info('Received request for sitemap regeneration');
             generateAndBroadcastSitemapData();
         },
     });
@@ -292,7 +290,7 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === 'com.enonic.cms.default') {
+                if (node.branch === 'master' && node.repo === contentRepo) {
                     const xpPath = node.path.replace(/^\/content/, '');
                     updateSitemapEntry(xpPath);
                 }
