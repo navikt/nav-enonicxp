@@ -22,10 +22,6 @@
                             <label>Panelbeskrivelse</label>
                             <occurrences  minimum="0" maximum="1"/>
                         </input>
-                        <input name="spanning" type="CheckBox">
-                            <label>Heldekkende panel</label>
-                            <help-text>Gjør at panelet spenner over hele raden</help-text>
-                        </input>
                         <item-set name="url">
                             <label>Peker til innhold</label>
                             <occurrences minimum="1" maximum="1"/>
