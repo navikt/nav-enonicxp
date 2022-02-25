@@ -9,7 +9,7 @@
                 <max-length>300</max-length>
             </config>
         </input>
-        <input type="Input" name="endnote">
+        <input type="TextLine" name="endnote">
             <label>Sluttnote / kategorinavn</label>
         </input>
     </form>
