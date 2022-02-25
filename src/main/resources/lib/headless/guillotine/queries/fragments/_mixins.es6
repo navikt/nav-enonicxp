@@ -17,7 +17,6 @@ const linkPanelsMixinFragment = `
     panelItems {
         title
         ingress
-        spanning
         url {
             text
             ref {

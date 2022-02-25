@@ -6,7 +6,7 @@
 <x-data>
 	<display-name>Menu settings</display-name>
 	<form>
-		<input type="Checkbox" name="menuItem">
+		<input type="CheckBox" name="menuItem">
 			<label>Show in Menu?</label>
 			<occurrences minimum="0" maximum="1"/>
 		</input>
@@ -14,7 +14,7 @@
 			<label>Override menu name</label>			<!-- Name to be used in menu. Optional -->
 			<occurrences minimum="0" maximum="1"/>
 		</input>
-		<input type="Checkbox" name="newWindow">
+		<input type="CheckBox" name="newWindow">
 			<label>Open in new window?</label>
 			<occurrences minimum="0" maximum="1"/>
 		</input>

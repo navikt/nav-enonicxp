@@ -81,7 +81,7 @@
             <label>Beregning</label>
             <help-text>Variabler må være like navnet som variabelnavn ovenfor. Du kan kun benytte javascript.</help-text>
         </input>
-        <input name="useThousandSeparator" type="Checkbox">
+        <input name="useThousandSeparator" type="CheckBox">
             <label>Legg inn tusenskille i svaret</label>
             <help-text>Nyttig når svaret feks gis i kroner</help-text>
         </input>
