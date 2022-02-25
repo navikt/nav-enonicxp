@@ -9,7 +9,6 @@ import {
 import { getParentPath } from '../utils/nav-utils';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { generateUUID, isUUID } from '../utils/uuid';
 import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
@@ -25,11 +24,6 @@ export type NodeEventData = {
     repo: string;
 };
 
-const cacheId = generateUUID();
-
-log.info(`Cache ID for this instance: ${cacheId}`);
-
-const oneDay = 3600 * 24;
 const oneMinute = 60;
 
 const caches = {
@@ -40,14 +34,6 @@ const caches = {
     driftsmeldinger: cacheLib.newCache({
         size: 50,
         expire: oneMinute,
-    }),
-    sitecontent: cacheLib.newCache({
-        size: 5000,
-        expire: oneDay,
-    }),
-    notifications: cacheLib.newCache({
-        size: 5000,
-        expire: oneDay,
     }),
 };
 
@@ -97,41 +83,14 @@ export const getDriftsmeldingerCache = (
     return getCacheValue('driftsmeldinger', `driftsmelding-heading-${language}`, callback);
 };
 
-export const getSitecontentCache = (
-    idOrPath: string,
-    branch: RepoBranch,
-    callback: CallbackFunc
-) => {
-    // Do not cache draft branch or content id requests
-    if (branch === 'draft' || isUUID(idOrPath)) {
-        return callback();
-    }
-
-    const cacheKey = getPathname(idOrPath);
-    return getCacheValue('sitecontent', cacheKey, callback);
-};
-
-export const getNotificationsCache = (idOrPath: string, callback: CallbackFunc) => {
-    if (isUUID(idOrPath)) {
-        return callback();
-    }
-
-    const cacheKey = getPathname(idOrPath);
-    return getCacheValue('notifications', cacheKey, callback);
-};
-
 export const wipeAllCaches = () => {
-    log.info(`Wiping all caches on [${cacheId}]`);
+    log.info(`Wiping all caches`);
     Object.keys(caches).forEach((name) => wipeCache(name as CacheName));
 };
 
 const wipeCache = (name: CacheName) => {
-    log.info(`Wiping all entries in [${name} (${caches[name].getSize()})] on [${cacheId}]`);
+    log.info(`Wiping all entries in [${name} (${caches[name].getSize()})]`);
     caches[name].clear();
-};
-
-const wipeCacheEntry = (name: CacheName, key: string) => {
-    caches[name].remove(key);
 };
 
 const wipeSitecontentEntry = (nodePath: string, eventId: string) => {
@@ -142,7 +101,6 @@ const wipeSitecontentEntry = (nodePath: string, eventId: string) => {
     const pathname = getPathname(nodePath);
     log.info(`Clearing cache for ${pathname}`);
 
-    wipeCacheEntry('sitecontent', pathname);
     frontendCacheRevalidate(pathname, eventId);
 };
 
@@ -153,15 +111,13 @@ const wipeNotificationsEntry = (nodePath: string, eventId: string) => {
 
     const parentCacheKey = getPathname(getParentPath(nodePath));
     log.info(`Clearing notifications from ${parentCacheKey}`);
-    wipeCacheEntry('notifications', parentCacheKey);
     frontendCacheRevalidate(parentCacheKey, eventId);
 };
 
 const wipeSpecialCases = (nodePath: string) => {
     // When a template is updated we need to wipe all caches
     if (nodePath.includes('_templates/')) {
-        log.info(`All caches cleared due to updated template on [${cacheId}]`);
-        wipeCache('sitecontent');
+        log.info('Clearing whole cache due to updated template');
         frontendCacheWipeAll();
         return true;
     }
@@ -180,8 +136,7 @@ const wipeSpecialCases = (nodePath: string) => {
 
     // If global notifications are modified, every page is potentially affected
     if (nodePath.includes('/global-notifications/')) {
-        log.info(`Global notification modified, wiping notifications cache and frontend cache`);
-        wipeCache('notifications');
+        log.info('Clearing whole cache due to updated global notification');
         frontendCacheWipeAll();
         return true;
     }

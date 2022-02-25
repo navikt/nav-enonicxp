@@ -1,6 +1,5 @@
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
-const cache = require('/lib/siteCache');
 
 const notification = require('/lib/headless/guillotine/queries/fragments/notification');
 const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');
@@ -45,6 +44,4 @@ const getNotifications = (path) => {
     return [...globalNotifications, ...localNotifications];
 };
 
-const getFromCache = (path) => cache.getNotificationsCache(path, () => getNotifications(path));
-
-module.exports = { getNotifications: getFromCache };
+module.exports = { getNotifications };
