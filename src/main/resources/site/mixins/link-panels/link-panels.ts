@@ -20,11 +20,6 @@ export interface LinkPanels {
     ingress?: string;
 
     /**
-     * Heldekkende panel
-     */
-    spanning: boolean;
-
-    /**
      * Peker til innhold
      */
     url: {
