@@ -25,11 +25,6 @@ export interface TransportPage {
     ingress?: string;
 
     /**
-     * Heldekkende panel
-     */
-    spanning: boolean;
-
-    /**
      * Peker til innhold
      */
     url: {

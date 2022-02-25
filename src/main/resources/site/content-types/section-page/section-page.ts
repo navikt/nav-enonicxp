@@ -35,11 +35,6 @@ export interface SectionPage {
     ingress?: string;
 
     /**
-     * Heldekkende panel
-     */
-    spanning: boolean;
-
-    /**
      * Peker til innhold
      */
     url: {
