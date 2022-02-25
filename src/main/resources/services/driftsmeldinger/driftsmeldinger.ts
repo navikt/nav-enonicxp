@@ -16,7 +16,7 @@ type Message = {
     type: Melding['type'];
 };
 
-const constructMessage = (message: MessageContent) => {
+const transformMessageContent = (message: MessageContent): Message => {
     const heading = message.displayName;
     const url = portalLib.pageUrl({ path: message._path });
     const type = message.data.type;
@@ -39,7 +39,9 @@ export const get = () => {
 
         return result.hits.reduce(
             (acc, item) =>
-                item.type === 'no.nav.navno:melding' ? [...acc, constructMessage(item)] : acc,
+                item.type === 'no.nav.navno:melding'
+                    ? [...acc, transformMessageContent(item)]
+                    : acc,
             [] as Message[]
         );
     });
