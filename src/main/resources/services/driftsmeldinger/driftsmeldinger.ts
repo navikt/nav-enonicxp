@@ -6,7 +6,7 @@ import { Melding } from '../../site/content-types/melding/melding';
 const cacheKey = 'driftsmeldinger-cache';
 const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
 
-const cache = cacheLib.newCache({ size: 50, expire: 60 });
+const cache = cacheLib.newCache({ size: 50, expire: 10 });
 
 type MessageContent = Content<'no.nav.navno:melding'>;
 
