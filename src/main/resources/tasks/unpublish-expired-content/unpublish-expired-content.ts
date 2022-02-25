@@ -34,10 +34,13 @@ export const run = (params: UnpublishExpiredContentConfig) => {
 
     try {
         const unpublished = contentLib.unpublish({ keys: [id] });
-        if (unpublished) {
+        if (unpublished && unpublished.length > 0) {
             log.info(`Unpublished content: ${unpublished.join(', ')}`);
+            if (unpublished.length > 1) {
+                log.warning(`Unexpectedly unpublished multiple contents with id ${id}`);
+            }
         } else {
-            log.error(`Could not unpublish ${id}`);
+            log.error(`Could not unpublish ${id} - unknown error`);
         }
     } catch (e) {
         log.error(`Error while unpublishing ${id} - ${e}`);
