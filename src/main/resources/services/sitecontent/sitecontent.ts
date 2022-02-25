@@ -1,9 +1,9 @@
 const { isValidBranch } = require('/lib/utils/branch-context');
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
-const handleGet = (req) => {
+export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch, time, nocache } = req.params;
+    const { id: idOrPath, branch, time } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -36,7 +36,7 @@ const handleGet = (req) => {
         };
     }
 
-    const content = getSiteContent(idOrPath, branch, time, nocache);
+    const content = getSiteContent(idOrPath, branch, time);
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);
@@ -55,5 +55,3 @@ const handleGet = (req) => {
         contentType: 'application/json',
     };
 };
-
-exports.get = handleGet;
