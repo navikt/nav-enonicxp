@@ -249,7 +249,7 @@ export const wipeCacheForNode = (node: NodeEventData, eventType: string, timesta
 const nodeListenerCallback = (event: EnonicEvent) => {
     event.data.nodes.forEach((node) => {
         if (node.branch === 'master' && node.repo === contentRepo) {
-            const isPrepublished = handleScheduledPublish(node, event);
+            const isPrepublished = handleScheduledPublish(node, event.type);
 
             if (!isPrepublished) {
                 wipeCacheForNode(node, event.type, event.timestamp);
