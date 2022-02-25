@@ -3,7 +3,9 @@ import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
 import { prepublishInvalidateEvent } from '../../lib/siteCache';
 
 export const run = (params: PrepublishCacheWipeConfig) => {
-    log.info(`Running task for prepublish cache wipe - ${params.id}`);
+    log.info(
+        `Running task for cache invalidation of prepublished content - ${params.id} - ${params.path}`
+    );
 
     sendReliableEvent({
         type: prepublishInvalidateEvent,

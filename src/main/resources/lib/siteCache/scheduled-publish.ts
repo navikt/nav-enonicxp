@@ -74,6 +74,7 @@ export const scheduleUnpublish = ({
     });
 };
 
+// Returns true if the content was scheduled for prepublishing
 export const handleScheduledPublish = (nodeData: NodeEventData, event: EnonicEvent) => {
     if (event.type !== 'node.pushed') {
         return false;

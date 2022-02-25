@@ -195,7 +195,6 @@ export const wipeSitecontentEntryWithReferences = (
     wipeSitecontentEntry(path, eventId);
     wipeNotificationsEntry(path, eventId);
 
-    // TODO: remove type assertion when findReferences has been rewritten to TS
     const references = findReferences({ id, eventType });
 
     log.info(
@@ -288,14 +287,10 @@ export const activateCacheEventListeners = () => {
         addReliableEventListener<NodeEventData>({
             type: cacheInvalidateEventName,
             callback: (event) => {
-                const { id, path } = event.data;
+                const { id, path, eventId } = event.data;
                 log.info(`Received event for cache invalidating of ${path} - ${id}`);
                 runInBranchContext(
-                    () =>
-                        wipeSitecontentEntryWithReferences(
-                            event.data,
-                            generateEventId(event.data, event.timestamp)
-                        ),
+                    () => wipeSitecontentEntryWithReferences(event.data, eventId),
                     'master'
                 );
             },

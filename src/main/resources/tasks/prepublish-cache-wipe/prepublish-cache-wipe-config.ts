@@ -9,14 +9,4 @@ export interface PrepublishCacheWipeConfig {
    * Node id
    */
   id: string;
-
-  /**
-   * Event type
-   */
-  eventType: string;
-
-  /**
-   * Event timestamp
-   */
-  timestamp: number;
 }

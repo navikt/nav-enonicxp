@@ -220,7 +220,7 @@ const generateAndBroadcastSitemapData = () =>
                         );
 
                         if (sitemapEntries.length > maxCount) {
-                            log.warning(`Sitemap entries count exceeds recommended maximum`);
+                            log.error(`Sitemap entries count exceeds recommended maximum`);
                         }
                     } catch (e) {
                         log.error(`Error while generating sitemap - ${e}`);
@@ -260,6 +260,8 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
     entries.forEach((entry) => {
         sitemapData.set(entry.id, entry);
     });
+
+    log.info(`Updated sitemap data with ${entries.length} entries`);
 };
 
 export const requestSitemapUpdate = () => {
@@ -272,7 +274,6 @@ export const activateSitemapDataUpdateEventListener = () => {
     addReliableEventListener<{ entries: SitemapEntry[] }>({
         type: eventTypeSitemapGenerated,
         callback: (event) => {
-            log.info('Received sitemap data from master, updating...');
             updateSitemapData(event.data.entries);
         },
     });
@@ -280,7 +281,6 @@ export const activateSitemapDataUpdateEventListener = () => {
     addReliableEventListener({
         type: eventTypeSitemapRequested,
         callback: () => {
-            log.info('Received request for sitemap regeneration');
             generateAndBroadcastSitemapData();
         },
     });
