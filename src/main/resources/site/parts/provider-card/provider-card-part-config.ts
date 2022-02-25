@@ -33,5 +33,5 @@ export interface ProviderCardPartConfig {
   /**
    * Sluttnote / kategorinavn
    */
-  endnote?: unknown;
+  endnote?: string;
 }
