@@ -1,5 +1,5 @@
 import cacheLib from '/lib/cache';
-import eventLib, { EnonicEventData, EnonicEvent } from '/lib/xp/event';
+import eventLib, { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import {
@@ -7,7 +7,6 @@ import {
     frontendCacheWipeAll,
 } from '../headless/frontend-cache-revalidate';
 import { getParentPath } from '../utils/nav-utils';
-import { ArrayItem } from '../../types/util-types';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { generateUUID, isUUID } from '../utils/uuid';
@@ -19,7 +18,12 @@ import { findReferences } from './references';
 
 type CallbackFunc = () => any;
 
-export type NodeEventData = ArrayItem<EnonicEventData['nodes']>;
+export type NodeEventData = {
+    id: string;
+    path: string;
+    branch: string;
+    repo: string;
+};
 
 const cacheId = generateUUID();
 
