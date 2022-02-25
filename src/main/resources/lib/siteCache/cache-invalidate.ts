@@ -1,7 +1,5 @@
-import cacheLib from '/lib/cache';
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
-import { RepoBranch } from '../../types/common';
 import {
     frontendCacheRevalidate,
     frontendCacheWipeAll,
@@ -15,25 +13,12 @@ import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/pre
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferences } from './references';
 
-type CallbackFunc = () => any;
-
 export type NodeEventData = {
     id: string;
     path: string;
     branch: string;
     repo: string;
 };
-
-const oneMinute = 60;
-
-const caches = {
-    driftsmeldinger: cacheLib.newCache({
-        size: 50,
-        expire: oneMinute,
-    }),
-};
-
-type CacheName = keyof typeof caches;
 
 export const cacheInvalidateEventName = 'invalidate-cache';
 export const prepublishInvalidateEvent = 'prepublish-invalidate';
@@ -49,37 +34,6 @@ const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 
 const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${timestamp}`;
-
-const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc) => {
-    try {
-        return caches[cacheName].get(key, callback);
-    } catch (e) {
-        // cache.get function throws if callback returns null
-        return null;
-    }
-};
-
-export const getDriftsmeldingerCache = (
-    language: string,
-    branch: RepoBranch,
-    callback: CallbackFunc
-) => {
-    if (branch === 'draft') {
-        return callback();
-    }
-
-    return getCacheValue('driftsmeldinger', `driftsmelding-heading-${language}`, callback);
-};
-
-export const wipeAllCaches = () => {
-    log.info(`Wiping all caches`);
-    Object.keys(caches).forEach((name) => wipeCache(name as CacheName));
-};
-
-const wipeCache = (name: CacheName) => {
-    log.info(`Wiping all entries in [${name} (${caches[name].getSize()})]`);
-    caches[name].clear();
-};
 
 const wipeSitecontentEntry = (nodePath: string, eventId: string) => {
     if (!nodePath) {
@@ -107,12 +61,6 @@ const wipeSpecialCases = (nodePath: string) => {
     if (nodePath.includes('_templates/')) {
         log.info('Clearing whole cache due to updated template');
         frontendCacheWipeAll();
-        return true;
-    }
-
-    // Wipe cache for decorator service notifications
-    if (nodePath.includes('/driftsmeldinger/')) {
-        wipeCache('driftsmeldinger');
         return true;
     }
 
@@ -211,8 +159,6 @@ const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
 let hasSetupListeners = false;
 
 export const activateCacheEventListeners = () => {
-    wipeAllCaches();
-
     if (!hasSetupListeners) {
         eventLib.listener({
             type: '(node.pushed|node.deleted)',
