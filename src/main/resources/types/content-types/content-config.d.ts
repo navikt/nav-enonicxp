@@ -25,6 +25,7 @@ import { TransportPage } from '../../site/content-types/transport-page/transport
 import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
+import { Notification } from '../../site/content-types/notification/notification';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;

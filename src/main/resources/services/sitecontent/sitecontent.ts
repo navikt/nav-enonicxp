@@ -1,4 +1,5 @@
-const { isValidBranch } = require('/lib/utils/branch-context');
+import { isValidBranch } from '../../lib/utils/branch-context';
+
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
 export const get = (req: XP.Request) => {

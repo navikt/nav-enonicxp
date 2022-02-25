@@ -7,7 +7,8 @@ const branches: { [key in RepoBranch]: boolean } = {
     draft: true,
 };
 
-export const isValidBranch = (branch: RepoBranch): branch is RepoBranch => branches[branch];
+export const isValidBranch = (branch: string): branch is RepoBranch =>
+    branches[branch as RepoBranch];
 
 export const runInBranchContext = <ReturnType>(
     func: () => ReturnType,

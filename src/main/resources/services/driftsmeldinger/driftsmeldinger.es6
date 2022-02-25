@@ -1,7 +1,7 @@
 const libs = {
     content: require('/lib/xp/content'),
     portal: require('/lib/xp/portal'),
-    cache: require('/lib/siteCache'),
+    cache: require('/lib/siteCache/cache-invalidate'),
 };
 
 const constructMessage = (message) => {

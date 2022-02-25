@@ -1,6 +1,6 @@
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { NodeEventData } from './index';
+import { NodeEventData } from './cache-invalidate';
 import { appDescriptor } from '../constants';
 import { createOrUpdateSchedule } from '../utils/scheduler';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';

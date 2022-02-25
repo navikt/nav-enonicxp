@@ -2,7 +2,6 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
-import { wipeAllCaches } from '../lib/siteCache';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { sendReliableEvent } from '../lib/events/reliable-custom-events';
@@ -16,9 +15,8 @@ const validActions = {
         callback: () => runOfficeInfoUpdateTask(false),
     },
     wipeCache: {
-        description: 'Slett cache (XP og frontend)',
+        description: 'Slett frontend-cache',
         callback: () => {
-            wipeAllCaches();
             frontendCacheWipeAll();
         },
     },

@@ -1,6 +1,6 @@
 import contentLib from '/lib/xp/content';
 import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
-import { cacheInvalidateEventName } from '../../lib/siteCache';
+import { cacheInvalidateEventName } from '../../lib/siteCache/cache-invalidate';
 
 export const get = (req: XP.Request) => {
     const { contentId } = req.params;

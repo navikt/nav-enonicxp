@@ -27,10 +27,6 @@ export type NodeEventData = {
 const oneMinute = 60;
 
 const caches = {
-    decorator: cacheLib.newCache({
-        size: 50,
-        expire: oneMinute,
-    }),
     driftsmeldinger: cacheLib.newCache({
         size: 50,
         expire: oneMinute,
@@ -61,14 +57,6 @@ const getCacheValue = (cacheName: CacheName, key: string, callback: CallbackFunc
         // cache.get function throws if callback returns null
         return null;
     }
-};
-
-export const getDecoratorMenuCache = (branch: RepoBranch, callback: CallbackFunc) => {
-    if (branch === 'draft') {
-        return callback();
-    }
-
-    return getCacheValue('decorator', 'decorator', callback);
 };
 
 export const getDriftsmeldingerCache = (
@@ -125,12 +113,6 @@ const wipeSpecialCases = (nodePath: string) => {
     // Wipe cache for decorator service notifications
     if (nodePath.includes('/driftsmeldinger/')) {
         wipeCache('driftsmeldinger');
-        return true;
-    }
-
-    // Wipe cache for decorator menu
-    if (nodePath.includes('/dekorator-meny/')) {
-        wipeCache('decorator');
         return true;
     }
 

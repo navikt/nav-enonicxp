@@ -7,7 +7,7 @@ const facetLib = require('/lib/facets');
 
 import clusterLib from '/lib/xp/cluster';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
-import { activateCacheEventListeners } from './lib/siteCache';
+import { activateCacheEventListeners } from './lib/siteCache/cache-invalidate';
 import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
@@ -17,8 +17,6 @@ import {
     startReliableEventAckListener,
 } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
-
-let appIsRunning = true;
 
 updateClusterInfo();
 
@@ -56,7 +54,5 @@ facetLib.activateEventListener();
 log.info('Finished running main');
 
 __.disposer(() => {
-    // when the app is closed down, tasks might have survived and should not
-    // spawn of new tasks. We keep this state to make sure of this.
-    appIsRunning = false;
+    log.info('App is shutting down');
 });
