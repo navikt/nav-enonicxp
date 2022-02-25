@@ -5,7 +5,7 @@ import portalLib from '/lib/xp/portal';
 const cacheKey = 'decorator-menu-cache';
 const menuPath = '/www.nav.no/dekorator-meny/';
 
-const cache = cacheLib.newCache({ size: 50, expire: 60 });
+const cache = cacheLib.newCache({ size: 1, expire: 60 });
 
 type MenuItemContent = Content<'no.nav.navno:megamenu-item'>;
 
