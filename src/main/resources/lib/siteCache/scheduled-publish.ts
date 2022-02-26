@@ -31,6 +31,10 @@ const isPrepublished = (publishFrom?: string): publishFrom is string => {
     return publishFrom ? new Date(publishFrom).getTime() > Date.now() : false;
 };
 
+export const getPrepublishJobName = (contentId: string) => `prepublish-invalidate-${contentId}`;
+
+export const getUnpublishJobName = (contentId: string) => `unpublish-${contentId}`;
+
 const scheduleCacheInvalidation = ({
     id,
     path,
@@ -41,7 +45,7 @@ const scheduleCacheInvalidation = ({
     publishFrom: string;
 }) => {
     createOrUpdateSchedule<PrepublishCacheWipeConfig>({
-        jobName: `prepublish-invalidate-${id}`,
+        jobName: getPrepublishJobName(id),
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishFrom,
@@ -64,7 +68,7 @@ export const scheduleUnpublish = ({
     publishTo: string;
 }) => {
     createOrUpdateSchedule<UnpublishExpiredContentConfig>({
-        jobName: `unpublish-${id}`,
+        jobName: getUnpublishJobName(id),
         jobSchedule: {
             type: 'ONE_TIME',
             value: publishTo,

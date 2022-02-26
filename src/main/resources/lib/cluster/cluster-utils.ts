@@ -19,7 +19,7 @@ type ClusterNodeInfo = {
     isClientNode: boolean;
 };
 
-type ClusterState = 'RED' | 'YELLOW' | 'GREEN';
+export type ClusterState = 'RED' | 'YELLOW' | 'GREEN' | 'UNKNOWN';
 
 type ClusterInfo = {
     name: string;
@@ -48,9 +48,14 @@ const requestClusterInfo = () => {
     }
 };
 
-export const clusterInfo: { localServerName: string; nodeCount: number } = {
+export const clusterInfo: {
+    localServerName: string;
+    nodeCount: number;
+    clusterState: ClusterState;
+} = {
     localServerName: '',
     nodeCount: 0,
+    clusterState: 'UNKNOWN',
 };
 
 export const updateClusterInfo = () => {
@@ -65,6 +70,7 @@ export const updateClusterInfo = () => {
 
     clusterInfo.localServerName = localMember?.name || clusterInfoResponse.localNode.id;
     clusterInfo.nodeCount = clusterInfoResponse.members.length;
+    clusterInfo.clusterState = clusterInfoResponse.state;
 
     log.info(
         `Local server name: ${clusterInfo.localServerName} - Nodes in cluster: ${clusterInfo.nodeCount}`
