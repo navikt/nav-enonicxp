@@ -5,7 +5,13 @@ import { forceArray } from '../utils/nav-utils';
 
 const frontendApiUrl = `${urls.frontendOrigin}/editor/global-values`;
 
-export const get = () => {
+export const get = (req: XP.Request) => {
+    if (req.method !== 'GET') {
+        return {
+            status: 200,
+        };
+    }
+
     const content = portalLib.getContent();
 
     if (content.type !== 'no.nav.navno:global-value-set') {

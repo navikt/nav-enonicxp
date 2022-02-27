@@ -84,7 +84,13 @@ const contentQuery = (query: string, branch: RepoBranch, sort?: string) =>
         branch
     );
 
-export const get = () => {
+export const get = (req: XP.Request) => {
+    if (req.method !== 'GET') {
+        return {
+            status: 200,
+        };
+    }
+
     const currentTime = new Date().toISOString();
     const currentTimeMinusOneDay = new Date(Date.now() - 1000 * 3600 * 24).toISOString();
     const currentTimePlusOneWeek = new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString();
