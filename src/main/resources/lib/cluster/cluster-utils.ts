@@ -19,7 +19,7 @@ type ClusterNodeInfo = {
     isClientNode: boolean;
 };
 
-export type ClusterState = 'RED' | 'YELLOW' | 'GREEN' | 'UNKNOWN';
+export type ClusterState = 'RED' | 'YELLOW' | 'GREEN';
 
 type ClusterInfo = {
     name: string;
@@ -30,7 +30,7 @@ type ClusterInfo = {
 
 const clusterStatisticsApi = 'http://localhost:2609/cluster.elasticsearch';
 
-const requestClusterInfo = () => {
+export const requestClusterInfo = () => {
     try {
         const response = httpClient.request({
             url: clusterStatisticsApi,
@@ -48,14 +48,20 @@ const requestClusterInfo = () => {
     }
 };
 
+export const getLocalServerName = (clusterInfo: ClusterInfo) => {
+    const localMember = clusterInfo.members.find(
+        (member) => member.id === clusterInfo.localNode.id
+    );
+
+    return localMember?.name || clusterInfo.localNode.id;
+};
+
 export const clusterInfo: {
     localServerName: string;
     nodeCount: number;
-    clusterState: ClusterState;
 } = {
     localServerName: '',
     nodeCount: 0,
-    clusterState: 'UNKNOWN',
 };
 
 export const updateClusterInfo = () => {
@@ -64,13 +70,8 @@ export const updateClusterInfo = () => {
         return;
     }
 
-    const localMember = clusterInfoResponse.members.find(
-        (member) => member.id === clusterInfoResponse.localNode.id
-    );
-
-    clusterInfo.localServerName = localMember?.name || clusterInfoResponse.localNode.id;
+    clusterInfo.localServerName = getLocalServerName(clusterInfoResponse);
     clusterInfo.nodeCount = clusterInfoResponse.members.length;
-    clusterInfo.clusterState = clusterInfoResponse.state;
 
     log.info(
         `Local server name: ${clusterInfo.localServerName} - Nodes in cluster: ${clusterInfo.nodeCount}`
