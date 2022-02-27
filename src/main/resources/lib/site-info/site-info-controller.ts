@@ -26,7 +26,8 @@ type ContentSummary = {
 
 type SiteInfo = {
     publishScheduled: ContentSummary[];
-    unpublishScheduled: ContentSummary[];
+    unpublishScheduledNextWeek: ContentSummary[];
+    unpublishScheduledLater: ContentSummary[];
     recentlyPublished: ContentSummary[];
     contentWithCustomPath: ContentSummary[];
     serverInfo: {
@@ -65,7 +66,7 @@ const transformContent = (content: Content): ContentSummary => {
         path: content._path,
         customPath: hasCustomPath(content) ? content.data.customPath : undefined,
         displayName: content.displayName,
-        type: content.type,
+        type: contentLib.getType(content.type)?.displayName || '',
         publish: getPublishInfo(content),
     };
 };
@@ -86,6 +87,7 @@ const contentQuery = (query: string, branch: RepoBranch, sort?: string) =>
 export const get = () => {
     const currentTime = new Date().toISOString();
     const currentTimeMinusOneDay = new Date(Date.now() - 1000 * 3600 * 24).toISOString();
+    const currentTimePlusOneWeek = new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString();
 
     const contentToPublish = contentQuery(
         `publish.from > instant("${currentTime}")`,
@@ -93,8 +95,14 @@ export const get = () => {
         'publish.from ASC'
     );
 
-    const contentToUnpublish = contentQuery(
-        `publish.to > instant("${currentTime}")`,
+    const contentToUnpublishNextWeek = contentQuery(
+        `publish.to > instant("${currentTime}") AND publish.to <= instant("${currentTimePlusOneWeek}")`,
+        'master',
+        'publish.to ASC'
+    );
+
+    const contentToUnpublishLater = contentQuery(
+        `publish.to > instant("${currentTimePlusOneWeek}")`,
         'master',
         'publish.to ASC'
     );
@@ -102,7 +110,7 @@ export const get = () => {
     const recentlyPublished = contentQuery(
         `range("publish.from", instant("${currentTimeMinusOneDay}"), instant("${currentTime}"))`,
         'master',
-        'publish.from ASC'
+        'publish.from DESC'
     );
 
     const contentWithCustomPath = contentQuery(
@@ -115,7 +123,8 @@ export const get = () => {
 
     const requestBody: SiteInfo = {
         publishScheduled: contentToPublish,
-        unpublishScheduled: contentToUnpublish,
+        unpublishScheduledNextWeek: contentToUnpublishNextWeek,
+        unpublishScheduledLater: contentToUnpublishLater,
         recentlyPublished,
         contentWithCustomPath,
         serverInfo: {
