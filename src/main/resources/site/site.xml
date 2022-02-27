@@ -7,10 +7,13 @@
     <x-data name="fasetter" optional="true"/>
     <x-data name="oldContentType" optional="true"/>
     <mappings>
-        <mapping controller="/lib/site-info/site-info-controller.js">
+        <mapping controller="/lib/controllers/site-info.js">
             <match>type:'portal:site'</match>
         </mapping>
-        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
+        <mapping controller="/lib/controllers/global-values-editor.js">
+            <match>type:'no.nav.navno:global-value-set'</match>
+        </mapping>
+        <mapping controller="/lib/controllers/admin-frontend-proxy.js">
             <pattern>/.*</pattern>
         </mapping>
     </mappings>
