@@ -5,9 +5,7 @@ import { runInBranchContext } from '../lib/utils/branch-context';
 import { wipeAllCaches } from '../lib/siteCache';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
-import { sendReliableEvent } from '../lib/events/reliable-custom-events';
-import { generateUUID } from '../lib/utils/uuid';
-import contentLib from '/lib/xp/content';
+import { updateScheduledPublishJobs } from '../lib/siteCache/scheduled-publish-updater';
 
 const view = resolve('webapp.html');
 const validActions = {
@@ -26,17 +24,9 @@ const validActions = {
         description: 'Generer data for sitemap',
         callback: requestSitemapUpdate,
     },
-    testReliableEvent: {
-        description: 'Kjør en test av pålitelige events',
-        callback: () => {
-            const someContent = contentLib.get({ key: '/www.nav.no/no/person' });
-            [...Array(1000)].forEach(() =>
-                sendReliableEvent({
-                    type: 'test-event',
-                    data: { foo: `barinos ${generateUUID()}`, content: someContent },
-                })
-            );
-        },
+    updatePrepublishJobs: {
+        description: 'Oppretter scheduler-jobs for prepublish/unpublish (må kjøres på master)',
+        callback: updateScheduledPublishJobs,
     },
 };
 

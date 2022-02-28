@@ -7,8 +7,11 @@
     <x-data name="fasetter" optional="true"/>
     <x-data name="oldContentType" optional="true"/>
     <mappings>
+        <mapping controller="/lib/controllers/site-info.js">
+            <match>type:'portal:site'</match>
+        </mapping>
         <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
-            <pattern invert="true">(/no/rss)</pattern>
+            <pattern>/.*</pattern>
         </mapping>
     </mappings>
 </site>
