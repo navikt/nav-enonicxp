@@ -4,7 +4,6 @@ import {
     frontendCacheRevalidate,
     frontendCacheWipeAll,
 } from '../headless/frontend-cache-revalidate';
-import { getParentPath } from '../utils/nav-utils';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
@@ -47,28 +46,14 @@ const wipeSitecontentEntry = (nodePath: string, eventId: string) => {
     frontendCacheRevalidate(pathname, eventId);
 };
 
-const wipeNotificationsEntry = (nodePath: string, eventId: string) => {
-    if (!nodePath) {
-        return;
-    }
-
-    const parentCacheKey = getPathname(getParentPath(nodePath));
-    log.info(`Clearing notifications from ${parentCacheKey}`);
-    frontendCacheRevalidate(parentCacheKey, eventId);
-};
-
-const wipeSpecialCases = (nodePath: string) => {
-    // When a template is updated we need to wipe all caches
-    if (nodePath.includes('_templates/')) {
+const shouldWipeAll = (nodePath: string) => {
+    if (nodePath.includes('/_templates/')) {
         log.info('Clearing whole cache due to updated template');
-        frontendCacheWipeAll();
         return true;
     }
 
-    // If global notifications are modified, every page is potentially affected
     if (nodePath.includes('/global-notifications/')) {
         log.info('Clearing whole cache due to updated global notification');
-        frontendCacheWipeAll();
         return true;
     }
 
@@ -81,19 +66,18 @@ export const wipeSitecontentEntryWithReferences = (
     eventType?: string
 ) => {
     const { id, path } = node;
-
-    wipeSitecontentEntry(path, eventId);
-    wipeNotificationsEntry(path, eventId);
-
     const references = findReferences({ id, eventType });
+    log.info(`Event type: ${eventType}`);
 
     log.info(
-        `Clearing ${references.length} references for ${path}: ${JSON.stringify(
+        `Clearing ${path} and ${references.length} references for ${path}: ${JSON.stringify(
             references.map((item) => item._path),
             null,
             4
         )}`
     );
+
+    wipeSitecontentEntry(path, eventId);
 
     references.forEach((item) => {
         wipeSitecontentEntry(item._path, eventId);
@@ -117,14 +101,13 @@ const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
                 `Path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${currentPath}`
             );
             wipeSitecontentEntry(previousPath, eventId);
-            wipeNotificationsEntry(previousPath, eventId);
         }
     }
 };
 
 export const wipeCacheForNode = (node: NodeEventData, eventType: string, timestamp: number) => {
-    const didWipe = wipeSpecialCases(node.path);
-    if (didWipe) {
+    if (shouldWipeAll(node.path)) {
+        frontendCacheWipeAll();
         return;
     }
 
@@ -189,6 +172,6 @@ export const activateCacheEventListeners = () => {
         log.info('Started: Cache eventListener on node events');
         hasSetupListeners = true;
     } else {
-        log.info('Cache node listeners already running');
+        log.warning('Cache node listeners already running');
     }
 };

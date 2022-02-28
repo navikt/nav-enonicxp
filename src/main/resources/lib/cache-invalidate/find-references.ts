@@ -123,7 +123,10 @@ const getReferencesFromParent = (content: Content | null) => {
         return [];
     }
 
-    if (parent.type === 'no.nav.navno:publishing-calendar') {
+    if (
+        content.type === 'no.nav.navno:notification' ||
+        parent.type === 'no.nav.navno:publishing-calendar'
+    ) {
         return [parent];
     }
 
@@ -204,7 +207,7 @@ export const findReferences = ({
     // For deep references we always use master.
     const content = runInBranchContext(
         () => contentLib.get({ key: id }),
-        eventType === 'deleted' ? 'draft' : 'master'
+        eventType === 'node.deleted' ? 'draft' : 'master'
     );
 
     const references = removeDuplicatesById(
