@@ -16,17 +16,11 @@ type Message = {
     type: Melding['type'];
 };
 
-const transformMessageContent = (message: MessageContent): Message => {
-    const heading = message.displayName;
-    const url = portalLib.pageUrl({ path: message._path });
-    const type = message.data.type;
-
-    return {
-        heading,
-        url,
-        type,
-    };
-};
+const transformMessageContent = (message: MessageContent): Message => ({
+    heading: message.displayName,
+    url: portalLib.pageUrl({ path: message._path }),
+    type: message.data.type,
+});
 
 export const get = () => {
     const body = cache.get(cacheKey, () => {
