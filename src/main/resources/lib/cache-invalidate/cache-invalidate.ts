@@ -35,17 +35,6 @@ const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${timestamp}`;
 
-const wipeSitecontentEntry = (nodePath: string, eventId: string) => {
-    if (!nodePath) {
-        return;
-    }
-
-    const pathname = getPathname(nodePath);
-    log.info(`Clearing cache for ${pathname}`);
-
-    frontendCacheRevalidate(pathname, eventId);
-};
-
 const shouldWipeAll = (nodePath: string) => {
     if (nodePath.includes('/_templates/')) {
         log.info('Clearing whole cache due to updated template');
@@ -60,31 +49,7 @@ const shouldWipeAll = (nodePath: string) => {
     return false;
 };
 
-export const wipeSitecontentEntryWithReferences = (
-    node: NodeEventData,
-    eventId: string,
-    eventType?: string
-) => {
-    const { id, path } = node;
-    const references = findReferences({ id, eventType });
-    log.info(`Event type: ${eventType}`);
-
-    log.info(
-        `Clearing ${path} and ${references.length} references for ${path}: ${JSON.stringify(
-            references.map((item) => item._path),
-            null,
-            4
-        )}`
-    );
-
-    wipeSitecontentEntry(path, eventId);
-
-    references.forEach((item) => {
-        wipeSitecontentEntry(item._path, eventId);
-    });
-};
-
-const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
+const getPreviousIfPathChanged = (node: NodeEventData) => {
     const repo = nodeLib.connect({
         repoId: node.repo || contentRepo,
         branch: 'master',
@@ -98,11 +63,39 @@ const wipePreviousIfPathChanged = (node: NodeEventData, eventId: string) => {
 
         if (previousPath !== currentPath) {
             log.info(
-                `Path changed for ${node.id}, wiping cache with old path key - Previous path: ${previousPath} - New path: ${currentPath}`
+                `Path changed for ${node.id}, wiping cache on old path - Previous path: ${previousPath} - New path: ${currentPath}`
             );
-            wipeSitecontentEntry(previousPath, eventId);
+            return previousPath;
         }
     }
+
+    return null;
+};
+
+export const wipeSitecontentEntryWithReferences = (
+    node: NodeEventData,
+    eventId: string,
+    eventType?: string
+) => {
+    const { id, path } = node;
+
+    const referencedPaths = findReferences({ id, eventType }).map((content) => content._path);
+
+    const previousPath = getPreviousIfPathChanged(node);
+
+    if (previousPath) {
+        referencedPaths.push(previousPath);
+    }
+
+    log.info(
+        `Clearing ${path} and ${referencedPaths.length} references for ${path}: ${JSON.stringify(
+            referencedPaths,
+            null,
+            4
+        )}`
+    );
+
+    frontendCacheRevalidate([path, ...referencedPaths], eventId);
 };
 
 export const wipeCacheForNode = (node: NodeEventData, eventType: string, timestamp: number) => {
@@ -114,7 +107,6 @@ export const wipeCacheForNode = (node: NodeEventData, eventType: string, timesta
     const eventId = generateEventId(node, timestamp);
 
     runInBranchContext(() => {
-        wipePreviousIfPathChanged(node, eventId);
         wipeSitecontentEntryWithReferences(node, eventId, eventType);
     }, 'master');
 };

@@ -6,11 +6,11 @@ import { urls } from '../constants';
 const numRetries = 2;
 const timeoutMs = 5000;
 
-const requestRevalidate = (path: string, eventId: string, retriesLeft = numRetries) => {
+const requestRevalidate = (paths: string[], eventId: string, retriesLeft = numRetries) => {
     try {
         const response = httpClient.request({
-            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?path=${encodeURI(
-                path
+            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?paths=${encodeURIComponent(
+                JSON.stringify(paths)
             )}&eventId=${eventId}`,
             method: 'GET',
             connectionTimeout: timeoutMs,
@@ -22,18 +22,22 @@ const requestRevalidate = (path: string, eventId: string, retriesLeft = numRetri
 
         if (response.status >= 400) {
             if (retriesLeft > 0) {
-                requestRevalidate(path, eventId, retriesLeft - 1);
+                requestRevalidate(paths, eventId, retriesLeft - 1);
             } else {
-                log.error(`Revalidate request to frontend failed for ${path} - ${response.body}`);
+                log.error(
+                    `Revalidate request to frontend failed for ${eventId} - ${response.body}`
+                );
             }
         } else {
-            log.info(`Revalidate request to frontend acknowledged for ${path} - ${response.body}`);
+            log.info(
+                `Revalidate request to frontend acknowledged for ${eventId} - ${response.body}`
+            );
         }
     } catch (e) {
         if (retriesLeft > 0) {
-            requestRevalidate(path, eventId, retriesLeft - 1);
+            requestRevalidate(paths, eventId, retriesLeft - 1);
         } else {
-            log.error(`Revalidate request to frontend failed for ${path} - ${e}`);
+            log.error(`Revalidate request to frontend failed for ${eventId} - ${e}`);
         }
     }
 };
@@ -59,19 +63,17 @@ const requestWipeAll = (retriesLeft = numRetries) => {
     }
 };
 
-export const frontendCacheRevalidate = (pathname: string, eventId: string) => {
-    if (!pathname) {
-        return;
-    }
+export const frontendCacheRevalidate = (paths: string[], eventId: string) => {
+    // If the content has a custom path, the frontend will use this as key for its cache
+    // Make sure we send this path to the revalidator proxy
+    const pathsWithCustompaths = paths.map(
+        (path) => getCustomPathFromContent(`/www.nav.no${path}`) || path
+    );
 
     taskLib.executeFunction({
-        description: `Send revalidate on ${pathname}`,
+        description: `Send revalidate with event id ${eventId}`,
         func: () => {
-            // If the content has a custom path, the frontend will use this as key for its cache
-            // Make sure we send this path to the revalidator proxy
-            const customPath = getCustomPathFromContent(`/www.nav.no${pathname}`);
-
-            requestRevalidate(customPath || pathname, eventId);
+            requestRevalidate(pathsWithCustompaths, eventId);
         },
     });
 };
