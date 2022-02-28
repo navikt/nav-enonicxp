@@ -1,7 +1,7 @@
 import { generateAnchorIdField } from '../../../lib/headless/component-utils';
 import { SectionWithHeaderConfig } from './section-with-header-config';
 
-const controller = require('/lib/controllers/component-preview-controller');
+const controller = require('/lib/headless/controllers/component-preview-controller');
 
 exports.get = (req: XP.Request) => {
     if (req.mode === 'edit') {

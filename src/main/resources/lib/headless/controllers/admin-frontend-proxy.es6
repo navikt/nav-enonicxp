@@ -19,12 +19,6 @@ const errorResponse = (url, status, message) => {
 // This proxies requests made directly to XP to the frontend. Normally this will
 // only be used in the portal-admin content studio previews
 const adminFrontendProxy = (req) => {
-    if (req.method !== 'GET') {
-        return {
-            status: 200,
-        };
-    }
-
     const isLoopback = req.params[loopbackCheckParam];
     if (isLoopback) {
         log.info(`Loopback to XP detected from path ${req.rawPath}`);

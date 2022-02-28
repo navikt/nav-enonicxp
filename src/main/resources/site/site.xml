@@ -10,9 +10,6 @@
         <mapping controller="/lib/controllers/site-info.js">
             <match>type:'portal:site'</match>
         </mapping>
-        <mapping controller="/lib/controllers/global-values-editor.js">
-            <match>type:'no.nav.navno:global-value-set'</match>
-        </mapping>
         <mapping controller="/lib/controllers/admin-frontend-proxy.js">
             <pattern>/.*</pattern>
         </mapping>
