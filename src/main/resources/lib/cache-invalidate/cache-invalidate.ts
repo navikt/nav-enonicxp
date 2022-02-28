@@ -12,6 +12,7 @@ import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferences } from './references';
+import { wipeSiteinfoCache } from '../controllers/site-info';
 
 export type NodeEventData = {
     id: string;
@@ -145,15 +146,17 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             }
         }
     });
+    wipeSiteinfoCache();
 };
 
 const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
-    log.info(`Prepublish invalidate event: ${JSON.stringify(event)}`);
+    log.info(`Clearing cache for prepublished content: ${event.data.path}`);
     wipeCacheForNode(
         { ...event.data, branch: 'master', repo: contentRepo },
         event.type,
         event.timestamp
     );
+    wipeSiteinfoCache();
 };
 
 let hasSetupListeners = false;
