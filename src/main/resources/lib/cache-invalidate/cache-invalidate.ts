@@ -11,7 +11,7 @@ import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-import { findReferences } from './references';
+import { findReferences } from './find-references';
 import { wipeSiteinfoCache } from '../controllers/site-info';
 
 export type NodeEventData = {

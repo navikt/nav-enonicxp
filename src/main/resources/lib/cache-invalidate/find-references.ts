@@ -191,7 +191,7 @@ export const findReferences = ({
     prevReferences?: any[];
 }): Content[] => {
     if (depth > MAX_DEPTH) {
-        log.info(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
+        log.warning(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
         return [];
     }
 

@@ -4,7 +4,7 @@ import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
-import { updateScheduledPublishJobs } from '../lib/siteCache/scheduled-publish-updater';
+import { updateScheduledPublishJobs } from '../lib/cache-invalidate/scheduled-publish-updater';
 
 const view = resolve('webapp.html');
 const validActions = {
