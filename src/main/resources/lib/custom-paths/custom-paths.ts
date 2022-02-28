@@ -10,7 +10,7 @@ const xpPathToPathname = (xpPath: string) => xpPath?.replace(/^\/www\.nav\.no/, 
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
-const hasCustomPath = (content: Content): content is ContentWithCustomPath => {
+export const hasCustomPath = (content: Content): content is ContentWithCustomPath => {
     return isValidCustomPath((content as ContentWithCustomPath).data?.customPath);
 };
 
