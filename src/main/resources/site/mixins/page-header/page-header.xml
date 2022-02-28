@@ -4,5 +4,11 @@
             <label>Sett side-tittel</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
+        <!-- Next field is used for editorial guidance only. Not exposed in guillotine to frontend. -->
+        <input type="TextLine" name="norwegianTitle">
+            <label>Norsk tittel (hvis fremmedspräklig innhold)</label>
+            <occurrences minimum="0" maximum="1"/>
+            <help-text>Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no.</help-text>
+        </input>
     </form>
 </mixin>

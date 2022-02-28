@@ -4,4 +4,9 @@ export interface PageHeader {
    * Sett side-tittel
    */
   title?: string;
+
+  /**
+   * Norsk tittel (hvis fremmedspräklig innhold)
+   */
+  norwegianTitle?: string;
 }

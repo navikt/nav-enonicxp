@@ -6,6 +6,11 @@ export interface GuideData {
   title?: string;
 
   /**
+   * Norsk tittel (hvis fremmedspräklig innhold)
+   */
+  norwegianTitle?: string;
+
+  /**
    * Ingress
    */
   ingress?: string;
