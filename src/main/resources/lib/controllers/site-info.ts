@@ -1,6 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
+import cacheLib from '/lib/cache';
 import { urls } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster/cluster-utils';
 import { getPrepublishJobName, getUnpublishJobName } from '../siteCache/scheduled-publish';
@@ -24,17 +25,27 @@ type ContentSummary = {
     publish: PublishInfo;
 };
 
-type SiteInfo = {
+type ContentLists = {
     publishScheduled: ContentSummary[];
     unpublishScheduledNextWeek: ContentSummary[];
     unpublishScheduledLater: ContentSummary[];
     recentlyPublished: ContentSummary[];
     contentWithCustomPath: ContentSummary[];
+};
+
+type SiteInfo = {
     serverInfo: {
         serverName: string;
         clusterState?: ClusterState;
     };
-};
+} & ContentLists;
+
+const cache = cacheLib.newCache({
+    size: 1,
+    expire: 3600,
+});
+
+const cacheKey = 'content-lists';
 
 const isFuture = (dateTime?: string) => dateTime && Date.now() < new Date(dateTime).getTime();
 
@@ -84,6 +95,53 @@ const contentQuery = (query: string, branch: RepoBranch, sort?: string) =>
         branch
     );
 
+const getContentLists = () =>
+    cache.get(cacheKey, (): ContentLists => {
+        const currentTime = new Date().toISOString();
+        const currentTimeMinusOneDay = new Date(Date.now() - 1000 * 3600 * 24).toISOString();
+        const currentTimePlusOneWeek = new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString();
+
+        const publishScheduled = contentQuery(
+            `publish.from > instant("${currentTime}")`,
+            'draft',
+            'publish.from ASC'
+        );
+
+        const unpublishScheduledNextWeek = contentQuery(
+            `publish.to <= instant("${currentTimePlusOneWeek}")`,
+            'master',
+            'publish.to ASC'
+        );
+
+        const unpublishScheduledLater = contentQuery(
+            `publish.to > instant("${currentTimePlusOneWeek}")`,
+            'master',
+            'publish.to ASC'
+        );
+
+        const recentlyPublished = contentQuery(
+            `range("publish.from", instant("${currentTimeMinusOneDay}"), instant("${currentTime}"))`,
+            'master',
+            'publish.from DESC'
+        );
+
+        const contentWithCustomPath = contentQuery(
+            'data.customPath LIKE "*"',
+            'master',
+            'data.customPath'
+        ).filter((content) => !!content.customPath);
+
+        return {
+            publishScheduled,
+            unpublishScheduledNextWeek,
+            unpublishScheduledLater,
+            recentlyPublished,
+            contentWithCustomPath,
+        };
+    });
+
+export const wipeSiteinfoCache = () => cache.clear();
+
 export const get = (req: XP.Request) => {
     if (req.method !== 'GET') {
         return {
@@ -91,48 +149,12 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const currentTime = new Date().toISOString();
-    const currentTimeMinusOneDay = new Date(Date.now() - 1000 * 3600 * 24).toISOString();
-    const currentTimePlusOneWeek = new Date(Date.now() + 1000 * 3600 * 24 * 7).toISOString();
-
-    const contentToPublish = contentQuery(
-        `publish.from > instant("${currentTime}")`,
-        'draft',
-        'publish.from ASC'
-    );
-
-    const contentToUnpublishNextWeek = contentQuery(
-        `publish.to <= instant("${currentTimePlusOneWeek}")`,
-        'master',
-        'publish.to ASC'
-    );
-
-    const contentToUnpublishLater = contentQuery(
-        `publish.to > instant("${currentTimePlusOneWeek}")`,
-        'master',
-        'publish.to ASC'
-    );
-
-    const recentlyPublished = contentQuery(
-        `range("publish.from", instant("${currentTimeMinusOneDay}"), instant("${currentTime}"))`,
-        'master',
-        'publish.from DESC'
-    );
-
-    const contentWithCustomPath = contentQuery(
-        'data.customPath LIKE "*"',
-        'master',
-        'data.customPath'
-    ).filter((content) => !!content.customPath);
-
     const clusterInfoResponse = requestClusterInfo();
 
+    const contentLists = getContentLists();
+
     const requestBody: SiteInfo = {
-        publishScheduled: contentToPublish,
-        unpublishScheduledNextWeek: contentToUnpublishNextWeek,
-        unpublishScheduledLater: contentToUnpublishLater,
-        recentlyPublished,
-        contentWithCustomPath,
+        ...contentLists,
         serverInfo: {
             serverName: clusterInfo.localServerName,
             clusterState: clusterInfoResponse?.state,

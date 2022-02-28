@@ -15,6 +15,7 @@ import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferences } from './references';
+import { wipeSiteinfoCache } from '../controllers/site-info';
 
 type CallbackFunc = () => any;
 
@@ -260,6 +261,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             }
         }
     });
+    wipeSiteinfoCache();
 };
 
 const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
@@ -269,6 +271,7 @@ const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
         event.type,
         event.timestamp
     );
+    wipeSiteinfoCache();
 };
 
 let hasSetupListeners = false;
