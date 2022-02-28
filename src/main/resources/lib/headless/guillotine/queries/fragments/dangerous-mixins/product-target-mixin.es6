@@ -2,6 +2,7 @@ const globalFragment = require('/lib/headless/guillotine/queries/fragments/_glob
 const { situationPageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
 const { productPageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
 const { toolsPageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
+const { guidePageFragment } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
 const {
     themedArticlePageFragment,
 } = require('/lib/headless/guillotine/queries/fragments/dynamicPage');
@@ -15,6 +16,7 @@ const productTargetMixin = `
         ${situationPageFragment}
         ${themedArticlePageFragment}
         ${toolsPageFragment}
+        ${guidePageFragment}
     }
 `;
 
