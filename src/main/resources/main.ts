@@ -40,16 +40,16 @@ generateSitemapDataAndActivateSchedule();
 
 hookLibsWithTimeTravel();
 
-// if (clusterLib.isMaster()) {
-//     // make sure the updateAll lock is released on startup, and clear the
-//     // list of recently validated nodes
-//     const facetValidation = facetLib.getFacetValidation();
-//     if (facetValidation) {
-//         facetLib.clearUpdateState();
-//     }
-// }
-//
-// facetLib.activateEventListener();
+if (clusterLib.isMaster()) {
+    // make sure the updateAll lock is released on startup, and clear the
+    // list of recently validated nodes
+    const facetValidation = facetLib.getFacetValidation();
+    if (facetValidation) {
+        facetLib.clearUpdateState();
+    }
+}
+
+facetLib.activateEventListener();
 
 log.info('Finished running main');
 
