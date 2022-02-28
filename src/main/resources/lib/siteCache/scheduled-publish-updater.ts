@@ -1,4 +1,5 @@
 import contentLib from '/lib/xp/content';
+import clusterLib from '/lib/xp/cluster';
 import { runInBranchContext } from '../utils/branch-context';
 import { scheduleCacheInvalidation, scheduleUnpublish } from './scheduled-publish';
 
@@ -49,6 +50,10 @@ const scheduleUnpublishTasks = () => {
 };
 
 export const updateScheduledPublishJobs = () => {
-    schedulePrepublishTasks();
-    scheduleUnpublishTasks();
+    if (clusterLib.isMaster()) {
+        schedulePrepublishTasks();
+        scheduleUnpublishTasks();
+    } else {
+        log.warning('updateScheduledPublishJobs will only run on master');
+    }
 };
