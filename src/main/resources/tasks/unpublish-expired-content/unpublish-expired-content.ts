@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import nodeLib from '/lib/xp/node';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
-import { scheduleUnpublish } from '../../lib/siteCache/scheduled-publish';
+import { scheduleUnpublish } from '../../lib/cache-invalidate/scheduled-publish';
 import { contentRepo } from '../../lib/constants';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
