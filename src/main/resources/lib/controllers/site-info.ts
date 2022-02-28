@@ -42,7 +42,7 @@ type SiteInfo = {
 
 const cache = cacheLib.newCache({
     size: 1,
-    expire: 3600,
+    expire: 60,
 });
 
 const cacheKey = 'content-lists';
