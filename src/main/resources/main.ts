@@ -17,8 +17,7 @@ import {
     startReliableEventAckListener,
 } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
-
-let appIsRunning = true;
+import { updateScheduledPublishJobs } from './lib/siteCache/scheduled-publish-updater';
 
 updateClusterInfo();
 
@@ -43,6 +42,8 @@ generateSitemapDataAndActivateSchedule();
 hookLibsWithTimeTravel();
 
 if (clusterLib.isMaster()) {
+    updateScheduledPublishJobs();
+
     // make sure the updateAll lock is released on startup, and clear the
     // list of recently validated nodes
     const facetValidation = facetLib.getFacetValidation();
@@ -54,9 +55,3 @@ if (clusterLib.isMaster()) {
 facetLib.activateEventListener();
 
 log.info('Finished running main');
-
-__.disposer(() => {
-    // when the app is closed down, tasks might have survived and should not
-    // spawn of new tasks. We keep this state to make sure of this.
-    appIsRunning = false;
-});

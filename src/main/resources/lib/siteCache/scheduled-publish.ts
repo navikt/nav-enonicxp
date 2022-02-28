@@ -35,7 +35,7 @@ export const getPrepublishJobName = (contentId: string) => `prepublish-invalidat
 
 export const getUnpublishJobName = (contentId: string) => `unpublish-${contentId}`;
 
-const scheduleCacheInvalidation = ({
+export const scheduleCacheInvalidation = ({
     id,
     path,
     publishFrom,

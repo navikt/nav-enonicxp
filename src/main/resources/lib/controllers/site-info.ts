@@ -102,7 +102,7 @@ export const get = (req: XP.Request) => {
     );
 
     const contentToUnpublishNextWeek = contentQuery(
-        `publish.to > instant("${currentTime}") AND publish.to <= instant("${currentTimePlusOneWeek}")`,
+        `publish.to <= instant("${currentTimePlusOneWeek}")`,
         'master',
         'publish.to ASC'
     );
