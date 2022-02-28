@@ -10,7 +10,7 @@
         <mapping controller="/lib/controllers/site-info.js">
             <match>type:'portal:site'</match>
         </mapping>
-        <mapping controller="/lib/controllers/admin-frontend-proxy.js">
+        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
             <pattern>/.*</pattern>
         </mapping>
     </mappings>
