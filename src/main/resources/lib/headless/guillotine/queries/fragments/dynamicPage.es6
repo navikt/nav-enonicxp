@@ -126,5 +126,6 @@ module.exports = {
     productPageFragment,
     situationPageFragment,
     themedArticlePageFragment,
+    guidePageFragment,
     toolsPageFragment,
 };
