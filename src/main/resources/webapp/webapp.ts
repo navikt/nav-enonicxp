@@ -25,7 +25,7 @@ const validActions = {
         callback: requestSitemapUpdate,
     },
     updatePrepublishJobs: {
-        description: 'Oppdater scheduler-jobs for prepublish/unpublish (må kjøres på master)',
+        description: 'Oppretter scheduler-jobs for prepublish/unpublish (må kjøres på master)',
         callback: updateScheduledPublishJobs,
     },
 };

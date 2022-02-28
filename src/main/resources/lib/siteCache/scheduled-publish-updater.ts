@@ -1,7 +1,13 @@
 import contentLib from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
+import schedulerLib from '/lib/xp/scheduler';
 import { runInBranchContext } from '../utils/branch-context';
-import { scheduleCacheInvalidation, scheduleUnpublish } from './scheduled-publish';
+import {
+    getPrepublishJobName,
+    getUnpublishJobName,
+    scheduleCacheInvalidation,
+    scheduleUnpublish,
+} from './scheduled-publish';
 
 const schedulePrepublishTasks = () => {
     const result = runInBranchContext(
@@ -17,11 +23,15 @@ const schedulePrepublishTasks = () => {
 
     result.forEach((content) => {
         if (content.publish?.from) {
-            scheduleCacheInvalidation({
-                id: content._id,
-                path: content._path,
-                publishFrom: content.publish.from,
-            });
+            const existingJob = schedulerLib.get({ name: getPrepublishJobName(content._id) });
+
+            if (!existingJob) {
+                scheduleCacheInvalidation({
+                    id: content._id,
+                    path: content._path,
+                    publishFrom: content.publish.from,
+                });
+            }
         }
     });
 };
@@ -40,11 +50,15 @@ const scheduleUnpublishTasks = () => {
 
     result.forEach((content) => {
         if (content.publish?.to) {
-            scheduleUnpublish({
-                id: content._id,
-                path: content._path,
-                publishTo: content.publish.to,
-            });
+            const existingJob = schedulerLib.get({ name: getUnpublishJobName(content._id) });
+
+            if (!existingJob) {
+                scheduleUnpublish({
+                    id: content._id,
+                    path: content._path,
+                    publishTo: content.publish.to,
+                });
+            }
         }
     });
 };
