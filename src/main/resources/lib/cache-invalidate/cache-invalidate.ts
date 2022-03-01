@@ -10,11 +10,19 @@ import { wipeSiteinfoCache } from '../controllers/site-info';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { getChangedPaths } from './find-changed-paths';
 
-const invalidateWithReferences = (node: NodeEventData, eventId: string, eventType?: string) => {
-    const { id, path } = node;
-
+const invalidateWithReferences = ({
+    id,
+    path,
+    eventId,
+    eventType,
+}: {
+    id: string;
+    path: string;
+    eventId: string;
+    eventType?: string;
+}) => {
     const referencedPaths = findReferencedPaths({ id, eventType });
-    const changedPaths = getChangedPaths(node);
+    const changedPaths = getChangedPaths({ id, path });
 
     log.info(
         `Invalidating cache for ${path}${
@@ -39,14 +47,22 @@ const shouldWipeAll = (nodePath: string) => {
     return false;
 };
 
-const invalidateCacheForNode = (node: NodeEventData, eventType: string, timestamp: number) => {
+const invalidateCacheForNode = ({
+    node,
+    eventType,
+    timestamp,
+}: {
+    node: NodeEventData;
+    eventType: string;
+    timestamp: number;
+}) => {
     const eventId = generateCacheEventId(node, timestamp);
 
     if (shouldWipeAll(node.path)) {
         frontendCacheWipeAll(eventId);
     } else {
         runInBranchContext(() => {
-            invalidateWithReferences(node, eventId, eventType);
+            invalidateWithReferences({ id: node.id, path: node.path, eventId, eventType });
         }, 'master');
     }
 };
@@ -57,7 +73,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             const isPrepublished = handleScheduledPublish(node, event.type);
 
             if (!isPrepublished) {
-                invalidateCacheForNode(node, event.type, event.timestamp);
+                invalidateCacheForNode({ node, eventType: event.type, timestamp: event.timestamp });
             }
         }
     });
@@ -66,11 +82,11 @@ const nodeListenerCallback = (event: EnonicEvent) => {
 
 const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
     log.info(`Clearing cache for prepublished content: ${event.data.path}`);
-    invalidateCacheForNode(
-        { ...event.data, branch: 'master', repo: contentRepo },
-        event.type,
-        event.timestamp
-    );
+    invalidateCacheForNode({
+        node: { ...event.data, branch: 'master', repo: contentRepo },
+        eventType: event.type,
+        timestamp: event.timestamp,
+    });
     wipeSiteinfoCache();
 };
 
@@ -96,8 +112,8 @@ export const activateCacheEventListeners = () => {
             type: cacheInvalidateEventName,
             callback: (event) => {
                 const { id, path, eventId } = event.data;
-                log.info(`Received event for cache invalidating of ${path} - ${id}`);
-                runInBranchContext(() => invalidateWithReferences(event.data, eventId), 'master');
+                log.info(`Received cache-invalidation event for ${path} - ${id}`);
+                runInBranchContext(() => invalidateWithReferences({ id, path, eventId }), 'master');
             },
         });
 
