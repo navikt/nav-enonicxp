@@ -7,7 +7,7 @@ import { getGlobalValueUsage, globalValuesContentType } from '../global-values/g
 import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
-import { getFrontendPathname } from './utils';
+import { getFrontendPathname, isRenderedType } from './utils';
 import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 
 const MAX_DEPTH = 5;
@@ -264,7 +264,10 @@ export const findReferencedPaths = ({
     id: string;
     eventType?: string;
 }): string[] => {
-    return findReferences({ id, eventType }).map(
-        (content) => getCustomPathFromContent(content._path) || getFrontendPathname(content._path)
-    );
+    return findReferences({ id, eventType })
+        .filter((content) => isRenderedType(content))
+        .map(
+            (content) =>
+                getCustomPathFromContent(content._path) || getFrontendPathname(content._path)
+        );
 };
