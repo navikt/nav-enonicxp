@@ -23,7 +23,6 @@ export const findChangedPaths = ({ id, path }: { id: string; path: string }) => 
         }
 
         const currentCustomPath = getCustomPathFromContent(id);
-
         const previousCustomPath = getCustomPathFromContent(
             previousVersion.nodeId,
             previousVersion.versionId

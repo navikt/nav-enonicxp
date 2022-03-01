@@ -21,11 +21,9 @@ const invalidateWithReferences = (node: NodeEventData, eventId: string, eventTyp
     const previousPaths = findChangedPaths(node);
 
     log.info(
-        `Clearing ${path} and ${referencedPaths.length} references for ${path}: ${JSON.stringify(
-            referencedPaths,
-            null,
-            4
-        )}`
+        `Invalidating cache for ${path}${
+            previousPaths.length > 0 ? ` and previous paths ${previousPaths.join(', ')}` : ''
+        } with ${referencedPaths.length} references: ${JSON.stringify(referencedPaths, null, 4)}`
     );
 
     frontendCacheInvalidatePaths([path, ...referencedPaths, ...previousPaths], eventId);
