@@ -8,6 +8,8 @@ const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
 
 const cache = cacheLib.newCache({ size: 1, expire: 10 });
 
+const maxMessages = 2;
+
 type MessageContent = Content<'no.nav.navno:melding'>;
 
 type Message = {
@@ -26,18 +28,19 @@ export const get = () => {
     const body = cache.get(cacheKey, () => {
         const result = contentLib.getChildren({
             key: driftsmeldingerPath,
-            start: 0,
-            count: 2,
+            count: 1000,
             sort: '_manualordervalue DESC',
         });
 
-        return result.hits.reduce(
-            (acc, item) =>
-                item.type === 'no.nav.navno:melding'
-                    ? [...acc, transformMessageContent(item)]
-                    : acc,
-            [] as Message[]
-        );
+        return result.hits
+            .reduce(
+                (acc, item) =>
+                    item.type === 'no.nav.navno:melding'
+                        ? [...acc, transformMessageContent(item)]
+                        : acc,
+                [] as Message[]
+            )
+            .slice(0, maxMessages);
     });
 
     return {
