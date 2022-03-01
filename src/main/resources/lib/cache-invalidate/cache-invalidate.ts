@@ -1,11 +1,11 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
-import { frontendCacheInvalidatePaths, frontendCacheWipeAll } from './frontend-cache-invalidate';
+import { frontendCacheInvalidatePaths, frontendCacheWipeAll } from './frontend-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-import { findReferencedPaths } from './find-referenced-paths';
+import { findReferencedPaths } from './find-references';
 import { wipeSiteinfoCache } from '../controllers/site-info';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { getChangedPaths } from './find-changed-paths';
