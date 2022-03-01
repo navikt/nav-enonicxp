@@ -1,10 +1,10 @@
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { NodeEventData } from './cache-invalidate';
 import { appDescriptor } from '../constants';
 import { createOrUpdateSchedule } from '../utils/scheduler';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
+import { NodeEventData } from './utils';
 
 const getPublish = (node: NodeEventData) => {
     const repo = nodeLib.connect({
