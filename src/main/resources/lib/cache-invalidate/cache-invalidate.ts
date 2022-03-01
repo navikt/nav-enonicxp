@@ -8,7 +8,7 @@ import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/pre
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferencedPaths } from './find-references';
 import { wipeSiteinfoCache } from '../controllers/site-info';
-import { generateCacheEventId, isRenderedType, NodeEventData } from './utils';
+import { generateCacheEventId, getFrontendPathname, isRenderedType, NodeEventData } from './utils';
 import { getChangedPaths } from './find-changed-paths';
 
 const invalidateWithReferences = ({
@@ -43,7 +43,10 @@ const invalidateWithReferences = ({
         return frontendCacheInvalidatePaths(referencedPaths, eventId);
     }
 
-    frontendCacheInvalidatePaths([path, ...referencedPaths, ...changedPaths], eventId);
+    frontendCacheInvalidatePaths(
+        [getFrontendPathname(path), ...referencedPaths, ...changedPaths],
+        eventId
+    );
 };
 
 const shouldWipeAll = (nodePath: string) => {
