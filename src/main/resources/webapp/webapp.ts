@@ -2,9 +2,10 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
-import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
+import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-invalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/cache-invalidate/scheduled-publish-updater';
+import { generateUUID } from '../lib/utils/uuid';
 
 const view = resolve('webapp.html');
 const validActions = {
@@ -15,7 +16,7 @@ const validActions = {
     wipeCache: {
         description: 'Slett frontend-cache',
         callback: () => {
-            frontendCacheWipeAll();
+            frontendCacheWipeAll(`manual-wipe-${generateUUID()}`);
         },
     },
     generateSitemap: {

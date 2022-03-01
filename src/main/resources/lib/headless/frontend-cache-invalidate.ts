@@ -6,23 +6,23 @@ import { urls } from '../constants';
 const numRetries = 2;
 const timeoutMs = 5000;
 
-const requestRevalidate = (paths: string[], eventId: string, retriesLeft = numRetries) => {
+const requestInvalidatePaths = (paths: string[], eventId: string, retriesLeft = numRetries) => {
     try {
         const response = httpClient.request({
-            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy?paths=${encodeURIComponent(
-                JSON.stringify(paths)
-            )}&eventId=${eventId}`,
-            method: 'GET',
+            url: `${urls.revalidatorProxyOrigin}/revalidator-proxy`,
+            method: 'POST',
             connectionTimeout: timeoutMs,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
+                eventid: eventId,
             },
+            body: JSON.stringify({ paths }),
         });
 
         if (response.status >= 400) {
             if (retriesLeft > 0) {
-                requestRevalidate(paths, eventId, retriesLeft - 1);
+                requestInvalidatePaths(paths, eventId, retriesLeft - 1);
             } else {
                 log.error(
                     `Revalidate request to frontend failed for ${eventId} - ${response.body}`
@@ -35,14 +35,14 @@ const requestRevalidate = (paths: string[], eventId: string, retriesLeft = numRe
         }
     } catch (e) {
         if (retriesLeft > 0) {
-            requestRevalidate(paths, eventId, retriesLeft - 1);
+            requestInvalidatePaths(paths, eventId, retriesLeft - 1);
         } else {
             log.error(`Revalidate request to frontend failed for ${eventId} - ${e}`);
         }
     }
 };
 
-const requestWipeAll = (retriesLeft = numRetries) => {
+const requestWipeAll = (eventId: string, retriesLeft = numRetries) => {
     try {
         httpClient.request({
             url: `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`,
@@ -51,38 +51,39 @@ const requestWipeAll = (retriesLeft = numRetries) => {
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
+                eventid: eventId,
             },
         });
         log.info('Wipe-all request to frontend acknowledged');
     } catch (e) {
         if (retriesLeft > 0) {
-            requestWipeAll(retriesLeft - 1);
+            requestWipeAll(eventId, retriesLeft - 1);
         } else {
             log.error(`Wipe-all request to frontend failed - ${e}`);
         }
     }
 };
 
-export const frontendCacheRevalidate = (paths: string[], eventId: string) => {
+export const frontendCacheInvalidatePaths = (paths: string[], eventId: string) => {
     // If the content has a custom path, the frontend will use this as key for its cache
     // Make sure we send this path to the revalidator proxy
-    const pathsWithCustompaths = paths.map(
+    const pathsWithCustomPaths = paths.map(
         (path) => getCustomPathFromContent(`/www.nav.no${path}`) || path
     );
 
     taskLib.executeFunction({
-        description: `Send revalidate with event id ${eventId}`,
+        description: `Send invalidate with event id ${eventId}`,
         func: () => {
-            requestRevalidate(pathsWithCustompaths, eventId);
+            requestInvalidatePaths(pathsWithCustomPaths, eventId);
         },
     });
 };
 
-export const frontendCacheWipeAll = () => {
+export const frontendCacheWipeAll = (eventId: string) => {
     taskLib.executeFunction({
         description: `Send wipe-all`,
         func: () => {
-            requestWipeAll();
+            requestWipeAll(eventId);
         },
     });
 };

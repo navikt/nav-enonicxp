@@ -1,9 +1,9 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import nodeLib from '/lib/xp/node';
 import {
-    frontendCacheRevalidate,
+    frontendCacheInvalidatePaths,
     frontendCacheWipeAll,
-} from '../headless/frontend-cache-revalidate';
+} from '../headless/frontend-cache-invalidate';
 import { getNodeVersions } from '../time-travel/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
@@ -32,7 +32,7 @@ const pathnameFilter = new RegExp(`^(/content)?(${redirectPath}|${sitePath})`);
 
 const getPathname = (path: string) => path.replace(pathnameFilter, '/');
 
-const generateEventId = (nodeData: NodeEventData, timestamp: number) =>
+const generateCacheEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${timestamp}`;
 
 const shouldWipeAll = (nodePath: string) => {
@@ -95,16 +95,16 @@ export const wipeSitecontentEntryWithReferences = (
         )}`
     );
 
-    frontendCacheRevalidate([path, ...referencedPaths], eventId);
+    frontendCacheInvalidatePaths([path, ...referencedPaths], eventId);
 };
 
 export const wipeCacheForNode = (node: NodeEventData, eventType: string, timestamp: number) => {
+    const eventId = generateCacheEventId(node, timestamp);
+
     if (shouldWipeAll(node.path)) {
-        frontendCacheWipeAll();
+        frontendCacheWipeAll(eventId);
         return;
     }
-
-    const eventId = generateEventId(node, timestamp);
 
     runInBranchContext(() => {
         wipeSitecontentEntryWithReferences(node, eventId, eventType);
