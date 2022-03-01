@@ -6,6 +6,11 @@ export interface PageHeaderPartConfig {
   title?: string;
 
   /**
+   * Norsk tittel (hvis fremmedspräklig innhold)
+   */
+  norwegianTitle?: string;
+
+  /**
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";

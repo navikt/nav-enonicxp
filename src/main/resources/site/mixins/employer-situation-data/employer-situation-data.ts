@@ -6,6 +6,11 @@ export interface EmployerSituationData {
   title?: string;
 
   /**
+   * Norsk tittel (hvis fremmedspräklig innhold)
+   */
+  norwegianTitle?: string;
+
+  /**
    * Ingress
    */
   ingress?: string;
