@@ -51,5 +51,5 @@ const ignoredContentTypeMap = [...ignoredBaseContentTypes, ...ignoredCustomConte
 const isMedia = (type: string) => type.startsWith('media:');
 
 // Returns false for content types which are not rendered by the user-facing frontend
-export const isRenderedType = (content: Content) =>
-    !isMedia(content.type) && !ignoredContentTypeMap[content.type];
+export const isRenderedType = (content: Content | null) =>
+    content && !isMedia(content.type) && !ignoredContentTypeMap[content.type];

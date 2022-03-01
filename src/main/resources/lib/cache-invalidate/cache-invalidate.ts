@@ -1,4 +1,5 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
+import contentLib from '/lib/xp/content';
 import { frontendCacheInvalidatePaths, frontendCacheWipeAll } from './frontend-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
@@ -7,7 +8,7 @@ import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/pre
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferencedPaths } from './find-references';
 import { wipeSiteinfoCache } from '../controllers/site-info';
-import { generateCacheEventId, NodeEventData } from './utils';
+import { generateCacheEventId, isRenderedType, NodeEventData } from './utils';
 import { getChangedPaths } from './find-changed-paths';
 
 const invalidateWithReferences = ({
@@ -25,10 +26,22 @@ const invalidateWithReferences = ({
     const changedPaths = getChangedPaths({ id, path });
 
     log.info(
-        `Invalidating cache for ${path}${
+        `Invalidate event ${eventId} - Invalidating cache for ${path}${
             changedPaths.length > 0 ? ` and previous paths ${changedPaths.join(', ')}` : ''
         } with ${referencedPaths.length} references: ${JSON.stringify(referencedPaths, null, 4)}`
     );
+
+    // If the base content of the invalidate request is a type not rendered/cached in the frontend we
+    // can ignore it. We still need to invalidate content which references the base content, if any.
+    const baseContent = contentLib.get({ key: id });
+    if (baseContent && !isRenderedType(baseContent)) {
+        if (referencedPaths.length === 0) {
+            log.info(`Nothing to invalidate for event ${eventId}`);
+            return;
+        }
+
+        return frontendCacheInvalidatePaths(referencedPaths, eventId);
+    }
 
     frontendCacheInvalidatePaths([path, ...referencedPaths, ...changedPaths], eventId);
 };
