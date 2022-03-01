@@ -1,6 +1,5 @@
 import httpClient from '/lib/http-client';
 import taskLib from '/lib/xp/task';
-import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 import { urls } from '../constants';
 
 const numRetries = 2;
@@ -65,16 +64,10 @@ const requestWipeAll = (eventId: string, retriesLeft = numRetries) => {
 };
 
 export const frontendCacheInvalidatePaths = (paths: string[], eventId: string) => {
-    // If the content has a custom path, the frontend will use this as key for its cache
-    // Make sure we send this path to the revalidator proxy
-    const pathsWithCustomPaths = paths.map(
-        (path) => getCustomPathFromContent(`/www.nav.no${path}`) || path
-    );
-
     taskLib.executeFunction({
         description: `Send invalidate with event id ${eventId}`,
         func: () => {
-            requestInvalidatePaths(pathsWithCustomPaths, eventId);
+            requestInvalidatePaths(paths, eventId);
         },
     });
 };

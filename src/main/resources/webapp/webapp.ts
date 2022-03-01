@@ -2,7 +2,7 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
-import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-invalidate';
+import { frontendCacheWipeAll } from '../lib/cache-invalidate/frontend-cache-invalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/cache-invalidate/scheduled-publish-updater';
 import { generateUUID } from '../lib/utils/uuid';

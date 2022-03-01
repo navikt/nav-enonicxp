@@ -8,6 +8,7 @@ import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils'
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
 import { getFrontendPathname } from './utils';
+import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 
 const MAX_DEPTH = 5;
 
@@ -184,7 +185,7 @@ const removeDuplicatesById = (contentArray: Content[]) =>
     removeDuplicates(contentArray, (a, b) => a._id === b._id);
 
 // Perform a deep search of content references recursively
-const _findReferences = ({
+const findReferences = ({
     id,
     eventType,
     depth = 0,
@@ -245,7 +246,7 @@ const _findReferences = ({
 
         return [
             ...acc,
-            ..._findReferences({
+            ...findReferences({
                 id: reference._id,
                 depth: depth + 1,
                 prevReferences: [...references, ...prevReferences],
@@ -256,6 +257,14 @@ const _findReferences = ({
     return removeDuplicatesById([...references, ...deepReferences]);
 };
 
-export const findReferences = ({ id, eventType }: { id: string; eventType?: string }): string[] => {
-    return _findReferences({ id, eventType }).map((content) => getFrontendPathname(content._path));
+export const findReferencedPaths = ({
+    id,
+    eventType,
+}: {
+    id: string;
+    eventType?: string;
+}): string[] => {
+    return findReferences({ id, eventType }).map(
+        (content) => getCustomPathFromContent(content._path) || getFrontendPathname(content._path)
+    );
 };

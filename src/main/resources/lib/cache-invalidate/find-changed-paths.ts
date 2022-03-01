@@ -4,7 +4,7 @@ import { getNodeVersions } from '../time-travel/version-utils';
 import { getFrontendPathname } from './utils';
 import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 
-export const findChangedPaths = ({ id, path }: { id: string; path: string }) => {
+export const getChangedPaths = ({ id, path }: { id: string; path: string }) => {
     const repo = nodeLib.connect({
         repoId: contentRepo,
         branch: 'master',

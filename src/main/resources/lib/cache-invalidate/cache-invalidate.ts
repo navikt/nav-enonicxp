@@ -1,32 +1,28 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
-import {
-    frontendCacheInvalidatePaths,
-    frontendCacheWipeAll,
-} from '../headless/frontend-cache-invalidate';
+import { frontendCacheInvalidatePaths, frontendCacheWipeAll } from './frontend-cache-invalidate';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-import { findReferences } from './find-references';
+import { findReferencedPaths } from './find-referenced-paths';
 import { wipeSiteinfoCache } from '../controllers/site-info';
 import { generateCacheEventId, NodeEventData } from './utils';
-import { findChangedPaths } from './find-changed-paths';
+import { getChangedPaths } from './find-changed-paths';
 
 const invalidateWithReferences = (node: NodeEventData, eventId: string, eventType?: string) => {
     const { id, path } = node;
 
-    const referencedPaths = findReferences({ id, eventType });
-
-    const previousPaths = findChangedPaths(node);
+    const referencedPaths = findReferencedPaths({ id, eventType });
+    const changedPaths = getChangedPaths(node);
 
     log.info(
         `Invalidating cache for ${path}${
-            previousPaths.length > 0 ? ` and previous paths ${previousPaths.join(', ')}` : ''
+            changedPaths.length > 0 ? ` and previous paths ${changedPaths.join(', ')}` : ''
         } with ${referencedPaths.length} references: ${JSON.stringify(referencedPaths, null, 4)}`
     );
 
-    frontendCacheInvalidatePaths([path, ...referencedPaths, ...previousPaths], eventId);
+    frontendCacheInvalidatePaths([path, ...referencedPaths, ...changedPaths], eventId);
 };
 
 const shouldWipeAll = (nodePath: string) => {
