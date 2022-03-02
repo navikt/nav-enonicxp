@@ -6,13 +6,23 @@ import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../siteCache/scheduled-publish';
 
 const isPublishedOrPrepublished = (contentId: string) => {
-    const masterContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'master');
-    if (masterContent) {
-        return true;
-    }
+    try {
+        const masterContent = runInBranchContext(
+            () => contentLib.get({ key: contentId }),
+            'master'
+        );
+        if (masterContent) {
+            return true;
+        }
 
-    const draftContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
-    return isPrepublished(draftContent?.publish?.from);
+        const draftContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
+        return isPrepublished(draftContent?.publish?.from);
+    } catch (e) {
+        log.error(
+            `Error getting publish state, assuming content is corrupted and returning false - ${e}`
+        );
+        return false;
+    }
 };
 
 export const removeUnpublishedFromContentList = (
