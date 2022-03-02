@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import eventLib from '/lib/xp/event';
 import { runInBranchContext } from '../utils/branch-context';
 import { forceArray } from '../utils/nav-utils';
-import { isPrepublished } from '../siteCache/scheduled-publish';
+import { isPrepublished } from '../cache-invalidate/scheduled-publish';
 
 const isPublishedOrPrepublished = (contentId: string) => {
     const masterContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'master');
