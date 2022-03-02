@@ -81,7 +81,7 @@ export const removeUnpublishedFromAllContentLists = () => {
         'draft'
     ).hits;
 
-    log.info(`Pruning ${contentLists.length}`);
+    log.info(`Pruning ${contentLists.length} content-lists`);
 
     const numRemovedArray = contentLists
         .map(removeUnpublishedFromContentList)
@@ -89,7 +89,7 @@ export const removeUnpublishedFromAllContentLists = () => {
     const numRemoved = numRemovedArray.reduce((acc, item) => acc + item);
 
     log.info(
-        `Removed ${numRemoved} unpublished content from ${numRemovedArray.length} content lists`
+        `Removed ${numRemoved} unpublished content from ${numRemovedArray.length} content-lists`
     );
 };
 
