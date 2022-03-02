@@ -1,5 +1,9 @@
 import { Content } from '/lib/xp/content';
 import { appDescriptor } from '../constants';
+import {
+    BuiltinContentDescriptor,
+    CustomContentDescriptor,
+} from '../../types/content-types/content-config';
 
 export type NodeEventData = {
     id: string;
@@ -19,33 +23,27 @@ export const getFrontendPathname = (path: string) => path.replace(pathnameFilter
 export const generateCacheEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${timestamp}`;
 
-const ignoredBaseContentTypes = [
+const ignoredBaseContentTypes: BuiltinContentDescriptor[] = [
     'base:folder',
     'portal:template-folder',
     'portal:page-template',
     'portal:site',
 ];
 
-const ignoredCustomContentTypes = [
-    'animated-icons',
-    'breaking-news',
-    'calculator',
-    'cms2xp_page',
-    'cms2xp_section',
-    'contact-information',
-    'content-list',
-    'generic-page',
-    'global-value-set',
-    'link-list',
-    'megamenu-item',
-    'notification',
-    'publishing-calendar-entry',
-    'searchresult',
-].map((typeSuffix) => `${appDescriptor}:${typeSuffix}`);
+const ignoredCustomContentTypes: CustomContentDescriptor[] = [
+    `${appDescriptor}:animated-icons`,
+    `${appDescriptor}:calculator`,
+    `${appDescriptor}:contact-information`,
+    `${appDescriptor}:content-list`,
+    `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:megamenu-item`,
+    `${appDescriptor}:notification`,
+    `${appDescriptor}:publishing-calendar-entry`,
+];
 
 const ignoredContentTypeMap = [...ignoredBaseContentTypes, ...ignoredCustomContentTypes].reduce(
-    (acc, type) => ({ [type]: true }),
-    {} as { [key: string]: boolean }
+    (acc, type) => ({ ...acc, [type]: true }),
+    {} as { [type: string]: boolean }
 );
 
 const isMedia = (type: string) => type.startsWith('media:');

@@ -57,7 +57,7 @@ const requestWipeAll = (eventId: string, retriesLeft = numRetries) => {
                 eventid: eventId,
             },
         });
-        log.info('Wipe-all request to frontend acknowledged');
+        log.info(`Wipe-all request to frontend acknowledged for event ${eventId}`);
     } catch (e) {
         if (retriesLeft > 0) {
             requestWipeAll(eventId, retriesLeft - 1);

@@ -26,6 +26,7 @@ import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 import { Notification } from '../../site/content-types/notification/notification';
+import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -48,6 +49,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'office-information': OfficeInformation;
     'page-list': PageList;
     'publishing-calendar': PublishingCalendar;
+    'publishing-calendar-entry': PublishingCalendarEntry;
     'section-page': SectionPage;
     'situation-page': SituationPage;
     'themed-article-page': ThemedArticlePage;
@@ -74,10 +76,12 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
       }
     : never;
 
-export type BuiltinContentDescriptor = 'portal:fragment';
-// | 'portal:template-folder'
-// | 'portal:page-template'
-// | 'portal:site';
+export type BuiltinContentDescriptor =
+    | 'portal:fragment'
+    | 'portal:template-folder'
+    | 'portal:page-template'
+    | 'portal:site'
+    | 'base:folder';
 
 export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
 
