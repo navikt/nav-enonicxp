@@ -56,18 +56,14 @@
                             <label>Tittel</label>
                             <occurrences minimum="1" maximum="1"/>
                         </input>
-                        <option-set name="icon">
-                            <label>Ikon</label>
+                        <input name="icon" type="ComboBox">
+                            <label>Icon</label>
                             <occurrences minimum="1" maximum="1"/>
-                            <options minimum="1" maximum="1">
-                                <option name="facebook">
-                                    <label>Facebook</label>
-                                </option>
-                                <option name="linkedin">
-                                    <label>LinkedIn</label>
-                                </option>
-                            </options>
-                        </option-set>
+                            <config>
+                                <option value="facebook">Facebook</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </config>
+                        </input>
                         <input name="url" type="TextLine">
                             <label>Url</label>
                             <occurrences minimum="1" maximum="1"/>

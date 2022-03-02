@@ -88,31 +88,9 @@ export interface ContactOptionPartConfig {
           title: string;
 
           /**
-           * Ikon
+           * Icon
            */
-          icon:
-            | {
-                /**
-                 * Selected
-                 */
-                _selected: "facebook";
-
-                /**
-                 * Facebook
-                 */
-                facebook: Record<string, unknown>;
-              }
-            | {
-                /**
-                 * Selected
-                 */
-                _selected: "linkedin";
-
-                /**
-                 * LinkedIn
-                 */
-                linkedin: Record<string, unknown>;
-              };
+          icon: "facebook" | "linkedin";
 
           /**
            * Url
