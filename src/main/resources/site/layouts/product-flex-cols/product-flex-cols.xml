@@ -1,0 +1,21 @@
+<layout>
+    <display-name>Fleksibelt kolonne-layout for produktsider</display-name>
+    <description>Fleksibel kolonne-layout for produktsider</description>
+    <form>
+        <mixin name="header-with-anchor"/>
+        <input type="RadioButton" name="usageContext">
+            <label>Bruksområde</label>
+            <help-text>
+                Bruksområdet du velger vil bestemme farger, avstander etc.
+            </help-text>
+            <config>
+                <option value="contact-channels">Kontaktkanaler</option>
+                <option value="other">Annet</option>
+            </config>
+            <default>contact-channels</default>
+        </input>
+    </form>
+    <regions>
+        <region name="flexcols"/>
+    </regions>
+</layout>
