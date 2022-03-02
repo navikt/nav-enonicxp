@@ -1,17 +1,28 @@
 import contentLib, { Content } from '/lib/xp/content';
 import eventLib from '/lib/xp/event';
+import clusterLib from '/lib/xp/cluster';
 import { runInBranchContext } from '../utils/branch-context';
 import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../cache-invalidate/scheduled-publish';
 
 const isPublishedOrPrepublished = (contentId: string) => {
-    const masterContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'master');
-    if (masterContent) {
-        return true;
-    }
+    try {
+        const masterContent = runInBranchContext(
+            () => contentLib.get({ key: contentId }),
+            'master'
+        );
+        if (masterContent) {
+            return true;
+        }
 
-    const draftContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
-    return isPrepublished(draftContent?.publish?.from);
+        const draftContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
+        return isPrepublished(draftContent?.publish?.from);
+    } catch (e) {
+        log.error(
+            `Error getting publish state for ${contentId}, assuming content is corrupted and returning false - ${e}`
+        );
+        return false;
+    }
 };
 
 export const removeUnpublishedFromContentList = (
@@ -19,35 +30,43 @@ export const removeUnpublishedFromContentList = (
 ): number => {
     let numRemoved = 0;
 
-    runInBranchContext(
-        () =>
-            contentLib.modify<'no.nav.navno:content-list'>({
-                key: contentList._id,
-                editor: (content) => {
-                    const sectionContents = forceArray(content.data?.sectionContents);
+    try {
+        runInBranchContext(
+            () =>
+                contentLib.modify<'no.nav.navno:content-list'>({
+                    key: contentList._id,
+                    requireValid: false,
+                    editor: (content) => {
+                        const sectionContents = forceArray(content.data?.sectionContents);
 
-                    if (sectionContents.length === 0) {
-                        return content;
-                    }
-
-                    content.data.sectionContents = sectionContents.filter((sectionContentId) => {
-                        const shouldKeep = isPublishedOrPrepublished(sectionContentId);
-
-                        if (!shouldKeep) {
-                            log.info(
-                                `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
-                            );
-                            numRemoved++;
+                        if (sectionContents.length === 0) {
+                            return content;
                         }
 
-                        return shouldKeep;
-                    });
+                        content.data.sectionContents = sectionContents.filter(
+                            (sectionContentId) => {
+                                const shouldKeep = isPublishedOrPrepublished(sectionContentId);
 
-                    return content;
-                },
-            }),
-        'draft'
-    );
+                                if (!shouldKeep) {
+                                    log.info(
+                                        `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
+                                    );
+                                    numRemoved++;
+                                }
+
+                                return shouldKeep;
+                            }
+                        );
+
+                        return content;
+                    },
+                }),
+            'draft'
+        );
+    } catch (e) {
+        log.error(`Error while modifying content list ${contentList._id} - ${e}`);
+        return 0;
+    }
 
     return numRemoved;
 };
@@ -59,15 +78,18 @@ export const removeUnpublishedFromAllContentLists = () => {
                 count: 10000,
                 contentTypes: ['no.nav.navno:content-list'],
             }),
-        'draft'
+        'master'
     ).hits;
 
-    const numRemovedArray = contentLists.map(removeUnpublishedFromContentList);
+    log.info(`Pruning ${contentLists.length} content-lists`);
+
+    const numRemovedArray = contentLists
+        .map(removeUnpublishedFromContentList)
+        .filter((item) => item !== 0);
+    const numRemoved = numRemovedArray.reduce((acc, item) => acc + item);
 
     log.info(
-        `Removed ${numRemovedArray.reduce((acc, item) => acc + item)} unpublished content from ${
-            numRemovedArray.length
-        } content lists`
+        `Removed ${numRemoved} unpublished content from ${numRemovedArray.length} content-lists`
     );
 };
 
@@ -88,7 +110,7 @@ const removeUnpublishedContentFromContentLists = (contentId: string) => {
                     },
                 },
             }),
-        'draft'
+        'master'
     ).hits.forEach(removeUnpublishedFromContentList);
 };
 
@@ -104,6 +126,10 @@ export const activateContentListItemUnpublishedListener = () => {
     eventLib.listener({
         type: 'node.deleted',
         callback: (event) => {
+            if (!clusterLib.isMaster()) {
+                return;
+            }
+
             event.data.nodes.forEach((node) => {
                 removeUnpublishedContentFromContentLists(node.id);
             });
