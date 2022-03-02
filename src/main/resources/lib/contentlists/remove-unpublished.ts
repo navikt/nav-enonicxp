@@ -78,7 +78,7 @@ export const removeUnpublishedFromAllContentLists = () => {
                 count: 10000,
                 contentTypes: ['no.nav.navno:content-list'],
             }),
-        'draft'
+        'master'
     ).hits;
 
     log.info(`Pruning ${contentLists.length} content-lists`);
@@ -110,7 +110,7 @@ const removeUnpublishedContentFromContentLists = (contentId: string) => {
                     },
                 },
             }),
-        'draft'
+        'master'
     ).hits.forEach(removeUnpublishedFromContentList);
 };
 
