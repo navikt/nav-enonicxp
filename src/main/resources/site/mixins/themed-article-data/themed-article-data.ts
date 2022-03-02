@@ -6,6 +6,11 @@ export interface ThemedArticleData {
   title?: string;
 
   /**
+   * Norsk tittel (hvis fremmedspråklig innhold)
+   */
+  norwegianTitle?: string;
+
+  /**
    * Ingress
    */
   ingress?: string;
