@@ -54,7 +54,7 @@ export const removeUnpublishedFromContentList = (
             'draft'
         );
     } catch (e) {
-        log.error(`Error while modifying content list: ${e}`);
+        log.error(`Error while modifying content list ${contentList._id} - ${e}`);
         return 0;
     }
 
