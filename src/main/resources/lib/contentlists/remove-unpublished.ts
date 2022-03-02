@@ -81,11 +81,13 @@ export const removeUnpublishedFromAllContentLists = () => {
         'draft'
     ).hits;
 
+    log.info(`Pruning ${contentLists.length}`);
+
     const numRemovedArray = contentLists.map(removeUnpublishedFromContentList);
 
     log.info(
         `Removed ${numRemovedArray.reduce((acc, item) => acc + item)} unpublished content from ${
-            numRemovedArray.length
+            numRemovedArray.filter((item) => item !== 0).length
         } content lists`
     );
 };
