@@ -19,35 +19,43 @@ export const removeUnpublishedFromContentList = (
 ): number => {
     let numRemoved = 0;
 
-    runInBranchContext(
-        () =>
-            contentLib.modify<'no.nav.navno:content-list'>({
-                key: contentList._id,
-                editor: (content) => {
-                    const sectionContents = forceArray(content.data?.sectionContents);
+    try {
+        runInBranchContext(
+            () =>
+                contentLib.modify<'no.nav.navno:content-list'>({
+                    key: contentList._id,
+                    requireValid: false,
+                    editor: (content) => {
+                        const sectionContents = forceArray(content.data?.sectionContents);
 
-                    if (sectionContents.length === 0) {
-                        return content;
-                    }
-
-                    content.data.sectionContents = sectionContents.filter((sectionContentId) => {
-                        const shouldKeep = isPublishedOrPrepublished(sectionContentId);
-
-                        if (!shouldKeep) {
-                            log.info(
-                                `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
-                            );
-                            numRemoved++;
+                        if (sectionContents.length === 0) {
+                            return content;
                         }
 
-                        return shouldKeep;
-                    });
+                        content.data.sectionContents = sectionContents.filter(
+                            (sectionContentId) => {
+                                const shouldKeep = isPublishedOrPrepublished(sectionContentId);
 
-                    return content;
-                },
-            }),
-        'draft'
-    );
+                                if (!shouldKeep) {
+                                    log.info(
+                                        `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
+                                    );
+                                    numRemoved++;
+                                }
+
+                                return shouldKeep;
+                            }
+                        );
+
+                        return content;
+                    },
+                }),
+            'draft'
+        );
+    } catch (e) {
+        log.error(`Error while modifying content list: ${e}`);
+        return 0;
+    }
 
     return numRemoved;
 };
