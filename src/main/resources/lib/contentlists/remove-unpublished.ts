@@ -19,7 +19,7 @@ const isPublishedOrPrepublished = (contentId: string) => {
         return isPrepublished(draftContent?.publish?.from);
     } catch (e) {
         log.error(
-            `Error getting publish state, assuming content is corrupted and returning false - ${e}`
+            `Error getting publish state for ${contentId}, assuming content is corrupted and returning false - ${e}`
         );
         return false;
     }
