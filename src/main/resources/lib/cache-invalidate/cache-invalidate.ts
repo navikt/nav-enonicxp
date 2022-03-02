@@ -1,15 +1,18 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import contentLib from '/lib/xp/content';
-import { frontendCacheInvalidatePaths, frontendCacheWipeAll } from './frontend-requests';
+import {
+    frontendCacheInvalidateContent,
+    frontendCacheWipeAll,
+} from './frontend-invalidate-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-import { findReferencedPaths } from './find-references';
+import { findReferences } from './find-references';
 import { wipeSiteinfoCache } from '../controllers/site-info';
-import { generateCacheEventId, getFrontendPathname, isRenderedType, NodeEventData } from './utils';
-import { getChangedPaths } from './find-changed-paths';
+import { generateCacheEventId, NodeEventData } from './utils';
+import { findChangedPaths } from './find-changed-paths';
 
 const invalidateWithReferences = ({
     id,
@@ -22,45 +25,28 @@ const invalidateWithReferences = ({
     eventId: string;
     eventType?: string;
 }) => {
-    const referencedPaths = findReferencedPaths({ id, eventType });
-    const changedPaths = getChangedPaths({ id, path });
+    const baseContent = runInBranchContext(
+        () => contentLib.get({ key: id }),
+        eventType === 'node.deleted' ? 'draft' : 'master'
+    );
+    const references = findReferences({ id, eventType });
+    const changedPaths = findChangedPaths({ id, path });
 
     log.info(
         `Invalidate event ${eventId} - Invalidating cache for ${path}${
             changedPaths.length > 0 ? ` and previous paths ${changedPaths.join(', ')}` : ''
-        } with ${referencedPaths.length} references: ${JSON.stringify(referencedPaths, null, 4)}`
+        } with ${references.length} references: ${JSON.stringify(
+            references.map((content) => content._path),
+            null,
+            4
+        )}`
     );
 
-    // If the base content of the invalidate request is a type not rendered/cached in the frontend we
-    // can ignore it. We still need to invalidate content which references the base content, if any.
-    const baseContent = contentLib.get({ key: id });
-    if (baseContent && !isRenderedType(baseContent)) {
-        if (referencedPaths.length === 0) {
-            log.info(`Nothing to invalidate for event ${eventId}`);
-            return;
-        }
-
-        return frontendCacheInvalidatePaths(referencedPaths, eventId);
-    }
-
-    frontendCacheInvalidatePaths(
-        [getFrontendPathname(path), ...referencedPaths, ...changedPaths],
-        eventId
-    );
-};
-
-const shouldWipeAll = (nodePath: string) => {
-    if (nodePath.includes('/_templates/')) {
-        log.info('Clearing whole cache due to updated template');
-        return true;
-    }
-
-    if (nodePath.includes('/global-notifications/')) {
-        log.info('Clearing whole cache due to updated global notification');
-        return true;
-    }
-
-    return false;
+    frontendCacheInvalidateContent({
+        contents: [...(baseContent ? [baseContent] : []), ...references],
+        paths: changedPaths,
+        eventId,
+    });
 };
 
 const invalidateCacheForNode = ({
@@ -74,7 +60,8 @@ const invalidateCacheForNode = ({
 }) => {
     const eventId = generateCacheEventId(node, timestamp);
 
-    if (shouldWipeAll(node.path)) {
+    if (node.path.includes('/global-notifications/')) {
+        log.info('Clearing whole cache due to updated global notification');
         frontendCacheWipeAll(eventId);
     } else {
         runInBranchContext(() => {

@@ -7,8 +7,6 @@ import { getGlobalValueUsage, globalValuesContentType } from '../global-values/g
 import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
-import { getFrontendPathname, isRenderedType } from './utils';
-import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 
 const MAX_DEPTH = 5;
 
@@ -184,8 +182,8 @@ const getMainArticleChapterReferences = (
 const removeDuplicatesById = (contentArray: Content[]) =>
     removeDuplicates(contentArray, (a, b) => a._id === b._id);
 
-// Perform a deep search of content references recursively
-const findReferences = ({
+// Perform a recursive search of content references
+const _findReferences = ({
     id,
     eventType,
     depth = 0,
@@ -246,7 +244,7 @@ const findReferences = ({
 
         return [
             ...acc,
-            ...findReferences({
+            ..._findReferences({
                 id: reference._id,
                 depth: depth + 1,
                 prevReferences: [...references, ...prevReferences],
@@ -257,17 +255,12 @@ const findReferences = ({
     return removeDuplicatesById([...references, ...deepReferences]);
 };
 
-export const findReferencedPaths = ({
+export const findReferences = ({
     id,
     eventType,
 }: {
     id: string;
     eventType?: string;
-}): string[] => {
-    return findReferences({ id, eventType })
-        .filter((content) => isRenderedType(content))
-        .map(
-            (content) =>
-                getCustomPathFromContent(content._path) || getFrontendPathname(content._path)
-        );
+}): Content[] => {
+    return _findReferences({ id, eventType });
 };
