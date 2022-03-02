@@ -1,9 +1,6 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import contentLib from '/lib/xp/content';
-import {
-    frontendCacheInvalidateContent,
-    frontendCacheWipeAll,
-} from './frontend-invalidate-requests';
+import { frontendCacheInvalidate, frontendCacheWipeAll } from './frontend-invalidate-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
@@ -13,6 +10,8 @@ import { findReferences } from './find-references';
 import { wipeSiteinfoCache } from '../controllers/site-info';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
+import { clearDriftsmeldingerCache } from '../../services/driftsmeldinger/driftsmeldinger';
+import { clearDecoratorMenuCache } from '../../services/menu/menu';
 
 const invalidateWithReferences = ({
     id,
@@ -42,8 +41,20 @@ const invalidateWithReferences = ({
         )}`
     );
 
-    frontendCacheInvalidateContent({
-        contents: [...(baseContent ? [baseContent] : []), ...references],
+    const contentToInvalidate = [...(baseContent ? [baseContent] : []), ...references];
+
+    if (contentToInvalidate.some((content) => content.type === 'no.nav.navno:melding')) {
+        log.info(`Clearing driftsmeldinger cache on invalidate event ${eventId}`);
+        clearDriftsmeldingerCache();
+    }
+
+    if (contentToInvalidate.some((content) => content.type === 'no.nav.navno:megamenu-item')) {
+        log.info(`Clearing decorator menu cache on invalidate event ${eventId}`);
+        clearDecoratorMenuCache();
+    }
+
+    frontendCacheInvalidate({
+        contents: contentToInvalidate,
         paths: changedPaths,
         eventId,
     });

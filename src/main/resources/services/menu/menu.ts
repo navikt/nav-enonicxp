@@ -7,6 +7,8 @@ const menuPath = '/www.nav.no/dekorator-meny/';
 
 const cache = cacheLib.newCache({ size: 1, expire: 60 });
 
+export const clearDecoratorMenuCache = () => cache.clear();
+
 type MenuItemContent = Content<'no.nav.navno:megamenu-item'>;
 
 type MenuItem = {

@@ -67,7 +67,7 @@ const requestWipeAll = (eventId: string, retriesLeft = numRetries) => {
     }
 };
 
-export const frontendCacheInvalidateContent = ({
+export const frontendCacheInvalidate = ({
     contents = [],
     paths = [],
     eventId,
