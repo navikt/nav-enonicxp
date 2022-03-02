@@ -27,7 +27,7 @@ const getPublish = (node: NodeEventData) => {
     return content.publish;
 };
 
-const isPrepublished = (publishFrom?: string): publishFrom is string => {
+export const isPrepublished = (publishFrom?: string): publishFrom is string => {
     return publishFrom ? new Date(publishFrom).getTime() > Date.now() : false;
 };
 

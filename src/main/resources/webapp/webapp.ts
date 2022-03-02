@@ -6,9 +6,12 @@ import { wipeAllCaches } from '../lib/siteCache';
 import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/siteCache/scheduled-publish-updater';
+import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
+
+type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
 const view = resolve('webapp.html');
-const validActions = {
+const validActions: ActionsMap = {
     norg: {
         description: 'Oppdater kontor-info fra norg',
         callback: () => runOfficeInfoUpdateTask(false),
@@ -27,6 +30,10 @@ const validActions = {
     updatePrepublishJobs: {
         description: 'Oppretter scheduler-jobs for prepublish/unpublish (må kjøres på master)',
         callback: updateScheduledPublishJobs,
+    },
+    removeUnpublishedFromContentLists: {
+        description: 'Fjern avpublisert innhold fra alle innholdslister',
+        callback: removeUnpublishedFromAllContentLists,
     },
 };
 
