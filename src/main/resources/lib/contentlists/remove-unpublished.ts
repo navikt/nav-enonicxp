@@ -1,5 +1,6 @@
 import contentLib, { Content } from '/lib/xp/content';
 import eventLib from '/lib/xp/event';
+import clusterLib from '/lib/xp/cluster';
 import { runInBranchContext } from '../utils/branch-context';
 import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../siteCache/scheduled-publish';
@@ -112,6 +113,10 @@ export const activateContentListItemUnpublishedListener = () => {
     eventLib.listener({
         type: 'node.deleted',
         callback: (event) => {
+            if (!clusterLib.isMaster()) {
+                return;
+            }
+
             event.data.nodes.forEach((node) => {
                 removeUnpublishedContentFromContentLists(node.id);
             });
