@@ -6,7 +6,7 @@ export interface PageHeaderPartConfig {
   title?: string;
 
   /**
-   * Norsk tittel (hvis fremmedspräklig innhold)
+   * Norsk tittel (hvis fremmedspråklig innhold)
    */
   norwegianTitle?: string;
 

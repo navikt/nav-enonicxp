@@ -17,6 +17,7 @@ import {
     startReliableEventAckListener,
 } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
+import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 
 updateClusterInfo();
 
@@ -35,6 +36,8 @@ startOfficeInfoPeriodicUpdateSchedule();
 activateCacheEventListeners();
 
 activateSitemapDataUpdateEventListener();
+
+activateContentListItemUnpublishedListener();
 
 generateSitemapDataAndActivateSchedule();
 
