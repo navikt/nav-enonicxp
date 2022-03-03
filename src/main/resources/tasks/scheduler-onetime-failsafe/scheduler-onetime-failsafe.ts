@@ -8,21 +8,21 @@ const oneTimeJobFailedToRun = (job: ScheduledJob) => {
         return false;
     }
 
-    const jobScheduleValue = new Date(job.schedule.value).getTime();
-    const jobLastRunValue = job.lastRun && new Date(job.lastRun).getTime();
+    const jobScheduleTime = new Date(job.schedule.value).getTime();
+    const jobLastRunTime = job.lastRun && new Date(job.lastRun).getTime();
 
-    if (Date.now() <= jobScheduleValue) {
+    if (Date.now() <= jobScheduleTime) {
         return false;
     }
 
-    if (!jobLastRunValue) {
-        log.error(`Job ${job.name} should have ran at ${jobScheduleValue} but never ran`);
+    if (!jobLastRunTime) {
+        log.error(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
         return true;
     }
 
-    if (jobLastRunValue < jobScheduleValue) {
+    if (jobLastRunTime < jobScheduleTime) {
         log.error(
-            `Job ${job.name} should have ran at ${jobScheduleValue} but last ran at ${jobLastRunValue}`
+            `Job ${job.name} should have ran at ${job.schedule.value} but last ran at ${job.lastRun}`
         );
         return true;
     }
@@ -40,7 +40,13 @@ export const run = () => {
     schedulerLib.list().forEach((job) => {
         if (oneTimeJobFailedToRun(job)) {
             log.error(`Running task for failed one-time job ${job.name}`);
-            schedulerLib.delete({ name: job.name });
+            schedulerLib.modify({
+                name: job.name,
+                editor: (edit) => {
+                    edit.enabled = false;
+                    return edit;
+                },
+            });
             taskLib.submitTask({
                 descriptor: job.descriptor,
                 config: job.config,
