@@ -37,7 +37,8 @@ type EventProps<EventData> = {
 
 const ackEventType = 'ack';
 
-const timeoutMsDefault = 2000;
+const timeoutMsDefault = 5000;
+const timeoutMsIncrement = 1000;
 const timeoutMsMax = 10000;
 
 const retriesDefault = 10;
@@ -85,7 +86,7 @@ const handleAcks = ({
                     _sendReliableEvent({
                         type,
                         data,
-                        timeoutMs,
+                        timeoutMs: Math.min(timeoutMs + timeoutMsIncrement, timeoutMsMax),
                         retries: retries - 1,
                         retryProps: {
                             prevEventId: eventId,
