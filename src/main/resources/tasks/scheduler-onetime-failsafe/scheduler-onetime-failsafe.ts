@@ -12,7 +12,7 @@ const oneTimeJobFailedToRun = (job: ScheduledJob) => {
 
     const jobScheduleTime = getUnixTimeFromDateTimeString(job.schedule.value);
 
-    if (Date.now() <= jobScheduleTime) {
+    if (Date.now() < jobScheduleTime) {
         return false;
     }
 

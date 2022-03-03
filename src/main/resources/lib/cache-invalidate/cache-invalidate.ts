@@ -28,20 +28,27 @@ const invalidateWithReferences = ({
         () => contentLib.get({ key: id }),
         eventType === 'node.deleted' ? 'draft' : 'master'
     );
-    const references = findReferences({ id, eventType });
+
+    const contentToInvalidate = findReferences({ id, eventType });
     const changedPaths = findChangedPaths({ id, path });
 
     log.info(
         `Invalidate event ${eventId} - Invalidating cache for ${path}${
             changedPaths.length > 0 ? ` and previous paths ${changedPaths.join(', ')}` : ''
-        } with ${references.length} references: ${JSON.stringify(
-            references.map((content) => content._path),
+        } with ${contentToInvalidate.length} references: ${JSON.stringify(
+            contentToInvalidate.map((content) => content._path),
             null,
             4
         )}`
     );
 
-    const contentToInvalidate = [...(baseContent ? [baseContent] : []), ...references];
+    if (baseContent) {
+        contentToInvalidate.push(baseContent);
+    }
+
+    if (eventType === 'node.deleted') {
+        changedPaths.push(path);
+    }
 
     if (contentToInvalidate.some((content) => content.type === 'no.nav.navno:melding')) {
         log.info(`Clearing driftsmeldinger cache on invalidate event ${eventId}`);
