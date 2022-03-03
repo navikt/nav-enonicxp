@@ -2,10 +2,10 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
-import { wipeAllCaches } from '../lib/siteCache';
-import { frontendCacheWipeAll } from '../lib/headless/frontend-cache-revalidate';
+import { frontendCacheWipeAll } from '../lib/cache-invalidate/frontend-invalidate-requests';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
-import { updateScheduledPublishJobs } from '../lib/siteCache/scheduled-publish-updater';
+import { updateScheduledPublishJobs } from '../lib/cache-invalidate/scheduled-publish-updater';
+import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
@@ -17,10 +17,9 @@ const validActions: ActionsMap = {
         callback: () => runOfficeInfoUpdateTask(false),
     },
     wipeCache: {
-        description: 'Slett cache (XP og frontend)',
+        description: 'Slett frontend-cache',
         callback: () => {
-            wipeAllCaches();
-            frontendCacheWipeAll();
+            frontendCacheWipeAll(`manual-wipe-${generateUUID()}`);
         },
     },
     generateSitemap: {

@@ -1,11 +1,12 @@
 <content-type>
     <display-name>Menyelement</display-name>
     <super-type>base:structured</super-type>
+    <allow-child-content-type>${app}:megamenu-item</allow-child-content-type>
     <form>
         <input name="target" type="ContentSelector">
             <label>Velg innhold</label>
             <allowPath>${site}/*</allowPath>
-            <occurrences maximum="0" minimum="0"/>
+            <occurrences minimum="0" maximum="1" />
         </input>
         <input name="displayLock" type="CheckBox">
             <label>Nivå 4 - Vis hengelås</label>

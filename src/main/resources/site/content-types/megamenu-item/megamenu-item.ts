@@ -3,7 +3,7 @@ export interface MegamenuItem {
   /**
    * Velg innhold
    */
-  target?: Array<string>;
+  target?: string;
 
   /**
    * Nivå 4 - Vis hengelås

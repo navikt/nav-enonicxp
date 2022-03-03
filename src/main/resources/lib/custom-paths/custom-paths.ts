@@ -28,8 +28,8 @@ export const shouldRedirectToCustomPath = (
     );
 };
 
-export const getCustomPathFromContent = (contentId: string) => {
-    const content = contentLib.get({ key: contentId });
+export const getCustomPathFromContent = (contentId: string, versionId?: string) => {
+    const content = contentLib.get({ key: contentId, versionId });
     return content && hasCustomPath(content) ? content.data.customPath : null;
 };
 

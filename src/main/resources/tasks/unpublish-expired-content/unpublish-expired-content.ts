@@ -1,8 +1,9 @@
 import contentLib from '/lib/xp/content';
 import nodeLib from '/lib/xp/node';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
-import { scheduleUnpublish } from '../../lib/siteCache/scheduled-publish';
+import { scheduleUnpublish } from '../../lib/cache-invalidate/scheduled-publish';
 import { contentRepo } from '../../lib/constants';
+import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
     const { id, path } = params;
@@ -23,7 +24,7 @@ export const run = (params: UnpublishExpiredContentConfig) => {
     }
 
     const currentTime = Date.now();
-    const publishToTime = new Date(publishTo).getTime();
+    const publishToTime = getUnixTimeFromDateTimeString(publishTo);
     if (currentTime < publishToTime) {
         log.info(
             `Content ${id} has not yet expired - rescheduling unpublish task (current time: ${currentTime} - expire time: ${publishToTime})`

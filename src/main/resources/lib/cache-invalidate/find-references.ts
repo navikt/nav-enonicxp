@@ -123,7 +123,10 @@ const getReferencesFromParent = (content: Content | null) => {
         return [];
     }
 
-    if (parent.type === 'no.nav.navno:publishing-calendar') {
+    if (
+        content.type === 'no.nav.navno:notification' ||
+        parent.type === 'no.nav.navno:publishing-calendar'
+    ) {
         return [parent];
     }
 
@@ -179,7 +182,8 @@ const getMainArticleChapterReferences = (
 const removeDuplicatesById = (contentArray: Content[]) =>
     removeDuplicates(contentArray, (a, b) => a._id === b._id);
 
-export const findReferences = ({
+// Perform a recursive search of content references
+const _findReferences = ({
     id,
     eventType,
     depth = 0,
@@ -191,7 +195,7 @@ export const findReferences = ({
     prevReferences?: any[];
 }): Content[] => {
     if (depth > MAX_DEPTH) {
-        log.info(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
+        log.warning(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
         return [];
     }
 
@@ -204,7 +208,7 @@ export const findReferences = ({
     // For deep references we always use master.
     const content = runInBranchContext(
         () => contentLib.get({ key: id }),
-        eventType === 'deleted' ? 'draft' : 'master'
+        eventType === 'node.deleted' ? 'draft' : 'master'
     );
 
     const references = removeDuplicatesById(
@@ -240,7 +244,7 @@ export const findReferences = ({
 
         return [
             ...acc,
-            ...findReferences({
+            ..._findReferences({
                 id: reference._id,
                 depth: depth + 1,
                 prevReferences: [...references, ...prevReferences],
@@ -249,4 +253,14 @@ export const findReferences = ({
     }, [] as Content[]);
 
     return removeDuplicatesById([...references, ...deepReferences]);
+};
+
+export const findReferences = ({
+    id,
+    eventType,
+}: {
+    id: string;
+    eventType?: string;
+}): Content[] => {
+    return _findReferences({ id, eventType });
 };
