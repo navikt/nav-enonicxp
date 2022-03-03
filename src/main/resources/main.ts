@@ -7,36 +7,25 @@ const facetLib = require('/lib/facets');
 
 import clusterLib from '/lib/xp/cluster';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
-import { activateCacheEventListeners } from './lib/siteCache';
+import { activateCacheEventListeners } from './lib/cache-invalidate/cache-invalidate';
 import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
-import {
-    addReliableEventListener,
-    startReliableEventAckListener,
-} from './lib/events/reliable-custom-events';
+import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
+import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
+import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 
 updateClusterInfo();
 
 startReliableEventAckListener();
 
-// TODO: remove this after verifying it works in prod :)
-addReliableEventListener({
-    type: 'test-event',
-    callback: (event) => {
-        log.info(`Event received! ${event.type} - ${event.data.eventId}`);
-    },
-});
-
-startOfficeInfoPeriodicUpdateSchedule();
-
 activateCacheEventListeners();
 
 activateSitemapDataUpdateEventListener();
 
-generateSitemapDataAndActivateSchedule();
+activateContentListItemUnpublishedListener();
 
 hookLibsWithTimeTravel();
 
@@ -47,8 +36,16 @@ if (clusterLib.isMaster()) {
     if (facetValidation) {
         facetLib.clearUpdateState();
     }
+
+    startFailsafeSchedule();
+    generateSitemapDataAndActivateSchedule();
+    startOfficeInfoPeriodicUpdateSchedule();
 }
 
 facetLib.activateEventListener();
 
 log.info('Finished running main');
+
+__.disposer(() => {
+    log.info('App is shutting down');
+});

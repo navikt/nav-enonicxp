@@ -15,6 +15,7 @@ type Props<TaskConfig> = {
     taskConfig: TaskConfig;
     enabled?: boolean;
     user?: PrincipalKeyUser;
+    onScheduleExistsAction?: 'modify' | 'overwrite' | 'abort';
 };
 
 export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
@@ -25,6 +26,7 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
     taskConfig,
     enabled = true,
     user = 'user:system:su',
+    onScheduleExistsAction = 'modify',
 }: Props<TaskConfig>) => {
     if (!clusterLib.isMaster()) {
         return;
@@ -44,16 +46,24 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
         const existingJob = schedulerLib.get({ name: jobName });
 
         if (existingJob) {
-            log.info(`Scheduler job updated: ${jobName}`);
-            return schedulerLib.modify<typeof taskConfig>({
-                name: jobName,
-                editor: (prevJobParams) => {
-                    return { ...prevJobParams, ...jobParams };
-                },
-            });
-        } else {
-            log.info(`Scheduler job created: ${jobName}`);
-            return schedulerLib.create<typeof taskConfig>(jobParams);
+            if (onScheduleExistsAction === 'modify') {
+                log.info(`Scheduler job updated: ${jobName}`);
+                return schedulerLib.modify<typeof taskConfig>({
+                    name: jobName,
+                    editor: (prevJobParams) => {
+                        return { ...prevJobParams, ...jobParams };
+                    },
+                });
+            } else if (onScheduleExistsAction === 'overwrite') {
+                log.info(`Removing existing job: ${jobName}`);
+                schedulerLib.delete({ name: jobName });
+            } else {
+                log.info(`Job already exists, aborting - ${jobName}`);
+                return;
+            }
         }
+
+        log.info(`Scheduler job created: ${jobName}`);
+        return schedulerLib.create<typeof taskConfig>(jobParams);
     }, 'master');
 };

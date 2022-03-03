@@ -1,10 +1,11 @@
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { NodeEventData } from './index';
 import { appDescriptor } from '../constants';
 import { createOrUpdateSchedule } from '../utils/scheduler';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
+import { NodeEventData } from './utils';
+import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 
 const getPublish = (node: NodeEventData) => {
     const repo = nodeLib.connect({
@@ -27,8 +28,8 @@ const getPublish = (node: NodeEventData) => {
     return content.publish;
 };
 
-const isPrepublished = (publishFrom?: string): publishFrom is string => {
-    return publishFrom ? new Date(publishFrom).getTime() > Date.now() : false;
+export const isPrepublished = (publishFrom?: string): publishFrom is string => {
+    return publishFrom ? getUnixTimeFromDateTimeString(publishFrom) > Date.now() : false;
 };
 
 export const getPrepublishJobName = (contentId: string) => `prepublish-invalidate-${contentId}`;
