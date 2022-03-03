@@ -1,24 +1,26 @@
 import schedulerLib, { ScheduledJob } from '/lib/xp/scheduler';
 import taskLib from '/lib/xp/task';
+import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 
 const fifteenSeconds = 15000;
 
 const oneTimeJobFailedToRun = (job: ScheduledJob) => {
-    if (job.schedule.type !== 'ONE_TIME') {
+    if (job.schedule.type !== 'ONE_TIME' || !job.enabled) {
         return false;
     }
 
-    const jobScheduleTime = new Date(job.schedule.value).getTime();
+    const jobScheduleTime = getUnixTimeFromDateTimeString(job.schedule.value);
 
     if (Date.now() <= jobScheduleTime) {
         return false;
     }
 
-    const jobLastRunTime = job.lastRun && new Date(job.lastRun).getTime();
+    const jobLastRunTime = getUnixTimeFromDateTimeString(job.lastRun);
 
     log.info(`Checking job ${job.name}: ${JSON.stringify(job)}`);
 
     if (!jobLastRunTime) {
+        log.info(`${job.lastRun} - ${jobLastRunTime}`);
         log.error(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
         return true;
     }
