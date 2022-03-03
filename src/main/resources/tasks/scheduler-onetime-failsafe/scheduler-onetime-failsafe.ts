@@ -41,13 +41,9 @@ export const run = () => {
 
     schedulerLib.list().forEach((job) => {
         if (oneTimeJobFailedToRun(job)) {
-            log.error(`Running task for failed one-time job ${job.name}`);
-            schedulerLib.modify({
+            log.error(`Running task for failed one-time job ${job.name} - ${JSON.stringify(job)}`);
+            schedulerLib.delete({
                 name: job.name,
-                editor: (edit) => {
-                    edit.enabled = false;
-                    return edit;
-                },
             });
             taskLib.submitTask({
                 descriptor: job.descriptor,
