@@ -46,10 +46,6 @@ const invalidateWithReferences = ({
         contentToInvalidate.push(baseContent);
     }
 
-    if (eventType === 'node.deleted') {
-        changedPaths.push(path);
-    }
-
     if (contentToInvalidate.some((content) => content.type === 'no.nav.navno:melding')) {
         log.info(`Clearing driftsmeldinger cache on invalidate event ${eventId}`);
         clearDriftsmeldingerCache();
