@@ -17,10 +17,7 @@ const oneTimeJobFailedToRun = (job: ScheduledJob) => {
 
     const jobLastRunTime = getUnixTimeFromDateTimeString(job.lastRun);
 
-    log.info(`Checking job ${job.name}: ${JSON.stringify(job)}`);
-
     if (!jobLastRunTime) {
-        log.info(`${job.lastRun} - ${jobLastRunTime}`);
         log.error(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
         return true;
     }
