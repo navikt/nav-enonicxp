@@ -15,20 +15,17 @@ import {
 import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
+import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 
 updateClusterInfo();
 
 startReliableEventAckListener();
-
-startOfficeInfoPeriodicUpdateSchedule();
 
 activateCacheEventListeners();
 
 activateSitemapDataUpdateEventListener();
 
 activateContentListItemUnpublishedListener();
-
-generateSitemapDataAndActivateSchedule();
 
 hookLibsWithTimeTravel();
 
@@ -39,6 +36,10 @@ if (clusterLib.isMaster()) {
     if (facetValidation) {
         facetLib.clearUpdateState();
     }
+
+    startFailsafeSchedule();
+    generateSitemapDataAndActivateSchedule();
+    startOfficeInfoPeriodicUpdateSchedule();
 }
 
 facetLib.activateEventListener();

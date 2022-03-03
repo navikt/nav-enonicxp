@@ -1,6 +1,5 @@
 import httpClient from '/lib/http-client';
 import taskLib from '/lib/xp/task';
-import clusterLib from '/lib/xp/cluster';
 import { Content } from '/lib/xp/content';
 import { urls } from '../constants';
 import { getFrontendPathname, isRenderedType } from './utils';
@@ -76,43 +75,37 @@ export const frontendCacheInvalidate = ({
     paths?: string[];
     eventId: string;
 }) => {
-    if (clusterLib.isMaster()) {
-        taskLib.executeFunction({
-            description: `Send invalidate with event id ${eventId}`,
-            func: () => {
-                // Ensure the paths we send to the frontend for invalidation are of the same format as used
-                // by the frontend. Also filter out any content types that aren't rendered/cached by the frontend.
-                const frontendPaths = [
-                    ...contents
-                        .filter((content) => isRenderedType(content))
-                        .map(
-                            (content) =>
-                                getCustomPathFromContent(content._path) ||
-                                getFrontendPathname(content._path)
-                        ),
-                    ...paths.map(getFrontendPathname),
-                ];
+    taskLib.executeFunction({
+        description: `Send invalidate with event id ${eventId}`,
+        func: () => {
+            // Ensure the paths we send to the frontend for invalidation are of the same format as used
+            // by the frontend. Also filter out any content types that aren't rendered/cached by the frontend.
+            const frontendPaths = [
+                ...contents
+                    .filter((content) => isRenderedType(content))
+                    .map(
+                        (content) =>
+                            getCustomPathFromContent(content._path) ||
+                            getFrontendPathname(content._path)
+                    ),
+                ...paths.map(getFrontendPathname),
+            ];
 
-                if (frontendPaths.length === 0) {
-                    log.info(
-                        `Nothing to invalidate for event ${eventId} - aborting frontend request`
-                    );
-                    return;
-                }
+            if (frontendPaths.length === 0) {
+                log.info(`Nothing to invalidate for event ${eventId} - aborting frontend request`);
+                return;
+            }
 
-                requestInvalidatePaths(frontendPaths, eventId);
-            },
-        });
-    }
+            requestInvalidatePaths(frontendPaths, eventId);
+        },
+    });
 };
 
 export const frontendCacheWipeAll = (eventId: string) => {
-    if (clusterLib.isMaster()) {
-        taskLib.executeFunction({
-            description: `Send wipe-all`,
-            func: () => {
-                requestWipeAll(eventId);
-            },
-        });
-    }
+    taskLib.executeFunction({
+        description: `Send wipe-all`,
+        func: () => {
+            requestWipeAll(eventId);
+        },
+    });
 };
