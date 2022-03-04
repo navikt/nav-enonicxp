@@ -62,15 +62,6 @@ const situationPageFragment = `
     }
 `;
 
-const employerSituationPageFragment = `
-    ...on no_nav_navno_EmployerSituationPage {
-        ${commonDataObject}
-        data {
-            ${situationDataMixin}
-        }
-    }
-`;
-
 const toolsPageFragment = `
     ...on no_nav_navno_ToolsPage {
         data {
@@ -84,7 +75,6 @@ const dynamicPageFragment = `
     ${guidePageFragment}
     ${themedArticlePageFragment}
     ${situationPageFragment}
-    ${employerSituationPageFragment}
     ${toolsPageFragment}
     ...on no_nav_navno_DynamicPage {
         ${commonDataObject}
@@ -93,9 +83,6 @@ const dynamicPageFragment = `
 
 const dynamicPageShortFragment = `
     ...on no_nav_navno_SituationPage {
-        ${commonDataObjectShort}
-    }
-    ...on no_nav_navno_EmployerSituationPage {
         ${commonDataObjectShort}
     }
     ...on no_nav_navno_ContentPageWithSidemenus {

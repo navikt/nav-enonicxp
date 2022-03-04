@@ -62,7 +62,6 @@ export const sitemapContentTypes: ContentDescriptor[] = [
     `${app.name}:situation-page`,
     `${app.name}:guide-page`,
     `${app.name}:themed-article-page`,
-    `${app.name}:employer-situation-page`,
     `${app.name}:dynamic-page`,
     `${app.name}:content-page-with-sidemenus`,
     `${app.name}:main-article`,
