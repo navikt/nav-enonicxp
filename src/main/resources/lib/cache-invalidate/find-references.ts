@@ -13,7 +13,6 @@ const MAX_DEPTH = 5;
 const productCardTargetTypes: { [type in ContentDescriptor]?: boolean } = {
     'no.nav.navno:content-page-with-sidemenus': true,
     'no.nav.navno:situation-page': true,
-    'no.nav.navno:employer-situation-page': true,
     'no.nav.navno:tools-page': true,
 };
 
