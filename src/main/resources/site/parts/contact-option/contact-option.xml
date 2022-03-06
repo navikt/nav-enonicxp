@@ -50,7 +50,7 @@
                 </option>
                 <option name="custom">
                     <label>Egentilpasset</label>
-                    <help-text>Brukes til andre Kontaktkanaler</help-text>
+                    <help-text>Brukes til andre kontaktkanaler</help-text>
                     <items>
                         <input name="title" type="TextLine">
                             <label>Tittel</label>
