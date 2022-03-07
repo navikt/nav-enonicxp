@@ -31,6 +31,9 @@
             </items>
         </item-set>
     </form>
+    <config>
+        <allow-on-content-type>${app}:situation-page</allow-on-content-type>
+    </config>
     <regions>
         <region name="flexcols"/>
     </regions>

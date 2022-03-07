@@ -15,6 +15,9 @@
             <default>contact-channels</default>
         </input>
     </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+    </config>
     <regions>
         <region name="flexcols"/>
     </regions>
