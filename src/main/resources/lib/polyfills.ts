@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 Object.defineProperty(Array.prototype, 'find', {
     value: function (predicate) {
         if (!this) {
