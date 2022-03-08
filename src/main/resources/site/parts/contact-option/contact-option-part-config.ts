@@ -71,6 +71,37 @@ export interface ContactOptionPartConfig {
            */
           phoneNumber?: undefined;
         };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "custom";
+
+        /**
+         * Egentilpasset
+         */
+        custom: {
+          /**
+           * Tittel
+           */
+          title: string;
+
+          /**
+           * Icon
+           */
+          icon: "facebook" | "linkedin";
+
+          /**
+           * Url
+           */
+          url: string;
+
+          /**
+           * Ingress
+           */
+          ingress?: string;
+        };
       };
 
   /**

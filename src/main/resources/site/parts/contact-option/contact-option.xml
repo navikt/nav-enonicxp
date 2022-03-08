@@ -48,6 +48,31 @@
                         </input>
                     </items>
                 </option>
+                <option name="custom">
+                    <label>Egentilpasset</label>
+                    <help-text>Brukes til andre kontaktkanaler</help-text>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Tittel</label>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
+                        <input name="icon" type="ComboBox">
+                            <label>Icon</label>
+                            <occurrences minimum="1" maximum="1"/>
+                            <config>
+                                <option value="facebook">Facebook</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </config>
+                        </input>
+                        <input name="url" type="TextLine">
+                            <label>Url</label>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
+                        <input name="ingress" type="TextArea">
+                            <label>Ingress</label>
+                        </input>
+                    </items>
+                </option>
             </options>
         </option-set>
         <mixin name="auth-render-option"/>

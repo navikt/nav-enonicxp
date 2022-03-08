@@ -141,6 +141,12 @@ const partsFragment = `
                             ${contactInformationFragment.fragment}
                         }
                     }
+                    custom {
+                        ingress
+                        icon
+                        title
+                        url
+                    }
                 }
             }
         }
