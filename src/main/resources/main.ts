@@ -7,7 +7,7 @@ const facetLib = require('/lib/facets');
 
 import clusterLib from '/lib/xp/cluster';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
-import { activateCacheEventListeners } from './lib/cache-invalidate/cache-invalidate';
+import { activateCacheEventListeners } from './lib/cache/cache-invalidate';
 import {
     activateSitemapDataUpdateEventListener,
     generateSitemapDataAndActivateSchedule,

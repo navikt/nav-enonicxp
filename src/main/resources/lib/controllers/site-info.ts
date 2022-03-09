@@ -4,7 +4,7 @@ import httpClient from '/lib/http-client';
 import cacheLib from '/lib/cache';
 import { urls } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster/cluster-utils';
-import { getPrepublishJobName, getUnpublishJobName } from '../cache-invalidate/scheduled-publish';
+import { getPrepublishJobName, getUnpublishJobName } from '../cache/scheduled-publish';
 import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
 import { hasCustomPath } from '../custom-paths/custom-paths';

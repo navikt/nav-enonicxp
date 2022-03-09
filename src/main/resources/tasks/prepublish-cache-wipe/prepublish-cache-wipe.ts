@@ -1,6 +1,6 @@
 import { PrepublishCacheWipeConfig } from './prepublish-cache-wipe-config';
 import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
-import { prepublishInvalidateEvent } from '../../lib/cache-invalidate/cache-invalidate';
+import { prepublishInvalidateEvent } from '../../lib/cache/cache-invalidate';
 
 export const run = (params: PrepublishCacheWipeConfig) => {
     log.info(
