@@ -1,14 +1,14 @@
 import { PrepublishCacheWipeConfig } from './prepublish-cache-wipe-config';
-import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
-import { prepublishInvalidateEvent } from '../../lib/cache/cache-invalidate';
+import { invalidateCacheForNode } from '../../lib/cache/cache-invalidate';
+import { contentRepo } from '../../lib/constants';
 
 export const run = (params: PrepublishCacheWipeConfig) => {
-    log.info(
-        `Running task for cache invalidation of prepublished content - ${params.id} - ${params.path}`
-    );
+    const { id, path } = params;
+    log.info(`Running task for cache invalidation of prepublished content - ${id} - ${path}`);
 
-    sendReliableEvent({
-        type: prepublishInvalidateEvent,
-        data: params,
+    invalidateCacheForNode({
+        node: { ...params, branch: 'master', repo: contentRepo },
+        eventType: 'node.pushed',
+        timestamp: Date.now(),
     });
 };

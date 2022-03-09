@@ -64,7 +64,7 @@ const invalidateWithReferences = ({
     });
 };
 
-const invalidateCacheForNode = ({
+export const invalidateCacheForNode = ({
     node,
     eventType,
     timestamp,
