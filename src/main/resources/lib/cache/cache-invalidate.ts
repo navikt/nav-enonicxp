@@ -1,5 +1,6 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import contentLib from '/lib/xp/content';
+import clusterLib from '/lib/xp/cluster';
 import { frontendCacheInvalidate, frontendCacheWipeAll } from './frontend-invalidate-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
@@ -7,7 +8,7 @@ import { contentRepo } from '../constants';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferences } from './find-references';
-import { wipeSiteinfoCache } from '../controllers/site-info';
+import { wipeSiteinfoCache } from '../site-info/controller';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
 import { clearDriftsmeldingerCache } from '../../services/driftsmeldinger/driftsmeldinger';
@@ -85,26 +86,34 @@ const invalidateCacheForNode = ({
 };
 
 const nodeListenerCallback = (event: EnonicEvent) => {
-    event.data.nodes.forEach((node) => {
-        if (node.branch === 'master' && node.repo === contentRepo) {
-            const isPrepublished = handleScheduledPublish(node, event.type);
-
-            if (!isPrepublished) {
-                invalidateCacheForNode({ node, eventType: event.type, timestamp: event.timestamp });
-            }
-        }
-    });
     wipeSiteinfoCache();
+
+    if (clusterLib.isMaster()) {
+        event.data.nodes.forEach((node) => {
+            if (node.branch === 'master' && node.repo === contentRepo) {
+                const isPrepublished = handleScheduledPublish(node, event.type);
+
+                if (!isPrepublished) {
+                    invalidateCacheForNode({
+                        node,
+                        eventType: event.type,
+                        timestamp: event.timestamp,
+                    });
+                }
+            }
+        });
+    }
 };
 
-const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
+export const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
+    wipeSiteinfoCache();
+
     log.info(`Clearing cache for prepublished content: ${event.data.path}`);
     invalidateCacheForNode({
         node: { ...event.data, branch: 'master', repo: contentRepo },
         eventType: event.type,
         timestamp: event.timestamp,
     });
-    wipeSiteinfoCache();
 };
 
 export const cacheInvalidateEventName = 'invalidate-cache';
