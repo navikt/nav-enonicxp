@@ -12,5 +12,7 @@ export const getContentFromCache = (
     cacheVersionKey: string,
     callback: () => any
 ) => {
-    return cache.get(getCacheKey(contentId, cacheVersionKey), callback);
+    const cacheKey = getCacheKey(contentId, cacheVersionKey);
+    log.info(`Getting content cached with key ${cacheKey}`);
+    return cache.get(cacheKey, callback);
 };
