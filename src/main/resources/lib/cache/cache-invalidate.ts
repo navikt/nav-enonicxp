@@ -5,121 +5,125 @@ import { frontendCacheInvalidate, frontendCacheWipeAll } from './frontend-invali
 import { runInBranchContext } from '../utils/branch-context';
 import { handleScheduledPublish } from './scheduled-publish';
 import { contentRepo } from '../constants';
-import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import { findReferences } from './find-references';
-import { wipeSiteinfoCache } from '../site-info/controller';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
-import { clearDriftsmeldingerCache } from '../../services/driftsmeldinger/driftsmeldinger';
-import { clearDecoratorMenuCache } from '../../services/menu/menu';
+import {
+    clearLocalCaches,
+    getCachesToClear,
+    LocalCacheInvalidationData,
+    localCacheInvalidationEventName,
+    sendLocalCacheInvalidationEvent,
+} from './local-cache';
 
-const invalidateWithReferences = ({
-    id,
-    path,
-    eventId,
-    eventType,
-}: {
-    id: string;
-    path: string;
-    eventId: string;
-    eventType?: string;
-}) => {
+export const cacheInvalidateEventName = 'invalidate-cache';
+
+let hasSetupListeners = false;
+
+const getContentToInvalidate = (id: string, eventType: string) => {
+    const referencesToInvalidate = findReferences({ id, eventType });
+
     const baseContent = runInBranchContext(
         () => contentLib.get({ key: id }),
         eventType === 'node.deleted' ? 'draft' : 'master'
     );
 
-    const contentToInvalidate = findReferences({ id, eventType });
-    const changedPaths = findChangedPaths({ id, path });
-
-    log.info(
-        `Invalidate event ${eventId} - Invalidating cache for ${path}${
-            changedPaths.length > 0 ? ` and previous paths ${changedPaths.join(', ')}` : ''
-        } with ${contentToInvalidate.length} references: ${JSON.stringify(
-            contentToInvalidate.map((content) => content._path),
-            null,
-            4
-        )}`
-    );
-
     if (baseContent) {
-        contentToInvalidate.push(baseContent);
+        return [baseContent, ...referencesToInvalidate];
     }
 
-    if (contentToInvalidate.some((content) => content.type === 'no.nav.navno:melding')) {
-        log.info(`Clearing driftsmeldinger cache on invalidate event ${eventId}`);
-        clearDriftsmeldingerCache();
-    }
-
-    if (contentToInvalidate.some((content) => content.type === 'no.nav.navno:megamenu-item')) {
-        log.info(`Clearing decorator menu cache on invalidate event ${eventId}`);
-        clearDecoratorMenuCache();
-    }
-
-    frontendCacheInvalidate({
-        contents: contentToInvalidate,
-        paths: changedPaths,
-        eventId,
-    });
+    return referencesToInvalidate;
 };
 
 export const invalidateCacheForNode = ({
     node,
     eventType,
     timestamp,
+    isRunningClusterWide,
 }: {
     node: NodeEventData;
     eventType: string;
     timestamp: number;
+    isRunningClusterWide: boolean;
 }) => {
     const eventId = generateCacheEventId(node, timestamp);
 
+    // If this invalidation is running on every node in the cluster, we only want the master node
+    // to send calls to the frontend
+    const shouldSendFrontendRequests = !isRunningClusterWide || clusterLib.isMaster();
+
     if (node.path.includes('/global-notifications/')) {
         log.info('Clearing whole cache due to updated global notification');
-        frontendCacheWipeAll(eventId);
+
+        const localCachesToClear = { all: true };
+
+        if (isRunningClusterWide) {
+            clearLocalCaches(localCachesToClear);
+        } else {
+            sendLocalCacheInvalidationEvent(localCachesToClear);
+        }
+
+        if (shouldSendFrontendRequests) {
+            frontendCacheWipeAll(eventId);
+        }
     } else {
         runInBranchContext(() => {
-            invalidateWithReferences({ id: node.id, path: node.path, eventId, eventType });
+            const contentToInvalidate = getContentToInvalidate(node.id, eventType);
+
+            const localCachesToClear = getCachesToClear(contentToInvalidate);
+
+            if (isRunningClusterWide) {
+                clearLocalCaches(localCachesToClear);
+            } else {
+                sendLocalCacheInvalidationEvent(localCachesToClear);
+            }
+
+            log.info(
+                `Invalidate event ${eventId} - Invalidating ${
+                    contentToInvalidate.length
+                } paths for root node ${node.id}: ${JSON.stringify(
+                    contentToInvalidate.map((content) => content._path),
+                    null,
+                    4
+                )}`
+            );
+
+            if (shouldSendFrontendRequests) {
+                const changedPaths = findChangedPaths({ id: node.id, path: node.path });
+
+                if (changedPaths.length > 0) {
+                    log.info(
+                        `Invalidating changed paths for node ${node.id}: ${changedPaths.join(', ')}`
+                    );
+                }
+
+                frontendCacheInvalidate({
+                    contents: contentToInvalidate,
+                    paths: changedPaths,
+                    eventId,
+                });
+            }
         }, 'master');
     }
 };
 
 const nodeListenerCallback = (event: EnonicEvent) => {
-    wipeSiteinfoCache();
+    event.data.nodes.forEach((node) => {
+        if (node.branch === 'master' && node.repo === contentRepo) {
+            const isPrepublished = handleScheduledPublish(node, event.type);
 
-    if (clusterLib.isMaster()) {
-        event.data.nodes.forEach((node) => {
-            if (node.branch === 'master' && node.repo === contentRepo) {
-                const isPrepublished = handleScheduledPublish(node, event.type);
-
-                if (!isPrepublished) {
-                    invalidateCacheForNode({
-                        node,
-                        eventType: event.type,
-                        timestamp: event.timestamp,
-                    });
-                }
+            if (!isPrepublished) {
+                invalidateCacheForNode({
+                    node,
+                    eventType: event.type,
+                    timestamp: event.timestamp,
+                    isRunningClusterWide: true,
+                });
             }
-        });
-    }
-};
-
-export const prepublishCallback = (event: EnonicEvent<PrepublishCacheWipeConfig>) => {
-    wipeSiteinfoCache();
-
-    log.info(`Clearing cache for prepublished content: ${event.data.path}`);
-    invalidateCacheForNode({
-        node: { ...event.data, branch: 'master', repo: contentRepo },
-        eventType: event.type,
-        timestamp: event.timestamp,
+        }
     });
 };
-
-export const cacheInvalidateEventName = 'invalidate-cache';
-export const prepublishInvalidateEvent = 'prepublish-invalidate';
-
-let hasSetupListeners = false;
 
 export const activateCacheEventListeners = () => {
     if (!hasSetupListeners) {
@@ -129,17 +133,28 @@ export const activateCacheEventListeners = () => {
             callback: nodeListenerCallback,
         });
 
-        addReliableEventListener({
-            type: prepublishInvalidateEvent,
-            callback: prepublishCallback,
+        // This event triggers invalidation of local caches
+        addReliableEventListener<LocalCacheInvalidationData>({
+            type: localCacheInvalidationEventName,
+            callback: (event) => {
+                clearLocalCaches(event.data);
+            },
         });
 
+        // This event is sent via the Content Studio widget for manual invalidation of a single page
         addReliableEventListener<NodeEventData>({
             type: cacheInvalidateEventName,
             callback: (event) => {
-                const { id, path, eventId } = event.data;
+                const { id, path } = event.data;
                 log.info(`Received cache-invalidation event for ${path} - ${id}`);
-                runInBranchContext(() => invalidateWithReferences({ id, path, eventId }), 'master');
+                runInBranchContext(() =>
+                    invalidateCacheForNode({
+                        node: { id, path, branch: 'master', repo: contentRepo },
+                        timestamp: event.timestamp,
+                        eventType: event.type,
+                        isRunningClusterWide: true,
+                    })
+                );
             },
         });
 

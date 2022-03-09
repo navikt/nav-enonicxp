@@ -42,7 +42,7 @@ type SiteInfo = {
 
 const cache = cacheLib.newCache({
     size: 1,
-    expire: 60,
+    expire: 3600,
 });
 
 const cacheKey = 'content-lists';
@@ -140,7 +140,7 @@ const getContentLists = () =>
         };
     });
 
-export const wipeSiteinfoCache = () => cache.clear();
+export const clearSiteinfoCache = () => cache.clear();
 
 export const get = (req: XP.Request) => {
     if (req.method !== 'GET') {

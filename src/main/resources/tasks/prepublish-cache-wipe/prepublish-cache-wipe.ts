@@ -10,5 +10,6 @@ export const run = (params: PrepublishCacheWipeConfig) => {
         node: { id, path, branch: 'master', repo: contentRepo },
         eventType: 'node.pushed',
         timestamp: Date.now(),
+        isRunningClusterWide: false,
     });
 };
