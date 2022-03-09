@@ -7,7 +7,7 @@ export const run = (params: PrepublishCacheWipeConfig) => {
     log.info(`Running task for cache invalidation of prepublished content - ${id} - ${path}`);
 
     invalidateCacheForNode({
-        node: { ...params, branch: 'master', repo: contentRepo },
+        node: { id, path, branch: 'master', repo: contentRepo },
         eventType: 'node.pushed',
         timestamp: Date.now(),
     });
