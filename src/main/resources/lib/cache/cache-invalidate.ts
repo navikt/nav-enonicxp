@@ -53,16 +53,16 @@ export const invalidateCacheForNode = ({
     // to send calls to the frontend
     const shouldSendFrontendRequests = !isRunningClusterWide || clusterLib.isMaster();
 
+    // If this invalidation is running on every node, we can just clear local caches immediately.
+    // Otherwise we must send a cluster-wide event so every node gets cleared
+    const clearLocalCachesFunc = isRunningClusterWide
+        ? clearLocalCaches
+        : sendLocalCacheInvalidationEvent;
+
     if (node.path.includes('/global-notifications/')) {
         log.info('Clearing whole cache due to updated global notification');
 
-        const localCachesToClear = { all: true };
-
-        if (isRunningClusterWide) {
-            clearLocalCaches(localCachesToClear);
-        } else {
-            sendLocalCacheInvalidationEvent(localCachesToClear);
-        }
+        clearLocalCachesFunc({ all: true });
 
         if (shouldSendFrontendRequests) {
             frontendCacheWipeAll(eventId);
@@ -71,13 +71,7 @@ export const invalidateCacheForNode = ({
         runInBranchContext(() => {
             const contentToInvalidate = getContentToInvalidate(node.id, eventType);
 
-            const localCachesToClear = getCachesToClear(contentToInvalidate);
-
-            if (isRunningClusterWide) {
-                clearLocalCaches(localCachesToClear);
-            } else {
-                sendLocalCacheInvalidationEvent(localCachesToClear);
-            }
+            clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
 
             log.info(
                 `Invalidate event ${eventId} - Invalidating ${
