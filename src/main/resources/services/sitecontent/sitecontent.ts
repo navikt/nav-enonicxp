@@ -38,9 +38,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const content = cacheKey
-        ? getContentFromCache(idOrPath, cacheKey, () => getSiteContent(idOrPath, branch, time))
-        : getSiteContent(idOrPath, branch, time);
+    const content = getContentFromCache(
+        idOrPath,
+        () => getSiteContent(idOrPath, branch, time),
+        cacheKey
+    );
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);
