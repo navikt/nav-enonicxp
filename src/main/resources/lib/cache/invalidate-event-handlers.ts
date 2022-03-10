@@ -35,7 +35,7 @@ const manualInvalidationCallback = (event: EnonicEvent<NodeEventData>) => {
     log.info(`Received cache-invalidation event for ${path} - ${id}`);
     runInBranchContext(() =>
         invalidateCacheForNode({
-            node: { id, path, branch: 'master', repo: contentRepo },
+            node: event.data,
             timestamp: event.timestamp,
             eventType: event.type,
             isRunningClusterWide: true,
