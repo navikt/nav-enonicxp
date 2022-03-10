@@ -4,7 +4,7 @@ import httpClient from '/lib/http-client';
 import cacheLib from '/lib/cache';
 import { urls } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster/cluster-utils';
-import { getPrepublishJobName, getUnpublishJobName } from '../cache-invalidate/scheduled-publish';
+import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
 import { hasCustomPath } from '../custom-paths/custom-paths';
@@ -42,7 +42,7 @@ type SiteInfo = {
 
 const cache = cacheLib.newCache({
     size: 1,
-    expire: 60,
+    expire: 3600,
 });
 
 const cacheKey = 'content-lists';
@@ -140,7 +140,7 @@ const getContentLists = () =>
         };
     });
 
-export const wipeSiteinfoCache = () => cache.clear();
+export const clearSiteinfoCache = () => cache.clear();
 
 export const get = (req: XP.Request) => {
     if (req.method !== 'GET') {

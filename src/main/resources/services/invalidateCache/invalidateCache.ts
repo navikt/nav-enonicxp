@@ -1,6 +1,8 @@
 import contentLib from '/lib/xp/content';
 import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
-import { cacheInvalidateEventName } from '../../lib/cache-invalidate/cache-invalidate';
+import { cacheInvalidateEventName } from '../../lib/cache/cache-invalidate';
+import { NodeEventData } from '../../lib/cache/utils';
+import { contentRepo } from '../../lib/constants';
 
 export const get = (req: XP.Request) => {
     const { contentId } = req.params;
@@ -25,9 +27,9 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    sendReliableEvent({
+    sendReliableEvent<NodeEventData>({
         type: cacheInvalidateEventName,
-        data: { id: content._id, path: content._path },
+        data: { id: content._id, path: content._path, branch: 'master', repo: contentRepo },
     });
 
     log.info(`Manually triggered cache invalidation for ${content._path}`);

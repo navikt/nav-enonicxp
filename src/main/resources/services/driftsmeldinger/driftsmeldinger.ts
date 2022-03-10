@@ -8,7 +8,9 @@ const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
 
 const cache = cacheLib.newCache({ size: 1, expire: 10 });
 
-export const clearDriftsmeldingerCache = () => cache.clear();
+export const clearDriftsmeldingerCache = () => {
+    cache.clear();
+};
 
 const maxMessages = 2;
 
