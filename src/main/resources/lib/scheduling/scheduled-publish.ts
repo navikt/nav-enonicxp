@@ -1,10 +1,10 @@
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { appDescriptor } from '../constants';
-import { createOrUpdateSchedule } from '../utils/scheduler';
+import { createOrUpdateSchedule } from './schedule-job';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
-import { NodeEventData } from './utils';
+import { NodeEventData } from '../cache/utils';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 
 const getPublish = (node: NodeEventData) => {

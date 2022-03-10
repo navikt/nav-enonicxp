@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import nodeLib from '/lib/xp/node';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
-import { scheduleUnpublish } from '../../lib/cache/scheduled-publish';
+import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
 import { contentRepo } from '../../lib/constants';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 

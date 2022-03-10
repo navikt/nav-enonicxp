@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import commonLib from '/lib/xp/common';
 import taskLib from '/lib/xp/task';
-import { createOrUpdateSchedule } from '../utils/scheduler';
+import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';

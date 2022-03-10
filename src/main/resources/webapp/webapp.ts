@@ -4,7 +4,7 @@ import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
 import { frontendCacheWipeAll } from '../lib/cache/frontend-invalidate-requests';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
-import { updateScheduledPublishJobs } from '../lib/cache/scheduled-publish-updater';
+import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 

@@ -5,7 +5,7 @@ import schedulerLib, {
 } from '/lib/xp/scheduler';
 import clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
-import { runInBranchContext } from './branch-context';
+import { runInBranchContext } from '../utils/branch-context';
 
 type Props<TaskConfig> = {
     jobName: string;
