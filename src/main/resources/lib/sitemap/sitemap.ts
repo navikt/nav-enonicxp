@@ -7,7 +7,7 @@ import { forceArray } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { contentRepo, urls } from '../constants';
-import { createOrUpdateSchedule } from '../utils/scheduler';
+import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 
 const batchCount = 1000;

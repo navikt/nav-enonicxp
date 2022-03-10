@@ -37,9 +37,9 @@ type EventProps<EventData> = {
 
 const ackEventType = 'ack';
 
-const timeoutMsDefault = 5000;
-const timeoutMsIncrement = 1000;
-const timeoutMsMax = 10000;
+const timeoutMsDefault = 10000;
+const timeoutMsIncrement = 2000;
+const timeoutMsMax = 20000;
 
 const retriesDefault = 10;
 const retriesMax = 10;

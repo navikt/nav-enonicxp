@@ -1,4 +1,4 @@
-import { createOrUpdateSchedule } from '../utils/scheduler';
+import { createOrUpdateSchedule } from './schedule-job';
 import { appDescriptor } from '../constants';
 
 // Failsafe to ensure the one-time scheduler is doing its job :)

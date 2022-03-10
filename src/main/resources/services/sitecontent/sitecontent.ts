@@ -1,10 +1,11 @@
 import { isValidBranch } from '../../lib/utils/branch-context';
+import { getContentFromCache } from '../../lib/cache/sitecontent-cache';
 
 const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
 export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch, time } = req.params;
+    const { id: idOrPath, branch, time, cacheKey } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -37,7 +38,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const content = getSiteContent(idOrPath, branch, time);
+    const content = getContentFromCache(
+        idOrPath,
+        () => getSiteContent(idOrPath, branch, time),
+        cacheKey
+    );
 
     if (!content) {
         log.info(`Content not found: ${idOrPath}`);
