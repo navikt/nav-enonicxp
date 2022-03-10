@@ -76,7 +76,9 @@ export const invalidateCacheForNode = ({
 
                 if (changedPaths.length > 0) {
                     log.info(
-                        `Invalidating changed paths for node ${node.id}: ${changedPaths.join(', ')}`
+                        `Invalidating changed paths for node ${
+                            node.id
+                        } (event id ${eventId}): ${changedPaths.join(', ')}`
                     );
                 }
 
