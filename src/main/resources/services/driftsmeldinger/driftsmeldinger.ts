@@ -9,7 +9,6 @@ const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
 const cache = cacheLib.newCache({ size: 1, expire: 10 });
 
 export const clearDriftsmeldingerCache = () => {
-    log.info('Clearing cache for driftsmeldinger');
     cache.clear();
 };
 
