@@ -39,4 +39,9 @@ export interface ThemedArticleData {
    * Velg piktogram
    */
   illustration?: string;
+
+  /**
+   * Videresend alle besøk til annen url:
+   */
+  externalProductUrl?: string;
 }
