@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, nav-enonicxp-actions-runner-dev-gcp]
+    runs-on: [self-hosted, nav-enonicxp-actions-runner-dev]
     environment: dev-sbs:q6
     steps:
       - name: Cleanup
