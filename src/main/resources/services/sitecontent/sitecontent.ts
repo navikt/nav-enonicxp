@@ -8,6 +8,8 @@ export const get = (req: XP.Request) => {
     const { id: idOrPath, branch, time, cacheKey } = req.params;
     const { secret } = req.headers;
 
+    log.info('Hello world!');
+
     if (secret !== app.config.serviceSecret) {
         return {
             status: 401,
