@@ -118,6 +118,7 @@ const guideDataMixin = `
         ${globalFragment}
         ${animatedIconsFragment.fragment}
     }
+    externalProductUrl
 `;
 
 const themedArticleDataMixin = `
@@ -131,6 +132,7 @@ const themedArticleDataMixin = `
         ${globalFragment}
         ${animatedIconsFragment.fragment}
     }
+    externalProductUrl
 `;
 
 module.exports = {
