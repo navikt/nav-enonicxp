@@ -21,7 +21,8 @@ const mainArticleChapterFragment = `
                 _id
             }
             article {
-               ${mainArticle.fragment}
+                ${globalFragment}
+                ${mainArticle.fragment}
             }
         }
     }

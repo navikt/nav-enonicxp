@@ -8,6 +8,8 @@
             <occurrences maximum="1" minimum="1"/>
             <config>
                 <allowContentType>${app}:main-article</allowContentType>
+                <allowContentType>${app}:internal-link</allowContentType>
+                <allowContentType>${app}:external-link</allowContentType>
             </config>
         </input>
     </form>
