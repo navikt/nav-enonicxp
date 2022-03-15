@@ -7,6 +7,9 @@ const {
     seoMixinFragment,
 } = require('./_mixins');
 const { imageFragment } = require('./media');
+const {
+    mainArticleChapterMenuDataMixin,
+} = require('./dangerous-mixins/mainArticleChapterMenuDataMixin');
 
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
@@ -27,7 +30,7 @@ const mainArticleFragment = `
                 altText
             }
             chapters {
-                ${globalFragment}
+                ${mainArticleChapterMenuDataMixin}
             }
             ${decoratorTogglesMixinFragment}
             ${menuListItems.fragment}

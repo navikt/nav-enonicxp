@@ -1,5 +1,8 @@
 const globalFragment = require('./_global');
 const mainArticle = require('./mainArticle');
+const {
+    mainArticleChapterMenuDataMixin,
+} = require('./dangerous-mixins/mainArticleChapterMenuDataMixin');
 
 const mainArticleChapterFragment = `
     ...on no_nav_navno_MainArticleChapter {
@@ -9,7 +12,7 @@ const mainArticleChapterFragment = `
                 ${globalFragment}
                 data {
                     chapters {
-                        ${globalFragment}
+                        ${mainArticleChapterMenuDataMixin}
                     }
                 }
             }

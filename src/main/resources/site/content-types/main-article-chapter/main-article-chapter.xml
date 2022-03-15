@@ -8,8 +8,11 @@
             <occurrences maximum="1" minimum="1"/>
             <config>
                 <allowContentType>${app}:main-article</allowContentType>
-                <allowContentType>${app}:internal-link</allowContentType>
-                <allowContentType>${app}:external-link</allowContentType>
+                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                <allowContentType>${app}:situation-page</allowContentType>
+                <allowContentType>${app}:guide-page</allowContentType>
+                <allowContentType>${app}:tools-page</allowContentType>
+                <allowContentType>${app}:themed-article-page</allowContentType>
             </config>
         </input>
     </form>
