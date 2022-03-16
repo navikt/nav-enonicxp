@@ -1,10 +1,22 @@
-const cacheLib = require('/lib/cache');
-const contentLib = require('/lib/xp/content');
-const nodeLib = require('/lib/xp/node');
-const { parseJsonArray } = require('/lib/utils/nav-utils');
-const { getNestedValue } = require('/lib/utils/nav-utils');
-const { sitemapContentTypes } = require('/lib/sitemap/sitemap');
-const { runInBranchContext } = require('/lib/utils/branch-context');
+import cacheLib from '/lib/cache';
+import { Content } from '/lib/xp/content';
+import nodeLib from '/lib/xp/node';
+import { sitemapContentTypes } from '../../lib/sitemap/sitemap';
+import { getNestedValue, parseJsonArray } from '../../lib/utils/nav-utils';
+import { runInBranchContext } from '../../lib/utils/branch-context';
+import { ContentDescriptor } from '../../types/content-types/content-config';
+import { batchedContentQuery } from '../../lib/utils/batched-query';
+
+type Branch = 'published' | 'unpublished';
+
+type RunQueryParams = {
+    requestId: string;
+    branch: Branch;
+    query?: string;
+    batch: number;
+    types?: ContentDescriptor[];
+    fieldKeys?: string[];
+};
 
 const batchSize = 1000;
 
@@ -15,11 +27,12 @@ const defaultTypes = [
     'media:spreadsheet',
     'media:presentation',
 ];
-
-const validBranches = {
+const validBranches: { [key in Branch]: boolean } = {
     published: true,
     unpublished: true,
 };
+
+const branchIsValid = (branch: string): branch is Branch => validBranches[branch as Branch];
 
 // Cache the content-ids per request on the first batch, to ensure batched responses are consistent
 const contentIdsCache = cacheLib.newCache({
@@ -27,8 +40,8 @@ const contentIdsCache = cacheLib.newCache({
     expire: 3600,
 });
 
-const hitsWithRequestedFields = (hits, fieldKeys) =>
-    fieldKeys?.length > 0
+const hitsWithRequestedFields = (hits: ReadonlyArray<Content>, fieldKeys?: string[]) =>
+    fieldKeys && fieldKeys.length > 0
         ? hits.map((hit) =>
               fieldKeys.reduce((acc, key) => {
                   const value = getNestedValue(hit, key);
@@ -43,7 +56,7 @@ const hitsWithRequestedFields = (hits, fieldKeys) =>
           )
         : hits;
 
-const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
+const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
     const repo = nodeLib.connect({
         repoId: 'com.enonic.cms.default',
         branch: branch === 'published' ? 'master' : 'draft',
@@ -56,12 +69,14 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
             count: 100000,
             filters: {
                 boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'type',
-                            values: types,
+                    ...(types && {
+                        must: {
+                            hasValue: {
+                                field: 'type',
+                                values: types,
+                            },
                         },
-                    },
+                    }),
                     ...(branch === 'unpublished' && {
                         mustNot: {
                             exists: {
@@ -80,33 +95,29 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
     return result;
 };
 
-const runQuery = ({ requestId, query, batch, branch, types, fieldKeys }) => {
-    const contentIds = contentIdsCache.get(requestId, () =>
-        getContentIdsFromQuery({
-            query,
-            branch,
-            types,
-            requestId,
-        })
-    );
+const runQuery = (params: RunQueryParams) => {
+    const { requestId, batch, fieldKeys } = params;
+
+    const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
 
     const start = batch * batchSize;
     const end = start + batchSize;
 
     const contentIdsBatch = contentIds.slice(start, end);
 
-    const result = contentLib.query({
-        start: 0,
-        count: 100000,
-        filters: {
-            ids: {
-                values: contentIdsBatch,
+    const hits = batchedContentQuery(
+        {
+            filters: {
+                ids: {
+                    values: contentIdsBatch,
+                },
             },
         },
-    });
+        batchSize
+    );
 
-    if (result.hits.length !== contentIdsBatch.length) {
-        const diff = contentIdsBatch.filter((id) => !result.hits.find((hit) => hit._id === id));
+    if (hits.length !== contentIdsBatch.length) {
+        const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
         log.info(
             `Data query: missing results from contentLib query for ${
                 diff.length
@@ -115,14 +126,14 @@ const runQuery = ({ requestId, query, batch, branch, types, fieldKeys }) => {
     }
 
     return {
-        ...result,
-        hits: hitsWithRequestedFields(result.hits, fieldKeys),
+        ...hits,
+        hits: hitsWithRequestedFields(hits, fieldKeys),
         total: contentIds.length,
         hasMore: contentIds.length > end,
     };
 };
 
-const handleGet = (req) => {
+export const get = (req: XP.Request) => {
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -148,7 +159,7 @@ const handleGet = (req) => {
         };
     }
 
-    if (!validBranches[branch]) {
+    if (!branch || !branchIsValid(branch)) {
         log.info(`Invalid branch specified: ${branch}`);
         return {
             status: 400,
@@ -192,7 +203,7 @@ const handleGet = (req) => {
                     requestId,
                     query,
                     branch,
-                    batch,
+                    batch: Number(batch),
                     fieldKeys: fieldKeysParsed,
                     types: typesParsed,
                 }),
@@ -231,5 +242,3 @@ const handleGet = (req) => {
         };
     }
 };
-
-exports.get = handleGet;
