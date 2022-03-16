@@ -11,6 +11,11 @@ export interface Melding {
   ingress?: string;
 
   /**
+   * Visning på bestemte url'er
+   */
+  urlscope?: Array<string>;
+
+  /**
    * Brødtekst melding
    */
   text?: string;

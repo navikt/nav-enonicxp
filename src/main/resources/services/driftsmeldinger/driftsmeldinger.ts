@@ -2,6 +2,7 @@ import portalLib from '/lib/xp/portal';
 import cacheLib from '/lib/cache';
 import contentLib, { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';
+import { forceArray } from '../../lib/utils/nav-utils';
 
 const cacheKey = 'driftsmeldinger-cache';
 const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
@@ -20,12 +21,14 @@ type Message = {
     heading: string;
     url: string;
     type: Melding['type'];
+    urlscope: string[];
 };
 
 const transformMessageContent = (message: MessageContent): Message => ({
     heading: message.displayName,
     url: portalLib.pageUrl({ path: message._path }),
     type: message.data.type,
+    urlscope: forceArray(message.data.urlscope),
 });
 
 export const get = () => {
