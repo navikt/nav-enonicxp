@@ -5,7 +5,7 @@
             <label>Kategori</label>
             <occurrences minimum="0" maximum="8"/>
             <config>
-                <option value="aid">Hjelpemiddel</option>
+                <option value="assistive_tools">Hjelpemiddel</option>
                 <option value="followup">Oppfølging</option>
                 <option value="benefits">Pengestøtte</option>
                 <option value="measures">Tiltak</option>
