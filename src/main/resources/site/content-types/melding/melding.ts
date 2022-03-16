@@ -11,12 +11,39 @@ export interface Melding {
   ingress?: string;
 
   /**
-   * Visning på bestemte url'er
-   */
-  urlscope?: Array<string>;
-
-  /**
    * Brødtekst melding
    */
   text?: string;
+
+  /**
+   * Visning
+   */
+  urlscope:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "global";
+
+        /**
+         * Vises på alle sider
+         */
+        global: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "scoped";
+
+        /**
+         * Vises kun på bestemte URL'er
+         */
+        scoped: {
+          /**
+           * URL
+           */
+          urls?: Array<string>;
+        };
+      };
 }

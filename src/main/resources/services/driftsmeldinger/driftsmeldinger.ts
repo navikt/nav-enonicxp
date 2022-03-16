@@ -24,12 +24,17 @@ type Message = {
     urlscope: string[];
 };
 
-const transformMessageContent = (message: MessageContent): Message => ({
-    heading: message.displayName,
-    url: portalLib.pageUrl({ path: message._path }),
-    type: message.data.type,
-    urlscope: forceArray(message.data.urlscope),
-});
+const transformMessageContent = (message: MessageContent): Message => {
+    return {
+        heading: message.displayName,
+        url: portalLib.pageUrl({ path: message._path }),
+        type: message.data.type,
+        urlscope:
+            message.data.urlscope?._selected === 'scoped'
+                ? forceArray(message.data.urlscope.scoped?.urls)
+                : [],
+    };
+};
 
 export const get = () => {
     const body = cache.get(cacheKey, () => {

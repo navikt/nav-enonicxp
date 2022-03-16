@@ -15,19 +15,35 @@
                     <default>prodstatus</default>
                 </input>
                 <mixin name="ingress"/>
-                <input type="TextLine" name="urlscope">
-                    <label>Visning på bestemte url'er</label>
-                    <help-text>Vis meldingen kun under bestemte url'er. Hvis blank vises meldingen på alle sider på nav.no</help-text>
-                    <occurrences minimum="0" maximum="0"/>
-                    <config>
-                        <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
-                    </config>
-                </input>
                 <input type="HtmlArea" name="text">
                     <label>Brødtekst melding</label>
                     <help-text>Kort og konsis meldingstekst</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
+                <option-set name="urlscope">
+                    <label>Visning</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="1">
+                        <option name="global">
+                            <label>Vises på alle sider</label>
+                            <default>true</default>
+                        </option>
+                        <option name="scoped">
+                            <label>Vises kun på bestemte URL'er</label>
+                            <help-text>Eksempel: https://www.nav.no/no/arbeid vil vises på /no/arbeid og alle undersider</help-text>
+                            <items>
+                                <input type="TextLine" name="urls">
+                                    <label>URL</label>
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <default>https://www.nav.no/</default>
+                                    <config>
+                                        <regexp>^https:\/\/([a-z0-9_\-.]*\.)*nav\.no($|\/).*</regexp>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
             </items>
         </field-set>
     </form>
