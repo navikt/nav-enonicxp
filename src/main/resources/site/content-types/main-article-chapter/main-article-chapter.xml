@@ -4,10 +4,16 @@
     <super-type>base:unstructured</super-type>
     <form>
         <input name="article" type="ContentSelector">
-            <label>Artikkel</label>
+            <label>Velg artikkel</label>
+            <help-text>Dersom du velger en annen innholdstype enn Artikkel, vil dette kapittelet fungere som en redirect</help-text>
             <occurrences maximum="1" minimum="1"/>
             <config>
                 <allowContentType>${app}:main-article</allowContentType>
+                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                <allowContentType>${app}:situation-page</allowContentType>
+                <allowContentType>${app}:guide-page</allowContentType>
+                <allowContentType>${app}:tools-page</allowContentType>
+                <allowContentType>${app}:themed-article-page</allowContentType>
             </config>
         </input>
     </form>

@@ -1,9 +1,9 @@
-const httpClient = require('/lib/http-client');
-const { urls } = require('/lib/constants');
+import httpClient from '/lib/http-client';
+import { urls } from '../../constants';
 
 const loopbackCheckParam = 'fromXp';
 
-const errorResponse = (url, status, message) => {
+const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
     if (status >= 400) {
         log.error(msg);
@@ -18,7 +18,13 @@ const errorResponse = (url, status, message) => {
 
 // This proxies requests made directly to XP to the frontend. Normally this will
 // only be used in the portal-admin content studio previews
-const adminFrontendProxy = (req) => {
+const adminFrontendProxy = (req: XP.Request) => {
+    if (req.method === 'HEAD') {
+        return {
+            status: 200,
+        };
+    }
+
     const isLoopback = req.params[loopbackCheckParam];
     if (isLoopback) {
         log.info(`Loopback to XP detected from path ${req.rawPath}`);
@@ -46,7 +52,7 @@ const adminFrontendProxy = (req) => {
             followRedirects: false,
             queryParams: {
                 ...req.params,
-                [loopbackCheckParam]: true,
+                [loopbackCheckParam]: 'true',
                 mode: req.mode,
             },
         });
@@ -73,5 +79,5 @@ const adminFrontendProxy = (req) => {
     }
 };
 
-exports.get = adminFrontendProxy;
-exports.handleError = adminFrontendProxy;
+export const get = adminFrontendProxy;
+export const handleError = adminFrontendProxy;
