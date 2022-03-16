@@ -1,11 +1,10 @@
 import cacheLib from '/lib/cache';
 import { Content } from '/lib/xp/content';
-import nodeLib from '/lib/xp/node';
 import { sitemapContentTypes } from '../../lib/sitemap/sitemap';
 import { getNestedValue, parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { batchedContentQuery } from '../../lib/utils/batched-query';
+import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 
 type Branch = 'published' | 'unpublished';
 
@@ -57,13 +56,8 @@ const hitsWithRequestedFields = (hits: ReadonlyArray<Content>, fieldKeys?: strin
         : hits;
 
 const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
-    const repo = nodeLib.connect({
-        repoId: 'com.enonic.cms.default',
-        branch: branch === 'published' ? 'master' : 'draft',
-    });
-
-    const result = repo
-        .query({
+    const result = batchedNodeQuery(
+        {
             ...(query && { query }),
             start: 0,
             count: 100000,
@@ -86,8 +80,14 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
                     }),
                 },
             },
-        })
-        .hits.map((hit) => hit.id)
+        },
+        {
+            repoId: 'com.enonic.cms.default',
+            branch: branch === 'published' ? 'master' : 'draft',
+        },
+        batchSize
+    )
+        .map((hit) => hit.id)
         .sort();
 
     log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
