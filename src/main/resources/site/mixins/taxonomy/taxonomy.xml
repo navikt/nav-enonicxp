@@ -5,12 +5,13 @@
             <label>Kategori</label>
             <occurrences minimum="0" maximum="8"/>
             <config>
-                <option value="benefits">Pengestøtte</option>
+                <option value="assistive_tools">Hjelpemiddel</option>
                 <option value="followup">Oppfølging</option>
-                <option value="rights">Veiledning</option>
+                <option value="benefits">Pengestøtte</option>
                 <option value="measures">Tiltak</option>
+                <option value="rights">Veiledning</option>
                 <option value="for_employers">For arbeidsgivere</option>
-                <option value="for_providers">For samhandlere</option>
+                <option value="for_providers">For samarbeidspartnere</option>
             </config>
         </input>
     </form>
