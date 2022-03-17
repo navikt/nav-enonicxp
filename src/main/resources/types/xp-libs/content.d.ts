@@ -84,7 +84,7 @@ declare module '*/lib/xp/content' {
             count: number;
             total: number;
             aggregations: AggregationsResponse<AggregationKeys>;
-            highlight: HighlightResponse;
+            highlight?: HighlightResponse;
         }>;
 
         type CreateContentParams<
