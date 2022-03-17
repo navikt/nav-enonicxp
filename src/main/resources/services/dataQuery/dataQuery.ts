@@ -1,7 +1,6 @@
 import cacheLib from '/lib/cache';
-import { Content } from '/lib/xp/content';
 import { sitemapContentTypes } from '../../lib/sitemap/sitemap';
-import { getNestedValue, parseJsonArray } from '../../lib/utils/nav-utils';
+import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
@@ -14,7 +13,6 @@ type RunQueryParams = {
     query?: string;
     batch: number;
     types?: ContentDescriptor[];
-    fieldKeys?: string[];
 };
 
 const batchSize = 1000;
@@ -39,24 +37,12 @@ const contentIdsCache = cacheLib.newCache({
     expire: 3600,
 });
 
-const hitsWithRequestedFields = (hits: ReadonlyArray<Content>, fieldKeys?: string[]) =>
-    fieldKeys && fieldKeys.length > 0
-        ? hits.map((hit) =>
-              fieldKeys.reduce((acc, key) => {
-                  const value = getNestedValue(hit, key);
-
-                  return value
-                      ? {
-                            ...acc,
-                            [key]: value,
-                        }
-                      : acc;
-              }, {})
-          )
-        : hits;
-
 const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
     const result = batchedNodeQuery(
+        {
+            repoId: 'com.enonic.cms.default',
+            branch: branch === 'published' ? 'master' : 'draft',
+        },
         {
             ...(query && { query }),
             start: 0,
@@ -80,14 +66,9 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
                     }),
                 },
             },
-        },
-        {
-            repoId: 'com.enonic.cms.default',
-            branch: branch === 'published' ? 'master' : 'draft',
-        },
-        batchSize
+        }
     )
-        .map((hit) => hit.id)
+        .hits.map((hit) => hit.id)
         .sort();
 
     log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
@@ -96,7 +77,7 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
 };
 
 const runQuery = (params: RunQueryParams) => {
-    const { requestId, batch, fieldKeys } = params;
+    const { requestId, batch } = params;
 
     const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
 
@@ -105,16 +86,14 @@ const runQuery = (params: RunQueryParams) => {
 
     const contentIdsBatch = contentIds.slice(start, end);
 
-    const hits = batchedContentQuery(
-        {
-            filters: {
-                ids: {
-                    values: contentIdsBatch,
-                },
+    const hits = batchedContentQuery({
+        count: 100000,
+        filters: {
+            ids: {
+                values: contentIdsBatch,
             },
         },
-        batchSize
-    );
+    }).hits;
 
     if (hits.length !== contentIdsBatch.length) {
         const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
@@ -126,8 +105,7 @@ const runQuery = (params: RunQueryParams) => {
     }
 
     return {
-        ...hits,
-        hits: hitsWithRequestedFields(hits, fieldKeys),
+        hits,
         total: contentIds.length,
         hasMore: contentIds.length > end,
     };
@@ -146,7 +124,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const { branch, requestId, query, types, fields, batch = 0 } = req.params;
+    const { branch, requestId, query, types, batch = 0 } = req.params;
 
     if (!requestId) {
         log.info('No request id specified');
@@ -167,17 +145,6 @@ export const get = (req: XP.Request) => {
                 message: `Invalid or missing parameter "branch" - must be one of ${Object.keys(
                     validBranches
                 ).join(', ')}`,
-            },
-            contentType: 'application/json',
-        };
-    }
-
-    const fieldKeysParsed = fields ? parseJsonArray(fields) : [];
-    if (!fieldKeysParsed) {
-        return {
-            status: 400,
-            body: {
-                message: 'Invalid type for argument "fields"',
             },
             contentType: 'application/json',
         };
@@ -204,7 +171,6 @@ export const get = (req: XP.Request) => {
                     query,
                     branch,
                     batch: Number(batch),
-                    fieldKeys: fieldKeysParsed,
                     types: typesParsed,
                 }),
             branch === 'published' ? 'master' : 'draft'
@@ -221,7 +187,6 @@ export const get = (req: XP.Request) => {
                 branch,
                 ...(query && { query }),
                 ...(typesParsed.length > 0 && { types: typesParsed }),
-                ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
                 total: result.total,
                 hits: result.hits,
                 hasMore: result.hasMore,

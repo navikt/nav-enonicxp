@@ -3,6 +3,7 @@ import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { forceArray, getParentPath } from '../../../../lib/utils/nav-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
+import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
 
 type ArchiveEntry = {
     name: string;
@@ -18,13 +19,13 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
         query ? ` AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")` : ''
     }`;
 
-    const archivedContentIds = repo
-        .query({
-            count: 10000,
+    const archivedContentIds = batchedNodeQuery(
+        { repoId, branch: 'draft' },
+        {
             query: queryString,
             sort: '_path ASC',
-        })
-        .hits.map((node) => node.id);
+        }
+    ).hits.map((node) => node.id);
 
     const archivedContents = repo.get(archivedContentIds);
 
