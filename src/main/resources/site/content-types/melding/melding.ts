@@ -26,7 +26,7 @@ export interface Melding {
         _selected: "global";
 
         /**
-         * Vises på alle sider
+         * Vises globalt på nav.no
          */
         global: Record<string, unknown>;
       }
