@@ -15,7 +15,7 @@ type RunQueryParams = {
     types?: ContentDescriptor[];
 };
 
-const batchSize = 1000;
+const BATCH_SIZE = 1000;
 
 const defaultTypes = [
     ...sitemapContentTypes,
@@ -81,13 +81,13 @@ const runQuery = (params: RunQueryParams) => {
 
     const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
 
-    const start = batch * batchSize;
-    const end = start + batchSize;
+    const start = batch * BATCH_SIZE;
+    const end = start + BATCH_SIZE;
 
     const contentIdsBatch = contentIds.slice(start, end);
 
     const hits = batchedContentQuery({
-        count: 100000,
+        count: BATCH_SIZE,
         filters: {
             ids: {
                 values: contentIdsBatch,

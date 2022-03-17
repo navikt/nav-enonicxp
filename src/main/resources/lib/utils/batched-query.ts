@@ -94,7 +94,7 @@ export const batchedNodeQuery = (
 ): NodeQueryResponse => {
     const repo = nodeLib.connect(repoParams);
 
-    return batchedQuery({ queryFunc: repo.query, queryParams });
+    return batchedQuery({ queryFunc: repo.query.bind(repo), queryParams });
 };
 
 export const batchedContentQuery = <ContentType extends ContentDescriptor>(
