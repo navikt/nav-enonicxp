@@ -16,7 +16,7 @@ export interface Melding {
   text?: string;
 
   /**
-   * Vis kun på spesifikke URL'er
+   * Vis kun på bestemte URL'er
    */
   urlscope?: {
     /**

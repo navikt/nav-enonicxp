@@ -21,12 +21,13 @@
                     <occurrences minimum="0" maximum="1"/>
                 </input>
                 <item-set name="urlscope">
-                    <label>Vis kun på spesifikke URL'er</label>
+                    <label>Vis kun på bestemte URL'er</label>
                     <help-text>Hvis ingen URL'er er satt, vises meldingen globalt på nav.no</help-text>
                     <occurrences minimum="0" maximum="1"/>
                     <items>
                         <input type="TextLine" name="urls">
                             <label>URL</label>
+                            <help-text>Som standard vises meldingen på alle under-sider av valgt URL - For å kun vise på en spesifikk side, avslutt med $</help-text>
                             <occurrences minimum="1" maximum="0"/>
                             <default>https://www.nav.no/</default>
                             <config>
