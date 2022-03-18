@@ -127,11 +127,14 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (Date.now() < rejectUntilTime) {
+    // This circuit breaker is triggered if a query throws an unexpected error.
+    // Prevents database errors from accumulating and crashing the server :)
+    const time = Date.now();
+    if (time < rejectUntilTime) {
         return {
             status: 503,
             body: {
-                message: `Service unavailable`,
+                message: `Service unavailable for ${(rejectUntilTime - time) / 1000} seconds`,
             },
             contentType: 'application/json',
         };
