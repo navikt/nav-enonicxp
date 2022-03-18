@@ -13,7 +13,7 @@ export const clearDriftsmeldingerCache = () => {
     cache.clear();
 };
 
-const maxMessages = 2;
+const maxMessages = 100;
 
 type MessageContent = Content<'no.nav.navno:melding'>;
 
