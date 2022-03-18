@@ -1,12 +1,21 @@
-const cacheLib = require('/lib/cache');
-const contentLib = require('/lib/xp/content');
-const nodeLib = require('/lib/xp/node');
-const { parseJsonArray } = require('/lib/utils/nav-utils');
-const { getNestedValue } = require('/lib/utils/nav-utils');
-const { sitemapContentTypes } = require('/lib/sitemap/sitemap');
-const { runInBranchContext } = require('/lib/utils/branch-context');
+import cacheLib from '/lib/cache';
+import { sitemapContentTypes } from '../../lib/sitemap/sitemap';
+import { parseJsonArray } from '../../lib/utils/nav-utils';
+import { runInBranchContext } from '../../lib/utils/branch-context';
+import { ContentDescriptor } from '../../types/content-types/content-config';
+import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 
-const batchSize = 1000;
+type Branch = 'published' | 'unpublished';
+
+type RunQueryParams = {
+    requestId: string;
+    branch: Branch;
+    query?: string;
+    batch: number;
+    types?: ContentDescriptor[];
+};
+
+const RESPONSE_BATCH_SIZE = 1000;
 
 const defaultTypes = [
     ...sitemapContentTypes,
@@ -15,53 +24,39 @@ const defaultTypes = [
     'media:spreadsheet',
     'media:presentation',
 ];
-
-const validBranches = {
+const validBranches: { [key in Branch]: boolean } = {
     published: true,
     unpublished: true,
 };
 
-// Cache the content-ids per request on the first batch, to ensure batched responses are consistent
+const branchIsValid = (branch: string): branch is Branch => validBranches[branch as Branch];
+
+// Cache the content-ids on the initial request, to ensure batched responses are consistent
 const contentIdsCache = cacheLib.newCache({
     size: 10,
-    expire: 3600,
+    expire: 600,
 });
 
-const hitsWithRequestedFields = (hits, fieldKeys) =>
-    fieldKeys?.length > 0
-        ? hits.map((hit) =>
-              fieldKeys.reduce((acc, key) => {
-                  const value = getNestedValue(hit, key);
-
-                  return value
-                      ? {
-                            ...acc,
-                            [key]: value,
-                        }
-                      : acc;
-              }, {})
-          )
-        : hits;
-
-const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
-    const repo = nodeLib.connect({
-        repoId: 'com.enonic.cms.default',
-        branch: branch === 'published' ? 'master' : 'draft',
-    });
-
-    const result = repo
-        .query({
+const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
+    const result = batchedNodeQuery({
+        repoParams: {
+            repoId: 'com.enonic.cms.default',
+            branch: branch === 'published' ? 'master' : 'draft',
+        },
+        queryParams: {
             ...(query && { query }),
             start: 0,
             count: 100000,
             filters: {
                 boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'type',
-                            values: types,
+                    ...(types && {
+                        must: {
+                            hasValue: {
+                                field: 'type',
+                                values: types,
+                            },
                         },
-                    },
+                    }),
                     ...(branch === 'unpublished' && {
                         mustNot: {
                             exists: {
@@ -71,7 +66,8 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
                     }),
                 },
             },
-        })
+        },
+    })
         .hits.map((hit) => hit.id)
         .sort();
 
@@ -80,33 +76,27 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }) => {
     return result;
 };
 
-const runQuery = ({ requestId, query, batch, branch, types, fieldKeys }) => {
-    const contentIds = contentIdsCache.get(requestId, () =>
-        getContentIdsFromQuery({
-            query,
-            branch,
-            types,
-            requestId,
-        })
-    );
+const runQuery = (params: RunQueryParams) => {
+    const { requestId, batch } = params;
 
-    const start = batch * batchSize;
-    const end = start + batchSize;
+    const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
+
+    const start = batch * RESPONSE_BATCH_SIZE;
+    const end = start + RESPONSE_BATCH_SIZE;
 
     const contentIdsBatch = contentIds.slice(start, end);
 
-    const result = contentLib.query({
-        start: 0,
-        count: 100000,
+    const hits = batchedContentQuery({
+        count: RESPONSE_BATCH_SIZE,
         filters: {
             ids: {
                 values: contentIdsBatch,
             },
         },
-    });
+    }).hits;
 
-    if (result.hits.length !== contentIdsBatch.length) {
-        const diff = contentIdsBatch.filter((id) => !result.hits.find((hit) => hit._id === id));
+    if (hits.length !== contentIdsBatch.length) {
+        const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
         log.info(
             `Data query: missing results from contentLib query for ${
                 diff.length
@@ -115,14 +105,16 @@ const runQuery = ({ requestId, query, batch, branch, types, fieldKeys }) => {
     }
 
     return {
-        ...result,
-        hits: hitsWithRequestedFields(result.hits, fieldKeys),
+        hits,
         total: contentIds.length,
         hasMore: contentIds.length > end,
     };
 };
 
-const handleGet = (req) => {
+let rejectUntilTime = 0;
+const timeoutPeriodMs = 1000 * 60 * 5;
+
+export const get = (req: XP.Request) => {
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -135,7 +127,20 @@ const handleGet = (req) => {
         };
     }
 
-    const { branch, requestId, query, types, fields, batch = 0 } = req.params;
+    // This circuit breaker is triggered if a query throws an unexpected error.
+    // Prevents database errors from accumulating and crashing the server :)
+    const time = Date.now();
+    if (time < rejectUntilTime) {
+        return {
+            status: 503,
+            body: {
+                message: `Service unavailable for ${(rejectUntilTime - time) / 1000} seconds`,
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const { branch, requestId, query, types, batch = 0 } = req.params;
 
     if (!requestId) {
         log.info('No request id specified');
@@ -148,7 +153,7 @@ const handleGet = (req) => {
         };
     }
 
-    if (!validBranches[branch]) {
+    if (!branch || !branchIsValid(branch)) {
         log.info(`Invalid branch specified: ${branch}`);
         return {
             status: 400,
@@ -156,17 +161,6 @@ const handleGet = (req) => {
                 message: `Invalid or missing parameter "branch" - must be one of ${Object.keys(
                     validBranches
                 ).join(', ')}`,
-            },
-            contentType: 'application/json',
-        };
-    }
-
-    const fieldKeysParsed = fields ? parseJsonArray(fields) : [];
-    if (!fieldKeysParsed) {
-        return {
-            status: 400,
-            body: {
-                message: 'Invalid type for argument "fields"',
             },
             contentType: 'application/json',
         };
@@ -192,8 +186,7 @@ const handleGet = (req) => {
                     requestId,
                     query,
                     branch,
-                    batch,
-                    fieldKeys: fieldKeysParsed,
+                    batch: Number(batch),
                     types: typesParsed,
                 }),
             branch === 'published' ? 'master' : 'draft'
@@ -210,7 +203,6 @@ const handleGet = (req) => {
                 branch,
                 ...(query && { query }),
                 ...(typesParsed.length > 0 && { types: typesParsed }),
-                ...(fieldKeysParsed.length > 0 && { fields: fieldKeysParsed }),
                 total: result.total,
                 hits: result.hits,
                 hasMore: result.hasMore,
@@ -222,6 +214,8 @@ const handleGet = (req) => {
             `Data query: error while running query for request id ${requestId}, batch ${batch} - ${e}`
         );
 
+        rejectUntilTime = Date.now() + timeoutPeriodMs;
+
         return {
             status: 500,
             body: {
@@ -231,5 +225,3 @@ const handleGet = (req) => {
         };
     }
 };
-
-exports.get = handleGet;
