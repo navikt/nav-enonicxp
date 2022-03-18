@@ -111,6 +111,9 @@ const runQuery = (params: RunQueryParams) => {
     };
 };
 
+let rejectUntilTime = 0;
+const timeoutPeriodMs = 1000 * 60 * 5;
+
 export const get = (req: XP.Request) => {
     const { secret } = req.headers;
 
@@ -119,6 +122,16 @@ export const get = (req: XP.Request) => {
             status: 401,
             body: {
                 message: 'Not authorized',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    if (Date.now() < rejectUntilTime) {
+        return {
+            status: 503,
+            body: {
+                message: `Service unavailable`,
             },
             contentType: 'application/json',
         };
@@ -197,6 +210,8 @@ export const get = (req: XP.Request) => {
         log.error(
             `Data query: error while running query for request id ${requestId}, batch ${batch} - ${e}`
         );
+
+        rejectUntilTime = Date.now() + timeoutPeriodMs;
 
         return {
             status: 500,
