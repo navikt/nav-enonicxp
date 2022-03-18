@@ -14,6 +14,7 @@
                         <allowContentType>${app}:situation-page</allowContentType>
                         <allowContentType>${app}:guide-page</allowContentType>
                         <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page</allowContentType>
                     </config>
                 </input>
             </items>
