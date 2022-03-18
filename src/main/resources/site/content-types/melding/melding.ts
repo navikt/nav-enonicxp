@@ -16,34 +16,12 @@ export interface Melding {
   text?: string;
 
   /**
-   * Visning
+   * Vis kun på spesifikke URL'er
    */
-  urlscope:
-    | {
-        /**
-         * Selected
-         */
-        _selected: "global";
-
-        /**
-         * Vises globalt på nav.no
-         */
-        global: Record<string, unknown>;
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "scoped";
-
-        /**
-         * Vises kun på bestemte URL'er
-         */
-        scoped: {
-          /**
-           * URL
-           */
-          urls?: Array<string>;
-        };
-      };
+  urlscope?: {
+    /**
+     * URL
+     */
+    urls: Array<string>;
+  };
 }

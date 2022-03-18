@@ -20,30 +20,21 @@
                     <help-text>Kort og konsis meldingstekst</help-text>
                     <occurrences minimum="0" maximum="1"/>
                 </input>
-                <option-set name="urlscope">
-                    <label>Visning</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <options minimum="1" maximum="1">
-                        <option name="global">
-                            <label>Vises globalt på nav.no</label>
-                            <default>true</default>
-                        </option>
-                        <option name="scoped">
-                            <label>Vises kun på bestemte URL'er</label>
-                            <help-text>Eksempel: https://www.nav.no/no/arbeid vil vises på /no/arbeid og alle undersider</help-text>
-                            <items>
-                                <input type="TextLine" name="urls">
-                                    <label>URL</label>
-                                    <occurrences minimum="0" maximum="0"/>
-                                    <default>https://www.nav.no/</default>
-                                    <config>
-                                        <regexp>^((http:\/\/localhost:3000)|(https:\/\/([a-z0-9_\-.]*\.)*nav\.no))($|\/).*</regexp>
-                                    </config>
-                                </input>
-                            </items>
-                        </option>
-                    </options>
-                </option-set>
+                <item-set name="urlscope">
+                    <label>Vis kun på spesifikke URL'er</label>
+                    <help-text>Hvis ingen URL'er er satt, vises meldingen globalt på nav.no</help-text>
+                    <occurrences minimum="0" maximum="1"/>
+                    <items>
+                        <input type="TextLine" name="urls">
+                            <label>URL</label>
+                            <occurrences minimum="1" maximum="0"/>
+                            <default>https://www.nav.no/</default>
+                            <config>
+                                <regexp>^((http:\/\/localhost:3000)|(https:\/\/([a-z0-9_\-.]*\.)*nav\.no))($|\/).*</regexp>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
             </items>
         </field-set>
     </form>
