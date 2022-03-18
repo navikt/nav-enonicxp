@@ -88,13 +88,28 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
     };
 };
 
-export const batchedNodeQuery = (
-    repoParams: Source,
-    queryParams: NodeQueryParams
-): NodeQueryResponse => {
-    const repo = nodeLib.connect(repoParams);
+type BatchedNodeQueryParams =
+    | {
+          queryParams: NodeQueryParams;
+      } & (
+          | {
+                repoParams: Source;
+                repo?: never;
+            }
+          | {
+                repo: RepoConnection;
+                repoParams?: never;
+            }
+      );
 
-    return batchedQuery({ queryFunc: repo.query.bind(repo), queryParams });
+export const batchedNodeQuery = ({
+    queryParams,
+    repoParams,
+    repo,
+}: BatchedNodeQueryParams): NodeQueryResponse => {
+    const _repo = repo || nodeLib.connect(repoParams as Source);
+
+    return batchedQuery({ queryFunc: _repo.query.bind(_repo), queryParams });
 };
 
 export const batchedContentQuery = <ContentType extends ContentDescriptor>(

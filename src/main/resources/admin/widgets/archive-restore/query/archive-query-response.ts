@@ -19,13 +19,13 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
         query ? ` AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")` : ''
     }`;
 
-    const archivedContentIds = batchedNodeQuery(
-        { repoId, branch: 'draft' },
-        {
+    const archivedContentIds = batchedNodeQuery({
+        repo,
+        queryParams: {
             query: queryString,
             sort: '_path ASC',
-        }
-    ).hits.map((node) => node.id);
+        },
+    }).hits.map((node) => node.id);
 
     const archivedContents = repo.get(archivedContentIds);
 

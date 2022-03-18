@@ -15,7 +15,7 @@ type RunQueryParams = {
     types?: ContentDescriptor[];
 };
 
-const BATCH_SIZE = 1000;
+const RESPONSE_BATCH_SIZE = 1000;
 
 const defaultTypes = [
     ...sitemapContentTypes,
@@ -31,19 +31,19 @@ const validBranches: { [key in Branch]: boolean } = {
 
 const branchIsValid = (branch: string): branch is Branch => validBranches[branch as Branch];
 
-// Cache the content-ids per request on the first batch, to ensure batched responses are consistent
+// Cache the content-ids on the initial request, to ensure batched responses are consistent
 const contentIdsCache = cacheLib.newCache({
     size: 10,
-    expire: 3600,
+    expire: 600,
 });
 
 const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
-    const result = batchedNodeQuery(
-        {
+    const result = batchedNodeQuery({
+        repoParams: {
             repoId: 'com.enonic.cms.default',
             branch: branch === 'published' ? 'master' : 'draft',
         },
-        {
+        queryParams: {
             ...(query && { query }),
             start: 0,
             count: 100000,
@@ -66,8 +66,8 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
                     }),
                 },
             },
-        }
-    )
+        },
+    })
         .hits.map((hit) => hit.id)
         .sort();
 
@@ -81,13 +81,13 @@ const runQuery = (params: RunQueryParams) => {
 
     const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
 
-    const start = batch * BATCH_SIZE;
-    const end = start + BATCH_SIZE;
+    const start = batch * RESPONSE_BATCH_SIZE;
+    const end = start + RESPONSE_BATCH_SIZE;
 
     const contentIdsBatch = contentIds.slice(start, end);
 
     const hits = batchedContentQuery({
-        count: BATCH_SIZE,
+        count: RESPONSE_BATCH_SIZE,
         filters: {
             ids: {
                 values: contentIdsBatch,
