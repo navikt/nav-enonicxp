@@ -238,8 +238,10 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
     // If the content has a custom path, we want to redirect requests from the internal path
     if (shouldRedirectToCustomPath(content, requestedPathOrId, branch)) {
         return {
+            ...content,
             __typename: 'no_nav_navno_InternalLink',
             data: { target: { _path: content.data.customPath } },
+            page: undefined,
         };
     }
 
