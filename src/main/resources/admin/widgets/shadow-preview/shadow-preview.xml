@@ -1,0 +1,10 @@
+<widget>
+    <display-name>Lenke til skyggeside</display-name>
+    <description>Manuell cache-invalidering</description>
+    <interfaces>
+        <interface>contentstudio.contextpanel</interface>
+    </interfaces>
+    <allow>
+        <principal>role:system.authenticated</principal>
+    </allow>
+</widget>

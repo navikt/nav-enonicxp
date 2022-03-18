@@ -1,0 +1,26 @@
+<widget>
+    <form
+        method="get"
+        data-th-action="${invalidate}"
+        style="padding: 1rem"
+        data-th-onsubmit="onCopyHandler(form)"
+    >
+        <script>
+            function onCopyHandler(event) {
+                console.log('copy', event, this);
+            }
+        </script>
+        <h1>Skyggekopi</h1>
+        <p>
+            Dette er en lenke som du kan sende til alle som ikke har tilgang til Content Studio.
+            Husk at siden må være publisert og at lenken er tilgjengelig for alle utenfor NAV.
+        </p>
+        <input
+            data-th-value="${shadowUrl}"
+            type="text"
+            readonly
+            style="margin-top: 1rem; width: 100%; border: 0px; padding: 0px"
+        />
+        <button type="submit" style="margin-top: 1rem">Klikk her for å kopiere</button>
+    </form>
+</widget>
