@@ -14,4 +14,14 @@ export interface Melding {
    * Brødtekst melding
    */
   text?: string;
+
+  /**
+   * Vis kun på bestemte URL'er
+   */
+  urlscope?: {
+    /**
+     * URL
+     */
+    urls: Array<string>;
+  };
 }

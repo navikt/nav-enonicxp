@@ -2,6 +2,7 @@ import portalLib from '/lib/xp/portal';
 import cacheLib from '/lib/cache';
 import contentLib, { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';
+import { forceArray } from '../../lib/utils/nav-utils';
 
 const cacheKey = 'driftsmeldinger-cache';
 const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
@@ -12,7 +13,7 @@ export const clearDriftsmeldingerCache = () => {
     cache.clear();
 };
 
-const maxMessages = 2;
+const maxMessages = 100;
 
 type MessageContent = Content<'no.nav.navno:melding'>;
 
@@ -20,13 +21,17 @@ type Message = {
     heading: string;
     url: string;
     type: Melding['type'];
+    urlscope: string[];
 };
 
-const transformMessageContent = (message: MessageContent): Message => ({
-    heading: message.displayName,
-    url: portalLib.pageUrl({ path: message._path }),
-    type: message.data.type,
-});
+const transformMessageContent = (message: MessageContent): Message => {
+    return {
+        heading: message.displayName,
+        url: portalLib.pageUrl({ path: message._path }),
+        type: message.data.type,
+        urlscope: forceArray(message.data.urlscope?.urls),
+    };
+};
 
 export const get = () => {
     const body = cache.get(cacheKey, () => {
