@@ -15,7 +15,9 @@
                         <allowContentType>${app}:section-page</allowContentType>
                         <allowContentType>${app}:page-list</allowContentType>
                         <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
                         <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
                 </input>

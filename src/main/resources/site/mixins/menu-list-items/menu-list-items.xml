@@ -24,6 +24,8 @@
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -49,6 +51,8 @@
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -73,6 +77,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -97,6 +103,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -130,6 +138,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -154,6 +164,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -178,6 +190,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -202,6 +216,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -226,6 +242,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -250,6 +268,8 @@
                                 <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
                                 <allowContentType>${app}:situation-page</allowContentType>
                                 <allowContentType>${app}:tools-page</allowContentType>
+                                <allowContentType>${app}:guide-page</allowContentType>
+                                <allowContentType>${app}:themed-article-page</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
