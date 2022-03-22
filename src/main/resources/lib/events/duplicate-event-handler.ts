@@ -33,7 +33,6 @@ export const activateNodeDuplicationListener = () => {
     if (!hasSetupListeners) {
         hasSetupListeners = true;
 
-        // Invalidate cache on publish/unpublish actions
         eventLib.listener({
             type: 'node.duplicated',
             localOnly: false,
