@@ -1,3 +1,5 @@
+import { activateNodeDuplicationListener } from './lib/events/duplicate-event-handler';
+
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -43,6 +45,8 @@ if (clusterLib.isMaster()) {
 }
 
 facetLib.activateEventListener();
+
+activateNodeDuplicationListener();
 
 log.info('Finished running main');
 
