@@ -16,7 +16,6 @@ const duplicatedNodeCallback = (event: EnonicEvent) => {
                 contentLib.modify({
                     key: node.id,
                     editor: (content) => {
-                        log.info(JSON.stringify(content.data));
                         if (hasCustomPath(content)) {
                             (content.data.customPath as string | null) = null;
                         }
