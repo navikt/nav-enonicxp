@@ -21,7 +21,7 @@ export interface SituationFlexColsConfig {
   toggleCopyButton: boolean;
 
   /**
-   * Antall kolonner ved full skjermbredde
+   * Overstyr antall kolonner ved full skjermbredde
    */
   numCols?: number;
 

@@ -4,8 +4,7 @@
     <form>
         <mixin name="header-with-anchor"/>
         <input type="Long" name="numCols">
-            <label>Antall kolonner ved full skjermbredde</label>
-            <default>3</default>
+            <label>Overstyr antall kolonner ved full skjermbredde</label>
             <config>
                 <min>1</min>
                 <max>3</max>
