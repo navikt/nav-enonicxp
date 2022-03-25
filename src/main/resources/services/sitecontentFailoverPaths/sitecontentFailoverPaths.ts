@@ -43,7 +43,7 @@ export const get = (req: XP.Request) => {
 
     const redirectPaths = contentLib
         .getChildren({ key: redirectsPath, count: 1000 })
-        .hits.map((content) => stripPathPrefix(content._path));
+        .hits.map((content) => content._path.replace(redirectsPath, ''));
 
     return {
         status: 200,
