@@ -1,6 +1,6 @@
 import contentLib from '/lib/xp/content';
 import { getContentList } from '../../lib/contentlists/contentlists';
-import { forceArray, notEmpty } from '../../lib/utils/nav-utils';
+import { forceArray, notEmpty, stripPathPrefix } from '../../lib/utils/nav-utils';
 
 // Urls to content lists to include in the RSS-feed
 const contentLists = [
@@ -31,7 +31,7 @@ const handleGet = () => {
             if (content && content.type === 'no.nav.navno:main-article') {
                 rssFeed.push({
                     title: content.displayName,
-                    url: content._path.replace(/^\/www.nav.no/, 'https://www.nav.no'),
+                    url: `https://www.nav.no${stripPathPrefix(content._path)}`,
                     date: content?.publish?.first,
                     description: content?.data?.ingress,
                 });

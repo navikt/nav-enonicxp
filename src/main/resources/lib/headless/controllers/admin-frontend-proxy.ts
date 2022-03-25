@@ -1,5 +1,6 @@
 import httpClient from '/lib/http-client';
 import { urls } from '../../constants';
+import { stripPathPrefix } from '../../utils/nav-utils';
 
 const loopbackCheckParam = 'fromXp';
 
@@ -36,7 +37,7 @@ const adminFrontendProxy = (req: XP.Request) => {
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
-    const contentPath = req.rawPath.slice(pathStartIndex).replace('/www.nav.no', '');
+    const contentPath = stripPathPrefix(req.rawPath.slice(pathStartIndex));
     const frontendUrl = `${urls.frontendOrigin}${
         req.branch === 'draft' ? '/draft' : ''
     }${contentPath}`;

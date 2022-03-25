@@ -3,6 +3,7 @@ const genericLib = require('/lib/guillotine/generic');
 const dynamicLib = require('/lib/guillotine/dynamic');
 const rootQueryLib = require('/lib/guillotine/query/root-query');
 const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscription');
+const { redirectsPath } = require('../../constants');
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
@@ -67,7 +68,7 @@ const schemaContextOptions = {
         RichText: richTextCallback,
     }),
     applications: [app.name, 'navno.nav.no.search'],
-    allowPaths: ['/redirects'],
+    allowPaths: [redirectsPath],
 };
 
 const initAndCreateSchema = () => {

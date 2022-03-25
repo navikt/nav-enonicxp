@@ -3,7 +3,7 @@ import taskLib from '/lib/xp/task';
 import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, stripPathPrefix } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { contentRepo, urls } from '../constants';
@@ -89,9 +89,7 @@ const getUrl = (content: Content<any>) => {
 
     const customPath = content.data?.customPath;
 
-    const pathname = isValidCustomPath(customPath)
-        ? customPath
-        : content._path.replace(/^\/www.nav.no/, '');
+    const pathname = isValidCustomPath(customPath) ? customPath : stripPathPrefix(content._path);
     return `${urls.frontendOrigin}${pathname}`;
 };
 

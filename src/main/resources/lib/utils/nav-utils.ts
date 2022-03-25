@@ -1,5 +1,5 @@
 import nodeLib from '/lib/xp/node';
-import { contentRepo } from '../constants';
+import { contentRepo, navnoRootPath } from '../constants';
 
 // TODO: rydd i denne fila
 
@@ -166,3 +166,7 @@ export const createObjectChecksum = (obj: Record<string, any>) => {
     const serializedObj = JSON.stringify(cleanObj).split('').sort().join();
     return hashCode(serializedObj);
 };
+
+const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
+
+export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
