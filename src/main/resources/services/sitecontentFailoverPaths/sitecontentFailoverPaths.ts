@@ -17,17 +17,13 @@ const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:situation-page',
 ];
 
-const getPathsToRender = (test?: boolean) => {
+const getPathsToRender = (isTest?: boolean) => {
     try {
         const contentPaths = batchedContentQuery({
             start: 0,
             count: 20000,
-            contentTypes: test ? testContentTypes : contentTypesRenderedByFrontend,
+            contentTypes: isTest ? testContentTypes : contentTypesRenderedByFrontend,
         }).hits.reduce((acc, content) => {
-            if (!content) {
-                log.info(`Null content! Oh noes!`);
-                return acc;
-            }
             acc.push(stripPathPrefix(content._path));
 
             if (hasCustomPath(content)) {
@@ -37,7 +33,7 @@ const getPathsToRender = (test?: boolean) => {
             return acc;
         }, [] as string[]);
 
-        if (test) {
+        if (isTest) {
             return contentPaths;
         }
 
@@ -82,7 +78,10 @@ export const get = (req: XP.Request) => {
     if (!paths) {
         return {
             status: 500,
-            message: 'Server error!',
+            body: {
+                message: 'Unknown error',
+            },
+            contentType: 'application/json',
         };
     }
 
