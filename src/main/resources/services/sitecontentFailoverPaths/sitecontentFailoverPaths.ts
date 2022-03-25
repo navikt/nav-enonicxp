@@ -14,6 +14,41 @@ const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:situation-page',
 ];
 
+const getPathsToRender = (test?: boolean) => {
+    try {
+        const contentPaths = batchedContentQuery({
+            start: 0,
+            count: 20000,
+            contentTypes: test ? testContentTypes : contentTypesRenderedByFrontend,
+        }).hits.reduce((acc, content) => {
+            if (!content) {
+                log.info(`Null content! Oh noes!`);
+                return acc;
+            }
+            acc.push(stripPathPrefix(content._path));
+
+            if (hasCustomPath(content)) {
+                acc.push(content.data.customPath);
+            }
+
+            return acc;
+        }, [] as string[]);
+
+        if (test) {
+            return contentPaths;
+        }
+
+        const redirectPaths = contentLib
+            .getChildren({ key: redirectsPath, count: 1000 })
+            .hits.map((content) => content._path.replace(redirectsPath, ''));
+
+        return [...contentPaths, ...redirectPaths];
+    } catch (e) {
+        log.error(`Error while retrieving content paths - ${e}`);
+        return null;
+    }
+};
+
 // This returns a full list of content paths that should be pre-rendered
 // by the failover-instance of the frontend app
 export const get = (req: XP.Request) => {
@@ -29,35 +64,26 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const contentPaths = batchedContentQuery({
-        start: 0,
-        count: 20000,
-        contentTypes: test ? testContentTypes : contentTypesRenderedByFrontend,
-    }).hits.reduce((acc, content) => {
-        const standardPath = stripPathPrefix(content._path);
+    const startTime = Date.now();
 
-        if (hasCustomPath(content)) {
-            return [...acc, standardPath, content.data.customPath];
-        }
+    const paths = getPathsToRender(!!test);
 
-        return [...acc, standardPath];
-    }, [] as string[]);
-
-    if (test) {
+    if (!paths) {
         return {
-            status: 200,
-            body: contentPaths,
-            contentType: 'application/json',
+            status: 500,
+            message: 'Server error!',
         };
     }
 
-    const redirectPaths = contentLib
-        .getChildren({ key: redirectsPath, count: 1000 })
-        .hits.map((content) => content._path.replace(redirectsPath, ''));
+    log.info(
+        `Retrieved paths for ${paths.length} entries - Time spent: ${
+            (Date.now() - startTime) / 1000
+        } sec`
+    );
 
     return {
         status: 200,
-        body: [...contentPaths, ...redirectPaths],
+        body: paths,
         contentType: 'application/json',
     };
 };
