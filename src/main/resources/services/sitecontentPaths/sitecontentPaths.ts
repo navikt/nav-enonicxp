@@ -57,7 +57,7 @@ const getFromCache = (isTest: boolean) => {
 };
 
 // This returns a full list of content paths that should be pre-rendered
-// by the failover-instance of the frontend app
+// by the failover-instance of the frontend
 export const get = (req: XP.Request) => {
     const { secret, test } = req.headers;
 
