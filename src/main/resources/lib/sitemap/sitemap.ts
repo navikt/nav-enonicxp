@@ -59,7 +59,7 @@ const sitemapData: SitemapData = {
 };
 
 const isIncludedType = (type: string) =>
-    !!contentTypesInSitemap.find((includedType) => includedType === type);
+    contentTypesInSitemap.some((includedType) => includedType === type);
 
 const shouldIncludeContent = (content: Content<any>) =>
     content &&
