@@ -5,10 +5,10 @@ import clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { ContentDescriptor } from '../../types/content-types/content-config';
 import { contentRepo, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
+import { sitemapContentTypes } from '../contenttype-lists';
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -57,21 +57,6 @@ const sitemapData: SitemapData = {
         return Object.values(this.entries);
     },
 };
-
-export const sitemapContentTypes: ContentDescriptor[] = [
-    `${app.name}:situation-page`,
-    `${app.name}:guide-page`,
-    `${app.name}:themed-article-page`,
-    `${app.name}:dynamic-page`,
-    `${app.name}:content-page-with-sidemenus`,
-    `${app.name}:main-article`,
-    `${app.name}:section-page`,
-    `${app.name}:page-list`,
-    `${app.name}:transport-page`,
-    `${app.name}:office-information`,
-    `${app.name}:publishing-calendar`,
-    `${app.name}:large-table`,
-];
 
 const isIncludedType = (type: string) =>
     !!sitemapContentTypes.find((includedType) => includedType === type);

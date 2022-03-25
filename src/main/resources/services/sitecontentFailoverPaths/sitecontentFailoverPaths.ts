@@ -1,19 +1,21 @@
 import contentLib from '/lib/xp/content';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
-import { sitemapContentTypes } from '../../lib/sitemap/sitemap';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { redirectsPath } from '../../lib/constants';
 import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { sitemapContentTypes } from '../../lib/contenttype-lists';
 
 // Limited selection of content types for testing purposes
-// (we don't want to build all ~15000 pages on every deploy while testing :)
+// (we don't want to build all 15000+ pages on every deploy while testing :)
 const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:dynamic-page',
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
 ];
 
+// This returns a full list of content paths that should be pre-rendered
+// by the failover-instance of the frontend app
 export const get = (req: XP.Request) => {
     const { secret, test } = req.headers;
 

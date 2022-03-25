@@ -4,7 +4,7 @@ const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
 const { getPortalFragmentContent } = require('/lib/headless/process-components');
 const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getBreadcrumbMenu } = require('./breadcrumbs');
+const { getBreadcrumbs } = require('./breadcrumbs');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
 const {
@@ -127,7 +127,7 @@ const getContent = (contentRef, branch) => {
         };
     }
 
-    const breadcrumbs = runInBranchContext(() => getBreadcrumbMenu(contentRef), branch);
+    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(contentRef), branch);
 
     return {
         ...contentWithParsedData,

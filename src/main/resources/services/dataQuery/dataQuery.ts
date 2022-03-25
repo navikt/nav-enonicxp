@@ -1,9 +1,9 @@
 import cacheLib from '/lib/cache';
-import { sitemapContentTypes } from '../../lib/sitemap/sitemap';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
+import { dataQueryContentTypes } from '../../lib/contenttype-lists';
 
 type Branch = 'published' | 'unpublished';
 
@@ -17,13 +17,6 @@ type RunQueryParams = {
 
 const RESPONSE_BATCH_SIZE = 1000;
 
-const defaultTypes = [
-    ...sitemapContentTypes,
-    'media:text',
-    'media:document',
-    'media:spreadsheet',
-    'media:presentation',
-];
 const validBranches: { [key in Branch]: boolean } = {
     published: true,
     unpublished: true,
@@ -166,7 +159,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const typesParsed = types ? parseJsonArray(types) : defaultTypes;
+    const typesParsed = types ? parseJsonArray(types) : dataQueryContentTypes;
     if (!typesParsed) {
         return {
             status: 400,
