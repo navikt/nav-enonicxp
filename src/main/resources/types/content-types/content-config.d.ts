@@ -79,7 +79,8 @@ export type BuiltinContentDescriptor =
     | 'portal:template-folder'
     | 'portal:page-template'
     | 'portal:site'
-    | 'base:folder';
+    | 'base:folder'
+    | 'no.nav.navno:url';
 
 export type MediaDescriptor = `media:${string}`;
 

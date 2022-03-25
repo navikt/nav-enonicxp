@@ -32,6 +32,11 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:dynamic-page`,
 ];
 
+export const linkContentTypes: ContentTypeList = [
+    `${appDescriptor}:internal-link`,
+    `${appDescriptor}:external-link`,
+];
+
 export const contentTypesInSitemap: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
@@ -48,8 +53,7 @@ export const contentTypesInDataQuery: ContentTypeList = [
 export const contentTypesInContentSwitcher: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
-    `${appDescriptor}:internal-link`,
-    `${appDescriptor}:external-link`,
+    ...linkContentTypes,
 ];
 
 export const productCardTargetTypes: ContentTypeSet = listToSet([
@@ -73,3 +77,12 @@ export const contentTypesWithBreadcrumbs: ContentTypeSet = listToSet([
     `${appDescriptor}:transport-page`,
     `${appDescriptor}:large-table`,
 ]);
+
+export const contentTypesRenderedByFrontend: ContentTypeList = [
+    ...legacyPageContentTypes,
+    ...dynamicPageContentTypes,
+    ...linkContentTypes,
+    `${appDescriptor}:main-article-chapter`,
+    `${appDescriptor}:tools-page`,
+    `${appDescriptor}:url`,
+];

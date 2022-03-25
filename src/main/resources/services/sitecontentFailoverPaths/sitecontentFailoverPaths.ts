@@ -4,7 +4,7 @@ import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { redirectsPath } from '../../lib/constants';
 import { stripPathPrefix } from '../../lib/utils/nav-utils';
-import { contentTypesInSitemap } from '../../lib/contenttype-lists';
+import { contentTypesRenderedByFrontend } from '../../lib/contenttype-lists';
 
 // Limited selection of content types for testing purposes
 // (we don't want to build all 15000+ pages on every deploy while testing :)
@@ -32,7 +32,7 @@ export const get = (req: XP.Request) => {
     const contentPaths = batchedContentQuery({
         start: 0,
         count: 20000,
-        contentTypes: test ? testContentTypes : contentTypesInSitemap,
+        contentTypes: test ? testContentTypes : contentTypesRenderedByFrontend,
     }).hits.reduce((acc, content) => {
         const standardPath = stripPathPrefix(content._path);
 
