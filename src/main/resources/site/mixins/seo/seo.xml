@@ -29,7 +29,7 @@
                 </input>
                 <input name="noindex" type="CheckBox">
                     <label>
-                        Skal ikke vises i eksternt søk - NB! Skal bare legges inn av hovedredaktør/administrator
+                        Skal ikke vises i eksternt søk
                     </label>
                     <help-text>
                         Med eksternt søk menes Google, Bing mv.
