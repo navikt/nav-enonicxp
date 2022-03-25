@@ -1,10 +1,13 @@
 import contentLib from '/lib/xp/content';
+import cacheLib from '/lib/cache';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { redirectsPath } from '../../lib/constants';
 import { stripPathPrefix } from '../../lib/utils/nav-utils';
 import { contentTypesRenderedByFrontend } from '../../lib/contenttype-lists';
+
+const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
 // Limited selection of content types for testing purposes
 // (we don't want to build all 15000+ pages on every deploy while testing :)
@@ -49,6 +52,14 @@ const getPathsToRender = (test?: boolean) => {
     }
 };
 
+const getFromCache = (isTest: boolean) => {
+    try {
+        return cache.get(isTest ? 'test' : 'full', () => getPathsToRender(isTest));
+    } catch (e) {
+        return null;
+    }
+};
+
 // This returns a full list of content paths that should be pre-rendered
 // by the failover-instance of the frontend app
 export const get = (req: XP.Request) => {
@@ -66,7 +77,7 @@ export const get = (req: XP.Request) => {
 
     const startTime = Date.now();
 
-    const paths = getPathsToRender(!!test);
+    const paths = getFromCache(!!test);
 
     if (!paths) {
         return {
