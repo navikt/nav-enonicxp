@@ -43,6 +43,14 @@ export const get = (req: XP.Request) => {
         return [...acc, standardPath];
     }, [] as string[]);
 
+    if (test) {
+        return {
+            status: 200,
+            body: contentPaths,
+            contentType: 'application/json',
+        };
+    }
+
     const redirectPaths = contentLib
         .getChildren({ key: redirectsPath, count: 1000 })
         .hits.map((content) => content._path.replace(redirectsPath, ''));
