@@ -81,11 +81,16 @@ export type BuiltinContentDescriptor =
     | 'portal:site'
     | 'base:folder';
 
+export type MediaDescriptor = `media:${string}`;
+
 export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
 
 export type CustomContentDescriptor = keyof CustomContentDataConfigs;
 
-export type ContentDescriptor = CustomContentDescriptor | BuiltinContentDescriptor;
+export type ContentDescriptor =
+    | MediaDescriptor
+    | CustomContentDescriptor
+    | BuiltinContentDescriptor;
 
 // TODO: add x-data
 // TODO: add media/portal/base types

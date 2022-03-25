@@ -8,7 +8,7 @@ import { runInBranchContext } from '../utils/branch-context';
 import { contentRepo, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
-import { sitemapContentTypes } from '../contenttype-lists';
+import { contentTypesInSitemap } from '../contenttype-lists';
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -59,7 +59,7 @@ const sitemapData: SitemapData = {
 };
 
 const isIncludedType = (type: string) =>
-    !!sitemapContentTypes.find((includedType) => includedType === type);
+    !!contentTypesInSitemap.find((includedType) => includedType === type);
 
 const shouldIncludeContent = (content: Content<any>) =>
     content &&
@@ -147,7 +147,7 @@ const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): Sit
         .query({
             start,
             count: batchCount,
-            contentTypes: sitemapContentTypes,
+            contentTypes: contentTypesInSitemap,
             filters: {
                 boolean: {
                     mustNot: {

@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { switchableContentTypes } from '../../../lib/contenttype-lists';
+import { contentTypesInContentSwitcher } from '../../../lib/contenttype-lists';
 
 const view = resolve('./content-type-switcher.html');
 
@@ -9,7 +9,7 @@ const getAllowedTypes = () => {
     return contentLib
         .getTypes()
         .filter((type) =>
-            switchableContentTypes.some((allowedTypeName) => allowedTypeName === type.name)
+            contentTypesInContentSwitcher.some((allowedTypeName) => allowedTypeName === type.name)
         );
 };
 

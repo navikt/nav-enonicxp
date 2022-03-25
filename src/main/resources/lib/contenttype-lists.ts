@@ -1,68 +1,75 @@
 import { ContentDescriptor } from '../types/content-types/content-config';
 import { appDescriptor } from './constants';
 
+type ContentTypeList = ContentDescriptor[];
+
 type ContentTypeSet = { [type in ContentDescriptor]?: true };
 
-export const sitemapContentTypes: ContentDescriptor[] = [
-    `${appDescriptor}:situation-page`,
-    `${appDescriptor}:guide-page`,
-    `${appDescriptor}:themed-article-page`,
-    `${appDescriptor}:dynamic-page`,
-    `${appDescriptor}:content-page-with-sidemenus`,
+const listToSet = (list: ContentTypeList): ContentTypeSet =>
+    list.reduce((acc, contentType) => {
+        return { ...acc, [contentType]: true };
+    }, {});
+
+export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:main-article`,
     `${appDescriptor}:section-page`,
     `${appDescriptor}:page-list`,
     `${appDescriptor}:transport-page`,
+    `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-    `${appDescriptor}:large-table`,
 ];
 
-export const dataQueryContentTypes = [
-    ...sitemapContentTypes,
+export const productPageContentTypes: ContentTypeList = [
+    `${appDescriptor}:situation-page`,
+    `${appDescriptor}:guide-page`,
+    `${appDescriptor}:themed-article-page`,
+    `${appDescriptor}:content-page-with-sidemenus`,
+];
+
+export const dynamicPageContentTypes: ContentTypeList = [
+    ...productPageContentTypes,
+    `${appDescriptor}:dynamic-page`,
+];
+
+export const contentTypesInSitemap: ContentTypeList = [
+    ...dynamicPageContentTypes,
+    ...legacyPageContentTypes,
+];
+
+export const contentTypesInDataQuery: ContentTypeList = [
+    ...contentTypesInSitemap,
     'media:text',
     'media:document',
     'media:spreadsheet',
     'media:presentation',
 ];
 
-export const switchableContentTypes = [
-    `${appDescriptor}:dynamic-page`,
-    `${appDescriptor}:content-page-with-sidemenus`,
+export const contentTypesInContentSwitcher: ContentTypeList = [
+    ...dynamicPageContentTypes,
+    ...legacyPageContentTypes,
     `${appDescriptor}:internal-link`,
     `${appDescriptor}:external-link`,
+];
+
+export const productCardTargetTypes: ContentTypeSet = listToSet([
+    ...productPageContentTypes,
+    `${appDescriptor}:tools-page`,
+]);
+
+export const typesWithDeepReferences: ContentTypeSet = listToSet([
+    'portal:fragment',
+    `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:notification`,
+    `${appDescriptor}:main-article-chapter`,
+    `${appDescriptor}:content-list`,
+]);
+
+export const contentTypesWithBreadcrumbs: ContentTypeSet = listToSet([
+    ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:section-page`,
     `${appDescriptor}:page-list`,
     `${appDescriptor}:transport-page`,
-    `${appDescriptor}:office-information`,
     `${appDescriptor}:large-table`,
-];
-
-export const productCardTargetTypes: ContentTypeSet = {
-    [`${appDescriptor}:content-page-with-sidemenus`]: true,
-    [`${appDescriptor}:situation-page`]: true,
-    [`${appDescriptor}:tools-page`]: true,
-};
-
-export const typesWithDeepReferences: ContentTypeSet = {
-    'portal:fragment': true,
-    [`${appDescriptor}:global-value-set`]: true,
-    [`${appDescriptor}:notification`]: true,
-    [`${appDescriptor}:main-article-chapter`]: true,
-    [`${appDescriptor}:content-list`]: true,
-};
-
-export const contentTypesWithBreadcrumbs: ContentTypeSet = {
-    [`${appDescriptor}:main-article`]: true,
-    [`${appDescriptor}:section-page`]: true,
-    [`${appDescriptor}:page-list`]: true,
-    [`${appDescriptor}:transport-page`]: true,
-    [`${appDescriptor}:generic-page`]: true,
-    [`${appDescriptor}:dynamic-page`]: true,
-    [`${appDescriptor}:content-page-with-sidemenus`]: true,
-    [`${appDescriptor}:situation-page`]: true,
-    [`${appDescriptor}:guide-page`]: true,
-    [`${appDescriptor}:themed-article-page`]: true,
-    [`${appDescriptor}:large-table`]: true,
-};
+]);

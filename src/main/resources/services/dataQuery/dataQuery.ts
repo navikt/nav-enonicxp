@@ -3,7 +3,7 @@ import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
-import { dataQueryContentTypes } from '../../lib/contenttype-lists';
+import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 
 type Branch = 'published' | 'unpublished';
 
@@ -159,7 +159,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const typesParsed = types ? parseJsonArray(types) : dataQueryContentTypes;
+    const typesParsed = types ? parseJsonArray(types) : contentTypesInDataQuery;
     if (!typesParsed) {
         return {
             status: 400,
