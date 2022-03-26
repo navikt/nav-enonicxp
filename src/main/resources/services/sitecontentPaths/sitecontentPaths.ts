@@ -3,19 +3,23 @@ import cacheLib from '/lib/cache';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { redirectsPath } from '../../lib/constants';
-import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { navnoRootPath, redirectsPath } from '../../lib/constants';
+import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { contentTypesRenderedByFrontend } from '../../lib/contenttype-lists';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
 // Limited selection of content types for testing purposes
-// (we don't want to build all 15000+ pages on every deploy while testing :)
+// (we don't want to build all 17000+ pages on every deploy while testing :)
 const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:dynamic-page',
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
 ];
+
+const siteRootPath = `/content${navnoRootPath}/`;
+const statistikkRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/statistikk/`;
+const queryString = `_path LIKE '${siteRootPath}*' AND _path NOT LIKE '${statistikkRootPath}*'`;
 
 const getPathsToRender = (isTest?: boolean) => {
     try {
@@ -23,6 +27,7 @@ const getPathsToRender = (isTest?: boolean) => {
             start: 0,
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByFrontend,
+            query: queryString,
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
 
@@ -41,7 +46,7 @@ const getPathsToRender = (isTest?: boolean) => {
             .getChildren({ key: redirectsPath, count: 1000 })
             .hits.map((content) => content._path.replace(redirectsPath, ''));
 
-        return [...contentPaths, ...redirectPaths];
+        return removeDuplicates([...contentPaths, ...redirectPaths]);
     } catch (e) {
         log.error(`Error while retrieving content paths - ${e}`);
         return null;
