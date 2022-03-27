@@ -1,9 +1,10 @@
 import contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
+import taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { navnoRootPath, redirectsPath } from '../../lib/constants';
+import { appDescriptor, navnoRootPath, redirectsPath } from '../../lib/constants';
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { contentTypesRenderedByFrontend } from '../../lib/contenttype-lists';
 
@@ -17,17 +18,40 @@ const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:situation-page',
 ];
 
+const oneYearMs = 1000 * 3600 * 24 * 365;
+
 const siteRootPath = `/content${navnoRootPath}/`;
+
 const statistikkRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/statistikk/`;
-const queryString = `_path LIKE '${siteRootPath}*' AND _path NOT LIKE '${statistikkRootPath}*'`;
+const kunnskapRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/kunnskap/`;
+
+const statistikkContent = `type LIKE '${appDescriptor}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${appDescriptor}:main-article*')`;
+const newsAndPressReleases = `type LIKE '${appDescriptor}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
+
+const excludedOldContent = `(${statistikkContent}) OR (${newsAndPressReleases})`;
+
+// Prevent concurrent queries
+let isRunning = false;
+const waitUntilFinished = (msToWait = 60000) => {
+    if (isRunning) {
+        if (msToWait < 0) {
+            throw new Error('Timed out while waiting for query to finish');
+        }
+
+        taskLib.sleep(1000);
+        waitUntilFinished(msToWait - 1000);
+    }
+};
 
 const getPathsToRender = (isTest?: boolean) => {
     try {
+        const oneYearAgo = new Date(Date.now() - oneYearMs).toISOString();
+
         const contentPaths = batchedContentQuery({
             start: 0,
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByFrontend,
-            query: queryString,
+            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND ${excludedOldContent})`,
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
 
@@ -55,9 +79,15 @@ const getPathsToRender = (isTest?: boolean) => {
 
 const getFromCache = (isTest: boolean) => {
     try {
+        waitUntilFinished();
+        isRunning = true;
+
         return cache.get(isTest ? 'test' : 'full', () => getPathsToRender(isTest));
     } catch (e) {
+        log.error(`Error getting content paths - ${e}`);
         return null;
+    } finally {
+        isRunning = false;
     }
 };
 

@@ -56,6 +56,11 @@ const imageFragment = `
     ...on media_Image {
         ${mediaUrlInline}
         imageUrl(scale:"$scale", type:server)
+        imageInfo {
+            imageWidth
+            imageHeight
+            contentType
+        }
     }
 `;
 

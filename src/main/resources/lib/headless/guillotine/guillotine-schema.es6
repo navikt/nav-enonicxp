@@ -12,7 +12,7 @@ const { richTextCallback } = require('/lib/headless/guillotine/schema-creation-c
 const {
     macroAlertboxCallback,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/macro-alert-box');
-const { mediaCodeCallback } = require('./schema-creation-callbacks/media');
+const { mediaCodeCallback, mediaImageCallback } = require('./schema-creation-callbacks/media');
 const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
@@ -43,6 +43,7 @@ const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
         Attachment: attachmentCallback,
         media_Code: mediaCodeCallback,
+        media_Image: mediaImageCallback,
         no_nav_navno_MainArticle: mainArticleCallback,
         no_nav_navno_MainArticle_Data: mainArticleDataCallback,
         no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
