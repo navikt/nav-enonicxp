@@ -1,27 +1,15 @@
 import contentLib from '/lib/xp/content';
 import portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
+import { contentTypesInContentSwitcher } from '../../../lib/contenttype-lists';
 
 const view = resolve('./content-type-switcher.html');
-
-const allowedTypeNames = [
-    'dynamic-page',
-    'content-page-with-sidemenus',
-    'internal-link',
-    'external-link',
-    'main-article',
-    'section-page',
-    'page-list',
-    'transport-page',
-    'office-information',
-    'large-table',
-].map((contentType) => `${app.name}:${contentType}`);
 
 const getAllowedTypes = () => {
     return contentLib
         .getTypes()
         .filter((type) =>
-            allowedTypeNames.some((allowedTypeName) => allowedTypeName === type.name)
+            contentTypesInContentSwitcher.some((allowedTypeName) => allowedTypeName === type.name)
         );
 };
 

@@ -3,12 +3,12 @@ import taskLib from '/lib/xp/task';
 import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, stripPathPrefix } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { ContentDescriptor } from '../../types/content-types/content-config';
 import { contentRepo, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
+import { contentTypesInSitemap } from '../contenttype-lists';
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -58,23 +58,8 @@ const sitemapData: SitemapData = {
     },
 };
 
-export const sitemapContentTypes: ContentDescriptor[] = [
-    `${app.name}:situation-page`,
-    `${app.name}:guide-page`,
-    `${app.name}:themed-article-page`,
-    `${app.name}:dynamic-page`,
-    `${app.name}:content-page-with-sidemenus`,
-    `${app.name}:main-article`,
-    `${app.name}:section-page`,
-    `${app.name}:page-list`,
-    `${app.name}:transport-page`,
-    `${app.name}:office-information`,
-    `${app.name}:publishing-calendar`,
-    `${app.name}:large-table`,
-];
-
 const isIncludedType = (type: string) =>
-    !!sitemapContentTypes.find((includedType) => includedType === type);
+    contentTypesInSitemap.some((includedType) => includedType === type);
 
 const shouldIncludeContent = (content: Content<any>) =>
     content &&
@@ -89,9 +74,7 @@ const getUrl = (content: Content<any>) => {
 
     const customPath = content.data?.customPath;
 
-    const pathname = isValidCustomPath(customPath)
-        ? customPath
-        : content._path.replace(/^\/www.nav.no/, '');
+    const pathname = isValidCustomPath(customPath) ? customPath : stripPathPrefix(content._path);
     return `${urls.frontendOrigin}${pathname}`;
 };
 
@@ -164,7 +147,7 @@ const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): Sit
         .query({
             start,
             count: batchCount,
-            contentTypes: sitemapContentTypes,
+            contentTypes: contentTypesInSitemap,
             filters: {
                 boolean: {
                     mustNot: {

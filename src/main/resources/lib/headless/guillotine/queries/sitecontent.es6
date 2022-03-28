@@ -4,7 +4,7 @@ const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
 const { getPortalFragmentContent } = require('/lib/headless/process-components');
 const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getBreadcrumbMenu } = require('./breadcrumbs');
+const { getBreadcrumbs } = require('./breadcrumbs');
 const { getNotifications } = require('/lib/headless/guillotine/queries/notifications');
 const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
 const {
@@ -14,6 +14,9 @@ const {
 const { runWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
+const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+const { validateTimestampConsistency } = require('/lib/time-travel/consistency-check');
+const { redirectsPath } = require('../../../constants');
 
 const globalFragment = require('./fragments/_global');
 const componentsFragment = require('./fragments/_components');
@@ -36,8 +39,6 @@ const dynamicPage = require('./fragments/dynamicPage');
 const globalValueSet = require('./fragments/globalValueSet');
 const media = require('./fragments/media');
 const animatedIconFragment = require('./fragments/animatedIcons');
-const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-const { validateTimestampConsistency } = require('/lib/time-travel/consistency-check');
 
 const queryFragments = [
     globalFragment,
@@ -126,7 +127,7 @@ const getContent = (contentRef, branch) => {
         };
     }
 
-    const breadcrumbs = runInBranchContext(() => getBreadcrumbMenu(contentRef), branch);
+    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(contentRef), branch);
 
     return {
         ...contentWithParsedData,
@@ -165,7 +166,7 @@ const getRedirectContent = (idOrPath, branch) => {
     const shortUrlPath = pathSegments.length === 3 && pathSegments[2];
 
     if (shortUrlPath) {
-        return getContent(`/redirects/${shortUrlPath}`, branch);
+        return getContent(`${redirectsPath}/${shortUrlPath}`, branch);
     }
 
     return null;

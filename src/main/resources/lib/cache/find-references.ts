@@ -6,23 +6,9 @@ import {
 import { getGlobalValueUsage, globalValuesContentType } from '../global-values/global-values';
 import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { ContentDescriptor } from 'types/content-types/content-config';
+import { productCardTargetTypes, typesWithDeepReferences } from '../contenttype-lists';
 
 const MAX_DEPTH = 5;
-
-const productCardTargetTypes: { [type in ContentDescriptor]?: boolean } = {
-    'no.nav.navno:content-page-with-sidemenus': true,
-    'no.nav.navno:situation-page': true,
-    'no.nav.navno:tools-page': true,
-};
-
-const typesWithDeepReferences: { [type in ContentDescriptor]?: boolean } = {
-    'portal:fragment': true,
-    'no.nav.navno:global-value-set': true,
-    'no.nav.navno:notification': true,
-    'no.nav.navno:main-article-chapter': true,
-    'no.nav.navno:content-list': true,
-};
 
 const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
