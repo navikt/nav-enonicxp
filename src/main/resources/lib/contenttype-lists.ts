@@ -76,6 +76,8 @@ export const contentTypesWithBreadcrumbs: ContentTypeSet = listToSet([
     `${appDescriptor}:page-list`,
     `${appDescriptor}:transport-page`,
     `${appDescriptor}:large-table`,
+    `${appDescriptor}:office-information`,
+    `${appDescriptor}:publishing-calendar`,
 ]);
 
 export const contentTypesRenderedByFrontend: ContentTypeList = [

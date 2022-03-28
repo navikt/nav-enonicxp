@@ -13,7 +13,7 @@ export type NodeEventData = {
 };
 
 // Matches [/content]/www.nav.no/* and [/content]/redirects/*
-const pathnameFilter = new RegExp(`^(/content)?(${redirectsPath}|${navnoRootPath}/)`);
+const pathnameFilter = new RegExp(`^(/content)?(${redirectsPath}|${navnoRootPath})/`);
 
 export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 
