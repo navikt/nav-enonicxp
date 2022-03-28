@@ -25,6 +25,7 @@ export const productPageContentTypes: ContentTypeList = [
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
+    `${appDescriptor}:tools-page`,
 ];
 
 export const dynamicPageContentTypes: ContentTypeList = [
@@ -56,10 +57,7 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     ...linkContentTypes,
 ];
 
-export const productCardTargetTypes: ContentTypeSet = listToSet([
-    ...productPageContentTypes,
-    `${appDescriptor}:tools-page`,
-]);
+export const productCardTargetTypes: ContentTypeSet = listToSet([...productPageContentTypes]);
 
 export const typesWithDeepReferences: ContentTypeSet = listToSet([
     'portal:fragment',
