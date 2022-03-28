@@ -12,6 +12,7 @@ const listToSet = (list: ContentTypeList): ContentTypeSet =>
 
 export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:main-article`,
+    `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,
     `${appDescriptor}:page-list`,
     `${appDescriptor}:transport-page`,
@@ -36,6 +37,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
 export const linkContentTypes: ContentTypeList = [
     `${appDescriptor}:internal-link`,
     `${appDescriptor}:external-link`,
+    `${appDescriptor}:url`,
 ];
 
 export const contentTypesInSitemap: ContentTypeList = [
@@ -57,7 +59,7 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     ...linkContentTypes,
 ];
 
-export const productCardTargetTypes: ContentTypeSet = listToSet([...productPageContentTypes]);
+export const productCardTargetTypes: ContentTypeSet = listToSet(productPageContentTypes);
 
 export const typesWithDeepReferences: ContentTypeSet = listToSet([
     'portal:fragment',
@@ -80,6 +82,4 @@ export const contentTypesRenderedByFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
     ...linkContentTypes,
-    `${appDescriptor}:main-article-chapter`,
-    `${appDescriptor}:url`,
 ];
