@@ -81,6 +81,5 @@ export const contentTypesRenderedByFrontend: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...linkContentTypes,
     `${appDescriptor}:main-article-chapter`,
-    `${appDescriptor}:tools-page`,
     `${appDescriptor}:url`,
 ];
