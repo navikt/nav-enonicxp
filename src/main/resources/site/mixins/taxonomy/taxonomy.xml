@@ -12,6 +12,9 @@
                 <option value="rights">Veiledning</option>
                 <option value="for_employers">For arbeidsgivere</option>
                 <option value="for_providers">For samarbeidspartnere</option>
+                <option value="for_municipality">For kommunen</option>
+                <option value="for_event_organizers">For tiltaksarrangører</option>
+                <option value="for_health_service">For leger og andre behandlere</option>
             </config>
         </input>
     </form>
