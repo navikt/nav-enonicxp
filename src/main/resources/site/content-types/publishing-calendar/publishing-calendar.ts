@@ -16,7 +16,7 @@ export interface PublishingCalendar {
   canonicalUrl?: string;
 
   /**
-   * Skal ikke vises i eksternt søk - NB! Skal bare legges inn av hovedredaktør/administrator
+   * Skal ikke vises i eksternt søk
    */
   noindex: boolean;
 
