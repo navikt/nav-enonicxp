@@ -15,7 +15,7 @@ const frontendOrigin = {
 }[env];
 
 const revalidatorProxyOrigin = {
-    p: 'https://nav-enonicxp-frontend-revalidator-proxy.nais.oera.no',
+    p: 'https://www.nav.no/revalidator-proxy/internal',
     dev: 'https://nav-enonicxp-frontend-revalidator-proxy.dev.nav.no',
     q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.dev.nav.no',
     localhost: 'http://localhost:3002',
