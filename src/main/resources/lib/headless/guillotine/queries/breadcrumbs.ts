@@ -19,7 +19,7 @@ const rootPaths = stringArrayToSet([
 ]);
 
 const getParentContent = (content: Content): Content | null => {
-    // If the virtualParent field is set, we use this for breadcrumb segments
+    // If the virtualParent field is set, we use this to generate parent breadcrumb segments
     const virtualParentRef = content.x?.[componentAppKey]?.virtualParent?.virtualParent;
     if (virtualParentRef) {
         const virtualParentContent = contentLib.get({ key: virtualParentRef });
