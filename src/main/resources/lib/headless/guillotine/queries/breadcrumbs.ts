@@ -1,39 +1,78 @@
-import contentLib from '/lib/xp/content';
-import portalLib from '/lib/xp/portal';
+import contentLib, { Content } from '/lib/xp/content';
 import { contentTypesWithBreadcrumbs } from '../../../contenttype-lists';
+import { componentAppKey, navnoRootPath } from '../../../constants';
+import { getParentPath, stringArrayToSet, stripPathPrefix } from '../../../utils/nav-utils';
 
 type Breadcrumb = {
     title: string;
     url: string;
 };
 
-export const getBreadcrumbs = (id: string): Breadcrumb[] => {
-    const breadcrumbs = []; // Stores each menu item
+const rootPaths = stringArrayToSet([
+    `${navnoRootPath}`,
+    `${navnoRootPath}/no/person`,
+    `${navnoRootPath}/no/bedrift`,
+    `${navnoRootPath}/no/samarbeidspartner`,
+    `${navnoRootPath}/no/nav-og-samfunn`,
+    `${navnoRootPath}/en/home`,
+    `${navnoRootPath}/se/samegiella`,
+]);
 
-    // Loop the entire path for current content based on the slashes. Generate
-    // one JSON item node for each item. If on frontpage, skip the path-loop
-    const arrVars = id.split('/');
-    const arrLength = arrVars.length;
-    for (let i = 3; i < arrLength - 1; i++) {
-        // Skip three first items - the site, language, context - since it is handled separately.
-        const lastVar = arrVars.pop();
-        if (lastVar !== '') {
-            const curItem = contentLib.get({
-                key: arrVars.join('/') + '/' + lastVar,
-            });
-            // Make sure item exists
-            if (curItem) {
-                const item = {
-                    title: curItem.displayName,
-                    url: portalLib.pageUrl({
-                        path: curItem._path,
-                    }),
-                };
-                if (contentTypesWithBreadcrumbs[curItem.type]) {
-                    breadcrumbs.push(item);
-                }
-            }
+const getParentContent = (content: Content): Content | null => {
+    // If the virtualParent field is set, we use this for breadcrumb segments
+    const virtualParentRef = content.x?.[componentAppKey]?.virtualParent?.virtualParent;
+    if (virtualParentRef) {
+        const virtualParentContent = contentLib.get({ key: virtualParentRef });
+
+        if (virtualParentContent) {
+            return virtualParentContent;
+        } else {
+            log.error(
+                `Invalid virtual parent specified for content ${content._id} (${content._path})`
+            );
         }
     }
-    return breadcrumbs.reverse();
+
+    const parentPath = getParentPath(content._path);
+
+    if (!parentPath) {
+        return null;
+    }
+
+    return contentLib.get({ key: parentPath });
+};
+
+const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb[] | null => {
+    const parentContent = getParentContent(content);
+
+    if (!parentContent) {
+        log.error(`Content has invalid parent: ${content._id} (${content._path})`);
+        return null;
+    }
+
+    if (segments.some((segmentContent) => segmentContent._path === parentContent._path)) {
+        log.error(`Content has circular breadcrumbs: ${content._id} (${content._path})`);
+        return null;
+    }
+
+    if (rootPaths[parentContent._path]) {
+        return segments.map((segmentContent) => ({
+            title: segmentContent.displayName,
+            url: stripPathPrefix(segmentContent._path),
+        }));
+    }
+
+    return getParentBreadcrumbs(
+        parentContent,
+        contentTypesWithBreadcrumbs[parentContent.type] ? [parentContent, ...segments] : segments
+    );
+};
+
+export const getBreadcrumbs = (contentRef: string) => {
+    const content = contentLib.get({ key: contentRef });
+    if (!content || !contentTypesWithBreadcrumbs[content.type] || rootPaths[content._path]) {
+        return null;
+    }
+
+    return getParentBreadcrumbs(content, [content]);
 };

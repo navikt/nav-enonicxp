@@ -1,14 +1,10 @@
 import { ContentDescriptor } from '../types/content-types/content-config';
 import { appDescriptor } from './constants';
+import { stringArrayToSet } from './utils/nav-utils';
 
 type ContentTypeList = ContentDescriptor[];
 
-type ContentTypeSet = { [type in ContentDescriptor]?: true };
-
-const listToSet = (list: ContentTypeList): ContentTypeSet =>
-    list.reduce((acc, contentType) => {
-        return { ...acc, [contentType]: true };
-    }, {});
+type ContentTypeSet = Partial<Record<ContentDescriptor, boolean>>;
 
 export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:main-article`,
@@ -59,9 +55,9 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     ...linkContentTypes,
 ];
 
-export const productCardTargetTypes: ContentTypeSet = listToSet(productPageContentTypes);
+export const productCardTargetTypes: ContentTypeSet = stringArrayToSet(productPageContentTypes);
 
-export const typesWithDeepReferences: ContentTypeSet = listToSet([
+export const typesWithDeepReferences: ContentTypeSet = stringArrayToSet([
     'portal:fragment',
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:notification`,
@@ -69,7 +65,7 @@ export const typesWithDeepReferences: ContentTypeSet = listToSet([
     `${appDescriptor}:content-list`,
 ]);
 
-export const contentTypesWithBreadcrumbs: ContentTypeSet = listToSet([
+export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:section-page`,
