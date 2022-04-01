@@ -3,8 +3,8 @@
     <display-name>Overstyring av brødsmulesti</display-name>
     <form>
         <input name="virtualParent" type="ContentSelector">
-            <label>Velg innhold</label>
-            <help-text>Velg innhold som dette innholdet skal ligge under i brødsmulestien. Overstyrer den interne posisjonen i strukturen.</help-text>
+            <label>Velg innhold for brødsmulesti</label>
+            <help-text>Velg innhold som dette innholdet skal ligge under i brødsmulestien. Overstyrer den interne posisjonen i strukturen når brødsmulestien genereres.</help-text>
             <occurrences minimum="0" maximum="1"/>
             <config>
                 <allowContentType>${app}:main-article</allowContentType>
