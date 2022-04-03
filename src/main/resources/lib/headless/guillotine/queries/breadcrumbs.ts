@@ -10,7 +10,7 @@ type Breadcrumb = {
 
 // The breadcrumbs trail should stop when we hit any of these paths
 const rootPaths = stringArrayToSet([
-    `${navnoRootPath}`,
+    navnoRootPath,
     `${navnoRootPath}/no/person`,
     `${navnoRootPath}/no/bedrift`,
     `${navnoRootPath}/no/samarbeidspartner`,
@@ -58,8 +58,8 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
     }
 
     // Because we have the option to set a virtual parent from anywhere in the content structure, it
-    // is possible to end up with a circular breadcrumbs trail if a descendant of a content is set as
-    // its parent.
+    // is possible to end up with a circular breadcrumbs trail if a descendant of a content (or the
+    // content itself) is set as its parent.
     if (segments.some((segmentContent) => segmentContent._id === parentContent._id)) {
         log.error(`Content has circular breadcrumbs: ${content._id} (${content._path})`);
         return null;
