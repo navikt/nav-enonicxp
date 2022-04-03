@@ -7,20 +7,10 @@
             <help-text>Velg innhold som dette innholdet skal ligge under i brødsmulestien. Overstyrer den interne posisjonen i strukturen når brødsmulestien genereres.</help-text>
             <occurrences minimum="0" maximum="1"/>
             <config>
-                <allowContentType>${app}:main-article</allowContentType>
-                <allowContentType>${app}:section-page</allowContentType>
-                <allowContentType>${app}:page-list</allowContentType>
-                <allowContentType>${app}:transport-page</allowContentType>
-                <allowContentType>${app}:large-table</allowContentType>
-                <allowContentType>${app}:office-information</allowContentType>
-                <allowContentType>${app}:publishing-calendar</allowContentType>
-                <allowContentType>${app}:dynamic-page</allowContentType>
-                <allowContentType>${app}:situation-page</allowContentType>
-                <allowContentType>${app}:guide-page</allowContentType>
-                <allowContentType>${app}:themed-article-page</allowContentType>
-                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                <allowContentType>${app}:tools-page</allowContentType>
                 <treeMode>true</treeMode>
+                <allowPath>${site}/*</allowPath>
+                <allowContentType>${app}:*</allowContentType>
+                <allowContentType>base:folder</allowContentType>
             </config>
         </input>
     </form>
