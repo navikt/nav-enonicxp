@@ -8,6 +8,7 @@ type Breadcrumb = {
     url: string;
 };
 
+// The breadcrumbs trail should stop when we hit any of these paths
 const rootPaths = stringArrayToSet([
     `${navnoRootPath}`,
     `${navnoRootPath}/no/person`,
@@ -18,8 +19,14 @@ const rootPaths = stringArrayToSet([
     `${navnoRootPath}/se/samegiella`,
 ]);
 
+const generateBreadcrumb = (content: Content): Breadcrumb => ({
+    title: content.displayName,
+    url: stripPathPrefix(content._path),
+});
+
 const getParentContent = (content: Content): Content | null => {
     // If the virtualParent field is set, we use this to generate parent breadcrumb segments
+    // instead of the actual parent of the content
     const virtualParentRef = content.x?.[componentAppKey]?.virtualParent?.virtualParent;
     if (virtualParentRef) {
         const virtualParentContent = contentLib.get({ key: virtualParentRef });
@@ -50,22 +57,25 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
         return null;
     }
 
-    if (segments.some((segmentContent) => segmentContent._path === parentContent._path)) {
+    // Because we have the option to set a virtual parent from anywhere in the content structure, it
+    // is possible to end up with a circular breadcrumbs trail if a descendant of a content is set as
+    // its parent.
+    if (segments.some((segmentContent) => segmentContent._id === parentContent._id)) {
         log.error(`Content has circular breadcrumbs: ${content._id} (${content._path})`);
         return null;
     }
 
-    if (rootPaths[parentContent._path]) {
-        return segments.map((segmentContent) => ({
-            title: segmentContent.displayName,
-            url: stripPathPrefix(segmentContent._path),
-        }));
+    // Generate more parent segments until we hit one of the root paths
+    if (!rootPaths[parentContent._path]) {
+        return getParentBreadcrumbs(
+            parentContent,
+            contentTypesWithBreadcrumbs[parentContent.type]
+                ? [parentContent, ...segments]
+                : segments
+        );
     }
 
-    return getParentBreadcrumbs(
-        parentContent,
-        contentTypesWithBreadcrumbs[parentContent.type] ? [parentContent, ...segments] : segments
-    );
+    return segments.map(generateBreadcrumb);
 };
 
 export const getBreadcrumbs = (contentRef: string) => {
