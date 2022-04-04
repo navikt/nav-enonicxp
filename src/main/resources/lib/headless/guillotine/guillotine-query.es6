@@ -12,8 +12,12 @@ const guillotineQuery = (query, params, branch = 'master') => {
     const { data, errors } = queryResponse;
 
     if (errors) {
-        log.error(`GraphQL errors for ${JSON.stringify(params)}:`);
-        errors.forEach((error) => log.error(error.message));
+        log.error(
+            `GraphQL errors for ${JSON.stringify(params)}: ${errors
+                .map((error) => error.message)
+                .join(' :: ')}`
+        );
+        return null;
     }
 
     return data?.guillotine;
