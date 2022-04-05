@@ -170,3 +170,8 @@ export const createObjectChecksum = (obj: Record<string, any>) => {
 const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
 
 export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
+
+export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
+    list.reduce((acc, contentType) => {
+        return { ...acc, [contentType]: true };
+    }, {});
