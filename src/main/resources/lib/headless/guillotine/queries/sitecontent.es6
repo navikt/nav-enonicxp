@@ -96,7 +96,8 @@ const getContent = (contentRef, branch) => {
         {
             ref: contentRef,
         },
-        branch
+        branch,
+        true
     );
 
     const content = response?.get;
