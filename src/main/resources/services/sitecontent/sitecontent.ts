@@ -38,26 +38,37 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const content = getContentFromCache(
-        idOrPath,
-        () => getSiteContent(idOrPath, branch, time),
-        cacheKey
-    );
+    try {
+        const content = getContentFromCache(
+            idOrPath,
+            () => getSiteContent(idOrPath, branch, time),
+            cacheKey
+        );
 
-    if (!content) {
-        log.info(`Content not found: ${idOrPath}`);
+        if (!content) {
+            log.info(`Content not found: ${idOrPath}`);
+            return {
+                status: 404,
+                body: {
+                    message: 'Site path not found',
+                },
+                contentType: 'application/json',
+            };
+        }
+
         return {
-            status: 404,
+            status: 200,
+            body: content,
+            contentType: 'application/json',
+        };
+    } catch (e) {
+        log.error(`Error fetching content for ${idOrPath} - ${e}`);
+        return {
+            status: 500,
             body: {
-                message: 'Site path not found',
+                message: 'Unknown server error',
             },
             contentType: 'application/json',
         };
     }
-
-    return {
-        status: 200,
-        body: content,
-        contentType: 'application/json',
-    };
 };
