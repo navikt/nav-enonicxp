@@ -14,4 +14,9 @@ export interface CalculatorPartConfig {
    * Velg filtre
    */
   filters?: Array<string>;
+
+  /**
+   * Logikk
+   */
+  filterLogic: "or" | "and";
 }

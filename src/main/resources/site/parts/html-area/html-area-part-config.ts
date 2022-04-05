@@ -26,6 +26,11 @@ export interface HtmlAreaPartConfig {
   filters?: Array<string>;
 
   /**
+   * Logikk
+   */
+  filterLogic: "or" | "and";
+
+  /**
    * Velg visning
    */
   renderOnAuthState: "always" | "loggedIn" | "loggedOut";

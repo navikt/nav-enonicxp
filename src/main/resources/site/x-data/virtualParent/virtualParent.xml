@@ -9,7 +9,7 @@
             <config>
                 <treeMode>true</treeMode>
                 <allowPath>${site}/*</allowPath>
-                <allowContentType>${app}:*</allowContentType>
+                <allowContentType>no.nav.navno:*</allowContentType>
                 <allowContentType>base:folder</allowContentType>
             </config>
         </input>
