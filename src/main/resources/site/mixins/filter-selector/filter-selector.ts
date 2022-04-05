@@ -4,4 +4,9 @@ export interface FilterSelector {
    * Velg filtre
    */
   filters?: Array<string>;
+
+  /**
+   * Logikk
+   */
+  filterLogic: "or" | "and";
 }
