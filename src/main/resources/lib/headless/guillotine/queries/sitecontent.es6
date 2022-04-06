@@ -91,6 +91,13 @@ const getPublishedVersionTimestamps = (contentRef, branch) => {
 };
 
 const getContent = (contentRef, branch) => {
+    // Do a contentLib lookup first to check if the content exists.
+    // This is much quicker than running a full Guillotine query.
+    const rawContent = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+    if (!rawContent) {
+        return null;
+    }
+
     const response = guillotineQuery(
         queryGetContentByRef,
         {
