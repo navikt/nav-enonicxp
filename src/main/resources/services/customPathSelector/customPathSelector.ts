@@ -1,8 +1,8 @@
-const contentLib = require('/lib/xp/content');
-const { forceArray } = require('/lib/utils/nav-utils');
+import contentLib from '/lib/xp/content';
+import { forceArray } from '../../lib/utils/nav-utils';
+import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
+
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
-const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
-const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 
 const errorIcon = {
     data: `<svg width="32" height="32">\
@@ -18,7 +18,7 @@ const warningIcon = {
     type: 'image/svg+xml',
 };
 
-const getResult = ({ query, ids }) => {
+const getResult = ({ query, ids }: { query?: string; ids?: string | string[] }) => {
     const currentSelection = forceArray(ids)[0];
     const suggestedPath = query || currentSelection;
 
@@ -81,8 +81,9 @@ const getResult = ({ query, ids }) => {
     ];
 };
 
-const handleGet = (req) => {
-    const result = getResult(req.params);
+export const get = (req: XP.CustomSelectorServiceRequest) => {
+    const { query, ids } = req.params;
+    const result = getResult({ query, ids });
 
     return {
         status: 200,
@@ -94,5 +95,3 @@ const handleGet = (req) => {
         contentType: 'application/json',
     };
 };
-
-exports.get = handleGet;
