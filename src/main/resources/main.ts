@@ -1,4 +1,4 @@
-import { activateNodeDuplicationListener } from './lib/events/duplicate-event-handler';
+import { activateCustomPathValidationListeners } from './lib/custom-paths/validation-listeners';
 
 log.info('Started running main');
 
@@ -46,7 +46,7 @@ if (clusterLib.isMaster()) {
 
 facetLib.activateEventListener();
 
-activateNodeDuplicationListener();
+activateCustomPathValidationListeners();
 
 log.info('Finished running main');
 

@@ -5,32 +5,43 @@ import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-pa
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
 const errorIcon = {
-    data: `<svg width="32" height="32">\
-<circle r="16" cx="16" cy="16" fill="#ba3a26"/>\
+    data: `<svg width='32' height='32'>\
+<circle r='16' cx='16' cy='16' fill='#ba3a26'/>\
 </svg>`,
     type: 'image/svg+xml',
 };
 
 const warningIcon = {
-    data: `<svg width="32" height="32">\
-<circle r="16" cx="16" cy="16" fill="#ffaa33"/>\
+    data: `<svg width='32' height='32'>\
+<circle r='16' cx='16' cy='16' fill='#ffaa33'/>\
 </svg>`,
     type: 'image/svg+xml',
 };
 
-const getResult = ({ query, ids }: { query?: string; ids?: string | string[] }) => {
+// Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
+const generateErrorHit = (displayName: string, description: string) => ({
+    id: `error-${Date.now()}`,
+    displayName,
+    description,
+    icon: errorIcon,
+});
+
+const getResult = ({
+    query,
+    ids,
+}: {
+    query?: string;
+    ids?: string | string[];
+}): XP.CustomSelectorServiceResponseHit[] => {
     const currentSelection = forceArray(ids)[0];
     const suggestedPath = query || currentSelection;
 
     if (!isValidCustomPath(suggestedPath)) {
         return [
-            {
-                id: `error-${Date.now()}`,
-                displayName: `Feil: "${suggestedPath}" er ikke en gyldig kort-url`,
-                description:
-                    'Kort-url må starte med "/" og kan inneholde tall, bokstaver (a-z) og bindestrek',
-                icon: errorIcon,
-            },
+            generateErrorHit(
+                `Feil: "${suggestedPath}" er ikke en gyldig kort-url`,
+                'Kort-url må starte med "/" og kan inneholde tall, bokstaver (a-z) og bindestrek'
+            ),
         ];
     }
 
@@ -38,12 +49,10 @@ const getResult = ({ query, ids }: { query?: string; ids?: string | string[] }) 
         const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
         if (contentWithCustomPath.length > 0) {
             return [
-                {
-                    id: `error-${Date.now()}`,
-                    displayName: `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
-                    description: `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`,
-                    icon: errorIcon,
-                },
+                generateErrorHit(
+                    `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
+                    `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`
+                ),
             ];
         }
     }
@@ -51,12 +60,10 @@ const getResult = ({ query, ids }: { query?: string; ids?: string | string[] }) 
     const contentWithInternalPath = contentLib.get({ key: `/www.nav.no${suggestedPath}` });
     if (contentWithInternalPath) {
         return [
-            {
-                id: `error-${Date.now()}`,
-                displayName: `Feil: "${suggestedPath}" er allerede i bruk som vanlig url`,
-                description: `"${contentWithInternalPath.displayName}" har denne url'en`,
-                icon: errorIcon,
-            },
+            generateErrorHit(
+                `Feil: "${suggestedPath}" er allerede i bruk som vanlig url`,
+                `"${contentWithInternalPath.displayName}" har denne url'en`
+            ),
         ];
     }
 
@@ -81,7 +88,7 @@ const getResult = ({ query, ids }: { query?: string; ids?: string | string[] }) 
     ];
 };
 
-export const get = (req: XP.CustomSelectorServiceRequest) => {
+export const get = (req: XP.CustomSelectorServiceRequest): XP.CustomSelectorServiceResponse => {
     const { query, ids } = req.params;
     const result = getResult({ query, ids });
 

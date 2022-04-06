@@ -3,14 +3,20 @@ import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { stripPathPrefix } from '../utils/nav-utils';
 
+type ContentWithCustomPath = Content & { data: { customPath: string } };
+
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
 export const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
 
-type ContentWithCustomPath = Content & { data: { customPath: string } };
-
-export const hasCustomPath = (content: Content): content is ContentWithCustomPath => {
+export const hasValidCustomPath = (content: Content): content is ContentWithCustomPath => {
     return isValidCustomPath((content as ContentWithCustomPath).data?.customPath);
+};
+
+export const hasInvalidCustomPath = (content: Content): content is ContentWithCustomPath => {
+    const customPath = (content as ContentWithCustomPath).data?.customPath;
+
+    return !!(customPath && !isValidCustomPath(customPath));
 };
 
 // If the content has a custom path and it is not the requested path
@@ -21,7 +27,7 @@ export const shouldRedirectToCustomPath = (
     branch: RepoBranch
 ) => {
     return (
-        hasCustomPath(content) &&
+        hasValidCustomPath(content) &&
         stripPathPrefix(requestedPathOrId) !== content.data.customPath &&
         branch === 'master'
     );
@@ -29,7 +35,7 @@ export const shouldRedirectToCustomPath = (
 
 export const getCustomPathFromContent = (contentId: string, versionId?: string) => {
     const content = contentLib.get({ key: contentId, versionId });
-    return content && hasCustomPath(content) ? content.data.customPath : null;
+    return content && hasValidCustomPath(content) ? content.data.customPath : null;
 };
 
 export const getContentFromCustomPath = (path: string) => {
@@ -90,7 +96,7 @@ export const getPathMapForReferences = (contentId: string) => {
             .reduce((pathMapAcc, dependencyId) => {
                 const dependencyContent = contentLib.get({ key: dependencyId });
 
-                if (dependencyContent && hasCustomPath(dependencyContent)) {
+                if (dependencyContent && hasValidCustomPath(dependencyContent)) {
                     return {
                         ...pathMapAcc,
                         [stripPathPrefix(dependencyContent._path)]:
