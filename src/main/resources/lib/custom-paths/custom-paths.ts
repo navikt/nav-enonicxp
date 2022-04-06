@@ -1,12 +1,11 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
+import { stripPathPrefix } from '../utils/nav-utils';
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
 
 export const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
-
-const xpPathToPathname = (xpPath: string) => xpPath?.replace(/^\/www\.nav\.no/, '');
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
@@ -23,7 +22,7 @@ export const shouldRedirectToCustomPath = (
 ) => {
     return (
         hasCustomPath(content) &&
-        xpPathToPathname(requestedPathOrId) !== content.data.customPath &&
+        stripPathPrefix(requestedPathOrId) !== content.data.customPath &&
         branch === 'master'
     );
 };
@@ -34,7 +33,7 @@ export const getCustomPathFromContent = (contentId: string, versionId?: string) 
 };
 
 export const getContentFromCustomPath = (path: string) => {
-    const customPath = xpPathToPathname(path);
+    const customPath = stripPathPrefix(path);
     if (!isValidCustomPath(customPath)) {
         return [];
     }
@@ -62,7 +61,7 @@ export const getContentFromCustomPath = (path: string) => {
 // Looks for content where 'path' is set as a valid custom public-facing path
 // and if found, returns the actual content path
 export const getInternalContentPathFromCustomPath = (xpPath: string) => {
-    const path = xpPathToPathname(xpPath);
+    const path = stripPathPrefix(xpPath);
     if (!isValidCustomPath(path)) {
         return null;
     }
@@ -94,7 +93,7 @@ export const getPathMapForReferences = (contentId: string) => {
                 if (dependencyContent && hasCustomPath(dependencyContent)) {
                     return {
                         ...pathMapAcc,
-                        [xpPathToPathname(dependencyContent._path)]:
+                        [stripPathPrefix(dependencyContent._path)]:
                             dependencyContent.data.customPath,
                     };
                 }
