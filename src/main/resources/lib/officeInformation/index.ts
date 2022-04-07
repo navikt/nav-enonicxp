@@ -103,14 +103,18 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     existingOffice.displayName !== enhet.navn
                 ) {
                     updated.push(existingOffice._path);
-                    contentLib.modify<OfficeInformationDescriptor>({
-                        key: existingOffice._id,
-                        editor: (content) => ({
-                            ...content,
-                            displayName: enhet.navn,
-                            data: updatedOfficeData,
-                        }),
-                    });
+                    try {
+                        contentLib.modify<OfficeInformationDescriptor>({
+                            key: existingOffice._id,
+                            editor: (content) => ({
+                                ...content,
+                                displayName: enhet.navn,
+                                data: updatedOfficeData,
+                            }),
+                        });
+                    } catch (e) {
+                        logger.error(`Failed to update office page: ${e}`);
+                    }
                 }
 
                 const currentName = existingOffice._name;
