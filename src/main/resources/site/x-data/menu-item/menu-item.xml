@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This schema is no longer in use and is only present for backwards compatibility-->
+
+<!--
+	DESCRIPTION:
+	Based on "example-standard" but also adds an open for "Open in new window" checkbox to all content.
+-->
+<x-data>
+	<display-name>Menu settings</display-name>
+	<form>
+		<input type="CheckBox" name="menuItem">
+			<label>Show in Menu?</label>
+			<occurrences minimum="0" maximum="1"/>
+		</input>
+		<input type="TextLine" name="menuName">
+			<label>Override menu name</label>			<!-- Name to be used in menu. Optional -->
+			<occurrences minimum="0" maximum="1"/>
+		</input>
+		<input type="CheckBox" name="newWindow">
+			<label>Open in new window?</label>
+			<occurrences minimum="0" maximum="1"/>
+		</input>
+	</form>
+</x-data>
