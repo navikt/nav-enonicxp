@@ -1,6 +1,8 @@
 import contentLib from '/lib/xp/content';
+import httpClient from '/lib/http-client';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
+import { frontendAppName, urls } from '../../lib/constants';
 
 const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
 
@@ -25,6 +27,22 @@ const generateErrorHit = (displayName: string, description: string) => ({
     description,
     icon: errorIcon,
 });
+
+const verifyIngressOwner = (path: string) => {
+    try {
+        const response = httpClient.request({
+            method: 'HEAD',
+            url: `${urls.frontendOrigin}${path}`,
+            connectionTimeout: 5000,
+            followRedirects: false,
+        });
+
+        return response.headers['app-name'] === frontendAppName;
+    } catch (e) {
+        log.warning(`Error determining ingress owner for ${path} - ${e}`);
+        return false;
+    }
+};
 
 const getResult = ({
     query,
@@ -63,6 +81,16 @@ const getResult = ({
             generateErrorHit(
                 `Feil: "${suggestedPath}" er allerede i bruk som vanlig url`,
                 `"${contentWithInternalPath.displayName}" har denne url'en`
+            ),
+        ];
+    }
+
+    const ingressIsOurs = verifyIngressOwner(suggestedPath);
+    if (!ingressIsOurs) {
+        return [
+            generateErrorHit(
+                `Feil: "${suggestedPath}" kan tilhøre en annen app på nav.no`,
+                "Det krever en teknisk endring for å ta i bruk denne kort-url'en, ta kontakt med team personbruker for hjelp med dette"
             ),
         ];
     }
