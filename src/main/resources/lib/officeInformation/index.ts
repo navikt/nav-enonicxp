@@ -113,7 +113,9 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             }),
                         });
                     } catch (e) {
-                        logger.error(`Failed to modify office info content - ${e}`);
+                        logger.error(
+                            `Failed to modify office info content ${existingOffice._path} - ${e}`
+                        );
                     }
                 }
 
@@ -141,7 +143,9 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             },
                         });
                     } catch (e) {
-                        logger.error(`Failed to updated office information name: ${e}`);
+                        logger.error(
+                            `Failed to updated office information name for ${existingOffice._path} - ${e}`
+                        );
                     }
                 }
             } else {
@@ -155,7 +159,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     });
                     newOffices.push(result._path);
                 } catch (e) {
-                    logger.error(`Failed to create new office page - ${e}`);
+                    logger.error(`Failed to create new office page for ${enhet.navn} - ${e}`);
                 }
             }
         }
