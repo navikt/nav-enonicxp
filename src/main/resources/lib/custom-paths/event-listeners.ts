@@ -29,7 +29,7 @@ const removeOnDuplicate = (event: EnonicEvent) => {
     });
 };
 
-const removeInvalid = (event: EnonicEvent) => {
+const removeInvalidOnPublish = (event: EnonicEvent) => {
     if (!clusterLib.isMaster()) {
         return;
     }
@@ -59,7 +59,7 @@ const removeInvalid = (event: EnonicEvent) => {
 
 let hasSetupListeners = false;
 
-export const activateCustomPathValidationListeners = () => {
+export const activateCustomPathNodeListeners = () => {
     if (!hasSetupListeners) {
         hasSetupListeners = true;
 
@@ -72,7 +72,7 @@ export const activateCustomPathValidationListeners = () => {
         eventLib.listener({
             type: 'node.pushed',
             localOnly: false,
-            callback: removeInvalid,
+            callback: removeInvalidOnPublish,
         });
 
         log.info('Started event listeners for custom path validation');
