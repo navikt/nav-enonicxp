@@ -1,11 +1,28 @@
-const graphQlLib = require('/lib/graphql');
-const { runInBranchContext } = require('/lib/utils/branch-context');
+import graphQlLib from '/lib/graphql';
+import { schema } from '../schema/schema';
+import { runInBranchContext } from '../../utils/branch-context';
+import { RepoBranch } from '../../../types/common';
 
-const schema = require('/lib/headless/guillotine/guillotine-schema');
+type GraphQLResponse = {
+    data?: {
+        guillotine?: {
+            get?: any;
+            query?: any;
+        };
+    };
+    errors?: {
+        message: string;
+    }[];
+};
 
-const guillotineQuery = (query, params, branch = 'master', throwOnErrors = false) => {
+export const guillotineQuery = (
+    query: string,
+    params: Record<string, object>,
+    branch: RepoBranch = 'master',
+    throwOnErrors = false
+) => {
     const queryResponse = runInBranchContext(
-        () => graphQlLib.execute(schema, query, params),
+        () => graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params),
         branch
     );
 
@@ -29,5 +46,3 @@ const guillotineQuery = (query, params, branch = 'master', throwOnErrors = false
 
     return data?.guillotine;
 };
-
-module.exports = { guillotineQuery, guillotineSchema: schema };

@@ -1,5 +1,5 @@
 const deepJsonParser = require('/lib/headless/deep-json-parser');
-const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
+const { guillotineQuery } = require('/lib/guillotine/queries/guillotine-query');
 
 const notification = require('/lib/headless/guillotine/queries/fragments/notification');
 const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');

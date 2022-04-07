@@ -22,7 +22,14 @@
         "import/no-unresolved": [
             "error",
             {
-                "ignore": ["^/lib/xp", "^/lib/http-client", "^/lib/cache", "^/lib/thymeleaf"]
+                "ignore": [
+                    "^/lib/xp",
+                    "^/lib/http-client",
+                    "^/lib/cache",
+                    "^/lib/thymeleaf",
+                    "^/lib/guillotine",
+                    "^/lib/graphql"
+                ]
             }
         ],
         "no-cond-assign": ["error", "except-parens"],

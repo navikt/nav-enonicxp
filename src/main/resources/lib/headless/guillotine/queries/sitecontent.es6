@@ -1,5 +1,5 @@
 const contentLib = require('/lib/xp/content');
-const { guillotineQuery } = require('/lib/headless/guillotine/guillotine-query');
+const { guillotineQuery } = require('/lib/guillotine/queries/guillotine-query');
 const deepJsonParser = require('/lib/headless/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/headless/process-components');
 const { getPortalFragmentContent } = require('/lib/headless/process-components');

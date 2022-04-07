@@ -4,7 +4,7 @@ const graphQlLib = require('/lib/graphql');
 const graphQlRxLib = require('/lib/graphql-rx');
 const webSocketLib = require('/lib/xp/websocket');
 const { urls } = require('/lib/constants');
-const { guillotineSchema } = require('/lib/headless/guillotine/guillotine-query');
+const { schema } = require('/lib/guillotine/schema/schema');
 const { env } = app.config;
 
 const graphQlSubscribers = {};
@@ -24,7 +24,7 @@ const handleStartMessage = (sessionId, message) => {
     const { query, variables } = message.payload;
 
     try {
-        const result = graphQlLib.execute(guillotineSchema, query, variables);
+        const result = graphQlLib.execute(schema, query, variables);
 
         if (result.data instanceof com.enonic.lib.graphql.rx.Publisher) {
             const subscriber = graphQlRxLib.createSubscriber({
@@ -51,7 +51,6 @@ const handleStartMessage = (sessionId, message) => {
     }
 };
 
-// TODO: sikre disse i prod?
 exports.get = (req) => {
     if (env === 'p') {
         return {
@@ -85,7 +84,7 @@ exports.post = (req) => {
     }
 
     const { query, variables } = JSON.parse(req.body);
-    const response = graphQlLib.execute(guillotineSchema, query, variables);
+    const response = graphQlLib.execute(schema, query, variables);
 
     return {
         contentType: 'application/json',

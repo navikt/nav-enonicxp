@@ -1,17 +1,13 @@
-const guillotineLib = require('/lib/guillotine');
-const genericLib = require('/lib/guillotine/generic');
-const dynamicLib = require('/lib/guillotine/dynamic');
-const rootQueryLib = require('/lib/guillotine/query/root-query');
-const rootSubscriptionLib = require('/lib/guillotine/subscription/root-subscription');
-const { redirectsPath } = require('../../constants');
+import guillotineLib from '/lib/guillotine';
+import { redirectsPath } from '../../constants';
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
 const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const { richTextCallback } = require('/lib/headless/guillotine/schema-creation-callbacks/richtext');
+const { richTextCallback } = require('/lib/guillotine/schema/schema-creation-callbacks/richtext');
 const {
     macroAlertboxCallback,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-alert-box');
+} = require('/lib/guillotine/schema/schema-creation-callbacks/macro-alert-box');
 const { mediaCodeCallback, mediaImageCallback } = require('./schema-creation-callbacks/media');
 const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
@@ -37,7 +33,7 @@ const {
 } = require('./schema-creation-callbacks/main-article-chapter');
 const {
     applyMacroCreationCallbacksToHtmlFragmentTypes,
-} = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
+} = require('/lib/guillotine/schema/schema-creation-callbacks/macro-html-fragment');
 
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
@@ -73,17 +69,7 @@ const schemaContextOptions = {
 };
 
 const initAndCreateSchema = () => {
-    const context = guillotineLib.createContext(schemaContextOptions);
-    genericLib.createTypes(context);
-    dynamicLib.createTypes(context);
-
-    return context.schemaGenerator.createSchema({
-        query: rootQueryLib.createRootQueryType(context),
-        subscription: rootSubscriptionLib.createRootSubscriptionType(context),
-        dictionary: context.dictionary,
-    });
+    return guillotineLib.createSchema(schemaContextOptions);
 };
 
-const schema = initAndCreateSchema();
-
-module.exports = schema;
+export const schema = initAndCreateSchema();
