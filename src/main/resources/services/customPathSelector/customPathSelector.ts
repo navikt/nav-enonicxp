@@ -90,7 +90,7 @@ const getResult = ({
         return [
             generateErrorHit(
                 `Feil: "${suggestedPath}" kan tilhøre en annen app på nav.no`,
-                "Det krever en teknisk endring for å ta i bruk denne kort-url'en, ta kontakt med team personbruker for hjelp med dette"
+                "Det krever en teknisk endring for å ta i bruk denne kort-url'en"
             ),
         ];
     }
