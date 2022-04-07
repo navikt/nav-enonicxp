@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This schema is no longer in use and is only present for backwards compatibility-->
+
+<x-data>
+    <display-name>Old Content Type</display-name>
+    <form>
+        <input type="TextLine" name="type">
+            <label>Type</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+</x-data>
