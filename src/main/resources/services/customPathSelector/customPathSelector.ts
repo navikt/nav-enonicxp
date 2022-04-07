@@ -37,7 +37,7 @@ const verifyIngressOwner = (path: string) => {
             followRedirects: false,
         });
 
-        return response.headers['App-Name'] === frontendAppName;
+        return response.headers['app-name'] === frontendAppName;
     } catch (e) {
         log.warning(`Error determining ingress owner for ${path} - ${e}`);
         return false;
