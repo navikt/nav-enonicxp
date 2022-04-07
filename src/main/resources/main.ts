@@ -1,5 +1,3 @@
-import { activateNodeDuplicationListener } from './lib/events/duplicate-event-handler';
-
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -15,6 +13,7 @@ import { startReliableEventAckListener } from './lib/events/reliable-custom-even
 import { updateClusterInfo } from './lib/cluster/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
+import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
 
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const facetLib = require('/lib/facets');
@@ -22,12 +21,10 @@ const facetLib = require('/lib/facets');
 updateClusterInfo();
 
 startReliableEventAckListener();
-
 activateCacheEventListeners();
-
 activateSitemapDataUpdateEventListener();
-
 activateContentListItemUnpublishedListener();
+activateCustomPathNodeListeners();
 
 hookLibsWithTimeTravel();
 
@@ -45,8 +42,6 @@ if (clusterLib.isMaster()) {
 }
 
 facetLib.activateEventListener();
-
-activateNodeDuplicationListener();
 
 log.info('Finished running main');
 

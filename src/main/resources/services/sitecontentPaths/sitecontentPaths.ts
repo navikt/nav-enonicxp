@@ -2,7 +2,7 @@ import contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
-import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
+import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { appDescriptor, navnoRootPath, redirectsPath } from '../../lib/constants';
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
@@ -55,7 +55,7 @@ const getPathsToRender = (isTest?: boolean) => {
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
 
-            if (hasCustomPath(content)) {
+            if (hasValidCustomPath(content)) {
                 acc.push(content.data.customPath);
             }
 

@@ -7,7 +7,7 @@ import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster/cluste
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
-import { hasCustomPath } from '../custom-paths/custom-paths';
+import { hasValidCustomPath } from '../custom-paths/custom-paths';
 
 const frontendApiUrl = `${urls.frontendOrigin}/editor/site-info`;
 
@@ -75,7 +75,7 @@ const transformContent = (content: Content): ContentSummary => {
     return {
         id: content._id,
         path: content._path,
-        customPath: hasCustomPath(content) ? content.data.customPath : undefined,
+        customPath: hasValidCustomPath(content) ? content.data.customPath : undefined,
         displayName: content.displayName,
         type: contentLib.getType(content.type)?.displayName || '',
         publish: getPublishInfo(content),
