@@ -1,5 +1,6 @@
-const deepJsonParser = require('/lib/headless/deep-json-parser');
-const { guillotineQuery } = require('/lib/guillotine/queries/guillotine-query');
+import { guillotineQuery } from '../guillotine-query';
+
+const { deepJsonParser } = require('/lib/headless/deep-json-parser');
 
 const notification = require('/lib/headless/guillotine/queries/fragments/notification');
 const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');
@@ -13,7 +14,7 @@ const queryGetNotifications = `query {
     }
 }`;
 
-const getNotifications = (path) => {
+const getNotifications = (path: string) => {
     // Notifications should always be fetched from master, we don't want unpublished notifications
     // to be displayed in content studio
     const queryResponse = guillotineQuery(queryGetNotifications, undefined, 'master');

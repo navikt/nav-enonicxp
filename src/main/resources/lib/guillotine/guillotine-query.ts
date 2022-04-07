@@ -1,7 +1,7 @@
 import graphQlLib from '/lib/graphql';
-import { schema } from '../schema/schema';
-import { runInBranchContext } from '../../utils/branch-context';
-import { RepoBranch } from '../../../types/common';
+import { schema } from './schema/schema';
+import { runInBranchContext } from '../utils/branch-context';
+import { RepoBranch } from '../../types/common';
 
 type GraphQLResponse = {
     data?: {

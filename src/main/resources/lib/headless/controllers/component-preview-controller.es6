@@ -2,10 +2,10 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { urls } = require('/lib/constants');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
-const deepJsonParser = require('/lib/headless/deep-json-parser');
-const { getContent } = require('/lib/headless/guillotine/queries/sitecontent');
-const { guillotineQuery } = require('/lib/guillotine/queries/guillotine-query');
-const { destructureComponent } = require('/lib/headless/process-components');
+const { deepJsonParser } = require('/lib/guillotine/utils/deep-json-parser');
+const { getContent } = require('/lib/guillotine/queries/sitecontent');
+const { guillotineQuery } = require('/lib/guillotine/guillotine-query');
+const { destructureComponent } = require('/lib/guillotine/utils/process-components');
 
 const queryGetComponents = `query($ref:ID!){
     guillotine {

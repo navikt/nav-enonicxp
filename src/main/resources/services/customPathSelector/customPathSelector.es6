@@ -1,6 +1,6 @@
 const contentLib = require('/lib/xp/content');
 const { forceArray } = require('/lib/utils/nav-utils');
-const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
+const { getRedirectContent } = require('/lib/guillotine/queries/sitecontent');
 const { getContentFromCustomPath } = require('/lib/custom-paths/custom-paths');
 const { isValidCustomPath } = require('/lib/custom-paths/custom-paths');
 
