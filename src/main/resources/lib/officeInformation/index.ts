@@ -113,7 +113,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             }),
                         });
                     } catch (e) {
-                        logger.error(`Failed to update office page: ${e}`);
+                        logger.error(`Failed to modify office info content - ${e}`);
                     }
                 }
 
