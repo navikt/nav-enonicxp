@@ -1,6 +1,5 @@
 const contentLib = require('/lib/xp/content');
 const { guillotineQuery } = require('/lib/guillotine/guillotine-query');
-const { deepJsonParser } = require('/lib/guillotine/utils/deep-json-parser');
 const { mergeComponentsIntoPage } = require('/lib/guillotine/utils/process-components');
 const { getPortalFragmentContent } = require('/lib/guillotine/utils/process-components');
 const { runInBranchContext } = require('/lib/utils/branch-context');
@@ -98,14 +97,15 @@ const getContent = (contentRef, branch) => {
         return null;
     }
 
-    const response = guillotineQuery(
-        queryGetContentByRef,
-        {
+    const response = guillotineQuery({
+        query: queryGetContentByRef,
+        branch,
+        params: {
             ref: contentRef,
         },
-        branch,
-        true
-    );
+        jsonBaseKeys: ['data', 'config', 'page'],
+        throwOnErrors: true,
+    });
 
     const content = response?.get;
     if (!content) {
@@ -115,8 +115,6 @@ const getContent = (contentRef, branch) => {
     if (isMedia(content)) {
         return content;
     }
-
-    const contentWithParsedData = deepJsonParser(content, ['data', 'config', 'page']);
 
     const publishedVersionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
 
@@ -130,7 +128,7 @@ const getContent = (contentRef, branch) => {
     // special handling for its contained components
     if (content.__typename === 'portal_Fragment') {
         return {
-            ...getPortalFragmentContent(contentWithParsedData),
+            ...getPortalFragmentContent(content),
             ...commonFields,
         };
     }
@@ -138,10 +136,10 @@ const getContent = (contentRef, branch) => {
     const breadcrumbs = runInBranchContext(() => getBreadcrumbs(contentRef), branch);
 
     return {
-        ...contentWithParsedData,
+        ...content,
         ...commonFields,
         ...(breadcrumbs && { breadcrumbs }),
-        page: mergeComponentsIntoPage(contentWithParsedData),
+        page: mergeComponentsIntoPage(content),
     };
 };
 

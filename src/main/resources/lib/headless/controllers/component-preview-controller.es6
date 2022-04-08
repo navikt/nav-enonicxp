@@ -2,7 +2,7 @@ const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { urls } = require('/lib/constants');
 const componentsFragment = require('/lib/headless/guillotine/queries/fragments/_components');
-const { deepJsonParser } = require('/lib/guillotine/utils/deep-json-parser');
+const { mergeGuillotineObjectJson } = require('/lib/guillotine/utils/merge-json');
 const { getContent } = require('/lib/guillotine/queries/sitecontent');
 const { guillotineQuery } = require('/lib/guillotine/guillotine-query');
 const { destructureComponent } = require('/lib/guillotine/utils/process-components');
@@ -48,13 +48,13 @@ const getComponentProps = () => {
         return getLayoutComponentProps(content, component.path);
     }
 
-    const response = guillotineQuery(
-        queryGetComponents,
-        {
+    const response = guillotineQuery({
+        query: queryGetComponents,
+        params: {
             ref: content._id,
         },
-        'draft'
-    );
+        branch: 'draft',
+    });
 
     const componentPath = component.path || '/';
 
@@ -69,7 +69,7 @@ const getComponentProps = () => {
     return {
         language: content.language,
         ...component,
-        ...destructureComponent(deepJsonParser(componentFromGuillotine, ['config'])),
+        ...destructureComponent(mergeGuillotineObjectJson(componentFromGuillotine, ['config'])),
     };
 };
 

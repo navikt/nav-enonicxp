@@ -2,12 +2,22 @@ import graphQlLib from '/lib/graphql';
 import { schema } from './schema/schema';
 import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
+import { mergeGuillotineArrayJson, mergeGuillotineObjectJson } from './utils/merge-json';
+
+export type AsJsonKey = `${string}AsJson`;
+
+export type GuillotineRecord = {
+    [key: string]: GuillotineRecord | string | GuillotineArray;
+    [key: AsJsonKey]: GuillotineRecord;
+};
+
+export type GuillotineArray = GuillotineRecord[];
 
 type GraphQLResponse = {
     data?: {
         guillotine?: {
-            get?: any;
-            query?: any;
+            get?: GuillotineRecord;
+            query?: GuillotineArray;
         };
     };
     errors?: {
@@ -15,18 +25,27 @@ type GraphQLResponse = {
     }[];
 };
 
-export const guillotineQuery = (
-    query: string,
-    params: Record<string, object>,
-    branch: RepoBranch = 'master',
-    throwOnErrors = false
-) => {
-    const queryResponse = runInBranchContext(
+export const guillotineQuery = ({
+    query,
+    branch,
+    jsonBaseKeys,
+    params = {},
+    throwOnErrors = false,
+}: {
+    query: string;
+    branch: RepoBranch;
+    jsonBaseKeys?: string[];
+    params?: Record<string, string>;
+    throwOnErrors?: boolean;
+}) => {
+    log.info(query);
+
+    const response = runInBranchContext(
         () => graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params),
         branch
     );
 
-    const { data, errors } = queryResponse;
+    const { data, errors } = response;
 
     if (errors) {
         const errorMsg = `GraphQL errors for ${JSON.stringify(params)}: ${errors
@@ -44,5 +63,22 @@ export const guillotineQuery = (
         }
     }
 
-    return data?.guillotine;
+    if (!data?.guillotine) {
+        return null;
+    }
+
+    const { get: getResult, query: queryResult } = data.guillotine;
+
+    return {
+        ...(getResult && {
+            get: (jsonBaseKeys
+                ? mergeGuillotineObjectJson(getResult, jsonBaseKeys)
+                : getResult) as any,
+        }),
+        ...(queryResult && {
+            query: (jsonBaseKeys
+                ? mergeGuillotineArrayJson(queryResult, jsonBaseKeys)
+                : queryResult) as any[],
+        }),
+    };
 };

@@ -1,7 +1,5 @@
 import { guillotineQuery } from '../guillotine-query';
 
-const { deepJsonParser } = require('/lib/headless/deep-json-parser');
-
 const notification = require('/lib/headless/guillotine/queries/fragments/notification');
 const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');
 
@@ -14,10 +12,14 @@ const queryGetNotifications = `query {
     }
 }`;
 
-const getNotifications = (path: string) => {
+export const getNotifications = (path: string) => {
     // Notifications should always be fetched from master, we don't want unpublished notifications
     // to be displayed in content studio
-    const queryResponse = guillotineQuery(queryGetNotifications, undefined, 'master');
+    const queryResponse = guillotineQuery({
+        query: queryGetNotifications,
+        branch: 'master',
+        jsonBaseKeys: ['data'],
+    });
 
     const notifications = queryResponse?.query;
 
@@ -26,15 +28,11 @@ const getNotifications = (path: string) => {
         return null;
     }
 
-    const parsedNotifications = deepJsonParser(notifications, ['data']);
-
     const localNotifications = path
-        ? parsedNotifications.filter(
-              (item) => item._path?.split('/').slice(0, -1).join('/') === path
-          )
+        ? notifications.filter((item) => item._path?.split('/').slice(0, -1).join('/') === path)
         : [];
 
-    const globalNotifications = parsedNotifications.filter(
+    const globalNotifications = notifications.filter(
         (item) =>
             item._path.startsWith('/www.nav.no/global-notifications') &&
             !localNotifications.some(
@@ -44,5 +42,3 @@ const getNotifications = (path: string) => {
 
     return [...globalNotifications, ...localNotifications];
 };
-
-module.exports = { getNotifications };
