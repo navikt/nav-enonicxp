@@ -1,10 +1,12 @@
-const portalLib = require('/lib/xp/portal');
-const httpClient = require('/lib/http-client');
-const { urls } = require('/lib/constants');
+import portalLib from '/lib/xp/portal';
+import { Content } from '/lib/xp/content';
+import httpClient from '/lib/http-client';
+import { runContentQuery } from '../guillotine/queries/sitecontent/sitecontent-query';
+import { guillotineQuery } from '../guillotine/guillotine-query';
+import { mergeGuillotineObjectJson } from '../guillotine/utils/merge-json';
+import { urls } from '../constants';
+
 const componentsFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/_components');
-const { mergeGuillotineObjectJson } = require('/lib/guillotine/utils/merge-json');
-const { runContentQuery } = require('../guillotine/queries/sitecontent/sitecontent-query');
-const { guillotineQuery } = require('/lib/guillotine/guillotine-query');
 const { destructureComponent } = require('/lib/guillotine/utils/process-components');
 
 const queryGetComponents = `query($ref:ID!){
@@ -22,22 +24,30 @@ const fallbackResponse = {
 
 // For layout-previews, we need the complete props-tree of the layout, including
 // components in the layout regions
-const getLayoutComponentProps = (content, path) => {
+const getLayoutComponentProps = (content: Content, path: string) => {
     if (content.type === 'portal:fragment') {
         return content.fragment;
     }
 
-    const pageRegions = runContentQuery(content._id, 'draft')?.page?.regions;
+    const pageRegions = runContentQuery(content._id, 'draft')?.page?.regions as Record<
+        string,
+        any
+    > | null;
 
     if (!pageRegions) {
         return null;
     }
 
-    const components = Object.values(pageRegions).reduce((componentsAcc, region) => {
-        return [...componentsAcc, ...region.components];
-    }, []);
+    const components: any[] = Object.values(pageRegions).reduce(
+        (componentsAcc: any, region: any) => {
+            return [...componentsAcc, ...region.components];
+        },
+        [] as any[]
+    );
 
-    return components.find((component) => component.type === 'layout' && component.path === path);
+    return components.find(
+        (component: any) => component.type === 'layout' && component.path === path
+    );
 };
 
 const getComponentProps = () => {
@@ -59,7 +69,7 @@ const getComponentProps = () => {
     const componentPath = component.path || '/';
 
     const componentFromGuillotine = response?.get?.components.find(
-        (item) => item.path === componentPath
+        (item: any) => item.path === componentPath
     );
 
     if (!componentFromGuillotine) {
@@ -75,7 +85,7 @@ const getComponentProps = () => {
 
 // This controller fetches component-HTML from the frontend rendered with the
 // supplied props. Used by the content-studio editor.
-const componentPreviewController = () => {
+export const componentPreviewController = () => {
     const componentProps = getComponentProps();
 
     if (!componentProps) {
@@ -108,4 +118,4 @@ const componentPreviewController = () => {
     return fallbackResponse;
 };
 
-module.exports = componentPreviewController;
+export default componentPreviewController;
