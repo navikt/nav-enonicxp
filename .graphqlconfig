@@ -1,14 +1,10 @@
 {
-  "name": "Untitled GraphQL Schema",
-  "schemaPath": "schema.graphql",
+  "name": "Guillotine Schema",
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
-        "url": "http://localhost:8080/graphql",
-        "headers": {
-          "user-agent": "JS GraphQL"
-        },
-        "introspect": false
+        "url": "http://localhost:8080/_/service/no.nav.navno/playground",
+        "introspect": true
       }
     }
   }
