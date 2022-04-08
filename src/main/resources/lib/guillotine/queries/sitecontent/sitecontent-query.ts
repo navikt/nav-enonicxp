@@ -30,12 +30,11 @@ const globalValueSet = require('./legacyFragments/globalValueSet');
 const media = require('./legacyFragments/media');
 const animatedIconFragment = require('./legacyFragments/animatedIcons');
 
-const commonFragments = [globalFragment, componentsFragment];
-
 const buildPageContentQuery = (contentTypeFragment: string) => `query($ref:ID!){
     guillotine {
         get(key:$ref) {
-            ${commonFragments.join('\n')}
+            ${globalFragment}
+            ${componentsFragment}
             ${contentTypeFragment}
             pageAsJson(resolveTemplate: true, resolveFragment: false)
         }
@@ -59,12 +58,13 @@ const pageContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:dynamic-page': buildPageContentQuery(dynamicPage.fragment),
     'no.nav.navno:global-value-set': buildPageContentQuery(globalValueSet.fragment),
     'no.nav.navno:animated-icons': buildPageContentQuery(animatedIconFragment.fragment),
+    'portal:fragment': buildPageContentQuery(''), // fragment previews only need the common fragments
 };
 
 const mediaContentQuery = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
-            ${commonFragments.join('\n')}
+            ${globalFragment}
             ${media.mediaAttachmentFragment}
         }
 }`;
