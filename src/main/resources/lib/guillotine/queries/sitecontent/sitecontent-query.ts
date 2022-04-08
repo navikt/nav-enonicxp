@@ -68,9 +68,10 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:themed-article-page': themedArticlePageFragment,
     'no.nav.navno:guide-page': guidePageFragment,
     'no.nav.navno:tools-page': toolsPageFragment,
-    'portal:fragment': '', // fragment previews only need the common fragments
     'no.nav.navno:contact-information': contactInformation.fragment,
     'no.nav.navno:global-value-set': globalValueSet.fragment,
+    'portal:fragment': '',
+    'portal:site': '',
 };
 
 const contentQueries = Object.entries(contentToQueryFragment).reduce((acc, [type, fragment]) => {
