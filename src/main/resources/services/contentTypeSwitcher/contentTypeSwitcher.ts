@@ -5,9 +5,7 @@ import { stringArrayToSet } from '../../lib/utils/nav-utils';
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
-type ContentTypes = keyof typeof contentTypesMap;
-
-const setContentType = (repoId: string, contentId: string, contentType: ContentTypes) => {
+const setContentType = (repoId: string, contentId: string, contentType: string) => {
     try {
         const repo = nodeLib.connect({
             repoId: repoId,
@@ -36,7 +34,7 @@ export const get = (req: XP.Request) => {
     const { repoId, contentId, contentType } = req.params as {
         repoId: string;
         contentId: string;
-        contentType: ContentTypes;
+        contentType: string;
     };
 
     if (!repoId || !contentId || !contentType) {

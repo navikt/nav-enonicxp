@@ -171,9 +171,7 @@ const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
 
 export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
 
-export const stringArrayToSet = <Type extends string = string>(
-    list: Type[]
-): Record<Type, boolean> =>
+export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
     list.reduce((acc, contentType) => {
         return { ...acc, [contentType]: true };
-    }, {} as Record<Type, boolean>);
+    }, {});
