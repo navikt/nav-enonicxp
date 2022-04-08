@@ -1,7 +1,7 @@
 import { isValidBranch } from '../../lib/utils/branch-context';
 import { getContentFromCache } from '../../lib/cache/sitecontent-cache';
 
-const { getSiteContent } = require('/lib/guillotine/queries/sitecontent');
+const { getSiteContent } = require('/lib/guillotine/queries/sitecontent/sitecontent');
 
 export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
