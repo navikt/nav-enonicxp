@@ -61,6 +61,11 @@ const pageContentQueries: { [type in ContentDescriptor]?: string } = {
     'portal:fragment': buildPageContentQuery(''), // fragment previews only need the common fragments
 };
 
+Object.entries(pageContentQueries).forEach(([key, value]) => {
+    // @ts-ignore
+    log.info(`${key} query size: ${value.length}`);
+});
+
 const mediaContentQuery = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
