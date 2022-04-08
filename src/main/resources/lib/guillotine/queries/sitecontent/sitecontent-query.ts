@@ -3,6 +3,12 @@ import { runInBranchContext } from '../../../utils/branch-context';
 import { RepoBranch } from '../../../../types/common';
 import { ContentDescriptor } from '../../../../types/content-types/content-config';
 import { guillotineQuery } from '../../guillotine-query';
+import { getPublishedVersionTimestamps } from '../../../time-travel/version-utils';
+import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
+import { getBreadcrumbs } from './breadcrumbs';
+
+const { getPortalFragmentContent } = require('/lib/guillotine/utils/process-components');
+const { mergeComponentsIntoPage } = require('/lib/guillotine/utils/process-components');
 
 const globalFragment = require('./legacyFragments/_global');
 const componentsFragment = require('./legacyFragments/_components');
@@ -63,15 +69,13 @@ const mediaContentQuery = `query($ref:ID!){
         }
 }`;
 
-export const sitecontentQuery = (contentRef: string, branch: RepoBranch) => {
-    // Do a contentLib lookup first to check if the content exists.
-    // This is much quicker than running a full Guillotine query.
-    const content = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
-    if (!content) {
+export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
+    const contentRaw = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+    if (!contentRaw) {
         return null;
     }
 
-    const { _id, type } = content;
+    const { _id, type } = contentRaw;
 
     const baseQueryParams = {
         branch,
@@ -79,8 +83,13 @@ export const sitecontentQuery = (contentRef: string, branch: RepoBranch) => {
         throwOnErrors: true,
     };
 
+    // Media types only redirect to the media asset in the frontend and
+    // don't require any further processing
     if (type.startsWith('media:')) {
-        return guillotineQuery({ ...baseQueryParams, query: mediaContentQuery });
+        return guillotineQuery({
+            ...baseQueryParams,
+            query: mediaContentQuery,
+        })?.get;
     }
 
     const contentQuery = pageContentQueries[type];
@@ -89,9 +98,37 @@ export const sitecontentQuery = (contentRef: string, branch: RepoBranch) => {
         return null;
     }
 
-    return guillotineQuery({
+    const queryResult = guillotineQuery({
         ...baseQueryParams,
         query: contentQuery,
         jsonBaseKeys: ['data', 'config', 'page'],
-    });
+    })?.get;
+
+    if (!queryResult) {
+        return null;
+    }
+
+    const commonFields = {
+        components: undefined,
+        pathMap: getPathMapForReferences(contentRef),
+        versionTimestamps: getPublishedVersionTimestamps(contentRef, branch),
+    };
+
+    // This is the preview/editor page for fragments (not user-facing). It requires some
+    // special handling for its contained components
+    if (queryResult.__typename === 'portal_Fragment') {
+        return {
+            ...getPortalFragmentContent(queryResult),
+            ...commonFields,
+        };
+    }
+
+    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(contentRef), branch);
+
+    return {
+        ...queryResult,
+        ...commonFields,
+        ...(breadcrumbs && { breadcrumbs }),
+        page: mergeComponentsIntoPage(queryResult),
+    };
 };
