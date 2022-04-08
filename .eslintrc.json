@@ -28,10 +28,12 @@
                     "^/lib/cache",
                     "^/lib/thymeleaf",
                     "^/lib/guillotine",
-                    "^/lib/graphql"
+                    "^/lib/graphql",
+                    "^/lib/graphql-rx"
                 ]
             }
         ],
+        "no-case-declarations": "off",
         "no-cond-assign": ["error", "except-parens"],
         "no-console": "error",
         "no-extend-native": "off",

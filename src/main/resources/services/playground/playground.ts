@@ -1,15 +1,16 @@
-/* eslint-disable */
-const graphqlPlaygroundLib = require('/lib/graphql-playground');
-const graphQlLib = require('/lib/graphql');
-const graphQlRxLib = require('/lib/graphql-rx');
-const webSocketLib = require('/lib/xp/websocket');
-const { urls } = require('/lib/constants');
-const { schema } = require('/lib/guillotine/schema/schema');
-const { env } = app.config;
+import graphqlPlaygroundLib from '/lib/graphql-playground';
+import graphQlLib from '/lib/graphql';
+// @ts-ignore
+import graphQlRxLib from '/lib/graphql-rx';
+import webSocketLib from '/lib/xp/websocket';
+import { schema } from '../../lib/guillotine/schema/schema';
+import { urls } from '../../lib/constants';
 
-const graphQlSubscribers = {};
+const isProd = app.config.env === 'p';
 
-const cancelSubscription = (sessionId) => {
+const graphQlSubscribers: Record<string, any> = {};
+
+const cancelSubscription = (sessionId: string) => {
     Java.synchronized(() => {
         const subscriber = graphQlSubscribers[sessionId];
         if (subscriber) {
@@ -19,16 +20,17 @@ const cancelSubscription = (sessionId) => {
     }, graphQlSubscribers)();
 };
 
-const handleStartMessage = (sessionId, message) => {
+const handleStartMessage = (sessionId: string, message: any) => {
     const graphlqlOperationId = message.id;
     const { query, variables } = message.payload;
 
     try {
         const result = graphQlLib.execute(schema, query, variables);
 
+        // @ts-ignore
         if (result.data instanceof com.enonic.lib.graphql.rx.Publisher) {
             const subscriber = graphQlRxLib.createSubscriber({
-                onNext: (result) => {
+                onNext: (result: any) => {
                     webSocketLib.send(
                         sessionId,
                         JSON.stringify({
@@ -51,8 +53,8 @@ const handleStartMessage = (sessionId, message) => {
     }
 };
 
-exports.get = (req) => {
-    if (env === 'p') {
+export const get = (req: XP.Request) => {
+    if (isProd) {
         return {
             status: 403,
         };
@@ -76,8 +78,8 @@ exports.get = (req) => {
     };
 };
 
-exports.post = (req) => {
-    if (env === 'p') {
+export const post = (req: XP.Request) => {
+    if (isProd) {
         return {
             status: 403,
         };
@@ -92,8 +94,8 @@ exports.post = (req) => {
     };
 };
 
-exports.webSocketEvent = (event) => {
-    if (env === 'p') {
+export const webSocketEvent = (event: XP.WebSocketEvent) => {
+    if (isProd) {
         return {
             status: 403,
         };
