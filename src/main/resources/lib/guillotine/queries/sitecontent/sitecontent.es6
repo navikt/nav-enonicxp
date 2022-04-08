@@ -135,6 +135,5 @@ const getSiteContent = (requestedPathOrId, branch = 'master', time) => {
 
 module.exports = {
     getSiteContent,
-    getContent,
     getRedirectContent,
 };

@@ -3,7 +3,7 @@ const httpClient = require('/lib/http-client');
 const { urls } = require('/lib/constants');
 const componentsFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/_components');
 const { mergeGuillotineObjectJson } = require('/lib/guillotine/utils/merge-json');
-const { getContent } = require('/lib/guillotine/queries/sitecontent/sitecontent');
+const { runContentQuery } = require('../guillotine/queries/sitecontent/sitecontent-query');
 const { guillotineQuery } = require('/lib/guillotine/guillotine-query');
 const { destructureComponent } = require('/lib/guillotine/utils/process-components');
 
@@ -27,7 +27,7 @@ const getLayoutComponentProps = (content, path) => {
         return content.fragment;
     }
 
-    const pageRegions = getContent(content._id, 'draft')?.page?.regions;
+    const pageRegions = runContentQuery(content._id, 'draft')?.page?.regions;
 
     if (!pageRegions) {
         return null;
