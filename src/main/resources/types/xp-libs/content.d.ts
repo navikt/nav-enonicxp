@@ -60,6 +60,7 @@ declare module '*/lib/xp/content' {
                     state: WORKFLOW_STATES;
                     checks: Record<string, WORKFLOW_STATES>;
                 };
+                page: Record<string, any>;
             };
 
         type QueryParams<

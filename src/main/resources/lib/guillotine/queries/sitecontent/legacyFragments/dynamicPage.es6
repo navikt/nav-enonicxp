@@ -71,11 +71,6 @@ const toolsPageFragment = `
 `;
 
 const dynamicPageFragment = `
-    ${productPageFragment}
-    ${guidePageFragment}
-    ${themedArticlePageFragment}
-    ${situationPageFragment}
-    ${toolsPageFragment}
     ...on no_nav_navno_DynamicPage {
         ${commonDataObject}
     }
@@ -108,8 +103,8 @@ const dynamicPageShortFragment = `
 `;
 
 module.exports = {
-    fragment: dynamicPageFragment,
     shortFragment: dynamicPageShortFragment,
+    dynamicPageFragment,
     productPageFragment,
     situationPageFragment,
     themedArticlePageFragment,

@@ -7,11 +7,13 @@ import { getPublishedVersionTimestamps } from '../../../time-travel/version-util
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
 
-const { getPortalFragmentContent } = require('/lib/guillotine/utils/process-components');
-const { mergeComponentsIntoPage } = require('/lib/guillotine/utils/process-components');
+const {
+    getPortalFragmentContent,
+    mergeComponentsIntoPage,
+} = require('/lib/guillotine/utils/process-components');
 
 const globalFragment = require('./legacyFragments/_global');
-const componentsFragment = require('./legacyFragments/_components');
+const { componentsFragment, fragmentFragment } = require('./legacyFragments/_components');
 const sectionPage = require('./legacyFragments/sectionPage');
 const contactInformation = require('./legacyFragments/contactInformation');
 const internalLink = require('./legacyFragments/internalLink');
@@ -25,53 +27,78 @@ const officeInformation = require('./legacyFragments/officeInformation');
 const largeTable = require('./legacyFragments/largeTable');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
 const urlFragment = require('./legacyFragments/url');
-const dynamicPage = require('./legacyFragments/dynamicPage');
+const {
+    dynamicPageFragment,
+    productPageFragment,
+    situationPageFragment,
+    themedArticlePageFragment,
+    guidePageFragment,
+    toolsPageFragment,
+} = require('./legacyFragments/dynamicPage');
 const globalValueSet = require('./legacyFragments/globalValueSet');
 const media = require('./legacyFragments/media');
-const animatedIconFragment = require('./legacyFragments/animatedIcons');
 
-const buildPageContentQuery = (contentTypeFragment: string) => `query($ref:ID!){
+const buildPageContentQuery = (contentTypeFragment?: string) =>
+    `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${globalFragment}
-            ${componentsFragment}
             ${contentTypeFragment}
             pageAsJson(resolveTemplate: true, resolveFragment: false)
         }
     }
 }`;
 
-const pageContentQueries: { [type in ContentDescriptor]?: string } = {
-    'no.nav.navno:contact-information': buildPageContentQuery(contactInformation.fragment),
-    'no.nav.navno:external-link': buildPageContentQuery(externalLink.fragment),
-    'no.nav.navno:internal-link': buildPageContentQuery(internalLink.fragment),
-    'no.nav.navno:url': buildPageContentQuery(urlFragment.fragment),
-    'no.nav.navno:main-article': buildPageContentQuery(mainArticle.fragment),
-    'no.nav.navno:main-article-chapter': buildPageContentQuery(mainArticleChapter.fragment),
-    'no.nav.navno:page-list': buildPageContentQuery(pageList.fragment),
-    'no.nav.navno:section-page': buildPageContentQuery(sectionPage.fragment),
-    'no.nav.navno:transport-page': buildPageContentQuery(transportPage.fragment),
-    'no.nav.navno:large-table': buildPageContentQuery(largeTable.fragment),
-    'no.nav.navno:office-information': buildPageContentQuery(officeInformation.fragment),
-    'no.nav.navno:publishing-calendar': buildPageContentQuery(publishingCalendar.fragment),
-    'no.nav.navno:melding': buildPageContentQuery(melding.fragment),
-    'no.nav.navno:dynamic-page': buildPageContentQuery(dynamicPage.fragment),
-    'no.nav.navno:global-value-set': buildPageContentQuery(globalValueSet.fragment),
-    'no.nav.navno:animated-icons': buildPageContentQuery(animatedIconFragment.fragment),
-    'portal:fragment': buildPageContentQuery(''), // fragment previews only need the common fragments
+const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
+    'no.nav.navno:main-article': mainArticle.fragment,
+    'no.nav.navno:main-article-chapter': mainArticleChapter.fragment,
+    'no.nav.navno:section-page': sectionPage.fragment,
+    'no.nav.navno:page-list': pageList.fragment,
+    'no.nav.navno:transport-page': transportPage.fragment,
+    'no.nav.navno:large-table': largeTable.fragment,
+    'no.nav.navno:office-information': officeInformation.fragment,
+    'no.nav.navno:publishing-calendar': publishingCalendar.fragment,
+    'no.nav.navno:melding': melding.fragment,
+    'no.nav.navno:external-link': externalLink.fragment,
+    'no.nav.navno:internal-link': internalLink.fragment,
+    'no.nav.navno:url': urlFragment.fragment,
+    'no.nav.navno:dynamic-page': dynamicPageFragment,
+    'no.nav.navno:content-page-with-sidemenus': productPageFragment,
+    'no.nav.navno:situation-page': situationPageFragment,
+    'no.nav.navno:themed-article-page': themedArticlePageFragment,
+    'no.nav.navno:guide-page': guidePageFragment,
+    'no.nav.navno:tools-page': toolsPageFragment,
+    'portal:fragment': '', // fragment previews only need the common fragments
+    'no.nav.navno:contact-information': contactInformation.fragment,
+    'no.nav.navno:global-value-set': globalValueSet.fragment,
 };
 
-Object.entries(pageContentQueries).forEach(([key, value]) => {
-    // @ts-ignore
-    log.info(`${key} query size: ${value.length}`);
-});
+const contentQueries = Object.entries(contentToQueryFragment).reduce((acc, [type, fragment]) => {
+    return { ...acc, [type]: buildPageContentQuery(fragment) };
+}, {} as { [type in ContentDescriptor]: string });
 
-const mediaContentQuery = `query($ref:ID!){
+const mediaQuery = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${globalFragment}
             ${media.mediaAttachmentFragment}
         }
+}`;
+
+const componentsQuery = `query($ref:ID!){
+    guillotine {
+        get(key:$ref) {
+            ${componentsFragment}
+        }
+    }
+}`;
+
+const fragmentQuery = `query($ref:ID!){
+    guillotine {
+        get(key:$ref) {
+            ${fragmentFragment}
+        }
+    }
 }`;
 
 export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
@@ -80,7 +107,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         return null;
     }
 
-    const { _id, type } = contentRaw;
+    const { _id, type, page } = contentRaw;
 
     const baseQueryParams = {
         branch,
@@ -93,47 +120,87 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
     if (type.startsWith('media:')) {
         return guillotineQuery({
             ...baseQueryParams,
-            query: mediaContentQuery,
+            query: mediaQuery,
         })?.get;
     }
 
-    const contentQuery = pageContentQueries[type];
+    const contentQuery = contentQueries[type];
 
     if (!contentQuery) {
         return null;
     }
 
-    const queryResult = guillotineQuery({
+    const contentQueryResult = guillotineQuery({
         ...baseQueryParams,
         query: contentQuery,
         jsonBaseKeys: ['data', 'config', 'page'],
     })?.get;
 
-    if (!queryResult) {
+    if (!contentQueryResult) {
         return null;
     }
 
-    const commonFields = {
-        components: undefined,
-        pathMap: getPathMapForReferences(contentRef),
-        versionTimestamps: getPublishedVersionTimestamps(contentRef, branch),
-    };
+    const versionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
 
     // This is the preview/editor page for fragments (not user-facing). It requires some
     // special handling for its contained components
-    if (queryResult.__typename === 'portal_Fragment') {
+    if (contentQueryResult.__typename === 'portal_Fragment') {
+        const fragmentQueryResult = guillotineQuery({
+            ...baseQueryParams,
+            query: fragmentQuery,
+            jsonBaseKeys: ['config'],
+        })?.get;
+
         return {
-            ...getPortalFragmentContent(queryResult),
-            ...commonFields,
+            ...getPortalFragmentContent({ ...contentQueryResult, ...fragmentQueryResult }),
+            versionTimestamps,
         };
     }
 
     const breadcrumbs = runInBranchContext(() => getBreadcrumbs(contentRef), branch);
 
-    return {
-        ...queryResult,
-        ...commonFields,
+    const commonFields = {
+        ...contentQueryResult,
+        pathMap: getPathMapForReferences(contentRef),
+        versionTimestamps,
         ...(breadcrumbs && { breadcrumbs }),
-        page: mergeComponentsIntoPage(queryResult),
+    };
+
+    // If the page object has any fields, the content has been customized
+    // for component-level editing, and we need to retrieve component data.
+    // Otherwise, we're done!
+    if (!page.type) {
+        return commonFields;
+    }
+
+    const componentsQueryResult = guillotineQuery({
+        ...baseQueryParams,
+        query: componentsQuery,
+        jsonBaseKeys: ['config'],
+    })?.get;
+
+    const fragmentQueryResult = guillotineQuery({
+        ...baseQueryParams,
+        query: fragmentQuery,
+        jsonBaseKeys: ['config'],
+    })?.get;
+
+    return {
+        ...commonFields,
+        page: mergeComponentsIntoPage({
+            page: contentQueryResult.page,
+            components: [...componentsQueryResult.components, ...fragmentQueryResult.components],
+        }),
     };
 };
+
+Object.entries(contentQueries).forEach(([key, value]) => {
+    // @ts-ignore
+    log.info(`${key} query size: ${value.length}`);
+});
+
+log.info(`Component query size: ${componentsQuery.length}`);
+
+log.info(`Fragment query size: ${fragmentQuery.length}`);
+
+log.info(`Media query size: ${mediaQuery.length}`);
