@@ -5,6 +5,7 @@ const mainArticle = require('./mainArticle');
 const internalLink = require('./internalLink');
 const externalLink = require('./externalLink');
 const urlFragment = require('./url');
+const dynamicPage = require('./dynamicPage');
 
 const contentListFragment = `
     ...on no_nav_navno_ContentList {
@@ -18,6 +19,7 @@ const contentListFragment = `
                 ${internalLink.fragment}
                 ${externalLink.fragment}
                 ${urlFragment.fragment}
+                ${dynamicPage.shortFragment}
             }
         }
     }
