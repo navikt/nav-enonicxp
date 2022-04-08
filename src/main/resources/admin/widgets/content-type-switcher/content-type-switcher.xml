@@ -5,6 +5,6 @@
         <interface>contentstudio.contextpanel</interface>
     </interfaces>
     <allow>
-        <principal>role:system.admin</principal>
+        <principal>role:system.authenticated</principal>
     </allow>
 </widget>
