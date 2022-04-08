@@ -5,7 +5,7 @@ const {
     getGvKeyAndContentIdFromUniqueKey,
     getGlobalValueItem,
 } = require('/lib/global-values/global-values');
-const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
+const { appendMacroDescriptionToKey } = require('/lib/utils/component-utils');
 const { forceArray } = require('/lib/utils/nav-utils');
 const { runInBranchContext } = require('/lib/utils/branch-context');
 

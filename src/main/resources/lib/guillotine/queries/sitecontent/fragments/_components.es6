@@ -8,10 +8,10 @@ const { imageFragment } = require('./media');
 const contentListMixinFragment = require('./dangerous-mixins/content-list-mixin');
 const {
     productTargetMixin,
-} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-target-mixin');
+} = require('/lib/guillotine/queries/sitecontent/fragments/dangerous-mixins/product-target-mixin');
 const {
     calculatorTargetMixin,
-} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/calculator-target-mixin');
+} = require('/lib/guillotine/queries/sitecontent/fragments/dangerous-mixins/calculator-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
 
 const contactInformationFragment = require('./contactInformation');

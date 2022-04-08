@@ -1,4 +1,4 @@
-const { imageFragment } = require('/lib/headless/guillotine/queries/fragments/media');
+const { imageFragment } = require('/lib/guillotine/queries/sitecontent/fragments/media');
 
 const codeFragment = `
     ...on media_Code {

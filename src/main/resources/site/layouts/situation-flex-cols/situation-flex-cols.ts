@@ -1,7 +1,7 @@
-import { generateAnchorIdField } from '../../../lib/headless/component-utils';
+import { generateAnchorIdField } from '../../../lib/utils/component-utils';
 import { SituationFlexColsConfig } from './situation-flex-cols-config';
 
-const controller = require('/lib/headless/controllers/component-preview-controller');
+const controller = require('/lib/controllers/component-preview-controller');
 
 exports.get = (req: XP.Request) => {
     if (req.mode === 'edit') {

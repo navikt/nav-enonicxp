@@ -1,7 +1,7 @@
 import { guillotineQuery } from '../guillotine-query';
 
-const notification = require('/lib/headless/guillotine/queries/fragments/notification');
-const globalFragment = require('/lib/headless/guillotine/queries/fragments/_global');
+const notification = require('/lib/guillotine/queries/sitecontent/fragments/notification');
+const globalFragment = require('/lib/guillotine/queries/sitecontent/fragments/_global');
 
 const queryGetNotifications = `query {
     guillotine {

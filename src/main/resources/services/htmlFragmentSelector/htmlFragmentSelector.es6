@@ -1,9 +1,9 @@
 const contentLib = require('/lib/xp/content');
 const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
+const { getKeyWithoutMacroDescription } = require('/lib/utils/component-utils');
 const { forceArray } = require('/lib/utils/nav-utils');
-const { appendMacroDescriptionToKey } = require('/lib/headless/component-utils');
-const { findContentsWithFragmentComponent } = require('/lib/headless/component-utils');
+const { appendMacroDescriptionToKey } = require('/lib/utils/component-utils');
+const { findContentsWithFragmentComponent } = require('/lib/utils/component-utils');
 const { getSubPath } = require('../service-utils');
 const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
 

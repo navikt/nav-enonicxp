@@ -1,3 +1,3 @@
-const controller = require('/lib/headless/controllers/component-preview-controller');
+const controller = require('/lib/controllers/component-preview-controller');
 
 exports.get = controller;

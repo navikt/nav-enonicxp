@@ -1,6 +1,6 @@
 const {
     processedHtmlFragment,
-} = require('/lib/headless/guillotine/queries/fragments/_processedHtml');
+} = require('/lib/guillotine/queries/sitecontent/fragments/_processedHtml');
 
 const largeTableFragment = `
     ...on no_nav_navno_LargeTable {

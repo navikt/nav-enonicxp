@@ -3,7 +3,7 @@ const { guillotineQuery } = require('/lib/guillotine/guillotine-query');
 const { mergeComponentsIntoPage } = require('/lib/guillotine/utils/process-components');
 const { getPortalFragmentContent } = require('/lib/guillotine/utils/process-components');
 const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getBreadcrumbs } = require('../../headless/guillotine/queries/breadcrumbs');
+const { getBreadcrumbs } = require('./breadcrumbs');
 const { getNotifications } = require('/lib/guillotine/queries/notifications');
 const { shouldRedirectToCustomPath } = require('/lib/custom-paths/custom-paths');
 const {
@@ -15,29 +15,29 @@ const { getVersionTimestamps } = require('/lib/time-travel/version-utils');
 const { getModifiedTimeIncludingFragments } = require('/lib/fragments/find-fragments');
 const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { validateTimestampConsistency } = require('/lib/time-travel/consistency-check');
-const { redirectsPath } = require('../../constants');
+const { redirectsPath } = require('../../../constants');
 
-const globalFragment = require('../../headless/guillotine/queries/fragments/_global');
-const componentsFragment = require('../../headless/guillotine/queries/fragments/_components');
-const sectionPage = require('../../headless/guillotine/queries/fragments/sectionPage');
-const contentList = require('../../headless/guillotine/queries/fragments/contentList');
-const calculator = require('../../headless/guillotine/queries/fragments/calculator');
-const contactInformation = require('../../headless/guillotine/queries/fragments/contactInformation');
-const internalLink = require('../../headless/guillotine/queries/fragments/internalLink');
-const transportPage = require('../../headless/guillotine/queries/fragments/transportPage');
-const externalLink = require('../../headless/guillotine/queries/fragments/externalLink');
-const pageList = require('../../headless/guillotine/queries/fragments/pageList');
-const melding = require('../../headless/guillotine/queries/fragments/melding');
-const mainArticle = require('../../headless/guillotine/queries/fragments/mainArticle');
-const mainArticleChapter = require('../../headless/guillotine/queries/fragments/mainArticleChapter');
-const officeInformation = require('../../headless/guillotine/queries/fragments/officeInformation');
-const largeTable = require('../../headless/guillotine/queries/fragments/largeTable');
-const publishingCalendar = require('../../headless/guillotine/queries/fragments/publishingCalendar');
-const urlFragment = require('../../headless/guillotine/queries/fragments/url');
-const dynamicPage = require('../../headless/guillotine/queries/fragments/dynamicPage');
-const globalValueSet = require('../../headless/guillotine/queries/fragments/globalValueSet');
-const media = require('../../headless/guillotine/queries/fragments/media');
-const animatedIconFragment = require('../../headless/guillotine/queries/fragments/animatedIcons');
+const globalFragment = require('./fragments/_global');
+const componentsFragment = require('./fragments/_components');
+const sectionPage = require('./fragments/sectionPage');
+const contentList = require('./fragments/contentList');
+const calculator = require('./fragments/calculator');
+const contactInformation = require('./fragments/contactInformation');
+const internalLink = require('./fragments/internalLink');
+const transportPage = require('./fragments/transportPage');
+const externalLink = require('./fragments/externalLink');
+const pageList = require('./fragments/pageList');
+const melding = require('./fragments/melding');
+const mainArticle = require('./fragments/mainArticle');
+const mainArticleChapter = require('./fragments/mainArticleChapter');
+const officeInformation = require('./fragments/officeInformation');
+const largeTable = require('./fragments/largeTable');
+const publishingCalendar = require('./fragments/publishingCalendar');
+const urlFragment = require('./fragments/url');
+const dynamicPage = require('./fragments/dynamicPage');
+const globalValueSet = require('./fragments/globalValueSet');
+const media = require('./fragments/media');
+const animatedIconFragment = require('./fragments/animatedIcons');
 
 const queryFragments = [
     globalFragment,
@@ -68,11 +68,6 @@ const queryGetContentByRef = `query($ref:ID!){
         get(key:$ref) {
             ${queryFragments}
             pageAsJson(resolveTemplate: true, resolveFragment: false)
-            ...on base_Folder {
-                children(first:1000) {
-                    ${queryFragments}
-                }
-            }
         }
     }
 }`;
@@ -97,16 +92,16 @@ const getContent = (contentRef, branch) => {
         return null;
     }
 
-    // runInBranchContext(
-    //     () =>
-    //         contentLib.create({
-    //             name: 'heckin big queryrino',
-    //             parentPath: '/www.nav.no',
-    //             contentType: 'no.nav.navno:large-table',
-    //             data: { text: queryGetContentByRef },
-    //         }),
-    //     'draft'
-    // );
+    runInBranchContext(
+        () =>
+            contentLib.create({
+                name: 'heckin big queryrino 2',
+                parentPath: '/www.nav.no',
+                contentType: 'no.nav.navno:large-table',
+                data: { text: queryGetContentByRef },
+            }),
+        'draft'
+    );
 
     const response = guillotineQuery({
         query: queryGetContentByRef,

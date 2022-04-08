@@ -1,6 +1,6 @@
 import httpClient from '/lib/http-client';
-import { urls } from '../../constants';
-import { stripPathPrefix } from '../../utils/nav-utils';
+import { urls } from '../constants';
+import { stripPathPrefix } from '../utils/nav-utils';
 
 const loopbackCheckParam = 'fromXp';
 

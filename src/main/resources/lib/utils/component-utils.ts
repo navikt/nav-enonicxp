@@ -3,7 +3,7 @@ import nodeLib from '/lib/xp/node';
 import contentLib, { Content } from '/lib/xp/content';
 import commonLib from '/lib/xp/common';
 import { NodeComponent } from '../../types/components/component-node';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray } from './nav-utils';
 import { PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { componentAppKey } from '../constants';
