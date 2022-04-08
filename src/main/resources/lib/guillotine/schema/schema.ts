@@ -69,7 +69,12 @@ const schemaContextOptions = {
 };
 
 const initAndCreateSchema = () => {
-    return guillotineLib.createSchema(schemaContextOptions);
+    const mySchema = guillotineLib.createSchema(schemaContextOptions);
+
+    const gqlTools = __.newBean('graphql.GraphQLTools');
+    gqlTools.graphQLSchemaReader(mySchema);
+
+    return mySchema;
 };
 
 export const schema = initAndCreateSchema();
