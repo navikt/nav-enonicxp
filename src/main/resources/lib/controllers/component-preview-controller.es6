@@ -1,7 +1,7 @@
 const portalLib = require('/lib/xp/portal');
 const httpClient = require('/lib/http-client');
 const { urls } = require('/lib/constants');
-const componentsFragment = require('/lib/guillotine/queries/sitecontent/fragments/_components');
+const componentsFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/_components');
 const { mergeGuillotineObjectJson } = require('/lib/guillotine/utils/merge-json');
 const { getContent } = require('/lib/guillotine/queries/sitecontent/sitecontent');
 const { guillotineQuery } = require('/lib/guillotine/guillotine-query');

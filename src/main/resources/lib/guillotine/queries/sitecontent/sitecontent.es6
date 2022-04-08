@@ -17,61 +17,6 @@ const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { validateTimestampConsistency } = require('/lib/time-travel/consistency-check');
 const { redirectsPath } = require('../../../constants');
 
-const globalFragment = require('./fragments/_global');
-const componentsFragment = require('./fragments/_components');
-const sectionPage = require('./fragments/sectionPage');
-const contentList = require('./fragments/contentList');
-const calculator = require('./fragments/calculator');
-const contactInformation = require('./fragments/contactInformation');
-const internalLink = require('./fragments/internalLink');
-const transportPage = require('./fragments/transportPage');
-const externalLink = require('./fragments/externalLink');
-const pageList = require('./fragments/pageList');
-const melding = require('./fragments/melding');
-const mainArticle = require('./fragments/mainArticle');
-const mainArticleChapter = require('./fragments/mainArticleChapter');
-const officeInformation = require('./fragments/officeInformation');
-const largeTable = require('./fragments/largeTable');
-const publishingCalendar = require('./fragments/publishingCalendar');
-const urlFragment = require('./fragments/url');
-const dynamicPage = require('./fragments/dynamicPage');
-const globalValueSet = require('./fragments/globalValueSet');
-const media = require('./fragments/media');
-const animatedIconFragment = require('./fragments/animatedIcons');
-
-const queryFragments = [
-    globalFragment,
-    componentsFragment,
-    contentList.fragment,
-    calculator.fragment,
-    contactInformation.fragment,
-    externalLink.fragment,
-    internalLink.fragment,
-    urlFragment.fragment,
-    mainArticle.fragment,
-    mainArticleChapter.fragment,
-    pageList.fragment,
-    sectionPage.fragment,
-    transportPage.fragment,
-    largeTable.fragment,
-    officeInformation.fragment,
-    publishingCalendar.fragment,
-    melding.fragment,
-    dynamicPage.fragment,
-    globalValueSet.fragment,
-    media.mediaAttachmentFragment,
-    animatedIconFragment.fragment,
-].join('\n');
-
-const queryGetContentByRef = `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${queryFragments}
-            pageAsJson(resolveTemplate: true, resolveFragment: false)
-        }
-    }
-}`;
-
 const isMedia = (content) => content.__typename?.startsWith('media_');
 
 const getPublishedVersionTimestamps = (contentRef, branch) => {
@@ -85,13 +30,6 @@ const getPublishedVersionTimestamps = (contentRef, branch) => {
 };
 
 const getContent = (contentRef, branch) => {
-    // Do a contentLib lookup first to check if the content exists.
-    // This is much quicker than running a full Guillotine query.
-    const rawContent = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
-    if (!rawContent) {
-        return null;
-    }
-
     runInBranchContext(
         () =>
             contentLib.create({

@@ -76,8 +76,14 @@ export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     `${appDescriptor}:publishing-calendar`,
 ]);
 
-export const contentTypesRenderedByFrontend: ContentTypeList = [
+export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
     ...linkContentTypes,
+];
+
+export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
+    ...contentTypesRenderedByPublicFrontend,
+    `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:contact-information`,
 ];
