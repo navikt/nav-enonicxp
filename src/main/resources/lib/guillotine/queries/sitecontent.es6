@@ -97,6 +97,17 @@ const getContent = (contentRef, branch) => {
         return null;
     }
 
+    // runInBranchContext(
+    //     () =>
+    //         contentLib.create({
+    //             name: 'heckin big queryrino',
+    //             parentPath: '/www.nav.no',
+    //             contentType: 'no.nav.navno:large-table',
+    //             data: { text: queryGetContentByRef },
+    //         }),
+    //     'draft'
+    // );
+
     const response = guillotineQuery({
         query: queryGetContentByRef,
         branch,

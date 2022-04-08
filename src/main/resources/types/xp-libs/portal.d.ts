@@ -54,7 +54,10 @@ declare module '*/lib/xp/portal' {
             /**
              * This function returns a data-stream for a named multipart item.
              */
-            getMultipartStream(name: string, index?: number): null; //import('/lib/xp/content').ByteSource | undefined;
+            getMultipartStream(
+                name: string,
+                index?: number
+            ): import('/lib/xp/content').ByteSource | undefined;
             /**
              * This function returns the multipart item data as text.
              */
@@ -63,7 +66,7 @@ declare module '*/lib/xp/portal' {
              * This function returns the parent site of the content corresponding to the current execution context. It is meant
              * to be called from a page, layout or part controller.
              */
-            getSite<Config extends object>(): null; //import('/lib/xp/content').Site<Config>;
+            getSite<Config extends object>(): import('/lib/xp/content').Site<Config>;
             /**
              * This function returns the site configuration for this app in the parent site of the content corresponding to the
              * current execution context. It is meant to be called from a page, layout or part controller.

@@ -38,7 +38,7 @@ export const guillotineQuery = ({
     params?: Record<string, string>;
     throwOnErrors?: boolean;
 }) => {
-    log.info(query);
+    log.info(`schema: ${schema}`);
 
     const response = runInBranchContext(
         () => graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params),
