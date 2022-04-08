@@ -6,6 +6,7 @@ import { guillotineQuery } from '../../guillotine-query';
 import { getPublishedVersionTimestamps } from '../../../time-travel/version-utils';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
+import { dynamicPageContentTypesSet } from '../../../contenttype-lists';
 
 const {
     getPortalFragmentContent,
@@ -108,7 +109,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         return null;
     }
 
-    const { _id, type, page } = contentRaw;
+    const { _id, type } = contentRaw;
 
     const baseQueryParams = {
         branch,
@@ -167,10 +168,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         ...(breadcrumbs && { breadcrumbs }),
     };
 
-    // If the page object has any fields, the content has been customized
-    // for component-level editing, and we need to retrieve component data.
-    // Otherwise, we're done!
-    if (!page.type) {
+    if (!dynamicPageContentTypesSet[type]) {
         return commonFields;
     }
 

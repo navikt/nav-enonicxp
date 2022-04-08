@@ -30,6 +30,8 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:dynamic-page`,
 ];
 
+export const dynamicPageContentTypesSet: ContentTypeSet = stringArrayToSet(dynamicPageContentTypes);
+
 export const linkContentTypes: ContentTypeList = [
     `${appDescriptor}:internal-link`,
     `${appDescriptor}:external-link`,

@@ -23,7 +23,7 @@ const generatePersistantIds = (componentPath) => (content) => {
 
     const categories = forceArray(config.categories);
 
-    categories?.forEach((category) => {
+    categories.forEach((category) => {
         insertIdIfNotExist(category);
         forceArray(category.filters)?.forEach((filter) => insertIdIfNotExist(filter));
     });
