@@ -1,4 +1,5 @@
 import { guillotineQuery } from '../guillotine-query';
+import { Content } from '/lib/xp/content';
 
 const notification = require('/lib/guillotine/queries/sitecontent/legacyFragments/notification');
 const globalFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/_global');
@@ -15,16 +16,13 @@ const queryGetNotifications = `query {
 export const getNotifications = (path: string) => {
     // Notifications should always be fetched from master, we don't want unpublished notifications
     // to be displayed in content studio
-    const queryResponse = guillotineQuery({
+    const notifications = guillotineQuery({
         query: queryGetNotifications,
         branch: 'master',
         jsonBaseKeys: ['data'],
-    });
-
-    const notifications = queryResponse?.query;
+    })?.query as Content<'no.nav.navno:notification'>[] | null;
 
     if (!notifications) {
-        log.info('Notifications not found');
         return null;
     }
 
@@ -35,9 +33,7 @@ export const getNotifications = (path: string) => {
     const globalNotifications = notifications.filter(
         (item) =>
             item._path.startsWith('/www.nav.no/global-notifications') &&
-            !localNotifications.some(
-                (local) => local.data?.notificationToReplaceId?._id === item._id
-            )
+            !localNotifications.some((local) => local.data?.notificationToReplaceId === item._id)
     );
 
     return [...globalNotifications, ...localNotifications];

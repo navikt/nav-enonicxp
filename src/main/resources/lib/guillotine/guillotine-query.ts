@@ -67,11 +67,14 @@ export const guillotineQuery = ({
 
     const { get: getResult, query: queryResult } = data.guillotine;
 
+    // We don't have any good Typescript integration with Guillotine/GraphQL atm
+    // so just return as any for now...
     return {
-        get: jsonBaseKeys && getResult ? mergeGuillotineObject(getResult, jsonBaseKeys) : getResult,
-        query:
-            jsonBaseKeys && queryResult
-                ? mergeGuillotineArray(queryResult, jsonBaseKeys)
-                : queryResult,
+        get: (jsonBaseKeys && getResult
+            ? mergeGuillotineObject(getResult, jsonBaseKeys)
+            : getResult) as any,
+        query: (jsonBaseKeys && queryResult
+            ? mergeGuillotineArray(queryResult, jsonBaseKeys)
+            : queryResult) as any,
     };
 };

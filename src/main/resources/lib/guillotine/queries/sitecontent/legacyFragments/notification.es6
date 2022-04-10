@@ -15,10 +15,6 @@ const notificationFragment = `
                 ${globalFragment}
                 ${externalLink.fragment}
             }
-            notificationToReplaceId {
-                _id
-                _path
-            }
             type
         }
     }

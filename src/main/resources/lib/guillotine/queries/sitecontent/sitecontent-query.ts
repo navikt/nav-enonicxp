@@ -178,7 +178,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         jsonBaseKeys: ['config'],
     })?.get;
 
-    const fragmentQueryResult = guillotineQuery({
+    const fragmentsQueryResult = guillotineQuery({
         ...baseQueryParams,
         query: fragmentQuery,
         jsonBaseKeys: ['config'],
@@ -188,7 +188,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         ...commonFields,
         page: mergeComponentsIntoPage({
             page: contentQueryResult.page,
-            components: [...componentsQueryResult.components, ...fragmentQueryResult.components],
+            components: [...componentsQueryResult.components, ...fragmentsQueryResult.components],
         }),
     };
 };
