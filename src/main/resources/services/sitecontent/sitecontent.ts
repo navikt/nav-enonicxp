@@ -49,7 +49,10 @@ export const get = (req: XP.Request) => {
             return {
                 status: 404,
                 body: {
-                    message: 'No content found for the provided id',
+                    // This message is used by the frontend to differentiate between
+                    // 404 returned from this service and general 404 from the server
+                    // Don't change it without also changing the implementation in the frontend!
+                    message: 'Site path not found',
                 },
                 contentType: 'application/json',
             };

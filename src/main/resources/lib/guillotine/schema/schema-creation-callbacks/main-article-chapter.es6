@@ -11,8 +11,17 @@ const mainArticleChapterDataCallback = (context, params) => {
 // Finds and sets the corresponding chapters for the alternative language versions
 // referred to by the chapter article
 const mainArticleChapterCallback = (context, params) => {
+    params.fields.data.args = {
+        resolveLanguages: graphQlLib.GraphQLBoolean,
+    };
+
     params.fields.data.resolve = (env) => {
         const { data, _path } = env.source;
+        const { resolveLanguages } = env.args;
+
+        if (!resolveLanguages) {
+            return data;
+        }
 
         // Get the alternative language versions of the chapter article
         const article = contentLib.get({ key: data.article });
@@ -22,6 +31,8 @@ const mainArticleChapterCallback = (context, params) => {
         if (articleLanguageTargets.length === 0) {
             return data;
         }
+
+        const startTime = Date.now();
 
         // Get the alternative language versions of the chapter parent
         const parentPath = _path.split('/').slice(0, -1).join('/');
@@ -64,6 +75,8 @@ const mainArticleChapterCallback = (context, params) => {
 
             return [...languagesAcc, chapterTarget];
         }, []);
+
+        log.info(`Retreiveing chapter languages took ${Date.now() - startTime}ms`);
 
         return { ...data, languages };
     };

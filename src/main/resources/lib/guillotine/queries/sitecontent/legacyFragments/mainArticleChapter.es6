@@ -17,7 +17,7 @@ const mainArticleChapterFragment = `
                 }
             }
         }
-        data {
+        data(resolveLanguages:true) {
             languages {
                 language
                 _path

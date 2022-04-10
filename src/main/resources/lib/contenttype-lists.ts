@@ -70,6 +70,7 @@ export const typesWithDeepReferences: ContentTypeSet = stringArrayToSet([
 export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
+    `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,
     `${appDescriptor}:page-list`,
     `${appDescriptor}:transport-page`,
