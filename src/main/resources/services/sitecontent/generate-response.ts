@@ -2,13 +2,15 @@ import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { runContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
-import { redirectsPath } from '../../lib/constants';
+import { redirectsPathPrefix } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/fragments/find-fragments';
 import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
 import { getNotifications } from '../../lib/guillotine/queries/notifications';
+import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { isUUID } from '../../lib/utils/uuid';
 
 const { runWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
@@ -55,24 +57,37 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
     } as Content<'no.nav.navno:internal-link'>;
 };
 
-// Gets content from the /redirects folder outside the site content tree
 export const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | null => {
+    if (isUUID(idOrPath)) {
+        return null;
+    }
+
     const redirectFromLegacyPath = runInBranchContext(
         () => getRedirectFromLegacyPath(idOrPath),
         branch
     );
+
     if (redirectFromLegacyPath) {
         return redirectFromLegacyPath;
     }
 
-    const pathSegments = idOrPath.split('/');
-    const shortUrlPath = pathSegments.length === 3 && pathSegments[2];
+    const redirectPath = stripPathPrefix(idOrPath);
 
-    if (shortUrlPath) {
-        return runContentQuery(`${redirectsPath}/${shortUrlPath}`, branch);
+    if (!redirectPath) {
+        return null;
     }
 
-    return null;
+    // Gets content from the /redirects folder outside the site content tree
+    const redirectContent = runInBranchContext(
+        () => contentLib.get({ key: `${redirectsPathPrefix}${redirectPath}` }),
+        branch
+    );
+
+    if (!redirectContent) {
+        return null;
+    }
+
+    return runContentQuery(redirectContent, branch);
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
@@ -86,11 +101,9 @@ const getContentVersionFromTime = (
         return null;
     }
 
-    const contentId = contentRaw._id;
-
     try {
-        return runWithTimeTravel(dateTime, branch, contentId, () => {
-            const content = runContentQuery(contentId, branch);
+        return runWithTimeTravel(dateTime, branch, contentRaw._id, () => {
+            const content = runContentQuery(contentRaw, branch);
             if (!content) {
                 return null;
             }
@@ -107,11 +120,34 @@ const getContentVersionFromTime = (
 };
 
 const getContentOrRedirect = (
-    contentRef: string,
+    requestedPathOrId: string,
     branch: RepoBranch,
     retries = 2
 ): Content | null => {
-    const content = runContentQuery(contentRef, branch);
+    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
+    const baseContent = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+
+    // If the content was not found, check if there are any applicable redirects
+    // for the requested path/id
+    if (!baseContent) {
+        return getRedirectContent(contentRef, branch);
+    }
+
+    // If the content has a custom path, we generally want to redirect requests from the internal path
+    if (shouldRedirectToCustomPath(baseContent, requestedPathOrId, branch)) {
+        log.info(`Custom path check: ${requestedPathOrId} - ${baseContent.data.customPath}`);
+
+        return {
+            ...baseContent,
+            // @ts-ignore
+            __typename: 'no_nav_navno_InternalLink',
+            type: 'no.nav.navno:internal-link',
+            data: { target: { _path: baseContent.data.customPath } },
+            page: undefined,
+        } as Content<'no.nav.navno:internal-link'>;
+    }
+
+    const content = runContentQuery(baseContent, branch);
 
     // Consistency check to ensure our version-history hack isn't affecting normal requests
     if (!validateTimestampConsistency(contentRef, content, branch)) {
@@ -129,24 +165,6 @@ const getContentOrRedirect = (
         return getContentOrRedirect(contentRef, branch);
     }
 
-    // If the content was not found, check if there are any applicable redirects
-    // for the requested path/id
-    if (!content) {
-        return getRedirectContent(contentRef, branch);
-    }
-
-    // If the content has a custom path, we generally want to redirect requests from the internal path
-    if (shouldRedirectToCustomPath(content, contentRef, branch)) {
-        return {
-            ...content,
-            // @ts-ignore
-            __typename: 'no_nav_navno_InternalLink',
-            type: 'no.nav.navno:internal-link',
-            data: { target: { _path: content.data.customPath } },
-            page: undefined,
-        } as Content<'no.nav.navno:internal-link'>;
-    }
-
     return {
         ...content,
         // modifiedTime should also take any fragments on the page into account
@@ -159,13 +177,11 @@ export const generateSitecontentResponse = (
     branch: RepoBranch,
     datetime?: string
 ): Content | null => {
-    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
-
     if (datetime) {
-        return getContentVersionFromTime(contentRef, branch, datetime);
+        return getContentVersionFromTime(requestedPathOrId, branch, datetime);
     }
 
-    const content = getContentOrRedirect(contentRef, branch);
+    const content = getContentOrRedirect(requestedPathOrId, branch);
 
     if (!content) {
         return null;

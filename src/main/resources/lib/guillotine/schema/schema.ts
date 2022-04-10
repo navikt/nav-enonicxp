@@ -1,5 +1,5 @@
 import guillotineLib from '/lib/guillotine';
-import { redirectsPath } from '../../constants';
+import { redirectsPathPrefix } from '../../constants';
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
@@ -65,7 +65,7 @@ const schemaContextOptions = {
         RichText: richTextCallback,
     }),
     applications: [app.name, 'navno.nav.no.search'],
-    allowPaths: [redirectsPath],
+    allowPaths: [redirectsPathPrefix],
 };
 
 const initAndCreateSchema = () => {

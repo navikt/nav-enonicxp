@@ -4,7 +4,7 @@ import taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { appDescriptor, navnoRootPath, redirectsPath } from '../../lib/constants';
+import { appDescriptor, navnoRootPath, redirectsPathPrefix } from '../../lib/constants';
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { contentTypesRenderedByPublicFrontend } from '../../lib/contenttype-lists';
 
@@ -67,8 +67,8 @@ const getPathsToRender = (isTest?: boolean) => {
         }
 
         const redirectPaths = contentLib
-            .getChildren({ key: redirectsPath, count: 1000 })
-            .hits.map((content) => content._path.replace(redirectsPath, ''));
+            .getChildren({ key: redirectsPathPrefix, count: 1000 })
+            .hits.map((content) => content._path.replace(redirectsPathPrefix, ''));
 
         return removeDuplicates([...contentPaths, ...redirectPaths]);
     } catch (e) {

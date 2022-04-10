@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { runInBranchContext } from '../../../utils/branch-context';
 import { RepoBranch } from '../../../../types/common';
 import { ContentDescriptor } from '../../../../types/content-types/content-config';
@@ -103,13 +103,8 @@ const fragmentQuery = `query($ref:ID!){
     }
 }`;
 
-export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
-    const contentRaw = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
-    if (!contentRaw) {
-        return null;
-    }
-
-    const { _id, type } = contentRaw;
+export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
+    const { _id, type } = baseContent;
 
     const baseQueryParams = {
         branch,
@@ -142,7 +137,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         return null;
     }
 
-    const versionTimestamps = getPublishedVersionTimestamps(contentRef, branch);
+    const versionTimestamps = getPublishedVersionTimestamps(_id, branch);
 
     // This is the preview/editor page for fragments (not user-facing). It requires some
     // special handling for its contained components
@@ -159,11 +154,11 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
         };
     }
 
-    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(contentRef), branch);
+    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(_id), branch);
 
     const commonFields = {
         ...contentQueryResult,
-        pathMap: getPathMapForReferences(contentRef),
+        pathMap: getPathMapForReferences(_id),
         versionTimestamps,
         ...(breadcrumbs && { breadcrumbs }),
     };

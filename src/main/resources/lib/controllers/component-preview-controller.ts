@@ -29,7 +29,7 @@ const getLayoutComponentProps = (content: Content, path: string) => {
         return content.fragment;
     }
 
-    const pageRegions = runContentQuery(content._id, 'draft')?.page?.regions as Record<
+    const pageRegions = runContentQuery(content, 'draft')?.page?.regions as Record<
         string,
         any
     > | null;
