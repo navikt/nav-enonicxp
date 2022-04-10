@@ -1,20 +1,25 @@
+import { RepoBranch } from '../../types/common';
+import { runInBranchContext } from '../utils/branch-context';
+import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
+import { Content } from '/lib/xp/content';
+
 const {
     timeTravelHooksEnabled,
     contentLibGetStandard,
 } = require('/lib/time-travel/run-with-time-travel');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getUnixTimeFromDateTimeString } = require('/lib/utils/nav-utils');
 
 // Peace-of-mind checks to see if hooks for time-specific content retrieval is
-// causing unexpected side-effects. For normal requests (with no "time" parameter)
+// causing unexpected side effects. For normal requests (with no "time" parameter)
 // the modifiedTime field for contents retrieved should be equal for hooked and
 // standard functions
 //
-// Can be removed once peace of mind has been attained :)
-//
 // Note: this has false negatives if the content is updated and then requested within
 // a short period of time
-const validateTimestampConsistency = (contentRef, contentFromHookedLibs, branch) => {
+export const validateTimestampConsistency = (
+    contentRef: string,
+    contentFromHookedLibs: Content | null,
+    branch: RepoBranch
+) => {
     if (!timeTravelHooksEnabled) {
         return true;
     }
@@ -33,6 +38,13 @@ const validateTimestampConsistency = (contentRef, contentFromHookedLibs, branch)
         );
         return false;
     }
+    // See above
+    if (!contentFromHookedLibs) {
+        log.error(
+            `Time travel consistency check could not complete, found raw content but no content from hooked libs ${contentRef}`
+        );
+        return false;
+    }
 
     const rawTime = contentRaw.modifiedTime;
     const hookedTime = contentFromHookedLibs.modifiedTime;
@@ -48,8 +60,4 @@ const validateTimestampConsistency = (contentRef, contentFromHookedLibs, branch)
     }
 
     return true;
-};
-
-module.exports = {
-    validateTimestampConsistency,
 };
