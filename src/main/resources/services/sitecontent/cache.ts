@@ -7,7 +7,7 @@ const cache = cacheLib.newCache({ size: 10000, expire: oneDay });
 const getCacheKey = (contentId: string, cacheVersionKey: string) =>
     `${contentId}_${cacheVersionKey}`;
 
-export const getContentFromCache = (
+export const getResponseFromCache = (
     contentId: string,
     callback: () => any,
     cacheVersionKey?: string

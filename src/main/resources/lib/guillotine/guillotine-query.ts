@@ -2,7 +2,7 @@ import graphQlLib from '/lib/graphql';
 import { schema } from './schema/schema';
 import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
-import { mergeGuillotineArrayJson, mergeGuillotineObjectJson } from './utils/merge-json';
+import { mergeGuillotineArray, mergeGuillotineObject } from './utils/merge-json';
 
 export type AsJsonKey = `${string}AsJson`;
 
@@ -38,12 +38,12 @@ export const guillotineQuery = ({
     params?: Record<string, string>;
     throwOnErrors?: boolean;
 }) => {
-    const response = runInBranchContext(
+    const result = runInBranchContext(
         () => graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params),
         branch
     );
 
-    const { data, errors } = response;
+    const { data, errors } = result;
 
     if (errors) {
         const errorMsg = `GraphQL errors for ${JSON.stringify(params)}: ${errors
@@ -68,15 +68,10 @@ export const guillotineQuery = ({
     const { get: getResult, query: queryResult } = data.guillotine;
 
     return {
-        ...(getResult && {
-            get: (jsonBaseKeys
-                ? mergeGuillotineObjectJson(getResult, jsonBaseKeys)
-                : getResult) as any,
-        }),
-        ...(queryResult && {
-            query: (jsonBaseKeys
-                ? mergeGuillotineArrayJson(queryResult, jsonBaseKeys)
-                : queryResult) as any[],
-        }),
+        get: jsonBaseKeys && getResult ? mergeGuillotineObject(getResult, jsonBaseKeys) : getResult,
+        query:
+            jsonBaseKeys && queryResult
+                ? mergeGuillotineArray(queryResult, jsonBaseKeys)
+                : queryResult,
     };
 };

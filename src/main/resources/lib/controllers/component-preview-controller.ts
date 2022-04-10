@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { runContentQuery } from '../guillotine/queries/sitecontent/sitecontent-query';
 import { guillotineQuery } from '../guillotine/guillotine-query';
-import { mergeGuillotineObjectJson } from '../guillotine/utils/merge-json';
+import { mergeGuillotineObject } from '../guillotine/utils/merge-json';
 import { urls } from '../constants';
 
 const componentsFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/_components');
@@ -79,7 +79,7 @@ const getComponentProps = () => {
     return {
         language: content.language,
         ...component,
-        ...destructureComponent(mergeGuillotineObjectJson(componentFromGuillotine, ['config'])),
+        ...destructureComponent(mergeGuillotineObject(componentFromGuillotine, ['config'])),
     };
 };
 

@@ -50,6 +50,7 @@ const mediaAttachmentFragment = `
 
 const imageFragment = `
     __typename
+    type
     ...on media_Vector {
         ${mediaUrlInline}
     }

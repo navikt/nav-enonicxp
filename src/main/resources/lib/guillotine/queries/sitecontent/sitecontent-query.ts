@@ -114,7 +114,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
     const baseQueryParams = {
         branch,
         params: { ref: _id },
-        throwOnErrors: true,
+        throwErrors: true,
     };
 
     // Media types only redirect to the media asset in the frontend and
@@ -146,7 +146,7 @@ export const runContentQuery = (contentRef: string, branch: RepoBranch) => {
 
     // This is the preview/editor page for fragments (not user-facing). It requires some
     // special handling for its contained components
-    if (contentQueryResult.__typename === 'portal_Fragment') {
+    if (type === 'portal:fragment') {
         const fragmentQueryResult = guillotineQuery({
             ...baseQueryParams,
             query: fragmentQuery,
