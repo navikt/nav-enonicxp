@@ -1,0 +1,14 @@
+<content-type>
+    <display-name>Oversiktsside</display-name>
+    <description>Egen side med oversikt over søknadsfrister, satser etc</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>false</allow-child-content>
+    <form>
+        <mixin name="dynamic-page-common"/>
+        <input name="allProducts" type="RadioButton">
+            <label>-</label>
+        </input>
+    </form>
+</content-type>

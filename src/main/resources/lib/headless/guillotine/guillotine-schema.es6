@@ -38,6 +38,7 @@ const {
 const {
     applyMacroCreationCallbacksToHtmlFragmentTypes,
 } = require('/lib/headless/guillotine/schema-creation-callbacks/macro-html-fragment');
+const { overviewCallback } = require('./schema-creation-callbacks/overview-callback');
 
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
@@ -54,6 +55,7 @@ const schemaContextOptions = {
         no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
         no_nav_navno_GlobalValueSet: globalValuesCallback,
+        no_nav_navno_Overview_Data: overviewCallback,
         no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
         Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter:
             contentListCallback('publish.first'),
