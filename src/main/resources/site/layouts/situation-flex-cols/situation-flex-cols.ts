@@ -1,12 +1,11 @@
 import { generateAnchorIdField } from '../../../lib/utils/component-utils';
 import { SituationFlexColsConfig } from './situation-flex-cols-config';
+import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 
-const controller = require('/lib/controllers/component-preview-controller');
-
-exports.get = (req: XP.Request) => {
+export const get = (req: XP.Request) => {
     if (req.mode === 'edit') {
         generateAnchorIdField<SituationFlexColsConfig>(req, 'title');
     }
 
-    return controller(req);
+    return componentPreviewController(req);
 };

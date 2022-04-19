@@ -85,7 +85,7 @@ const getComponentProps = () => {
 
 // This controller fetches component-HTML from the frontend rendered with the
 // supplied props. Used by the content-studio editor.
-export const componentPreviewController = () => {
+export const componentPreviewController = (req: XP.Request) => {
     const componentProps = getComponentProps();
 
     if (!componentProps) {
