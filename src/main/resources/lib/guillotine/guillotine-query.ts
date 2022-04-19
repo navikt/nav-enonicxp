@@ -25,19 +25,21 @@ type GraphQLResponse = {
     }[];
 };
 
+export type GuillotineQueryParams = {
+    query: string;
+    branch: RepoBranch;
+    jsonBaseKeys?: string[];
+    params?: Record<string, string>;
+    throwOnErrors?: boolean;
+};
+
 export const guillotineQuery = ({
     query,
     branch,
     jsonBaseKeys,
     params = {},
     throwOnErrors = false,
-}: {
-    query: string;
-    branch: RepoBranch;
-    jsonBaseKeys?: string[];
-    params?: Record<string, string>;
-    throwOnErrors?: boolean;
-}) => {
+}: GuillotineQueryParams) => {
     const result = runInBranchContext(
         () => graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params),
         branch

@@ -2,7 +2,7 @@ import { Content } from '/lib/xp/content';
 import { runInBranchContext } from '../../../utils/branch-context';
 import { RepoBranch } from '../../../../types/common';
 import { ContentDescriptor } from '../../../../types/content-types/content-config';
-import { guillotineQuery } from '../../guillotine-query';
+import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
 import { getPublishedVersionTimestamps } from '../../../time-travel/version-utils';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
@@ -39,6 +39,8 @@ const {
 } = require('./legacyFragments/dynamicPage');
 const globalValueSet = require('./legacyFragments/globalValueSet');
 const media = require('./legacyFragments/media');
+
+type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwOnErrors'>;
 
 const buildPageContentQuery = (contentTypeFragment?: string) =>
     `query($ref:ID!){
@@ -104,13 +106,29 @@ const fragmentQuery = `query($ref:ID!){
     }
 }`;
 
+const runComponentsQuery = (baseQueryParams: BaseQueryParams) => {
+    const fragmentsQueryResult = guillotineQuery({
+        ...baseQueryParams,
+        query: fragmentQuery,
+        jsonBaseKeys: ['config'],
+    })?.get;
+
+    const componentsQueryResult = guillotineQuery({
+        ...baseQueryParams,
+        query: componentsQuery,
+        jsonBaseKeys: ['config'],
+    })?.get;
+
+    return [...fragmentsQueryResult.components, ...componentsQueryResult.components];
+};
+
 export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
     const { _id, type } = baseContent;
 
-    const baseQueryParams = {
+    const baseQueryParams: BaseQueryParams = {
         branch,
         params: { ref: _id },
-        throwErrors: true,
+        throwOnErrors: true,
     };
 
     // Media types only redirect to the media asset in the frontend and
@@ -143,14 +161,13 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
     // This is the preview/editor page for fragments (not user-facing). It requires some
     // special handling for its contained components
     if (type === 'portal:fragment') {
-        const fragmentQueryResult = guillotineQuery({
-            ...baseQueryParams,
-            query: fragmentQuery,
-            jsonBaseKeys: ['config'],
-        })?.get;
+        const components = runComponentsQuery(baseQueryParams);
 
         return {
-            ...getPortalFragmentContent({ ...contentQueryResult, ...fragmentQueryResult }),
+            ...getPortalFragmentContent({
+                ...contentQueryResult,
+                components,
+            }),
             versionTimestamps,
         };
     }
@@ -168,25 +185,13 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
         return commonFields;
     }
 
-    const componentsQueryResult = guillotineQuery({
-        ...baseQueryParams,
-        query: componentsQuery,
-        jsonBaseKeys: ['config'],
-    })?.get;
-
-    const fragmentsQueryResult = guillotineQuery({
-        ...baseQueryParams,
-        query: fragmentQuery,
-        jsonBaseKeys: ['config'],
-    })?.get;
-
-    log.info(`Fragments result: ${JSON.stringify(fragmentsQueryResult)}`);
+    const components = runComponentsQuery(baseQueryParams);
 
     return {
         ...commonFields,
         page: mergeComponentsIntoPage({
             page: contentQueryResult.page,
-            components: [...componentsQueryResult.components, ...fragmentsQueryResult.components],
+            components,
         }),
     };
 };
