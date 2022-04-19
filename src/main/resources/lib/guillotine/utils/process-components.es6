@@ -66,7 +66,7 @@ const insertComponentsIntoFragment = (fragment, components) => {
 
     // Layouts can contain multiple components in regions, which need special treatment
     const regions = components.reduce((regionsAcc, component) => {
-        const regionName = component.path.split('/')[1];
+        const regionName = component.path?.split('/')[1];
         if (!regionName) {
             return regionsAcc;
         }

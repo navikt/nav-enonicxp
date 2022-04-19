@@ -223,6 +223,8 @@ const componentsFragment = `
 // ¯\_(ツ)_/¯
 const fragmentFragment = `
     components(resolveTemplate: true, resolveFragment: false) {
+        type
+        path
         fragment {
             fragment {
                 components(resolveTemplate: true, resolveFragment: true){
