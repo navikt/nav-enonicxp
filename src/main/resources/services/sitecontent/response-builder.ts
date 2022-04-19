@@ -54,7 +54,7 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
     } as Content<'no.nav.navno:internal-link'>;
 };
 
-export const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | null => {
+const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | null => {
     if (isUUID(idOrPath)) {
         return null;
     }

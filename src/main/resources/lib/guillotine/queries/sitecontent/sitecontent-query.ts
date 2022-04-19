@@ -180,6 +180,8 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
         jsonBaseKeys: ['config'],
     })?.get;
 
+    log.info(`Fragments result: ${JSON.stringify(fragmentsQueryResult)}`);
+
     return {
         ...commonFields,
         page: mergeComponentsIntoPage({
