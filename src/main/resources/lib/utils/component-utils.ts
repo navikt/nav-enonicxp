@@ -27,8 +27,7 @@ export const getComponentConfig = (component?: NodeComponent) => {
         return null;
     }
 
-    // @ts-ignore
-    // component[component.type] is always a valid field
+    // @ts-ignore (component[component.type] is always a valid field)
     const componentProps = component[type];
     if (!componentProps) {
         return null;
@@ -111,8 +110,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
                 }
 
                 if (!config[idSourceField] && idSourceDefaultValue !== undefined) {
-                    // @ts-ignore
-                    config[idSourceField] = idSourceDefaultValue;
+                    (config as any)[idSourceField] = idSourceDefaultValue;
                 }
 
                 const fieldValue = config[idSourceField] as unknown as string;

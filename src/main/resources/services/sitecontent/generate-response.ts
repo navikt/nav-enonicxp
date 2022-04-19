@@ -35,19 +35,19 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
         query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
     }).hits;
 
-    if (legacyHits.length > 1) {
-        log.error(`Multiple contents found with legacy key ${legacyCmsKey}`);
-    }
-
     const targetContent = legacyHits[0];
 
     if (!targetContent) {
         return null;
     }
 
+    if (legacyHits.length > 1) {
+        log.error(`Multiple contents found with legacy key ${legacyCmsKey}`);
+    }
+
     return {
         ...targetContent,
-        // @ts-ignore
+        // @ts-ignore (__typename is not a content field but is presently used by the frontend)
         __typename: 'no_nav_navno_InternalLink',
         type: 'no.nav.navno:internal-link',
         data: {
@@ -139,7 +139,7 @@ const getContentOrRedirect = (
 
         return {
             ...baseContent,
-            // @ts-ignore
+            // @ts-ignore (__typename is not a content field but is presently used by the frontend)
             __typename: 'no_nav_navno_InternalLink',
             type: 'no.nav.navno:internal-link',
             data: { target: { _path: baseContent.data.customPath } },

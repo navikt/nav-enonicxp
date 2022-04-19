@@ -1,6 +1,6 @@
 import graphqlPlaygroundLib from '/lib/graphql-playground';
 import graphQlLib from '/lib/graphql';
-// @ts-ignore
+// @ts-ignore (we don't have typedefs for this library)
 import graphQlRxLib from '/lib/graphql-rx';
 import webSocketLib from '/lib/xp/websocket';
 import { schema } from '../../lib/guillotine/schema/schema';
@@ -27,7 +27,7 @@ const handleStartMessage = (sessionId: string, message: any) => {
     try {
         const result = graphQlLib.execute(schema, query, variables);
 
-        // @ts-ignore
+        // @ts-ignore (we don't have typedefs for java libraries)
         if (result.data instanceof com.enonic.lib.graphql.rx.Publisher) {
             const subscriber = graphQlRxLib.createSubscriber({
                 onNext: (result: any) => {

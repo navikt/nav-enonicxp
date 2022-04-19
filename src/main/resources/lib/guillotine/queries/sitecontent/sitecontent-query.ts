@@ -189,7 +189,6 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
 };
 
 Object.entries(contentQueries).forEach(([key, value]) => {
-    // @ts-ignore
     log.info(`${key} query size: ${value.length}`);
 });
 

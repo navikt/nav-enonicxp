@@ -1,8 +1,8 @@
 const globalFragment = `
     __typename
-    type
     _id
     _path
+    type
     createdTime
     modifiedTime
     displayName
