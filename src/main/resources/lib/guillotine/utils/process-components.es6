@@ -1,3 +1,5 @@
+// TODO: See if some of this can be simplified a bit...
+
 // Component config in the components-array is stored in a <app-name>.<region-name> sub-object
 // Move this data down to the base config object, to match the XP page-object structure
 const destructureConfig = (component) => {
