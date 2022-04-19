@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { runContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
-import { redirectsPathPrefix } from '../../lib/constants';
+import { redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/fragments/find-fragments';
 import {
     getInternalContentPathFromCustomPath,
@@ -76,7 +76,7 @@ export const getRedirectContent = (idOrPath: string, branch: RepoBranch): Conten
 
     // Gets content from the /redirects folder outside the site content tree
     const redirectContent = runInBranchContext(
-        () => contentLib.get({ key: `${redirectsPathPrefix}${redirectPath}` }),
+        () => contentLib.get({ key: `${redirectsRootPath}${redirectPath}` }),
         branch
     );
 
