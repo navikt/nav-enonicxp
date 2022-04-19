@@ -9,14 +9,11 @@ import {
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
 import { getNotifications } from '../../lib/guillotine/queries/notifications';
-import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
+import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 
-const { runWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-const { unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-const { validateTimestampConsistency } = require('/lib/time-travel/consistency-check');
-
-const isMedia = (content: Content) => content.type.startsWith('media:');
+const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -135,8 +132,6 @@ const getContentOrRedirect = (
 
     // If the content has a custom path, we generally want to redirect requests from the internal path
     if (shouldRedirectToCustomPath(baseContent, requestedPathOrId, branch)) {
-        log.info(`Custom path check: ${requestedPathOrId} - ${baseContent.data.customPath}`);
-
         return {
             ...baseContent,
             // @ts-ignore (__typename is not a content field but is presently used by the frontend)
@@ -172,7 +167,7 @@ const getContentOrRedirect = (
     };
 };
 
-export const generateSitecontentResponse = (
+export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
     datetime?: string

@@ -7,6 +7,7 @@ import { getPublishedVersionTimestamps } from '../../../time-travel/version-util
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
 import { dynamicPageContentTypesSet } from '../../../contenttype-lists';
+import { isMedia } from '../../../utils/nav-utils';
 
 const {
     getPortalFragmentContent,
@@ -44,7 +45,7 @@ const buildPageContentQuery = (contentTypeFragment?: string) =>
     guillotine {
         get(key:$ref) {
             ${globalFragment}
-            ${contentTypeFragment}
+            ${contentTypeFragment || ''}
             pageAsJson(resolveTemplate: true, resolveFragment: false)
         }
     }
@@ -114,7 +115,7 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
 
     // Media types only redirect to the media asset in the frontend and
     // don't require any further processing
-    if (type.startsWith('media:')) {
+    if (isMedia(baseContent)) {
         return guillotineQuery({
             ...baseQueryParams,
             query: mediaQuery,

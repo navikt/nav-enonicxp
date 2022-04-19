@@ -1,6 +1,6 @@
 import { isValidBranch } from '../../lib/utils/branch-context';
 import { getResponseFromCache } from './cache';
-import { generateSitecontentResponse } from './generate-response';
+import { getSitecontentResponse } from './response-builder';
 
 export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
@@ -40,7 +40,7 @@ export const get = (req: XP.Request) => {
     try {
         const content = getResponseFromCache(
             idOrPath,
-            () => generateSitecontentResponse(idOrPath, branch, time),
+            () => getSitecontentResponse(idOrPath, branch, time),
             cacheKey
         );
 

@@ -1,4 +1,5 @@
 import nodeLib from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { contentRepo, navnoRootPath } from '../constants';
 
 // TODO: rydd i denne fila
@@ -175,3 +176,5 @@ export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
     list.reduce((acc, contentType) => {
         return { ...acc, [contentType]: true };
     }, {});
+
+export const isMedia = (content: Content) => content.type.startsWith('media:');

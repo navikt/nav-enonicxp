@@ -4,6 +4,7 @@ import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
 } from '../../types/content-types/content-config';
+import { isMedia } from '../utils/nav-utils';
 
 export type NodeEventData = {
     id: string;
@@ -43,8 +44,6 @@ const ignoredContentTypeMap = [...ignoredBaseContentTypes, ...ignoredCustomConte
     {} as { [type: string]: boolean }
 );
 
-const isMedia = (type: string) => type.startsWith('media:');
-
 // Returns false for content types which are not rendered by the user-facing frontend
 export const isRenderedType = (content: Content | null) =>
-    content && !isMedia(content.type) && !ignoredContentTypeMap[content.type];
+    content && !isMedia(content) && !ignoredContentTypeMap[content.type];
