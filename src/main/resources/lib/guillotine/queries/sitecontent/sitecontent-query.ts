@@ -98,7 +98,7 @@ const componentsQuery = `query($ref:ID!){
     }
 }`;
 
-export const runComponentsQuery = (baseQueryParams: BaseQueryParams) => {
+export const componentsGuillotineQuery = (baseQueryParams: BaseQueryParams) => {
     const componentsQueryResult = guillotineQuery({
         ...baseQueryParams,
         query: componentsQuery,
@@ -108,7 +108,7 @@ export const runComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     return componentsQueryResult?.components;
 };
 
-export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
+export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
     const { _id, type } = baseContent;
 
     const baseQueryParams: BaseQueryParams = {
@@ -147,7 +147,7 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
     // This is the preview/editor page for fragments (not user-facing). It requires some
     // special handling for its contained components
     if (type === 'portal:fragment') {
-        const components = runComponentsQuery(baseQueryParams);
+        const components = componentsGuillotineQuery(baseQueryParams);
 
         return {
             ...getPortalFragmentContent({
@@ -171,7 +171,7 @@ export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {
         return commonFields;
     }
 
-    const components = runComponentsQuery(baseQueryParams);
+    const components = componentsGuillotineQuery(baseQueryParams);
 
     return {
         ...commonFields,
@@ -186,6 +186,6 @@ Object.entries(contentQueries).forEach(([key, value]) => {
     log.info(`${key} query size: ${value.length}`);
 });
 
-log.info(`Component query size: ${componentsQuery.length}`);
+log.info(`Components query size: ${componentsQuery.length}`);
 
 log.info(`Media query size: ${mediaQuery.length}`);

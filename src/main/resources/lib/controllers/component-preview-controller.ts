@@ -2,8 +2,8 @@ import portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import {
-    runComponentsQuery,
-    runContentQuery,
+    componentsGuillotineQuery,
+    contentGuillotineQuery,
 } from '../guillotine/queries/sitecontent/sitecontent-query';
 import { mergeGuillotineObject } from '../guillotine/utils/merge-json';
 import { urls } from '../constants';
@@ -22,7 +22,7 @@ const getLayoutComponentProps = (content: Content, path: string) => {
         return content.fragment;
     }
 
-    const pageRegions = runContentQuery(content, 'draft')?.page?.regions as Record<
+    const pageRegions = contentGuillotineQuery(content, 'draft')?.page?.regions as Record<
         string,
         any
     > | null;
@@ -51,7 +51,7 @@ const getComponentProps = () => {
         return getLayoutComponentProps(content, component.path);
     }
 
-    const components = runComponentsQuery({
+    const components = componentsGuillotineQuery({
         params: {
             ref: content._id,
         },
@@ -75,6 +75,7 @@ const getComponentProps = () => {
 
 // This controller fetches component-HTML from the frontend rendered with the
 // supplied props. Used by the content-studio editor.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const componentPreviewController = (req: XP.Request) => {
     const componentProps = getComponentProps();
 
