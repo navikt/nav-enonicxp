@@ -15,7 +15,7 @@ const {
 } = require('/lib/guillotine/utils/process-components');
 
 const globalFragment = require('./legacyFragments/_global');
-const { componentsFragment, fragmentFragment } = require('./legacyFragments/_components');
+const { componentsFragment } = require('./legacyFragments/_components');
 const sectionPage = require('./legacyFragments/sectionPage');
 const contactInformation = require('./legacyFragments/contactInformation');
 const internalLink = require('./legacyFragments/internalLink');
@@ -94,14 +94,6 @@ const componentsQuery = `query($ref:ID!){
     guillotine {
         get(key:$ref) {
             ${componentsFragment}
-        }
-    }
-}`;
-
-const fragmentQuery = `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${fragmentFragment}
         }
     }
 }`;
@@ -195,7 +187,5 @@ Object.entries(contentQueries).forEach(([key, value]) => {
 });
 
 log.info(`Component query size: ${componentsQuery.length}`);
-
-log.info(`Fragment query size: ${fragmentQuery.length}`);
 
 log.info(`Media query size: ${mediaQuery.length}`);
