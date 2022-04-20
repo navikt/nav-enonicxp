@@ -11,16 +11,16 @@ const destructureConfig = (component) => {
 
     // Field names from Guillotine queries are not consistent when it comes
     // to dash/underscore. We have to account for both... -_-
-    const regionNameDash = descriptor.split(':')[1];
-    if (!regionNameDash) {
+    const componentNameDash = descriptor.split(':')[1];
+    if (!componentNameDash) {
         return null;
     }
 
-    const regionNameUnderscore = regionNameDash.replace(/-/g, '_');
+    const componentNameUnderscore = componentNameDash.replace(/-/g, '_');
 
     return {
-        ...(config['no-nav-navno'] && config['no-nav-navno'][regionNameDash]),
-        ...(config['no_nav_navno'] && config['no_nav_navno'][regionNameUnderscore]),
+        ...(config['no-nav-navno'] && config['no-nav-navno'][componentNameDash]),
+        ...(config['no_nav_navno'] && config['no_nav_navno'][componentNameUnderscore]),
     };
 };
 
@@ -62,6 +62,8 @@ const insertComponentsIntoFragment = (fragment, components) => {
             },
         };
     }
+
+    log.info(`Components: ${JSON.stringify(components)}`);
 
     // Layouts can contain multiple components in regions, which need special treatment
     const regions = components.reduce((regionsAcc, component) => {
@@ -165,6 +167,7 @@ const getPortalFragmentContent = (content) => {
     return {
         ...content,
         fragment: { ...insertComponentsIntoFragment(rootComponent, components).fragment },
+        components: undefined,
     };
 };
 
