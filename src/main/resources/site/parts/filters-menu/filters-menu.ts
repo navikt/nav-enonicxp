@@ -1,18 +1,18 @@
-const controller = require('/lib/controllers/component-preview-controller');
-const portalLib = require('/lib/xp/portal');
-const nodeLib = require('/lib/xp/node');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { isUUID } = require('/lib/utils/uuid');
-const { getComponentConfigByPath } = require('/lib/utils/component-utils');
-const { generateUUID } = require('/lib/utils/uuid');
+import { Content } from '/lib/xp/content';
+import portalLib from '/lib/xp/portal';
+import nodeLib, { NodeContent } from '/lib/xp/node';
+import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
+import { generateUUID, isUUID } from '../../../lib/utils/uuid';
+import { forceArray } from '../../../lib/utils/nav-utils';
+import { getComponentConfigByPath } from '../../../lib/utils/component-utils';
 
-const insertIdIfNotExist = (obj) => {
-    if (!isUUID(obj.id)) {
-        obj.id = generateUUID();
+const insertIdIfNotExist = (component: any) => {
+    if (!isUUID(component.id)) {
+        component.id = generateUUID();
     }
 };
 
-const generatePersistantIds = (componentPath) => (content) => {
+const generatePersistantIds = (componentPath: string) => (content: NodeContent<Content>) => {
     const { components } = content;
 
     const config = getComponentConfigByPath(componentPath, components);
@@ -31,7 +31,7 @@ const generatePersistantIds = (componentPath) => (content) => {
     return content;
 };
 
-exports.get = (req) => {
+export const get = (req: XP.Request) => {
     if (req.mode === 'edit') {
         const contentId = portalLib.getContent()._id;
         const component = portalLib.getComponent();
@@ -41,11 +41,11 @@ exports.get = (req) => {
             branch: req.branch,
         });
 
-        repo.modify({
+        repo.modify<any>({
             key: contentId,
             editor: generatePersistantIds(component.path),
         });
     }
 
-    return controller(req);
+    return componentPreviewController(req);
 };

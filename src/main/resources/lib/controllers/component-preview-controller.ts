@@ -1,21 +1,14 @@
 import portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import { runContentQuery } from '../guillotine/queries/sitecontent/sitecontent-query';
-import { guillotineQuery } from '../guillotine/guillotine-query';
+import {
+    runComponentsQuery,
+    runContentQuery,
+} from '../guillotine/queries/sitecontent/sitecontent-query';
 import { mergeGuillotineObject } from '../guillotine/utils/merge-json';
 import { urls } from '../constants';
 
-const componentsFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/_components');
 const { destructureComponent } = require('/lib/guillotine/utils/process-components');
-
-const queryGetComponents = `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${componentsFragment}
-        }
-    }
-}`;
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -58,8 +51,7 @@ const getComponentProps = () => {
         return getLayoutComponentProps(content, component.path);
     }
 
-    const response = guillotineQuery({
-        query: queryGetComponents,
+    const components = runComponentsQuery({
         params: {
             ref: content._id,
         },
@@ -68,9 +60,7 @@ const getComponentProps = () => {
 
     const componentPath = component.path || '/';
 
-    const componentFromGuillotine = response?.get?.components.find(
-        (item: any) => item.path === componentPath
-    );
+    const componentFromGuillotine = components?.find((item: any) => item.path === componentPath);
 
     if (!componentFromGuillotine) {
         return null;
@@ -117,5 +107,3 @@ export const componentPreviewController = (req: XP.Request) => {
     log.error(`Failed to fetch preview for component ${componentProps.descriptor}`);
     return fallbackResponse;
 };
-
-export default componentPreviewController;

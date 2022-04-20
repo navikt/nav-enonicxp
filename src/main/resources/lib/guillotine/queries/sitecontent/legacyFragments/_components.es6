@@ -211,7 +211,7 @@ const componentsContent = `
 `;
 
 const componentsFragment = `
-    components(resolveTemplate: true, resolveFragment: false) {
+    components(resolveTemplate: true, resolveFragment: true) {
         ${componentsContent}
     }
 `;

@@ -106,20 +106,14 @@ const fragmentQuery = `query($ref:ID!){
     }
 }`;
 
-const runComponentsQuery = (baseQueryParams: BaseQueryParams) => {
-    const fragmentsQueryResult = guillotineQuery({
-        ...baseQueryParams,
-        query: fragmentQuery,
-        jsonBaseKeys: ['config'],
-    })?.get;
-
+export const runComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const componentsQueryResult = guillotineQuery({
         ...baseQueryParams,
         query: componentsQuery,
         jsonBaseKeys: ['config'],
     })?.get;
 
-    return [...fragmentsQueryResult.components, ...componentsQueryResult.components];
+    return componentsQueryResult?.components;
 };
 
 export const runContentQuery = (baseContent: Content, branch: RepoBranch) => {

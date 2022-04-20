@@ -25,8 +25,8 @@ const destructureConfig = (component) => {
 };
 
 // Component data in the components-array is stored in type-specific sub-objects
-// Move this data down to the base object, to match the XP page-object structure
 const destructureComponent = (component) => {
+    // Move this data down to the base object, to match the XP page-object structure
     const { page, part, layout, image, text, fragment, ...rest } = component;
 
     const destructured = {
