@@ -9,8 +9,9 @@ const destructureConfig = (component) => {
         return null;
     }
 
-    // Field names from Guillotine queries are not consistent when it comes
-    // to dash/underscore. We have to account for both... -_-
+    // Field names from Guillotine queries are not consistent when it comes to dash/underscore.
+    // configAsJson returns dash, while config {<field>} converts to underscore.
+    // We have to account for both... -_-
     const componentNameDash = descriptor.split(':')[1];
     if (!componentNameDash) {
         return null;
