@@ -3,6 +3,14 @@ query($ref:ID!){
         get(key:$ref) {
             _id
             _path
+            pageAsJson(resolveTemplate: true, resolveFragment: false)
+            components(resolveTemplate: true, resolveFragment: false) {
+                type
+                path
+                fragment {
+                    id
+                }
+            }
         }
     }
 }

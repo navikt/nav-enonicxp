@@ -51,7 +51,7 @@ const getComponentProps = () => {
         return getLayoutComponentProps(content, component.path);
     }
 
-    const components = componentsGuillotineQuery({
+    const { components } = componentsGuillotineQuery({
         params: {
             ref: content._id,
         },
@@ -60,7 +60,7 @@ const getComponentProps = () => {
 
     const componentPath = component.path || '/';
 
-    const componentFromGuillotine = components?.find((item: any) => item.path === componentPath);
+    const componentFromGuillotine = components.find((item: any) => item.path === componentPath);
 
     if (!componentFromGuillotine) {
         return null;

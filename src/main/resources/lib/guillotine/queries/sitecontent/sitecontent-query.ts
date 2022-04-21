@@ -15,7 +15,7 @@ const {
 } = require('/lib/guillotine/utils/process-components');
 
 const globalFragment = require('./legacyFragments/_global');
-const { componentsFragment } = require('./legacyFragments/_components');
+const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
 const sectionPage = require('./legacyFragments/sectionPage');
 const contactInformation = require('./legacyFragments/contactInformation');
 const internalLink = require('./legacyFragments/internalLink');
@@ -48,7 +48,7 @@ const buildPageContentQuery = (contentTypeFragment?: string) =>
         get(key:$ref) {
             ${globalFragment}
             ${contentTypeFragment || ''}
-            pageAsJson(resolveTemplate: true, resolveFragment: true)
+            pageAsJson(resolveTemplate: true, resolveFragment: false)
         }
     }
 }`;
@@ -74,7 +74,7 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:tools-page': toolsPageFragment,
     'no.nav.navno:contact-information': contactInformation.fragment,
     'no.nav.navno:global-value-set': globalValueSet.fragment,
-    'portal:fragment': '',
+    'portal:fragment': fragmentComponentsFragment,
     'portal:site': '',
 };
 
@@ -98,26 +98,48 @@ const componentsQuery = `query($ref:ID!){
     }
 }`;
 
+const fragmentComponentsQuery = `query($ref:ID!){
+    guillotine {
+        get(key:$ref) {
+            ${fragmentComponentsFragment}
+        }
+    }
+}`;
+
 export const componentsGuillotineQuery = (baseQueryParams: BaseQueryParams) => {
-    const componentsQueryResult = guillotineQuery({
+    const queryParams = {
         ...baseQueryParams,
         query: componentsQuery,
         jsonBaseKeys: ['config'],
-    })?.get;
+    };
 
-    if (!componentsQueryResult) {
-        return null;
+    const components = guillotineQuery(queryParams)?.get?.components;
+
+    if (!components) {
+        return { components: [], fragments: [] };
     }
 
-    const { components, fragments } = componentsQueryResult;
+    const fragments = components.reduce((acc: any[], component: any): string[] => {
+        if (component.type !== 'fragment') {
+            return acc;
+        }
 
-    return components.map((component: any) => {
-        const fragment = fragments.find(
-            (fragment: any) => fragment.type === 'fragment' && fragment.path === component.path
-        );
+        const fragment = guillotineQuery({
+            ...queryParams,
+            query: fragmentComponentsQuery,
+            params: { ref: component.fragment.id },
+        })?.get;
 
-        return fragment ? { ...component, fragment: fragment.fragment.id } : component;
-    });
+        return [
+            ...acc,
+            {
+                ...component,
+                fragment: buildFragmentComponentTree(fragment.components),
+            },
+        ];
+    }, []);
+
+    return { components, fragments };
 };
 
 export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
@@ -159,12 +181,16 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
     // This is the preview/editor page for fragments (not user-facing). It requires some
     // special handling for its contained components
     if (type === 'portal:fragment') {
-        const components = componentsGuillotineQuery(baseQueryParams);
-
         return {
             ...contentQueryResult,
-            fragment: buildFragmentComponentTree(components),
+            fragment: buildFragmentComponentTree(
+                contentQueryResult.components,
+                contentQueryResult.nestedFragments.filter(
+                    (fragment: any) => fragment.type === 'fragment'
+                )
+            ),
             versionTimestamps,
+            components: undefined,
         };
     }
 
@@ -181,13 +207,14 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
         return commonFields;
     }
 
-    const components = componentsGuillotineQuery(baseQueryParams);
+    const { components, fragments } = componentsGuillotineQuery(baseQueryParams);
 
     return {
         ...commonFields,
         page: buildPageComponentTree({
             page: contentQueryResult.page,
             components,
+            fragments,
         }),
     };
 };

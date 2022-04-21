@@ -54,7 +54,8 @@ export const destructureComponent = (component: any): any => {
 
 const insertsComponentsIntoRegions = (
     parentComponent: PortalComponent,
-    componentsArray: GuillotineComponent[]
+    components: GuillotineComponent[],
+    fragments: PortalComponent<'fragment'>[]
 ): PortalComponent => {
     const { path, regions } = parentComponent;
 
@@ -71,9 +72,21 @@ const insertsComponentsIntoRegions = (
 
         // log.info(`Getting components for region ${regionPath}...`);
 
-        const regionComponents = componentsArray.reduce((acc, component) => {
-            if (!component.path.startsWith(regionPath)) {
+        const regionComponents = components.reduce((acc, component) => {
+            const { path, type } = component;
+
+            if (!path.startsWith(regionPath)) {
                 return acc;
+            }
+
+            if (type === 'fragment') {
+                const fragment = fragments.find((fragment) => fragment.path === component.path);
+
+                if (!fragment) {
+                    return acc;
+                }
+
+                return [...acc, fragment];
             }
 
             const regionComponent = region.components.find(
@@ -85,21 +98,7 @@ const insertsComponentsIntoRegions = (
                 return acc;
             }
 
-            const { fragment } = component;
-
-            if (fragment) {
-                log.info(`Fragment: ${JSON.stringify(component)}`);
-                return [
-                    ...acc,
-                    {
-                        type: 'fragment',
-                        path: component.path,
-                        fragment: insertsComponentsIntoRegions(regionComponent, componentsArray),
-                    } as PortalComponent,
-                ];
-            }
-
-            return [...acc, insertsComponentsIntoRegions(regionComponent, componentsArray)];
+            return [...acc, insertsComponentsIntoRegions(regionComponent, components, fragments)];
         }, [] as PortalComponent[]);
 
         // log.info(`Found components for region ${regionPath}: ${JSON.stringify(regionComponents)}`);
@@ -124,26 +123,32 @@ const insertsComponentsIntoRegions = (
 export const buildPageComponentTree = ({
     page,
     components,
+    fragments,
 }: {
     page?: PortalComponent<'page'>;
-    components?: GuillotineComponent[];
+    components: GuillotineComponent[];
+    fragments: PortalComponent<'fragment'>[];
 }) => {
     if (!page || page.type !== 'page') {
         return {};
     }
 
-    if (!components || components.length === 0) {
+    if (components.length === 0) {
         return page;
     }
 
     log.info(`Page: ${JSON.stringify(page)}`);
     log.info(`Components: ${JSON.stringify(components)}`);
+    log.info(`Fragments: ${JSON.stringify(fragments)}`);
 
-    return insertsComponentsIntoRegions(page, components);
+    return insertsComponentsIntoRegions(page, components, fragments);
 };
 
-export const buildFragmentComponentTree = (components: GuillotineComponent[]) => {
-    const rootComponent = components?.find((component: any) => component.path === '/');
+export const buildFragmentComponentTree = (
+    components: GuillotineComponent[],
+    nestedFragments?: any
+) => {
+    const rootComponent = components.find((component: any) => component.path === '/');
     if (!rootComponent) {
         return {};
     }
@@ -163,9 +168,11 @@ export const buildFragmentComponentTree = (components: GuillotineComponent[]) =>
 
         const region = acc[regionName] || { components: [], name: regionName };
 
-        const { fragment } = component;
+        const isNestedFragment = nestedFragments?.some(
+            (fragment: any) => fragment.path === component.path
+        );
 
-        if (fragment) {
+        if (isNestedFragment) {
             return {
                 ...acc,
                 [regionName]: {
@@ -174,7 +181,7 @@ export const buildFragmentComponentTree = (components: GuillotineComponent[]) =>
                         ...region.components,
                         {
                             type: 'fragment',
-                            path: component.path,
+                            path: '/',
                             fragment: destructureComponent(component),
                         },
                     ],

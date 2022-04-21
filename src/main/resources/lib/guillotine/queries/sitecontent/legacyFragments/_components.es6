@@ -185,7 +185,7 @@ const pagesFragment = `
     }
 `;
 
-const componentsContent = `
+const _componentsFragment = `
     type
     path
     page {
@@ -207,20 +207,26 @@ const componentsContent = `
         image {
             imageUrl(scale: "$scale", type: server)
         }
-    }
+    }  
 `;
 
 const componentsFragment = `
-    components(resolveTemplate: true, resolveFragment: true) {
-        ${componentsContent}
-    }
-    fragments: components(resolveTemplate: true, resolveFragment: false) {
-        path
-        type
+    components(resolveTemplate: true, resolveFragment: false) {
+        ${_componentsFragment}
         fragment {
-            id
+            id    
         }
     }
 `;
 
-module.exports = { componentsFragment };
+const fragmentComponentsFragment = `
+    components(resolveTemplate: true, resolveFragment: true) {
+        ${_componentsFragment}
+    }
+    nestedFragments: components(resolveTemplate: true, resolveFragment: false) {
+        path
+        type
+    }
+`;
+
+module.exports = { componentsFragment, fragmentComponentsFragment };
