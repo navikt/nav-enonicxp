@@ -10,8 +10,8 @@ import { dynamicPageContentTypesSet } from '../../../contenttype-lists';
 import { isMedia } from '../../../utils/nav-utils';
 
 const {
-    getPortalFragmentContent,
-    mergeComponentsIntoPage,
+    buildFragmentComponentTree,
+    buildPageComponentTree,
 } = require('/lib/guillotine/utils/process-components');
 
 const globalFragment = require('./legacyFragments/_global');
@@ -48,7 +48,7 @@ const buildPageContentQuery = (contentTypeFragment?: string) =>
         get(key:$ref) {
             ${globalFragment}
             ${contentTypeFragment || ''}
-            pageAsJson(resolveTemplate: true, resolveFragment: false)
+            pageAsJson(resolveTemplate: true, resolveFragment: true)
         }
     }
 }`;
@@ -105,7 +105,19 @@ export const componentsGuillotineQuery = (baseQueryParams: BaseQueryParams) => {
         jsonBaseKeys: ['config'],
     })?.get;
 
-    return componentsQueryResult?.components;
+    if (!componentsQueryResult) {
+        return null;
+    }
+
+    const { components, fragments } = componentsQueryResult;
+
+    return components.map((component: any) => {
+        const fragment = fragments.find(
+            (fragment: any) => fragment.type === 'fragment' && fragment.path === component.path
+        );
+
+        return fragment ? { ...component, fragment: fragment.fragment.id } : component;
+    });
 };
 
 export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
@@ -150,7 +162,7 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
         const components = componentsGuillotineQuery(baseQueryParams);
 
         return {
-            ...getPortalFragmentContent({
+            ...buildFragmentComponentTree({
                 ...contentQueryResult,
                 components,
             }),
@@ -175,7 +187,7 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
 
     return {
         ...commonFields,
-        page: mergeComponentsIntoPage({
+        page: buildPageComponentTree({
             page: contentQueryResult.page,
             components,
         }),

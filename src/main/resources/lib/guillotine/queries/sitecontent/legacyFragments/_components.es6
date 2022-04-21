@@ -214,6 +214,13 @@ const componentsFragment = `
     components(resolveTemplate: true, resolveFragment: true) {
         ${componentsContent}
     }
+    fragments: components(resolveTemplate: true, resolveFragment: false) {
+        path
+        type
+        fragment {
+            id
+        }
+    }
 `;
 
 module.exports = { componentsFragment };

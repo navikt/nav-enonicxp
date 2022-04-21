@@ -1,7 +1,7 @@
 declare module '*/lib/xp/portal' {
     import { XOR } from 'enonic-types/types';
     import { ComponentName, ComponentType } from 'types/components/component-config';
-    import { PortalComponentMapper } from 'types/components/component-portal';
+    import { PortalComponent } from 'types/components/component-portal';
     import { Content } from '*/lib/xp/content';
 
     // Replacements for enonic-types definitions
@@ -15,12 +15,10 @@ declare module '*/lib/xp/portal' {
             getContent(): Content;
         }
 
-        type Component<Type = ComponentType, Name = ComponentName> = Readonly<
-            PortalComponentMapper<Type, Name> & {
-                path: string;
-                regions?: Record<string, Region>;
-            }
-        >;
+        type Component<
+            Type extends ComponentType = ComponentType,
+            Name extends ComponentName = ComponentName
+        > = Readonly<PortalComponent<Type, Name>>;
     }
 
     // Definitions from enonic-types v0.3.12
