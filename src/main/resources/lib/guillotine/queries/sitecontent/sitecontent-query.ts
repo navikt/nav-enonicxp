@@ -162,10 +162,8 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
         const components = componentsGuillotineQuery(baseQueryParams);
 
         return {
-            ...buildFragmentComponentTree({
-                ...contentQueryResult,
-                components,
-            }),
+            ...contentQueryResult,
+            fragment: buildFragmentComponentTree(components),
             versionTimestamps,
         };
     }
