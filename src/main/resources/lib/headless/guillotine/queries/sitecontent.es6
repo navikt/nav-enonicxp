@@ -23,6 +23,7 @@ const componentsFragment = require('./fragments/_components');
 const sectionPage = require('./fragments/sectionPage');
 const contentList = require('./fragments/contentList');
 const calculator = require('./fragments/calculator');
+const productDetails = require('./fragments/productDetails');
 const contactInformation = require('./fragments/contactInformation');
 const internalLink = require('./fragments/internalLink');
 const transportPage = require('./fragments/transportPage');
@@ -58,6 +59,7 @@ const queryFragments = [
     largeTable.fragment,
     officeInformation.fragment,
     publishingCalendar.fragment,
+    productDetails.fragment,
     melding.fragment,
     dynamicPage.fragment,
     globalValueSet.fragment,

@@ -39,8 +39,11 @@ const productListData: ProductListData = {
     remove: function (key: string) {
         delete this.entries[key];
     },
-    getEntries: function () {
-        return Object.values(this.entries);
+    getEntries: function (language: string) {
+        log.info(JSON.stringify(Object.values(this.entries)));
+        return Object.values(this.entries)
+            .filter((item: any) => item.language === language)
+            .sort((a: any, b: any) => a.title.localeCompare(b.title));
     },
 };
 
@@ -101,6 +104,7 @@ const cleanProduct = (product: any) => {
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
         audience: product.data.audience,
+        language: product.language,
         taxonomy: forceArray(product.data.taxonomy),
         area: product.data.area,
         illustration: {
@@ -133,8 +137,8 @@ const getAllProducts = (start = 0, previousEntries = []) => {
     return entriesBatch;
 };
 
-const getProductList = () => {
-    return productListData.getEntries();
+const getProductList = (language: string) => {
+    return productListData.getEntries(language);
 };
 
 const generateProductListData = () => {

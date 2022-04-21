@@ -8,6 +8,7 @@ const overviewList = `
                 title
                 ingress
                 taxonomy
+                language
                 audience
                 area
                 illustration {

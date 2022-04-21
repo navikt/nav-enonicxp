@@ -1,0 +1,13 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Produktdetaljer</display-name>
+    <description>Viser valgt produktdetaljer som en del av produktsiden</description>
+    <form>
+        <input name="productDetailsTarget" type="ContentSelector">
+            <label>Velg produktdetalj</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowContentType>${app}:product-details</allowContentType>
+            </config>
+        </input>
+    </form>
+</part>

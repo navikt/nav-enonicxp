@@ -65,6 +65,7 @@ const overviewCallback = (context, params) => {
             id: { type: graphQlLib.GraphQLString },
             path: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
@@ -77,7 +78,7 @@ const overviewCallback = (context, params) => {
     params.fields.productList = {
         type: graphQlLib.list(productType),
         resolve: () => {
-            const productList = getProductList();
+            const productList = getProductList('no');
             return productList;
         },
     };

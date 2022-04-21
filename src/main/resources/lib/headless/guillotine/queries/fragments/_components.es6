@@ -10,6 +10,9 @@ const {
     productTargetMixin,
 } = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-target-mixin');
 const {
+    productDetailsTargetMixin,
+} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-details-target-mixin');
+const {
     calculatorTargetMixin,
 } = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/calculator-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
@@ -119,6 +122,9 @@ const partsFragment = `
             }
             product_card_mini {
                 ${productTargetMixin}
+            }
+            product_details {
+                ${productDetailsTargetMixin}
             }
             calculator {
                 ${calculatorTargetMixin}
