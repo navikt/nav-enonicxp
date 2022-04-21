@@ -98,7 +98,14 @@ const insertsComponentsIntoRegions = (
                 return acc;
             }
 
-            return [...acc, insertsComponentsIntoRegions(regionComponent, components, fragments)];
+            return [
+                ...acc,
+                insertsComponentsIntoRegions(
+                    { ...regionComponent, ...destructureComponent(component) },
+                    components,
+                    fragments
+                ),
+            ];
         }, [] as PortalComponent[]);
 
         // log.info(`Found components for region ${regionPath}: ${JSON.stringify(regionComponents)}`);
@@ -137,11 +144,17 @@ export const buildPageComponentTree = ({
         return page;
     }
 
-    log.info(`Page: ${JSON.stringify(page)}`);
-    log.info(`Components: ${JSON.stringify(components)}`);
-    log.info(`Fragments: ${JSON.stringify(fragments)}`);
+    // log.info(`Page: ${JSON.stringify(page)}`);
+    // log.info(`Components: ${JSON.stringify(components)}`);
+    // log.info(`Fragments: ${JSON.stringify(fragments)}`);
 
-    return insertsComponentsIntoRegions(page, components, fragments);
+    const pageComponent = components.find((component) => component.path === '/');
+
+    return insertsComponentsIntoRegions(
+        { ...page, ...destructureComponent(pageComponent) },
+        components,
+        fragments
+    );
 };
 
 export const buildFragmentComponentTree = (

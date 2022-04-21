@@ -7,9 +7,7 @@ query($ref:ID!){
             components(resolveTemplate: true, resolveFragment: false) {
                 type
                 path
-                fragment {
-                    id
-                }
+                part {configAsJson}
             }
         }
     }
