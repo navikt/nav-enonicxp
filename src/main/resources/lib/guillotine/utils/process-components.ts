@@ -42,7 +42,7 @@ const destructureConfig = (component: GuillotineComponent) => {
     const { descriptor, config } = component;
 
     if (!descriptor || !config) {
-        return null;
+        return {};
     }
 
     // Field names from Guillotine queries are not consistent when it comes to dash/underscore.
@@ -50,7 +50,7 @@ const destructureConfig = (component: GuillotineComponent) => {
     // We have to account for both... -_-
     const componentNameDash = descriptor.split(':')[1];
     if (!componentNameDash) {
-        return null;
+        return {};
     }
 
     const componentNameUnderscore = componentNameDash.replace(/-/g, '_');
