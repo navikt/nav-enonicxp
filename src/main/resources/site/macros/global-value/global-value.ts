@@ -3,6 +3,7 @@ import {
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../lib/global-values/global-values';
 import { forceArray } from '../../../lib/utils/nav-utils';
+import { contentStudioEditPathPrefix } from '../../../lib/constants';
 
 export const createGlobalValuePreview = (key: string) => {
     const { contentId, gvKey } = getGvKeyAndContentIdFromUniqueKey(key);
@@ -31,7 +32,7 @@ export const createGlobalValuePreview = (key: string) => {
         <div>
             <span style='font-size:20px'>${displayName}</span><br/>
             <span style='color:#888888'>${_path}</span><br/>
-            <a href='/admin/tool/com.enonic.app.contentstudio/main#/default/edit/${contentId}' target='_blank'>[Åpne i editoren]</a><br/>
+            <a href='${contentStudioEditPathPrefix}/${contentId}' target='_blank'>[Åpne i editoren]</a><br/>
             <br/>
             Navn: ${itemName} - Verdi: ${numberValue}
         </div>
