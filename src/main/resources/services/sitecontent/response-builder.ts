@@ -160,6 +160,10 @@ const getContentOrRedirect = (
         return getContentOrRedirect(contentRef, branch);
     }
 
+    if (!content) {
+        return null;
+    }
+
     return {
         ...content,
         // modifiedTime should also take any fragments on the page into account

@@ -247,10 +247,3 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         }),
     };
 };
-
-// Log some things on startup to remind ourselves if these queries grow overly large again :)
-Object.entries(contentQueries).forEach(([key, value]) => {
-    log.info(`${key} query size: ${value.length}`);
-});
-log.info(`Components query size: ${componentsQuery.length}`);
-log.info(`Media query size: ${mediaQuery.length}`);
