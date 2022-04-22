@@ -2,9 +2,8 @@ import contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
-import { frontendAppName, urls } from '../../lib/constants';
-
-const { getRedirectContent } = require('/lib/headless/guillotine/queries/sitecontent');
+import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
+import { runInBranchContext } from '../../lib/utils/branch-context';
 
 const errorIcon = {
     data: `<svg width='32' height='32'>\
@@ -75,7 +74,10 @@ const getResult = ({
         }
     }
 
-    const contentWithInternalPath = contentLib.get({ key: `/www.nav.no${suggestedPath}` });
+    const contentWithInternalPath = runInBranchContext(
+        () => contentLib.get({ key: `${navnoRootPath}${suggestedPath}` }),
+        'master'
+    );
     if (contentWithInternalPath) {
         return [
             generateErrorHit(
@@ -95,7 +97,10 @@ const getResult = ({
         ];
     }
 
-    const redirectContent = getRedirectContent(`/www.nav.no${suggestedPath}`);
+    const redirectContent = runInBranchContext(
+        () => contentLib.get({ key: `${redirectsRootPath}${suggestedPath}` }),
+        'master'
+    );
     if (redirectContent) {
         return [
             {

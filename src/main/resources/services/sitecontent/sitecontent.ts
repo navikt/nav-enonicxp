@@ -1,11 +1,10 @@
 import { isValidBranch } from '../../lib/utils/branch-context';
-import { getContentFromCache } from '../../lib/cache/sitecontent-cache';
-
-const { getSiteContent } = require('/lib/headless/guillotine/queries/sitecontent');
+import { getResponseFromCache } from './cache';
+import { getSitecontentResponse } from './generate-response';
 
 export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch, time, cacheKey } = req.params;
+    const { id: idOrPath, branch = 'master', time, cacheKey } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -28,7 +27,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (branch && !isValidBranch(branch)) {
+    if (!isValidBranch(branch)) {
         return {
             status: 400,
             body: {
@@ -39,9 +38,9 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const content = getContentFromCache(
+        const content = getResponseFromCache(
             idOrPath,
-            () => getSiteContent(idOrPath, branch, time),
+            () => getSitecontentResponse(idOrPath, branch, time),
             cacheKey
         );
 
@@ -50,6 +49,9 @@ export const get = (req: XP.Request) => {
             return {
                 status: 404,
                 body: {
+                    // This message is used by the frontend to differentiate between
+                    // 404 returned from this service and general 404 from the server
+                    // Don't change it without also changing the implementation in the frontend!
                     message: 'Site path not found',
                 },
                 contentType: 'application/json',

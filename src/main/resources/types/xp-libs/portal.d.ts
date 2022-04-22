@@ -1,7 +1,7 @@
 declare module '*/lib/xp/portal' {
     import { XOR } from 'enonic-types/types';
     import { ComponentName, ComponentType } from 'types/components/component-config';
-    import { PortalComponentMapper } from 'types/components/component-portal';
+    import { PortalComponent } from 'types/components/component-portal';
     import { Content } from '*/lib/xp/content';
 
     // Replacements for enonic-types definitions
@@ -15,12 +15,10 @@ declare module '*/lib/xp/portal' {
             getContent(): Content;
         }
 
-        type Component<Type = ComponentType, Name = ComponentName> = Readonly<
-            PortalComponentMapper<Type, Name> & {
-                path: string;
-                regions?: Record<string, Region>;
-            }
-        >;
+        type Component<
+            Type extends ComponentType = ComponentType,
+            Name extends ComponentName = ComponentName
+        > = Readonly<PortalComponent<Type, Name>>;
     }
 
     // Definitions from enonic-types v0.3.12
@@ -54,7 +52,10 @@ declare module '*/lib/xp/portal' {
             /**
              * This function returns a data-stream for a named multipart item.
              */
-            getMultipartStream(name: string, index?: number): null; //import('/lib/xp/content').ByteSource | undefined;
+            getMultipartStream(
+                name: string,
+                index?: number
+            ): import('/lib/xp/content').ByteSource | undefined;
             /**
              * This function returns the multipart item data as text.
              */
@@ -63,7 +64,7 @@ declare module '*/lib/xp/portal' {
              * This function returns the parent site of the content corresponding to the current execution context. It is meant
              * to be called from a page, layout or part controller.
              */
-            getSite<Config extends object>(): null; //import('/lib/xp/content').Site<Config>;
+            getSite<Config extends object>(): import('/lib/xp/content').Site<Config>;
             /**
              * This function returns the site configuration for this app in the parent site of the content corresponding to the
              * current execution context. It is meant to be called from a page, layout or part controller.

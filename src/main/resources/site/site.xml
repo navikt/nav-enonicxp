@@ -8,10 +8,10 @@
     <x-data name="menu-item" optional="true" allowContentTypes="^$"/>
     <x-data name="oldContentType" optional="true" allowContentTypes="^$"/>
     <mappings>
-        <mapping controller="/lib/site-info/controller.js">
+        <mapping controller="/lib/controllers/site-info-controller.js">
             <match>type:'portal:site'</match>
         </mapping>
-        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
+        <mapping controller="/lib/controllers/admin-frontend-proxy.js">
             <pattern>/.*</pattern>
         </mapping>
     </mappings>

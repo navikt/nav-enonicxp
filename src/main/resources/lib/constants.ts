@@ -31,8 +31,6 @@ export const urls = {
 export const componentAppKey = 'no-nav-navno';
 export const appDescriptor = 'no.nav.navno';
 export const contentRepo = 'com.enonic.cms.default';
-export const redirectsPath = '/redirects';
+export const redirectsRootPath = '/redirects';
 export const navnoRootPath = '/www.nav.no';
 export const frontendAppName = 'nav-enonicxp-frontend';
-
-// TODO: find other constants currently repeated throughout the code base and add them here

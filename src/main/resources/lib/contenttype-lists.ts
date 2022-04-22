@@ -30,6 +30,8 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:dynamic-page`,
 ];
 
+export const dynamicPageContentTypesSet: ContentTypeSet = stringArrayToSet(dynamicPageContentTypes);
+
 export const linkContentTypes: ContentTypeList = [
     `${appDescriptor}:internal-link`,
     `${appDescriptor}:external-link`,
@@ -68,6 +70,7 @@ export const typesWithDeepReferences: ContentTypeSet = stringArrayToSet([
 export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
+    `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,
     `${appDescriptor}:page-list`,
     `${appDescriptor}:transport-page`,
@@ -76,8 +79,14 @@ export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     `${appDescriptor}:publishing-calendar`,
 ]);
 
-export const contentTypesRenderedByFrontend: ContentTypeList = [
+export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
     ...linkContentTypes,
+];
+
+export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
+    ...contentTypesRenderedByPublicFrontend,
+    `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:contact-information`,
 ];

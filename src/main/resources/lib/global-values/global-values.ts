@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { getKeyWithoutMacroDescription } from '../headless/component-utils';
+import { getKeyWithoutMacroDescription } from '../utils/component-utils';
 import { findContentsWithHtmlAreaText } from '../htmlarea/htmlarea';
 import { forceArray } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';

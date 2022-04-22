@@ -25,7 +25,7 @@ export const shouldRedirectToCustomPath = (
     content: Content,
     requestedPathOrId: string,
     branch: RepoBranch
-) => {
+): content is ContentWithCustomPath => {
     return (
         hasValidCustomPath(content) &&
         stripPathPrefix(requestedPathOrId) !== content.data.customPath &&

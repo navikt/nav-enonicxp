@@ -1,7 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { clearDriftsmeldingerCache } from '../../services/driftsmeldinger/driftsmeldinger';
 import { clearDecoratorMenuCache } from '../../services/menu/menu';
-import { clearSiteinfoCache } from '../site-info/controller';
+import { clearSiteinfoCache } from '../controllers/site-info-controller';
 import { sendReliableEvent } from '../events/reliable-custom-events';
 
 export type LocalCacheInvalidationData = {

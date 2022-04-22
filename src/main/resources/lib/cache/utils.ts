@@ -1,9 +1,10 @@
 import { Content } from '/lib/xp/content';
-import { appDescriptor, navnoRootPath, redirectsPath } from '../constants';
+import { appDescriptor, navnoRootPath, redirectsRootPath } from '../constants';
 import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
 } from '../../types/content-types/content-config';
+import { isMedia } from '../utils/nav-utils';
 
 export type NodeEventData = {
     id: string;
@@ -13,7 +14,7 @@ export type NodeEventData = {
 };
 
 // Matches [/content]/www.nav.no/* and [/content]/redirects/*
-const pathnameFilter = new RegExp(`^(/content)?(${redirectsPath}|${navnoRootPath})/`);
+const pathnameFilter = new RegExp(`^(/content)?(${redirectsRootPath}|${navnoRootPath})/`);
 
 export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 
@@ -43,8 +44,6 @@ const ignoredContentTypeMap = [...ignoredBaseContentTypes, ...ignoredCustomConte
     {} as { [type: string]: boolean }
 );
 
-const isMedia = (type: string) => type.startsWith('media:');
-
 // Returns false for content types which are not rendered by the user-facing frontend
 export const isRenderedType = (content: Content | null) =>
-    content && !isMedia(content.type) && !ignoredContentTypeMap[content.type];
+    content && !isMedia(content) && !ignoredContentTypeMap[content.type];

@@ -1,13 +1,12 @@
-import { generateAnchorIdField } from '../../../lib/headless/component-utils';
+import { generateAnchorIdField } from '../../../lib/utils/component-utils';
 import { SectionWithHeaderConfig } from './section-with-header-config';
+import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 
-const controller = require('/lib/headless/controllers/component-preview-controller');
-
-exports.get = (req: XP.Request) => {
+export const get = (req: XP.Request) => {
     if (req.mode === 'edit') {
-        // the fieldDefaultValue parameter must match the default title set in the xml file
+        // The fieldDefaultValue parameter must match the default title set in the xml file
         generateAnchorIdField<SectionWithHeaderConfig>(req, 'title', 'Seksjonstittel');
     }
 
-    return controller(req);
+    return componentPreviewController(req);
 };

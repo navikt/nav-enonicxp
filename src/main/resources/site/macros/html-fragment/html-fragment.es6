@@ -1,5 +1,5 @@
 const contentLib = require('/lib/xp/content');
-const { getKeyWithoutMacroDescription } = require('/lib/headless/component-utils');
+const { getKeyWithoutMacroDescription } = require('/lib/utils/component-utils');
 
 const previewController = (context) => {
     const { fragmentId } = context.params;
