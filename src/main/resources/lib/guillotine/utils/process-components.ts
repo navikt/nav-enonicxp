@@ -29,7 +29,6 @@ type GuillotineComponent = {
         'no-nav-navno': any;
         no_nav_navno: any;
     };
-    fragment?: string;
     page: any;
     part: any;
     layout: any;
@@ -236,7 +235,7 @@ export const buildFragmentComponentTree = (
                 components: [...region.components, destructureComponent(component)],
             },
         };
-    }, {} as Record<string, any>);
+    }, {} as Regions);
 
     return { ...destructuredComponent, regions };
 };
