@@ -1,7 +1,7 @@
-const contentLib = require('/lib/xp/content');
-const { getKeyWithoutMacroDescription } = require('/lib/utils/component-utils');
+import contentLib from '/lib/xp/content';
+import { getKeyWithoutMacroDescription } from '../../../lib/utils/component-utils';
 
-const previewController = (context) => {
+export const macro = (context: XP.MacroContext) => {
     const { fragmentId } = context.params;
 
     if (!fragmentId) {
@@ -32,5 +32,3 @@ const previewController = (context) => {
             `,
     };
 };
-
-exports.macro = previewController;
