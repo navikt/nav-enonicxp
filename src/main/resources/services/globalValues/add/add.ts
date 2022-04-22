@@ -1,22 +1,23 @@
-const nodeLib = require('/lib/xp/node');
-const {
-    validateGlobalValueInputAndGetErrorResponse,
+import nodeLib from '/lib/xp/node';
+import { generateUUID } from '../../../lib/utils/uuid';
+import {
+    GlobalValueInput,
     gvServiceInvalidRequestResponse,
-} = require('../utils');
-const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const { generateUUID } = require('/lib/utils/uuid');
+    validateGlobalValueInputAndGetErrorResponse,
+} from '../utils';
+import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { getGlobalValueSet } from '../../../lib/global-values/global-values';
+import { forceArray } from '../../../lib/utils/nav-utils';
 
 const generateKey = () => `gv_${generateUUID()}`;
 
-const addGlobalValueItemService = (req) => {
+export const addGlobalValueItemService = (req: XP.Request) => {
     const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
     }
 
-    const { contentId, itemName, numberValue } = req.params;
+    const { contentId, itemName, numberValue } = req.params as unknown as GlobalValueInput;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
@@ -73,8 +74,4 @@ const addGlobalValueItemService = (req) => {
             },
         };
     }
-};
-
-module.exports = {
-    addGlobalValueItemService,
 };

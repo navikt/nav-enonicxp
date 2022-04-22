@@ -1,9 +1,19 @@
-const {
-    validateCurrentUserPermissionForContent,
+import {
     insufficientPermissionResponse,
-} = require('/lib/utils/auth-utils');
+    validateCurrentUserPermissionForContent,
+} from '../../lib/utils/auth-utils';
 
-const validateGlobalValueInputAndGetErrorResponse = ({ contentId, itemName, numberValue }) => {
+export type GlobalValueInput = {
+    contentId: string;
+    itemName: string;
+    numberValue: number;
+};
+
+export const validateGlobalValueInputAndGetErrorResponse = ({
+    contentId,
+    itemName,
+    numberValue,
+}: Partial<GlobalValueInput>) => {
     if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
         return insufficientPermissionResponse('MODIFY');
     }
@@ -26,7 +36,7 @@ const validateGlobalValueInputAndGetErrorResponse = ({ contentId, itemName, numb
     return null;
 };
 
-const gvServiceInvalidRequestResponse = (msg) => ({
+export const gvServiceInvalidRequestResponse = (msg: string) => ({
     status: 400,
     contentType: 'application/json',
     body: {
@@ -34,8 +44,3 @@ const gvServiceInvalidRequestResponse = (msg) => ({
         level: 'error',
     },
 });
-
-module.exports = {
-    validateGlobalValueInputAndGetErrorResponse,
-    gvServiceInvalidRequestResponse,
-};

@@ -1,13 +1,13 @@
-const { reorderGlobalValuesService } = require('./reorderValues/reorderGlobalValuesService');
-const { getSubPath } = require('../service-utils');
-const { getGlobalValueSetService } = require('./getSet/getSet');
-const { removeGlobalValueItemService } = require('./remove/remove');
-const { modifyGlobalValueItemService } = require('./modify/modify');
-const { addGlobalValueItemService } = require('./add/add');
-const { getGlobalValueUsageService } = require('./usage/usage');
-const { globalValueSelectorService } = require('./selector/selector');
+import { getSubPath } from '../service-utils';
+import { globalValueSelectorService } from './selector/selector';
+import { getGlobalValueSetService } from './getSet/getSet';
+import { getGlobalValueUsageService } from './usage/usage';
+import { modifyGlobalValueItemService } from './modify/modify';
+import { removeGlobalValueItemService } from './remove/remove';
+import { addGlobalValueItemService } from './add/add';
+import { reorderGlobalValuesService } from './reorderValues/reorderGlobalValuesService';
 
-const globalValues = (req) => {
+export const get = (req: XP.Request) => {
     const subPath = getSubPath(req);
 
     if (!subPath) {
@@ -36,5 +36,3 @@ const globalValues = (req) => {
         contentType: 'application/json',
     };
 };
-
-exports.get = globalValues;

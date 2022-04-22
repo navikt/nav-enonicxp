@@ -1,13 +1,14 @@
-const { getGlobalValueUsage } = require('/lib/global-values/global-values');
-const { gvServiceInvalidRequestResponse } = require('../utils');
+import { Content } from '/lib/xp/content';
+import { gvServiceInvalidRequestResponse } from '../utils';
+import { getGlobalValueUsage } from '../../../lib/global-values/global-values';
 
-const transformToResponseItem = (content) => ({
+const transformToResponseItem = (content: Content) => ({
     id: content._id,
     path: content._path,
     displayName: content.displayName,
 });
 
-const getGlobalValueUsageService = (req) => {
+export const getGlobalValueUsageService = (req: XP.Request) => {
     const { key, contentId } = req.params;
 
     if (!key || !contentId) {
@@ -24,5 +25,3 @@ const getGlobalValueUsageService = (req) => {
         },
     };
 };
-
-module.exports = { getGlobalValueUsageService };

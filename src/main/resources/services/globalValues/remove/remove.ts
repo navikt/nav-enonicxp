@@ -1,12 +1,14 @@
-const nodeLib = require('/lib/xp/node');
-const { userIsAdmin } = require('/lib/utils/auth-utils');
-const { insufficientPermissionResponse } = require('/lib/utils/auth-utils');
-const { validateCurrentUserPermissionForContent } = require('/lib/utils/auth-utils');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { getGlobalValueSet, getGlobalValueUsage } = require('/lib/global-values/global-values');
-const { gvServiceInvalidRequestResponse } = require('../utils');
+import nodeLib from '/lib/xp/node';
+import {
+    insufficientPermissionResponse,
+    userIsAdmin,
+    validateCurrentUserPermissionForContent,
+} from '../../../lib/utils/auth-utils';
+import { gvServiceInvalidRequestResponse } from '../utils';
+import { getGlobalValueSet, getGlobalValueUsage } from '../../../lib/global-values/global-values';
+import { forceArray } from '../../../lib/utils/nav-utils';
 
-const removeGlobalValueItemService = (req) => {
+export const removeGlobalValueItemService = (req: XP.Request) => {
     const { key, contentId } = req.params;
 
     if (!validateCurrentUserPermissionForContent(contentId, 'DELETE')) {
@@ -76,5 +78,3 @@ const removeGlobalValueItemService = (req) => {
         };
     }
 };
-
-module.exports = { removeGlobalValueItemService };
