@@ -2,8 +2,8 @@ import portalLib from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import {
-    componentsGuillotineQuery,
-    contentGuillotineQuery,
+    guillotineComponentsQuery,
+    guillotineContentQuery,
 } from '../guillotine/queries/sitecontent/sitecontent-query';
 import { mergeGuillotineObject } from '../guillotine/utils/merge-json';
 import { urls } from '../constants';
@@ -22,7 +22,7 @@ const getLayoutComponentProps = (content: Content, path: string) => {
         return content.fragment;
     }
 
-    const pageRegions = contentGuillotineQuery(content, 'draft')?.page?.regions as Record<
+    const pageRegions = guillotineContentQuery(content, 'draft')?.page?.regions as Record<
         string,
         any
     > | null;
@@ -51,7 +51,7 @@ const getComponentProps = () => {
         return getLayoutComponentProps(content, component.path);
     }
 
-    const { components } = componentsGuillotineQuery({
+    const { components } = guillotineComponentsQuery({
         params: {
             ref: content._id,
         },

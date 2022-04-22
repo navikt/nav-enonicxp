@@ -210,6 +210,10 @@ const _componentsFragment = `
     }  
 `;
 
+// This is used for resolving components. The resolveFragment arg does not work correctly with nested fragments
+// (ie. a part inside a layout-fragment region), so we have to resolve fragments with our own logic. ("Fragment" is an
+// overloaded term here, meaning both a GraphQL query fragment and an XP fragment component type ¯\_(ツ)_/¯)
+// We include fragment.id in this query so we can do followup queries for resolving fragments
 const componentsFragment = `
     components(resolveTemplate: true, resolveFragment: false) {
         ${_componentsFragment}
@@ -219,11 +223,14 @@ const componentsFragment = `
     }
 `;
 
+// This is used for components in the portal:fragment type. Because this type can only have one level of nesting, the
+// resolveFragment bug does not affect us here. We include a list of unresolved types, as nested fragments need to be
+// tagged with fragment attributes in order to enable editing such fragments in the content studio editor
 const fragmentComponentsFragment = `
     components(resolveTemplate: true, resolveFragment: true) {
         ${_componentsFragment}
     }
-    nestedFragments: components(resolveTemplate: true, resolveFragment: false) {
+    unresolvedComponentTypes: components(resolveTemplate: true, resolveFragment: false) {
         path
         type
     }

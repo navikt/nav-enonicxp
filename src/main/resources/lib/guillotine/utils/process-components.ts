@@ -1,6 +1,7 @@
 import { Region } from '/lib/xp/portal';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { NodeComponent } from '../../../types/components/component-node';
+import { ComponentType } from '../../../types/components/component-config';
 
 type Regions = Record<string, Region>;
 type GuillotineComponent = NodeComponent & { fragment?: string };
@@ -63,14 +64,11 @@ const insertsComponentsIntoRegions = (
     const parentPath = path.replace(/\/$/, '');
 
     if (!regions) {
-        // log.info(`No regions found on component ${parentPath}`);
         return parentComponent;
     }
 
     const regionsWithComponents = Object.entries(regions).reduce((acc, [regionName, region]) => {
         const regionPath = `${parentPath}/${regionName}`;
-
-        // log.info(`Getting components for region ${regionPath}...`);
 
         const regionComponents = components.reduce((acc, component) => {
             const { path, type } = component;
@@ -93,7 +91,6 @@ const insertsComponentsIntoRegions = (
                 (regionComponent) => regionComponent.path === component.path
             );
 
-            // log.info(`Found component: ${regionComponent}`);
             if (!regionComponent) {
                 return acc;
             }
@@ -108,8 +105,6 @@ const insertsComponentsIntoRegions = (
             ];
         }, [] as PortalComponent[]);
 
-        // log.info(`Found components for region ${regionPath}: ${JSON.stringify(regionComponents)}`);
-
         return {
             ...acc,
             [regionName]: {
@@ -118,8 +113,6 @@ const insertsComponentsIntoRegions = (
             },
         };
     }, {} as Regions);
-
-    // log.info(`Components for region ${parentPath}: ${JSON.stringify(regionsWithComponents)}`);
 
     return { ...parentComponent, regions: regionsWithComponents };
 };
@@ -159,7 +152,7 @@ export const buildPageComponentTree = ({
 
 export const buildFragmentComponentTree = (
     components: GuillotineComponent[],
-    nestedFragments?: any
+    unresolvedComponentTypes?: { type: ComponentType; path: string }[]
 ) => {
     const rootComponent = components.find((component: any) => component.path === '/');
     if (!rootComponent) {
@@ -181,8 +174,8 @@ export const buildFragmentComponentTree = (
 
         const region = acc[regionName] || { components: [], name: regionName };
 
-        const isNestedFragment = nestedFragments?.some(
-            (fragment: any) => fragment.path === component.path
+        const isNestedFragment = unresolvedComponentTypes?.some(
+            (fragment) => fragment.type === 'fragment' && fragment.path === component.path
         );
 
         if (isNestedFragment) {

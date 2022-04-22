@@ -1,13 +1,19 @@
 import { Content } from '/lib/xp/content';
 import { runInBranchContext } from '../../../utils/branch-context';
 import { RepoBranch } from '../../../../types/common';
-import { ContentDescriptor } from '../../../../types/content-types/content-config';
+import {
+    ContentDescriptor,
+    CustomContentDescriptor,
+} from '../../../../types/content-types/content-config';
 import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
 import { getPublishedVersionTimestamps } from '../../../time-travel/version-utils';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
 import { dynamicPageContentTypesSet } from '../../../contenttype-lists';
 import { isMedia } from '../../../utils/nav-utils';
+import { NodeComponent } from '../../../../types/components/component-node';
+import { PortalComponent } from '../../../../types/components/component-portal';
+import { ComponentType } from '../../../../types/components/component-config';
 
 const {
     buildFragmentComponentTree,
@@ -41,6 +47,22 @@ const globalValueSet = require('./legacyFragments/globalValueSet');
 const media = require('./legacyFragments/media');
 
 type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwOnErrors'>;
+
+// TODO: improve these types if/when Guillotine gets better Typescript support
+export type GuillotineContentQueryResult =
+    | {
+          type: CustomContentDescriptor;
+          page: PortalComponent<'page'>;
+      }
+    | {
+          type: 'portal:fragment';
+          components: NodeComponent[];
+          unresolvedComponentTypes: { type: ComponentType; path: string }[];
+      };
+
+export type GuillotineComponentQueryResult = {
+    components: NodeComponent[];
+};
 
 const buildPageContentQuery = (contentTypeFragment?: string) =>
     `query($ref:ID!){
@@ -106,21 +128,25 @@ const fragmentComponentsQuery = `query($ref:ID!){
     }
 }`;
 
-export const componentsGuillotineQuery = (baseQueryParams: BaseQueryParams) => {
+export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const queryParams = {
         ...baseQueryParams,
         query: componentsQuery,
         jsonBaseKeys: ['config'],
     };
 
-    const components = guillotineQuery(queryParams)?.get?.components;
+    const result = guillotineQuery(queryParams)?.get as GuillotineComponentQueryResult;
 
-    if (!components) {
+    if (!result) {
         return { components: [], fragments: [] };
     }
 
-    const fragments = components.reduce((acc: any[], component: any): string[] => {
-        if (component.type !== 'fragment') {
+    const { components } = result;
+
+    // Resolve fragments through separate queries to workaround a bug in the Guillotine resolver which prevents
+    // nested fragments from resolving
+    const fragments = components.reduce((acc, component) => {
+        if (component.type !== 'fragment' || !component.fragment?.id) {
             return acc;
         }
 
@@ -137,12 +163,12 @@ export const componentsGuillotineQuery = (baseQueryParams: BaseQueryParams) => {
                 fragment: buildFragmentComponentTree(fragment.components),
             },
         ];
-    }, []);
+    }, [] as PortalComponent<'fragment'>[]);
 
     return { components, fragments };
 };
 
-export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
+export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch) => {
     const { _id, type } = baseContent;
 
     const baseQueryParams: BaseQueryParams = {
@@ -151,8 +177,7 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
         throwOnErrors: true,
     };
 
-    // Media types only redirect to the media asset in the frontend and
-    // don't require any further processing
+    // Media types only redirect to the media asset in the frontend and don't require any further processing
     if (isMedia(baseContent)) {
         return guillotineQuery({
             ...baseQueryParams,
@@ -170,24 +195,24 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
         ...baseQueryParams,
         query: contentQuery,
         jsonBaseKeys: ['data', 'config', 'page'],
-    })?.get;
+    })?.get as GuillotineContentQueryResult;
 
     if (!contentQueryResult) {
         return null;
     }
 
+    // These are used with the version history selector, and are only included in requests for the draft branch
+    // (ie from content studio)
     const versionTimestamps = getPublishedVersionTimestamps(_id, branch);
 
-    // This is the preview/editor page for fragments (not user-facing). It requires some
-    // special handling for its contained components
-    if (type === 'portal:fragment') {
+    // This is the preview/editor page for fragments (not user-facing). This content type has a slightly
+    // different components structure which requires some special handling
+    if (contentQueryResult.type === 'portal:fragment') {
         return {
             ...contentQueryResult,
             fragment: buildFragmentComponentTree(
                 contentQueryResult.components,
-                contentQueryResult.nestedFragments.filter(
-                    (fragment: any) => fragment.type === 'fragment'
-                )
+                contentQueryResult.unresolvedComponentTypes
             ),
             versionTimestamps,
             components: undefined,
@@ -196,21 +221,23 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
 
     const breadcrumbs = runInBranchContext(() => getBreadcrumbs(_id), branch);
 
-    const commonFields = {
+    const contentWithoutComponents = {
         ...contentQueryResult,
         pathMap: getPathMapForReferences(_id),
         versionTimestamps,
         ...(breadcrumbs && { breadcrumbs }),
     };
 
+    // Skip the components query and processing for content types which are not intended for use
+    // with components
     if (!dynamicPageContentTypesSet[type]) {
-        return commonFields;
+        return contentWithoutComponents;
     }
 
-    const { components, fragments } = componentsGuillotineQuery(baseQueryParams);
+    const { components, fragments } = guillotineComponentsQuery(baseQueryParams);
 
     return {
-        ...commonFields,
+        ...contentWithoutComponents,
         page: buildPageComponentTree({
             page: contentQueryResult.page,
             components,
@@ -219,10 +246,9 @@ export const contentGuillotineQuery = (baseContent: Content, branch: RepoBranch)
     };
 };
 
+// Log some things on startup to remind ourselves if these queries grow overly large again :)
 Object.entries(contentQueries).forEach(([key, value]) => {
     log.info(`${key} query size: ${value.length}`);
 });
-
 log.info(`Components query size: ${componentsQuery.length}`);
-
 log.info(`Media query size: ${mediaQuery.length}`);

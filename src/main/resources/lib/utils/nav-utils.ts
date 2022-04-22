@@ -1,6 +1,7 @@
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { contentRepo, navnoRootPath } from '../constants';
+import { MediaDescriptor } from '../../types/content-types/content-config';
 
 // TODO: rydd i denne fila
 
@@ -177,4 +178,5 @@ export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
         return { ...acc, [contentType]: true };
     }, {});
 
-export const isMedia = (content: Content) => content.type.startsWith('media:');
+export const isMedia = (content: Content): content is Content & { type: MediaDescriptor } =>
+    content.type.startsWith('media:');

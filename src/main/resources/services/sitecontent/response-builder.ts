@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
-import { contentGuillotineQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
+import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
 import { redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/fragments/find-fragments';
 import {
@@ -84,7 +84,7 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         return null;
     }
 
-    return contentGuillotineQuery(redirectContent, branch);
+    return guillotineContentQuery(redirectContent, branch);
 };
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
@@ -100,7 +100,7 @@ const getContentVersionFromTime = (
 
     try {
         return runWithTimeTravel(dateTime, branch, contentRaw._id, () => {
-            const content = contentGuillotineQuery(contentRaw, branch);
+            const content = guillotineContentQuery(contentRaw, branch);
             if (!content) {
                 return null;
             }
@@ -142,7 +142,7 @@ const getContentOrRedirect = (
         } as Content<'no.nav.navno:internal-link'>;
     }
 
-    const content = contentGuillotineQuery(baseContent, branch);
+    const content = guillotineContentQuery(baseContent, branch);
 
     // Consistency check to ensure our version-history hack isn't affecting normal requests
     if (!validateTimestampConsistency(contentRef, content, branch)) {
