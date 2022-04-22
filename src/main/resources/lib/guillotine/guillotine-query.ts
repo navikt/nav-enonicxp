@@ -4,20 +4,11 @@ import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './utils/merge-json';
 
-export type AsJsonKey = `${string}AsJson`;
-
-export type GuillotineRecord = {
-    [key: string]: GuillotineRecord | string | GuillotineArray;
-    [key: AsJsonKey]: GuillotineRecord;
-};
-
-export type GuillotineArray = GuillotineRecord[];
-
 type GraphQLResponse = {
     data?: {
         guillotine?: {
-            get?: GuillotineRecord;
-            query?: GuillotineArray;
+            get?: any;
+            query?: any[];
         };
     };
     errors?: {

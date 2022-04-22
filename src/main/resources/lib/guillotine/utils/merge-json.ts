@@ -1,12 +1,10 @@
-import { AsJsonKey, GuillotineArray, GuillotineRecord } from '../guillotine-query';
-
 // Merges "xAsJson" objects from a Guillotine query into their base objects
 export const mergeGuillotineObject = (
-    obj: GuillotineRecord,
+    obj: Record<string, any>,
     baseKeys: string[]
-): GuillotineRecord => {
+): Record<string, any> => {
     baseKeys.forEach((baseKey) => {
-        const jsonKey = `${baseKey}AsJson` as AsJsonKey;
+        const jsonKey = `${baseKey}AsJson`;
         const jsonObject = obj[jsonKey];
 
         if (jsonObject) {
@@ -32,5 +30,5 @@ export const mergeGuillotineObject = (
     return obj;
 };
 
-export const mergeGuillotineArray = (array: GuillotineArray, baseKeys: string[]): GuillotineArray =>
+export const mergeGuillotineArray = (array: any[], baseKeys: string[]): any[] =>
     array.map((item) => (typeof item === 'object' ? mergeGuillotineObject(item, baseKeys) : item));
