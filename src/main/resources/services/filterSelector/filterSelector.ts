@@ -54,7 +54,7 @@ const generateHits = (req: XP.Request) => {
         .flat();
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: XP.CustomSelectorServiceRequest) => {
     try {
         const hits = generateHits(req);
 

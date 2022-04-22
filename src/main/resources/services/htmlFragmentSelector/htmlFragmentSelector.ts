@@ -19,7 +19,7 @@ const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?:
     description: fragment._path,
 });
 
-const selectorHandler = (req: XP.Request) => {
+const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
     const { query, withDescription, ids } = req.params;
 
     if (ids) {
@@ -74,7 +74,7 @@ const transformContentToResponseData = (contentArray: ReadonlyArray<Content>) =>
     }));
 };
 
-const getFragmentUsage = (req: XP.Request) => {
+const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {
     const { fragmentId } = req.params;
 
     if (!fragmentId) {
@@ -98,7 +98,7 @@ const getFragmentUsage = (req: XP.Request) => {
     };
 };
 
-export const get = (req: XP.Request) => {
+export const get = (req: XP.CustomSelectorServiceRequest) => {
     const subPath = getSubPath(req);
 
     return runInBranchContext(() => {
