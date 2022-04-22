@@ -1,4 +1,5 @@
-// Merges "xAsJson" objects from a Guillotine query into their base objects
+// These functions merges fields from "xAsJson" objects from a Guillotine query into their base objects
+
 export const mergeGuillotineObject = (
     obj: Record<string, any>,
     baseKeys: string[]

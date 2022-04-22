@@ -4,6 +4,8 @@ import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './utils/merge-json';
 
+// We don't have any good Typescript integration with Guillotine/GraphQL atm
+// so just return as any for now...
 type GraphQLResponse = {
     data?: {
         guillotine?: {
@@ -60,14 +62,11 @@ export const guillotineQuery = ({
 
     const { get: getResult, query: queryResult } = data.guillotine;
 
-    // We don't have any good Typescript integration with Guillotine/GraphQL atm
-    // so just return as any for now...
     return {
-        get: (jsonBaseKeys && getResult
-            ? mergeGuillotineObject(getResult, jsonBaseKeys)
-            : getResult) as any,
-        query: (jsonBaseKeys && queryResult
-            ? mergeGuillotineArray(queryResult, jsonBaseKeys)
-            : queryResult) as any,
+        get: jsonBaseKeys && getResult ? mergeGuillotineObject(getResult, jsonBaseKeys) : getResult,
+        query:
+            jsonBaseKeys && queryResult
+                ? mergeGuillotineArray(queryResult, jsonBaseKeys)
+                : queryResult,
     };
 };

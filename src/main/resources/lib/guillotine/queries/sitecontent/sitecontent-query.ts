@@ -48,6 +48,8 @@ const media = require('./legacyFragments/media');
 
 type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwOnErrors'>;
 
+export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
+
 // TODO: improve these types if/when Guillotine gets better Typescript support
 export type GuillotineContentQueryResult =
     | {
@@ -57,7 +59,7 @@ export type GuillotineContentQueryResult =
     | {
           type: 'portal:fragment';
           components: NodeComponent[];
-          unresolvedComponentTypes: { type: ComponentType; path: string }[];
+          unresolvedComponentTypes: GuillotineUnresolvedComponentType[];
       };
 
 export type GuillotineComponentQueryResult = {
