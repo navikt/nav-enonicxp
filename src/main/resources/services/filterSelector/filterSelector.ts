@@ -1,9 +1,21 @@
-const portalLib = require('/lib/xp/portal');
-const nodeLib = require('/lib/xp/node');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { getComponentConfig } = require('/lib/utils/component-utils');
+import portalLib from '/lib/xp/portal';
+import nodeLib from '/lib/xp/node';
+import { forceArray } from '../../lib/utils/nav-utils';
+import { getComponentConfig } from '../../lib/utils/component-utils';
+import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
 
-const getFilterMenus = (req) => {
+type Hit = XP.CustomSelectorServiceResponseHit;
+
+type CategoryRaw = Required<FiltersMenuPartConfig>['categories'][number];
+
+// Filters have a unique id that is set programmatically and is not part of the schema from which
+// the type is generated
+type Filter = CategoryRaw['filters'][number] & {
+    id: string;
+};
+type Category = CategoryRaw & { filters: Filter[] };
+
+const getFilterMenus = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!content) {
         throw new Error('Ugyldig context, forsøk å laste inn editoren på nytt (F5)');
@@ -21,22 +33,19 @@ const getFilterMenus = (req) => {
     );
 };
 
-const generateHit = (category, filter) => ({
+const generateHit = (category: Category, filter: Filter): Hit => ({
     id: filter.id,
     displayName: filter.filterName,
     description: `Kategori: ${category.categoryName}`,
 });
 
-const generateHits = (req) => {
+const generateHits = (req: XP.Request) => {
     const filterMenus = getFilterMenus(req);
-    if (!filterMenus.length > 0) {
-        return [];
-    }
 
     return filterMenus
         .map((filterMenu) => {
             const config = getComponentConfig(filterMenu);
-            const categories = forceArray(config?.categories);
+            const categories = forceArray(config?.categories) as Category[];
 
             return categories.map((category) =>
                 forceArray(category.filters)?.map((filter) => generateHit(category, filter))
@@ -45,7 +54,7 @@ const generateHits = (req) => {
         .flat();
 };
 
-const filterSelector = (req) => {
+export const get = (req: XP.Request) => {
     try {
         const hits = generateHits(req);
 
@@ -57,7 +66,7 @@ const filterSelector = (req) => {
                 hits: hits,
             },
         };
-    } catch (e) {
+    } catch (e: any) {
         return {
             status: 200,
             body: {
@@ -74,5 +83,3 @@ const filterSelector = (req) => {
         };
     }
 };
-
-exports.get = filterSelector;
