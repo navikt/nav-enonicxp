@@ -100,18 +100,20 @@ const insertsComponentsIntoRegions = (
     const regionsWithComponents = Object.entries(regions).reduce((acc, [regionName, region]) => {
         // This is the component path for the current region. We use this to filter out components
         // belonging to this region
-        const regionPath = `${parentPath}/${regionName}`;
+        const targetRegionPath = `${parentPath}/${regionName}`;
 
         const regionComponents = components.reduce((acc, component) => {
             const { path, type } = component;
 
-            if (!path.startsWith(regionPath)) {
+            const componentRegionPath = path.split('/').slice(0, -1).join('/');
+
+            if (componentRegionPath !== targetRegionPath) {
                 return acc;
             }
 
             // Fragments should already have their regions populated correctly, and require no further processing
             if (type === 'fragment') {
-                const fragment = fragments.find((fragment) => fragment.path === component.path);
+                const fragment = fragments.find((fragment) => fragment.path === path);
 
                 if (!fragment) {
                     return acc;
@@ -121,7 +123,7 @@ const insertsComponentsIntoRegions = (
             }
 
             const regionComponent = region.components.find(
-                (regionComponent) => regionComponent.path === component.path
+                (regionComponent) => regionComponent.path === path
             );
 
             if (!regionComponent) {
