@@ -211,7 +211,7 @@ const _componentsFragment = `
 `;
 
 // This is used for resolving components. The resolveFragment arg does not work correctly with nested fragments
-// (ie. a part inside a layout-fragment region), so we have to resolve fragments with our own logic. ("Fragment" is an
+// (ie. a part inside a layout-fragment region), so we have to resolve fragments separately. ("Fragment" is an
 // overloaded term here, meaning both a GraphQL query fragment and an XP fragment component type ¯\_(ツ)_/¯)
 // We include fragment.id in this query so we can do followup queries for resolving fragments
 const componentsFragment = `
