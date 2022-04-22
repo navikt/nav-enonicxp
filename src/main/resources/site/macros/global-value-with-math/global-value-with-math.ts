@@ -1,7 +1,7 @@
-const { createGlobalValuePreview } = require('../global-value/global-value');
-const { forceArray } = require('/lib/utils/nav-utils');
+import { forceArray } from '../../../lib/utils/nav-utils';
+import { createGlobalValuePreview } from '../global-value/global-value';
 
-const previewController = (context) => {
+export const macro = (context: XP.MacroContext) => {
     const { keys } = context.params;
 
     if (!keys) {
@@ -16,5 +16,3 @@ const previewController = (context) => {
         body: previewHtml,
     };
 };
-
-exports.macro = previewController;
