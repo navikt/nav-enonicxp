@@ -1,9 +1,18 @@
 import { sanitize } from '/lib/xp/common';
 
+const toHex = (num: number) => {
+    const hex = num.toString(16);
+    if (hex.length === 1) {
+        return `0${hex}`;
+    }
+
+    return hex;
+};
+
 // Converts rgba colors to hex-colors
 // (for easy pasting of colors from the design system tokens, which are formatted like this :)
-const rgba = (r: number, g: number, b: number, _?: number) =>
-    `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+const rgba = (r: number, g: number, b: number, a: number) =>
+    `#${toHex(r)}${toHex(g)}${toHex(b)}${a === 1 ? '' : toHex(a * 255)}`;
 
 const colorsByName = {
     NavdsGlobalColorBlue50: rgba(230, 240, 255, 1),
@@ -148,9 +157,9 @@ const colorsByCode = Object.entries(colorsByName).reduce((acc, [colorName, color
 }, {} as Record<string, string>);
 
 const generateIcon = (color: string) => `\
-<svg width="32" height="32">\
-<circle r="16" cx="16" cy="16" fill="#444"/>\
-<circle r="15" cx="16" cy="16" fill="${color}"/>\
+<svg width='32' height='32'>\
+<circle r='16' cx='16' cy='16' fill='#444'/>\
+<circle r='15' cx='16' cy='16' fill='${color}'/>\
 </svg>\
 `;
 
