@@ -112,6 +112,7 @@ const mediaQuery = `query($ref:ID!){
             ${globalFragment}
             ${media.mediaAttachmentFragment}
         }
+    }
 }`;
 
 const componentsQuery = `query($ref:ID!){
