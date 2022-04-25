@@ -1,12 +1,11 @@
-import { generateAnchorIdField } from '../../../lib/headless/component-utils';
+import { generateAnchorIdField } from '../../../lib/utils/component-utils';
 import { ProductFlexColsConfig } from './product-flex-cols-config';
+import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 
-const controller = require('/lib/headless/controllers/component-preview-controller');
-
-exports.get = (req: XP.Request) => {
+export const get = (req: XP.Request) => {
     if (req.mode === 'edit') {
         generateAnchorIdField<ProductFlexColsConfig>(req, 'title');
     }
 
-    return controller(req);
+    return componentPreviewController(req);
 };

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+    <display-name>Overstyring av brødsmulesti</display-name>
+    <form>
+        <input name="virtualParent" type="ContentSelector">
+            <label>Velg innhold for brødsmulesti</label>
+            <help-text>Velg innhold som dette innholdet skal ligge under i brødsmulestien. Overstyrer den interne posisjonen i strukturen når brødsmulestien genereres.</help-text>
+            <occurrences minimum="0" maximum="1"/>
+            <config>
+                <treeMode>true</treeMode>
+                <allowPath>${site}/*</allowPath>
+                <allowContentType>no.nav.navno:*</allowContentType>
+                <allowContentType>base:folder</allowContentType>
+            </config>
+        </input>
+    </form>
+</x-data>

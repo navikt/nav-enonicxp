@@ -22,9 +22,18 @@
         "import/no-unresolved": [
             "error",
             {
-                "ignore": ["^/lib/xp", "^/lib/http-client", "^/lib/cache", "^/lib/thymeleaf"]
+                "ignore": [
+                    "^/lib/xp",
+                    "^/lib/http-client",
+                    "^/lib/cache",
+                    "^/lib/thymeleaf",
+                    "^/lib/guillotine",
+                    "^/lib/graphql",
+                    "^/lib/graphql-rx"
+                ]
             }
         ],
+        "no-case-declarations": "off",
         "no-cond-assign": ["error", "except-parens"],
         "no-console": "error",
         "no-extend-native": "off",

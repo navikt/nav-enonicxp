@@ -14,9 +14,17 @@
                     <config>
                         <showStatus>true</showStatus>
                         <allowContentType>${app}:main-article</allowContentType>
+                        <allowContentType>${app}:main-article-chapter</allowContentType>
                         <allowContentType>${app}:internal-link</allowContentType>
                         <allowContentType>${app}:external-link</allowContentType>
                         <allowContentType>${app}:page-list</allowContentType>
+                        <allowContentType>${app}:dynamic-page</allowContentType>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                        <allowContentType>${app}:situation-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:tools-page</allowContentType>
+                        <allowContentType>${app}:guide-page</allowContentType>
+                        <allowContentType>${app}:themed-article-page</allowContentType>
                     </config>
                 </input>
             </items>

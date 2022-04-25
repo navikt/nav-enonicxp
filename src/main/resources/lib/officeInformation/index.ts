@@ -103,14 +103,20 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     existingOffice.displayName !== enhet.navn
                 ) {
                     updated.push(existingOffice._path);
-                    contentLib.modify<OfficeInformationDescriptor>({
-                        key: existingOffice._id,
-                        editor: (content) => ({
-                            ...content,
-                            displayName: enhet.navn,
-                            data: updatedOfficeData,
-                        }),
-                    });
+                    try {
+                        contentLib.modify<OfficeInformationDescriptor>({
+                            key: existingOffice._id,
+                            editor: (content) => ({
+                                ...content,
+                                displayName: enhet.navn,
+                                data: updatedOfficeData,
+                            }),
+                        });
+                    } catch (e) {
+                        logger.error(
+                            `Failed to modify office info content ${existingOffice._path} - ${e}`
+                        );
+                    }
                 }
 
                 const currentName = existingOffice._name;
@@ -137,7 +143,9 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             },
                         });
                     } catch (e) {
-                        logger.error(`Failed to updated office information name: ${e}`);
+                        logger.error(
+                            `Failed to updated office information name for ${existingOffice._path} - ${e}`
+                        );
                     }
                 }
             } else {
@@ -151,7 +159,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     });
                     newOffices.push(result._path);
                 } catch (e) {
-                    logger.error(`Failed to create new office page - ${e}`);
+                    logger.error(`Failed to create new office page for ${enhet.navn} - ${e}`);
                 }
             }
         }

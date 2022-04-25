@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-    <x-data name="cmsContent" optional="true"/>
-    <x-data name="cmsMenu" optional="true"/>
-    <x-data name="cmsStatus" optional="true"/>
-    <x-data name="menu-item" optional="true"/>
+    <x-data name="virtualParent" optional="true"/>
     <x-data name="fasetter" optional="true"/>
-    <x-data name="oldContentType" optional="true"/>
+    <x-data name="cmsContent" optional="true" allowContentTypes="^$"/>
+    <x-data name="cmsMenu" optional="true" allowContentTypes="^$"/>
+    <x-data name="cmsStatus" optional="true" allowContentTypes="^$"/>
+    <x-data name="menu-item" optional="true" allowContentTypes="^$"/>
+    <x-data name="oldContentType" optional="true" allowContentTypes="^$"/>
     <mappings>
-        <mapping controller="/lib/site-info/controller.js">
+        <mapping controller="/lib/controllers/site-info-controller.js">
             <match>type:'portal:site'</match>
         </mapping>
-        <mapping controller="/lib/headless/controllers/admin-frontend-proxy.js">
+        <mapping controller="/lib/controllers/admin-frontend-proxy.js">
             <pattern>/.*</pattern>
         </mapping>
     </mappings>

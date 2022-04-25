@@ -1,5 +1,7 @@
 import nodeLib from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { contentRepo, navnoRootPath } from '../constants';
+import { MediaDescriptor } from '../../types/content-types/content-config';
 
 // TODO: rydd i denne fila
 
@@ -170,3 +172,11 @@ export const createObjectChecksum = (obj: Record<string, any>) => {
 const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
 
 export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
+
+export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
+    list.reduce((acc, contentType) => {
+        return { ...acc, [contentType]: true };
+    }, {});
+
+export const isMedia = (content: Content): content is Content & { type: MediaDescriptor } =>
+    content.type.startsWith('media:');

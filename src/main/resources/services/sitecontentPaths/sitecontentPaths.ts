@@ -2,11 +2,11 @@ import contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
-import { hasCustomPath } from '../../lib/custom-paths/custom-paths';
+import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { appDescriptor, navnoRootPath, redirectsPath } from '../../lib/constants';
+import { appDescriptor, navnoRootPath, redirectsRootPath } from '../../lib/constants';
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
-import { contentTypesRenderedByFrontend } from '../../lib/contenttype-lists';
+import { contentTypesRenderedByPublicFrontend } from '../../lib/contenttype-lists';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -50,12 +50,12 @@ const getPathsToRender = (isTest?: boolean) => {
         const contentPaths = batchedContentQuery({
             start: 0,
             count: 20000,
-            contentTypes: isTest ? testContentTypes : contentTypesRenderedByFrontend,
-            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND ${excludedOldContent})`,
+            contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
+            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
 
-            if (hasCustomPath(content)) {
+            if (hasValidCustomPath(content)) {
                 acc.push(content.data.customPath);
             }
 
@@ -67,8 +67,8 @@ const getPathsToRender = (isTest?: boolean) => {
         }
 
         const redirectPaths = contentLib
-            .getChildren({ key: redirectsPath, count: 1000 })
-            .hits.map((content) => content._path.replace(redirectsPath, ''));
+            .getChildren({ key: redirectsRootPath, count: 1000 })
+            .hits.map((content) => content._path.replace(redirectsRootPath, ''));
 
         return removeDuplicates([...contentPaths, ...redirectPaths]);
     } catch (e) {

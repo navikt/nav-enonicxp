@@ -78,8 +78,7 @@ dependencies {
     include 'com.enonic.lib:lib-urlredirect:3.0.0'
     include "com.enonic.lib:lib-http-client:2.4.0"
     include "com.enonic.lib:lib-cache:2.1.1"
-    include 'com.enonic.lib:lib-cron:1.1.1' // TODO: replace all usage of this with lib-scheduler
-    include "com.enonic.lib:lib-guillotine:5.0.1" // TODO: upgrade this after refactoring the sitecontent query
+    include "com.enonic.lib:lib-guillotine:5.5.0"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
     webjar "org.webjars.npm:html-entities:2.1.0"
     webjar "org.webjars.npm:striptags:3.1.1"

@@ -1,0 +1,12 @@
+{
+  "name": "Guillotine Schema",
+  "schemaPath": "guillotine-schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "GraphQL playground service": {
+        "url": "http://localhost:8080/_/service/no.nav.navno/playground",
+        "introspect": true
+      }
+    }
+  }
+}
