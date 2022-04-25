@@ -5,7 +5,7 @@ import {
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
 import { forceArray } from '../../lib/utils/nav-utils';
-import { findContentsWithFragmentMacro } from '../../lib/htmlarea/htmlarea';
+import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
 import { getSubPath } from '../service-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 

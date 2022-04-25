@@ -1,7 +1,7 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
 import taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
-import { clusterInfo } from '../cluster/cluster-utils';
+import { clusterInfo } from '../utils/cluster-utils';
 import { EmptyObject } from '../../types/util-types';
 
 /*

@@ -10,7 +10,7 @@ import {
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
 import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
-import { updateClusterInfo } from './lib/cluster/cluster-utils';
+import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';

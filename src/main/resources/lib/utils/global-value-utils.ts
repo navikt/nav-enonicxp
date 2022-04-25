@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { getKeyWithoutMacroDescription } from '../utils/component-utils';
-import { findContentsWithHtmlAreaText } from '../htmlarea/htmlarea';
-import { forceArray } from '../utils/nav-utils';
+import { getKeyWithoutMacroDescription } from './component-utils';
+import { findContentsWithHtmlAreaText } from './htmlarea-utils';
+import { forceArray } from './nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 
 export const globalValuesContentType: NavNoDescriptor<'global-value-set'> =

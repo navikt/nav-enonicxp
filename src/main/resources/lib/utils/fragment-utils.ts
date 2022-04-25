@@ -8,9 +8,9 @@ import {
     getNestedValue,
     getUnixTimeFromDateTimeString,
     removeDuplicates,
-} from '../utils/nav-utils';
-import { htmlAreaComponentPaths, htmlAreaDataPaths } from '../htmlarea/htmlarea';
-import { runInBranchContext } from '../utils/branch-context';
+} from './nav-utils';
+import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
+import { runInBranchContext } from './branch-context';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 

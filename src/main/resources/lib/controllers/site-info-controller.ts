@@ -3,7 +3,7 @@ import schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
 import cacheLib from '/lib/cache';
 import { urls } from '../constants';
-import { clusterInfo, ClusterState, requestClusterInfo } from '../cluster/cluster-utils';
+import { clusterInfo, ClusterState, requestClusterInfo } from '../utils/cluster-utils';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { runInBranchContext } from '../utils/branch-context';
 import { RepoBranch } from '../../types/common';

@@ -2,8 +2,8 @@ import contentLib, { Content } from '/lib/xp/content';
 import {
     findContentsWithFragmentMacro,
     findContentsWithProductCardMacro,
-} from '../htmlarea/htmlarea';
-import { getGlobalValueUsage, globalValuesContentType } from '../global-values/global-values';
+} from '../utils/htmlarea-utils';
+import { getGlobalValueUsage, globalValuesContentType } from '../utils/global-value-utils';
 import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { productCardTargetTypes, typesWithDeepReferences } from '../contenttype-lists';

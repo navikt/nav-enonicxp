@@ -3,7 +3,7 @@ import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
 import { redirectsRootPath } from '../../lib/constants';
-import { getModifiedTimeIncludingFragments } from '../../lib/fragments/find-fragments';
+import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
