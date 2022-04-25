@@ -1,9 +1,11 @@
-const contentLib = require('/lib/xp/content');
-const ioLib = require('/lib/xp/io');
+import contentLib, { Attachment } from '/lib/xp/content';
+import ioLib from '/lib/xp/io';
+
+type GuillotineAttachment = Attachment & { __nodeId: string };
 
 const maxSizeDefault = 100000;
 
-const getAttachmentText = (attachment, maxSize = maxSizeDefault) => {
+export const getAttachmentText = (attachment: GuillotineAttachment, maxSize = maxSizeDefault) => {
     if (!attachment) {
         log.warning(`No attachment object was provided`);
         return null;
@@ -52,5 +54,3 @@ const getAttachmentText = (attachment, maxSize = maxSizeDefault) => {
 
     return attachmentText;
 };
-
-module.exports = { getAttachmentText };
