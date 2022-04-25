@@ -1,6 +1,9 @@
 import { appDescriptor } from './constants';
+import { ContentDescriptor } from '../types/content-types/content-config';
 
-export const legacyPageContentTypes = [
+type ContentTypeList = ContentDescriptor[];
+
+export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,
@@ -9,55 +12,55 @@ export const legacyPageContentTypes = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-] as const;
+];
 
-export const productPageContentTypes = [
+export const productPageContentTypes: ContentTypeList = [
     `${appDescriptor}:situation-page`,
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
     `${appDescriptor}:tools-page`,
-] as const;
+];
 
-export const dynamicPageContentTypes = [
+export const dynamicPageContentTypes: ContentTypeList = [
     ...productPageContentTypes,
     `${appDescriptor}:dynamic-page`,
-] as const;
+];
 
-export const linkContentTypes = [
+export const linkContentTypes: ContentTypeList = [
     `${appDescriptor}:internal-link`,
     `${appDescriptor}:external-link`,
     `${appDescriptor}:url`,
-] as const;
+];
 
-export const contentTypesInSitemap = [
+export const contentTypesInSitemap: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
-] as const;
+];
 
-export const contentTypesInDataQuery = [
+export const contentTypesInDataQuery: ContentTypeList = [
     ...contentTypesInSitemap,
     'media:text',
     'media:document',
     'media:spreadsheet',
     'media:presentation',
-] as const;
+];
 
-export const contentTypesInContentSwitcher = [
+export const contentTypesInContentSwitcher: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
     ...linkContentTypes,
-] as const;
+];
 
-export const typesWithDeepReferences = [
+export const typesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:notification`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:content-list`,
-] as const;
+];
 
-export const contentTypesWithBreadcrumbs = [
+export const contentTypesWithBreadcrumbs: ContentTypeList = [
     ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
@@ -67,16 +70,16 @@ export const contentTypesWithBreadcrumbs = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-] as const;
+];
 
-export const contentTypesRenderedByPublicFrontend = [
+export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
     ...linkContentTypes,
-] as const;
+];
 
-export const contentTypesRenderedByEditorFrontend = [
+export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     ...contentTypesRenderedByPublicFrontend,
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:contact-information`,
-] as const;
+];
