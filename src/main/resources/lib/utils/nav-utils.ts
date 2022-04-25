@@ -180,3 +180,7 @@ export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
 
 export const isMedia = (content: Content): content is Content & { type: MediaDescriptor } =>
     content.type.startsWith('media:');
+
+const Thread = Java.type('java.lang.Thread');
+
+export const getCurrentThreadId = () => Number(Thread.currentThread().getId());

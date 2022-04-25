@@ -1,40 +1,13 @@
 import contextLib from '/lib/xp/context';
-import { RepoConnection } from '/lib/xp/node';
-import { RepoBranch } from '../../types/common';
 import { getNodeKey, getTargetUnixTime } from './version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
-import { nodeLibConnectStandard } from './run-with-time-travel';
-
-type ConfigEntry = {
-    repo: RepoConnection;
-    branch: RepoBranch;
-    baseNodeKey: string;
-    baseContentKey: string;
-    targetUnixTime: number;
-};
-
-type ConfigMap = {
-    configs: { [threadId: string]: ConfigEntry };
-    add: ({
-        threadId,
-        requestedDateTime,
-        branch,
-        baseContentKey,
-    }: {
-        threadId: number;
-        requestedDateTime: string;
-        branch: RepoBranch;
-        baseContentKey: string;
-    }) => void;
-    get: (threadId: number) => ConfigEntry | undefined;
-    remove: (threadId: number) => void;
-    clear: () => void;
-};
+import { nodeLibConnectStandard } from './time-travel-hooks';
+import { TimeTravelConfig } from './types';
 
 // Stores config-objects for time travel for threads that requested content from
 // a certain timestamp. Keyed with thread-id. Any thread with an entry in this map
 // will retrieve all content from the specified timestamp.
-export const timeTravelConfigMap: ConfigMap = {
+export const timeTravelConfig: TimeTravelConfig = {
     configs: {},
     add: function ({ threadId, requestedDateTime, branch = 'master', baseContentKey }) {
         const context = contextLib.get();

@@ -14,8 +14,8 @@ import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
+import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 
-const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const facetLib = require('/lib/facets');
 
 updateClusterInfo();
@@ -25,6 +25,7 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
+facetLib.activateEventListener();
 
 hookLibsWithTimeTravel();
 
@@ -40,8 +41,6 @@ if (clusterLib.isMaster()) {
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
 }
-
-facetLib.activateEventListener();
 
 log.info('Finished running main');
 

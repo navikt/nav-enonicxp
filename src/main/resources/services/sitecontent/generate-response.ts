@@ -12,8 +12,8 @@ import { getNotifications } from '../../lib/guillotine/queries/notifications';
 import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
-
-const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+import { runWithTimeTravel } from '../../lib/time-travel/run-with-time-travel';
+import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
