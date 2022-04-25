@@ -19,17 +19,17 @@ import {
     applyMacroCreationCallbacksToHtmlFragmentTypes,
     macroHtmlFragmentCallback,
 } from './schema-creation-callbacks/macro-html-fragment';
-
-const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
-const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
-const {
-    mainArticleDataCallback,
+import {
     mainArticleCallback,
-} = require('./schema-creation-callbacks/main-article');
-const {
+    mainArticleDataCallback,
+} from './schema-creation-callbacks/main-article';
+import {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
-} = require('./schema-creation-callbacks/main-article-chapter');
+} from './schema-creation-callbacks/main-article-chapter';
+import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
+
+const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
 
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
