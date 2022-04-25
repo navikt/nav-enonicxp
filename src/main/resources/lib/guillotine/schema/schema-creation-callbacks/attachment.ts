@@ -1,8 +1,8 @@
-import graphQlLib, { CreateObjectTypeParams } from '/lib/graphql';
-import { Context } from '/lib/guillotine';
+import graphQlLib from '/lib/graphql';
 import { getAttachmentText } from './common/attachments';
+import { CreationCallback } from '../../types';
 
-export const attachmentCallback = (context: Context, params: CreateObjectTypeParams) => {
+export const attachmentCallback: CreationCallback = (context, params) => {
     params.fields.attachmentText = {
         type: graphQlLib.GraphQLString,
         args: {

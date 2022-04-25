@@ -17,9 +17,6 @@ const contactInformationFragment = `
                         }
                     }
                     specialOpeningHours  {
-                        title
-                        text
-                        footNote
                         validFrom
                         validTo
                         hours {

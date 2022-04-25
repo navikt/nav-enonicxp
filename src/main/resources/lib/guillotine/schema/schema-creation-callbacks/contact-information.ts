@@ -1,18 +1,31 @@
-const contentLib = require('/lib/xp/content');
-const graphQlLib = require('/lib/guillotine/graphql');
-const { forceArray } = require('../../../utils/nav-utils');
+import contentLib from '/lib/xp/content';
+import graphQlLib from '/lib/graphql';
+import { ContactInformation } from '../../../../site/content-types/contact-information/contact-information';
+import { forceArray } from '../../../utils/nav-utils';
+import { CreationCallback } from '../../types';
+
+const schemaGenerator = graphQlLib.newSchemaGenerator();
 
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,
  * just return the original  specialOpeningHoursobject.
  */
-const getSpecialOpeningHoursObject = (specialOpeningHours) => {
+const getSpecialOpeningHoursObject = (
+    specialOpeningHours: ContactInformation['contactType']['telephone']['specialOpeningHours']
+) => {
     if (!specialOpeningHours) {
         return null;
     }
+
     if (specialOpeningHours._selected === 'shared') {
         const id = specialOpeningHours.shared.sharedSpecialOpeningHours;
-        const openingHoursDocument = contentLib.get({ key: id });
+        if (!id) {
+            return null;
+        }
+
+        const openingHoursDocument = contentLib.get<'no.nav.navno:contact-information'>({
+            key: id,
+        });
         if (!openingHoursDocument?.data?.contactType) {
             return null;
         }
@@ -22,8 +35,8 @@ const getSpecialOpeningHoursObject = (specialOpeningHours) => {
     return specialOpeningHours;
 };
 
-const contactInformationCallback = (context, params) => {
-    const RegularOpeningHour = graphQlLib.createObjectType(context, {
+export const contactInformationCallback: CreationCallback = (context, params) => {
+    const RegularOpeningHour = schemaGenerator.createObjectType({
         name: 'regularOpeningHour',
         fields: {
             dayName: { type: graphQlLib.GraphQLString },
@@ -31,9 +44,11 @@ const contactInformationCallback = (context, params) => {
             to: { type: graphQlLib.GraphQLString },
             status: { type: graphQlLib.GraphQLString },
         },
+        description: '',
+        interfaces: [],
     });
 
-    const SpecialOpeningHour = graphQlLib.createObjectType(context, {
+    const SpecialOpeningHour = schemaGenerator.createObjectType({
         name: 'specialOpeningHour',
         fields: {
             date: { type: graphQlLib.GraphQLString },
@@ -41,14 +56,18 @@ const contactInformationCallback = (context, params) => {
             to: { type: graphQlLib.GraphQLString },
             status: { type: graphQlLib.GraphQLString },
         },
+        description: '',
+        interfaces: [],
     });
 
     params.fields.regularOpeningHours = {
-        type: graphQlLib.createObjectType(context, {
+        type: schemaGenerator.createObjectType({
             name: 'regularOpeningHours',
             fields: {
                 hours: { type: graphQlLib.list(RegularOpeningHour) },
             },
+            description: '',
+            interfaces: [],
         }),
         resolve: (env) => {
             const { regularOpeningHours = {} } = env.source;
@@ -77,16 +96,15 @@ const contactInformationCallback = (context, params) => {
     };
 
     params.fields.specialOpeningHours = {
-        type: graphQlLib.createObjectType(context, {
+        type: schemaGenerator.createObjectType({
             name: 'specialOpeningHours',
             fields: {
-                title: { type: graphQlLib.GraphQLString },
-                text: { type: graphQlLib.GraphQLString },
-                footNote: { type: graphQlLib.GraphQLString },
                 validFrom: { type: graphQlLib.GraphQLString },
                 validTo: { type: graphQlLib.GraphQLString },
                 hours: { type: graphQlLib.list(SpecialOpeningHour) },
             },
+            description: '',
+            interfaces: [],
         }),
         resolve: (env) => {
             const specialOpeningHours = getSpecialOpeningHoursObject(
@@ -94,11 +112,11 @@ const contactInformationCallback = (context, params) => {
             );
 
             // No specialOpeningHours are actually set by the editors.
-            if (!specialOpeningHours?.custom) {
+            if (specialOpeningHours?._selected !== 'custom') {
                 return {};
             }
 
-            const { title, text, footNote, validFrom, validTo, hours } = specialOpeningHours.custom;
+            const { validFrom, validTo, hours } = specialOpeningHours.custom;
 
             // We want the special opening hours to have the same schema as regular
             // opening hours and also (just in case) to be sorted by date.
@@ -118,17 +136,10 @@ const contactInformationCallback = (context, params) => {
                 .sort((a, b) => (a.date < b.date ? -1 : 1));
 
             return {
-                footNote,
                 hours: normalizedHours,
-                text,
-                title,
                 validFrom,
                 validTo,
             };
         },
     };
-};
-
-module.exports = {
-    contactInformationCallback,
 };
