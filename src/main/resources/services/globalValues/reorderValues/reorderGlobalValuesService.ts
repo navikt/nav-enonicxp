@@ -1,25 +1,29 @@
-const nodeLib = require('/lib/xp/node');
-const { parseJsonArray } = require('/lib/utils/nav-utils');
-const { gvServiceInvalidRequestResponse } = require('../utils');
-const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/utils/nav-utils');
+import nodeLib from '/lib/xp/node';
+import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
+import { gvServiceInvalidRequestResponse } from '../utils';
+import { getGlobalValueSet } from '../../../lib/global-values/global-values';
+import { GlobalValueItem } from '../../../types/content-types/global-value-set';
 
 // Verify that the keys-array from the request matches the keys in the global values set
-const validateKeys = (keysFromParam, valueItems) => {
+const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
     return (
         keysFromParam.length === valueItems.length &&
         valueItems.every((item) => keysFromParam.includes(item.key))
     );
 };
 
-const reorderGlobalValuesService = (req) => {
+export const reorderGlobalValuesService = (req: XP.Request) => {
     const { contentId, orderedKeys } = req.params;
+
+    if (!orderedKeys || !contentId) {
+        return gvServiceInvalidRequestResponse(
+            `Missing parameters:${!orderedKeys && ' "orderedKeys"'}${!contentId && ' "contentId"'}`
+        );
+    }
 
     const keysParsed = parseJsonArray(orderedKeys);
     if (!keysParsed) {
-        return gvServiceInvalidRequestResponse(
-            'Required parameter "orderedKeys" is missing or invalid'
-        );
+        return gvServiceInvalidRequestResponse('Required parameter "orderedKeys" is invalid');
     }
 
     const content = getGlobalValueSet(contentId);
@@ -72,5 +76,3 @@ const reorderGlobalValuesService = (req) => {
         };
     }
 };
-
-module.exports = { reorderGlobalValuesService };

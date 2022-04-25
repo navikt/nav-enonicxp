@@ -1,8 +1,8 @@
-const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { gvServiceInvalidRequestResponse } = require('../utils');
+import { getGlobalValueSet } from '../../../lib/global-values/global-values';
+import { gvServiceInvalidRequestResponse } from '../utils';
+import { forceArray } from '../../../lib/utils/nav-utils';
 
-const getGlobalValueSetService = (req) => {
+export const getGlobalValueSetService = (req: XP.Request) => {
     const { contentId } = req.params;
 
     const content = getGlobalValueSet(contentId);
@@ -18,5 +18,3 @@ const getGlobalValueSetService = (req) => {
         },
     };
 };
-
-module.exports = { getGlobalValueSetService };

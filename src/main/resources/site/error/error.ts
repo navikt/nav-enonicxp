@@ -1,9 +1,9 @@
-const thymeleafLib = require('/lib/thymeleaf');
+import thymeleafLib from '/lib/thymeleaf';
 
 const view = resolve('error.html');
 
 // TODO: implementer error-api i frontend som kan kalles her
-exports.handleError = (req) => {
+export const handleError = (req: XP.ErrorRequest) => {
     const model = {
         status: req.status,
         message: req.message,

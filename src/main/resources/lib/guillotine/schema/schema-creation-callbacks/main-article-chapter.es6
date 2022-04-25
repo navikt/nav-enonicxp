@@ -32,8 +32,6 @@ const mainArticleChapterCallback = (context, params) => {
             return data;
         }
 
-        const startTime = Date.now();
-
         // Get the alternative language versions of the chapter parent
         const parentPath = _path.split('/').slice(0, -1).join('/');
         const parent = contentLib.get({ key: parentPath });
@@ -75,8 +73,6 @@ const mainArticleChapterCallback = (context, params) => {
 
             return [...languagesAcc, chapterTarget];
         }, []);
-
-        log.info(`Retreiveing chapter languages took ${Date.now() - startTime}ms`);
 
         return { ...data, languages };
     };

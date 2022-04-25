@@ -1,3 +1,6 @@
+import httpClient from '/lib/http-client';
+import { urls } from '../../lib/constants';
+
 /*
  * This service simplifies queries to the content studio selector service
  * as a fallback when a query fails. This is done in order to support very
@@ -6,18 +9,15 @@
  *
  * */
 
-const httpClient = require('/lib/http-client');
-const { urls } = require('/lib/constants');
-
 const selectorQueryContentStudioUrl = `${urls.portalAdminOrigin}/selectorQuery`;
 
-const selectorQueryRequest = (req) =>
+const selectorQueryRequest = (req: XP.Request) =>
     httpClient.request({
         ...req,
         url: selectorQueryContentStudioUrl,
     });
 
-const selectorQuerySimpleRequest = (req) => {
+const selectorQuerySimpleRequest = (req: XP.Request) => {
     const body = JSON.parse(req.body);
     const { queryExpr } = body;
     // The query from content studio looks something like this:
@@ -34,7 +34,7 @@ const selectorQuerySimpleRequest = (req) => {
     });
 };
 
-const selectorQuery = (req) => {
+export const post = (req: XP.Request) => {
     try {
         const response = selectorQueryRequest(req);
 
@@ -53,5 +53,3 @@ const selectorQuery = (req) => {
         return selectorQuerySimpleRequest(req);
     }
 };
-
-exports.post = selectorQuery;

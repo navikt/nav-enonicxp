@@ -1,7 +1,8 @@
-const contentLib = require('/lib/xp/content');
-const { getKeyWithoutMacroDescription } = require('/lib/utils/component-utils');
+import contentLib from '/lib/xp/content';
+import { getKeyWithoutMacroDescription } from '../../../lib/utils/component-utils';
+import { contentStudioEditPathPrefix } from '../../../lib/constants';
 
-const previewController = (context) => {
+export const macro = (context: XP.MacroContext) => {
     const { fragmentId } = context.params;
 
     if (!fragmentId) {
@@ -27,10 +28,8 @@ const previewController = (context) => {
             <div>
                 <span style='font-size:20px'>${displayName}</span><br/>
                 <span style='color:#888888'>${_path}</span><br/>
-                <a href='/admin/tool/com.enonic.app.contentstudio/main#/default/edit/${contentId}' target='_blank'>[Åpne i editoren]</a>
+                <a href='${contentStudioEditPathPrefix}/${contentId}' target='_blank'>[Åpne i editoren]</a>
             </div>
             `,
     };
 };
-
-exports.macro = previewController;

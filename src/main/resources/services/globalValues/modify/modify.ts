@@ -1,22 +1,30 @@
-const nodeLib = require('/lib/xp/node');
-const {
-    validateGlobalValueInputAndGetErrorResponse,
+import nodeLib from '/lib/xp/node';
+import {
+    GlobalValueInput,
     gvServiceInvalidRequestResponse,
-} = require('../utils');
-const { getGlobalValueSet } = require('/lib/global-values/global-values');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const { forceArray } = require('/lib/utils/nav-utils');
+    validateGlobalValueInputAndGetErrorResponse,
+} from '../utils';
+import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { getGlobalValueSet } from '../../../lib/global-values/global-values';
+import { forceArray } from '../../../lib/utils/nav-utils';
+import { GlobalValueItem } from '../../../types/content-types/global-value-set';
 
-const itemNameExists = (valueItems, itemName, key) =>
+const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
-const modifyGlobalValueItemService = (req) => {
+export const modifyGlobalValueItemService = (req: XP.Request) => {
     const errorResponse = validateGlobalValueInputAndGetErrorResponse(req.params);
     if (errorResponse) {
         return errorResponse;
     }
 
-    const { contentId, key, itemName, numberValue } = req.params;
+    const { contentId, key, itemName, numberValue } = req.params as unknown as GlobalValueInput & {
+        key?: string;
+    };
+
+    if (!key) {
+        return gvServiceInvalidRequestResponse(`Parameter 'key' missing`);
+    }
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {
@@ -77,5 +85,3 @@ const modifyGlobalValueItemService = (req) => {
         };
     }
 };
-
-module.exports = { modifyGlobalValueItemService };

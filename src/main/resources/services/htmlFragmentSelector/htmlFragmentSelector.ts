@@ -1,13 +1,17 @@
-const contentLib = require('/lib/xp/content');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getKeyWithoutMacroDescription } = require('/lib/utils/component-utils');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { appendMacroDescriptionToKey } = require('/lib/utils/component-utils');
-const { findContentsWithFragmentComponent } = require('/lib/utils/component-utils');
-const { getSubPath } = require('../service-utils');
-const { findContentsWithFragmentMacro } = require('/lib/htmlarea/htmlarea');
+import contentLib, { Content } from '/lib/xp/content';
+import {
+    appendMacroDescriptionToKey,
+    findContentsWithFragmentComponent,
+    getKeyWithoutMacroDescription,
+} from '../../lib/utils/component-utils';
+import { forceArray } from '../../lib/utils/nav-utils';
+import { findContentsWithFragmentMacro } from '../../lib/htmlarea/htmlarea';
+import { getSubPath } from '../service-utils';
+import { runInBranchContext } from '../../lib/utils/branch-context';
 
-const hitFromFragment = (fragment, withDescription) => ({
+type Hit = XP.CustomSelectorServiceResponseHit;
+
+const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?: boolean): Hit => ({
     id: withDescription
         ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
         : fragment._id,
@@ -15,7 +19,7 @@ const hitFromFragment = (fragment, withDescription) => ({
     description: fragment._path,
 });
 
-const selectorHandler = (req) => {
+const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
     const { query, withDescription, ids } = req.params;
 
     if (ids) {
@@ -23,7 +27,7 @@ const selectorHandler = (req) => {
             const fragmentId = getKeyWithoutMacroDescription(id);
             const fragment = contentLib.get({ key: fragmentId });
 
-            if (!fragment) {
+            if (!fragment || fragment.type !== 'portal:fragment') {
                 return acc;
             }
 
@@ -34,7 +38,7 @@ const selectorHandler = (req) => {
                     id,
                 },
             ];
-        }, []);
+        }, [] as Hit[]);
     }
 
     const htmlFragments = contentLib.query({
@@ -59,10 +63,10 @@ const selectorHandler = (req) => {
         },
     }).hits;
 
-    return htmlFragments.map((fragment) => hitFromFragment(fragment, withDescription));
+    return htmlFragments.map((fragment) => hitFromFragment(fragment, withDescription === 'true'));
 };
 
-const transformContentToResponseData = (contentArray) => {
+const transformContentToResponseData = (contentArray: ReadonlyArray<Content>) => {
     return contentArray.map((content) => ({
         name: content.displayName,
         path: content._path,
@@ -70,7 +74,7 @@ const transformContentToResponseData = (contentArray) => {
     }));
 };
 
-const getFragmentUsage = (req) => {
+const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {
     const { fragmentId } = req.params;
 
     if (!fragmentId) {
@@ -94,7 +98,7 @@ const getFragmentUsage = (req) => {
     };
 };
 
-const htmlFragmentSelector = (req) => {
+export const get = (req: XP.CustomSelectorServiceRequest) => {
     const subPath = getSubPath(req);
 
     return runInBranchContext(() => {
@@ -114,5 +118,3 @@ const htmlFragmentSelector = (req) => {
         };
     }, 'master');
 };
-
-exports.get = htmlFragmentSelector;

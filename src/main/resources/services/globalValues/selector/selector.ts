@@ -1,26 +1,33 @@
-const contentLib = require('/lib/xp/content');
-const {
-    getGlobalValueUniqueKey,
-    globalValuesContentType,
-    getGvKeyAndContentIdFromUniqueKey,
+import contentLib, { Content } from '/lib/xp/content';
+import {
     getGlobalValueItem,
-} = require('/lib/global-values/global-values');
-const { appendMacroDescriptionToKey } = require('/lib/utils/component-utils');
-const { forceArray } = require('/lib/utils/nav-utils');
-const { runInBranchContext } = require('/lib/utils/branch-context');
+    getGlobalValueUniqueKey,
+    getGvKeyAndContentIdFromUniqueKey,
+    globalValuesContentType,
+} from '../../../lib/global-values/global-values';
+import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
+import { forceArray } from '../../../lib/utils/nav-utils';
+import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { GlobalValueItem } from '../../../types/content-types/global-value-set';
 
-const hitFromValueItem = (valueItem, valueType, content, withDescription) => {
+type Hit = XP.CustomSelectorServiceResponseHit;
+
+const hitFromValueItem = (
+    valueItem: GlobalValueItem,
+    content: Content,
+    withDescription?: boolean
+): Hit => {
     const displayName = `${content.displayName} - ${valueItem.itemName}`;
     const key = getGlobalValueUniqueKey(valueItem.key, content._id);
 
     return {
         id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
         displayName: `${displayName} - ${valueItem.key}`,
-        description: `${valueItem.itemName} - Verdi: ${valueItem[valueType]}`,
+        description: `${valueItem.itemName} - Verdi: ${valueItem.numberValue}`,
     };
 };
 
-const getHitsFromQuery = (query, type, withDescription) => {
+const getHitsFromQuery = (query: string | undefined, withDescription?: boolean) => {
     const wordsWithWildcard = query
         ?.split(' ')
         .map((word) => `${word}*`)
@@ -38,7 +45,7 @@ const getHitsFromQuery = (query, type, withDescription) => {
                 boolean: {
                     must: [
                         {
-                            exists: [{ field: 'data.valueItems' }],
+                            exists: { field: 'data.valueItems' },
                         },
                     ],
                 },
@@ -46,14 +53,14 @@ const getHitsFromQuery = (query, type, withDescription) => {
         })
         .hits.map((valueSet) =>
             forceArray(valueSet.data.valueItems).map((valueItem) =>
-                hitFromValueItem(valueItem, type, valueSet, withDescription)
+                hitFromValueItem(valueItem, valueSet, withDescription)
             )
         )
         .flat()
         .sort((a, b) => (a.displayName.toLowerCase() > b.displayName.toLowerCase() ? 1 : -1));
 };
 
-const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
+const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolean) =>
     forceArray(ids).reduce((acc, key) => {
         const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
 
@@ -76,20 +83,22 @@ const getHitsFromSelectedIds = (ids, valueType, withDescription) =>
         return [
             ...acc,
             {
-                ...hitFromValueItem(valueItem, valueType, content, withDescription),
+                ...hitFromValueItem(valueItem, content, withDescription),
                 id: key,
             },
         ];
-    }, []);
+    }, [] as Hit[]);
 
-const globalValueSelectorService = (req) => {
-    const { valueType = 'numberValue', withDescription, query, ids } = req.params;
+export const globalValueSelectorService = (req: XP.Request) => {
+    const { query, ids } = req.params;
+
+    const withDescription = req.params.withDescription === 'true';
 
     const hits = runInBranchContext(
         () =>
             ids
-                ? getHitsFromSelectedIds(ids, valueType, withDescription)
-                : getHitsFromQuery(query, valueType, withDescription),
+                ? getHitsFromSelectedIds(ids, withDescription)
+                : getHitsFromQuery(query, withDescription),
         'master'
     );
 
@@ -103,5 +112,3 @@ const globalValueSelectorService = (req) => {
         },
     };
 };
-
-module.exports = { globalValueSelectorService };
