@@ -32,8 +32,10 @@ const melding = require('./legacyFragments/melding');
 const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
 const officeInformation = require('./legacyFragments/officeInformation');
+const productDetailsFragment = require('./legacyFragments/productDetails');
 const largeTable = require('./legacyFragments/largeTable');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
+const productOverview = require('./legacyFragments/overview');
 const urlFragment = require('./legacyFragments/url');
 const {
     dynamicPageFragment,
@@ -95,9 +97,11 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:situation-page': situationPageFragment,
     'no.nav.navno:themed-article-page': themedArticlePageFragment,
     'no.nav.navno:guide-page': guidePageFragment,
+    'no.nav.navno:product-details': productDetailsFragment.fragment,
     'no.nav.navno:tools-page': toolsPageFragment,
     'no.nav.navno:contact-information': contactInformation.fragment,
     'no.nav.navno:global-value-set': globalValueSet.fragment,
+    'no.nav.navno:overview': productOverview.fragment,
     'portal:fragment': fragmentComponentsFragment,
     'portal:site': '',
 };

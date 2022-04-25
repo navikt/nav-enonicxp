@@ -44,7 +44,6 @@ const overviewCallback = (context, params) => {
         name: context.uniqueName('Illustration'),
         description: 'Illustration',
         fields: {
-            ___typename: { type: graphQlLib.GraphQLString },
             data: { type: icons },
         },
     });

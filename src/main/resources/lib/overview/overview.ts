@@ -40,7 +40,7 @@ const productListData: ProductListData = {
         delete this.entries[key];
     },
     getEntries: function (language: string) {
-        log.info(JSON.stringify(Object.values(this.entries)));
+        // log.info(JSON.stringify(Object.values(this.entries)));
         return Object.values(this.entries)
             .filter((item: any) => item.language === language)
             .sort((a: any, b: any) => a.title.localeCompare(b.title));
@@ -98,6 +98,8 @@ const cleanProduct = (product: any) => {
     const icons = getProductIllustrationIcons(product);
     const situationPages = getProductSituationPages(product);
 
+    log.info(JSON.stringify(product));
+
     return {
         id: product._id,
         path: product._path,
@@ -107,6 +109,7 @@ const cleanProduct = (product: any) => {
         language: product.language,
         taxonomy: forceArray(product.data.taxonomy),
         area: product.data.area,
+        page: product.page,
         illustration: {
             data: {
                 icons,
