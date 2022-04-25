@@ -21,7 +21,7 @@ import { ComponentType } from '../../../types/components/component-config';
 // inserted into their matching regions.
 
 type Regions = Record<string, Region>;
-type GuillotineComponent = {
+export type GuillotineComponent = {
     type: ComponentType;
     path: string;
     descriptor: string;

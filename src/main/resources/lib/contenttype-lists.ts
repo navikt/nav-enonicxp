@@ -1,12 +1,6 @@
-import { ContentDescriptor } from '../types/content-types/content-config';
 import { appDescriptor } from './constants';
-import { stringArrayToSet } from './utils/nav-utils';
 
-type ContentTypeList = ContentDescriptor[];
-
-type ContentTypeSet = Partial<Record<ContentDescriptor, boolean>>;
-
-export const legacyPageContentTypes: ContentTypeList = [
+export const legacyPageContentTypes = [
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,
@@ -15,59 +9,55 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-];
+] as const;
 
-export const productPageContentTypes: ContentTypeList = [
+export const productPageContentTypes = [
     `${appDescriptor}:situation-page`,
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
     `${appDescriptor}:tools-page`,
-];
+] as const;
 
-export const dynamicPageContentTypes: ContentTypeList = [
+export const dynamicPageContentTypes = [
     ...productPageContentTypes,
     `${appDescriptor}:dynamic-page`,
-];
+] as const;
 
-export const dynamicPageContentTypesSet: ContentTypeSet = stringArrayToSet(dynamicPageContentTypes);
-
-export const linkContentTypes: ContentTypeList = [
+export const linkContentTypes = [
     `${appDescriptor}:internal-link`,
     `${appDescriptor}:external-link`,
     `${appDescriptor}:url`,
-];
+] as const;
 
-export const contentTypesInSitemap: ContentTypeList = [
+export const contentTypesInSitemap = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
-];
+] as const;
 
-export const contentTypesInDataQuery: ContentTypeList = [
+export const contentTypesInDataQuery = [
     ...contentTypesInSitemap,
     'media:text',
     'media:document',
     'media:spreadsheet',
     'media:presentation',
-];
+] as const;
 
-export const contentTypesInContentSwitcher: ContentTypeList = [
+export const contentTypesInContentSwitcher = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
     ...linkContentTypes,
-];
+] as const;
 
-export const productCardTargetTypes: ContentTypeSet = stringArrayToSet(productPageContentTypes);
-
-export const typesWithDeepReferences: ContentTypeSet = stringArrayToSet([
+export const typesWithDeepReferences = [
     'portal:fragment',
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:notification`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:content-list`,
-]);
+] as const;
 
-export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
+export const contentTypesWithBreadcrumbs = [
     ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
@@ -77,16 +67,16 @@ export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-]);
+] as const;
 
-export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
+export const contentTypesRenderedByPublicFrontend = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
     ...linkContentTypes,
-];
+] as const;
 
-export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
+export const contentTypesRenderedByEditorFrontend = [
     ...contentTypesRenderedByPublicFrontend,
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:contact-information`,
-];
+] as const;

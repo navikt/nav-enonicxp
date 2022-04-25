@@ -4,4 +4,9 @@ export interface ToolsPage {
    * Skriv inn ønsket url
    */
   customPath?: string;
+
+  /**
+   * Legg til andre språkversjoner
+   */
+  languages?: Array<string>;
 }

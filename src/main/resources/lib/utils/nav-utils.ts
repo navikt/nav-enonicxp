@@ -173,10 +173,9 @@ const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
 
 export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
 
-export const stringArrayToSet = (list: string[]): Record<string, boolean> =>
-    list.reduce((acc, contentType) => {
-        return { ...acc, [contentType]: true };
-    }, {});
+export const stringArrayToSet = (list: string[] | readonly string[]): Record<string, boolean> =>
+    // @ts-ignore (TS bug? string[] | readonly string[] behaves strangely)
+    list.reduce((acc, contentType) => ({ ...acc, [contentType]: true }), {});
 
 export const isMedia = (content: Content): content is Content & { type: MediaDescriptor } =>
     content.type.startsWith('media:');

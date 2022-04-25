@@ -5,23 +5,19 @@ import { attachmentCallback } from './schema-creation-callbacks/attachment';
 import { mediaCodeCallback, mediaImageCallback } from './schema-creation-callbacks/media';
 import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
-
-const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
-const {
-    macroAlertboxCallback,
-} = require('/lib/guillotine/schema/schema-creation-callbacks/macro-alert-box');
-const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
-const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
-const { contactInformationCallback } = require('./schema-creation-callbacks/contact-information');
-const {
+import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
+import { contactInformationCallback } from './schema-creation-callbacks/contact-information';
+import { filterCallback } from './schema-creation-callbacks/filters-menu';
+import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
+import {
     globalValueMacroConfigCallback,
     globalValueWithMathMacroConfigCallback,
-} = require('./schema-creation-callbacks/global-value-macro-config');
-const {
-    globalValueCalculatorConfigCallback,
-} = require('./schema-creation-callbacks/global-value-calculator-config');
-const { globalValuesCallback } = require('./schema-creation-callbacks/global-values');
-const { contentListDataCallback } = require('./schema-creation-callbacks/content-list-data');
+} from './schema-creation-callbacks/global-value-macro-config';
+import { globalValuesCallback } from './schema-creation-callbacks/global-values';
+import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
+
+const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
+const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
 const {
     mainArticleDataCallback,

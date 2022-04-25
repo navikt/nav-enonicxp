@@ -84,7 +84,7 @@ export const getGlobalValueSet = (
     return null;
 };
 
-export const getGlobalValue = (gvKey: string, contentId: string) => {
+export const getGlobalValue = (gvKey: string | null, contentId: string | null) => {
     if (!gvKey) {
         log.info(`Invalid global value key requested from ${contentId}`);
         return null;

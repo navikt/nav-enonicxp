@@ -8,5 +8,6 @@
     <form>
         <mixin name="product-data"/>
         <mixin name="custom-path-selector"/>
+        <mixin name="languages-legacy"/>
     </form>
 </content-type>
