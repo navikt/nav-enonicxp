@@ -1,11 +1,12 @@
-import contentLib, { Content } from '/lib/xp/content';
+import contentLib from '/lib/xp/content';
 import nodeLib from '/lib/xp/node';
-import contextLib from '/lib/xp/context';
+import contextLib, { Context } from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
 import { forceArray } from '../../../utils/nav-utils';
 import { RepoBranch } from '../../../../types/common';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
+import { guillotineContentQuery } from '../../queries/sitecontent/sitecontent-query';
 
 type AnchorLink = {
     anchorId: string;
@@ -13,105 +14,120 @@ type AnchorLink = {
     hideFromInternalNavigation?: boolean;
 };
 
-const getComponentsOnPage = (contentId: string) => {
+const getComponents = (contentId: string, context: Context<any>) => {
     const content = contentLib.get({ key: contentId });
     if (!content) {
         return [];
     }
-
-    const context = contextLib.get();
 
     const node = nodeLib
         .connect({
             repoId: context.repository,
             branch: context.branch as RepoBranch,
         })
-        .get(content?._id);
+        .get(content._id);
 
     return forceArray(node?.components);
 };
 
-const getComponentAnchorLink = (
-    component: NodeComponent | Content<'portal:fragment'>
-): AnchorLink | null => {
-    if (component.type === 'part') {
-        if (component.part.descriptor !== 'no.nav.navno:dynamic-header') {
-            return null;
-        }
+const getAnchorLink = (
+    anchorId?: string,
+    linkText?: string,
+    hideFromInternalNavigation?: boolean
+) => {
+    return anchorId
+        ? {
+              anchorId,
+              linkText,
+              hideFromInternalNavigation,
+          }
+        : null;
+};
 
-        const dynamicHeader = component.part.config?.['no-nav-navno']?.['dynamic-header'];
+const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
+    const { descriptor, config } = part;
+
+    if (!config) {
+        return null;
+    }
+
+    if (descriptor === 'no.nav.navno:dynamic-header') {
+        const dynamicHeader = config['no-nav-navno']?.['dynamic-header'];
         if (!dynamicHeader) {
             return null;
         }
 
         const { anchorId, title, hideFromInternalNavigation } = dynamicHeader;
-        return anchorId
-            ? {
-                  anchorId,
-                  linkText: title,
-                  hideFromInternalNavigation,
-              }
-            : null;
+        return getAnchorLink(anchorId, title, hideFromInternalNavigation);
+    }
+
+    return null;
+};
+
+const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
+    const { descriptor, config } = layout;
+
+    if (!config) {
+        return null;
+    }
+
+    if (descriptor === 'no.nav.navno:situation-flex-cols') {
+        const situationFlexCols = config['no-nav-navno']?.['situation-flex-cols'];
+        if (!situationFlexCols) {
+            return null;
+        }
+
+        const { anchorId, title, hideFromInternalNavigation } = situationFlexCols;
+        return getAnchorLink(anchorId, title, hideFromInternalNavigation);
+    }
+
+    if (descriptor === 'no.nav.navno:section-with-header') {
+        const sectionWithHeader = config['no-nav-navno']?.['section-with-header'];
+        if (!sectionWithHeader) {
+            return null;
+        }
+
+        const { anchorId, title, hideFromInternalNavigation } = sectionWithHeader;
+        return getAnchorLink(anchorId, title, hideFromInternalNavigation);
+    }
+
+    return null;
+};
+
+const getFragmentAnchorLink = (
+    fragment: NodeComponent<'fragment'>['fragment'],
+    branch: RepoBranch
+) => {
+    const { id } = fragment;
+
+    const content = contentLib.get({ key: id });
+    if (!content) {
+        return null;
+    }
+
+    const fragmentContent = guillotineContentQuery(content, branch);
+
+    if (!fragmentContent || fragmentContent.type !== 'portal:fragment') {
+        return null;
+    }
+
+    return getComponentAnchorLink(fragmentContent.fragment, branch);
+};
+
+const getComponentAnchorLink = (
+    component: NodeComponent,
+    branch: RepoBranch
+): AnchorLink | null => {
+    if (component.type === 'part') {
+        return getPartAnchorLink(component.part);
     }
 
     if (component.type === 'layout') {
-        if (component.layout.descriptor === 'no.nav.navno:situation-flex-cols') {
-            const situationFlexCols =
-                component.layout.config?.['no-nav-navno']?.['situation-flex-cols'];
-
-            if (!situationFlexCols) {
-                return null;
-            }
-
-            const { anchorId, title, hideFromInternalNavigation } = situationFlexCols;
-
-            return anchorId
-                ? {
-                      anchorId,
-                      linkText: title,
-                      hideFromInternalNavigation,
-                  }
-                : null;
-        }
-
-        if (component.layout.descriptor === 'no.nav.navno:section-with-header') {
-            const sectionWithHeader =
-                component.layout?.config?.['no-nav-navno']?.['section-with-header'];
-
-            if (!sectionWithHeader) {
-                return null;
-            }
-
-            const { anchorId, title, hideFromInternalNavigation } = sectionWithHeader;
-            return anchorId
-                ? {
-                      anchorId,
-                      linkText: title,
-                      hideFromInternalNavigation,
-                  }
-                : null;
-        }
+        return getLayoutAnchorLink(component.layout);
     }
 
-    if (component.type === 'portal:fragment') {
-        if (
-            component.fragment.type === 'layout' &&
-            component.fragment.descriptor === 'no.nav.navno:section-with-header'
-        ) {
-            const fragmentSectionWithHeader = component.fragment.config;
-            if (fragmentSectionWithHeader) {
-                const { anchorId, title, hideFromInternalNavigation } = fragmentSectionWithHeader;
-                return anchorId
-                    ? {
-                          anchorId,
-                          linkText: title,
-                          hideFromInternalNavigation,
-                      }
-                    : null;
-            }
-        }
-
-        return null;
+    if (component.type === 'fragment') {
+        return getFragmentAnchorLink(component.fragment, branch);
     }
 
     return null;
@@ -122,28 +138,20 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
     params.fields.anchorLinks.resolve = (env) => {
         const { contentId } = env.args;
         if (!contentId) {
-            log.warning(
+            log.error(
                 'Attempted to resolve a page navigation menu without providing a content id for the page'
             );
             return null;
         }
 
+        const context = contextLib.get();
+        const branch = context.branch as RepoBranch;
+
         const anchorLinkOverrides = forceArray(env.source.anchorLinks);
-        const components = getComponentsOnPage(contentId);
+        const components = getComponents(contentId, context);
 
         const anchorLinksResolved = components.reduce((acc: AnchorLink[], component) => {
-            let anchorLink;
-            if (component.type === 'fragment') {
-                const { id } = component.fragment;
-                const fragmentContent = contentLib.get({ key: id });
-
-                if (fragmentContent?.type === 'portal:fragment') {
-                    anchorLink = fragmentContent && getComponentAnchorLink(fragmentContent);
-                }
-            } else {
-                anchorLink = getComponentAnchorLink(component);
-            }
-
+            const anchorLink = getComponentAnchorLink(component, branch);
             if (!anchorLink) {
                 return acc;
             }
@@ -154,8 +162,12 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
                 return acc;
             }
 
-            if (acc.find((_anchorLink) => _anchorLink.anchorId === anchorId)) {
-                log.warning(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
+            if (acc.some((_anchorLink) => _anchorLink.anchorId === anchorId)) {
+                if (branch === 'master') {
+                    log.error(
+                        `Duplicate anchor id ${anchorId} found under content id ${contentId}`
+                    );
+                }
                 return acc;
             }
 
