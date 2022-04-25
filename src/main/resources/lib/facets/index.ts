@@ -1,11 +1,17 @@
-const clusterLib = require('/lib/xp/cluster');
-const contextLib = require('/lib/xp/context');
-const eventLib = require('/lib/xp/event');
-const navUtils = require('/lib/utils/nav-utils');
-const nodeLib = require('/lib/xp/node');
-const taskLib = require('/lib/xp/task');
-const repoLib = require('/lib/xp/repo');
-const { removeDuplicates } = require('/lib/utils/nav-utils');
+// @ts-nocheck (not touching this without a full rewrite ¯\_(ツ)_/¯)
+import nodeLib from '/lib/xp/node';
+import contextLib from '/lib/xp/context';
+import eventLib from '/lib/xp/event';
+import clusterLib from '/lib/xp/cluster';
+import taskLib from '/lib/xp/task';
+import repoLib from '/lib/xp/repo';
+import {
+    createObjectChecksum,
+    fixDateFormat,
+    forceArray,
+    pushLiveElements,
+    removeDuplicates,
+} from '../utils/nav-utils';
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -32,7 +38,7 @@ const getLastFacetConfig = (contentId) => {
             });
             const timestamp = versionTimestamps[version.versionId] ?? '';
             // adding timestamp massage since nashorn Date can't handle ms
-            return { article, timestamp: navUtils.fixDateFormat(timestamp) };
+            return { article, timestamp: fixDateFormat(timestamp) };
         })
         .filter(({ article }) => {
             return article.workflow?.state !== 'IN_PROGRESS' && article.timestamp !== '';
@@ -68,7 +74,7 @@ const getNavRepo = () => {
                 user: {
                     login: 'su',
                 },
-                pricipals: ['role:system.admin'],
+                principals: ['role:system.admin'],
             });
 
             return navRepo;
@@ -76,7 +82,7 @@ const getNavRepo = () => {
     );
 };
 
-const getFacetValidation = () => {
+export const getFacetValidation = () => {
     const navRepo = getNavRepo();
     let facetValidation = navRepo.get('/facetValidation');
     if (!facetValidation) {
@@ -107,7 +113,7 @@ const setUpdateAll = (updateAll) => {
     });
 };
 
-const clearUpdateState = () => {
+export const clearUpdateState = () => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
@@ -132,7 +138,7 @@ const addValidatedNodes = (ids) => {
         editor: (facetValidation) => {
             let justValidatedNodes = [];
             if (facetValidation.data.justValidatedNodes) {
-                justValidatedNodes = navUtils.forceArray(facetValidation.data.justValidatedNodes);
+                justValidatedNodes = forceArray(facetValidation.data.justValidatedNodes);
             }
             justValidatedNodes = justValidatedNodes.concat(ids);
             return {
@@ -149,7 +155,7 @@ const removeValidatedNodes = (ids) => {
         editor: (facetValidation) => {
             let justValidatedNodes = [];
             if (facetValidation.data.justValidatedNodes) {
-                justValidatedNodes = navUtils.forceArray(facetValidation.data.justValidatedNodes);
+                justValidatedNodes = forceArray(facetValidation.data.justValidatedNodes);
             }
             ids.forEach((id) => {
                 justValidatedNodes.splice(justValidatedNodes.indexOf(id), 1);
@@ -165,14 +171,14 @@ const removeValidatedNodes = (ids) => {
 const getJustValidatedNodes = () => {
     const facetValidation = getFacetValidation();
     return facetValidation.data.justValidatedNodes
-        ? navUtils.forceArray(facetValidation.data.justValidatedNodes)
+        ? forceArray(facetValidation.data.justValidatedNodes)
         : [];
 };
 
 const updateFacets = (fasetter, ids) => {
     // create queries for each facet and subfacet
     const resolver = fasetter.reduce((t, el) => {
-        const underfasett = navUtils.forceArray(el.underfasetter);
+        const underfasett = forceArray(el.underfasetter);
         if (underfasett.length === 0 || !underfasett[0]) {
             t.push({
                 fasett: el.name,
@@ -256,7 +262,7 @@ const updateFacets = (fasetter, ids) => {
             return modifiedNode ? modifiedNode._id : undefined;
         });
         if (modifiedContent.length > 0) {
-            navUtils.pushLiveElements(modifiedContent);
+            pushLiveElements(modifiedContent);
         }
     });
 
@@ -267,16 +273,16 @@ const updateFacets = (fasetter, ids) => {
 };
 
 const bulkUpdateFacets = (facetConfig, ids) => {
-    let fasetter = navUtils.forceArray(facetConfig.data.fasetter);
+    let fasetter = forceArray(facetConfig.data.fasetter);
 
     if (!ids) {
         log.info('TAG ALL FACETS');
         const previousFacetConfig = getLastFacetConfig(facetConfig._id);
         if (previousFacetConfig) {
-            const previous = navUtils.forceArray(previousFacetConfig.data.fasetter);
+            const previous = forceArray(previousFacetConfig.data.fasetter);
             fasetter = fasetter.reduce((acc, rule, ix) => {
-                const current = navUtils.createObjectChecksum(rule);
-                const previousRule = navUtils.createObjectChecksum(previous[ix]);
+                const current = createObjectChecksum(rule);
+                const previousRule = createObjectChecksum(previous[ix]);
                 if (current !== previousRule) {
                     acc.push(rule);
                 }
@@ -300,7 +306,7 @@ const getFacetConfig = () => {
     return hits.length > 0 ? repo.get(hits[0].id) : null;
 };
 
-const checkIfUpdateNeeded = (nodeIds) => {
+export const checkIfUpdateNeeded = (nodeIds) => {
     // stop if update all is running
     if (isUpdatingAll()) {
         log.info('blocked by update all');
@@ -391,7 +397,7 @@ const facetHandler = (event) => {
     }
 };
 
-const activateEventListener = () => {
+export const activateEventListener = () => {
     eventLib.listener({
         type: 'node.pushed',
         callback: (event) => {
@@ -415,11 +421,4 @@ const activateEventListener = () => {
         localOnly: false,
     });
     log.info('Started: facet-handler listening on node.pushed');
-};
-
-module.exports = {
-    activateEventListener,
-    checkIfUpdateNeeded,
-    getFacetValidation,
-    clearUpdateState,
 };
