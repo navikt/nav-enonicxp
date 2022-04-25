@@ -15,9 +15,12 @@ import {
 } from './schema-creation-callbacks/global-value-macro-config';
 import { globalValuesCallback } from './schema-creation-callbacks/global-values';
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
+import {
+    applyMacroCreationCallbacksToHtmlFragmentTypes,
+    macroHtmlFragmentCallback,
+} from './schema-creation-callbacks/macro-html-fragment';
 
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
-const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
 const {
     mainArticleDataCallback,
@@ -27,9 +30,6 @@ const {
     mainArticleChapterCallback,
     mainArticleChapterDataCallback,
 } = require('./schema-creation-callbacks/main-article-chapter');
-const {
-    applyMacroCreationCallbacksToHtmlFragmentTypes,
-} = require('/lib/guillotine/schema/schema-creation-callbacks/macro-html-fragment');
 
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
