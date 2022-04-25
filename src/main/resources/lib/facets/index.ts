@@ -113,7 +113,7 @@ const setUpdateAll = (updateAll) => {
     });
 };
 
-export const clearUpdateState = () => {
+export const clearFacetUpdateState = () => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
@@ -397,7 +397,7 @@ const facetHandler = (event) => {
     }
 };
 
-export const activateEventListener = () => {
+export const activateFacetsEventListener = () => {
     eventLib.listener({
         type: 'node.pushed',
         callback: (event) => {

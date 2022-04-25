@@ -34,6 +34,7 @@ export type GuillotineComponent = {
     layout: any;
     image: any;
     text: any;
+    fragment: any;
 };
 
 // Component configs in the components-array are stored in <app-name>.<component-name> sub-objects

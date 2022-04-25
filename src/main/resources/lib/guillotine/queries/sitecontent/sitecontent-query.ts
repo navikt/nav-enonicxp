@@ -65,7 +65,7 @@ export type GuillotineContentQueryResult =
       };
 
 export type GuillotineComponentQueryResult = {
-    components: NodeComponent[];
+    components: GuillotineComponent[];
 };
 
 const buildPageContentQuery = (contentTypeFragment?: string) =>
@@ -164,9 +164,10 @@ export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
         return [
             ...acc,
             {
-                ...component,
+                type: 'fragment',
+                path: component.path,
                 fragment: buildFragmentComponentTree(fragment.components),
-            },
+            } as PortalComponent<'fragment'>,
         ];
     }, [] as PortalComponent<'fragment'>[]);
 

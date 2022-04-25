@@ -16,8 +16,11 @@ import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
-
-const facetLib = require('/lib/facets');
+import {
+    activateFacetsEventListener,
+    clearFacetUpdateState,
+    getFacetValidation,
+} from './lib/facets';
 
 updateClusterInfo();
 
@@ -26,16 +29,16 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-facetLib.activateEventListener();
+activateFacetsEventListener();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
     // make sure the updateAll lock is released on startup, and clear the
     // list of recently validated nodes
-    const facetValidation = facetLib.getFacetValidation();
+    const facetValidation = getFacetValidation();
     if (facetValidation) {
-        facetLib.clearUpdateState();
+        clearFacetUpdateState();
     }
 
     startFailsafeSchedule();
