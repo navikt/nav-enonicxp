@@ -12,104 +12,27 @@
  *
  * */
 
-const contentLib = require('/lib/xp/content');
-const contextLib = require('/lib/xp/context');
-const nodeLib = require('/lib/xp/node');
-const { getNodeKey } = require('/lib/time-travel/version-utils');
-const { getVersionFromTime } = require('/lib/time-travel/version-utils');
-const { getNodeVersions } = require('/lib/time-travel/version-utils');
-const { generateUUID } = require('/lib/utils/uuid');
-const { getUnixTimeFromDateTimeString } = require('/lib/utils/nav-utils');
-const { runInBranchContext } = require('/lib/utils/branch-context');
+import contentLib from '/lib/xp/content';
+import nodeLib, { RepoConnection } from '/lib/xp/node';
+import { getNodeKey, getVersionFromTime } from './version-utils';
+import { runInBranchContext } from '../utils/branch-context';
+import { generateUUID } from '../utils/uuid';
+import { RepoBranch } from '../../types/common';
+import { timeTravelConfigMap } from './time-travel-config';
 
 const Thread = Java.type('java.lang.Thread');
 
-let timeTravelHooksEnabled = false;
+export let timeTravelHooksEnabled = false;
 
-const contentLibGetStandard = contentLib.get;
-const nodeLibConnectStandard = nodeLib.connect;
+export const contentLibGetStandard = contentLib.get;
+export const nodeLibConnectStandard = nodeLib.connect;
 
 const getCurrentThreadId = () => Number(Thread.currentThread().getId());
-
-// If the requested time is older than the oldest version of the content,
-// return the timestamp of the oldest version instead
-const getTargetUnixTime = ({ nodeKey, requestedUnixTime, repo, branch }) => {
-    if (!nodeKey) {
-        return requestedUnixTime;
-    }
-
-    const nodeVersions = getNodeVersions({
-        nodeKey,
-        repo,
-        branch,
-    });
-    const length = nodeVersions?.length;
-    if (!length) {
-        return requestedUnixTime;
-    }
-
-    const oldestVersion = nodeVersions[length - 1];
-    const oldestUnixTime = getUnixTimeFromDateTimeString(oldestVersion.timestamp);
-
-    return Math.max(oldestUnixTime, requestedUnixTime);
-};
-
-// Stores config-objects for time travel for threads that requested content from
-// a certain timestamp. Keyed with thread-id. Any thread with an entry in this map
-// will retrieve all content from the specified timestamp.
-const timeTravelConfigMap = {
-    configs: {},
-    add: function ({ threadId, requestedDateTime, branch = 'master', baseContentKey }) {
-        const context = contextLib.get();
-        const repo = nodeLibConnectStandard({
-            repoId: context.repository,
-            branch: branch,
-        });
-
-        const baseNodeKey = getNodeKey(baseContentKey);
-        const requestedUnixTime = getUnixTimeFromDateTimeString(requestedDateTime);
-
-        const targetUnixTime = getTargetUnixTime({
-            nodeKey: baseNodeKey,
-            requestedUnixTime,
-            repo,
-            branch,
-        });
-
-        log.info(`Adding time travel config for thread ${threadId}`);
-
-        this.configs[threadId] = {
-            repo,
-            branch,
-            baseNodeKey,
-            baseContentKey,
-            targetUnixTime,
-        };
-    },
-    get: function (threadId) {
-        const config = this.configs[threadId];
-
-        // Check for 'undefined' to account for a rare/strange nashorn behaviour where a deleted object
-        // entry sometimes returns an object of the Undefined Java class, which evalutes to true
-        if (config?.toString() === 'undefined') {
-            log.error(`Time travel config returned an unexpected object for thread ${threadId}`);
-            return undefined;
-        }
-
-        return this.configs[threadId];
-    },
-    remove: function (threadId) {
-        delete this.configs[threadId];
-    },
-    clear: function () {
-        this.configs = {};
-    },
-};
 
 // This function will hook content retrieval functions to retrieve data from
 // the version at the requested timestamp. Only calls from threads currently
 // registered with a time travel config will be affected.
-const hookLibsWithTimeTravel = () => {
+export const hookLibsWithTimeTravel = () => {
     timeTravelHooksEnabled = true;
 
     contentLib.get = function (args) {
@@ -172,7 +95,7 @@ const hookLibsWithTimeTravel = () => {
 
         // repo.get args can be a single key, or an array of keys, or an object
         // (or array of objects) with the shape { key: <id or path> }
-        const getNodeKeysFromArgs = (args) => {
+        const getNodeKeysFromArgs = (args: Parameters<RepoConnection['get']>[0]): any => {
             if (typeof args === 'string') {
                 return args;
             }
@@ -188,7 +111,7 @@ const hookLibsWithTimeTravel = () => {
             return null;
         };
 
-        const getNode = (nodeKey) => {
+        const getNode = (nodeKey: string) => {
             const requestedVersion = getVersionFromTime({
                 nodeKey,
                 repo: repoConnection,
@@ -231,14 +154,19 @@ const hookLibsWithTimeTravel = () => {
 };
 
 // Restore standard functionality (disables time travel)
-const unhookTimeTravel = () => {
+export const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
     timeTravelConfigMap.clear();
     contentLib.get = contentLibGetStandard;
     nodeLib.connect = nodeLibConnectStandard;
 };
 
-const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) => {
+export const runWithTimeTravel = (
+    requestedDateTime: string,
+    branch: RepoBranch,
+    baseContentKey: string,
+    callback: () => any
+) => {
     if (!timeTravelHooksEnabled) {
         log.error(
             `Time travel: got request for ${baseContentKey} but time travel is disabled on this node`
@@ -267,13 +195,4 @@ const runWithTimeTravel = (requestedDateTime, branch, baseContentKey, callback) 
         timeTravelConfigMap.remove(threadId);
         log.info(`Time travel: Ending session ${sessionId} for thread ${threadId}`);
     }
-};
-
-module.exports = {
-    hookLibsWithTimeTravel,
-    unhookTimeTravel,
-    runWithTimeTravel,
-    contentLibGetStandard,
-    nodeLibConnectStandard,
-    timeTravelHooksEnabled,
 };

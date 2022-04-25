@@ -84,3 +84,36 @@ export const getPublishedVersionTimestamps = (contentRef: string, branch: RepoBr
 
     return getVersionTimestamps(contentRef, 'master');
 };
+
+// If the requested time is older than the oldest version of the content,
+// return the timestamp of the oldest version instead
+export const getTargetUnixTime = ({
+    nodeKey,
+    requestedUnixTime,
+    repo,
+    branch,
+}: {
+    nodeKey: string;
+    requestedUnixTime: number;
+    repo: RepoConnection;
+    branch: RepoBranch;
+}) => {
+    if (!nodeKey) {
+        return requestedUnixTime;
+    }
+
+    const nodeVersions = getNodeVersions({
+        nodeKey,
+        repo,
+        branch,
+    });
+    const length = nodeVersions?.length;
+    if (!length) {
+        return requestedUnixTime;
+    }
+
+    const oldestVersion = nodeVersions[length - 1];
+    const oldestUnixTime = getUnixTimeFromDateTimeString(oldestVersion.timestamp);
+
+    return Math.max(oldestUnixTime, requestedUnixTime);
+};
