@@ -28,8 +28,7 @@ import {
     mainArticleChapterDataCallback,
 } from './schema-creation-callbacks/main-article-chapter';
 import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
-
-const { pageNavigationMenuCallback } = require('./schema-creation-callbacks/page-navigation-menu');
+import { pageNavigationMenuCallback } from './schema-creation-callbacks/page-navigation-menu';
 
 const schemaContextOptions = {
     creationCallbacks: applyMacroCreationCallbacksToHtmlFragmentTypes({
