@@ -28,6 +28,11 @@ export const nodeLibConnectStandard = nodeLib.connect;
 // the version at the requested timestamp. Only calls from threads currently
 // registered with a time travel config will be affected.
 export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
+    if (timeTravelHooksEnabled) {
+        log.error(`Time travel hooks are already enabled!`);
+        return;
+    }
+
     timeTravelHooksEnabled = true;
 
     contentLib.get = function (args) {
@@ -148,7 +153,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
     };
 };
 
-// Restore standard functionality (disables time travel)
+// Restore standard functionality
 export const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
     contentLib.get = contentLibGetStandard;

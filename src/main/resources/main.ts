@@ -15,6 +15,7 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
+import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 
 const facetLib = require('/lib/facets');
 
@@ -27,7 +28,7 @@ activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 facetLib.activateEventListener();
 
-hookLibsWithTimeTravel();
+hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
     // make sure the updateAll lock is released on startup, and clear the
