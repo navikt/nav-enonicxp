@@ -3,7 +3,7 @@ import { forceArray, notEmpty } from '../utils/nav-utils';
 import { sortByDateTimeField } from '../utils/sort';
 
 // Sorts and slices content lists
-export const getContentList = (contentListKey: string, maxItemsKey: number, sortByKey: string) => {
+export const getContentList = (contentListKey: string, maxItemsKey: number, sortByKey?: string) => {
     const contentList = contentLib.get({ key: contentListKey });
     if (!contentList || contentList.type !== 'no.nav.navno:content-list') {
         return null;

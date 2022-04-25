@@ -1,6 +1,6 @@
 import graphQlLib from '/lib/graphql';
 import { getAttachmentText } from './common/attachments';
-import { CreationCallback } from '../../types';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 
 export const attachmentCallback: CreationCallback = (context, params) => {
     params.fields.attachmentText = {

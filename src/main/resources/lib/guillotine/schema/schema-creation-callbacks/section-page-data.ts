@@ -1,6 +1,7 @@
-const { contentListResolver } = require('./common/content-list-resolver');
+import { CreationCallback } from '../../utils/creation-callback-utils';
+import { contentListResolver } from './common/content-list-resolver';
 
-const sectionPageDataCallback = (context, params) => {
+export const sectionPageDataCallback: CreationCallback = (context, params) => {
     params.fields.newsContents.resolve = contentListResolver(
         'newsContents',
         'nrNews',
@@ -9,5 +10,3 @@ const sectionPageDataCallback = (context, params) => {
     params.fields.ntkContents.resolve = contentListResolver('ntkContents', 'nrNTK');
     params.fields.scContents.resolve = contentListResolver('scContents', 'nrSC');
 };
-
-module.exports = sectionPageDataCallback;

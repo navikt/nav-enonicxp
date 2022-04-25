@@ -2,9 +2,7 @@ import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { ContactInformation } from '../../../../site/content-types/contact-information/contact-information';
 import { forceArray } from '../../../utils/nav-utils';
-import { CreationCallback } from '../../types';
-
-const schemaGenerator = graphQlLib.newSchemaGenerator();
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,
@@ -36,7 +34,7 @@ const getSpecialOpeningHoursObject = (
 };
 
 export const contactInformationCallback: CreationCallback = (context, params) => {
-    const RegularOpeningHour = schemaGenerator.createObjectType({
+    const RegularOpeningHour = graphQlCreateObjectType({
         name: 'regularOpeningHour',
         fields: {
             dayName: { type: graphQlLib.GraphQLString },
@@ -44,11 +42,9 @@ export const contactInformationCallback: CreationCallback = (context, params) =>
             to: { type: graphQlLib.GraphQLString },
             status: { type: graphQlLib.GraphQLString },
         },
-        description: '',
-        interfaces: [],
     });
 
-    const SpecialOpeningHour = schemaGenerator.createObjectType({
+    const SpecialOpeningHour = graphQlCreateObjectType({
         name: 'specialOpeningHour',
         fields: {
             date: { type: graphQlLib.GraphQLString },
@@ -56,18 +52,14 @@ export const contactInformationCallback: CreationCallback = (context, params) =>
             to: { type: graphQlLib.GraphQLString },
             status: { type: graphQlLib.GraphQLString },
         },
-        description: '',
-        interfaces: [],
     });
 
     params.fields.regularOpeningHours = {
-        type: schemaGenerator.createObjectType({
+        type: graphQlCreateObjectType({
             name: 'regularOpeningHours',
             fields: {
                 hours: { type: graphQlLib.list(RegularOpeningHour) },
             },
-            description: '',
-            interfaces: [],
         }),
         resolve: (env) => {
             const { regularOpeningHours = {} } = env.source;
@@ -96,15 +88,13 @@ export const contactInformationCallback: CreationCallback = (context, params) =>
     };
 
     params.fields.specialOpeningHours = {
-        type: schemaGenerator.createObjectType({
+        type: graphQlCreateObjectType({
             name: 'specialOpeningHours',
             fields: {
                 validFrom: { type: graphQlLib.GraphQLString },
                 validTo: { type: graphQlLib.GraphQLString },
                 hours: { type: graphQlLib.list(SpecialOpeningHour) },
             },
-            description: '',
-            interfaces: [],
         }),
         resolve: (env) => {
             const specialOpeningHours = getSpecialOpeningHoursObject(

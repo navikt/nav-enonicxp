@@ -1,15 +1,15 @@
 import guillotineLib from '/lib/guillotine';
 import { redirectsRootPath } from '../../constants';
+import { contentListCallback } from './schema-creation-callbacks/content-list-callback';
+import { attachmentCallback } from './schema-creation-callbacks/attachment';
+import { mediaCodeCallback, mediaImageCallback } from './schema-creation-callbacks/media';
+import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
+import { richTextCallback } from './schema-creation-callbacks/richtext';
 
-const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
-const contentListCallback = require('./schema-creation-callbacks/content-list-callback');
-const { richTextCallback } = require('/lib/guillotine/schema/schema-creation-callbacks/richtext');
 const {
     macroAlertboxCallback,
 } = require('/lib/guillotine/schema/schema-creation-callbacks/macro-alert-box');
-const { mediaCodeCallback, mediaImageCallback } = require('./schema-creation-callbacks/media');
-const { attachmentCallback } = require('./schema-creation-callbacks/attachment');
 const { macroHtmlFragmentCallback } = require('./schema-creation-callbacks/macro-html-fragment');
 const { filterCallback } = require('./schema-creation-callbacks/filters-menu');
 const { contactInformationCallback } = require('./schema-creation-callbacks/contact-information');
