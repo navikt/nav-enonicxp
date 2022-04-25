@@ -6,7 +6,7 @@ import {
     CustomContentDescriptor,
 } from '../../../../types/content-types/content-config';
 import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
-import { getPublishedVersionTimestamps } from '../../../time-travel/version-utils';
+import { getPublishedVersionTimestamps } from '../../../utils/version-utils';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
 import { dynamicPageContentTypesSet } from '../../../contenttype-lists';

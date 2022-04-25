@@ -14,7 +14,7 @@
 
 import contentLib from '/lib/xp/content';
 import nodeLib, { RepoConnection } from '/lib/xp/node';
-import { getNodeKey, getVersionFromTime } from './version-utils';
+import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
 import { TimeTravelConfig } from './types';

@@ -2,7 +2,7 @@ import contextLib from '/lib/xp/context';
 import nodeLib from '/lib/xp/node';
 import contentLib from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { getNodeKey } from '../time-travel/version-utils';
+import { getNodeKey } from './version-utils';
 import {
     forceArray,
     getNestedValue,

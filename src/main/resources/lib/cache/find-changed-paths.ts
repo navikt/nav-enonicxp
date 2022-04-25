@@ -1,6 +1,6 @@
 import nodeLib from '/lib/xp/node';
 import { contentRepo } from '../constants';
-import { getNodeVersions } from '../time-travel/version-utils';
+import { getNodeVersions } from '../utils/version-utils';
 import { getFrontendPathname } from './utils';
 import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 
