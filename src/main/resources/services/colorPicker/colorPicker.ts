@@ -163,7 +163,9 @@ const generateIcon = (color: string) => `\
 </svg>\
 `;
 
-const colorCodePattern = new RegExp('^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$');
+const colorCodePattern = new RegExp(
+    '^#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})$'
+);
 
 const generateHit = (colorCode: string, colorName: string) => ({
     id: colorCode,
