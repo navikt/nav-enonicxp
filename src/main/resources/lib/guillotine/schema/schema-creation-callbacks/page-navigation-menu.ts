@@ -1,12 +1,11 @@
-import contentLib from '/lib/xp/content';
-import nodeLib from '/lib/xp/node';
-import contextLib, { Context } from '/lib/xp/context';
+import contentLib, { Content } from '/lib/xp/content';
+import nodeLib, { RepoConnection } from '/lib/xp/node';
+import contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
 import { forceArray } from '../../../utils/nav-utils';
 import { RepoBranch } from '../../../../types/common';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
-import { guillotineContentQuery } from '../../queries/sitecontent/sitecontent-query';
 
 type AnchorLink = {
     anchorId: string;
@@ -14,18 +13,13 @@ type AnchorLink = {
     hideFromInternalNavigation?: boolean;
 };
 
-const getComponents = (contentId: string, context: Context<any>) => {
+const getComponents = (contentId: string, repo: RepoConnection) => {
     const content = contentLib.get({ key: contentId });
     if (!content) {
         return [];
     }
 
-    const node = nodeLib
-        .connect({
-            repoId: context.repository,
-            branch: context.branch as RepoBranch,
-        })
-        .get(content._id);
+    const node = repo.get(content._id);
 
     return forceArray(node?.components);
 };
@@ -96,27 +90,27 @@ const getLayoutAnchorLink = (layout: NodeComponent<'layout'>['layout']) => {
 
 const getFragmentAnchorLink = (
     fragment: NodeComponent<'fragment'>['fragment'],
-    branch: RepoBranch
+    repo: RepoConnection
 ) => {
     const { id } = fragment;
 
-    const content = contentLib.get({ key: id });
+    const content = repo.get<Content<'portal:fragment'>>({ key: id });
     if (!content) {
         return null;
     }
 
-    const fragmentContent = guillotineContentQuery(content, branch);
+    const component = content.components.find((component) => component.path === '/');
 
-    if (!fragmentContent || fragmentContent.type !== 'portal:fragment') {
+    if (!component) {
         return null;
     }
 
-    return getComponentAnchorLink(fragmentContent.fragment, branch);
+    return getComponentAnchorLink(component, repo);
 };
 
 const getComponentAnchorLink = (
     component: NodeComponent,
-    branch: RepoBranch
+    repo: RepoConnection
 ): AnchorLink | null => {
     if (component.type === 'part') {
         return getPartAnchorLink(component.part);
@@ -127,7 +121,7 @@ const getComponentAnchorLink = (
     }
 
     if (component.type === 'fragment') {
-        return getFragmentAnchorLink(component.fragment, branch);
+        return getFragmentAnchorLink(component.fragment, repo);
     }
 
     return null;
@@ -145,13 +139,16 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
         }
 
         const context = contextLib.get();
-        const branch = context.branch as RepoBranch;
+        const repo = nodeLib.connect({
+            repoId: context.repository,
+            branch: context.branch as RepoBranch,
+        });
 
         const anchorLinkOverrides = forceArray(env.source.anchorLinks);
-        const components = getComponents(contentId, context);
+        const components = getComponents(contentId, repo);
 
         const anchorLinksResolved = components.reduce((acc: AnchorLink[], component) => {
-            const anchorLink = getComponentAnchorLink(component, branch);
+            const anchorLink = getComponentAnchorLink(component, repo);
             if (!anchorLink) {
                 return acc;
             }
@@ -163,7 +160,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
             }
 
             if (acc.some((_anchorLink) => _anchorLink.anchorId === anchorId)) {
-                if (branch === 'master') {
+                if (context.branch === 'master') {
                     log.error(
                         `Duplicate anchor id ${anchorId} found under content id ${contentId}`
                     );
