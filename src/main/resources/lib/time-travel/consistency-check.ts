@@ -5,7 +5,7 @@ import { Content } from '/lib/xp/content';
 import { contentLibGetStandard, timeTravelHooksEnabled } from './time-travel-hooks';
 import { contentTypesFromGuillotineQuery } from '../guillotine/queries/sitecontent/sitecontent-query';
 
-const contentTypesToCheckMap = stringArrayToSet(contentTypesFromGuillotineQuery);
+const contentTypesToCheck = stringArrayToSet(contentTypesFromGuillotineQuery);
 
 // Peace-of-mind checks to see if hooks for time-specific content retrieval is
 // causing unexpected side effects. For normal requests (with no "time" parameter)
@@ -37,7 +37,7 @@ export const validateTimestampConsistency = (
         return false;
     }
 
-    if (!contentTypesToCheckMap[contentRaw.type]) {
+    if (!contentTypesToCheck[contentRaw.type]) {
         return true;
     }
 
