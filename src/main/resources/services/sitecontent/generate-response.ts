@@ -204,8 +204,6 @@ export const getSitecontentResponse = (
 
     const notifications = getNotifications(content._path);
 
-    // These are used with the version history selector, and are only included in requests for the draft branch
-    // (ie from content studio)
     const versionTimestamps = getPublishedVersionTimestamps(content._id, branch);
 
     return {

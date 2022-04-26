@@ -74,7 +74,7 @@ export const getVersionTimestamps = (contentRef: string, branch: RepoBranch = 'm
     return versions.map((version) => version.timestamp);
 };
 
-// Use by the version history selector in the frontend
+// Used by the version history selector in the frontend
 export const getPublishedVersionTimestamps = (contentRef: string, branch: RepoBranch) => {
     // In production, requests from master should not include version timestamps
     // This check must be removed if/when we decide to make version history public
