@@ -3,7 +3,7 @@ export interface ToolsPage {
   /**
    * Skriv inn ønsket url
    */
-  customPath?: string;
+  customPath: string;
 
   /**
    * Legg til andre språkversjoner

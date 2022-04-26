@@ -3,7 +3,7 @@ export interface PublishingCalendar {
   /**
    * Ingress
    */
-  ingress?: string;
+  ingress: string;
 
   /**
    * Sidebeskrivelse for søk og sosiale medier

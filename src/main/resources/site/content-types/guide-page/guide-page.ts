@@ -8,7 +8,7 @@ export interface GuidePage {
   /**
    * Skriv inn ønsket url
    */
-  customPath?: string;
+  customPath: string;
 
   /**
    * Fant du det du lette etter?

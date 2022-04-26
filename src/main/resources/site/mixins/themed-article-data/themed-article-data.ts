@@ -13,7 +13,7 @@ export interface ThemedArticleData {
   /**
    * Ingress
    */
-  ingress?: string;
+  ingress: string;
 
   /**
    * Målgruppe
@@ -33,12 +33,12 @@ export interface ThemedArticleData {
   /**
    * Områdekategori
    */
-  area?: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling">;
 
   /**
    * Velg piktogram
    */
-  illustration?: string;
+  illustration: string;
 
   /**
    * Videresend alle besøk til annen url:

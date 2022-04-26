@@ -8,7 +8,7 @@ export interface MainArticle {
   /**
    * Ingress
    */
-  ingress?: string;
+  ingress: string;
 
   /**
    * Brødtekst

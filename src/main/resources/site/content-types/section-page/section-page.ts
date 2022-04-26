@@ -3,7 +3,7 @@ export interface SectionPage {
   /**
    * Ingress
    */
-  ingress?: string;
+  ingress: string;
 
   /**
    * Oppgi antall tavler/bokser på seksjonssiden
