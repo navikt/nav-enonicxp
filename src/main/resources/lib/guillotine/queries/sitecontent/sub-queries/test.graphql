@@ -1,7 +1,0 @@
-{
-    guillotine {
-        get(key: "/www.nav.no/no/person") {
-            displayName
-        }
-    }
-}
