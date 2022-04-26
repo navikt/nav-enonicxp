@@ -1,8 +1,11 @@
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
-import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
+import { getUnixTimeFromDateTimeString, stringArrayToSet } from '../utils/nav-utils';
 import { Content } from '/lib/xp/content';
 import { contentLibGetStandard, timeTravelHooksEnabled } from './time-travel-hooks';
+import { contentTypesFromGuillotineQuery } from '../guillotine/queries/sitecontent/sitecontent-query';
+
+const contentTypesToCheckMap = stringArrayToSet(contentTypesFromGuillotineQuery);
 
 // Peace-of-mind checks to see if hooks for time-specific content retrieval is
 // causing unexpected side effects. For normal requests (with no "time" parameter)
@@ -27,14 +30,17 @@ export const validateTimestampConsistency = (
         return true;
     }
 
-    // This should not be possible, but just in case...
     if (!contentRaw) {
         log.error(
             `Time travel consistency check could not complete, could not retrieve raw content for ${contentRef}`
         );
         return false;
     }
-    // See above
+
+    if (!contentTypesToCheckMap[contentRaw.type]) {
+        return true;
+    }
+
     if (!contentFromHookedLibs) {
         log.error(
             `Time travel consistency check could not complete, found raw content but no content from hooked libs ${contentRef}`
