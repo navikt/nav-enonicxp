@@ -96,11 +96,13 @@ const getFragmentAnchorLink = (
 
     const content = repo.get<Content<'portal:fragment'>>({ key: id });
 
-    if (!content?.components) {
+    if (!content) {
         return null;
     }
 
-    const rootComponent = content.components.find((component) => component.path === '/');
+    const rootComponent = forceArray(content.components).find(
+        (component) => component.path === '/'
+    );
 
     if (!rootComponent) {
         return null;
