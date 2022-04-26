@@ -20,16 +20,11 @@ export const globalValueSetCallback: CreationCallback = (context, params) => {
         ),
     };
 
-    if (!params.fields.data) {
-        params.fields.data = {
-            type: graphQlCreateObjectType(context, {
-                name: context.uniqueName('no_nav_navno_GlobalValueSet_Data'),
-                description: 'Data for globale verdier',
-                fields: { valueItems },
-            }),
-        };
-    } else {
-        // @ts-ignore (Guillotine/GraphQL typedefs does not account for nested fields)
-        params.fields.data.valueItems = valueItems;
-    }
+    params.fields.data = {
+        type: graphQlCreateObjectType(context, {
+            name: context.uniqueName('no_nav_navno_GlobalValueSet_Data'),
+            description: 'Data for globale verdier',
+            fields: { valueItems },
+        }),
+    };
 };
