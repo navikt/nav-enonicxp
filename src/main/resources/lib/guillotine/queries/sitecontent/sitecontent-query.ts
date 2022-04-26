@@ -104,6 +104,8 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'portal:site': '',
 };
 
+export const contentTypesFromGuillotineQuery = Object.keys(contentToQueryFragment);
+
 const contentQueries = Object.entries(contentToQueryFragment).reduce((acc, [type, fragment]) => {
     return { ...acc, [type]: buildPageContentQuery(fragment) };
 }, {} as { [type in ContentDescriptor]: string });
