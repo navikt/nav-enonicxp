@@ -2,11 +2,7 @@ import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { Content } from '/lib/xp/content';
-
-const {
-    timeTravelHooksEnabled,
-    contentLibGetStandard,
-} = require('/lib/time-travel/run-with-time-travel');
+import { contentLibGetStandard, timeTravelHooksEnabled } from './time-travel-hooks';
 
 // Peace-of-mind checks to see if hooks for time-specific content retrieval is
 // causing unexpected side effects. For normal requests (with no "time" parameter)

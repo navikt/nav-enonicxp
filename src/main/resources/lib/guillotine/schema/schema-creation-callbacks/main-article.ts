@@ -1,13 +1,14 @@
-const contentLib = require('/lib/xp/content');
-const graphQlLib = require('/lib/guillotine/graphql');
+import contentLib from '/lib/xp/content';
+import graphQlLib from '/lib/graphql';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 
-const mainArticleDataCallback = (context, params) => {
+export const mainArticleDataCallback: CreationCallback = (context, params) => {
     params.fields.chapters = {
         type: graphQlLib.list(graphQlLib.reference('Content')),
     };
 };
 
-const mainArticleCallback = (context, params) => {
+export const mainArticleCallback: CreationCallback = (context, params) => {
     params.fields.data.resolve = (env) => {
         // Resolve chapters
         const chapters = contentLib.query({
@@ -35,5 +36,3 @@ const mainArticleCallback = (context, params) => {
         };
     };
 };
-
-module.exports = { mainArticleCallback, mainArticleDataCallback };

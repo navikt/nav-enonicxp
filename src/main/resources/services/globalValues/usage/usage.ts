@@ -1,6 +1,6 @@
 import { Content } from '/lib/xp/content';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { getGlobalValueUsage } from '../../../lib/global-values/global-values';
+import { getGlobalValueUsage } from '../../../lib/utils/global-value-utils';
 
 const transformToResponseItem = (content: Content) => ({
     id: content._id,

@@ -1,8 +1,11 @@
-const contentLib = require('/lib/xp/content');
-const graphQlLib = require('/lib/guillotine/graphql');
-const { forceArray } = require('/lib/utils/nav-utils');
+import contentLib, { Content } from '/lib/xp/content';
+import graphQlLib from '/lib/graphql';
+import { forceArray } from '../../../utils/nav-utils';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 
-const mainArticleChapterDataCallback = (context, params) => {
+type ContentTypeWithLanguages = Content & { data?: { languages?: string } };
+
+export const mainArticleChapterDataCallback: CreationCallback = (context, params) => {
     params.fields.languages = {
         type: graphQlLib.list(graphQlLib.reference('Content')),
     };
@@ -10,7 +13,7 @@ const mainArticleChapterDataCallback = (context, params) => {
 
 // Finds and sets the corresponding chapters for the alternative language versions
 // referred to by the chapter article
-const mainArticleChapterCallback = (context, params) => {
+export const mainArticleChapterCallback: CreationCallback = (context, params) => {
     params.fields.data.args = {
         resolveLanguages: graphQlLib.GraphQLBoolean,
     };
@@ -24,20 +27,21 @@ const mainArticleChapterCallback = (context, params) => {
         }
 
         // Get the alternative language versions of the chapter article
-        const article = contentLib.get({ key: data.article });
+        const article = contentLib.get({ key: data.article }) as ContentTypeWithLanguages;
+
         const articleLanguageTargets = forceArray(article?.data?.languages)
             .map((target) => contentLib.get({ key: target }))
-            .filter(Boolean);
+            .filter(Boolean) as Content[];
         if (articleLanguageTargets.length === 0) {
             return data;
         }
 
         // Get the alternative language versions of the chapter parent
         const parentPath = _path.split('/').slice(0, -1).join('/');
-        const parent = contentLib.get({ key: parentPath });
+        const parent = contentLib.get({ key: parentPath }) as ContentTypeWithLanguages;
         const parentLanguageTargets = forceArray(parent?.data?.languages)
             .map((target) => contentLib.get({ key: target }))
-            .filter(Boolean);
+            .filter(Boolean) as Content[];
         if (parentLanguageTargets.length === 0) {
             return data;
         }
@@ -57,7 +61,9 @@ const mainArticleChapterCallback = (context, params) => {
                     key: parentAltLanguageTarget._id,
                     count: 1000,
                 })
-                ?.hits?.filter((cTarget) => cTarget.type === 'no.nav.navno:main-article-chapter');
+                ?.hits?.filter(
+                    (cTarget) => cTarget.type === 'no.nav.navno:main-article-chapter'
+                ) as Content<'no.nav.navno:main-article-chapter'>[];
             if (!altLanguageChapters) {
                 return languagesAcc;
             }
@@ -72,10 +78,8 @@ const mainArticleChapterCallback = (context, params) => {
             }
 
             return [...languagesAcc, chapterTarget];
-        }, []);
+        }, [] as Content[]);
 
         return { ...data, languages };
     };
 };
-
-module.exports = { mainArticleChapterDataCallback, mainArticleChapterCallback };

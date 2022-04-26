@@ -1,10 +1,13 @@
-const graphQlLib = require('/lib/guillotine/graphql');
-const { getGvKeyAndContentIdFromUniqueKey } = require('/lib/global-values/global-values');
-const { runInBranchContext } = require('/lib/utils/branch-context');
-const { getGlobalValue } = require('/lib/global-values/global-values');
-const { forceArray } = require('/lib/utils/nav-utils');
+import graphQlLib from '/lib/graphql';
+import { CreationCallback } from '../../utils/creation-callback-utils';
+import {
+    getGlobalValue,
+    getGvKeyAndContentIdFromUniqueKey,
+} from '../../../utils/global-value-utils';
+import { runInBranchContext } from '../../../utils/branch-context';
+import { forceArray } from '../../../utils/nav-utils';
 
-const globalValueMacroConfigCallback = (context, params) => {
+export const globalValueMacroConfigCallback: CreationCallback = (context, params) => {
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
@@ -14,7 +17,7 @@ const globalValueMacroConfigCallback = (context, params) => {
     };
 };
 
-const globalValueWithMathMacroConfigCallback = (context, params) => {
+export const globalValueWithMathMacroConfigCallback: CreationCallback = (context, params) => {
     params.fields.variables = {
         type: graphQlLib.list(graphQlLib.GraphQLFloat),
         resolve: (env) => {
@@ -37,9 +40,4 @@ const globalValueWithMathMacroConfigCallback = (context, params) => {
             return hasMissingValues ? [] : variables;
         },
     };
-};
-
-module.exports = {
-    globalValueMacroConfigCallback,
-    globalValueWithMathMacroConfigCallback,
 };

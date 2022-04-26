@@ -3,7 +3,7 @@ import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
 import { redirectsRootPath } from '../../lib/constants';
-import { getModifiedTimeIncludingFragments } from '../../lib/fragments/find-fragments';
+import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
@@ -12,8 +12,8 @@ import { getNotifications } from '../../lib/guillotine/queries/notifications';
 import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
-
-const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+import { runWithTimeTravel } from '../../lib/time-travel/run-with-time-travel';
+import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP

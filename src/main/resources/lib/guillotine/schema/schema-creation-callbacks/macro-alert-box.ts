@@ -1,8 +1,9 @@
-const macroLib = require('/lib/guillotine/macro');
-const htmlEntities = require('/assets/html-entities/2.1.0/lib');
-const striptags = require('/assets/striptags/3.1.1/src/striptags');
+import macroLib from '/lib/guillotine/macro';
+import { CreationCallback } from '../../utils/creation-callback-utils';
+import { decode } from '/assets/html-entities/2.1.0/lib';
+import striptags from '/assets/striptags/3.1.1/src/striptags';
 
-const macroAlertboxCallback = (context, params) => {
+export const macroAlertboxCallback: CreationCallback = (context, params) => {
     params.fields.body.resolve = (env) => {
         // Remove non-encoded tags from the macro body. Non-encoded tags are inserted by the
         // content/component-level htmlarea editor in content studio, we don't want these in the
@@ -10,7 +11,7 @@ const macroAlertboxCallback = (context, params) => {
         const encodedHtmlOnly = striptags(env.source.body);
 
         // Html from the macro-editor are encoded with html-entities, decode this to actual html
-        const decodedHtml = htmlEntities.decode(encodedHtmlOnly);
+        const decodedHtml = decode(encodedHtmlOnly);
 
         const processedHtml = macroLib.processHtml({
             type: 'server',
@@ -24,5 +25,3 @@ const macroAlertboxCallback = (context, params) => {
         return processedHtml.processedHtml;
     };
 };
-
-module.exports = { macroAlertboxCallback };

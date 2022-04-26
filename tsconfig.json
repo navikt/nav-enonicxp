@@ -7,7 +7,11 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "noEmit": true,
-        "baseUrl": "./src/main/resources"
+        "baseUrl": "./src/main/resources",
+        "paths": {
+            "/assets/html-entities/2.1.0/lib": ["../../../node_modules/html-entities"],
+            "/assets/striptags/3.1.1/src/striptags": ["../../../node_modules/striptags"]
+        }
     },
     "include": ["src/main/resources/**/*.ts", "node_modules/enonic-types/*.d.ts"],
     "exclude": [

@@ -5,10 +5,8 @@ import {
     guillotineComponentsQuery,
     guillotineContentQuery,
 } from '../guillotine/queries/sitecontent/sitecontent-query';
-import { mergeGuillotineObject } from '../guillotine/utils/merge-json';
 import { urls } from '../constants';
-
-const { destructureComponent } = require('/lib/guillotine/utils/process-components');
+import { destructureComponent } from '../guillotine/utils/process-components';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -69,7 +67,7 @@ const getComponentProps = () => {
     return {
         language: content.language,
         ...component,
-        ...destructureComponent(mergeGuillotineObject(componentFromGuillotine, ['config'])),
+        ...destructureComponent(componentFromGuillotine),
     };
 };
 

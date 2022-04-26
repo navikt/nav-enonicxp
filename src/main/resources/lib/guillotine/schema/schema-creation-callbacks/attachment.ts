@@ -1,7 +1,8 @@
-const graphQlLib = require('/lib/guillotine/graphql');
-const { getAttachmentText } = require('./common/attachments');
+import graphQlLib from '/lib/graphql';
+import { getAttachmentText } from './common/attachments';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 
-const attachmentCallback = (context, params) => {
+export const attachmentCallback: CreationCallback = (context, params) => {
     params.fields.attachmentText = {
         type: graphQlLib.GraphQLString,
         args: {
@@ -12,5 +13,3 @@ const attachmentCallback = (context, params) => {
         },
     };
 };
-
-module.exports = { attachmentCallback };

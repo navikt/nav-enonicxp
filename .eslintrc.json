@@ -29,7 +29,8 @@
                     "^/lib/thymeleaf",
                     "^/lib/guillotine",
                     "^/lib/graphql",
-                    "^/lib/graphql-rx"
+                    "^/lib/graphql-rx",
+                    "^/assets"
                 ]
             }
         ],

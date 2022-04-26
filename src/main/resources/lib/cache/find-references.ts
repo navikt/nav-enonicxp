@@ -2,13 +2,17 @@ import contentLib, { Content } from '/lib/xp/content';
 import {
     findContentsWithFragmentMacro,
     findContentsWithProductCardMacro,
-} from '../htmlarea/htmlarea';
-import { getGlobalValueUsage, globalValuesContentType } from '../global-values/global-values';
-import { forceArray, getParentPath, removeDuplicates } from '../utils/nav-utils';
+} from '../utils/htmlarea-utils';
+import { getGlobalValueUsage, globalValuesContentType } from '../utils/global-value-utils';
+import { forceArray, getParentPath, removeDuplicates, stringArrayToSet } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { productCardTargetTypes, typesWithDeepReferences } from '../contenttype-lists';
+import { productPageContentTypes, typesWithDeepReferences } from '../contenttype-lists';
 
 const MAX_DEPTH = 5;
+
+export const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
+
+export const typesWithDeepReferencesSet = stringArrayToSet(typesWithDeepReferences);
 
 const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
@@ -223,7 +227,7 @@ const _findReferences = ({
     );
 
     const deepReferences = references.reduce((acc, reference) => {
-        if (!typesWithDeepReferences[reference.type]) {
+        if (!typesWithDeepReferencesSet[reference.type]) {
             return acc;
         }
 

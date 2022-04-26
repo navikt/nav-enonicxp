@@ -1,10 +1,7 @@
-import { ContentDescriptor } from '../types/content-types/content-config';
 import { appDescriptor } from './constants';
-import { stringArrayToSet } from './utils/nav-utils';
+import { ContentDescriptor } from '../types/content-types/content-config';
 
 type ContentTypeList = ContentDescriptor[];
-
-type ContentTypeSet = Partial<Record<ContentDescriptor, boolean>>;
 
 export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:main-article`,
@@ -29,8 +26,6 @@ export const dynamicPageContentTypes: ContentTypeList = [
     ...productPageContentTypes,
     `${appDescriptor}:dynamic-page`,
 ];
-
-export const dynamicPageContentTypesSet: ContentTypeSet = stringArrayToSet(dynamicPageContentTypes);
 
 export const linkContentTypes: ContentTypeList = [
     `${appDescriptor}:internal-link`,
@@ -57,17 +52,15 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     ...linkContentTypes,
 ];
 
-export const productCardTargetTypes: ContentTypeSet = stringArrayToSet(productPageContentTypes);
-
-export const typesWithDeepReferences: ContentTypeSet = stringArrayToSet([
+export const typesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:notification`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:content-list`,
-]);
+];
 
-export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
+export const contentTypesWithBreadcrumbs: ContentTypeList = [
     ...dynamicPageContentTypes,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
@@ -77,7 +70,7 @@ export const contentTypesWithBreadcrumbs: ContentTypeSet = stringArrayToSet([
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-]);
+];
 
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,

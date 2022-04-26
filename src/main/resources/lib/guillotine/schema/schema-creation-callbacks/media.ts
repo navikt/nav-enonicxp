@@ -1,7 +1,8 @@
-const graphQlLib = require('/lib/guillotine/graphql');
-const { getAttachmentText } = require('./common/attachments');
+import graphQlLib from '/lib/graphql';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { getAttachmentText } from './common/attachments';
 
-const mediaCodeCallback = (context, params) => {
+export const mediaCodeCallback: CreationCallback = (context, params) => {
     params.fields.mediaText = {
         type: graphQlLib.GraphQLString,
         args: {
@@ -23,8 +24,8 @@ const mediaCodeCallback = (context, params) => {
     };
 };
 
-const mediaImageCallback = (context, params) => {
-    const imageInfoType = graphQlLib.createObjectType(context, {
+export const mediaImageCallback: CreationCallback = (context, params) => {
+    const imageInfoType = graphQlCreateObjectType(context, {
         name: 'ImageInfo',
         fields: {
             imageWidth: { type: graphQlLib.GraphQLInt },
@@ -50,5 +51,3 @@ const mediaImageCallback = (context, params) => {
         },
     };
 };
-
-module.exports = { mediaCodeCallback, mediaImageCallback };

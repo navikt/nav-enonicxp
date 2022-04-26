@@ -10,13 +10,17 @@ import {
     generateSitemapDataAndActivateSchedule,
 } from './lib/sitemap/sitemap';
 import { startReliableEventAckListener } from './lib/events/reliable-custom-events';
-import { updateClusterInfo } from './lib/cluster/cluster-utils';
+import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
-
-const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
-const facetLib = require('/lib/facets');
+import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
+import { timeTravelConfig } from './lib/time-travel/time-travel-config';
+import {
+    activateFacetsEventListener,
+    clearFacetUpdateState,
+    getFacetValidation,
+} from './lib/facets';
 
 updateClusterInfo();
 
@@ -25,23 +29,22 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
+activateFacetsEventListener();
 
-hookLibsWithTimeTravel();
+hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
     // make sure the updateAll lock is released on startup, and clear the
     // list of recently validated nodes
-    const facetValidation = facetLib.getFacetValidation();
+    const facetValidation = getFacetValidation();
     if (facetValidation) {
-        facetLib.clearUpdateState();
+        clearFacetUpdateState();
     }
 
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
 }
-
-facetLib.activateEventListener();
 
 log.info('Finished running main');
 
