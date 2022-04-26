@@ -99,13 +99,13 @@ const getFragmentAnchorLink = (
         return null;
     }
 
-    const component = content.components.find((component) => component.path === '/');
+    const rootComponent = content.components.find((component) => component.path === '/');
 
-    if (!component) {
+    if (!rootComponent) {
         return null;
     }
 
-    return getComponentAnchorLink(component, repo);
+    return getComponentAnchorLink(rootComponent, repo);
 };
 
 const getComponentAnchorLink = (
