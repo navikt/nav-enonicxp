@@ -92,10 +92,7 @@ const partsFragment = `
                 }
             }
             page_navigation_menu {
-                anchorLinks(contentId:$ref) {
-                    anchorId
-                    linkText
-                }
+                ${pageNavigationMenuMixinFragment}
             }
             filters_menu {
                 title

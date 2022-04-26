@@ -19,7 +19,10 @@ import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data
 import { globalValuesCallback } from './schema-creation-callbacks/global-values';
 import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
 import { contentListCallback } from './schema-creation-callbacks/content-list-callback';
-import { pageNavigationMenuCallback } from './schema-creation-callbacks/page-navigation-menu';
+import {
+    anchorLinksCallback,
+    pageNavigationMenuCallback,
+} from './schema-creation-callbacks/page-navigation-menu';
 import { filterCallback } from './schema-creation-callbacks/filters-menu';
 import {
     globalValueMacroConfigCallback,
@@ -47,7 +50,9 @@ export const schemaCreationCallbacks = applyMacroCreationCallbacksToHtmlFragment
         contentListCallback('publish.first'),
     Part_no_nav_navno_dynamic_link_list_HentLenkerFraInnholdsliste: contentListCallback(),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
+    Part_no_nav_navno_page_navigation_menu_OverstyrLenketekster: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
+    Page_no_nav_navno_page_with_side_menus_OverstyrLenketekster: anchorLinksCallback,
     Part_no_nav_navno_filters_menu_Filter: filterCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,

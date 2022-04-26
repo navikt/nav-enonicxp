@@ -74,6 +74,7 @@ const pageNavigationMenuMixinFragment = `
    anchorLinks(contentId:$ref) {
         anchorId
         linkText
+        isDupe
     }
 `;
 

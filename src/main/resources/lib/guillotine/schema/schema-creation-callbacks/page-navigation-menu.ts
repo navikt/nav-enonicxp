@@ -127,6 +127,12 @@ const getComponentAnchorLink = (
     return null;
 };
 
+export const anchorLinksCallback: CreationCallback = (context, params) => {
+    params.fields.isDupe = {
+        type: graphQlLib.GraphQLBoolean,
+    };
+};
+
 export const pageNavigationMenuCallback: CreationCallback = (context, params) => {
     params.fields.anchorLinks.args = { contentId: graphQlLib.GraphQLID };
     params.fields.anchorLinks.resolve = (env) => {
@@ -159,22 +165,19 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
                 return acc;
             }
 
-            if (acc.some((_anchorLink) => _anchorLink.anchorId === anchorId)) {
-                if (context.branch === 'master') {
-                    log.error(
-                        `Duplicate anchor id ${anchorId} found under content id ${contentId}`
-                    );
-                }
-                return acc;
-            }
-
             const linkOverride = anchorLinkOverrides.find((link) => link.anchorId === anchorId);
+            const isDupe = acc.some((_anchorLink) => _anchorLink.anchorId === anchorId);
+
+            if (isDupe && context.branch === 'master') {
+                log.error(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
+            }
 
             return [
                 ...acc,
                 {
                     ...anchorLink,
                     ...(linkOverride && { linkText: linkOverride.linkText }),
+                    ...(isDupe && { isDupe }),
                 },
             ];
         }, [] as AnchorLink[]);
