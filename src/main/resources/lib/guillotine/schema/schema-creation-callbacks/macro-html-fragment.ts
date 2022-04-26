@@ -1,11 +1,8 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { Context } from '/lib/guillotine';
-// @ts-ignore (typedef for guillotine is incomplete)
 import macroLib from '/lib/guillotine/macro';
-// @ts-ignore (see above)
 import formLib from '/lib/guillotine/dynamic/form';
-// @ts-ignore (see above)
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';

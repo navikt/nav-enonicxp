@@ -1,4 +1,3 @@
-// @ts-ignore (Guillotine type def is incomplete)
 import macroLib from '/lib/guillotine/macro';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { decode } from '/assets/html-entities/2.1.0/lib';

@@ -1,6 +1,5 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolverCallback } from '/lib/graphql';
-// @ts-ignore (typedef is incomplete)
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { forceArray } from '../../../utils/nav-utils';
