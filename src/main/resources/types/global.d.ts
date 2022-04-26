@@ -30,7 +30,8 @@ declare const com: {
 };
 
 // TODO: remove if/when type definitions are added for these libraries
-declare module '*/lib/guillotine/macro';
 declare module '*/lib/guillotine/dynamic/form';
+declare module '*/lib/guillotine/graphql';
+declare module '*/lib/guillotine/macro';
 declare module '*/lib/guillotine/util/naming';
 declare module '*/lib/graphql-rx';

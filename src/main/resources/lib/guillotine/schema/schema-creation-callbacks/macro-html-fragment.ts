@@ -64,7 +64,7 @@ const generateRichTextTypeWithoutHtmlFragment = (context: Context) => {
                 {}
             );
 
-            const macroDataConfigType = graphQlCreateObjectType({
+            const macroDataConfigType = graphQlCreateObjectType(context, {
                 name: macroDataConfigTypeName,
                 description: `Macro descriptor data config for application ['${descriptor.applicationKey}'] and descriptor ['${descriptor.name}']`,
                 fields: macroDataConfigFields,
@@ -83,13 +83,13 @@ const generateRichTextTypeWithoutHtmlFragment = (context: Context) => {
         {} as Record<string, GraphQLResolver>
     );
 
-    const macroConfigTypeModified = graphQlCreateObjectType({
+    const macroConfigTypeModified = graphQlCreateObjectType(context, {
         name: `MacroConfigHtmlFragment`,
         description: `Macro config type modified for html-fragment`,
         fields: macroConfigTypeFields,
     });
 
-    const macroTypeModified = graphQlCreateObjectType({
+    const macroTypeModified = graphQlCreateObjectType(context, {
         name: `MacroHtmlFragment`,
         description: `Macro type modified for html-fragment`,
         fields: {
@@ -120,7 +120,7 @@ const generateRichTextTypeWithoutHtmlFragment = (context: Context) => {
         },
     });
 
-    return graphQlCreateObjectType({
+    return graphQlCreateObjectType(context, {
         name: 'RichTextHtmlFragment',
         description: 'RichText type for html-fragment',
         fields: {

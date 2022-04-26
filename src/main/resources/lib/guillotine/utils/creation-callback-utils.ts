@@ -1,15 +1,15 @@
-import graphQlLib, { CreateObjectTypeParams } from '/lib/graphql';
-import { ContextOptions } from '/lib/guillotine';
+import { CreateObjectTypeParams } from '/lib/graphql';
+import graphQlLib from '/lib/guillotine/graphql';
+import { ContextOptions, Context } from '/lib/guillotine';
 
 export type CreationCallback = ContextOptions['creationCallbacks'][string];
 
-const schemaGenerator = graphQlLib.newSchemaGenerator();
+type CreateObjectTypeParamsGuillotine = Pick<CreateObjectTypeParams, 'name' | 'fields'> &
+    Partial<CreateObjectTypeParams>;
 
-export const graphQlCreateObjectType = ({
-    name,
-    fields,
-    description = '',
-    interfaces = [],
-}: Pick<CreateObjectTypeParams, 'name' | 'fields'> & Partial<CreateObjectTypeParams>) => {
-    return schemaGenerator.createObjectType({ name, fields, description, interfaces });
+export const graphQlCreateObjectType = (
+    context: Context,
+    { name, fields, description, interfaces }: CreateObjectTypeParamsGuillotine
+) => {
+    return graphQlLib.createObjectType(context, { name, fields, description, interfaces });
 };

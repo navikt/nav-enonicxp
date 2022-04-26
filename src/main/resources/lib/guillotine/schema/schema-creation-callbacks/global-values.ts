@@ -2,13 +2,13 @@ import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { forceArray } from '../../../utils/nav-utils';
 
-export const globalValuesCallback: CreationCallback = (context, params) => {
+export const globalValueSetCallback: CreationCallback = (context, params) => {
     const valueItems: GraphQLResolver = {
         resolve: (env) => {
-            return env.source.valueItems ? forceArray(env.source.valueItems) : null;
+            return forceArray(env.source.valueItems);
         },
         type: graphQlLib.list(
-            graphQlCreateObjectType({
+            graphQlCreateObjectType(context, {
                 name: context.uniqueName('GlobalValueItem'),
                 description: 'Global verdi',
                 fields: {
@@ -20,18 +20,16 @@ export const globalValuesCallback: CreationCallback = (context, params) => {
         ),
     };
 
-    if (params.fields.data) {
-        // @ts-ignore (Guillotine/GraphQL typedefs does not account for nested fields)
-        params.fields.data.valueItems = valueItems;
-    } else {
+    if (!params.fields.data) {
         params.fields.data = {
-            type: graphQlCreateObjectType({
+            type: graphQlCreateObjectType(context, {
                 name: context.uniqueName('no_nav_navno_GlobalValueSet_Data'),
                 description: 'Data for globale verdier',
-                fields: {
-                    valueItems: valueItems,
-                },
+                fields: { valueItems },
             }),
         };
+    } else {
+        // @ts-ignore (Guillotine/GraphQL typedefs does not account for nested fields)
+        params.fields.data.valueItems = valueItems;
     }
 };

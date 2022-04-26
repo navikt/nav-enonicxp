@@ -11,7 +11,7 @@ type MenuListData = {
 
 export const menuListDataCallback: CreationCallback = (context, params) => {
     // Create new types for mapped values
-    const menuListLink = graphQlCreateObjectType({
+    const menuListLink = graphQlCreateObjectType(context, {
         name: context.uniqueName('MenuListLink'),
         description: 'Lenke i MenuListItem',
         fields: {
@@ -20,7 +20,7 @@ export const menuListDataCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const menuListItem = graphQlCreateObjectType({
+    const menuListItem = graphQlCreateObjectType(context, {
         name: context.uniqueName('MenuListItem'),
         description: 'Lenker i høyremeny',
         fields: {

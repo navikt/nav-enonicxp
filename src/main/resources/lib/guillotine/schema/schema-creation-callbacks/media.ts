@@ -25,7 +25,7 @@ export const mediaCodeCallback: CreationCallback = (context, params) => {
 };
 
 export const mediaImageCallback: CreationCallback = (context, params) => {
-    const imageInfoType = graphQlCreateObjectType({
+    const imageInfoType = graphQlCreateObjectType(context, {
         name: 'ImageInfo',
         fields: {
             imageWidth: { type: graphQlLib.GraphQLInt },

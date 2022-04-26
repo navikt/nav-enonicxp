@@ -34,7 +34,7 @@ const getSpecialOpeningHoursObject = (
 };
 
 export const contactInformationCallback: CreationCallback = (context, params) => {
-    const RegularOpeningHour = graphQlCreateObjectType({
+    const RegularOpeningHour = graphQlCreateObjectType(context, {
         name: 'regularOpeningHour',
         fields: {
             dayName: { type: graphQlLib.GraphQLString },
@@ -44,7 +44,7 @@ export const contactInformationCallback: CreationCallback = (context, params) =>
         },
     });
 
-    const SpecialOpeningHour = graphQlCreateObjectType({
+    const SpecialOpeningHour = graphQlCreateObjectType(context, {
         name: 'specialOpeningHour',
         fields: {
             date: { type: graphQlLib.GraphQLString },
@@ -55,7 +55,7 @@ export const contactInformationCallback: CreationCallback = (context, params) =>
     });
 
     params.fields.regularOpeningHours = {
-        type: graphQlCreateObjectType({
+        type: graphQlCreateObjectType(context, {
             name: 'regularOpeningHours',
             fields: {
                 hours: { type: graphQlLib.list(RegularOpeningHour) },
@@ -88,7 +88,7 @@ export const contactInformationCallback: CreationCallback = (context, params) =>
     };
 
     params.fields.specialOpeningHours = {
-        type: graphQlCreateObjectType({
+        type: graphQlCreateObjectType(context, {
             name: 'specialOpeningHours',
             fields: {
                 validFrom: { type: graphQlLib.GraphQLString },

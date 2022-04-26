@@ -16,7 +16,7 @@ import { sectionPageDataCallback } from './schema-creation-callbacks/section-pag
 import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
 import { contactInformationCallback } from './schema-creation-callbacks/contact-information';
 import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
-import { globalValuesCallback } from './schema-creation-callbacks/global-values';
+import { globalValueSetCallback } from './schema-creation-callbacks/global-values';
 import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
 import { contentListCallback } from './schema-creation-callbacks/content-list-callback';
 import {
@@ -44,7 +44,7 @@ export const schemaCreationCallbacks = applyMacroCreationCallbacksToHtmlFragment
     no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
-    no_nav_navno_GlobalValueSet: globalValuesCallback,
+    no_nav_navno_GlobalValueSet: globalValueSetCallback,
     no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
     Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter:
         contentListCallback('publish.first'),
