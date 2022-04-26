@@ -1,4 +1,4 @@
-// @ts-nocheck (not touching this without a full rewrite ¯\_(ツ)_/¯)
+// @ts-nocheck (this requires some effort for sensible typing, and it will probably be removed soon'ish anyway)
 import nodeLib from '/lib/xp/node';
 import contextLib from '/lib/xp/context';
 import eventLib from '/lib/xp/event';
