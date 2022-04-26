@@ -6,7 +6,6 @@ import {
     CustomContentDescriptor,
 } from '../../../../types/content-types/content-config';
 import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
-import { getPublishedVersionTimestamps } from '../../../utils/version-utils';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
 import { dynamicPageContentTypes } from '../../../contenttype-lists';
@@ -209,10 +208,6 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         return null;
     }
 
-    // These are used with the version history selector, and are only included in requests for the draft branch
-    // (ie from content studio)
-    const versionTimestamps = getPublishedVersionTimestamps(_id, branch);
-
     // This is the preview/editor page for fragments (not user-facing). This content type has a slightly
     // different components structure which requires some special handling
     if (contentQueryResult.type === 'portal:fragment') {
@@ -222,7 +217,6 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
                 contentQueryResult.components as GuillotineComponent[],
                 contentQueryResult.unresolvedComponentTypes
             ),
-            versionTimestamps,
             components: undefined,
         };
     }
@@ -232,7 +226,6 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
     const contentWithoutComponents = {
         ...contentQueryResult,
         pathMap: getPathMapForReferences(_id),
-        versionTimestamps,
         ...(breadcrumbs && { breadcrumbs }),
     };
 

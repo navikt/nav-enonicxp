@@ -14,6 +14,7 @@ import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { runWithTimeTravel } from '../../lib/time-travel/run-with-time-travel';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
+import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -93,21 +94,32 @@ const getContentVersionFromTime = (
     branch: RepoBranch,
     dateTime: string
 ): Content | null => {
-    const contentRaw = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
-    if (!contentRaw) {
+    const contentLive = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+    if (!contentLive) {
         return null;
     }
 
     try {
-        return runWithTimeTravel(dateTime, branch, contentRaw._id, () => {
+        return runWithTimeTravel(dateTime, branch, contentRef, () => {
+            const contentRaw = runInBranchContext(
+                () => contentLib.get({ key: contentRef }),
+                branch
+            );
+            if (!contentRaw) {
+                return null;
+            }
+
             const content = guillotineContentQuery(contentRaw, branch);
             if (!content) {
                 return null;
             }
 
+            const versionTimestamps = getPublishedVersionTimestamps(content._id, 'draft');
+
             return {
                 ...content,
-                livePath: contentRaw._path,
+                versionTimestamps,
+                livePath: contentLive._path,
             };
         });
     } catch (e) {
@@ -175,7 +187,7 @@ export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
     datetime?: string
-): Content | null => {
+) => {
     if (datetime) {
         return getContentVersionFromTime(requestedPathOrId, branch, datetime);
     }
@@ -192,8 +204,11 @@ export const getSitecontentResponse = (
 
     const notifications = getNotifications(content._path);
 
+    const versionTimestamps = getPublishedVersionTimestamps(content._id, branch);
+
     return {
         ...content,
         ...(notifications && { notifications }),
+        versionTimestamps,
     };
 };
