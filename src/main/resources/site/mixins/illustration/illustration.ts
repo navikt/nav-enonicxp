@@ -3,5 +3,5 @@ export interface Illustration {
   /**
    * Velg piktogram
    */
-  illustration?: string;
+  illustration: string;
 }

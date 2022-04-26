@@ -3,5 +3,5 @@ export interface Ingress {
   /**
    * Ingress
    */
-  ingress?: string;
+  ingress: string;
 }
