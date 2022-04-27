@@ -3,7 +3,7 @@ export interface TransportPage {
   /**
    * Ingress
    */
-  ingress: string;
+  ingress?: string;
 
   /**
    * Overskrift over lenkepanelene

@@ -1,7 +1,6 @@
 <mixin>
     <form>
         <mixin name="languages-legacy"/>
-        <mixin name="custom-path-selector"/>
         <mixin name="decorator-toggles"/>
         <field-set>
             <label>For internt søk</label>

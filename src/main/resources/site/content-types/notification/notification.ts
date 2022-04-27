@@ -18,7 +18,7 @@ export interface Notification {
   /**
    * Ingress
    */
-  ingress: string;
+  ingress?: string;
 
   /**
    * Vis oppdateringstidspunkt
