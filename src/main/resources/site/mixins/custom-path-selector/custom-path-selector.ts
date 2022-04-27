@@ -3,5 +3,5 @@ export interface CustomPathSelector {
   /**
    * Skriv inn ønsket url
    */
-  customPath: string;
+  customPath?: string;
 }
