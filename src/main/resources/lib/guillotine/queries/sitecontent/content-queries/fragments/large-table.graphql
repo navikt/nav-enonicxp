@@ -1,0 +1,10 @@
+#import "./_content.graphql"
+
+fragment contentLargeTable on no_nav_navno_LargeTable {
+    ...content
+    data {
+        text(processHtml: { type: server }) {
+            processedHtml
+        }
+    }
+}

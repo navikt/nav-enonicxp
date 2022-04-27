@@ -1,0 +1,9 @@
+#import "./fragments/large-table.graphql"
+
+query largeTable($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentLargeTable
+        }
+    }
+}

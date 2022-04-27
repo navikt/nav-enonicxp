@@ -1,3 +1,4 @@
 {
+    "plugins": ["import-graphql"],
     "presets": ["@babel/preset-env", "@babel/preset-typescript"]
 }

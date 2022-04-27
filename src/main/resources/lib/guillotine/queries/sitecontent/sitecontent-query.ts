@@ -18,6 +18,11 @@ import {
     buildPageComponentTree,
     GuillotineComponent,
 } from '../../utils/process-components';
+import { print } from './graphql';
+
+import derp from './content-queries/large-table.graphql';
+
+log.info(`Derp: ${print(derp)}`);
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');

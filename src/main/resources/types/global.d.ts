@@ -29,6 +29,13 @@ declare const com: {
     enonic: { lib: { graphql: { rx: { Publisher: any } } } };
 };
 
+declare module '*.graphql' {
+    import { DocumentNode } from 'graphql';
+    const schema: DocumentNode;
+
+    export = schema;
+}
+
 // TODO: remove if/when type definitions are added for these libraries
 declare module '*/lib/guillotine/dynamic/form';
 declare module '*/lib/guillotine/graphql';

@@ -1,0 +1,13 @@
+fragment content on Content {
+    _id
+    _path
+    type
+    createdTime
+    modifiedTime
+    displayName
+    language
+    publish {
+        first
+        from
+    }
+}
