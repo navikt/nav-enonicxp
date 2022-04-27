@@ -8,7 +8,7 @@ export interface PageList {
   /**
    * Ingress
    */
-  ingress: string;
+  ingress?: string;
 
   /**
    * Skjul dato på artikkellisten

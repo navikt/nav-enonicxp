@@ -39,4 +39,9 @@ export interface ProductData {
    * Videresend alle besøk til annen url:
    */
   externalProductUrl?: string;
+
+  /**
+   * Skriv inn ønsket url
+   */
+  customPath: string;
 }

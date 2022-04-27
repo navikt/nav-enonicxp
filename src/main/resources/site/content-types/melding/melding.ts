@@ -8,7 +8,7 @@ export interface Melding {
   /**
    * Ingress
    */
-  ingress: string;
+  ingress?: string;
 
   /**
    * Brødtekst melding
