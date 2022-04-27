@@ -3,7 +3,7 @@
         <field-set>
             <items>
                 <mixin name="page-header"/>
-                <mixin name="ingress" />
+                <mixin name="ingress-required" />
                 <mixin name="audience" />
                 <mixin name="taxonomy" />
                 <mixin name="area" />
