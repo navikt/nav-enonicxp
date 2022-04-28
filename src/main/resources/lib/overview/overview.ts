@@ -98,8 +98,6 @@ const cleanProduct = (product: any) => {
     const icons = getProductIllustrationIcons(product);
     const situationPages = getProductSituationPages(product);
 
-    log.info(JSON.stringify(product));
-
     return {
         id: product._id,
         path: product._path,

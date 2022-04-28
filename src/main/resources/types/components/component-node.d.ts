@@ -31,4 +31,8 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
 // through a nodeLib repo connection
 export type NodeComponent = NodeComponentMapper<ComponentType, ComponentName> & {
     path: string;
+    part?: {
+        descriptor: NavNoDescriptor;
+        config: any;
+    };
 };

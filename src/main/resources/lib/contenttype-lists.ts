@@ -27,6 +27,7 @@ export const productPageContentTypes: ContentTypeList = [
 
 export const dynamicPageContentTypes: ContentTypeList = [
     ...productPageContentTypes,
+    `${appDescriptor}:product-details`,
     `${appDescriptor}:dynamic-page`,
 ];
 

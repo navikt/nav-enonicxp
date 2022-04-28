@@ -7,5 +7,5 @@ const productDetailsFragment = `
 `;
 
 module.exports = {
-    fragment: productDetailsFragment,
+    productDetailsFragment,
 };

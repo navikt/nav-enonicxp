@@ -16,6 +16,9 @@ const macroAlertboxCallback = (context, params) => {
             type: 'server',
             value: decodedHtml,
         });
+        log.info('got here');
+        log.info(JSON.stringify(processedHtml.processHtml));
+        log.info(processedHtml.processHtml);
 
         // Htmlareas are not properly typed as richtext by guillotine when used in
         // macros (type will be a plain String). Therefore we return only the processedHtml string

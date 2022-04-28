@@ -10,11 +10,11 @@ const {
     productTargetMixin,
 } = require('/lib/guillotine/queries/sitecontent/legacyFragments/dangerous-mixins/product-target-mixin');
 const {
-    productDetailsTargetMixin,
-} = require('/lib/headless/guillotine/queries/fragments/dangerous-mixins/product-details-target-mixin');
-const {
     calculatorTargetMixin,
 } = require('/lib/guillotine/queries/sitecontent/legacyFragments/dangerous-mixins/calculator-target-mixin');
+const {
+    productDetailsTargetMixin,
+} = require('/lib/guillotine/queries/sitecontent/legacyFragments/dangerous-mixins/product-details-target-mixin');
 const { processedHtmlFragment } = require('./_processedHtml');
 
 const contactInformationFragment = require('./contactInformation');
@@ -115,6 +115,9 @@ const partsFragment = `
                 ingressOverride
                 ${productTargetMixin}
             }
+            product_details {
+                ${productDetailsTargetMixin}
+            }
             product_card_micro {
                 card_list {
                     ${productTargetMixin}
@@ -122,9 +125,6 @@ const partsFragment = `
             }
             product_card_mini {
                 ${productTargetMixin}
-            }
-            product_details {
-                ${productDetailsTargetMixin}
             }
             calculator {
                 ${calculatorTargetMixin}

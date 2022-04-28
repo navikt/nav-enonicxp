@@ -35,6 +35,15 @@ const productPageFragment = `
     }
 `;
 
+const productDetailsFragment = `
+    ...on no_nav_navno_ProductDetails {
+        ${commonDataObject}
+        data {
+            detailType
+        }
+    }
+`;
+
 const guidePageFragment = `
     ...on no_nav_navno_GuidePage {
         ${commonDataObject}
@@ -110,4 +119,5 @@ module.exports = {
     themedArticlePageFragment,
     guidePageFragment,
     toolsPageFragment,
+    productDetailsFragment,
 };

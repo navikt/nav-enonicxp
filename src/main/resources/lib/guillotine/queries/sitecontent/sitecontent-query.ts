@@ -32,7 +32,6 @@ const melding = require('./legacyFragments/melding');
 const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
 const officeInformation = require('./legacyFragments/officeInformation');
-const productDetailsFragment = require('./legacyFragments/productDetails');
 const largeTable = require('./legacyFragments/largeTable');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
 const productOverview = require('./legacyFragments/overview');
@@ -44,6 +43,7 @@ const {
     themedArticlePageFragment,
     guidePageFragment,
     toolsPageFragment,
+    productDetailsFragment,
 } = require('./legacyFragments/dynamicPage');
 const globalValueSet = require('./legacyFragments/globalValueSet');
 const media = require('./legacyFragments/media');
