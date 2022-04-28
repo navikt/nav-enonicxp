@@ -10,12 +10,12 @@ import { clearLocalCaches, getCachesToClear, sendLocalCacheInvalidationEvent } f
 export const cacheInvalidateEventName = 'invalidate-cache';
 
 const getContentToInvalidate = (id: string, eventType: string) => {
-    const referencesToInvalidate = findReferences({ id, eventType });
+    // If the content was deleted, we must check in the draft branch for references
+    const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
-    const baseContent = runInBranchContext(
-        () => contentLib.get({ key: id }),
-        eventType === 'node.deleted' ? 'draft' : 'master'
-    );
+    const referencesToInvalidate = findReferences(id, branch);
+
+    const baseContent = runInBranchContext(() => contentLib.get({ key: id }), branch);
 
     if (baseContent) {
         return [baseContent, ...referencesToInvalidate];

@@ -6,13 +6,18 @@ import {
 import { getGlobalValueUsage, globalValuesContentType } from '../utils/global-value-utils';
 import { forceArray, getParentPath, removeDuplicates, stringArrayToSet } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
-import { productPageContentTypes, typesWithDeepReferences } from '../contenttype-lists';
+import {
+    productPageContentTypes,
+    typesWithDeepReferences as _typesWithDeepReferences,
+} from '../contenttype-lists';
+import { RepoBranch } from '../../types/common';
 
-const MAX_DEPTH = 5;
+type IdMap = { [id: string]: boolean };
 
-export const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
+const MAX_DEPTH = 3;
 
-export const typesWithDeepReferencesSet = stringArrayToSet(typesWithDeepReferences);
+const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
+const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 
 const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
@@ -22,13 +27,11 @@ const getFragmentMacroReferences = (content: Content) => {
     const { _id } = content;
 
     const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
-    if (contentsWithFragmentId.length === 0) {
-        return [];
+    if (contentsWithFragmentId.length > 0) {
+        log.info(
+            `Found ${contentsWithFragmentId.length} pages with macro-references to fragment id ${_id}`
+        );
     }
-
-    log.info(
-        `Found ${contentsWithFragmentId.length} pages with macro-references to fragment id ${_id}`
-    );
 
     return contentsWithFragmentId;
 };
@@ -65,7 +68,7 @@ const getGlobalValueReferences = (content: Content) => {
 
 // "References" from macros and global value keys does not create explicit references in the content
 // structure. We must use our own implementations to find such references.
-const getIndirectReferences = (content: Content | null) => {
+const getLooseReferences = (content: Content | null) => {
     if (!content) {
         return [];
     }
@@ -171,85 +174,44 @@ const getMainArticleChapterReferences = (
 const removeDuplicatesById = (contentArray: Content[]) =>
     removeDuplicates(contentArray, (a, b) => a._id === b._id);
 
-// Perform a recursive search of content references
-const _findReferences = ({
-    id,
-    eventType,
-    depth = 0,
-    prevReferences = [],
-}: {
-    id: string;
-    eventType?: string;
-    depth?: number;
-    prevReferences?: any[];
-}): Content[] => {
-    if (depth > MAX_DEPTH) {
-        log.warning(`Reached max reference depth of ${MAX_DEPTH} while searching from id ${id}`);
-        return [];
-    }
+const getReferences = (id: string, branch: RepoBranch) => {
+    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
 
-    if (!id) {
-        return [];
-    }
+    const refs = [
+        ...getExplicitReferences(id),
+        ...getLooseReferences(content),
+        ...getReferencesFromParent(content),
+    ];
 
-    // If the root content of the reference-tree was deleted, we must check in the draft branch
-    // for the content data used to find indirect references (as the master is presumable deleted!) .
-    // For deep references we always use master.
-    const content = runInBranchContext(
-        () => contentLib.get({ key: id }),
-        eventType === 'node.deleted' ? 'draft' : 'master'
-    );
-
-    const references = removeDuplicatesById(
-        [
-            ...getExplicitReferences(id),
-            ...getIndirectReferences(content),
-            ...getReferencesFromParent(content),
-        ]
-            .reduce((acc, reference) => {
-                // Handle main-article-chapter references. There is a unique system of relations between
-                // articles/chapters which is most effectively handled as a separate step.
-                return [
-                    reference,
-                    ...acc,
-                    ...(reference.type === 'no.nav.navno:main-article'
-                        ? getMainArticleChapterReferences(reference)
-                        : []),
-                ];
-            }, [] as Content[])
-            .filter(
-                (reference) =>
-                    // Don't include the root content as a reference (may happen in some cases with indirect circular references
-                    reference._id !== id &&
-                    // Discard any references that were previously found, in order to prevent circular deep reference searches
-                    !prevReferences.some((prevReference) => prevReference._id === reference._id)
-            )
-    );
-
-    const deepReferences = references.reduce((acc, reference) => {
-        if (!typesWithDeepReferencesSet[reference.type]) {
+    const start = Date.now();
+    // Handle main-article-chapter references. There is a unique system of relations between
+    // articles/chapters which is most effectively handled as a separate step.
+    const chapterRefs = refs.reduce((acc, ref) => {
+        if (ref.type !== 'no.nav.navno:main-article') {
             return acc;
         }
 
-        return [
-            ...acc,
-            ..._findReferences({
-                id: reference._id,
-                depth: depth + 1,
-                prevReferences: [...references, ...prevReferences],
-            }),
-        ];
+        return [...acc, ...getMainArticleChapterReferences(ref)];
+    }, [] as Content[]);
+
+    log.info(`Time for chapter refs ${id}: ${Date.now() - start}`);
+
+    return removeDuplicatesById([...refs, ...chapterRefs]);
+};
+
+export const findReferences = (id: string, branch: RepoBranch) => {
+    const references = getReferences(id, branch);
+
+    log.info(`Found ${references.length} refs for ${id}`);
+
+    const deepReferences = references.reduce((acc, ref) => {
+        if (!typesWithDeepReferences[ref.type]) {
+            return acc;
+        }
+
+        // Deep references should always
+        return [...acc, ...getReferences(ref._id, 'master')];
     }, [] as Content[]);
 
     return removeDuplicatesById([...references, ...deepReferences]);
-};
-
-export const findReferences = ({
-    id,
-    eventType,
-}: {
-    id: string;
-    eventType?: string;
-}): Content[] => {
-    return _findReferences({ id, eventType });
 };
