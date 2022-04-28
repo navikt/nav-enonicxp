@@ -103,13 +103,13 @@ const getContentVersionFromTime = (
         return runWithTimeTravel(dateTime, branch, contentRef, () => {
             const contentRaw = runInBranchContext(
                 () => contentLib.get({ key: contentRef }),
-                branch
+                'draft'
             );
             if (!contentRaw) {
                 return null;
             }
 
-            const content = guillotineContentQuery(contentRaw, branch);
+            const content = guillotineContentQuery(contentRaw, 'draft');
             if (!content) {
                 return null;
             }
