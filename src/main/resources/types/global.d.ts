@@ -30,8 +30,8 @@ declare const com: {
 };
 
 declare module '*.graphql' {
-    import { DocumentNode } from 'graphql';
-    const schema: DocumentNode;
+    // import { DocumentNode } from 'graphql';
+    const schema: string;
 
     export = schema;
 }

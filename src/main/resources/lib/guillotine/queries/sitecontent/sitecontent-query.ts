@@ -18,11 +18,10 @@ import {
     buildPageComponentTree,
     GuillotineComponent,
 } from '../../utils/process-components';
-import { print } from './graphql';
 
-import derp from './content-queries/large-table.graphql';
+import test from './content-queries/large-table.graphql';
 
-log.info(`Derp: ${print(derp)}`);
+log.info(`Muh query: ${JSON.stringify(test)}`);
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
@@ -201,6 +200,14 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
 
     if (!contentQuery) {
         return null;
+    }
+
+    if (type === 'no.nav.navno:large-table') {
+        return guillotineQuery({
+            ...baseQueryParams,
+            query: test.replace(/(interface Dummy {(\s|.)*?})/, ''),
+            jsonBaseKeys: ['data', 'config', 'page'],
+        })?.get as GuillotineContentQueryResult;
     }
 
     const contentQueryResult = guillotineQuery({

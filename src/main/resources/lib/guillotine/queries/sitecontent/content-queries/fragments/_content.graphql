@@ -1,4 +1,5 @@
 fragment content on Content {
+    __typename
     _id
     _path
     type
