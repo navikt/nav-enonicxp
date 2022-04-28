@@ -12,10 +12,6 @@ import {
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 
-type IdMap = { [id: string]: boolean };
-
-const MAX_DEPTH = 3;
-
 const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 
@@ -138,10 +134,9 @@ const getReferencesFromParent = (content: Content | null) => {
 const getMainArticleChapterReferences = (
     mainArticleContent: Content<'no.nav.navno:main-article'>
 ) => {
-    const { _id } = mainArticleContent;
+    const { _id, _path } = mainArticleContent;
 
     const referencedChapters = contentLib.query({
-        start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:main-article-chapter'],
         filters: {
@@ -156,15 +151,14 @@ const getMainArticleChapterReferences = (
         },
     }).hits;
 
-    const childChapters = contentLib
-        .getChildren({ key: _id, count: 1000 })
-        .hits.filter(
-            (child) => child.type === 'no.nav.navno:main-article-chapter'
-        ) as Content<'no.nav.navno:main-article-chapter'>[];
+    const childChapters = contentLib.query({
+        count: 1000,
+        query: `_parentPath='/content${_path}'`,
+        contentTypes: ['no.nav.navno:main-article-chapter'],
+    }).hits;
 
     const childChapterArticles = childChapters.reduce((acc, chapter) => {
         const article = contentLib.get({ key: chapter.data.article });
-
         return article?.type === 'no.nav.navno:main-article' ? [...acc, article] : acc;
     }, [] as Content<'no.nav.navno:main-article'>[]);
 
@@ -177,11 +171,11 @@ const removeDuplicatesById = (contentArray: Content[]) =>
 const getReferences = (id: string, branch: RepoBranch) => {
     const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
 
-    const refs = [
+    const refs = removeDuplicatesById([
         ...getExplicitReferences(id),
         ...getLooseReferences(content),
         ...getReferencesFromParent(content),
-    ];
+    ]);
 
     const start = Date.now();
     // Handle main-article-chapter references. There is a unique system of relations between
