@@ -15,6 +15,9 @@ import { RepoBranch } from '../../types/common';
 const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 
+const removeDuplicatesById = (contentArray: Content[]) =>
+    removeDuplicates(contentArray, (a, b) => a._id === b._id);
+
 const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
         return [];
@@ -131,45 +134,20 @@ const getReferencesFromParent = (content: Content | null) => {
 // Chapters are attached to an article only via the parent/children relation, not with explicit
 // content references. Find any chapters which references the article, as well as the article's
 // child chapters and their references articles
-const getMainArticleChapterReferences = (
-    mainArticleContent: Content<'no.nav.navno:main-article'>
-) => {
-    const { _id, _path } = mainArticleContent;
-
-    const referencedChapters = contentLib.query({
+const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-article'>) => {
+    return contentLib.query({
         count: 1000,
-        contentTypes: ['no.nav.navno:main-article-chapter'],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.article',
-                        values: [_id],
-                    },
-                },
-            },
-        },
-    }).hits;
-
-    const childChapters = contentLib.query({
-        count: 1000,
-        query: `_parentPath='/content${_path}'`,
+        query: `_parentPath='/content${content._path}'`,
         contentTypes: ['no.nav.navno:main-article-chapter'],
     }).hits;
-
-    const childChapterArticles = childChapters.reduce((acc, chapter) => {
-        const article = contentLib.get({ key: chapter.data.article });
-        return article?.type === 'no.nav.navno:main-article' ? [...acc, article] : acc;
-    }, [] as Content<'no.nav.navno:main-article'>[]);
-
-    return [...referencedChapters, ...childChapters, ...childChapterArticles];
 };
-
-const removeDuplicatesById = (contentArray: Content[]) =>
-    removeDuplicates(contentArray, (a, b) => a._id === b._id);
 
 const getReferences = (id: string, branch: RepoBranch) => {
     const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+
+    if (!content) {
+        return getExplicitReferences(id);
+    }
 
     const refs = removeDuplicatesById([
         ...getExplicitReferences(id),
@@ -177,10 +155,9 @@ const getReferences = (id: string, branch: RepoBranch) => {
         ...getReferencesFromParent(content),
     ]);
 
-    const start = Date.now();
     // Handle main-article-chapter references. There is a unique system of relations between
     // articles/chapters which is most effectively handled as a separate step.
-    const chapterRefs = refs.reduce((acc, ref) => {
+    const chapterRefs = [...refs, content].reduce((acc, ref) => {
         if (ref.type !== 'no.nav.navno:main-article') {
             return acc;
         }
@@ -188,22 +165,17 @@ const getReferences = (id: string, branch: RepoBranch) => {
         return [...acc, ...getMainArticleChapterReferences(ref)];
     }, [] as Content[]);
 
-    log.info(`Time for chapter refs ${id}: ${Date.now() - start}`);
-
     return removeDuplicatesById([...refs, ...chapterRefs]);
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
     const references = getReferences(id, branch);
 
-    log.info(`Found ${references.length} refs for ${id}`);
-
     const deepReferences = references.reduce((acc, ref) => {
         if (!typesWithDeepReferences[ref.type]) {
             return acc;
         }
 
-        // Deep references should always
         return [...acc, ...getReferences(ref._id, 'master')];
     }, [] as Content[]);
 
