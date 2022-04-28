@@ -150,6 +150,23 @@ export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
 
     const { components } = result;
 
+    const deepComponents: NodeComponent[] = components.map((component) => {
+        if (component.part?.descriptor === 'no.nav.navno:product-details') {
+            const baseContent =
+                component.part?.config.no_nav_navno.product_details.productDetailsTarget;
+
+            const page = guillotineContentQuery(
+                { type: 'part', path: baseContent._path, ...baseContent },
+                baseQueryParams.branch
+            );
+
+            component.part.config.no_nav_navno.product_details.productDetailsTarget = page;
+
+            return component;
+        }
+        return component;
+    });
+
     // Resolve fragments through separate queries to workaround a bug in the Guillotine resolver which prevents
     // nested fragments from resolving
     const fragments = components.reduce((acc, component) => {
@@ -172,7 +189,7 @@ export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
         ];
     }, [] as PortalComponent<'fragment'>[]);
 
-    return { components, fragments };
+    return { components: deepComponents, fragments };
 };
 
 export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch) => {

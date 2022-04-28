@@ -9,5 +9,8 @@
                 <allowContentType>${app}:product-details</allowContentType>
             </config>
         </input>
+        <input name="allPage" type="TextLine">
+            <label>Tittel</label>
+        </input>
     </form>
 </part>

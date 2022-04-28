@@ -4,4 +4,9 @@ export interface ProductDetailsPartConfig {
    * Velg produktdetalj
    */
   productDetailsTarget: string;
+
+  /**
+   * Tittel
+   */
+  allPage?: string;
 }
