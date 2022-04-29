@@ -153,7 +153,11 @@ export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const deepComponents: NodeComponent[] = components.map((component) => {
         if (component.part?.descriptor === 'no.nav.navno:product-details') {
             const baseContent =
-                component.part?.config.no_nav_navno.product_details.productDetailsTarget;
+                component.part?.config?.no_nav_navno?.product_details?.productDetailsTarget;
+
+            if (!baseContent) {
+                return component;
+            }
 
             const page = guillotineContentQuery(
                 { type: 'part', path: baseContent._path, ...baseContent },

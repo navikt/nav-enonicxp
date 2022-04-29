@@ -10,7 +10,6 @@ const productDetailsTargetMixin = `
         ${globalFragment}
         ${productDetailsFragment}
     }
-    allPage
 `;
 
 module.exports = { productDetailsTargetMixin };
