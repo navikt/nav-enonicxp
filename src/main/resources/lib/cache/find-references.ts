@@ -198,7 +198,7 @@ const _findReferences = ({
 
     const references = getReferences(id, branch, prevReferences);
 
-    const _prevReferences = removeDuplicates([...references, ...prevReferences], prevReferences);
+    const _prevReferences = [...references, ...prevReferences];
 
     const deepReferences = references.reduce((acc, ref) => {
         if (!typesWithDeepReferences[ref.type]) {
