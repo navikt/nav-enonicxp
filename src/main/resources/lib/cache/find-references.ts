@@ -4,7 +4,12 @@ import {
     findContentsWithProductCardMacro,
 } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage, globalValuesContentType } from '../utils/global-value-utils';
-import { forceArray, getParentPath, removeDuplicates, stringArrayToSet } from '../utils/nav-utils';
+import {
+    forceArray,
+    getParentPath,
+    removeDuplicates as _removeDuplicates,
+    stringArrayToSet,
+} from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import {
     productPageContentTypes,
@@ -17,8 +22,10 @@ const MAX_DEPTH = 3;
 const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 
-const removeDuplicatesById = (contentArray: Content[]) =>
-    removeDuplicates(contentArray, (a, b) => a._id === b._id);
+const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
+    _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(
+        (ref) => !prevRefs.some((prevRef) => prevRef._id === ref._id)
+    );
 
 const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
@@ -151,41 +158,38 @@ const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]
         return getExplicitReferences(id);
     }
 
-    const refs = removeDuplicatesById([
-        ...getExplicitReferences(id),
-        ...getLooseReferences(content),
-        ...getReferencesFromParent(content),
-    ]).filter(
-        (ref) => ref._id !== id && !prevReferences.some((prevRef) => prevRef._id === ref._id)
+    const refs = removeDuplicates(
+        [
+            ...getExplicitReferences(id),
+            ...getLooseReferences(content),
+            ...getReferencesFromParent(content),
+        ],
+        prevReferences
     );
 
     // Handle main-article-chapter references. There is a unique system of relations between
     // articles/chapters which is most effectively handled as a separate step.
-    const chapterRefs = [...refs, content]
-        .reduce((acc, ref) => {
-            if (ref.type !== 'no.nav.navno:main-article') {
-                return acc;
-            }
+    const chapterRefs = [...refs, content].reduce((acc, ref) => {
+        if (ref.type !== 'no.nav.navno:main-article') {
+            return acc;
+        }
 
-            return [...acc, ...getMainArticleChapterReferences(ref)];
-        }, [] as Content[])
-        .filter(
-            (ref) => ref._id !== id && !prevReferences.some((prevRef) => prevRef._id === ref._id)
-        );
+        return [...acc, ...getMainArticleChapterReferences(ref)];
+    }, [] as Content[]);
 
-    return removeDuplicatesById([...refs, ...chapterRefs]);
+    return removeDuplicates([...refs, ...chapterRefs], prevReferences);
 };
 
-export const _findReferences = ({
+const _findReferences = ({
     id,
     branch,
+    prevReferences,
     depth = 0,
-    prevReferences = [],
 }: {
     id: string;
     branch: RepoBranch;
+    prevReferences: Content[];
     depth?: number;
-    prevReferences?: any[];
 }): Content[] => {
     if (depth > MAX_DEPTH) {
         log.warning(`Reached max depth for references search on id ${id}`);
@@ -194,7 +198,7 @@ export const _findReferences = ({
 
     const references = getReferences(id, branch, prevReferences);
 
-    const _prevReferences = removeDuplicates([...references, ...prevReferences]);
+    const _prevReferences = removeDuplicates([...references, ...prevReferences], prevReferences);
 
     const deepReferences = references.reduce((acc, ref) => {
         if (!typesWithDeepReferences[ref.type]) {
@@ -212,9 +216,12 @@ export const _findReferences = ({
         ];
     }, [] as Content[]);
 
-    return removeDuplicatesById([...references, ...deepReferences]);
+    return removeDuplicates([...references, ...deepReferences], prevReferences);
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
-    return _findReferences({ id, branch });
+    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+    const initialRefs = content ? [content] : [];
+
+    return _findReferences({ id, branch, prevReferences: initialRefs });
 };
