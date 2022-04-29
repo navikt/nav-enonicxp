@@ -1,5 +1,6 @@
 import contentLib from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
+import taskLib from '/lib/xp/task';
 import { frontendCacheInvalidate, frontendCacheWipeAll } from './frontend-invalidate-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { findReferences } from './find-references';
@@ -24,17 +25,19 @@ const getContentToInvalidate = (id: string, eventType: string) => {
     return referencesToInvalidate;
 };
 
-export const invalidateCacheForNode = ({
-    node,
-    eventType,
-    timestamp,
-    isRunningClusterWide,
-}: {
+type InvalidateCacheParams = {
     node: NodeEventData;
     eventType: string;
     timestamp: number;
     isRunningClusterWide: boolean;
-}) => {
+};
+
+const _invalidateCacheForNode = ({
+    node,
+    eventType,
+    timestamp,
+    isRunningClusterWide,
+}: InvalidateCacheParams) => {
     const eventId = generateCacheEventId(node, timestamp);
 
     // If this invalidation is running on every node in the cluster, we only want the master node
@@ -90,4 +93,11 @@ export const invalidateCacheForNode = ({
             }
         }, 'master');
     }
+};
+
+export const invalidateCacheForNode = (params: InvalidateCacheParams) => {
+    taskLib.executeFunction({
+        description: `Cache invalidation for node ${params.node.id}`,
+        func: () => _invalidateCacheForNode(params),
+    });
 };
