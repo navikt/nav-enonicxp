@@ -3,11 +3,12 @@
         <field-set>
             <items>
                 <mixin name="page-header"/>
-                <mixin name="ingress" />
+                <mixin name="ingress-required" />
                 <mixin name="audience" />
                 <mixin name="area" />
                 <mixin name="illustration" />
                 <mixin name="external-product-url" />
+                <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>
     </form>

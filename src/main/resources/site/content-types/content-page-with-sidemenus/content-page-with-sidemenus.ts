@@ -6,11 +6,6 @@ export interface ContentPageWithSidemenus {
   languages?: Array<string>;
 
   /**
-   * Skriv inn ønsket url
-   */
-  customPath: string;
-
-  /**
    * Fant du det du lette etter?
    */
   feedbackToggle: boolean;

@@ -8,7 +8,7 @@
                     <help-text>Dersom du ønsker at denne siden skal nåes fra en annen url enn den
                         interne i Enonic kan dette settes her. F.eks. /min-korte-url
                     </help-text>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <service>customPathSelector</service>
                     </config>
