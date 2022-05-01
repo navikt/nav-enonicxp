@@ -1,20 +1,9 @@
-fragment macro on Macro {
-    name
-    ref
-}
+#import "./macros.graphql"
 
-fragment processedHtml on RichText {
+fragment richText on RichText {
     processedHtml
-    macrosAsJson
     macros {
-        config {
-            html_fragment {
-                fragmentId
-                processedHtml {
-                    processedHtml
-                    macrosAsJson
-                }
-            }
-        }
+        ...macro
+        ...html_fragmentMacro
     }
 }

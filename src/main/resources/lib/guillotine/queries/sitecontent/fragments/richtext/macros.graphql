@@ -1,0 +1,102 @@
+fragment macro on Macro {
+    name
+    ref
+    config {
+        button {
+            text
+            url
+            content {
+                _path
+            }
+        }
+        button_blue {
+            text
+            url
+            content {
+                _path
+            }
+        }
+        chatbot_link {
+            text
+        }
+        chevron_link_external {
+            text
+            url
+        }
+        chevron_link_internal {
+            target {
+                _path
+                displayName
+            }
+            text
+        }
+        fotnote {
+            fotnote
+        }
+        global_value {
+            value
+        }
+        global_value_with_math {
+            decimals
+            expression
+            variables
+        }
+        header_with_anchor {
+            body
+            id
+            tag
+            text
+        }
+        infoBoks {
+            infoBoks
+        }
+        ingress {
+            body
+        }
+        lenkeFiler {
+            files {
+                _path
+            }
+            text
+        }
+        phone_link {
+            chevron
+            phoneNumber
+            text
+        }
+        # TODO: finish this
+        product_card_mini {
+            targetPage {
+                __typename
+                _path
+                displayName
+                type
+            }
+        }
+        quote {
+            quote
+        }
+        varselBoks {
+            varselBoks
+        }
+        video {
+            title
+            video
+        }
+    }
+}
+
+# This macro can contain other macros and must be defined as a separate fragment
+# to prevent circular queries
+fragment html_fragmentMacro on Macro {
+    config {
+        html_fragment {
+            processedHtml {
+                processedHtml
+                macros {
+                    ...macro
+                }
+            }
+        }
+    }
+}
