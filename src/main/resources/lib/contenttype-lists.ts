@@ -56,7 +56,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:notification`,
-    `${appDescriptor}:main-article-chapter`,
+    // `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:content-list`,
 ];
 

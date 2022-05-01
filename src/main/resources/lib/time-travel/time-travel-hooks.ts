@@ -74,7 +74,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
                     key: requestedVersion.nodeId,
                     versionId: requestedVersion.versionId,
                 }),
-            branch
+            'draft'
         );
     };
 

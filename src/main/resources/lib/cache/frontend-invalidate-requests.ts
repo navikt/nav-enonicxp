@@ -31,9 +31,7 @@ const requestInvalidatePaths = (paths: string[], eventId: string, retriesLeft = 
                 );
             }
         } else {
-            log.info(
-                `Revalidate request to frontend acknowledged for ${eventId} - ${response.body}`
-            );
+            log.info(`Revalidate request to frontend acknowledged for ${eventId}`);
         }
     } catch (e) {
         if (retriesLeft > 0) {

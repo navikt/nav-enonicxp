@@ -12,7 +12,7 @@ import { getNotifications } from '../../lib/guillotine/queries/notifications';
 import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
-import { runWithTimeTravel } from '../../lib/time-travel/run-with-time-travel';
+import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
 
@@ -88,46 +88,6 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     return guillotineContentQuery(redirectContent, branch);
 };
 
-// Get content from a specific datetime (used for requests from the internal version history selector)
-const getContentVersionFromTime = (
-    contentRef: string,
-    branch: RepoBranch,
-    dateTime: string
-): Content | null => {
-    const contentLive = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
-    if (!contentLive) {
-        return null;
-    }
-
-    try {
-        return runWithTimeTravel(dateTime, branch, contentRef, () => {
-            const contentRaw = runInBranchContext(
-                () => contentLib.get({ key: contentRef }),
-                branch
-            );
-            if (!contentRaw) {
-                return null;
-            }
-
-            const content = guillotineContentQuery(contentRaw, branch);
-            if (!content) {
-                return null;
-            }
-
-            const versionTimestamps = getPublishedVersionTimestamps(content._id, 'draft');
-
-            return {
-                ...content,
-                versionTimestamps,
-                livePath: contentLive._path,
-            };
-        });
-    } catch (e) {
-        log.warning(`Time travel: Error retrieving data from version history: ${e}`);
-        return null;
-    }
-};
-
 const getContentOrRedirect = (
     requestedPathOrId: string,
     branch: RepoBranch,
@@ -189,7 +149,7 @@ export const getSitecontentResponse = (
     datetime?: string
 ) => {
     if (datetime) {
-        return getContentVersionFromTime(requestedPathOrId, branch, datetime);
+        return getContentVersionFromDateTime(requestedPathOrId, branch, datetime);
     }
 
     const content = getContentOrRedirect(requestedPathOrId, branch);

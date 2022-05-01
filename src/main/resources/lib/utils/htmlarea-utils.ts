@@ -1,4 +1,5 @@
 import contentLib from '/lib/xp/content';
+import { batchedContentQuery } from './batched-query';
 
 export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.html-area.html',
@@ -27,18 +28,15 @@ export const findContentsWithHtmlAreaText = (text: string) => {
 
     // Workaround for searching htmlarea fragments. Query strings or filters don't seem to pick
     // up component config-fields in fragments...
-    const fragmentHits = contentLib
-        .query({
-            start: 0,
-            count: 10000,
-            contentTypes: ['portal:fragment'],
-        })
-        .hits.filter(
-            (hit) =>
-                hit.fragment.type === 'part' &&
-                hit.fragment.descriptor === 'no.nav.navno:html-area' &&
-                hit.fragment.config?.html?.includes(text)
-        );
+    const fragmentHits = batchedContentQuery({
+        count: 10000,
+        contentTypes: ['portal:fragment'],
+    }).hits.filter(
+        (hit) =>
+            hit.fragment.type === 'part' &&
+            hit.fragment.descriptor === 'no.nav.navno:html-area' &&
+            hit.fragment.config?.html?.includes(text)
+    );
 
     return [...queryHits, ...fragmentHits];
 };
