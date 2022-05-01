@@ -1,4 +1,4 @@
-#import "./fragments/large-table.graphql"
+#import "../fragments/content-types/large-table.graphql"
 
 query largeTable($ref: ID!) {
     guillotine {

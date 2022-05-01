@@ -35,7 +35,6 @@ const melding = require('./legacyFragments/melding');
 const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
 const officeInformation = require('./legacyFragments/officeInformation');
-const largeTable = require('./legacyFragments/largeTable');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
 const urlFragment = require('./legacyFragments/url');
 const {
@@ -88,7 +87,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:section-page': sectionPage.fragment,
     'no.nav.navno:page-list': pageList.fragment,
     'no.nav.navno:transport-page': transportPage.fragment,
-    'no.nav.navno:large-table': largeTable.fragment,
     'no.nav.navno:office-information': officeInformation.fragment,
     'no.nav.navno:publishing-calendar': publishingCalendar.fragment,
     'no.nav.navno:melding': melding.fragment,
@@ -196,18 +194,18 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         })?.get;
     }
 
-    const contentQuery = contentQueries[type];
-
-    if (!contentQuery) {
-        return null;
-    }
-
     if (type === 'no.nav.navno:large-table') {
         return guillotineQuery({
             ...baseQueryParams,
             query: test,
             jsonBaseKeys: ['data', 'config', 'page'],
         })?.get as GuillotineContentQueryResult;
+    }
+
+    const contentQuery = contentQueries[type];
+
+    if (!contentQuery) {
+        return null;
     }
 
     const contentQueryResult = guillotineQuery({

@@ -1,7 +1,4 @@
-import {
-    applyMacroCreationCallbacksToHtmlFragmentTypes,
-    macroHtmlFragmentCallback,
-} from './schema-creation-callbacks/macro-html-fragment';
+import { macroHtmlFragmentCallback } from './schema-creation-callbacks/macro-html-fragment';
 import { attachmentCallback } from './schema-creation-callbacks/attachment';
 import { mediaCodeCallback, mediaImageCallback } from './schema-creation-callbacks/media';
 import {
@@ -31,7 +28,7 @@ import {
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 
-export const schemaCreationCallbacks = applyMacroCreationCallbacksToHtmlFragmentTypes({
+export const schemaCreationCallbacks = {
     Attachment: attachmentCallback,
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
@@ -59,4 +56,4 @@ export const schemaCreationCallbacks = applyMacroCreationCallbacksToHtmlFragment
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
     RichText: richTextCallback,
-});
+};

@@ -2,7 +2,6 @@ import contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { Context } from '/lib/guillotine';
 import macroLib from '/lib/guillotine/macro';
-import formLib from '/lib/guillotine/dynamic/form';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
@@ -14,10 +13,6 @@ type MacroDescriptor = {
     form: any;
 };
 
-const macroConfigTypeNamePrefix = 'Macro_no_nav_navno';
-const macroConfigTypeNameHtmlFragmentSuffix = '_HtmlFragment';
-const htmlFragmentMacroConfigTypename = `${macroConfigTypeNamePrefix}_html_fragment_DataConfig`;
-
 const getMacroDescriptors = (applicationsKeys: string[]): MacroDescriptor[] => {
     const descriptorBean = __.newBean(
         'com.enonic.lib.guillotine.handler.ComponentDescriptorHandler'
@@ -27,7 +22,7 @@ const getMacroDescriptors = (applicationsKeys: string[]): MacroDescriptor[] => {
 
 // Generates a special case of the RichText type where the html-fragment macro is not
 // included in the macro config type. This is necessary in order to prevent circular
-// references in the graphql-types, as this macro can itself contain other macros
+// references in the graphql schema, as this macro can itself contain other macros
 // when resolved
 //
 // (this is largely derived from createMacroDataConfigType() in lib-guillotine)
@@ -44,36 +39,12 @@ const generateRichTextTypeWithoutHtmlFragment = (context: Context) => {
                 descriptor.applicationKey
             )}_${sanitizeDescriptorName}`;
 
-            const macroDataConfigTypeName = `${macroTypeName}_DataConfig${macroConfigTypeNameHtmlFragmentSuffix}`;
-
-            const formItems = formLib.getFormItems(descriptor.form);
-
-            const macroDataConfigFields = formItems.reduce(
-                (macroDataConfigFieldsAcc: any, formItem: any) => ({
-                    ...macroDataConfigFieldsAcc,
-                    [sanitizeText(formItem.name)]: {
-                        type: formLib.generateFormItemObjectType(
-                            context,
-                            macroDataConfigTypeName,
-                            formItem
-                        ),
-                        args: formLib.generateFormItemArguments(context, formItem),
-                        resolve: formLib.generateFormItemResolveFunction(formItem),
-                    },
-                }),
-                {}
-            );
-
-            const macroDataConfigType = graphQlCreateObjectType(context, {
-                name: macroDataConfigTypeName,
-                description: `Macro descriptor data config for application ['${descriptor.applicationKey}'] and descriptor ['${descriptor.name}']`,
-                fields: macroDataConfigFields,
-            });
+            const macroDataConfigTypeName = `${macroTypeName}_DataConfig`;
 
             return {
                 ...macroConfigTypeFieldsAcc,
                 [sanitizeDescriptorName]: {
-                    type: macroDataConfigType,
+                    type: graphQlLib.reference(macroDataConfigTypeName),
                     resolve: (env) => {
                         return env.source[descriptor.name];
                     },
@@ -136,6 +107,12 @@ const generateRichTextTypeWithoutHtmlFragment = (context: Context) => {
                     return env.source.macrosAsJson;
                 },
             },
+            macrosAsJson: {
+                type: graphQlLib.Json,
+                resolve: (env) => {
+                    return env.source.macrosAsJson;
+                },
+            },
         },
     });
 };
@@ -175,31 +152,5 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
                 value: html,
             });
         },
-    };
-};
-
-// Applies any macro creation callbacks to the special HtmlFragment macro types as well
-export const applyMacroCreationCallbacksToHtmlFragmentTypes = (
-    creationCallbacks: Record<string, CreationCallback>
-) => {
-    const htmlFragmentMacroCreationCallbacks = Object.entries(creationCallbacks).reduce(
-        (acc, [key, callback]) => {
-            if (
-                key.startsWith(macroConfigTypeNamePrefix) &&
-                !key.endsWith(macroConfigTypeNameHtmlFragmentSuffix) &&
-                key !== htmlFragmentMacroConfigTypename
-            ) {
-                const htmlFragmentMacroKey = `${key}${macroConfigTypeNameHtmlFragmentSuffix}`;
-                return { ...acc, [htmlFragmentMacroKey]: callback };
-            }
-
-            return acc;
-        },
-        {}
-    );
-
-    return {
-        ...creationCallbacks,
-        ...htmlFragmentMacroCreationCallbacks,
     };
 };

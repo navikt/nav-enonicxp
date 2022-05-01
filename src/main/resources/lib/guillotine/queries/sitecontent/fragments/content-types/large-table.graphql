@@ -1,4 +1,4 @@
-#import "./_content.graphql"
+#import "./content.graphql"
 
 fragment contentLargeTable on no_nav_navno_LargeTable {
     ...content

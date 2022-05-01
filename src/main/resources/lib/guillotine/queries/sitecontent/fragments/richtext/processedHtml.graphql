@@ -1,0 +1,20 @@
+fragment macro on Macro {
+    name
+    ref
+}
+
+fragment processedHtml on RichText {
+    processedHtml
+    macrosAsJson
+    macros {
+        config {
+            html_fragment {
+                fragmentId
+                processedHtml {
+                    processedHtml
+                    macrosAsJson
+                }
+            }
+        }
+    }
+}
