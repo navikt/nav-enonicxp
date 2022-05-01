@@ -1,9 +1,5 @@
 #import "./fragments/large-table.graphql"
 
-interface Dummy {
-    dummy: String
-}
-
 query largeTable($ref: ID!) {
     guillotine {
         get(key: $ref) {

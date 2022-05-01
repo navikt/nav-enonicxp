@@ -1,4 +1,6 @@
 {
-    "plugins": ["import-graphql"],
+    "plugins": [["@anders-nom/babel-plugin-import-graphql-string", {
+        "sourceOnly": true
+    }]],
     "presets": ["@babel/preset-env", "@babel/preset-typescript"]
 }

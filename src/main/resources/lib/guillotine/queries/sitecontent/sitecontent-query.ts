@@ -21,7 +21,7 @@ import {
 
 import test from './content-queries/large-table.graphql';
 
-log.info(`Muh query: ${JSON.stringify(test)}`);
+log.info(`Muh query: ${test}`);
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
@@ -205,7 +205,7 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
     if (type === 'no.nav.navno:large-table') {
         return guillotineQuery({
             ...baseQueryParams,
-            query: test.replace(/(interface Dummy {(\s|.)*?})/, ''),
+            query: test,
             jsonBaseKeys: ['data', 'config', 'page'],
         })?.get as GuillotineContentQueryResult;
     }
