@@ -1,9 +1,9 @@
-#import "./macros.graphql"
+#import "./macrosFragment.graphql"
 
 fragment richText on RichText {
     processedHtml
     macros {
-        ...macro
+        ...macros
         ...html_fragmentMacro
     }
 }

@@ -19,9 +19,9 @@ import {
     GuillotineComponent,
 } from '../../utils/process-components';
 
-import test from './content-queries/large-table.graphql';
-
-log.info(`Muh query: ${test}`);
+import largeTableQuery from './content-queries/largeTableQuery.graphql';
+import urlQuery from './content-queries/urlQuery.graphql';
+import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
@@ -36,7 +36,6 @@ const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
 const officeInformation = require('./legacyFragments/officeInformation');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
-const urlFragment = require('./legacyFragments/url');
 const {
     dynamicPageFragment,
     productPageFragment,
@@ -92,7 +91,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:melding': melding.fragment,
     'no.nav.navno:external-link': externalLink.fragment,
     'no.nav.navno:internal-link': internalLink.fragment,
-    'no.nav.navno:url': urlFragment.fragment,
     'no.nav.navno:dynamic-page': dynamicPageFragment,
     'no.nav.navno:content-page-with-sidemenus': productPageFragment,
     'no.nav.navno:situation-page': situationPageFragment,
@@ -102,14 +100,16 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:contact-information': contactInformation.fragment,
     'no.nav.navno:global-value-set': globalValueSet.fragment,
     'portal:fragment': fragmentComponentsFragment,
-    'portal:site': '',
 };
 
 export const contentTypesFromGuillotineQuery = Object.keys(contentToQueryFragment);
 
-const contentQueries = Object.entries(contentToQueryFragment).reduce((acc, [type, fragment]) => {
-    return { ...acc, [type]: buildPageContentQuery(fragment) };
-}, {} as { [type in ContentDescriptor]: string });
+const contentQueriesLegacy = Object.entries(contentToQueryFragment).reduce(
+    (acc, [type, fragment]) => {
+        return { ...acc, [type]: buildPageContentQuery(fragment) };
+    },
+    {} as { [type in ContentDescriptor]: string }
+);
 
 const mediaQuery = `query($ref:ID!){
     guillotine {
@@ -135,6 +135,12 @@ const fragmentComponentsQuery = `query($ref:ID!){
         }
     }
 }`;
+
+const contentQueries: { [type in ContentDescriptor]?: string } = {
+    'no.nav.navno:large-table': largeTableQuery,
+    'no.nav.navno:url': urlQuery,
+    'portal:site': portalSiteQuery,
+};
 
 export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const queryParams = {
@@ -194,15 +200,7 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         })?.get;
     }
 
-    if (type === 'no.nav.navno:large-table') {
-        return guillotineQuery({
-            ...baseQueryParams,
-            query: test,
-            jsonBaseKeys: ['data', 'config', 'page'],
-        })?.get as GuillotineContentQueryResult;
-    }
-
-    const contentQuery = contentQueries[type];
+    const contentQuery = contentQueries[type] || contentQueriesLegacy[type];
 
     if (!contentQuery) {
         return null;

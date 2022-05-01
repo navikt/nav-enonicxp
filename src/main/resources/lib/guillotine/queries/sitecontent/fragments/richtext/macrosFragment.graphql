@@ -1,4 +1,4 @@
-fragment macro on Macro {
+fragment macros on Macro {
     name
     ref
     config {
@@ -94,7 +94,7 @@ fragment html_fragmentMacro on Macro {
             processedHtml {
                 processedHtml
                 macros {
-                    ...macro
+                    ...macros
                 }
             }
         }

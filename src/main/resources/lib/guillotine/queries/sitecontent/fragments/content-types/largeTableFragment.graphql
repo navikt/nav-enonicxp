@@ -1,8 +1,6 @@
-#import "./content.graphql"
-#import "../richtext/processedHtml.graphql"
+#import "../richtext/richTextFragment.graphql"
 
 fragment contentLargeTable on no_nav_navno_LargeTable {
-    ...content
     data {
         text(processHtml: { type: server }) {
             ...richText

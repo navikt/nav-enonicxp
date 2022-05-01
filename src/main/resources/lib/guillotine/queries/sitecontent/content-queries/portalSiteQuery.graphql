@@ -1,0 +1,9 @@
+#import "../fragments/contentCommonFragment.graphql"
+
+query ($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+        }
+    }
+}
