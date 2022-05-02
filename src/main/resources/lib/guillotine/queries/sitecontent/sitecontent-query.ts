@@ -36,7 +36,6 @@ const {
     guidePageFragment,
     toolsPageFragment,
 } = require('./legacyFragments/dynamicPage');
-const globalValueSet = require('./legacyFragments/globalValueSet');
 const media = require('./legacyFragments/media');
 
 type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwOnErrors'>;
@@ -85,7 +84,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:guide-page': guidePageFragment,
     'no.nav.navno:tools-page': toolsPageFragment,
     'no.nav.navno:contact-information': contactInformation.fragment,
-    'no.nav.navno:global-value-set': globalValueSet.fragment,
     'portal:fragment': fragmentComponentsFragment,
 };
 
