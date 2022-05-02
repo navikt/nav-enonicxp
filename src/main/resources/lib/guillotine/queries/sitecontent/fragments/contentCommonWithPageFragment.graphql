@@ -1,0 +1,6 @@
+#import "./contentCommonFragment.graphql"
+
+fragment contentCommonWithPage on Content {
+    ...contentCommon
+    pageAsJson(resolveTemplate: true, resolveFragment: false)
+}

@@ -1,10 +1,10 @@
-#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/contentCommonWithPageFragment.graphql"
 #import "../fragments/content-types/officeInformationFragment.graphql"
 
-query ($ref: ID!) {
+query officeInformationQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
-            ...contentCommon
+            ...contentCommonWithPage
             ...contentOfficeInformation
         }
     }

@@ -1,7 +1,7 @@
 #import "../fragments/contentCommonFragment.graphql"
 #import "../fragments/content-types/largeTableFragment.graphql"
 
-query ($ref: ID!) {
+query largeTableQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommon

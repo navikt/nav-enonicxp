@@ -1,3 +1,4 @@
+#import "../contentCommonFragment.graphql"
 #import "./externalLinkFragment.graphql"
 #import "./internalLinkFragment.graphql"
 

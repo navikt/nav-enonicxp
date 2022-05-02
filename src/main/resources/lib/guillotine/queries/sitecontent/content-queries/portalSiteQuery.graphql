@@ -1,6 +1,6 @@
 #import "../fragments/contentCommonFragment.graphql"
 
-query ($ref: ID!) {
+query portalSiteQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommon
