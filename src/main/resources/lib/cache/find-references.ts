@@ -123,10 +123,7 @@ const getReferencesFromParent = (content: Content | null) => {
         return [];
     }
 
-    if (
-        content.type === 'no.nav.navno:notification' ||
-        parent.type === 'no.nav.navno:publishing-calendar'
-    ) {
+    if (parent.type === 'no.nav.navno:publishing-calendar') {
         return [parent];
     }
 
