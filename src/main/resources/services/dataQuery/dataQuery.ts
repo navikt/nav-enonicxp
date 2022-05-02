@@ -76,10 +76,6 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
 
     log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
 
-    if (branch === 'archived') {
-        log.info(`Archived ids: ${JSON.stringify(result)}`);
-    }
-
     return result;
 };
 
@@ -141,7 +137,7 @@ const runQuery = (params: RunQueryParams) => {
         branch === 'archived' ? runArchiveQuery(contentIdsBatch) : runContentQuery(contentIdsBatch);
 
     if (hits.length !== contentIdsBatch.length) {
-        const diff = contentIdsBatch.filter((id) => !hits.find((hit: any) => hit._id === id));
+        const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
         log.info(
             `Data query: missing results from contentLib query for ${
                 diff.length
