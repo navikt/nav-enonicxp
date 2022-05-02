@@ -8,7 +8,6 @@ import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
-import { getNotifications } from '../../lib/guillotine/queries/notifications';
 import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
@@ -162,13 +161,10 @@ export const getSitecontentResponse = (
         return content;
     }
 
-    const notifications = getNotifications(content._path);
-
     const versionTimestamps = getPublishedVersionTimestamps(content._id, branch);
 
     return {
         ...content,
-        ...(notifications && { notifications }),
         versionTimestamps,
     };
 };

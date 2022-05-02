@@ -1,7 +1,8 @@
 <content-type>
     <display-name>Varsel</display-name>
-    <description>Viktig informasjon som vises over alt annet innhold</description>
+    <description>Viktig informasjon som vises over alt annet innhold (legacy, skal ikke brukes!)</description>
     <super-type>base:unstructured</super-type>
+    <is-abstract>true</is-abstract>
     <form>
         <field-set>
             <label>Varsel</label>

@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
 import taskLib from '/lib/xp/task';
-import { frontendCacheInvalidate, frontendCacheWipeAll } from './frontend-invalidate-requests';
+import { frontendCacheInvalidate } from './frontend-invalidate-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
@@ -50,49 +50,39 @@ const _invalidateCacheForNode = ({
         ? clearLocalCaches
         : sendLocalCacheInvalidationEvent;
 
-    if (node.path.includes('/global-notifications/')) {
-        log.info('Clearing whole cache due to updated global notification');
+    runInBranchContext(() => {
+        const contentToInvalidate = getContentToInvalidate(node.id, eventType);
 
-        clearLocalCachesFunc({ all: true });
+        clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
+
+        log.info(
+            `Invalidate event ${eventId} - Invalidating ${
+                contentToInvalidate.length
+            } paths for root node ${node.id}: ${JSON.stringify(
+                contentToInvalidate.map((content) => content._path),
+                null,
+                4
+            )}`
+        );
 
         if (shouldSendFrontendRequests) {
-            frontendCacheWipeAll(eventId);
-        }
-    } else {
-        runInBranchContext(() => {
-            const contentToInvalidate = getContentToInvalidate(node.id, eventType);
+            const changedPaths = findChangedPaths({ id: node.id, path: node.path });
 
-            clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
-
-            log.info(
-                `Invalidate event ${eventId} - Invalidating ${
-                    contentToInvalidate.length
-                } paths for root node ${node.id}: ${JSON.stringify(
-                    contentToInvalidate.map((content) => content._path),
-                    null,
-                    4
-                )}`
-            );
-
-            if (shouldSendFrontendRequests) {
-                const changedPaths = findChangedPaths({ id: node.id, path: node.path });
-
-                if (changedPaths.length > 0) {
-                    log.info(
-                        `Invalidating changed paths for node ${
-                            node.id
-                        } (event id ${eventId}): ${changedPaths.join(', ')}`
-                    );
-                }
-
-                frontendCacheInvalidate({
-                    contents: contentToInvalidate,
-                    paths: changedPaths,
-                    eventId,
-                });
+            if (changedPaths.length > 0) {
+                log.info(
+                    `Invalidating changed paths for node ${
+                        node.id
+                    } (event id ${eventId}): ${changedPaths.join(', ')}`
+                );
             }
-        }, 'master');
-    }
+
+            frontendCacheInvalidate({
+                contents: contentToInvalidate,
+                paths: changedPaths,
+                eventId,
+            });
+        }
+    }, 'master');
 };
 
 export const invalidateCacheForNode = (params: InvalidateCacheParams) => {
