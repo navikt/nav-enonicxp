@@ -1,15 +1,10 @@
 #import "../contentCommonFragment.graphql"
 #import "./mixins/languagesFragment.graphql"
+#import "./mixins/menuListItemFragment.graphql"
 #import "../media/imageInlineFragment.graphql"
 
-fragment menuListItem on MenuListItem {
-    links {
-        url
-        text
-    }
-}
-
 fragment contentMainArticle on no_nav_navno_MainArticle {
+    dataAsJson
     data {
         ingress
         social
@@ -44,61 +39,34 @@ fragment contentMainArticle on no_nav_navno_MainArticle {
         menuListItems {
             _selected
             selfservice {
-
+                ...menuListItem
             }
             form_and_application {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             process_times {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             related_information {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             international {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             report_changes {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             rates {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             appeal_rights {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             membership {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
             rules_and_regulations {
-                links {
-                    url
-                    text
-                }
+                ...menuListItem
             }
         }
     }

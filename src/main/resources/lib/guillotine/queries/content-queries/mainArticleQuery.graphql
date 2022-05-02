@@ -1,11 +1,11 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
-#import "../fragments/content-types/pageListFragment.graphql"
+#import "../fragments/content-types/mainArticleFragment.graphql"
 
-query pageListQuery($ref: ID!) {
+query mainArticleQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
-            ...contentPageList
+            ...contentMainArticle
         }
     }
 }

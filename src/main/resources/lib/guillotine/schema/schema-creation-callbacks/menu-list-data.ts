@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolverCallback } from '/lib/graphql';
 import { sanitizeText } from '/lib/guillotine/util/naming';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { forceArray } from '../../../utils/nav-utils';
 
 type MenuListData = {
@@ -9,14 +9,35 @@ type MenuListData = {
     url: string;
 };
 
-export const menuListDataCallback: CreationCallback = (context, params) => {
+export const menuListDataCallback: CreationCallback = (context: any, params) => {
+    if (!context.types.menuListItemType) {
+        context.types.menuListLinkType = graphQlCreateObjectType(context, {
+            name: 'MenuListLink',
+            description: 'Lenke i MenuListItem',
+            fields: {
+                url: { type: graphQlLib.GraphQLString },
+                text: { type: graphQlLib.GraphQLString },
+            },
+        });
+
+        context.types.menuListItemType = graphQlCreateObjectType(context, {
+            name: 'MenuListItem',
+            description: 'Lenker i høyremeny',
+            fields: {
+                links: {
+                    type: context.types.menuListLinkType,
+                },
+            },
+        });
+    }
+
     // Create new types for mapped values
     Object.keys(params.fields).forEach((key) => {
         if (key !== '_selected') {
             const sanitizedKey = sanitizeText(key);
             params.fields[sanitizedKey] = {
                 resolve: resolve(sanitizedKey),
-                type: graphQlLib.reference('MenuListItem'),
+                type: context.types.menuListItemType,
             };
         }
     });

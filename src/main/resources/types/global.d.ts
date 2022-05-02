@@ -44,3 +44,5 @@ declare module '*/lib/guillotine/util/naming';
 declare module '*/lib/graphql-rx';
 declare module '*/lib/guillotine/query/root-query';
 declare module '*/lib/guillotine/subscription/root-subscription';
+declare module '*/lib/guillotine/generic';
+declare module '*/lib/guillotine/dynamic';

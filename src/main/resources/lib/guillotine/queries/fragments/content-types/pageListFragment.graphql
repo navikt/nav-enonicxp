@@ -1,6 +1,7 @@
 #import "../contentCommonFragment.graphql"
 #import "./mixins/legacyShortFragments.graphql"
 #import "./mixins/languagesFragment.graphql"
+#import "./mixins/menuListItemFragment.graphql"
 
 fragment contentPageList on no_nav_navno_PageList {
     dataAsJson
@@ -14,10 +15,7 @@ fragment contentPageList on no_nav_navno_PageList {
         menuListItems {
             _selected
             shortcuts {
-                links {
-                    text
-                    url
-                }
+                ...menuListItem
             }
         }
     }
