@@ -10,6 +10,7 @@ import officeInformationQuery from './content-queries/officeInformationQuery.gra
 import meldingQuery from './content-queries/meldingQuery.graphql';
 import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
+import contantInformationQuery from './content-queries/contactInformationQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'portal:site': portalSiteQuery,
@@ -22,4 +23,5 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:melding': meldingQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
+    'no.nav.navno:contact-information': contantInformationQuery,
 };

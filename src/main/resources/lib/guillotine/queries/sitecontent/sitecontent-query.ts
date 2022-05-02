@@ -23,7 +23,6 @@ import { graphQlContentQueries } from './contenttype-query-map';
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
 const sectionPage = require('./legacyFragments/sectionPage');
-const contactInformation = require('./legacyFragments/contactInformation');
 const pageList = require('./legacyFragments/pageList');
 const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
@@ -81,7 +80,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:themed-article-page': themedArticlePageFragment,
     'no.nav.navno:guide-page': guidePageFragment,
     'no.nav.navno:tools-page': toolsPageFragment,
-    'no.nav.navno:contact-information': contactInformation.fragment,
     'portal:fragment': fragmentComponentsFragment,
 };
 
