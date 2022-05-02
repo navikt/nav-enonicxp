@@ -46,7 +46,7 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
             query:
                 buildQuery([
                     query,
-                    branch === 'archived' ? '_path LIKE "/archive/*"' : undefined,
+                    `_path LIKE ${branch === 'archived' ? '"/archive/*"' : '"/content/*"'}`,
                 ]) || undefined,
             start: 0,
             count: 100000,
