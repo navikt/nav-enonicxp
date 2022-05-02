@@ -30,13 +30,13 @@ const pageListFragment = `
             ${languagesMixinFragment}
             sectionContents {
                 ${globalFragment}
-                ${transportPage.shortFragment}
-                ${mainArticle.shortFragment}
                 ${internalLink.fragment}
                 ${externalLink.fragment}
                 ${urlFragment.fragment}
-                ${dynamicPage.shortFragment}
+                ${transportPage.shortFragment}
                 ${pageListShortFragment}
+                ${mainArticle.shortFragment}
+                ${dynamicPage.shortFragment}
             }
             ${menuListItems.shortcutsFragment}
         }

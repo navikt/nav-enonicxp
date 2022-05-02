@@ -1,0 +1,25 @@
+#import "../contentCommonFragment.graphql"
+#import "./combos/legacyShortFragments.graphql"
+
+fragment contentPageList on no_nav_navno_PageList {
+    dataAsJson
+    data {
+        languages {
+            language
+            _path
+            _id
+        }
+        sectionContents {
+            ...contentLegacyShortFragments
+        }
+        menuListItems {
+            _selected
+            shortcuts {
+                links {
+                    text
+                    url
+                }
+            }
+        }
+    }
+}
