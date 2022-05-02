@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/content-types/publishingCalendarFragment.graphql"
+
+query publishingCalendarQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ...contentPublishingCalendar
+        }
+    }
+}
