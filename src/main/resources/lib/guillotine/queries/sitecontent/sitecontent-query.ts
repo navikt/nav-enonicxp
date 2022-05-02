@@ -25,7 +25,6 @@ const { componentsFragment, fragmentComponentsFragment } = require('./legacyFrag
 const sectionPage = require('./legacyFragments/sectionPage');
 const contactInformation = require('./legacyFragments/contactInformation');
 const pageList = require('./legacyFragments/pageList');
-const melding = require('./legacyFragments/melding');
 const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
@@ -79,7 +78,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:section-page': sectionPage.fragment,
     'no.nav.navno:page-list': pageList.fragment,
     'no.nav.navno:publishing-calendar': publishingCalendar.fragment,
-    'no.nav.navno:melding': melding.fragment,
     'no.nav.navno:dynamic-page': dynamicPageFragment,
     'no.nav.navno:content-page-with-sidemenus': productPageFragment,
     'no.nav.navno:situation-page': situationPageFragment,
