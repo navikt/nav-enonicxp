@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { contentTypesWithBreadcrumbs } from '../../../contenttype-lists';
-import { componentAppKey, navnoRootPath } from '../../../constants';
-import { getParentPath, stringArrayToSet, stripPathPrefix } from '../../../utils/nav-utils';
+import { contentTypesWithBreadcrumbs } from '../../contenttype-lists';
+import { componentAppKey, navnoRootPath } from '../../constants';
+import { getParentPath, stringArrayToSet, stripPathPrefix } from '../../utils/nav-utils';
 
 type Breadcrumb = {
     title: string;

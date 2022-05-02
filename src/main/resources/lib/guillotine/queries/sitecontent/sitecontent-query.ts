@@ -7,7 +7,7 @@ import {
 } from '../../../../types/content-types/content-config';
 import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
-import { getBreadcrumbs } from './breadcrumbs';
+import { getBreadcrumbs } from '../../utils/breadcrumbs';
 import { dynamicPageContentTypes } from '../../../contenttype-lists';
 import { isMedia, stringArrayToSet } from '../../../utils/nav-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
@@ -18,18 +18,12 @@ import {
     buildPageComponentTree,
     GuillotineComponent,
 } from '../../utils/process-components';
-
-import largeTableQuery from './content-queries/largeTableQuery.graphql';
-import urlQuery from './content-queries/urlQuery.graphql';
-import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
+import { graphQlContentQueries } from './contenttype-query-map';
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
 const sectionPage = require('./legacyFragments/sectionPage');
 const contactInformation = require('./legacyFragments/contactInformation');
-const internalLink = require('./legacyFragments/internalLink');
-const transportPage = require('./legacyFragments/transportPage');
-const externalLink = require('./legacyFragments/externalLink');
 const pageList = require('./legacyFragments/pageList');
 const melding = require('./legacyFragments/melding');
 const mainArticle = require('./legacyFragments/mainArticle');
@@ -85,12 +79,9 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article-chapter': mainArticleChapter.fragment,
     'no.nav.navno:section-page': sectionPage.fragment,
     'no.nav.navno:page-list': pageList.fragment,
-    'no.nav.navno:transport-page': transportPage.fragment,
     'no.nav.navno:office-information': officeInformation.fragment,
     'no.nav.navno:publishing-calendar': publishingCalendar.fragment,
     'no.nav.navno:melding': melding.fragment,
-    'no.nav.navno:external-link': externalLink.fragment,
-    'no.nav.navno:internal-link': internalLink.fragment,
     'no.nav.navno:dynamic-page': dynamicPageFragment,
     'no.nav.navno:content-page-with-sidemenus': productPageFragment,
     'no.nav.navno:situation-page': situationPageFragment,
@@ -135,12 +126,6 @@ const fragmentComponentsQuery = `query($ref:ID!){
         }
     }
 }`;
-
-const contentQueries: { [type in ContentDescriptor]?: string } = {
-    'no.nav.navno:large-table': largeTableQuery,
-    'no.nav.navno:url': urlQuery,
-    'portal:site': portalSiteQuery,
-};
 
 export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const queryParams = {
@@ -200,7 +185,7 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         })?.get;
     }
 
-    const contentQuery = contentQueries[type] || contentQueriesLegacy[type];
+    const contentQuery = graphQlContentQueries[type] || contentQueriesLegacy[type];
 
     if (!contentQuery) {
         return null;

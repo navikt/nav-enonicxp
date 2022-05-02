@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/content-types/transportPageFragment.graphql"
+
+query ($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ...transportPage
+        }
+    }
+}
