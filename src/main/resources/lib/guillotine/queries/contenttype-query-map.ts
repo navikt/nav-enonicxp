@@ -13,6 +13,7 @@ import publishingCalendarQuery from './content-queries/publishingCalendarQuery.g
 import contantInformationQuery from './content-queries/contactInformationQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
+import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'portal:site': portalSiteQuery,
@@ -28,4 +29,5 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:contact-information': contantInformationQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:section-page': sectionPageQuery,
+    'no.nav.navno:main-article': mainArticleQuery,
 };

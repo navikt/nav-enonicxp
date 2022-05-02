@@ -25,7 +25,7 @@ export const menuListDataCallback: CreationCallback = (context: any, params) => 
             description: 'Lenker i høyremeny',
             fields: {
                 links: {
-                    type: context.types.menuListLinkType,
+                    type: graphQlLib.list(context.types.menuListLinkType),
                 },
             },
         });
