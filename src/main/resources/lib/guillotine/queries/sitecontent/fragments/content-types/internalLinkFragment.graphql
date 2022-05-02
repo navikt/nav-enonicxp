@@ -1,3 +1,5 @@
+#import "../contentCommonFragment.graphql"
+
 fragment contentInternalLink on no_nav_navno_InternalLink {
     data {
         description

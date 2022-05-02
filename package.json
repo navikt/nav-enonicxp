@@ -17,7 +17,7 @@
     },
     "homepage": "https://github.com/navikt/nav-enonicxp#readme",
     "devDependencies": {
-        "@anders-nom/babel-plugin-import-graphql-string": "^2.8.1-0",
+        "@anders-nom/babel-plugin-import-graphql-string": "^2.8.1-1",
         "@babel/cli": "^7.17.6",
         "@babel/core": "^7.17.9",
         "@babel/preset-env": "^7.16.11",

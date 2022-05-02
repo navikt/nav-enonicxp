@@ -6,6 +6,7 @@ import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import internalLinkQuery from './content-queries/internalLinkQuery.graphql';
 import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
+import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'portal:site': portalSiteQuery,
@@ -14,4 +15,5 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:transport-page': transportPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
+    'no.nav.navno:office-information': officeInformationQuery,
 };

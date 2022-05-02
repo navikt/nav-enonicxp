@@ -28,7 +28,6 @@ const pageList = require('./legacyFragments/pageList');
 const melding = require('./legacyFragments/melding');
 const mainArticle = require('./legacyFragments/mainArticle');
 const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
-const officeInformation = require('./legacyFragments/officeInformation');
 const publishingCalendar = require('./legacyFragments/publishingCalendar');
 const {
     dynamicPageFragment,
@@ -79,7 +78,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article-chapter': mainArticleChapter.fragment,
     'no.nav.navno:section-page': sectionPage.fragment,
     'no.nav.navno:page-list': pageList.fragment,
-    'no.nav.navno:office-information': officeInformation.fragment,
     'no.nav.navno:publishing-calendar': publishingCalendar.fragment,
     'no.nav.navno:melding': melding.fragment,
     'no.nav.navno:dynamic-page': dynamicPageFragment,
