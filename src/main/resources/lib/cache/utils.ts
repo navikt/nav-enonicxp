@@ -35,7 +35,6 @@ const ignoredCustomContentTypes: CustomContentDescriptor[] = [
     `${appDescriptor}:content-list`,
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:megamenu-item`,
-    `${appDescriptor}:notification`,
     `${appDescriptor}:publishing-calendar-entry`,
 ];
 

@@ -4,7 +4,7 @@ import {
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
     globalValuesContentType,
-} from '../../../lib/global-values/global-values';
+} from '../../../lib/utils/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';

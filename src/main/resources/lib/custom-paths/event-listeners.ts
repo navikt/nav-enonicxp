@@ -46,8 +46,8 @@ const removeInvalidOnPublish = (event: EnonicEvent) => {
                 contentLib.modify({
                     key: node.id,
                     editor: (content) => {
-                        // @ts-ignore (we already asserted that this field exists)
-                        content.data.customPath = null;
+                        // (we already asserted that this field exists)
+                        (content as { data: { customPath?: string } }).data.customPath = undefined;
 
                         return content;
                     },

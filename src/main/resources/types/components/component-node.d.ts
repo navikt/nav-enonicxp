@@ -6,7 +6,7 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
     ? {
           type: Type;
           path: string;
-          fragment?: {
+          fragment: {
               id: string;
           };
       }
@@ -29,7 +29,10 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
 
 // This type is used in the components array retrieved from a raw node
 // through a nodeLib repo connection
-export type NodeComponent = NodeComponentMapper<ComponentType, ComponentName> & {
+export type NodeComponent<
+    Type extends ComponentType = ComponentType,
+    Name extends ComponentName = ComponentName
+> = NodeComponentMapper<Type, Name> & {
     path: string;
     part?: {
         descriptor: NavNoDescriptor;

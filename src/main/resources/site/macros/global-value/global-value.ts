@@ -1,7 +1,7 @@
 import {
     getGlobalValueSet,
     getGvKeyAndContentIdFromUniqueKey,
-} from '../../../lib/global-values/global-values';
+} from '../../../lib/utils/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { contentStudioEditPathPrefix } from '../../../lib/constants';
 

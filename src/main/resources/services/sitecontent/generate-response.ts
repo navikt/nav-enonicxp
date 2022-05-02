@@ -3,17 +3,17 @@ import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
 import { redirectsRootPath } from '../../lib/constants';
-import { getModifiedTimeIncludingFragments } from '../../lib/fragments/find-fragments';
+import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
-import { getNotifications } from '../../lib/guillotine/queries/notifications';
 import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
-
-const { runWithTimeTravel, unhookTimeTravel } = require('/lib/time-travel/run-with-time-travel');
+import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
+import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
+import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -87,35 +87,6 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     return guillotineContentQuery(redirectContent, branch);
 };
 
-// Get content from a specific datetime (used for requests from the internal version history selector)
-const getContentVersionFromTime = (
-    contentRef: string,
-    branch: RepoBranch,
-    dateTime: string
-): Content | null => {
-    const contentRaw = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
-    if (!contentRaw) {
-        return null;
-    }
-
-    try {
-        return runWithTimeTravel(dateTime, branch, contentRaw._id, () => {
-            const content = guillotineContentQuery(contentRaw, branch);
-            if (!content) {
-                return null;
-            }
-
-            return {
-                ...content,
-                livePath: contentRaw._path,
-            };
-        });
-    } catch (e) {
-        log.warning(`Time travel: Error retrieving data from version history: ${e}`);
-        return null;
-    }
-};
-
 const getContentOrRedirect = (
     requestedPathOrId: string,
     branch: RepoBranch,
@@ -175,9 +146,9 @@ export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
     datetime?: string
-): Content | null => {
+) => {
     if (datetime) {
-        return getContentVersionFromTime(requestedPathOrId, branch, datetime);
+        return getContentVersionFromDateTime(requestedPathOrId, branch, datetime);
     }
 
     const content = getContentOrRedirect(requestedPathOrId, branch);
@@ -190,10 +161,10 @@ export const getSitecontentResponse = (
         return content;
     }
 
-    const notifications = getNotifications(content._path);
+    const versionTimestamps = getPublishedVersionTimestamps(content._id, branch);
 
     return {
         ...content,
-        ...(notifications && { notifications }),
+        versionTimestamps,
     };
 };

@@ -26,7 +26,6 @@ import { TransportPage } from '../../site/content-types/transport-page/transport
 import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
-import { Notification } from '../../site/content-types/notification/notification';
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
 
 type CustomContentDataConfigsWithoutDescriptor = {
@@ -45,7 +44,6 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'main-article-chapter': MainArticleChapter;
     'megamenu-item': MegamenuItem;
     melding: Melding;
-    notification: Notification;
     'office-information': OfficeInformation;
     'page-list': PageList;
     'publishing-calendar': PublishingCalendar;

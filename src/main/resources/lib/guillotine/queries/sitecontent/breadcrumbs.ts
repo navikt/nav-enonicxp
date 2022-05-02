@@ -8,6 +8,8 @@ type Breadcrumb = {
     url: string;
 };
 
+const allowedContentTypes = stringArrayToSet(contentTypesWithBreadcrumbs);
+
 // The breadcrumbs trail should stop when we hit any of these paths
 const rootPaths = stringArrayToSet([
     navnoRootPath,
@@ -69,9 +71,7 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
     if (!rootPaths[parentContent._path]) {
         return getParentBreadcrumbs(
             parentContent,
-            contentTypesWithBreadcrumbs[parentContent.type]
-                ? [parentContent, ...segments]
-                : segments
+            allowedContentTypes[parentContent.type] ? [parentContent, ...segments] : segments
         );
     }
 
@@ -80,7 +80,7 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
 
 export const getBreadcrumbs = (contentRef: string) => {
     const content = contentLib.get({ key: contentRef });
-    if (!content || !contentTypesWithBreadcrumbs[content.type] || rootPaths[content._path]) {
+    if (!content || !allowedContentTypes[content.type] || rootPaths[content._path]) {
         return null;
     }
 

@@ -1,5 +1,6 @@
 import guillotineLib from '/lib/guillotine';
 import { redirectsRootPath } from '../../constants';
+<<<<<<< HEAD
 
 const sectionPageDataCallback = require('./schema-creation-callbacks/section-page-data');
 const { menuListDataCallback } = require('./schema-creation-callbacks/menu-list-data');
@@ -66,6 +67,12 @@ const schemaContextOptions = {
         Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
         RichText: richTextCallback,
     }),
+=======
+import { schemaCreationCallbacks } from './schema-creation-callbacks';
+
+const schemaContextOptions = {
+    creationCallbacks: schemaCreationCallbacks,
+>>>>>>> master
     applications: [app.name, 'navno.nav.no.search'],
     allowPaths: [redirectsRootPath],
 };

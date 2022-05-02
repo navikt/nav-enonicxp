@@ -10,7 +10,9 @@ declare module '*/lib/xp/content' {
     // Replacements for enonic-types definitions
     namespace contentLib {
         interface ContentLibrary {
-            get(params: GetContentParams): Content | null;
+            get<ContentType extends ContentDescriptor = ContentDescriptor>(
+                params: GetContentParams
+            ): Content<ContentType> | null;
 
             // TODO: add typing for filters
             query<

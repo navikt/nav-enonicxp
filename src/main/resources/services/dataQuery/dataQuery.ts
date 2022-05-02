@@ -1,11 +1,13 @@
 import cacheLib from '/lib/cache';
+import nodeLib, { RepoNode } from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 
-type Branch = 'published' | 'unpublished';
+type Branch = 'published' | 'unpublished' | 'archived';
 
 type RunQueryParams = {
     requestId: string;
@@ -20,6 +22,7 @@ const RESPONSE_BATCH_SIZE = 1000;
 const validBranches: { [key in Branch]: boolean } = {
     published: true,
     unpublished: true,
+    archived: true,
 };
 
 const branchIsValid = (branch: string): branch is Branch => validBranches[branch as Branch];
@@ -30,6 +33,9 @@ const contentIdsCache = cacheLib.newCache({
     expire: 600,
 });
 
+const buildQuery = (queryStrings: (string | undefined)[]) =>
+    queryStrings.filter(Boolean).join(' AND ');
+
 const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
     const result = batchedNodeQuery({
         repoParams: {
@@ -37,7 +43,11 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
             branch: branch === 'published' ? 'master' : 'draft',
         },
         queryParams: {
-            ...(query && { query }),
+            query:
+                buildQuery([
+                    query,
+                    `_path LIKE ${branch === 'archived' ? '"/archive/*"' : '"/content/*"'}`,
+                ]) || undefined,
             start: 0,
             count: 100000,
             filters: {
@@ -69,8 +79,52 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
     return result;
 };
 
+const transformRepoNode = (node: RepoNode<Content>): Content => {
+    const {
+        _childOrder,
+        _indexConfig,
+        _inheritsPermissions,
+        _permissions,
+        _state,
+        _nodeType,
+        ...content
+    } = node;
+
+    return content;
+};
+
+const runArchiveQuery = (contentIdsBatch: string[]) => {
+    const repo = nodeLib.connect({
+        repoId: 'com.enonic.cms.default',
+        branch: 'draft',
+    });
+
+    const result = repo.get<RepoNode<Content>>(contentIdsBatch);
+
+    if (!result) {
+        return [];
+    }
+
+    if (!Array.isArray(result)) {
+        return [transformRepoNode(result)];
+    }
+
+    return result.map((hit) => transformRepoNode(hit));
+};
+
+const runContentQuery = (contentIdsBatch: string[]) => {
+    return batchedContentQuery({
+        count: RESPONSE_BATCH_SIZE,
+        filters: {
+            ids: {
+                values: contentIdsBatch,
+            },
+        },
+    }).hits;
+};
+
 const runQuery = (params: RunQueryParams) => {
-    const { requestId, batch } = params;
+    const { requestId, batch, branch } = params;
 
     const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
 
@@ -79,14 +133,8 @@ const runQuery = (params: RunQueryParams) => {
 
     const contentIdsBatch = contentIds.slice(start, end);
 
-    const hits = batchedContentQuery({
-        count: RESPONSE_BATCH_SIZE,
-        filters: {
-            ids: {
-                values: contentIdsBatch,
-            },
-        },
-    }).hits;
+    const hits =
+        branch === 'archived' ? runArchiveQuery(contentIdsBatch) : runContentQuery(contentIdsBatch);
 
     if (hits.length !== contentIdsBatch.length) {
         const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));

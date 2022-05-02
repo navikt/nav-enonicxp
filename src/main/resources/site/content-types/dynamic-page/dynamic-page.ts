@@ -6,11 +6,6 @@ export interface DynamicPage {
   languages?: Array<string>;
 
   /**
-   * Skriv inn ønsket url
-   */
-  customPath?: string;
-
-  /**
    * Fant du det du lette etter?
    */
   feedbackToggle: boolean;
@@ -39,4 +34,9 @@ export interface DynamicPage {
    * Skal ikke vises i eksternt søk
    */
   noindex: boolean;
+
+  /**
+   * Skriv inn ønsket url
+   */
+  customPath?: string;
 }

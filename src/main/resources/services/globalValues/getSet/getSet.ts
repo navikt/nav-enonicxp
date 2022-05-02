@@ -1,4 +1,4 @@
-import { getGlobalValueSet } from '../../../lib/global-values/global-values';
+import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 

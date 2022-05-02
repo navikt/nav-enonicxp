@@ -6,19 +6,18 @@ import {
     CustomContentDescriptor,
 } from '../../../../types/content-types/content-config';
 import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
-import { getPublishedVersionTimestamps } from '../../../time-travel/version-utils';
 import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
 import { getBreadcrumbs } from './breadcrumbs';
-import { dynamicPageContentTypesSet } from '../../../contenttype-lists';
-import { isMedia } from '../../../utils/nav-utils';
+import { dynamicPageContentTypes } from '../../../contenttype-lists';
+import { isMedia, stringArrayToSet } from '../../../utils/nav-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
 import { PortalComponent } from '../../../../types/components/component-portal';
 import { ComponentType } from '../../../../types/components/component-config';
-
-const {
+import {
     buildFragmentComponentTree,
     buildPageComponentTree,
-} = require('/lib/guillotine/utils/process-components');
+    GuillotineComponent,
+} from '../../utils/process-components';
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
@@ -52,6 +51,8 @@ type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwO
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
+const dynamicPageContentTypesSet = stringArrayToSet(dynamicPageContentTypes);
+
 // TODO: improve these types if/when Guillotine gets better Typescript support
 export type GuillotineContentQueryResult =
     | {
@@ -65,7 +66,7 @@ export type GuillotineContentQueryResult =
       };
 
 export type GuillotineComponentQueryResult = {
-    components: NodeComponent[];
+    components: GuillotineComponent[];
 };
 
 const buildPageContentQuery = (contentTypeFragment?: string) =>
@@ -105,6 +106,8 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'portal:fragment': fragmentComponentsFragment,
     'portal:site': '',
 };
+
+export const contentTypesFromGuillotineQuery = Object.keys(contentToQueryFragment);
 
 const contentQueries = Object.entries(contentToQueryFragment).reduce((acc, [type, fragment]) => {
     return { ...acc, [type]: buildPageContentQuery(fragment) };
@@ -187,9 +190,10 @@ export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
         return [
             ...acc,
             {
-                ...component,
+                type: 'fragment',
+                path: component.path,
                 fragment: buildFragmentComponentTree(fragment.components),
-            },
+            } as PortalComponent<'fragment'>,
         ];
     }, [] as PortalComponent<'fragment'>[]);
 
@@ -229,20 +233,15 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         return null;
     }
 
-    // These are used with the version history selector, and are only included in requests for the draft branch
-    // (ie from content studio)
-    const versionTimestamps = getPublishedVersionTimestamps(_id, branch);
-
     // This is the preview/editor page for fragments (not user-facing). This content type has a slightly
     // different components structure which requires some special handling
     if (contentQueryResult.type === 'portal:fragment') {
         return {
             ...contentQueryResult,
             fragment: buildFragmentComponentTree(
-                contentQueryResult.components,
+                contentQueryResult.components as GuillotineComponent[],
                 contentQueryResult.unresolvedComponentTypes
             ),
-            versionTimestamps,
             components: undefined,
         };
     }
@@ -252,7 +251,6 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
     const contentWithoutComponents = {
         ...contentQueryResult,
         pathMap: getPathMapForReferences(_id),
-        versionTimestamps,
         ...(breadcrumbs && { breadcrumbs }),
     };
 
@@ -268,7 +266,7 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         ...contentWithoutComponents,
         page: buildPageComponentTree({
             page: contentQueryResult.page,
-            components,
+            components: components as GuillotineComponent[],
             fragments,
         }),
     };
