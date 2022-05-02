@@ -1,0 +1,43 @@
+#import "../contentCommonFragment.graphql"
+#import "./contentListFragment.graphql"
+#import "./externalLinkFragment.graphql"
+#import "./internalLinkFragment.graphql"
+#import "./combos/legacyShortFragments.graphql"
+
+fragment contentSectionPage on no_nav_navno_SectionPage {
+    dataAsJson
+    data {
+        ingress
+        moreNewsUrl
+        panelsHeading
+        languages {
+            language
+            _path
+            _id
+        }
+        tableContents {
+            ...contentLegacyShortFragments
+        }
+        newsContents {
+            ...contentContentList
+        }
+        ntkContents {
+            ...contentContentList
+        }
+        scContents {
+            ...contentContentList
+        }
+        panelItems {
+            title
+            ingress
+            url {
+                text
+                ref {
+                    ...contentCommon
+                    ...contentExternalLink
+                    ...contentInternalLink
+                }
+            }
+        }
+    }
+}

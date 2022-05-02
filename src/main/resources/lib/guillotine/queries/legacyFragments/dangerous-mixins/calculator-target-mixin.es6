@@ -1,4 +1,4 @@
-const calculatorFragment = require('/lib/guillotine/queries/sitecontent/legacyFragments/calculator');
+const calculatorFragment = require('/lib/guillotine/queries/legacyFragments/calculator');
 
 // This fragment can cause circular references/stack overflow if imported
 // directly into a content-type fragment

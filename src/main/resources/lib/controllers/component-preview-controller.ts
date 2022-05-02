@@ -4,7 +4,7 @@ import httpClient from '/lib/http-client';
 import {
     guillotineComponentsQuery,
     guillotineContentQuery,
-} from '../guillotine/queries/sitecontent/sitecontent-query';
+} from '../guillotine/queries/sitecontent-query';
 import { urls } from '../constants';
 import { destructureComponent } from '../guillotine/utils/process-components';
 

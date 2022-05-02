@@ -1,0 +1,10 @@
+#import "./combos/legacyShortFragments.graphql"
+
+fragment contentContentList on no_nav_navno_ContentList {
+    data {
+        sortedBy
+        sectionContents {
+            ...contentLegacyShortFragments
+        }
+    }
+}

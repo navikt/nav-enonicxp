@@ -1,23 +1,23 @@
 import { Content } from '/lib/xp/content';
-import { runInBranchContext } from '../../../utils/branch-context';
-import { RepoBranch } from '../../../../types/common';
+import { runInBranchContext } from '../../utils/branch-context';
+import { RepoBranch } from '../../../types/common';
 import {
     ContentDescriptor,
     CustomContentDescriptor,
-} from '../../../../types/content-types/content-config';
-import { guillotineQuery, GuillotineQueryParams } from '../../guillotine-query';
-import { getPathMapForReferences } from '../../../custom-paths/custom-paths';
-import { getBreadcrumbs } from '../../utils/breadcrumbs';
-import { dynamicPageContentTypes } from '../../../contenttype-lists';
-import { isMedia, stringArrayToSet } from '../../../utils/nav-utils';
-import { NodeComponent } from '../../../../types/components/component-node';
-import { PortalComponent } from '../../../../types/components/component-portal';
-import { ComponentType } from '../../../../types/components/component-config';
+} from '../../../types/content-types/content-config';
+import { guillotineQuery, GuillotineQueryParams } from '../guillotine-query';
+import { getPathMapForReferences } from '../../custom-paths/custom-paths';
+import { getBreadcrumbs } from '../utils/breadcrumbs';
+import { dynamicPageContentTypes } from '../../contenttype-lists';
+import { isMedia, stringArrayToSet } from '../../utils/nav-utils';
+import { NodeComponent } from '../../../types/components/component-node';
+import { PortalComponent } from '../../../types/components/component-portal';
+import { ComponentType } from '../../../types/components/component-config';
 import {
     buildFragmentComponentTree,
     buildPageComponentTree,
     GuillotineComponent,
-} from '../../utils/process-components';
+} from '../utils/process-components';
 import { graphQlContentQueries } from './contenttype-query-map';
 
 const globalFragment = require('./legacyFragments/_global');

@@ -1,4 +1,4 @@
-import { ContentDescriptor } from '../../../../types/content-types/content-config';
+import { ContentDescriptor } from '../../../types/content-types/content-config';
 
 import largeTableQuery from './content-queries/largeTableQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';

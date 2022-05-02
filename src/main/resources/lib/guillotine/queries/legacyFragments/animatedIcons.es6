@@ -1,4 +1,4 @@
-const { imageFragment } = require('/lib/guillotine/queries/sitecontent/legacyFragments/media');
+const { imageFragment } = require('/lib/guillotine/queries/legacyFragments/media');
 
 const codeFragment = `
     ...on media_Code {

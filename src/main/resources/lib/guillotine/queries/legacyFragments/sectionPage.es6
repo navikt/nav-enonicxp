@@ -47,8 +47,8 @@ const sectionPageFragment = `
                 ${globalFragment}
                 ${contentList.fragment}
             }
-            ${decoratorTogglesMixinFragment}
             ${linkPanelsMixinFragment}
+            ${decoratorTogglesMixinFragment}
             ${seoMixinFragment}
             ${languagesMixinFragment}
         }

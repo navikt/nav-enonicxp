@@ -1,7 +1,7 @@
-#import "../contentCommonFragment.graphql"
-#import "./internalLinkFragment.graphql"
-#import "./externalLinkFragment.graphql"
-#import "./urlFragment.graphql"
+#import "../../contentCommonFragment.graphql"
+#import "../internalLinkFragment.graphql"
+#import "../externalLinkFragment.graphql"
+#import "../urlFragment.graphql"
 
 fragment contentLegacyShortFragments on Content {
     ...contentCommon

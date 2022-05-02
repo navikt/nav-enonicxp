@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
-import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent/sitecontent-query';
+import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent-query';
 import { redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
