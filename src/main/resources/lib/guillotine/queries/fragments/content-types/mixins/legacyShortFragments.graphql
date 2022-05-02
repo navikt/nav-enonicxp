@@ -3,7 +3,7 @@
 #import "../externalLinkFragment.graphql"
 #import "../urlFragment.graphql"
 
-fragment contentLegacyShortFragments on Content {
+fragment legacyShortFragmentsMixin on Content {
     ...contentCommon
     ...contentInternalLink
     ...contentExternalLink

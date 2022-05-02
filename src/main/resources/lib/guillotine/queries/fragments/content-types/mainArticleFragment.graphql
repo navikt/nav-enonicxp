@@ -1,0 +1,105 @@
+#import "../contentCommonFragment.graphql"
+#import "./mixins/languagesFragment.graphql"
+#import "../media/imageInlineFragment.graphql"
+
+fragment menuListItem on MenuListItem {
+    links {
+        url
+        text
+    }
+}
+
+fragment contentMainArticle on no_nav_navno_MainArticle {
+    data {
+        ingress
+        social
+        hasTableOfContents
+        languages {
+            ...languagesMixin
+        }
+        text(processHtml: { type: server }) {
+            ...richText
+        }
+        fact(processHtml: { type: server }) {
+            ...richText
+        }
+        picture {
+            size
+            caption
+            altText
+            target {
+                ...imageInline
+            }
+        }
+        chapters {
+            ... on no_nav_navno_MainArticleChapter {
+                ...contentCommon
+                data {
+                    article {
+                        ...contentCommon
+                    }
+                }
+            }
+        }
+        menuListItems {
+            _selected
+            selfservice {
+
+            }
+            form_and_application {
+                links {
+                    url
+                    text
+                }
+            }
+            process_times {
+                links {
+                    url
+                    text
+                }
+            }
+            related_information {
+                links {
+                    url
+                    text
+                }
+            }
+            international {
+                links {
+                    url
+                    text
+                }
+            }
+            report_changes {
+                links {
+                    url
+                    text
+                }
+            }
+            rates {
+                links {
+                    url
+                    text
+                }
+            }
+            appeal_rights {
+                links {
+                    url
+                    text
+                }
+            }
+            membership {
+                links {
+                    url
+                    text
+                }
+            }
+            rules_and_regulations {
+                links {
+                    url
+                    text
+                }
+            }
+        }
+    }
+}

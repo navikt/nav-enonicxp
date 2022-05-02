@@ -1,16 +1,15 @@
 #import "../contentCommonFragment.graphql"
-#import "./combos/legacyShortFragments.graphql"
+#import "./mixins/legacyShortFragments.graphql"
+#import "./mixins/languagesFragment.graphql"
 
 fragment contentPageList on no_nav_navno_PageList {
     dataAsJson
     data {
         languages {
-            language
-            _path
-            _id
+            ...languagesMixin
         }
         sectionContents {
-            ...contentLegacyShortFragments
+            ...legacyShortFragmentsMixin
         }
         menuListItems {
             _selected

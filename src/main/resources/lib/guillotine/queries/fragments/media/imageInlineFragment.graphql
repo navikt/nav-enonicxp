@@ -1,0 +1,16 @@
+fragment imageInline on Content {
+    __typename
+    type
+    ... on media_Vector {
+        mediaUrl(type: server, download: false)
+    }
+    ... on media_Image {
+        mediaUrl(type: server, download: false)
+        imageUrl(type: server, scale: "$scale")
+        imageInfo {
+            imageWidth
+            imageHeight
+            contentType
+        }
+    }
+}

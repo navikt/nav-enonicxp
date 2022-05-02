@@ -2,7 +2,8 @@
 #import "./contentListFragment.graphql"
 #import "./externalLinkFragment.graphql"
 #import "./internalLinkFragment.graphql"
-#import "./combos/legacyShortFragments.graphql"
+#import "./mixins/legacyShortFragments.graphql"
+#import "./mixins/languagesFragment.graphql"
 
 fragment contentSectionPage on no_nav_navno_SectionPage {
     dataAsJson
@@ -11,12 +12,10 @@ fragment contentSectionPage on no_nav_navno_SectionPage {
         moreNewsUrl
         panelsHeading
         languages {
-            language
-            _path
-            _id
+            ...languagesMixin
         }
         tableContents {
-            ...contentLegacyShortFragments
+            ...legacyShortFragmentsMixin
         }
         newsContents {
             ...contentContentList

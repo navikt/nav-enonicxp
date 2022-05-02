@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolverCallback } from '/lib/graphql';
 import { sanitizeText } from '/lib/guillotine/util/naming';
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 import { forceArray } from '../../../utils/nav-utils';
 
 type MenuListData = {
@@ -11,32 +11,12 @@ type MenuListData = {
 
 export const menuListDataCallback: CreationCallback = (context, params) => {
     // Create new types for mapped values
-    const menuListLink = graphQlCreateObjectType(context, {
-        name: context.uniqueName('MenuListLink'),
-        description: 'Lenke i MenuListItem',
-        fields: {
-            url: { type: graphQlLib.GraphQLString },
-            text: { type: graphQlLib.GraphQLString },
-        },
-    });
-
-    const menuListItem = graphQlCreateObjectType(context, {
-        name: context.uniqueName('MenuListItem'),
-        description: 'Lenker i høyremeny',
-        fields: {
-            links: {
-                type: graphQlLib.list(menuListLink),
-            },
-        },
-    });
-
-    // Create new types for mapped values
     Object.keys(params.fields).forEach((key) => {
         if (key !== '_selected') {
             const sanitizedKey = sanitizeText(key);
             params.fields[sanitizedKey] = {
                 resolve: resolve(sanitizedKey),
-                type: menuListItem,
+                type: graphQlLib.reference('MenuListItem'),
             };
         }
     });

@@ -13,14 +13,13 @@ const {
 
 const mainArticleFragment = `
     ...on no_nav_navno_MainArticle {
-        ${globalFragment}
         data {
-            ${languagesMixinFragment}
-            ingress
-            text ${processedHtmlFragment}
-            hasTableOfContents
-            fact ${processedHtmlFragment}
             social
+            ingress
+            hasTableOfContents
+            ${languagesMixinFragment}
+            text ${processedHtmlFragment}
+            fact ${processedHtmlFragment}
             picture {
                 target {
                     ${imageFragment}

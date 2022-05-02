@@ -12,6 +12,7 @@ import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
 import contantInformationQuery from './content-queries/contactInformationQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
+import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'portal:site': portalSiteQuery,
@@ -26,4 +27,5 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
     'no.nav.navno:contact-information': contantInformationQuery,
     'no.nav.navno:page-list': pageListQuery,
+    'no.nav.navno:section-page': sectionPageQuery,
 };
