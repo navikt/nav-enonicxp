@@ -1,20 +1,11 @@
+import { CreationCallback } from 'lib/guillotine/utils/creation-callback-utils';
+
 // const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 
 const { getProductList } = require('../../../productList/productList');
 
-/*
-id: product._id,
-path: product._path,
-title: product.data.title || product.displayName,
-ingress: product.data.ingress,
-illustration: getProductIllustrationIcon(product),
-taxonomy: navUtils.forceArray(product.data.taxonomy),
-area: product.data.area,
-situationPages: getProductSituationPages(product),
-*/
-
-const overviewCallback = (context, params) => {
+export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlLib.createObjectType(context, {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
@@ -82,5 +73,3 @@ const overviewCallback = (context, params) => {
         },
     };
 };
-
-module.exports = { overviewCallback };
