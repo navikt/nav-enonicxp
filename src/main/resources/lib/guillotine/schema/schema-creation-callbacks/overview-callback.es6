@@ -1,7 +1,7 @@
 // const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 
-const { getProductList } = require('../../../overview/overview');
+const { getProductList } = require('../../../productList/productList');
 
 /*
 id: product._id,
@@ -61,7 +61,7 @@ const overviewCallback = (context, params) => {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
-            id: { type: graphQlLib.GraphQLString },
+            _id: { type: graphQlLib.GraphQLString },
             path: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },

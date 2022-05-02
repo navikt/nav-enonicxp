@@ -3,7 +3,7 @@ const overviewList = `
         displayName
         data {
             productList {
-                id
+                _id
                 path
                 title
                 ingress

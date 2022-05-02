@@ -4,7 +4,7 @@ import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { forceArray } from '../utils/nav-utils';
 
-import { getProductIllustrationIcons, getProductSituationPages } from './overviewUtils';
+import { getProductIllustrationIcons, getProductSituationPages } from './productLIstUtils';
 import { getContentFromCustomPath } from '../custom-paths/custom-paths';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
@@ -99,7 +99,7 @@ const cleanProduct = (product: any) => {
     const situationPages = getProductSituationPages(product);
 
     return {
-        id: product._id,
+        _id: product._id,
         path: product._path,
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
@@ -173,6 +173,10 @@ const generateProductListData = () => {
     }
 };
 
+const requestProductListUpdate = () => {
+    runInBranchContext(generateProductListData, 'master');
+};
+
 const buildProductListAndActivateSchedule = () => {
     runInBranchContext(generateProductListData, 'master');
 
@@ -199,7 +203,7 @@ const updateProductListData = (productList: any) => {
     productListData.clear();
 
     productList.forEach((entry) => {
-        productListData.set(entry.id, entry);
+        productListData.set(entry._id, entry);
     });
 };
 
@@ -217,6 +221,7 @@ const activateDataUpdateEventListener = () => {
 export {
     getProductList,
     buildProductListAndActivateSchedule,
+    requestProductListUpdate,
     updateProductListEntry,
     activateDataUpdateEventListener,
 };

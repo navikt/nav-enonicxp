@@ -18,7 +18,7 @@ import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listen
 import {
     activateDataUpdateEventListener,
     buildProductListAndActivateSchedule,
-} from './lib/overview/overview';
+} from './lib/productList/productList';
 
 const { hookLibsWithTimeTravel } = require('/lib/time-travel/run-with-time-travel');
 const facetLib = require('/lib/facets');
