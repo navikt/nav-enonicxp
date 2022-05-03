@@ -1,0 +1,7 @@
+fragment pagePageWithSideMenus on Page_no_nav_navno_page_with_side_menus {
+    anchorLinks(contentId: $ref) {
+        anchorId
+        linkText
+        isDupe
+    }
+}

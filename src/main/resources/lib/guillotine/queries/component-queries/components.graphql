@@ -1,6 +1,7 @@
 # TODO: split this into separate queries for each component
 #import "../fragments/components/partsFragment.graphql"
 #import "../fragments/components/layoutsFragment.graphql"
+#import "../fragments/components/pagesFragment.graphql"
 
 query componentsQuery($ref: ID!) {
     guillotine {
@@ -16,6 +17,14 @@ query componentsQuery($ref: ID!) {
                 }
                 layout {
                     ...layoutComponents
+                }
+                page {
+                    ...pageComponents
+                }
+                image {
+                    image {
+                        imageUrl(type: server, scale: "$scale")
+                    }
                 }
             }
         }
