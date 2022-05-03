@@ -1,0 +1,32 @@
+#import "../contentCommonFragment.graphql"
+#import "./mixins/languagesFragment.graphql"
+#import "./mainArticleFragment.graphql"
+
+fragment contentMainArticleChapter on no_nav_navno_MainArticleChapter {
+    parent {
+        ... on no_nav_navno_MainArticle {
+            ...contentCommon
+            data {
+                chapters {
+                    ... on no_nav_navno_MainArticleChapter {
+                        ...contentCommon
+                        data {
+                            article {
+                                ...contentCommon
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    data(resolveLanguages: true) {
+        languages {
+            ...languagesMixin
+        }
+        article {
+            ...contentCommon
+            ...contentMainArticle
+        }
+    }
+}

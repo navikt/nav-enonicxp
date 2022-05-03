@@ -22,7 +22,6 @@ import { graphQlContentQueries } from './contenttype-query-map';
 
 const globalFragment = require('./legacyFragments/_global');
 const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
-const mainArticleChapter = require('./legacyFragments/mainArticleChapter');
 const {
     dynamicPageFragment,
     productPageFragment,
@@ -31,7 +30,6 @@ const {
     guidePageFragment,
     toolsPageFragment,
 } = require('./legacyFragments/dynamicPage');
-const media = require('./legacyFragments/media');
 
 type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwOnErrors'>;
 
@@ -67,7 +65,6 @@ const buildPageContentQuery = (contentTypeFragment?: string) =>
 }`;
 
 const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
-    'no.nav.navno:main-article-chapter': mainArticleChapter.fragment,
     'no.nav.navno:dynamic-page': dynamicPageFragment,
     'no.nav.navno:content-page-with-sidemenus': productPageFragment,
     'no.nav.navno:situation-page': situationPageFragment,
@@ -85,15 +82,6 @@ const contentQueriesLegacy = Object.entries(contentToQueryFragment).reduce(
     },
     {} as { [type in ContentDescriptor]: string }
 );
-
-const mediaQuery = `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${globalFragment}
-            ${media.mediaAttachmentFragment}
-        }
-    }
-}`;
 
 const componentsQuery = `query($ref:ID!){
     guillotine {
@@ -161,18 +149,18 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         throwOnErrors: true,
     };
 
-    // Media types only redirect to the media asset in the frontend and don't require any further processing
-    if (isMedia(baseContent)) {
-        return guillotineQuery({
-            ...baseQueryParams,
-            query: mediaQuery,
-        })?.get;
-    }
-
     const contentQuery = graphQlContentQueries[type] || contentQueriesLegacy[type];
 
     if (!contentQuery) {
         return null;
+    }
+
+    // Media types only redirect to the media asset in the frontend and don't require any further processing
+    if (isMedia(baseContent)) {
+        return guillotineQuery({
+            ...baseQueryParams,
+            query: contentQuery,
+        })?.get;
     }
 
     const contentQueryResult = guillotineQuery({

@@ -1,0 +1,12 @@
+#import "../fragments/contentCommonFragment.graphql"
+
+query mediaDataQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ... on media_Data {
+                mediaUrl(type: server, download: true)
+            }
+        }
+    }
+}

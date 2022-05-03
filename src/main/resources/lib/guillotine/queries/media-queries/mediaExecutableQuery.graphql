@@ -1,0 +1,12 @@
+#import "../fragments/contentCommonFragment.graphql"
+
+query mediaExecutableQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ... on media_Executable {
+                mediaUrl(type: server, download: true)
+            }
+        }
+    }
+}

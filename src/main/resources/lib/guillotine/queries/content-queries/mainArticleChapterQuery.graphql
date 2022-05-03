@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+#import "../fragments/content-types/mainArticleChapterFragment.graphql"
+
+query mainArticleChapterQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+            ...contentMainArticleChapter
+        }
+    }
+}
