@@ -95,6 +95,7 @@ fragment macros on Macro {
 fragment html_fragmentMacro on Macro {
     config {
         html_fragment {
+            fragmentId
             processedHtml {
                 processedHtml
                 macros {
