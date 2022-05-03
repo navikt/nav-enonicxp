@@ -21,6 +21,7 @@ import {
 import { graphQlContentQueries } from './contenttype-query-map';
 
 import componentsQuery from './component-queries/components.graphql';
+import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 
 const globalFragment = require('./legacyFragments/_global');
 const { fragmentComponentsFragment } = require('./legacyFragments/_components');
@@ -84,14 +85,6 @@ const contentQueriesLegacy = Object.entries(contentToQueryFragment).reduce(
     },
     {} as { [type in ContentDescriptor]: string }
 );
-
-const fragmentComponentsQuery = `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${fragmentComponentsFragment}
-        }
-    }
-}`;
 
 export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const queryParams = {

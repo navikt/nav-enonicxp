@@ -1,31 +1,11 @@
 # TODO: split this into separate queries for each component
-#import "../fragments/components/partsFragment.graphql"
-#import "../fragments/components/layoutsFragment.graphql"
-#import "../fragments/components/pagesFragment.graphql"
+#import "../fragments/components/allComponentsFragment.graphql"
 
 query componentsQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             components(resolveTemplate: true, resolveFragment: false) {
-                type
-                path
-                fragment {
-                    id
-                }
-                part {
-                    ...partComponents
-                }
-                layout {
-                    ...layoutComponents
-                }
-                page {
-                    ...pageComponents
-                }
-                image {
-                    image {
-                        imageUrl(type: server, scale: "$scale")
-                    }
-                }
+                ...allComponents
             }
         }
     }
