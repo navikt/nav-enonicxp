@@ -4,6 +4,12 @@ fragment macros on Macro {
     name
     ref
     config {
+        alert_box {
+            type
+            size
+            inline
+            body
+        }
         button {
             text
             url
