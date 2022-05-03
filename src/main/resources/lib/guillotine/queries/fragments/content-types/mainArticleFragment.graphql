@@ -2,7 +2,7 @@
 #import "../mixins/languagesFragment.graphql"
 #import "../mixins/menuListItemFragment.graphql"
 #import "../mixins/imageInlineFragment.graphql"
-#import "../richtext/richTextFragment.graphql"
+#import "../richText/richTextFragment.graphql"
 
 fragment contentMainArticle on no_nav_navno_MainArticle {
     dataAsJson
