@@ -3,7 +3,7 @@ import { runInBranchContext } from '../utils/branch-context';
 import { getUnixTimeFromDateTimeString, stringArrayToSet } from '../utils/nav-utils';
 import { Content } from '/lib/xp/content';
 import { contentLibGetStandard, timeTravelHooksEnabled } from './time-travel-hooks';
-import { graphQlContentQueries } from '../guillotine/queries/contenttype-query-map';
+import { graphQlContentQueries } from '../guillotine/queries/run-content-query';
 
 const contentTypesWithQuery = stringArrayToSet(Object.keys(graphQlContentQueries));
 

@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
-import { guillotineContentQuery } from '../../lib/guillotine/queries/sitecontent-query';
+import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
@@ -84,7 +84,7 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         return null;
     }
 
-    return guillotineContentQuery(redirectContent, branch);
+    return runSitecontentGuillotineQuery(redirectContent, branch);
 };
 
 const getContentOrRedirect = (
@@ -113,7 +113,7 @@ const getContentOrRedirect = (
         } as Content<'no.nav.navno:internal-link'>;
     }
 
-    const content = guillotineContentQuery(baseContent, branch);
+    const content = runSitecontentGuillotineQuery(baseContent, branch);
 
     // Consistency check to ensure our version-history hack isn't affecting normal requests
     if (!validateTimestampConsistency(contentRef, content, branch)) {

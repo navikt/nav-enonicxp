@@ -1,8 +1,8 @@
 import graphQlLib from '/lib/graphql';
-import { schema } from './schema/schema';
-import { runInBranchContext } from '../utils/branch-context';
-import { RepoBranch } from '../../types/common';
-import { mergeGuillotineArray, mergeGuillotineObject } from './utils/merge-json';
+import { schema } from '../schema/schema';
+import { runInBranchContext } from '../../utils/branch-context';
+import { RepoBranch } from '../../../types/common';
+import { mergeGuillotineArray, mergeGuillotineObject } from './merge-json';
 
 // We don't have any good Typescript integration with Guillotine/GraphQL atm
 // so just return as any for now...
@@ -26,7 +26,7 @@ export type GuillotineQueryParams = {
     throwOnErrors?: boolean;
 };
 
-export const guillotineQuery = ({
+export const runGuillotineQuery = ({
     query,
     branch,
     jsonBaseKeys,

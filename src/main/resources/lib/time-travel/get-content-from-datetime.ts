@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { runWithTimeTravel } from './run-with-time-travel';
-import { guillotineContentQuery } from '../guillotine/queries/sitecontent-query';
+import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { getPublishedVersionTimestamps } from '../utils/version-utils';
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
@@ -26,7 +26,7 @@ export const getContentVersionFromDateTime = (
                 return null;
             }
 
-            const content = guillotineContentQuery(contentFromDateTime, 'draft');
+            const content = runSitecontentGuillotineQuery(contentFromDateTime, 'draft');
             if (!content) {
                 return null;
             }

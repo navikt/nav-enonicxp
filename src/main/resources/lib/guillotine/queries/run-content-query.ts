@@ -1,4 +1,8 @@
-import { ContentDescriptor } from '../../../types/content-types/content-config';
+import { Content } from '/lib/xp/content';
+import {
+    ContentDescriptor,
+    CustomContentDescriptor,
+} from '../../../types/content-types/content-config';
 
 import mediaArchiveQuery from './media-queries/mediaArchiveQuery.graphql';
 import mediaAudioQuery from './media-queries/mediaAudioQuery.graphql';
@@ -36,6 +40,15 @@ import situationPageQuery from './content-queries/situationPageQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
+import { isMedia } from '../../utils/nav-utils';
+import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
+import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
+import { runInBranchContext } from '../../utils/branch-context';
+import { getBreadcrumbs } from '../utils/breadcrumbs';
+import { getPathMapForReferences } from '../../custom-paths/custom-paths';
+import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
+import { PortalComponent } from '../../../types/components/component-portal';
+import { NodeComponent } from '../../../types/components/component-node';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -51,26 +64,90 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:unknown': mediaUnknownQuery,
     'media:vector': mediaVectorQuery,
     'media:video': mediaVideoQuery,
-    'no.nav.navno:url': urlQuery,
-    'no.nav.navno:large-table': largeTableQuery,
-    'no.nav.navno:transport-page': transportPageQuery,
+    'no.nav.navno:contact-information': contantInformationQuery,
+    'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
+    'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
-    'no.nav.navno:office-information': officeInformationQuery,
-    'no.nav.navno:melding': meldingQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
-    'no.nav.navno:publishing-calendar': publishingCalendarQuery,
-    'no.nav.navno:contact-information': contantInformationQuery,
-    'no.nav.navno:page-list': pageListQuery,
-    'no.nav.navno:section-page': sectionPageQuery,
+    'no.nav.navno:guide-page': guidePageQuery,
+    'no.nav.navno:large-table': largeTableQuery,
     'no.nav.navno:main-article': mainArticleQuery,
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
-    'no.nav.navno:dynamic-page': dynamicPageQuery,
-    'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
+    'no.nav.navno:melding': meldingQuery,
+    'no.nav.navno:office-information': officeInformationQuery,
+    'no.nav.navno:page-list': pageListQuery,
+    'no.nav.navno:publishing-calendar': publishingCalendarQuery,
+    'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:situation-page': situationPageQuery,
-    'no.nav.navno:guide-page': guidePageQuery,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,
-    'portal:site': portalSiteQuery,
+    'no.nav.navno:transport-page': transportPageQuery,
+    'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
+    'portal:site': portalSiteQuery,
+};
+
+// TODO: improve these types if/when Guillotine gets better Typescript support
+export type GuillotineContentQueryResult =
+    | {
+          type: CustomContentDescriptor;
+          page: PortalComponent<'page'>;
+      }
+    | {
+          type: 'portal:fragment';
+          components: NodeComponent[];
+          unresolvedComponentTypes: GuillotineUnresolvedComponentType[];
+      };
+
+export const runGuillotineContentQuery = (
+    baseContent: Content,
+    baseQueryParams: Omit<GuillotineQueryParams, 'query'>
+) => {
+    const { _id } = baseContent;
+
+    const contentQuery = graphQlContentQueries[baseContent.type];
+
+    if (!contentQuery) {
+        return null;
+    }
+
+    // Media types only redirect to the media asset in the frontend and don't require any further processing
+    if (isMedia(baseContent)) {
+        return runGuillotineQuery({
+            ...baseQueryParams,
+            query: contentQuery,
+        })?.get;
+    }
+
+    const contentQueryResult = runGuillotineQuery({
+        ...baseQueryParams,
+        query: contentQuery,
+        jsonBaseKeys: ['data', 'config', 'page'],
+    })?.get as GuillotineContentQueryResult;
+
+    if (!contentQueryResult) {
+        return null;
+    }
+
+    // This is the preview/editor page for fragments (not user-facing). This content type has a slightly
+    // different components structure which requires some special handling
+    if (contentQueryResult.type === 'portal:fragment') {
+        return {
+            ...contentQueryResult,
+            fragment: buildFragmentComponentTree(
+                contentQueryResult.components as GuillotineComponent[],
+                contentQueryResult.unresolvedComponentTypes
+            ),
+            components: undefined,
+        };
+    }
+
+    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(_id), baseQueryParams.branch);
+
+    return {
+        ...contentQueryResult,
+        pathMap: getPathMapForReferences(_id),
+        ...(breadcrumbs && { breadcrumbs }),
+    };
 };
