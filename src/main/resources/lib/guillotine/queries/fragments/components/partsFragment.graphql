@@ -11,6 +11,7 @@
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
 #import "./parts/partProductCard.graphql"
+#import "./parts/partProductCardMicro.graphql"
 #import "./parts/partProductCardMini.graphql"
 
 fragment partComponents on PartComponentData {
@@ -57,6 +58,9 @@ fragment partComponents on PartComponentData {
                 }
                 product_card {
                     ...partComponentProductCard
+                }
+                product_card_micro {
+                    ...partComponentProductCardMicro
                 }
                 product_card_mini {
                     ...partComponentProductCardMini

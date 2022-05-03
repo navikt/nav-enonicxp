@@ -1,0 +1,9 @@
+#import "../../mixins/productTargetFragment.graphql"
+
+fragment partComponentProductCardMicro on Part_no_nav_navno_product_card_micro {
+    card_list {
+        targetPage {
+            ...productTargetMixin
+        }
+    }
+}
