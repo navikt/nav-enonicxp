@@ -1,0 +1,17 @@
+#import "./layouts/layoutSectionWithHeader.graphql"
+#import "./layouts/layoutSituationFlexCols.graphql"
+
+fragment layoutComponents on LayoutComponentData {
+    descriptor
+    configAsJson
+    config {
+        no_nav_navno {
+            section_with_header {
+                ...layoutComponentSectionWithHeader
+            }
+            situation_flex_cols {
+                ...layoutComponentSituationFlexCols
+            }
+        }
+    }
+}

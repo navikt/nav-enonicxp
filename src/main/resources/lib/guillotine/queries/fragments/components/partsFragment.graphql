@@ -1,17 +1,17 @@
-#import "./parts/partDynamicHeader.graphql"
-#import "./parts/partDynamicLinkPanel.graphql"
-#import "./parts/partDynamicAlert.graphql"
-#import "./parts/partDynamicLinkList.graphql"
-#import "./parts/partDynamicNewsList.graphql"
-#import "./parts/partHtmlArea.graphql"
-#import "./parts/partPageHeader.graphql"
 #import "./parts/partButton.graphql"
-#import "./parts/partPageNavigationMenu.graphql"
-#import "./parts/partFiltersMenu.graphql"
-#import "./parts/partProductCard.graphql"
-#import "./parts/partProductCardMini.graphql"
 #import "./parts/partCalculator.graphql"
 #import "./parts/partContactOption.graphql"
+#import "./parts/partDynamicAlert.graphql"
+#import "./parts/partDynamicHeader.graphql"
+#import "./parts/partDynamicLinkList.graphql"
+#import "./parts/partDynamicLinkPanel.graphql"
+#import "./parts/partDynamicNewsList.graphql"
+#import "./parts/partFiltersMenu.graphql"
+#import "./parts/partHtmlArea.graphql"
+#import "./parts/partPageHeader.graphql"
+#import "./parts/partPageNavigationMenu.graphql"
+#import "./parts/partProductCard.graphql"
+#import "./parts/partProductCardMini.graphql"
 
 fragment partComponents on PartComponentData {
     descriptor
@@ -19,20 +19,32 @@ fragment partComponents on PartComponentData {
     config {
         ... on PartComponentDataConfig {
             no_nav_navno {
-                dynamic_header {
-                    ...partComponentDynamicHeader
+                button {
+                    ...partComponentButton
                 }
-                dynamic_link_panel {
-                    ...partComponentDynamicLinkPanel
+                calculator {
+                    ...partComponentCalculator
+                }
+                contact_option {
+                    ...partComponentContactOption
                 }
                 dynamic_alert {
                     ...partComponentDynamicAlert
                 }
+                dynamic_header {
+                    ...partComponentDynamicHeader
+                }
                 dynamic_link_list {
                     ...partComponentDynamicLinkList
                 }
+                dynamic_link_panel {
+                    ...partComponentDynamicLinkPanel
+                }
                 dynamic_news_list {
                     ...partComponentDynamicNewsList
+                }
+                filters_menu {
+                    ...partComponentFiltersMenu
                 }
                 html_area {
                     ...partComponentHtmlArea
@@ -40,26 +52,14 @@ fragment partComponents on PartComponentData {
                 page_header {
                     ...partComponentPageHeader
                 }
-                button {
-                    ...partComponentButton
-                }
                 page_navigation_menu {
                     ...partComponentPageNavigationMenu
-                }
-                filters_menu {
-                    ...partComponentFiltersMenu
                 }
                 product_card {
                     ...partComponentProductCard
                 }
                 product_card_mini {
                     ...partComponentProductCardMini
-                }
-                calculator {
-                    ...partComponentCalculator
-                }
-                contact_option {
-                    ...partComponentContactOption
                 }
             }
         }
