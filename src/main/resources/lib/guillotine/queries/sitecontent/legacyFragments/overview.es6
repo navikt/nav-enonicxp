@@ -21,10 +21,6 @@ const overviewList = `
                         }
                     }
                 }
-                situationPages {
-                    path
-                    title
-                }
             }
         }
     }

@@ -4,7 +4,7 @@ import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { forceArray } from '../utils/nav-utils';
 
-import { getProductIllustrationIcons } from './productListUtils';
+import { getProductIllustrationIcons } from './productListHelpers';
 import { getContentFromCustomPath } from '../custom-paths/custom-paths';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
