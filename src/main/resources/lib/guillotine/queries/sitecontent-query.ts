@@ -24,7 +24,6 @@ import componentsQuery from './component-queries/components.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 
 const globalFragment = require('./legacyFragments/_global');
-const { fragmentComponentsFragment } = require('./legacyFragments/_components');
 const {
     dynamicPageFragment,
     productPageFragment,
@@ -74,7 +73,6 @@ const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:themed-article-page': themedArticlePageFragment,
     'no.nav.navno:guide-page': guidePageFragment,
     'no.nav.navno:tools-page': toolsPageFragment,
-    'portal:fragment': fragmentComponentsFragment,
 };
 
 export const contentTypesFromGuillotineQuery = Object.keys(contentToQueryFragment);

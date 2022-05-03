@@ -29,6 +29,7 @@ import pageListQuery from './content-queries/pageListQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
+import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -59,4 +60,5 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article': mainArticleQuery,
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
     'portal:site': portalSiteQuery,
+    'portal:fragment': portalFragmentQuery,
 };
