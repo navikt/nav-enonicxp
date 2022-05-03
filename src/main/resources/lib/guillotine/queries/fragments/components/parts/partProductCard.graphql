@@ -3,6 +3,6 @@
 fragment partComponentProductCard on Part_no_nav_navno_product_card {
     ingressOverride
     targetPage {
-        ...productTarget
+        ...productTargetMixin
     }
 }

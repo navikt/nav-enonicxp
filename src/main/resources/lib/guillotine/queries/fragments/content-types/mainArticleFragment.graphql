@@ -24,7 +24,7 @@ fragment contentMainArticle on no_nav_navno_MainArticle {
             caption
             altText
             target {
-                ...imageInline
+                ...imageInlineMixin
             }
         }
         chapters {
@@ -40,34 +40,34 @@ fragment contentMainArticle on no_nav_navno_MainArticle {
         menuListItems {
             _selected
             selfservice {
-                ...menuListItem
+                ...menuListItemMixin
             }
             form_and_application {
-                ...menuListItem
+                ...menuListItemMixin
             }
             process_times {
-                ...menuListItem
+                ...menuListItemMixin
             }
             related_information {
-                ...menuListItem
+                ...menuListItemMixin
             }
             international {
-                ...menuListItem
+                ...menuListItemMixin
             }
             report_changes {
-                ...menuListItem
+                ...menuListItemMixin
             }
             rates {
-                ...menuListItem
+                ...menuListItemMixin
             }
             appeal_rights {
-                ...menuListItem
+                ...menuListItemMixin
             }
             membership {
-                ...menuListItem
+                ...menuListItemMixin
             }
             rules_and_regulations {
-                ...menuListItem
+                ...menuListItemMixin
             }
         }
     }

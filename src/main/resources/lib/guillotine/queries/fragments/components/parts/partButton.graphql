@@ -3,7 +3,7 @@
 
 fragment partComponentButton on Part_no_nav_navno_button {
     icon {
-        ...imageInline
+        ...imageInlineMixin
     }
     link {
         _selected
@@ -14,7 +14,7 @@ fragment partComponentButton on Part_no_nav_navno_button {
         internal {
             text
             target {
-                ...internalLinkTarget
+                ...internalLinkTargetMixin
             }
         }
     }

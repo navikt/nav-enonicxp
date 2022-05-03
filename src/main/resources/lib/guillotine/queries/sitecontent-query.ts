@@ -1,10 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { runInBranchContext } from '../../utils/branch-context';
 import { RepoBranch } from '../../../types/common';
-import {
-    ContentDescriptor,
-    CustomContentDescriptor,
-} from '../../../types/content-types/content-config';
+import { CustomContentDescriptor } from '../../../types/content-types/content-config';
 import { guillotineQuery, GuillotineQueryParams } from '../guillotine-query';
 import { getPathMapForReferences } from '../../custom-paths/custom-paths';
 import { getBreadcrumbs } from '../utils/breadcrumbs';
@@ -22,16 +19,6 @@ import { graphQlContentQueries } from './contenttype-query-map';
 
 import componentsQuery from './component-queries/components.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
-
-const globalFragment = require('./legacyFragments/_global');
-const {
-    dynamicPageFragment,
-    productPageFragment,
-    situationPageFragment,
-    themedArticlePageFragment,
-    guidePageFragment,
-    toolsPageFragment,
-} = require('./legacyFragments/dynamicPage');
 
 type BaseQueryParams = Pick<GuillotineQueryParams, 'branch' | 'params' | 'throwOnErrors'>;
 
@@ -54,35 +41,6 @@ export type GuillotineContentQueryResult =
 export type GuillotineComponentQueryResult = {
     components: GuillotineComponent[];
 };
-
-const buildPageContentQuery = (contentTypeFragment?: string) =>
-    `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${globalFragment}
-            ${contentTypeFragment || ''}
-            pageAsJson(resolveTemplate: true, resolveFragment: false)
-        }
-    }
-}`;
-
-const contentToQueryFragment: { [type in ContentDescriptor]?: string } = {
-    'no.nav.navno:dynamic-page': dynamicPageFragment,
-    'no.nav.navno:content-page-with-sidemenus': productPageFragment,
-    'no.nav.navno:situation-page': situationPageFragment,
-    'no.nav.navno:themed-article-page': themedArticlePageFragment,
-    'no.nav.navno:guide-page': guidePageFragment,
-    'no.nav.navno:tools-page': toolsPageFragment,
-};
-
-export const contentTypesFromGuillotineQuery = Object.keys(contentToQueryFragment);
-
-const contentQueriesLegacy = Object.entries(contentToQueryFragment).reduce(
-    (acc, [type, fragment]) => {
-        return { ...acc, [type]: buildPageContentQuery(fragment) };
-    },
-    {} as { [type in ContentDescriptor]: string }
-);
 
 export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const queryParams = {
@@ -134,7 +92,7 @@ export const guillotineContentQuery = (baseContent: Content, branch: RepoBranch)
         throwOnErrors: true,
     };
 
-    const contentQuery = graphQlContentQueries[type] || contentQueriesLegacy[type];
+    const contentQuery = graphQlContentQueries[type];
 
     if (!contentQuery) {
         return null;

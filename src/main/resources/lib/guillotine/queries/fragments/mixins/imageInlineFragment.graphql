@@ -1,4 +1,4 @@
-fragment imageInline on Content {
+fragment imageInlineMixin on Content {
     __typename
     type
     ... on media_Vector {

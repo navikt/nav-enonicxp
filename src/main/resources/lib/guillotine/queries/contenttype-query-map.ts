@@ -30,6 +30,12 @@ import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
 import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
+import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
+import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
+import situationPageQuery from './content-queries/situationPageQuery.graphql';
+import guidePageQuery from './content-queries/guidePageQuery.graphql';
+import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
+import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -59,6 +65,12 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:main-article': mainArticleQuery,
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
+    'no.nav.navno:dynamic-page': dynamicPageQuery,
+    'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
+    'no.nav.navno:situation-page': situationPageQuery,
+    'no.nav.navno:guide-page': guidePageQuery,
+    'no.nav.navno:themed-article-page': themedArticlePageQuery,
+    'no.nav.navno:tools-page': toolsPageQuery,
     'portal:site': portalSiteQuery,
     'portal:fragment': portalFragmentQuery,
 };

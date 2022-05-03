@@ -1,6 +1,6 @@
 #import "../contentCommonFragment.graphql"
 #TODO: add content types
 
-fragment productTarget on Content {
+fragment productTargetMixin on Content {
     ...contentCommon
 }

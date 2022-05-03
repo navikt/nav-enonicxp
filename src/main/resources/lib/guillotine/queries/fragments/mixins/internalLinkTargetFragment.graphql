@@ -2,7 +2,7 @@
 #import "../content-types/externalLinkFragment.graphql"
 #import "../content-types/urlFragment.graphql"
 
-fragment internalLinkTarget on Content {
+fragment internalLinkTargetMixin on Content {
     ...contentCommon
     ...contentExternalLink
     ...contentUrl

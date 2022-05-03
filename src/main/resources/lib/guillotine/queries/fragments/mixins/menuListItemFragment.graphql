@@ -1,4 +1,4 @@
-fragment menuListItem on MenuListItem {
+fragment menuListItemMixin on MenuListItem {
     links {
         url
         text

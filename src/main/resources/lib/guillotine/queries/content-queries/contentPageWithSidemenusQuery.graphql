@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+#import "../fragments/content-types/contentPageWithSidemenusFragment.graphql"
+
+query contentPageWithSidemenusQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+            ...contentContentPageWithSidemenus
+        }
+    }
+}

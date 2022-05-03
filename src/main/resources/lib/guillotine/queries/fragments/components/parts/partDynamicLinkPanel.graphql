@@ -12,14 +12,14 @@ fragment partComponentDynamicLinkPanel on Part_no_nav_navno_dynamic_link_panel {
         internal {
             text
             target {
-                ...internalLinkTarget
+                ...internalLinkTargetMixin
             }
         }
     }
     icon {
-        ...imageInline
+        ...imageInlineMixin
     }
     background {
-        ...imageInline
+        ...imageInlineMixin
     }
 }
