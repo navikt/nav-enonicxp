@@ -1,3 +1,5 @@
+#import "../mixins/productTargetFragment.graphql"
+
 fragment macros on Macro {
     name
     ref
@@ -64,13 +66,9 @@ fragment macros on Macro {
             phoneNumber
             text
         }
-        # TODO: finish this
         product_card_mini {
             targetPage {
-                __typename
-                _path
-                displayName
-                type
+                ...productTargetMixin
             }
         }
         quote {
