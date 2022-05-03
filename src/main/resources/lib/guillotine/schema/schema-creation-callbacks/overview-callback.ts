@@ -39,15 +39,6 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const situationPage = graphQlLib.createObjectType(context, {
-        name: context.uniqueName('SituationPageType'),
-        description: 'Situasjonsside',
-        fields: {
-            path: { type: graphQlLib.GraphQLString },
-            title: { type: graphQlLib.GraphQLString },
-        },
-    });
-
     const productType = graphQlLib.createObjectType(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
@@ -61,7 +52,6 @@ export const overviewCallback: CreationCallback = (context, params) => {
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.GraphQLString },
             illustration: { type: illustration },
-            situationPages: { type: graphQlLib.list(situationPage) },
         },
     });
 

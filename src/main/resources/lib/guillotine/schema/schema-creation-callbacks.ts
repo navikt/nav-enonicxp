@@ -42,6 +42,7 @@ export const schemaCreationCallbacks = applyMacroCreationCallbacksToHtmlFragment
     no_nav_navno_MainArticleChapter: mainArticleChapterCallback,
     no_nav_navno_SectionPage_Data: sectionPageDataCallback,
     no_nav_navno_ContentList_Data: contentListDataCallback,
+    no_nav_navno_Overview_Data: overviewCallback,
     no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,

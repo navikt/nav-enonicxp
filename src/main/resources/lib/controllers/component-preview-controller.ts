@@ -6,7 +6,7 @@ import {
     guillotineContentQuery,
 } from '../guillotine/queries/sitecontent/sitecontent-query';
 import { urls } from '../constants';
-import { destructureComponent, GuillotineComponent } from '../guillotine/utils/process-components';
+import { destructureComponent } from '../guillotine/utils/process-components';
 
 const fallbackResponse = {
     contentType: 'text/html',

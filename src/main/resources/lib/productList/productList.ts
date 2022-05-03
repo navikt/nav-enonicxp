@@ -4,7 +4,7 @@ import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { forceArray } from '../utils/nav-utils';
 
-import { getProductIllustrationIcons, getProductSituationPages } from './productLIstUtils';
+import { getProductIllustrationIcons } from './productListUtils';
 import { getContentFromCustomPath } from '../custom-paths/custom-paths';
 import { runInBranchContext } from '../utils/branch-context';
 import { ContentDescriptor } from 'types/content-types/content-config';
@@ -96,7 +96,6 @@ const updateProductListEntry = (path: any) => {
 
 const cleanProduct = (product: any) => {
     const icons = getProductIllustrationIcons(product);
-    const situationPages = getProductSituationPages(product);
 
     return {
         _id: product._id,
@@ -113,11 +112,10 @@ const cleanProduct = (product: any) => {
                 icons,
             },
         },
-        situationPages,
     };
 };
 
-const getAllProducts = (start = 0, previousEntries = []) => {
+const getAllProducts = (start = 0) => {
     const entriesBatch = contentLib
         .query({
             start,

@@ -1,4 +1,5 @@
-const contentLib = require('/lib/xp/content');
+import contentLib from '/lib/xp/content';
+import { AnimatedIcons } from 'site/content-types/animated-icons/animated-icons';
 
 export const getProductIllustrationIcons = (product: any) => {
     const illustrationId = product?.data?.illustration;
@@ -13,7 +14,8 @@ export const getProductIllustrationIcons = (product: any) => {
         return null;
     }
 
-    const { icons = [] } = illustrationDocument.data;
+    const { icons = [] } = illustrationDocument.data as AnimatedIcons;
+
     return icons
         .filter(({ icon }: any) => !!icon)
         .map(({ icon }: any) => {
@@ -30,23 +32,4 @@ export const getProductIllustrationIcons = (product: any) => {
                 },
             };
         });
-};
-
-export const getProductSituationPages = (product: any) => {
-    const { situationPages = [] } = product?.data || {};
-
-    const documents = situationPages.map((pageId: string) => {
-        const resource = contentLib.get({ key: pageId });
-
-        if (!resource) {
-            return null;
-        }
-
-        return {
-            path: resource._path,
-            title: resource.data.title || resource.displayName,
-        };
-    });
-
-    return documents;
 };
