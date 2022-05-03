@@ -1,0 +1,28 @@
+#import "../../content-types/contactInformationFragment.graphql"
+
+fragment partComponentContactOption on Part_no_nav_navno_contact_option {
+    contactOptions {
+        _selected
+        chat {
+            ingress
+        }
+        write {
+            ingress
+            title
+            url
+        }
+        call {
+            ingress
+            phoneNumber
+            sharedContactInformation {
+                ...contentContactInformation
+            }
+        }
+        custom {
+            ingress
+            icon
+            title
+            url
+        }
+    }
+}

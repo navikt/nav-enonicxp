@@ -80,17 +80,6 @@ const partsFragment = `
                     ${linkSelectableMixin}
                 }
             }
-            page_header {
-                title
-            }
-            button {
-                icon {
-                    ${imageFragment}
-                }
-                link {
-                    ${linkSelectableMixin}
-                }
-            }
             page_navigation_menu {
                 ${pageNavigationMenuMixinFragment}
             }

@@ -1,0 +1,67 @@
+#import "./parts/partDynamicHeader.graphql"
+#import "./parts/partDynamicLinkPanel.graphql"
+#import "./parts/partDynamicAlert.graphql"
+#import "./parts/partDynamicLinkList.graphql"
+#import "./parts/partDynamicNewsList.graphql"
+#import "./parts/partHtmlArea.graphql"
+#import "./parts/partPageHeader.graphql"
+#import "./parts/partButton.graphql"
+#import "./parts/partPageNavigationMenu.graphql"
+#import "./parts/partFiltersMenu.graphql"
+#import "./parts/partProductCard.graphql"
+#import "./parts/partProductCardMini.graphql"
+#import "./parts/partCalculator.graphql"
+#import "./parts/partContactOption.graphql"
+
+fragment partComponents on PartComponentData {
+    descriptor
+    configAsJson
+    config {
+        ... on PartComponentDataConfig {
+            no_nav_navno {
+                dynamic_header {
+                    ...partComponentDynamicHeader
+                }
+                dynamic_link_panel {
+                    ...partComponentDynamicLinkPanel
+                }
+                dynamic_alert {
+                    ...partComponentDynamicAlert
+                }
+                dynamic_link_list {
+                    ...partComponentDynamicLinkList
+                }
+                dynamic_news_list {
+                    ...partComponentDynamicNewsList
+                }
+                html_area {
+                    ...partComponentHtmlArea
+                }
+                page_header {
+                    ...partComponentPageHeader
+                }
+                button {
+                    ...partComponentButton
+                }
+                page_navigation_menu {
+                    ...partComponentPageNavigationMenu
+                }
+                filters_menu {
+                    ...partComponentFiltersMenu
+                }
+                product_card {
+                    ...partComponentProductCard
+                }
+                product_card_mini {
+                    ...partComponentProductCardMini
+                }
+                calculator {
+                    ...partComponentCalculator
+                }
+                contact_option {
+                    ...partComponentContactOption
+                }
+            }
+        }
+    }
+}

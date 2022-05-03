@@ -20,8 +20,10 @@ import {
 } from '../utils/process-components';
 import { graphQlContentQueries } from './contenttype-query-map';
 
+import componentsQuery from './component-queries/components.graphql';
+
 const globalFragment = require('./legacyFragments/_global');
-const { componentsFragment, fragmentComponentsFragment } = require('./legacyFragments/_components');
+const { fragmentComponentsFragment } = require('./legacyFragments/_components');
 const {
     dynamicPageFragment,
     productPageFragment,
@@ -82,14 +84,6 @@ const contentQueriesLegacy = Object.entries(contentToQueryFragment).reduce(
     },
     {} as { [type in ContentDescriptor]: string }
 );
-
-const componentsQuery = `query($ref:ID!){
-    guillotine {
-        get(key:$ref) {
-            ${componentsFragment}
-        }
-    }
-}`;
 
 const fragmentComponentsQuery = `query($ref:ID!){
     guillotine {

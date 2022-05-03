@@ -1,0 +1,11 @@
+fragment partComponentFiltersMenu on Part_no_nav_navno_filters_menu {
+    title
+    description
+    categories {
+        categoryName
+        filters {
+            filterName
+            id
+        }
+    }
+}

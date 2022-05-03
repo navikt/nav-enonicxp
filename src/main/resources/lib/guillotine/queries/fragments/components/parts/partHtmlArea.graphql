@@ -1,0 +1,8 @@
+#import "../../richtext/richTextFragment.graphql"
+
+fragment partComponentHtmlArea on Part_no_nav_navno_html_area {
+    filters
+    html(processHtml: { type: server }) {
+        ...richText
+    }
+}

@@ -1,5 +1,5 @@
 #import "../contentCommonFragment.graphql"
-#import "./mixins/languagesFragment.graphql"
+#import "../mixins/languagesFragment.graphql"
 #import "./mainArticleFragment.graphql"
 
 fragment contentMainArticleChapter on no_nav_navno_MainArticleChapter {

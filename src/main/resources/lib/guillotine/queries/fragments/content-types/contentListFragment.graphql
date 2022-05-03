@@ -1,4 +1,4 @@
-#import "./mixins/legacyShortFragments.graphql"
+#import "../mixins/legacyShortFragments.graphql"
 
 fragment contentContentList on no_nav_navno_ContentList {
     data {

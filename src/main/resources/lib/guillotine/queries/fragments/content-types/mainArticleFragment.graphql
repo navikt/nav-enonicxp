@@ -1,7 +1,7 @@
 #import "../contentCommonFragment.graphql"
-#import "./mixins/languagesFragment.graphql"
-#import "./mixins/menuListItemFragment.graphql"
-#import "../media/imageInlineFragment.graphql"
+#import "../mixins/languagesFragment.graphql"
+#import "../mixins/menuListItemFragment.graphql"
+#import "../mixins/imageInlineFragment.graphql"
 #import "../richtext/richTextFragment.graphql"
 
 fragment contentMainArticle on no_nav_navno_MainArticle {

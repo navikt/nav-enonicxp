@@ -1,0 +1,7 @@
+#import "../../mixins/productTargetFragment.graphql"
+
+fragment partComponentProductCardMini on Part_no_nav_navno_product_card_mini {
+    targetPage {
+        ...productTarget
+    }
+}
