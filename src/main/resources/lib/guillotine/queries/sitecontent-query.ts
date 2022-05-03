@@ -46,7 +46,7 @@ export const guillotineComponentsQuery = (baseQueryParams: BaseQueryParams) => {
     const queryParams = {
         ...baseQueryParams,
         query: componentsQuery,
-        jsonBaseKeys: ['config'],
+        jsonBaseKeys: ['config', 'data'],
     };
 
     const result = guillotineQuery(queryParams)?.get as GuillotineComponentQueryResult;
