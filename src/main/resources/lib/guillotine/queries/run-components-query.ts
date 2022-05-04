@@ -43,7 +43,10 @@ export const runGuillotineComponentsQuery = (
             {
                 type: 'fragment',
                 path: component.path,
-                fragment: buildFragmentComponentTree(fragment.components),
+                // If the fragment was not found, set the fragment component tree to an empty object
+                // to ensure it is rendered (as an error) in the CS preview. This allows editors to remove
+                // the invalid fragment
+                fragment: fragment ? buildFragmentComponentTree(fragment.components) : {},
             } as PortalComponent<'fragment'>,
         ];
     }, [] as PortalComponent<'fragment'>[]);
