@@ -1,0 +1,30 @@
+#import "../mixins/languagesFragment.graphql"
+
+fragment contentOverviewPage on no_nav_navno_Overview {
+    dataAsJson
+    data {
+        languages {
+            ...languagesMixin
+        }
+        productList {
+            _id
+            path
+            title
+            ingress
+            taxonomy
+            language
+            audience
+            area
+            illustration {
+                __typename
+                data {
+                    icons {
+                        icon {
+                            mediaUrl
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

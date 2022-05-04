@@ -1,4 +1,4 @@
-import { CreationCallback } from 'lib/guillotine/utils/creation-callback-utils';
+import { CreationCallback } from '../../utils/creation-callback-utils';
 
 // const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql.js');

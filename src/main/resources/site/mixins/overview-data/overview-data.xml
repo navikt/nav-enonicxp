@@ -1,0 +1,12 @@
+<mixin>
+    <form>
+        <field-set>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+                <mixin name="audience" />
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
+    </form>
+</mixin>
