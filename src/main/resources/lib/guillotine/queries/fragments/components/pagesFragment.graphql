@@ -1,0 +1,13 @@
+#import "./pages/pagePageWithSideMenus.graphql"
+
+fragment pageComponents on PageComponentData {
+    descriptor
+    configAsJson
+    config {
+        no_nav_navno {
+            page_with_side_menus {
+                ...pagePageWithSideMenus
+            }
+        }
+    }
+}

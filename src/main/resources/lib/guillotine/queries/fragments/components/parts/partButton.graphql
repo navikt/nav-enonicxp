@@ -1,0 +1,21 @@
+#import "../../mixins/imageInlineFragment.graphql"
+#import "../../mixins/internalLinkTargetFragment.graphql"
+
+fragment partComponentButton on Part_no_nav_navno_button {
+    icon {
+        ...imageInlineMixin
+    }
+    link {
+        _selected
+        external {
+            text
+            url
+        }
+        internal {
+            text
+            target {
+                ...internalLinkTargetMixin
+            }
+        }
+    }
+}

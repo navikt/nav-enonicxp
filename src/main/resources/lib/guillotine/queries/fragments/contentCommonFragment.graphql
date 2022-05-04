@@ -1,0 +1,14 @@
+fragment contentCommon on Content {
+    __typename
+    _id
+    _path
+    type
+    createdTime
+    modifiedTime
+    displayName
+    language
+    publish {
+        first
+        from
+    }
+}

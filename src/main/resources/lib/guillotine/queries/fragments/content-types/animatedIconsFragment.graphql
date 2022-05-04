@@ -1,0 +1,24 @@
+#import "../mixins/imageInlineFragment.graphql"
+
+fragment contentAnimatedIcons on no_nav_navno_AnimatedIcons {
+    data {
+        icons {
+            icon {
+                ...imageInlineMixin
+            }
+            transformStart
+            transformEnd
+            transformOrigin
+        }
+        lottieActive {
+            ... on media_Code {
+                mediaText
+            }
+        }
+        lottieHover {
+            ... on media_Code {
+                mediaText
+            }
+        }
+    }
+}

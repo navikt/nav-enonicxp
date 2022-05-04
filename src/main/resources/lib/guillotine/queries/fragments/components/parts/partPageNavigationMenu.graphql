@@ -1,0 +1,7 @@
+fragment partComponentPageNavigationMenu on Part_no_nav_navno_page_navigation_menu {
+    anchorLinks(contentId: $ref) {
+        anchorId
+        linkText
+        isDupe
+    }
+}

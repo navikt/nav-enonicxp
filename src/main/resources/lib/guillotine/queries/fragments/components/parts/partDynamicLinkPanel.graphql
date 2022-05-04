@@ -1,0 +1,25 @@
+#import "../../mixins/imageInlineFragment.graphql"
+#import "../../mixins/internalLinkTargetFragment.graphql"
+
+fragment partComponentDynamicLinkPanel on Part_no_nav_navno_dynamic_link_panel {
+    ingress
+    link {
+        _selected
+        external {
+            text
+            url
+        }
+        internal {
+            text
+            target {
+                ...internalLinkTargetMixin
+            }
+        }
+    }
+    icon {
+        ...imageInlineMixin
+    }
+    background {
+        ...imageInlineMixin
+    }
+}

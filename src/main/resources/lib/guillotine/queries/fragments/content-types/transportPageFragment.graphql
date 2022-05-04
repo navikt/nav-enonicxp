@@ -1,0 +1,22 @@
+#import "../contentCommonFragment.graphql"
+#import "./externalLinkFragment.graphql"
+#import "./internalLinkFragment.graphql"
+
+fragment transportPage on no_nav_navno_TransportPage {
+    dataAsJson
+    data {
+        panelsHeading
+        panelItems {
+            ingress
+            title
+            url {
+                ref {
+                    ...contentCommon
+                    ...contentExternalLink
+                    ...contentInternalLink
+                }
+                text
+            }
+        }
+    }
+}

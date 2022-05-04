@@ -1,6 +1,6 @@
 import { Region } from '/lib/xp/portal';
 import { PortalComponent } from '../../../types/components/component-portal';
-import { GuillotineUnresolvedComponentType } from '../queries/sitecontent/sitecontent-query';
+import { GuillotineUnresolvedComponentType } from '../queries/run-sitecontent-query';
 import { ComponentType } from '../../../types/components/component-config';
 
 // These functions are used for processing component-objects from Guillotine queries into a consistent structure

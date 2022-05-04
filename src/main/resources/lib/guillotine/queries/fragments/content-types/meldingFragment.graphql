@@ -1,0 +1,11 @@
+#import "../richText/richTextFragment.graphql"
+
+fragment contentMelding on no_nav_navno_Melding {
+    data {
+        ingress
+        type
+        text(processHtml: { type: server }) {
+            ...richText
+        }
+    }
+}

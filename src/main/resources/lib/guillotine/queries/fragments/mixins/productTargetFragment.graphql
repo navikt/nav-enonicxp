@@ -1,0 +1,15 @@
+#import "../contentCommonFragment.graphql"
+#import "../content-types/contentPageWithSidemenusFragment.graphql"
+#import "../content-types/situationPageFragment.graphql"
+#import "../content-types/themedArticlePageFragment.graphql"
+#import "../content-types/guidePageFragment.graphql"
+#import "../content-types/toolsPageFragment.graphql"
+
+fragment productTargetMixin on Content {
+    ...contentCommon
+    ...contentContentPageWithSidemenus
+    ...contentSituationPage
+    ...contentThemedArticlePage
+    ...contentGuidePage
+    ...contentToolsPage
+}

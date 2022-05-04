@@ -1,0 +1,33 @@
+#import "../../contentCommonFragment.graphql"
+#import "../../content-types/contentListFragment.graphql"
+#import "../../content-types/externalLinkFragment.graphql"
+#import "../../content-types/urlFragment.graphql"
+
+fragment partComponentDynamicLinkList on Part_no_nav_navno_dynamic_link_list {
+    title
+    list {
+        _selected
+        contentList {
+            target {
+                ...contentContentList
+            }
+        }
+        linkList {
+            links {
+                _selected
+                external {
+                    text
+                    url
+                }
+                internal {
+                    text
+                    target {
+                        ...contentCommon
+                        ...contentExternalLink
+                        ...contentUrl
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,13 @@
+#import "../../mixins/imageInlineFragment.graphql"
+
+fragment layoutComponentSectionWithHeader on Layout_no_nav_navno_section_with_header {
+    anchorId
+    hideFromInternalNavigation
+    icon {
+        color
+        size
+        icon {
+            ...imageInlineMixin
+        }
+    }
+}

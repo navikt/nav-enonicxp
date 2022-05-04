@@ -1,0 +1,17 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+#import "../fragments/components/allComponentsFragment.graphql"
+
+query portalFragmentQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+            components(resolveTemplate: true, resolveFragment: true) {
+                ...allComponents
+            }
+            unresolvedComponentTypes: components(resolveTemplate: true, resolveFragment: false) {
+                path
+                type
+            }
+        }
+    }
+}

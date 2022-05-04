@@ -1,0 +1,15 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../contentCommonFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentSituationPage on no_nav_navno_SituationPage {
+    dataAsJson
+    data {
+        languages {
+            ...languagesMixin
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}

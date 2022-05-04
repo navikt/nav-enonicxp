@@ -1,0 +1,14 @@
+#import "../../content-types/contentListFragment.graphql"
+
+fragment partComponentDynamicNewsList on Part_no_nav_navno_dynamic_news_list {
+    title
+    contentList {
+        target {
+            ...contentContentList
+        }
+    }
+    moreNews {
+        url
+        text
+    }
+}

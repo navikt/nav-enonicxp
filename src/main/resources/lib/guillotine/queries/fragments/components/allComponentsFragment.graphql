@@ -1,0 +1,25 @@
+#import "./partsFragment.graphql"
+#import "./layoutsFragment.graphql"
+#import "./pagesFragment.graphql"
+
+fragment allComponents on Component {
+    type
+    path
+    fragment {
+        id
+    }
+    part {
+        ...partComponents
+    }
+    layout {
+        ...layoutComponents
+    }
+    page {
+        ...pageComponents
+    }
+    image {
+        image {
+            imageUrl(type: server, scale: "$scale")
+        }
+    }
+}
