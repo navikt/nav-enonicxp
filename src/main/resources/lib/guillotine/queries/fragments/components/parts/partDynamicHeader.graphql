@@ -1,0 +1,12 @@
+fragment partComponentDynamicHeader on Part_no_nav_navno_dynamic_header {
+    title
+    anchorId
+    hideFromInternalNavigation
+    justify
+    typo {
+        _selected
+        custom {
+            typo
+        }
+    }
+}

@@ -1,0 +1,74 @@
+#import "../contentCommonFragment.graphql"
+#import "../mixins/languagesFragment.graphql"
+#import "../mixins/menuListItemFragment.graphql"
+#import "../mixins/imageInlineFragment.graphql"
+#import "../richText/richTextFragment.graphql"
+
+fragment contentMainArticle on no_nav_navno_MainArticle {
+    dataAsJson
+    data {
+        ingress
+        social
+        hasTableOfContents
+        languages {
+            ...languagesMixin
+        }
+        text(processHtml: { type: server }) {
+            ...richText
+        }
+        fact(processHtml: { type: server }) {
+            ...richText
+        }
+        picture {
+            size
+            caption
+            altText
+            target {
+                ...imageInlineMixin
+            }
+        }
+        chapters {
+            ... on no_nav_navno_MainArticleChapter {
+                ...contentCommon
+                data {
+                    article {
+                        ...contentCommon
+                    }
+                }
+            }
+        }
+        menuListItems {
+            _selected
+            selfservice {
+                ...menuListItemMixin
+            }
+            form_and_application {
+                ...menuListItemMixin
+            }
+            process_times {
+                ...menuListItemMixin
+            }
+            related_information {
+                ...menuListItemMixin
+            }
+            international {
+                ...menuListItemMixin
+            }
+            report_changes {
+                ...menuListItemMixin
+            }
+            rates {
+                ...menuListItemMixin
+            }
+            appeal_rights {
+                ...menuListItemMixin
+            }
+            membership {
+                ...menuListItemMixin
+            }
+            rules_and_regulations {
+                ...menuListItemMixin
+            }
+        }
+    }
+}

@@ -1,0 +1,12 @@
+# TODO: split this into separate queries for each component
+#import "../fragments/components/allComponentsFragment.graphql"
+
+query componentsQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            components(resolveTemplate: true, resolveFragment: false) {
+                ...allComponents
+            }
+        }
+    }
+}

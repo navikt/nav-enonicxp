@@ -1,0 +1,14 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenus {
+    dataAsJson
+    data {
+        languages {
+            ...languagesMixin
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}

@@ -1,0 +1,9 @@
+#import "../contentCommonFragment.graphql"
+#import "../content-types/externalLinkFragment.graphql"
+#import "../content-types/urlFragment.graphql"
+
+fragment internalLinkTargetMixin on Content {
+    ...contentCommon
+    ...contentExternalLink
+    ...contentUrl
+}

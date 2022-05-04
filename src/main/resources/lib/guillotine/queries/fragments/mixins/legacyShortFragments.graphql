@@ -1,0 +1,65 @@
+#import "../contentCommonFragment.graphql"
+#import "../content-types/internalLinkFragment.graphql"
+#import "../content-types/externalLinkFragment.graphql"
+#import "../content-types/urlFragment.graphql"
+
+fragment legacyShortFragmentsMixin on Content {
+    ...contentCommon
+    ...contentInternalLink
+    ...contentExternalLink
+    ...contentUrl
+    ... on no_nav_navno_TransportPage {
+        data {
+            ingress
+        }
+    }
+    ... on no_nav_navno_PageList {
+        data {
+            ingress
+        }
+    }
+    ... on no_nav_navno_SectionPage {
+        data {
+            ingress
+        }
+    }
+    ... on no_nav_navno_MainArticle {
+        data {
+            ingress
+        }
+    }
+    ... on no_nav_navno_DynamicPage {
+        data {
+            description
+        }
+    }
+    ... on no_nav_navno_ContentPageWithSidemenus {
+        data {
+            description
+            ingress
+        }
+    }
+    ... on no_nav_navno_SituationPage {
+        data {
+            description
+            ingress
+        }
+    }
+    ... on no_nav_navno_GuidePage {
+        data {
+            description
+            ingress
+        }
+    }
+    ... on no_nav_navno_ThemedArticlePage {
+        data {
+            description
+            ingress
+        }
+    }
+    ... on no_nav_navno_ToolsPage {
+        data {
+            ingress
+        }
+    }
+}

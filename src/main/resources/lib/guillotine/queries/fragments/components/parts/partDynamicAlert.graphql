@@ -1,0 +1,11 @@
+#import "../../richText/richTextFragment.graphql"
+
+fragment partComponentDynamicAlert on Part_no_nav_navno_dynamic_alert {
+    type
+    size
+    inline
+    margin
+    content(processHtml: { type: server }) {
+        ...richText
+    }
+}

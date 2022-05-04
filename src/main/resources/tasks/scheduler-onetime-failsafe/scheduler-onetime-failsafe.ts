@@ -38,7 +38,9 @@ export const run = () => {
     // The cron for this task runs every minute sharp
     taskLib.sleep(fifteenSeconds);
 
-    log.info('Running fail-safe task for one-time scheduled jobs');
+    if (app.config.env !== 'localhost') {
+        log.info('Running fail-safe task for one-time scheduled jobs');
+    }
 
     schedulerLib.list().forEach((job) => {
         if (oneTimeJobFailedToRun(job)) {

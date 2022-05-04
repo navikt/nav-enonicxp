@@ -1,0 +1,15 @@
+#import "../fragments/components/allComponentsFragment.graphql"
+
+query fragmentComponentsQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            components(resolveTemplate: true, resolveFragment: true) {
+                ...allComponents
+            }
+            unresolvedComponentTypes: components(resolveTemplate: true, resolveFragment: false) {
+                path
+                type
+            }
+        }
+    }
+}

@@ -1,0 +1,7 @@
+fragment contentExternalLink on no_nav_navno_ExternalLink {
+    data {
+        description
+        permanentRedirect
+        url
+    }
+}

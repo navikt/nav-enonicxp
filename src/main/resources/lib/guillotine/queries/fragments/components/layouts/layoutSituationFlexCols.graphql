@@ -1,0 +1,4 @@
+fragment layoutComponentSituationFlexCols on Layout_no_nav_navno_situation_flex_cols {
+    anchorId
+    hideFromInternalNavigation
+}

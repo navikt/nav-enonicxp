@@ -16,9 +16,10 @@ const removeOnDuplicate = (event: EnonicEvent) => {
             () =>
                 contentLib.modify({
                     key: node.id,
+                    requireValid: false,
                     editor: (content) => {
                         if (hasValidCustomPath(content)) {
-                            (content.data.customPath as string | null) = null;
+                            (content.data.customPath as string | undefined) = undefined;
                         }
 
                         return content;
@@ -45,6 +46,7 @@ const removeInvalidOnPublish = (event: EnonicEvent) => {
             if (content && hasInvalidCustomPath(content)) {
                 contentLib.modify({
                     key: node.id,
+                    requireValid: false,
                     editor: (content) => {
                         // (we already asserted that this field exists)
                         (content as { data: { customPath?: string } }).data.customPath = undefined;

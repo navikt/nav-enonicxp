@@ -1,0 +1,9 @@
+#import "../richText/richTextFragment.graphql"
+
+fragment contentLargeTable on no_nav_navno_LargeTable {
+    data {
+        text(processHtml: { type: server }) {
+            ...richText
+        }
+    }
+}

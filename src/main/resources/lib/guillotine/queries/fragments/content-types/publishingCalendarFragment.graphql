@@ -1,0 +1,11 @@
+#import "../contentCommonFragment.graphql"
+
+fragment contentPublishingCalendar on no_nav_navno_PublishingCalendar {
+    dataAsJson
+    children(first: 1000) {
+        ... on no_nav_navno_PublishingCalendarEntry {
+            ...contentCommon
+            dataAsJson
+        }
+    }
+}

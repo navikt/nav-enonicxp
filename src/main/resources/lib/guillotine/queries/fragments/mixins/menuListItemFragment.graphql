@@ -1,0 +1,6 @@
+fragment menuListItemMixin on MenuListItem {
+    links {
+        url
+        text
+    }
+}

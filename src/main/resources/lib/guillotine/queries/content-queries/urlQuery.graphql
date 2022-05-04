@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/content-types/urlFragment.graphql"
+
+query urlQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ...contentUrl
+        }
+    }
+}

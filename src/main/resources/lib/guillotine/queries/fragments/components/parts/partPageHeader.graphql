@@ -1,0 +1,3 @@
+fragment partComponentPageHeader on Part_no_nav_navno_page_header {
+    title
+}

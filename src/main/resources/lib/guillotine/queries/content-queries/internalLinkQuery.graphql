@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/content-types/internalLinkFragment.graphql"
+
+query internalLinkQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ...contentInternalLink
+        }
+    }
+}
