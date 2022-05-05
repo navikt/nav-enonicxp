@@ -3,7 +3,6 @@ import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guilloti
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
 import { PortalComponent } from '../../../types/components/component-portal';
-import { runGuillotineContentQuery } from './run-content-query';
 
 export type GuillotineComponentQueryResult = {
     components: GuillotineComponent[];
@@ -39,34 +38,6 @@ export const runGuillotineComponentsQuery = (
                 page: productDetailsContent.pageAsJson,
                 data: productDetailsContent.data,
             };
-
-            Object.keys(productDetailsContent.pageAsJson.regions).forEach((regionKey: any) => {
-                const region = productDetailsContent.pageAsJson.regions[regionKey];
-                const { components } = region;
-
-                const deepComponents = components.reduce((acc: any, component: any) => {
-                    if (component.type !== 'fragment' || !component.fragment) {
-                        return [...acc, component];
-                    }
-
-                    const fragment = runGuillotineQuery({
-                        ...queryParams,
-                        query: fragmentComponentsQuery,
-                        params: { ref: component.fragment },
-                    })?.get;
-
-                    return [
-                        ...acc,
-                        {
-                            type: 'fragment',
-                            path: component.path,
-                            fragment: buildFragmentComponentTree(fragment.components),
-                        } as PortalComponent<'fragment'>,
-                    ];
-                }, []);
-
-                productDetailsContent.pageAsJson.regions[regionKey].components = deepComponents;
-            });
 
             return component;
         }

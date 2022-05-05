@@ -3,6 +3,6 @@
 fragment partProductDetails on Part_no_nav_navno_product_details {
     productDetailsTarget {
         ...contentProductDetails
-        pageAsJson(resolveTemplate: true, resolveFragment: false)
+        pageAsJson(resolveTemplate: true, resolveFragment: true)
     }
 }
