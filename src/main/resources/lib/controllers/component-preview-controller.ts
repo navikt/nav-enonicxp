@@ -1,72 +1,50 @@
 import portalLib from '/lib/xp/portal';
-import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { urls } from '../constants';
-import { destructureComponent } from '../guillotine/utils/process-components';
+import {
+    destructureComponent,
+    insertComponentsIntoRegions,
+} from '../guillotine/utils/process-components';
 import { runGuillotineComponentsQuery } from '../guillotine/queries/run-components-query';
 
 const fallbackResponse = {
     contentType: 'text/html',
-    body: `<div>'Mark as ready for preview'</div>`,
-};
-
-// For layout-previews, we need the complete props-tree of the layout, including
-// components in the layout regions
-const getLayoutComponentProps = (content: Content, path: string) => {
-    if (content.type === 'portal:fragment') {
-        return content.fragment;
-    }
-
-    const pageRegions = runSitecontentGuillotineQuery(content, 'draft')?.page?.regions as Record<
-        string,
-        any
-    > | null;
-
-    if (!pageRegions) {
-        return null;
-    }
-
-    const components: any[] = Object.values(pageRegions).reduce(
-        (componentsAcc: any, region: any) => {
-            return [...componentsAcc, ...region.components];
-        },
-        [] as any[]
-    );
-
-    return components.find(
-        (component: any) => component.type === 'layout' && component.path === path
-    );
+    body: `<div>'Kunne ikke laste komponent-oppdateringer - Last inn editoren på nytt (F5) eller trykk "Marker som klar"'</div>`,
 };
 
 const getComponentProps = () => {
     const content = portalLib.getContent();
-    const component = portalLib.getComponent();
+    const portalComponent = portalLib.getComponent();
 
-    if (component.type === 'layout') {
-        return getLayoutComponentProps(content, component.path);
-    }
-
-    const { components } = runGuillotineComponentsQuery({
+    const { components, fragments } = runGuillotineComponentsQuery({
         params: {
             ref: content._id,
         },
         branch: 'draft',
     });
 
-    const componentPath = component.path || '/';
+    const componentPath = portalComponent.path || '/';
 
-    const componentFromGuillotine = components.find((item: any) => item.path === componentPath);
+    const componentFromGuillotine = components.find(
+        (guillotineComponent: any) => guillotineComponent.path === componentPath
+    );
 
     if (!componentFromGuillotine) {
         return null;
     }
 
-    return {
-        language: content.language,
-        ...component,
-        ...destructureComponent(componentFromGuillotine),
-    };
+    // Fragments are already fully processed in the components query
+    if (componentFromGuillotine.type === 'fragment') {
+        return fragments.find((fragment) => fragment.path === componentPath);
+    }
+
+    // Layouts must include components in its regions
+    if (componentFromGuillotine.type === 'layout') {
+        return insertComponentsIntoRegions(portalComponent, components, fragments);
+    }
+
+    // Parts need to be destructured into the structure the frontend expects for rendering
+    return destructureComponent(componentFromGuillotine);
 };
 
 // This controller fetches component-HTML from the frontend rendered with the
