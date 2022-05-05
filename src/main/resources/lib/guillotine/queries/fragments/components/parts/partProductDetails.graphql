@@ -1,8 +1,10 @@
+#import "../../contentCommonFragment.graphql"
 #import "../../content-types/productDetailsFragment.graphql"
 
 fragment partProductDetails on Part_no_nav_navno_product_details {
     productDetailsTarget {
+        ...contentCommon
         ...contentProductDetails
-        pageAsJson(resolveTemplate: true, resolveFragment: true)
+        pageAsJson(resolveTemplate: true, resolveFragment: false)
     }
 }
