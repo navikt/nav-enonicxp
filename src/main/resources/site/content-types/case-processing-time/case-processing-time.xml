@@ -12,7 +12,7 @@
                 <input name="number" type="Long">
                     <label>Sett antall tidsenheter</label>
                     <config>
-                        <min>0</min>
+                        <min>1</min>
                         <max>365</max>
                     </config>
                 </input>
