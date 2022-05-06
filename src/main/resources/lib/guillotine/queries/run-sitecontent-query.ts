@@ -28,6 +28,20 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams);
 
+    components.forEach((component) => {
+        if (component.part?.descriptor === 'no.nav.navno:product-details') {
+            const deepBaseContent =
+                component.part?.config['no_nav_navno']['product_details']?.productDetailsTarget;
+
+            const page = runSitecontentGuillotineQuery(deepBaseContent, branch);
+
+            if (page) {
+                component.part.config['no_nav_navno']['product_details'].productDetailsTarget =
+                    page;
+            }
+        }
+    });
+
     return {
         ...contentQueryResult,
         page: buildPageComponentTree({
