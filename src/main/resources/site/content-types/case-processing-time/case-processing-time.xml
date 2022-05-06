@@ -6,29 +6,34 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <input name="number" type="Long">
-            <label>Antall</label>
-            <config>
-                <min>0</min>
-                <max>365</max>
-            </config>
-        </input>
-        <option-set name="unit">
-            <label>Tidsenhet</label>
-            <expanded>true</expanded>
-            <occurrences minimum="1" maximum="1"/>
-            <options minimum="1" maximum="1">
-                <option name="days">
-                    <label>Dager</label>
-                </option>
-                <option name="weeks">
-                    <label>Uker</label>
-                    <default>true</default>
-                </option>
-                <option name="months">
-                    <label>Måneder</label>
-                </option>
-            </options>
-        </option-set>
+        <field-set>
+            <label>Saksbehandlingstid</label>
+            <items>
+                <input name="number" type="Long">
+                    <label>Sett antall tidsenheter</label>
+                    <config>
+                        <min>0</min>
+                        <max>365</max>
+                    </config>
+                </input>
+                <option-set name="unit">
+                    <label>Velg tidsenhet</label>
+                    <expanded>true</expanded>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="1">
+                        <option name="days">
+                            <label>Dager</label>
+                        </option>
+                        <option name="weeks">
+                            <label>Uker</label>
+                            <default>true</default>
+                        </option>
+                        <option name="months">
+                            <label>Måneder</label>
+                        </option>
+                    </options>
+                </option-set>
+            </items>
+        </field-set>
     </form>
 </content-type>
