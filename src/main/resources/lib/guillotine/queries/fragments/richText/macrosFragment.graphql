@@ -85,9 +85,7 @@ fragment macros on Macro {
                 ... on no_nav_navno_CaseProcessingTime {
                     data {
                         number
-                        unit {
-                            _selected
-                        }
+                        unit
                     }
                 }
             }
