@@ -31,7 +31,11 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
     components.forEach((component) => {
         if (component.part?.descriptor === 'no.nav.navno:product-details') {
             const deepBaseContent =
-                component.part?.config['no_nav_navno']['product_details']?.productDetailsTarget;
+                component.part?.config?.no_nav_navno?.product_details?.productDetailsTarget;
+
+            if (!deepBaseContent) {
+                return;
+            }
 
             const page = runSitecontentGuillotineQuery(deepBaseContent, branch);
 
