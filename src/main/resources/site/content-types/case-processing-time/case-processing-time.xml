@@ -8,9 +8,12 @@
     <form>
         <input name="number">
             <label>Antall</label>
+            <min>0</min>
+            <max>365</max>
         </input>
         <option-set name="unit">
             <label>Tidsenhet</label>
+            <expanded>true</expanded>
             <occurrences minimum="1" maximum="1" />
             <options minimum="1" maximum="1">
                 <option name="days">
