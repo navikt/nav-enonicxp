@@ -80,6 +80,18 @@ fragment macros on Macro {
         quote {
             quote
         }
+        saksbehandlingstid {
+            caseTime {
+                ... on no_nav_navno_CaseProcessingTime {
+                    data {
+                        number
+                        unit {
+                            _selected
+                        }
+                    }
+                }
+            }
+        }
         varselBoks {
             varselBoks
         }
