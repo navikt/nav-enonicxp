@@ -10,6 +10,8 @@
             <option value="accessibility">Hjelpemidler og tilrettelegging</option>
             <option value="pension">Pensjon</option>
             <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
+            <option value="municipality">For kommunen</option>            
+            <option value="other">Annet</option>
         </config>
     </input>
   </form>
