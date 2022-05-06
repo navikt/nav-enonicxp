@@ -1,0 +1,29 @@
+<content-type>
+    <display-name>Saksbehandlingstid</display-name>
+    <description>Saksbehandlingstid</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <input name="number">
+            <label>Antall</label>
+        </input>
+        <option-set name="unit">
+            <label>Tidsenhet</label>
+            <occurrences minimum="1" maximum="1" />
+            <options minimum="1" maximum="1">
+                <option name="days">
+                    <label>Dager</label>
+                </option>
+                <option name="weeks">
+                    <label>Uker</label>
+                    <default>true</default>
+                </option>
+                <option name="months">
+                    <label>Måneder</label>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</content-type>
