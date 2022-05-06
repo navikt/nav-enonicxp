@@ -50,5 +50,5 @@ export const findContentsWithProductCardMacro = (targetPageId: string) => {
 };
 
 export const findContentsWithCaseTimeMacro = (casetimeContentId: string) => {
-    return findContentsWithHtmlAreaText(`caseType=\\"${casetimeContentId}`);
+    return findContentsWithHtmlAreaText(`caseTime=\\"${casetimeContentId}`);
 };
