@@ -1,0 +1,13 @@
+<macro>
+    <display-name>Saksbehandlingstid</display-name>
+    <description>Sett inn en saksbehandlingstid i teksten</description>
+    <form>
+        <input name="caseTime" type="ContentSelector">
+            <label>Saksbehandlingstid</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowContentType>${app}:case-processing-time</allowContentType>
+            </config>
+        </input>
+    </form>
+</macro>
