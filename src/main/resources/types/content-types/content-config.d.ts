@@ -27,10 +27,12 @@ import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
+import { CaseProcessingTime } from '../../site/content-types/case-processing-time/case-processing-time';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
     calculator: Calculator;
+    'case-processing-time': CaseProcessingTime;
     'contact-information': ContactInformation;
     'content-list': ContentList;
     'content-page-with-sidemenus': ContentPageWithSidemenus;

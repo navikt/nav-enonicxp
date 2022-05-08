@@ -1,0 +1,33 @@
+<content-type>
+    <display-name>Saksbehandlingstid</display-name>
+    <description>Sett en globalt gjenbrukbar saksbehandlingstid</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Saksbehandlingstid</label>
+            <items>
+                <input name="number" type="Long">
+                    <label>Sett antall</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>365</max>
+                    </config>
+                </input>
+                <input name="unit" type="RadioButton">
+                    <label>Velg tidsenhet</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>months</default>
+                    <config>
+                        <option value="days">Dager</option>
+                        <option value="weeks">Uker</option>
+                        <option value="months">Måneder</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</content-type>
