@@ -115,6 +115,9 @@ const getComponentAnchorLink = (
     component: NodeComponent,
     repo: RepoConnection
 ): AnchorLink | null => {
+    if (!component.part) {
+        return null;
+    }
     if (component.type === 'part') {
         return getPartAnchorLink(component.part);
     }
