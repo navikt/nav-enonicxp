@@ -34,8 +34,4 @@ export type NodeComponent<
     Name extends ComponentName = ComponentName
 > = NodeComponentMapper<Type, Name> & {
     path: string;
-    part?: {
-        descriptor: NavNoDescriptor;
-        config: any;
-    };
 };

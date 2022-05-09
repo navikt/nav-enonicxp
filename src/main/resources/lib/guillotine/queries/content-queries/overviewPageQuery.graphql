@@ -1,7 +1,7 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
 #import "../fragments/content-types/overviewFragment.graphql"
 
-query dynamicPageQuery($ref: ID!) {
+query overviewPageQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage

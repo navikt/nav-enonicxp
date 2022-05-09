@@ -1,7 +1,7 @@
 #import "../contentCommonFragment.graphql"
 #import "../content-types/productDetailsFragment.graphql"
 
-fragment productDetalsMixin on Content {
+fragment productDetailsMixin on Content {
     ...contentCommon
     ...contentProductDetails
 }
