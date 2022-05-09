@@ -3,7 +3,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 // const contentLib = require('/lib/xp/content');
 const graphQlLib = require('/lib/guillotine/graphql.js');
 
-const { getProductList } = require('../../../productList/productList');
+const { getAllProducts } = require('../../../productList/productList');
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlLib.createObjectType(context, {
@@ -58,7 +58,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
     params.fields.productList = {
         type: graphQlLib.list(productType),
         resolve: () => {
-            const productList = getProductList('no');
+            const productList = getAllProducts('no');
             return productList;
         },
     };

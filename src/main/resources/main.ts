@@ -15,11 +15,6 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
 
-import {
-    activateDataUpdateEventListener,
-    buildProductListAndActivateSchedule,
-} from './lib/productList/productList';
-
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import {
@@ -37,8 +32,6 @@ activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
 activateFacetsEventListener();
 
-activateDataUpdateEventListener();
-
 hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
@@ -52,7 +45,6 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
-    buildProductListAndActivateSchedule();
 }
 
 log.info('Finished running main');

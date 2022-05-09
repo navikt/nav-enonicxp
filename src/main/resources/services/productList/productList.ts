@@ -1,4 +1,4 @@
-import { getProductList, requestProductListUpdate } from '../../lib/productList/productList';
+import { getAllProducts } from '../../lib/productList/productList';
 
 export const get = (req: XP.Request) => {
     const { secret } = req.headers;
@@ -13,19 +13,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const allProducts = getProductList('no');
-
-    if (!allProducts || allProducts.length === 0) {
-        log.error('Product list data was requested but is not available!');
-
-        requestProductListUpdate();
-
-        return {
-            status: 500,
-            body: { message: 'Internal server error - sitemap data not available' },
-            contentType: 'application/json',
-        };
-    }
+    const allProducts = getAllProducts();
 
     return {
         status: 200,
