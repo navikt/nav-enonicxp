@@ -63,3 +63,4 @@ atlassian-ide-plugin.xml
 node_modules/
 .enonic
 /guillotine-schema.graphql
+/coverage/
