@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "scripts": {
         "test": "jest",
-        "build": "npm-run-all lint babel",
-        "lint": "eslint ./src/main/resources --ext=ts --ext=es6 --quiet && tsc --noemit",
-        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\" --extensions \".ts,.es6\""
+        "build": "npm-run-all lint test babel",
+        "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig-build.json --noemit",
+        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/_test\" --no-copy-ignored --extensions \".ts\""
     },
     "repository": {
         "type": "git",

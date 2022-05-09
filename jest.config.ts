@@ -105,8 +105,8 @@ export default {
 
     // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
     moduleNameMapper: {
-        '^/lib/(.*)': '<rootDir>/src/main/test/mocks/lib/$1',
-        '^app$': '<rootDir>/src/main/test/mocks/appConfig.ts',
+        '^/lib/(.*)': '<rootDir>/src/main/resources/_test/mocks/lib/$1',
+        '^app$': '<rootDir>/src/main/resources/_test/mocks/appConfig.ts',
     },
 
     // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -143,7 +143,7 @@ export default {
     // rootDir: './src/main/resources',
 
     // A list of paths to directories that Jest should use to search for files in
-    roots: ['./src/main/resources', './src/main/test/mocks'],
+    roots: ['./src/main/resources'],
 
     // Allows you to use a custom runner instead of Jest's default test runner
     // runner: "jest-runner",

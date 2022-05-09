@@ -1,9 +1,8 @@
-import { hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';
-import { Content } from '/lib/xp/content';
+import { getCustomPathFromContent, hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';
+import contentLib, { Content } from '/lib/xp/content';
+import { mockReturnValue } from '../../_test/utils/mock-utils';
 
-// jest.mock('/lib/xp/content', () => {
-//     return {};
-// });
+jest.mock('/lib/xp/content');
 
 const contentWithoutCustomPath: Content = {
     _id: 'bfb67caa-c149-4302-bdb6-09f2ee0c3649',
@@ -45,20 +44,39 @@ const contentWithoutCustomPath: Content = {
 
 const contentWithValidCustomPath = {
     ...contentWithoutCustomPath,
-    data: { ...contentWithoutCustomPath.data, customPath: '/test-custom-path' },
+    data: { ...contentWithoutCustomPath.data, customPath: '/test-valid-path' },
 };
 
 const contentWithInvalidCustomPath = {
     ...contentWithoutCustomPath,
-    data: { ...contentWithoutCustomPath.data, customPath: '/test-custom-path' },
+    data: { ...contentWithoutCustomPath.data, customPath: 'test-invalid-path' },
 };
 
 describe('Custom paths', () => {
-    test('Custom paths should validate correctly', () => {
-        expect(hasValidCustomPath(contentWithValidCustomPath)).toEqual(true);
-        expect(hasInvalidCustomPath(contentWithInvalidCustomPath)).toEqual(false);
+    test('Content with valid custompath should be valid', () => {
+        expect(hasValidCustomPath(contentWithValidCustomPath)).toBe(true);
+    });
 
-        expect(hasValidCustomPath(contentWithValidCustomPath)).toEqual(false);
-        expect(hasInvalidCustomPath(contentWithInvalidCustomPath)).toEqual(true);
+    test('Content with invalid custompath should not be valid', () => {
+        expect(hasValidCustomPath(contentWithInvalidCustomPath)).toBe(false);
+    });
+
+    test('Content with valid custompath should not be invalid', () => {
+        expect(hasInvalidCustomPath(contentWithValidCustomPath)).toBe(false);
+    });
+
+    test('Content with invalid custompath should be invalid', () => {
+        expect(hasInvalidCustomPath(contentWithInvalidCustomPath)).toBe(true);
+    });
+
+    test('Content with no custom path should be neither valid nor invalid', () => {
+        expect(hasValidCustomPath(contentWithoutCustomPath)).toBe(false);
+        expect(hasInvalidCustomPath(contentWithoutCustomPath)).toBe(false);
+    });
+
+    test('Should redirect if content has a valid custom path', () => {
+        mockReturnValue(contentLib.get, contentWithValidCustomPath);
+
+        expect(getCustomPathFromContent('asdf')).toBe('/test-valid-path');
     });
 });
