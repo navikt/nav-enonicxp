@@ -4,4 +4,34 @@ export interface ProductDetailsPartConfig {
    * Velg produktdetalj
    */
   productDetailsTarget: string;
+
+  /**
+   * Utvidbar
+   */
+  expandable: boolean;
+
+  /**
+   * Tittel på utvidbart panel
+   */
+  expandableTitle?: string;
+
+  /**
+   * Anker-id på utvidbart panel
+   */
+  expandableAnchorId?: string;
+
+  /**
+   * Velg filtre
+   */
+  filters?: Array<string>;
+
+  /**
+   * Logikk
+   */
+  filterLogic: "or" | "and";
+
+  /**
+   * Velg visning
+   */
+  renderOnAuthState: "always" | "loggedIn" | "loggedOut";
 }

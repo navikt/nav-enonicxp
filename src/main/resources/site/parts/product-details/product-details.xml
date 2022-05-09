@@ -9,5 +9,8 @@
                 <allowContentType>${app}:product-details</allowContentType>
             </config>
         </input>
+        <mixin name="expandable"/>
+        <mixin name="filter-selector"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>
