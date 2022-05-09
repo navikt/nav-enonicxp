@@ -10,15 +10,6 @@
                         <service>filterSelector</service>
                     </config>
                 </input>
-                <input name="filterLogic" type="RadioButton">
-                    <label>Logikk</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <option value="or">ELLER</option>
-                        <option value="and">OG</option>
-                    </config>
-                    <default>or</default>
-                </input>
             </items>
         </field-set>
     </form>
