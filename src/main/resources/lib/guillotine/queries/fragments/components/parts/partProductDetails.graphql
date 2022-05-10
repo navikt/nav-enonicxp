@@ -1,0 +1,8 @@
+#import "../../mixins/productDetailsFragment.graphql"
+
+fragment partProductDetails on Part_no_nav_navno_product_details {
+    productDetailsTarget {
+        ...productDetailsMixin
+    }
+    filters
+}

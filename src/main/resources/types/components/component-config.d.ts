@@ -16,6 +16,7 @@ import { DynamicLinkPanelPartConfig } from '../../site/parts/dynamic-link-panel/
 import { DynamicNewsListPartConfig } from '../../site/parts/dynamic-news-list/dynamic-news-list-part-config';
 import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
 import { HtmlAreaPartConfig } from '../../site/parts/html-area/html-area-part-config';
+import { ProductDetailsPartConfig } from '../../site/parts/product-details/product-details-part-config';
 import { PageHeaderPartConfig } from '../../site/parts/page-header/page-header-part-config';
 import { PageNavigationMenuPartConfig } from '../../site/parts/page-navigation-menu/page-navigation-menu-part-config';
 import { ProductCardPartConfig } from '../../site/parts/product-card/product-card-part-config';
@@ -51,6 +52,7 @@ type PartConfigs = {
     'dynamic-news-list': DynamicNewsListPartConfig;
     'filters-menu': FiltersMenuPartConfig;
     'html-area': HtmlAreaPartConfig;
+    'product-details': ProductDetailsPartConfig;
     'page-header': PageHeaderPartConfig;
     'page-navigation-menu': PageNavigationMenuPartConfig;
     'product-card': ProductCardPartConfig;
