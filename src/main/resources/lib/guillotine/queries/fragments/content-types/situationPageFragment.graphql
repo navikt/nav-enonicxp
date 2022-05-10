@@ -5,6 +5,7 @@
 fragment contentSituationPage on no_nav_navno_SituationPage {
     dataAsJson
     data {
+        area
         languages {
             ...languagesMixin
         }
