@@ -1,0 +1,11 @@
+<content-type>
+    <display-name>Produktdetaljer</display-name>
+    <description>Satser, saksbehandlingstider og utbetalingsdatoer</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="product-details-data"/>
+    </form>
+</content-type>

@@ -39,6 +39,9 @@ const getAnchorLink = (
 };
 
 const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
+    if (!part) {
+        return null;
+    }
     const { descriptor, config } = part;
 
     if (!config) {
