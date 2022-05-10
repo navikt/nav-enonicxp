@@ -39,6 +39,9 @@ const getAnchorLink = (
 };
 
 const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
+    if (!part) {
+        return null;
+    }
     const { descriptor, config } = part;
 
     if (!config) {
@@ -93,6 +96,10 @@ const getFragmentAnchorLink = (
     repo: RepoConnection
 ) => {
     const { id } = fragment;
+
+    if (!id) {
+        return null;
+    }
 
     const content = repo.get<Content<'portal:fragment'>>({ key: id });
 

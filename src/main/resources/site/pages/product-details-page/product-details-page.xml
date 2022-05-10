@@ -1,0 +1,10 @@
+<page>
+    <display-name>Produktdetaljer</display-name>
+    <description>Sidetype for å sette opp produktdetaljer</description>
+    <config/>
+    <regions>
+        <region name="intro"/>
+        <region name="main"/>
+        <region name="outro"/>
+    </regions>
+</page>

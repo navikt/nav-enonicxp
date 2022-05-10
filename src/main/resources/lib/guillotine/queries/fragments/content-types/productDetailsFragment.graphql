@@ -1,0 +1,6 @@
+fragment contentProductDetails on no_nav_navno_ProductDetails {
+    dataAsJson
+    data {
+        detailType
+    }
+}

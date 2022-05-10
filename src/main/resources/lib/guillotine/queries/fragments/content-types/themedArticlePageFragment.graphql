@@ -4,6 +4,8 @@
 fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
     dataAsJson
     data {
+        area
+        taxonomy
         languages {
             ...languagesMixin
         }
