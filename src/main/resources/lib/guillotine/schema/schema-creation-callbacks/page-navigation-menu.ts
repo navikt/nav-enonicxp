@@ -98,6 +98,10 @@ const getFragmentAnchorLink = (
 ) => {
     const { id } = fragment;
 
+    if (!id) {
+        return null;
+    }
+
     const content = repo.get<Content<'portal:fragment'>>({ key: id });
 
     if (!content) {
