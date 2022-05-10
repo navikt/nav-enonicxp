@@ -1,6 +1,7 @@
 import { isValidBranch } from '../../lib/utils/branch-context';
 import { getResponseFromCache } from './cache';
 import { getSitecontentResponse } from './generate-response';
+import { logger } from '../../lib/utils/logging';
 
 export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
@@ -45,7 +46,7 @@ export const get = (req: XP.Request) => {
         );
 
         if (!content) {
-            log.info(`Content not found: ${idOrPath}`);
+            logger.info(`Content not found: ${idOrPath}`);
             return {
                 status: 404,
                 body: {
@@ -64,11 +65,18 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
         };
     } catch (e) {
-        log.error(`Error fetching content for ${idOrPath} - ${e}`);
+        const msg = `Error fetching content for ${idOrPath} - ${e}`;
+
+        if (branch === 'master') {
+            logger.critical(msg);
+        } else {
+            logger.error(msg);
+        }
+
         return {
             status: 500,
             body: {
-                message: 'Unknown server error',
+                message: `Server error - ${msg}`,
             },
             contentType: 'application/json',
         };

@@ -4,6 +4,7 @@ import graphQlRxLib from '/lib/graphql-rx';
 import webSocketLib from '/lib/xp/websocket';
 import { schema } from '../../lib/guillotine/schema/schema';
 import { urls } from '../../lib/constants';
+import { logger } from '../../lib/utils/logging';
 
 const isProd = app.config.env === 'p';
 
@@ -46,7 +47,7 @@ const handleStartMessage = (sessionId: string, message: any) => {
             result.data.subscribe(subscriber);
         }
     } catch (e) {
-        log.error('Error while handling Start GraphQL-WS message', e);
+        logger.warning('Error while handling Start GraphQL-WS message', e);
         throw e;
     }
 };
@@ -123,7 +124,7 @@ export const webSocketEvent = (event: XP.WebSocketEvent) => {
             }
             break;
         case 'error':
-            log.warning('Session [' + event.session.id + '] error: ' + event.error);
+            logger.warning('Session [' + event.session.id + '] error: ' + event.error);
             break;
     }
 };

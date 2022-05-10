@@ -1,5 +1,6 @@
 import httpClient from '/lib/http-client';
 import { urls } from '../../lib/constants';
+import { logger } from '../../lib/utils/logging';
 
 /*
  * This service simplifies queries to the content studio selector service
@@ -39,7 +40,7 @@ export const post = (req: XP.Request) => {
         const response = selectorQueryRequest(req);
 
         if (response.status >= 500) {
-            log.info(
+            logger.info(
                 `Error from selectorQuery, trying fallback - ${response.status} ${response.message}`
             );
 
@@ -48,7 +49,7 @@ export const post = (req: XP.Request) => {
 
         return response;
     } catch (e) {
-        log.info(`Exception from selectorQuery, trying fallback - ${e}`);
+        logger.info(`Exception from selectorQuery, trying fallback - ${e}`);
 
         return selectorQuerySimpleRequest(req);
     }

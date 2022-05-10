@@ -3,6 +3,7 @@ import clusterLib from '/lib/xp/cluster';
 import contentLib from '/lib/xp/content';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';
 import { runInBranchContext } from '../utils/branch-context';
+import { logger } from '../utils/logging';
 
 // When a content is duplicated, we don't want the custom path
 // to be duplicated as well, as it must be unique
@@ -77,8 +78,8 @@ export const activateCustomPathNodeListeners = () => {
             callback: removeInvalidOnPublish,
         });
 
-        log.info('Started event listeners for custom path validation');
+        logger.info('Started event listeners for custom path validation');
     } else {
-        log.warning('Event listeners for custom path validation were already started');
+        logger.error('Event listeners for custom path validation were already started');
     }
 };

@@ -6,6 +6,7 @@ import schedulerLib, {
 import clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
+import { logger } from '../utils/logging';
 
 type Props<TaskConfig> = {
     jobName: string;
@@ -47,7 +48,7 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
 
         if (existingJob) {
             if (onScheduleExistsAction === 'modify') {
-                log.info(`Scheduler job updated: ${jobName}`);
+                logger.info(`Scheduler job updated: ${jobName}`);
                 return schedulerLib.modify<typeof taskConfig>({
                     name: jobName,
                     editor: (prevJobParams) => {
@@ -55,15 +56,15 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
                     },
                 });
             } else if (onScheduleExistsAction === 'overwrite') {
-                log.info(`Removing existing job: ${jobName}`);
+                logger.info(`Removing existing job: ${jobName}`);
                 schedulerLib.delete({ name: jobName });
             } else {
-                log.info(`Job already exists, aborting - ${jobName}`);
+                logger.info(`Job already exists, aborting - ${jobName}`);
                 return;
             }
         }
 
-        log.info(`Scheduler job created: ${jobName}`);
+        logger.info(`Scheduler job created: ${jobName}`);
         return schedulerLib.create<typeof taskConfig>(jobParams);
     }, 'master');
 };

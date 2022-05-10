@@ -6,6 +6,7 @@ import { runInBranchContext } from '../../lib/utils/branch-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
+import { logger } from '../../lib/utils/logging';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -74,7 +75,7 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
         .hits.map((hit) => hit.id)
         .sort();
 
-    log.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
+    logger.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
 
     return result;
 };
@@ -138,7 +139,7 @@ const runQuery = (params: RunQueryParams) => {
 
     if (hits.length !== contentIdsBatch.length) {
         const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
-        log.info(
+        logger.info(
             `Data query: missing results from contentLib query for ${
                 diff.length
             } ids: ${JSON.stringify(diff)}`
@@ -184,7 +185,7 @@ export const get = (req: XP.Request) => {
     const { branch, requestId, query, types, batch = 0 } = req.params;
 
     if (!requestId) {
-        log.info('No request id specified');
+        logger.info('No request id specified');
         return {
             status: 400,
             body: {
@@ -195,7 +196,7 @@ export const get = (req: XP.Request) => {
     }
 
     if (!branch || !branchIsValid(branch)) {
-        log.info(`Invalid branch specified: ${branch}`);
+        logger.info(`Invalid branch specified: ${branch}`);
         return {
             status: 400,
             body: {
@@ -219,7 +220,7 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        log.info(`Data query: running query for request id ${requestId}, batch ${batch}`);
+        logger.info(`Data query: running query for request id ${requestId}, batch ${batch}`);
 
         const result = runInBranchContext(
             () =>
@@ -233,7 +234,7 @@ export const get = (req: XP.Request) => {
             branch === 'published' ? 'master' : 'draft'
         );
 
-        log.info(
+        logger.info(
             `Data query: successfully ran query batch for request id ${requestId}, batch ${batch}`
         );
 
@@ -251,7 +252,7 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
         };
     } catch (e) {
-        log.error(
+        logger.error(
             `Data query: error while running query for request id ${requestId}, batch ${batch} - ${e}`
         );
 

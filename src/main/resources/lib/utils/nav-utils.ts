@@ -2,6 +2,7 @@ import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { contentRepo, navnoRootPath } from '../constants';
 import { MediaDescriptor } from '../../types/content-types/content-config';
+import { logger } from './logging';
 
 // TODO: rydd i denne fila
 
@@ -33,10 +34,10 @@ export const parseJsonArray = (json: string): any[] | null => {
         if (Array.isArray(array)) {
             return array;
         }
-        log.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
+        logger.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
         return null;
     } catch (e) {
-        log.error(`Failed to parse JSON string ${json} - ${e}`);
+        logger.error(`Failed to parse JSON string ${json} - ${e}`);
         return null;
     }
 };
@@ -98,11 +99,11 @@ export const pushLiveElements = (targetIds: string[]) => {
             target: 'master',
         });
 
-        log.info(`Pushed ${masterIds.length} elements to master`);
-        log.info(JSON.stringify(pushResult, null, 4));
+        logger.info(`Pushed ${masterIds.length} elements to master`);
+        logger.info(JSON.stringify(pushResult, null, 4));
         return pushResult;
     }
-    log.info('No content was updated in master');
+    logger.info('No content was updated in master');
     return [];
 };
 

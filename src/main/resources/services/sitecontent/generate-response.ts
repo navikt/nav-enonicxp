@@ -14,6 +14,7 @@ import { validateTimestampConsistency } from '../../lib/time-travel/consistency-
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
+import { logger } from '../../lib/utils/logging';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -39,7 +40,7 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
     }
 
     if (legacyHits.length > 1) {
-        log.error(`Multiple contents found with legacy key ${legacyCmsKey}`);
+        logger.error(`Multiple contents found with legacy key ${legacyCmsKey}`);
     }
 
     return {
@@ -118,7 +119,7 @@ const getContentOrRedirect = (
     // Consistency check to ensure our version-history hack isn't affecting normal requests
     if (!validateTimestampConsistency(contentRef, content, branch)) {
         if (retries > 0) {
-            log.error(
+            logger.error(
                 `Timestamp consistency check failed - Retrying ${retries} more time${
                     retries > 1 ? 's' : ''
                 }`
@@ -126,7 +127,7 @@ const getContentOrRedirect = (
             return getContentOrRedirect(contentRef, branch, retries - 1);
         }
 
-        log.error(`Time travel permanently disabled on this node`);
+        logger.critical(`Time travel permanently disabled on this node`);
         unhookTimeTravel();
         return getContentOrRedirect(contentRef, branch);
     }

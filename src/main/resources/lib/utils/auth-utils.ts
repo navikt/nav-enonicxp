@@ -1,6 +1,7 @@
 import authLib, { PrincipalKey } from '/lib/xp/auth';
 import contentLib, { Permission, PermissionsParams } from '/lib/xp/content';
 import contextLib from '/lib/xp/context';
+import { logger } from './logging';
 
 export const insufficientPermissionResponse = (requiredPermission: string) => ({
     status: 403,
@@ -19,7 +20,7 @@ export const validateCurrentUserPermissionForContent = (
     permissions?: PermissionsParams[]
 ): boolean => {
     if (!contentId && !permissions) {
-        log.warning('contentId or permissions must be provided');
+        logger.warning('contentId or permissions must be provided');
         return false;
     }
 
@@ -32,7 +33,7 @@ export const validateCurrentUserPermissionForContent = (
 
     const currentUserPrincipals = contextLib.get()?.authInfo?.principals;
     if (!currentUserPrincipals) {
-        log.warning(
+        logger.warning(
             `Could not retrieve user principals in current context for content ${contentId}`
         );
         return false;

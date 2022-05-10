@@ -3,6 +3,7 @@ import { getKeyWithoutMacroDescription } from './component-utils';
 import { findContentsWithHtmlAreaText } from './htmlarea-utils';
 import { forceArray } from './nav-utils';
 import { NavNoDescriptor } from '../../types/common';
+import { logger } from './logging';
 
 export const globalValuesContentType: NavNoDescriptor<'global-value-set'> =
     'no.nav.navno:global-value-set';
@@ -62,7 +63,7 @@ export const getGlobalValueItem = (gvKey: string, contentId: string) => {
     const globalValueSet = getGlobalValueSet(contentId);
 
     if (!globalValueSet) {
-        log.info(`No global value set found for contentId ${contentId}`);
+        logger.info(`No global value set found for contentId ${contentId}`);
         return null;
     }
 
@@ -86,19 +87,19 @@ export const getGlobalValueSet = (
 
 export const getGlobalValue = (gvKey: string | null, contentId: string | null) => {
     if (!gvKey) {
-        log.info(`Invalid global value key requested from ${contentId}`);
+        logger.info(`Invalid global value key requested from ${contentId}`);
         return null;
     }
 
     if (!contentId) {
-        log.info(`Invalid contentId provided for global value key ${gvKey}`);
+        logger.info(`Invalid contentId provided for global value key ${gvKey}`);
         return null;
     }
 
     const globalValueSet = getGlobalValueSet(contentId);
 
     if (!globalValueSet) {
-        log.info(`No global value set found for contentId ${contentId}`);
+        logger.info(`No global value set found for contentId ${contentId}`);
         return null;
     }
 
@@ -107,12 +108,12 @@ export const getGlobalValue = (gvKey: string | null, contentId: string | null) =
     );
 
     if (valuesFound.length === 0) {
-        log.error(`Value not found for global value key ${gvKey}`);
+        logger.error(`Value not found for global value key ${gvKey}`);
         return null;
     }
 
     if (valuesFound.length > 1) {
-        log.error(`Found multiple values with global value key ${gvKey}!`);
+        logger.critical(`Found multiple values with global value key ${gvKey}!`);
         return null;
     }
 

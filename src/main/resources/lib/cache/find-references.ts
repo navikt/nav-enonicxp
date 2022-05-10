@@ -17,6 +17,7 @@ import {
     typesWithDeepReferences as _typesWithDeepReferences,
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
+import { logger } from '../utils/logging';
 
 const MAX_DEPTH = 3;
 
@@ -37,7 +38,7 @@ const getCaseTimeMacroReferences = (content: Content) => {
 
     const contentsWithCaseTimeMacro = findContentsWithCaseTimeMacro(_id);
     if (contentsWithCaseTimeMacro.length > 0) {
-        log.info(
+        logger.info(
             `Found ${contentsWithCaseTimeMacro.length} pages with macro-references to case time id ${_id}`
         );
     }
@@ -54,7 +55,7 @@ const getFragmentMacroReferences = (content: Content) => {
 
     const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
     if (contentsWithFragmentId.length > 0) {
-        log.info(
+        logger.info(
             `Found ${contentsWithFragmentId.length} pages with macro-references to fragment id ${_id}`
         );
     }
@@ -71,7 +72,7 @@ const getProductCardMacroReferences = (content: Content) => {
 
     const references = findContentsWithProductCardMacro(_id);
 
-    log.info(`Found ${references.length} pages with macro-references to product page id ${_id}`);
+    logger.info(`Found ${references.length} pages with macro-references to product page id ${_id}`);
 
     return references;
 };
@@ -87,7 +88,9 @@ const getGlobalValueReferences = (content: Content) => {
         })
         .flat();
 
-    log.info(`Found ${references.length} pages with references to global value id ${content._id}`);
+    logger.info(
+        `Found ${references.length} pages with references to global value id ${content._id}`
+    );
 
     return references;
 };
@@ -123,7 +126,7 @@ const getExplicitReferences = (id: string) => {
         },
     }).hits;
 
-    log.info(`Found ${references.length} pages with direct references to content id ${id}`);
+    logger.info(`Found ${references.length} pages with direct references to content id ${id}`);
 
     return references;
 };
@@ -208,7 +211,7 @@ const _findReferences = ({
     depth?: number;
 }): Content[] => {
     if (depth > MAX_DEPTH) {
-        log.warning(`Reached max depth for references search on id ${id}`);
+        logger.critical(`Reached max depth for references search on id ${id}`);
         return [];
     }
 

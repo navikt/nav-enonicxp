@@ -4,6 +4,7 @@ import { getUnixTimeFromDateTimeString, stringArrayToSet } from '../utils/nav-ut
 import { Content } from '/lib/xp/content';
 import { contentLibGetStandard, timeTravelHooksEnabled } from './time-travel-hooks';
 import { graphQlContentQueries } from '../guillotine/queries/run-content-query';
+import { logger } from '../utils/logging';
 
 const contentTypesWithQuery = stringArrayToSet(Object.keys(graphQlContentQueries));
 
@@ -31,7 +32,7 @@ export const validateTimestampConsistency = (
     }
 
     if (!contentRaw) {
-        log.error(
+        logger.error(
             `Time travel consistency check could not complete, could not retrieve raw content for ${contentRef}`
         );
         return false;
@@ -42,7 +43,7 @@ export const validateTimestampConsistency = (
     }
 
     if (!contentFromHookedLibs) {
-        log.error(
+        logger.error(
             `Time travel consistency check could not complete, found raw content but no content from hooked libs ${contentRef}`
         );
         return false;
@@ -55,7 +56,7 @@ export const validateTimestampConsistency = (
     const hookedTimestamp = getUnixTimeFromDateTimeString(hookedTime);
 
     if (rawTimestamp !== hookedTimestamp) {
-        log.error(
+        logger.error(
             `Time travel consistency check failed for ${contentRef} - got timestamp ${hookedTimestamp}, expected ${rawTimestamp}`
         );
         return false;

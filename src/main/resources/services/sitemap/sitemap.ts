@@ -1,4 +1,5 @@
 import { getAllSitemapEntries, requestSitemapUpdate } from '../../lib/sitemap/sitemap';
+import { logger } from '../../lib/utils/logging';
 
 export const get = (req: XP.Request) => {
     const { secret } = req.headers;
@@ -16,7 +17,7 @@ export const get = (req: XP.Request) => {
     const response = getAllSitemapEntries();
 
     if (!response || response.length === 0) {
-        log.error('Sitemap data was requested but is not available!');
+        logger.warning('Sitemap data was requested but is not available!');
 
         requestSitemapUpdate();
 

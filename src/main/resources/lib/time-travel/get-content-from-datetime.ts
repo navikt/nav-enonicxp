@@ -4,6 +4,7 @@ import { runInBranchContext } from '../utils/branch-context';
 import { runWithTimeTravel } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { getPublishedVersionTimestamps } from '../utils/version-utils';
+import { logger } from '../utils/logging';
 
 // Get content from a specific datetime (used for requests from the internal version history selector)
 export const getContentVersionFromDateTime = (
@@ -40,7 +41,7 @@ export const getContentVersionFromDateTime = (
             };
         });
     } catch (e) {
-        log.warning(`Time travel: Error retrieving data from version history: ${e}`);
+        logger.warning(`Time travel: Error retrieving data from version history: ${e}`);
         return null;
     }
 };

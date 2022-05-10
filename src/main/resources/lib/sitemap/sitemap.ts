@@ -9,6 +9,7 @@ import { contentRepo, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
+import { logger } from '../utils/logging';
 
 const batchCount = 1000;
 const maxCount = 50000;
@@ -94,7 +95,7 @@ const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[
                   ]
                 : acc;
         } catch (e) {
-            log.error(
+            logger.error(
                 `Could not retrieve alt language content for sitemap - root id: ${content._id} - alt id: ${id} - Error: ${e}`
             );
             return acc;
@@ -119,7 +120,7 @@ const getContent = (path: string) => {
         if (contentFromCustomPath.length === 1) {
             return contentFromCustomPath[0];
         }
-        log.warning(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
+        logger.critical(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
         return null;
     }
 
@@ -186,7 +187,7 @@ const generateAndBroadcastSitemapData = () =>
                 description: 'sitemap-generator-task',
                 func: () => {
                     try {
-                        log.info('Started generating sitemap data');
+                        logger.info('Started generating sitemap data');
                         const startTime = Date.now();
                         const sitemapEntries = getSitemapEntries();
 
@@ -195,17 +196,17 @@ const generateAndBroadcastSitemapData = () =>
                             data: { entries: sitemapEntries },
                         });
 
-                        log.info(
+                        logger.info(
                             `Finished generating sitemap data with ${
                                 sitemapEntries.length
                             } entries after ${Date.now() - startTime}ms`
                         );
 
                         if (sitemapEntries.length > maxCount) {
-                            log.error(`Sitemap entries count exceeds recommended maximum`);
+                            logger.error(`Sitemap entries count exceeds recommended maximum`);
                         }
                     } catch (e) {
-                        log.error(`Error while generating sitemap - ${e}`);
+                        logger.error(`Error while generating sitemap - ${e}`);
                     } finally {
                         isGenerating = false;
                     }
@@ -233,7 +234,7 @@ export const generateSitemapDataAndActivateSchedule = () => {
 
 const updateSitemapData = (entries: SitemapEntry[]) => {
     if (!entries || !Array.isArray(entries) || entries.length === 0) {
-        log.error('Attempted to update sitemap with invalid data');
+        logger.error('Attempted to update sitemap with invalid data');
         return;
     }
 
@@ -243,7 +244,7 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
         sitemapData.set(entry.id, entry);
     });
 
-    log.info(`Updated sitemap data with ${entries.length} entries`);
+    logger.info(`Updated sitemap data with ${entries.length} entries`);
 };
 
 export const requestSitemapUpdate = () => {

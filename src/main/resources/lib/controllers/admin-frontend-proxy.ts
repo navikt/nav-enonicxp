@@ -1,13 +1,14 @@
 import httpClient from '/lib/http-client';
 import { urls } from '../constants';
 import { stripPathPrefix } from '../utils/nav-utils';
+import { logger } from '../utils/logging';
 
 const loopbackCheckParam = 'fromXp';
 
 const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
     if (status >= 400) {
-        log.error(msg);
+        logger.error(msg);
     }
 
     return {
@@ -28,7 +29,7 @@ export const adminFrontendProxy = (req: XP.Request) => {
 
     const isLoopback = req.params[loopbackCheckParam];
     if (isLoopback) {
-        log.info(`Loopback to XP detected from path ${req.rawPath}`);
+        logger.warning(`Loopback to XP detected from path ${req.rawPath}`);
         return {
             contentType: 'text/html',
             body: `<div>Error: request to frontend looped back to XP</div>`,
@@ -65,7 +66,7 @@ export const adminFrontendProxy = (req: XP.Request) => {
         const { status, message } = response;
 
         if (status >= 400) {
-            log.info(`Error response from frontend for ${frontendUrl}: ${status} - ${message}`);
+            logger.info(`Error response from frontend for ${frontendUrl}: ${status} - ${message}`);
         }
 
         // Do not send redirect-responses to the content-studio editor view,

@@ -4,6 +4,7 @@ import clusterLib from '/lib/xp/cluster';
 import { runInBranchContext } from '../utils/branch-context';
 import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../scheduling/scheduled-publish';
+import { logger } from '../utils/logging';
 
 const isPublishedOrPrepublished = (contentId: string) => {
     try {
@@ -18,7 +19,7 @@ const isPublishedOrPrepublished = (contentId: string) => {
         const draftContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
         return isPrepublished(draftContent?.publish?.from);
     } catch (e) {
-        log.error(
+        logger.error(
             `Error getting publish state for ${contentId}, assuming content is corrupted and returning false - ${e}`
         );
         return false;
@@ -48,7 +49,7 @@ export const removeUnpublishedFromContentList = (
                                 const shouldKeep = isPublishedOrPrepublished(sectionContentId);
 
                                 if (!shouldKeep) {
-                                    log.info(
+                                    logger.info(
                                         `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
                                     );
                                     numRemoved++;
@@ -64,7 +65,7 @@ export const removeUnpublishedFromContentList = (
             'draft'
         );
     } catch (e) {
-        log.error(`Error while modifying content list ${contentList._id} - ${e}`);
+        logger.error(`Error while modifying content list ${contentList._id} - ${e}`);
         return 0;
     }
 
@@ -81,14 +82,14 @@ export const removeUnpublishedFromAllContentLists = () => {
         'master'
     ).hits;
 
-    log.info(`Pruning ${contentLists.length} content-lists`);
+    logger.info(`Pruning ${contentLists.length} content-lists`);
 
     const numRemovedArray = contentLists
         .map(removeUnpublishedFromContentList)
         .filter((item) => item !== 0);
     const numRemoved = numRemovedArray.reduce((acc, item) => acc + item);
 
-    log.info(
+    logger.info(
         `Removed ${numRemoved} unpublished content from ${numRemovedArray.length} content-lists`
     );
 };
