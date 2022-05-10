@@ -129,7 +129,7 @@ const _sendReliableEvent = <EventData>({
     retryProps?: ReliableEventRetryProps;
 }) => {
     if (retryProps) {
-        logger.info(
+        logger.warning(
             `Retrying event ${
                 retryProps.prevEventId
             } - excluding servers ${retryProps.prevEventServersAcked.join(', ')}`

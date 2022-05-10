@@ -66,7 +66,9 @@ export const adminFrontendProxy = (req: XP.Request) => {
         const { status, message } = response;
 
         if (status >= 400) {
-            logger.info(`Error response from frontend for ${frontendUrl}: ${status} - ${message}`);
+            logger.warning(
+                `Error response from frontend for ${frontendUrl}: ${status} - ${message}`
+            );
         }
 
         // Do not send redirect-responses to the content-studio editor view,

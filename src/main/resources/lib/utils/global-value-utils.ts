@@ -87,19 +87,19 @@ export const getGlobalValueSet = (
 
 export const getGlobalValue = (gvKey: string | null, contentId: string | null) => {
     if (!gvKey) {
-        logger.info(`Invalid global value key requested from ${contentId}`);
+        logger.warning(`Invalid global value key requested from ${contentId}`);
         return null;
     }
 
     if (!contentId) {
-        logger.info(`Invalid contentId provided for global value key ${gvKey}`);
+        logger.warning(`Invalid contentId provided for global value key ${gvKey}`);
         return null;
     }
 
     const globalValueSet = getGlobalValueSet(contentId);
 
     if (!globalValueSet) {
-        logger.info(`No global value set found for contentId ${contentId}`);
+        logger.warning(`No global value set found for contentId ${contentId}`);
         return null;
     }
 
@@ -108,7 +108,7 @@ export const getGlobalValue = (gvKey: string | null, contentId: string | null) =
     );
 
     if (valuesFound.length === 0) {
-        logger.error(`Value not found for global value key ${gvKey}`);
+        logger.warning(`Value not found for global value key ${gvKey}`);
         return null;
     }
 

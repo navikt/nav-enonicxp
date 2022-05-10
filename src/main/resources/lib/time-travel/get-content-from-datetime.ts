@@ -41,7 +41,7 @@ export const getContentVersionFromDateTime = (
             };
         });
     } catch (e) {
-        logger.warning(`Time travel: Error retrieving data from version history: ${e}`);
+        logger.error(`Time travel: Error retrieving data from version history: ${e}`);
         return null;
     }
 };

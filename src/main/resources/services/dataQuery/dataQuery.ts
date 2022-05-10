@@ -139,7 +139,7 @@ const runQuery = (params: RunQueryParams) => {
 
     if (hits.length !== contentIdsBatch.length) {
         const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
-        logger.info(
+        logger.warning(
             `Data query: missing results from contentLib query for ${
                 diff.length
             } ids: ${JSON.stringify(diff)}`

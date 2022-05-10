@@ -206,7 +206,7 @@ const generateAndBroadcastSitemapData = () =>
                             logger.error(`Sitemap entries count exceeds recommended maximum`);
                         }
                     } catch (e) {
-                        logger.error(`Error while generating sitemap - ${e}`);
+                        logger.critical(`Error while generating sitemap - ${e}`);
                     } finally {
                         isGenerating = false;
                     }

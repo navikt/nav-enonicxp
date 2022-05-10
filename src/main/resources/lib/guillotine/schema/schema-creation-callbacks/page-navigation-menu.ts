@@ -173,9 +173,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
             const isDupe = acc.some((_anchorLink) => _anchorLink.anchorId === anchorId);
 
             if (isDupe && context.branch === 'master') {
-                logger.warning(
-                    `Duplicate anchor id ${anchorId} found under content id ${contentId}`
-                );
+                logger.error(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
             }
 
             return [

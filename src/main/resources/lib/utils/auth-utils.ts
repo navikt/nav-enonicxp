@@ -20,7 +20,7 @@ export const validateCurrentUserPermissionForContent = (
     permissions?: PermissionsParams[]
 ): boolean => {
     if (!contentId && !permissions) {
-        logger.warning('contentId or permissions must be provided');
+        logger.error('contentId or permissions must be provided');
         return false;
     }
 
@@ -33,7 +33,7 @@ export const validateCurrentUserPermissionForContent = (
 
     const currentUserPrincipals = contextLib.get()?.authInfo?.principals;
     if (!currentUserPrincipals) {
-        logger.warning(
+        logger.error(
             `Could not retrieve user principals in current context for content ${contentId}`
         );
         return false;

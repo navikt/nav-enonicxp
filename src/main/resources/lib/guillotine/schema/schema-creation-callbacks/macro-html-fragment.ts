@@ -1,6 +1,7 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import macroLib from '/lib/guillotine/macro';
+import contextLib from '/lib/xp/context';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
 import { HtmlAreaPartConfig } from '../../../../site/parts/html-area/html-area-part-config';
@@ -19,22 +20,29 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             const content = contentLib.get({ key });
             if (!content) {
-                logger.warning(
-                    `Content not found for fragment in html-fragment macro: ${fragmentId}`
-                );
+                const msg = `Content not found for fragment in html-fragment macro: ${fragmentId}`;
+                const branch = contextLib.get()?.branch;
+
+                if (branch === 'master') {
+                    logger.critical(msg);
+                } else {
+                    logger.warning(msg);
+                }
                 return null;
             }
 
             if (content.type !== 'portal:fragment') {
                 logger.error(
-                    `Content content specified for html-fragment macro is not a fragment: ${fragmentId}`
+                    `Content specified for html-fragment macro is not a fragment: ${fragmentId}`
                 );
                 return null;
             }
 
             const html = (content.fragment?.config as HtmlAreaPartConfig)?.html;
             if (!html) {
-                logger.error(`Fragment in html-fragment macro did not contain html: ${fragmentId}`);
+                logger.warning(
+                    `Fragment in html-fragment macro did not contain html: ${fragmentId}`
+                );
                 return null;
             }
 

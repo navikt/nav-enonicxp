@@ -33,15 +33,23 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
         query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
     }).hits;
 
-    const targetContent = legacyHits[0];
-
-    if (!targetContent) {
+    if (legacyHits.length === 0) {
         return null;
     }
 
-    if (legacyHits.length > 1) {
-        logger.error(`Multiple contents found with legacy key ${legacyCmsKey}`);
+    const foundMultipleHits = legacyHits.length > 1;
+
+    if (foundMultipleHits) {
+        logger.error(`Found ${legacyHits.length} contents with legacy key ${legacyCmsKey}`);
     }
+
+    // Some legacy keys belong to multiple contents, usually due to duplication for locale variants
+    const targetContent = foundMultipleHits
+        ? legacyHits.find((hit) => hit.language === 'no') ||
+          legacyHits.find((hit) => hit.language === 'nn') ||
+          legacyHits.find((hit) => hit.language === 'en') ||
+          legacyHits[0]
+        : legacyHits[0];
 
     return {
         ...targetContent,

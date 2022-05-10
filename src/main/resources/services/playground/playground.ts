@@ -47,7 +47,7 @@ const handleStartMessage = (sessionId: string, message: any) => {
             result.data.subscribe(subscriber);
         }
     } catch (e) {
-        logger.warning('Error while handling Start GraphQL-WS message', e);
+        logger.warning(`Error while handling Start GraphQL-WS message - ${e}`);
         throw e;
     }
 };

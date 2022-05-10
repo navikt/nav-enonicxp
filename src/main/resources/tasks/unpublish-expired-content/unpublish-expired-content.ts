@@ -14,7 +14,7 @@ export const run = (params: UnpublishExpiredContentConfig) => {
     const repo = nodeLib.connect({ repoId: contentRepo, branch: 'master' });
     const content = repo.get({ key: id });
     if (!content) {
-        logger.info(`Content ${id} not found in master - aborting unpublish task`);
+        logger.error(`Content ${id} not found in master - aborting unpublish task`);
         return;
     }
 
@@ -39,7 +39,7 @@ export const run = (params: UnpublishExpiredContentConfig) => {
         if (unpublished && unpublished.length > 0) {
             logger.info(`Unpublished content: ${unpublished.join(', ')}`);
             if (unpublished.length > 1) {
-                logger.critical(`Unexpectedly unpublished multiple contents with id ${id}`);
+                logger.error(`Unexpectedly unpublished multiple contents with id ${id}`);
             }
         } else {
             logger.critical(`Could not unpublish ${id} - unknown error`);

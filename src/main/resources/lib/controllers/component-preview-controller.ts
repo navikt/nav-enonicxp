@@ -55,7 +55,7 @@ export const componentPreviewController = (req: XP.Request) => {
     const componentProps = getComponentProps();
 
     if (!componentProps) {
-        logger.info('Failed to get component props for preview');
+        logger.warning('Failed to get component props for preview');
         return fallbackResponse;
     }
 
