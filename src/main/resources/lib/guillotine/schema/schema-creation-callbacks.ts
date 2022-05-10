@@ -28,9 +28,11 @@ import {
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
+import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 
 export const schemaCreationCallbacks = {
     Attachment: attachmentCallback,
+    FragmentComponentData: fragmentComponentDataCallback,
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
     no_nav_navno_MainArticle: mainArticleCallback,

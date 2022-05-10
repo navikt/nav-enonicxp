@@ -4,6 +4,7 @@
 fragment contentGuidePage on no_nav_navno_GuidePage {
     dataAsJson
     data {
+        area
         languages {
             ...languagesMixin
         }
