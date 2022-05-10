@@ -74,9 +74,16 @@ describe('Custom paths', () => {
         expect(hasInvalidCustomPath(contentWithoutCustomPath)).toBe(false);
     });
 
-    test('Should redirect if content has a valid custom path', () => {
+    test('Should return customPath if it is valid', () => {
         mockReturnValue(contentLib.get, contentWithValidCustomPath);
+        expect(getCustomPathFromContent('someId')).toBe(contentWithValidCustomPath.data.customPath);
+    });
 
-        expect(getCustomPathFromContent('asdf')).toBe('/test-valid-path');
+    test('Should return null if no valid customPath', () => {
+        mockReturnValue(contentLib.get, contentWithInvalidCustomPath);
+        expect(getCustomPathFromContent('someId')).toBeNull();
+
+        mockReturnValue(contentLib.get, contentWithoutCustomPath);
+        expect(getCustomPathFromContent('someId')).toBeNull();
     });
 });
