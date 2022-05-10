@@ -12,6 +12,13 @@
                         <option value="processing_times">Saksbehandlingstider</option>
                     </config>
                 </input>
+                <input name="pageUsageReference" type="ContentSelector">
+                    <label>Velg tilhørende sider:</label>
+                    <occurrences minimum="1" maximum="5"/>
+                    <config>
+                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                    </config>
+                </input>
             </items>
         </field-set>
     </form>
