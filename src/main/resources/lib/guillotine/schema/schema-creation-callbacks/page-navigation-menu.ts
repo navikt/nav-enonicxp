@@ -6,6 +6,7 @@ import { forceArray } from '../../../utils/nav-utils';
 import { RepoBranch } from '../../../../types/common';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
+import { logger } from '../../../utils/logging';
 
 type AnchorLink = {
     anchorId: string;
@@ -148,7 +149,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
     params.fields.anchorLinks.resolve = (env) => {
         const { contentId } = env.args;
         if (!contentId) {
-            log.error(
+            logger.error(
                 'Attempted to resolve a page navigation menu without providing a content id for the page'
             );
             return null;
@@ -179,7 +180,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
             const isDupe = acc.some((_anchorLink) => _anchorLink.anchorId === anchorId);
 
             if (isDupe && context.branch === 'master') {
-                log.error(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
+                logger.error(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
             }
 
             return [

@@ -5,6 +5,7 @@ import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
 import { runInBranchContext } from '../../lib/utils/branch-context';
+import { logger } from '../../lib/utils/logging';
 
 const errorIcon = {
     data: `<svg width='32' height='32'>\
@@ -39,7 +40,7 @@ const verifyIngressOwner = (path: string) => {
 
         return response.headers['app-name'] === frontendAppName;
     } catch (e) {
-        log.warning(`Error determining ingress owner for ${path} - ${e}`);
+        logger.error(`Error determining ingress owner for ${path} - ${e}`);
         return false;
     }
 };

@@ -14,6 +14,7 @@ import { validateTimestampConsistency } from '../../lib/time-travel/consistency-
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
+import { logger } from '../../lib/utils/logging';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -32,15 +33,23 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
         query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
     }).hits;
 
-    const targetContent = legacyHits[0];
-
-    if (!targetContent) {
+    if (legacyHits.length === 0) {
         return null;
     }
 
-    if (legacyHits.length > 1) {
-        log.error(`Multiple contents found with legacy key ${legacyCmsKey}`);
+    const foundMultipleHits = legacyHits.length > 1;
+
+    if (foundMultipleHits) {
+        logger.error(`Found ${legacyHits.length} contents with legacy key ${legacyCmsKey}`);
     }
+
+    // Some legacy keys belong to multiple contents, usually due to duplication for locale variants
+    const targetContent = foundMultipleHits
+        ? legacyHits.find((hit) => hit.language === 'no') ||
+          legacyHits.find((hit) => hit.language === 'nn') ||
+          legacyHits.find((hit) => hit.language === 'en') ||
+          legacyHits[0]
+        : legacyHits[0];
 
     return {
         ...targetContent,
@@ -118,7 +127,7 @@ const getContentOrRedirect = (
     // Consistency check to ensure our version-history hack isn't affecting normal requests
     if (!validateTimestampConsistency(contentRef, content, branch)) {
         if (retries > 0) {
-            log.error(
+            logger.error(
                 `Timestamp consistency check failed - Retrying ${retries} more time${
                     retries > 1 ? 's' : ''
                 }`
@@ -126,7 +135,7 @@ const getContentOrRedirect = (
             return getContentOrRedirect(contentRef, branch, retries - 1);
         }
 
-        log.error(`Time travel permanently disabled on this node`);
+        logger.critical(`Time travel permanently disabled on this node`);
         unhookTimeTravel();
         return getContentOrRedirect(contentRef, branch);
     }

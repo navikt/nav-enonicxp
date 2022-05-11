@@ -3,6 +3,7 @@ import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
 import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { logger } from '../../../lib/utils/logging';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
@@ -65,7 +66,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
         };
     } catch (e) {
         const message = `Error reordering values on ${contentId} - ${e}`;
-        log.error(message);
+        logger.error(message);
         return {
             status: 500,
             contentType: 'application/json',

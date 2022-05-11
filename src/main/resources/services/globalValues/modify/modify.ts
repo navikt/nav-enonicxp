@@ -8,6 +8,7 @@ import { runInBranchContext } from '../../../lib/utils/branch-context';
 import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { logger } from '../../../lib/utils/logging';
 
 const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
@@ -74,7 +75,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
             },
         };
     } catch (e) {
-        log.error(`Error modifying ${key} on ${contentId} - ${e}`);
+        logger.critical(`Error modifying ${key} on ${contentId} - ${e}`);
         return {
             status: 500,
             contentType: 'application/json',

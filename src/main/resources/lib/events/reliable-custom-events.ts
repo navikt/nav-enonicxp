@@ -3,6 +3,7 @@ import taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
 import { clusterInfo } from '../utils/cluster-utils';
 import { EmptyObject } from '../../types/util-types';
+import { logger } from '../utils/logging';
 
 /*
  * This system allows nodes in the server cluster to exchange reliable events
@@ -72,7 +73,7 @@ const handleAcks = ({
 
             const serversAcked = eventIdToAckedServerIds[eventId];
             if (!serversAcked) {
-                log.error(`Acked list not found for event ${eventId}`);
+                logger.error(`Acked list not found for event ${eventId}`);
                 return;
             }
 
@@ -80,7 +81,7 @@ const handleAcks = ({
 
             if (numServersMissing > 0) {
                 if (retries > 0) {
-                    log.warning(
+                    logger.warning(
                         `${numServersMissing} servers did not ack event ${eventId} before timeout - retries remaining: ${retries}`
                     );
                     _sendReliableEvent({
@@ -94,13 +95,13 @@ const handleAcks = ({
                         },
                     });
                 } else {
-                    log.error(
+                    logger.critical(
                         `${numServersMissing} servers did not ack event ${eventId} before timeout - no retries remaining. This event may not have propagated fully!`
                     );
                     delete eventIdToAckedServerIds[eventId];
                 }
             } else {
-                log.info(`Event ${eventId} acked by all servers`);
+                logger.info(`Event ${eventId} acked by all servers`);
                 delete eventIdToAckedServerIds[eventId];
             }
         },
@@ -128,7 +129,7 @@ const _sendReliableEvent = <EventData>({
     retryProps?: ReliableEventRetryProps;
 }) => {
     if (retryProps) {
-        log.info(
+        logger.warning(
             `Retrying event ${
                 retryProps.prevEventId
             } - excluding servers ${retryProps.prevEventServersAcked.join(', ')}`
@@ -184,9 +185,9 @@ export const addReliableEventListener = <EventData = EmptyObject>({
                     return;
                 }
 
-                log.warning(`Retry event ${eventId} received`);
+                logger.info(`Retry event ${eventId} received`);
             } else {
-                log.info(`Event ${eventId} received`);
+                logger.info(`Event ${eventId} received`);
             }
 
             sendAck(eventId);
@@ -199,7 +200,7 @@ let ackListenerStarted = false;
 
 export const startReliableEventAckListener = () => {
     if (ackListenerStarted) {
-        log.error(`Attempted to start event ack listener multiple times!`);
+        logger.error(`Attempted to start event ack listener multiple times!`);
         return;
     }
 
@@ -218,9 +219,9 @@ export const startReliableEventAckListener = () => {
             }
 
             if (ackedServerIds.includes(serverId)) {
-                log.warning(`Event ${eventId} was already acked by server ${serverId}!`);
+                logger.warning(`Event ${eventId} was already acked by server ${serverId}!`);
             } else {
-                log.info(`Event ${eventId} acked by server ${serverId}`);
+                logger.info(`Event ${eventId} acked by server ${serverId}`);
                 ackedServerIds.push(serverId);
             }
         },

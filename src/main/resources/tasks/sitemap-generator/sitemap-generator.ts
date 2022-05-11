@@ -1,7 +1,8 @@
 import { requestSitemapUpdate } from '../../lib/sitemap/sitemap';
+import { logger } from '../../lib/utils/logging';
 
 export const run = () => {
-    log.info('Running task for triggering sitemap generation');
+    logger.info('Running task for triggering sitemap generation');
 
     requestSitemapUpdate();
 };

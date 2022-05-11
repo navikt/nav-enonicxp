@@ -1,6 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import portalLib from '/lib/xp/portal';
+import { logger } from '../../lib/utils/logging';
 
 const cacheKey = 'decorator-menu-cache';
 const menuPath = '/www.nav.no/dekorator-meny/';
@@ -95,7 +96,7 @@ export const get = () => {
             contentType: 'application/json',
         };
     } catch (e) {
-        log.error(`Could not retrieve decorator menu! - ${e}`);
+        logger.critical(`Could not retrieve decorator menu! - ${e}`);
 
         return {
             status: 500,

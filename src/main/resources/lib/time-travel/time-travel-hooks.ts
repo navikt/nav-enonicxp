@@ -18,6 +18,7 @@ import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
 import { TimeTravelConfig } from './types';
+import { logger } from '../utils/logging';
 
 export let timeTravelHooksEnabled = false;
 
@@ -29,7 +30,7 @@ export const nodeLibConnectStandard = nodeLib.connect;
 // registered with a time travel config will be affected.
 export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
     if (timeTravelHooksEnabled) {
-        log.error(`Time travel hooks are already enabled!`);
+        logger.error(`Time travel hooks are already enabled!`);
         return;
     }
 
