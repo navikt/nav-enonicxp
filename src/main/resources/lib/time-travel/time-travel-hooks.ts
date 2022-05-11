@@ -43,7 +43,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
         // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
         if (!configForThread) {
-            // Error boundary here as a temp fix for contentLib.get throwing error when attempting
+            // Catch errors here as a temp fix for contentLib.get throwing errors when attempting
             // to get a content which has been archived
             try {
                 return contentLibGetStandard(args);
