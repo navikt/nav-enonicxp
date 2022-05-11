@@ -16,7 +16,7 @@ const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): Ar
     const repo = nodeLib.connect({ repoId, branch: 'draft' });
 
     const queryString = `_path LIKE "/archive/*"${
-        query ? ` AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")` : ''
+        query ? ` AND fulltext("displayName, _path, _id", "${sanitize(query)}*", "AND")` : ''
     }`;
 
     const archivedContentIds = batchedNodeQuery({
