@@ -61,11 +61,11 @@ const pushLiveElements = (targetIds: string[]) => {
             target: 'master',
         });
 
-        log.info(`Pushed ${masterIds.length} elements to master`);
-        log.info(JSON.stringify(pushResult, null, 4));
+        logger.info(`Pushed ${masterIds.length} elements to master`);
+        logger.info(JSON.stringify(pushResult, null, 4));
         return pushResult;
     }
-    log.info('No content was updated in master');
+    logger.info('No content was updated in master');
     return [];
 };
 
