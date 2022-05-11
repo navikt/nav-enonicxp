@@ -1,4 +1,3 @@
-#import "./parts/partAlertPanel.graphql"
 #import "./parts/partButton.graphql"
 #import "./parts/partCalculator.graphql"
 #import "./parts/partContactOption.graphql"
@@ -22,9 +21,6 @@ fragment partComponents on PartComponentData {
     config {
         ... on PartComponentDataConfig {
             no_nav_navno {
-                alert_panel {
-                    ...partComponentAlertPanel
-                }
                 button {
                     ...partComponentButton
                 }

@@ -1,4 +1,0 @@
-fragment partComponentAlertPanel on Part_no_nav_navno_alert_panel {
-    header
-    ingress
-}
