@@ -80,7 +80,7 @@ export const destructureComponent = (component: GuillotineComponent) => {
 
     return {
         ...destructuredComponent,
-        ...(config && { config }),
+        config,
     };
 };
 

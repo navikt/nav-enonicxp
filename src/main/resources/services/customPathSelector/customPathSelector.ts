@@ -1,5 +1,6 @@
 import contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
+import portalLib from '/lib/xp/portal';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
@@ -64,14 +65,17 @@ const getResult = ({
     }
 
     if (suggestedPath !== currentSelection) {
-        const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
-        if (contentWithCustomPath.length > 0) {
-            return [
-                generateErrorHit(
-                    `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
-                    `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`
-                ),
-            ];
+        const contentWithCustomPath = getContentFromCustomPath(suggestedPath)[0];
+        if (contentWithCustomPath) {
+            const currentContent = portalLib.getContent();
+            if (currentContent._id !== contentWithCustomPath._id) {
+                return [
+                    generateErrorHit(
+                        `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
+                        `"${contentWithCustomPath._path}" bruker allerede denne kort-url'en`
+                    ),
+                ];
+            }
         }
     }
 

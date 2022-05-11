@@ -2,10 +2,10 @@
     "name": "navno-enonicxp",
     "version": "1.0.0",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npm-run-all lint babel",
-        "lint": "eslint ./src/main/resources --ext=ts --ext=es6 --quiet && tsc --noemit",
-        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"**/*.js\" --extensions \".ts,.es6\""
+        "test": "jest",
+        "build": "npm-run-all lint test babel",
+        "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig-build.json --noemit",
+        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/_test\" --no-copy-ignored --extensions \".ts\""
     },
     "repository": {
         "type": "git",
@@ -22,6 +22,7 @@
         "@babel/core": "^7.17.9",
         "@babel/preset-env": "^7.16.11",
         "@babel/preset-typescript": "^7.16.7",
+        "@types/jest": "^27.5.0",
         "@types/node": "^10.17.60",
         "@typescript-eslint/eslint-plugin": "^5.21.0",
         "@typescript-eslint/parser": "^5.21.0",
@@ -34,10 +35,12 @@
         "eslint-plugin-prettier": "^4.0.0",
         "graphql": "^16.4.0",
         "html-entities": "2.1.1",
+        "jest": "^28.1.0",
         "npm-run-all": "^4.1.5",
         "onchange": "^7.1.0",
         "prettier": "^2.6.2",
         "striptags": "3.1.1",
+        "ts-node": "^10.7.0",
         "typescript": "^4.6.3"
     }
 }
