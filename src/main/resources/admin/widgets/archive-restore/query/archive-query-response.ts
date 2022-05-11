@@ -14,19 +14,17 @@ type ArchiveEntry = {
 const view = resolve('./archive-query-response.html');
 
 const buildQueryString = (query?: string) => {
-    const archivePathQuery = '_path LIKE "/archive/*';
+    const archivePathQuery = '_path LIKE "/archive/*"';
 
     if (!query) {
         return archivePathQuery;
     }
 
     if (isUUID(query)) {
-        return `${archivePathQuery} AND _id="${query}")`;
+        return `${archivePathQuery} AND _id="${query}"`;
     }
 
-    return `${archivePathQuery} AND fulltext("displayName, _path, _id", "${sanitize(
-        query
-    )}*", "AND")`;
+    return `${archivePathQuery} AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")`;
 };
 
 const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): ArchiveEntry[] => {
