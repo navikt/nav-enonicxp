@@ -83,7 +83,7 @@ declare module '*/lib/xp/content' {
             ContentType extends ContentDescriptor = ContentDescriptor,
             AggregationKeys extends string = never
         > = Readonly<{
-            hits: ReadonlyArray<Content<ContentType>>;
+            hits: Array<Content<ContentType>>;
             count: number;
             total: number;
             aggregations: AggregationsResponse<AggregationKeys>;
