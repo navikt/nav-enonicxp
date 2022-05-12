@@ -1,6 +1,6 @@
 <content-type>
-    <display-name>Globale verdier</display-name>
-    <description>Tallverdier som forvaltes sentralt og kan benyttes i tekster eller kalkulatorer</description>
+    <display-name>Saksbehandlingstider</display-name>
+    <description>Saksbehandlingstider som forvaltes sentralt og kan benyttes i tekster</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>

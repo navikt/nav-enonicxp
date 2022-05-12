@@ -29,6 +29,7 @@ import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-b
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
+import { caseProcessingTimeSetCallback } from './schema-creation-callbacks/case-processing-time-set';
 
 export const schemaCreationCallbacks = {
     Attachment: attachmentCallback,
@@ -46,6 +47,7 @@ export const schemaCreationCallbacks = {
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
+    no_nav_navno_CaseProcessingTimeSet: caseProcessingTimeSetCallback,
     no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
     Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter:
         contentListCallback('publish.first'),
