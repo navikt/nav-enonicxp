@@ -42,7 +42,14 @@ export const run = (params: UnpublishExpiredContentConfig) => {
                 logger.error(`Unexpectedly unpublished multiple contents with id ${id}`);
             }
         } else {
-            logger.critical(`Could not unpublish ${id} - unknown error`);
+            const contentNow = repo.get({ key: id });
+            if (contentNow) {
+                logger.critical(`Could not unpublish ${id} - unknown error`);
+            } else {
+                logger.warning(
+                    `Could not unpublish ${id} as it was already unpublished`
+                );
+            }
         }
     } catch (e) {
         logger.critical(`Error while unpublishing ${id} - ${e}`);
