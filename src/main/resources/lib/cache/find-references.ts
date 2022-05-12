@@ -29,8 +29,9 @@ const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
         (ref) => !prevRefs.some((prevRef) => prevRef._id === ref._id)
     );
 
+// TODO: update for new system
 const getCaseTimeMacroReferences = (content: Content) => {
-    if (content.type !== 'no.nav.navno:case-processing-time') {
+    if (content.type !== 'no.nav.navno:case-processing-time-set') {
         return [];
     }
 
