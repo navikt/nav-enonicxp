@@ -29,27 +29,27 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
     const legacyCmsKey = legacyCmsKeyMatch[0];
 
     const legacyHits = contentLib.query({
-        count: 2,
-        query: `x.no-nav-navno.cmsContent.contentKey LIKE "${legacyCmsKey}"`,
+        count: 100,
+        sort: 'createdTime ASC',
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'x.no-nav-navno.cmsContent.contentKey',
+                        values: [legacyCmsKey],
+                    },
+                },
+            },
+        },
     }).hits;
 
     if (legacyHits.length === 0) {
         return null;
     }
 
-    const foundMultipleHits = legacyHits.length > 1;
-
-    if (foundMultipleHits) {
-        logger.error(`Found ${legacyHits.length} contents with legacy key ${legacyCmsKey}`);
-    }
-
-    // Some legacy keys belong to multiple contents, usually due to duplication for locale variants
-    const targetContent = foundMultipleHits
-        ? legacyHits.find((hit) => hit.language === 'no') ||
-          legacyHits.find((hit) => hit.language === 'nn') ||
-          legacyHits.find((hit) => hit.language === 'en') ||
-          legacyHits[0]
-        : legacyHits[0];
+    // Sometimes multiple contents have the same legacy key, usually due to duplication
+    // for localization purposes. Return the oldest content.
+    const targetContent = legacyHits[0];
 
     return {
         ...targetContent,
