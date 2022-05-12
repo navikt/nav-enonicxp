@@ -6,7 +6,7 @@ import {
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
+import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';
 

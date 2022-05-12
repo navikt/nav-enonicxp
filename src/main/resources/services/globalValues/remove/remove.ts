@@ -5,7 +5,10 @@ import {
     validateCurrentUserPermissionForContent,
 } from '../../../lib/utils/auth-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { getGlobalValueSet, getGlobalValueUsage } from '../../../lib/utils/global-value-utils';
+import {
+    getGlobalValueSet,
+    getGlobalValueUsage,
+} from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';
 

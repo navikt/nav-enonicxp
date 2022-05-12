@@ -1,4 +1,4 @@
-import { GlobalValueSetData } from './global-value-set';
+import { GlobalNumberValueSetData } from './global-value-set';
 import { Component } from '/lib/xp/portal';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 import { Calculator } from '../../site/content-types/calculator/calculator';
@@ -38,7 +38,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
-    'global-value-set': GlobalValueSetData;
+    'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;

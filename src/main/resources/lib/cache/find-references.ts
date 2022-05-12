@@ -4,7 +4,7 @@ import {
     findContentsWithProductCardMacro,
     findContentsWithCaseTimeMacro,
 } from '../utils/htmlarea-utils';
-import { getGlobalValueUsage, globalValuesContentType } from '../utils/global-value-utils';
+import { getGlobalValueUsage, globalValueTypes } from '../global-values/global-value-utils';
 import {
     forceArray,
     getParentPath,
@@ -79,7 +79,7 @@ const getProductCardMacroReferences = (content: Content) => {
 };
 
 const getGlobalValueReferences = (content: Content) => {
-    if (content.type !== globalValuesContentType) {
+    if (content.type !== globalValueTypes) {
         return [];
     }
 

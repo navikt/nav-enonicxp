@@ -3,17 +3,17 @@ import {
     getGlobalValueItem,
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
-    globalValuesContentType,
-} from '../../../lib/utils/global-value-utils';
+    globalValueTypes,
+} from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { GlobalNumberValueItem } from '../../../types/content-types/global-value-set';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
 const hitFromValueItem = (
-    valueItem: GlobalValueItem,
+    valueItem: GlobalNumberValueItem,
     content: Content,
     withDescription?: boolean
 ): Hit => {
@@ -37,7 +37,7 @@ const getHitsFromQuery = (query: string | undefined, withDescription?: boolean) 
         .query({
             start: 0,
             count: 10000,
-            contentTypes: [globalValuesContentType],
+            contentTypes: [globalValueTypes],
             query:
                 query &&
                 `fulltext("data.valueItems.itemName, data.valueItems.key, displayName", "${wordsWithWildcard}", "AND")`,

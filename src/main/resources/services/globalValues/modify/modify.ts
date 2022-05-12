@@ -5,12 +5,12 @@ import {
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
+import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
-import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { GlobalNumberValueItem } from '../../../types/content-types/global-value-set';
 import { logger } from '../../../lib/utils/logging';
 
-const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
+const itemNameExists = (valueItems: GlobalNumberValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
 export const modifyGlobalValueItemService = (req: XP.Request) => {

@@ -1,9 +1,9 @@
 import graphQlLib from '/lib/graphql';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import {
-    getGlobalValue,
+    getGlobalValueSetNumberValue,
     getGvKeyAndContentIdFromUniqueKey,
-} from '../../../utils/global-value-utils';
+} from '../../../global-values/global-value-utils';
 import { runInBranchContext } from '../../../utils/branch-context';
 
 export const globalValueCalculatorConfigCallback: CreationCallback = (context, params) => {
@@ -15,7 +15,10 @@ export const globalValueCalculatorConfigCallback: CreationCallback = (context, p
             }
 
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
-            return runInBranchContext(() => getGlobalValue(gvKey, contentId), 'master');
+            return runInBranchContext(
+                () => getGlobalValueSetNumberValue(gvKey, contentId),
+                'master'
+            );
         },
     };
 };

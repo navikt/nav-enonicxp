@@ -8,8 +8,9 @@ export type CaseProcessingTimeItem = {
     name: string;
     value: number;
     unit: CaseProcessingTimeUnit;
+    type: 'casetime';
 };
 
 export type CaseProcessingTimeData = {
-    items?: CaseProcessingTimeItem[] | CaseProcessingTimeItem;
+    valueItems?: CaseProcessingTimeItem[] | CaseProcessingTimeItem;
 };

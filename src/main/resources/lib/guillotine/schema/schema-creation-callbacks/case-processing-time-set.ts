@@ -7,9 +7,9 @@ import {
 } from '../../../../types/content-types/case-processing-time-set';
 
 export const caseProcessingTimeSetCallback: CreationCallback = (context, params) => {
-    const items: GraphQLResolver = {
+    const valueItems: GraphQLResolver = {
         resolve: (env) => {
-            return forceArray(env.source.items);
+            return forceArray(env.source.valueItems);
         },
         type: graphQlLib.list(
             graphQlCreateObjectType(context, {
@@ -29,7 +29,7 @@ export const caseProcessingTimeSetCallback: CreationCallback = (context, params)
         type: graphQlCreateObjectType(context, {
             name: context.uniqueName('no_nav_navno_CaseProcessingTimeSet_Data'),
             description: 'Data for saksbehandlingstider',
-            fields: { items } as Record<keyof CaseProcessingTimeData, any>,
+            fields: { valueItems } as Record<keyof CaseProcessingTimeData, any>,
         }),
     };
 };
