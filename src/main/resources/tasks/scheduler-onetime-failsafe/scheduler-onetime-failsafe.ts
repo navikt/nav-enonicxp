@@ -20,12 +20,12 @@ const oneTimeJobFailedToRun = (job: ScheduledJob) => {
     const jobLastRunTime = getUnixTimeFromDateTimeString(job.lastRun);
 
     if (!jobLastRunTime) {
-        logger.critical(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
+        logger.error(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
         return true;
     }
 
     if (jobLastRunTime < jobScheduleTime) {
-        logger.critical(
+        logger.error(
             `Job ${job.name} should have ran at ${job.schedule.value} but last ran at ${job.lastRun}`
         );
         return true;
