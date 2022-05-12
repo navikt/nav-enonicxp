@@ -1,0 +1,10 @@
+fragment contentCaseProcessingTimeSet on no_nav_navno_CaseProcessingTimeSet {
+    data {
+        items {
+            key
+            name
+            value
+            unit
+        }
+    }
+}
