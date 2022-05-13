@@ -7,7 +7,7 @@
             <occurrences minimum="1" maximum="1"/>
             <config>
                 <service>caseProcessingTimes</service>
-                <param value="valueType">caseTime</param>
+                <param value="contentType">no.nav.navno:case-processing-time-set</param>
                 <param value="withDescription">true</param>
             </config>
         </input>

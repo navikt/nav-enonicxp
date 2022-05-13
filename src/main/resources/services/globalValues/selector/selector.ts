@@ -8,17 +8,13 @@ import {
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import {
-    GlobalValueItem,
-    globalValueContentTypes,
-    GlobalValueContentDescriptor,
-} from '../../../lib/global-values/types';
+import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
 type ReqParams = XP.Request['params'] & {
-    valueType: GlobalValueContentDescriptor;
+    contentType: GlobalValueContentDescriptor;
 };
 
 const hitFromValueItem = (
@@ -101,9 +97,9 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
     }, [] as Hit[]);
 
 export const globalValueSelectorService = (req: XP.Request) => {
-    const { query, ids, valueType } = req.params as ReqParams;
+    const { query, ids, contentType } = req.params as ReqParams;
 
-    log.info(valueType);
+    log.info(contentType);
 
     const withDescription = req.params.withDescription === 'true';
 
@@ -111,7 +107,7 @@ export const globalValueSelectorService = (req: XP.Request) => {
         () =>
             ids
                 ? getHitsFromSelectedIds(ids, withDescription)
-                : getHitsFromQuery(valueType, query, withDescription),
+                : getHitsFromQuery(contentType, query, withDescription),
         'master'
     );
 

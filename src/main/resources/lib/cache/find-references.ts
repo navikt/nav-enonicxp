@@ -2,9 +2,8 @@ import contentLib, { Content } from '/lib/xp/content';
 import {
     findContentsWithFragmentMacro,
     findContentsWithProductCardMacro,
-    findContentsWithCaseTimeMacro,
 } from '../utils/htmlarea-utils';
-import { getGlobalValueUsage, globalValueTypes } from '../global-values/global-value-utils';
+import { getGlobalValueUsage } from '../global-values/global-value-utils';
 import {
     forceArray,
     getParentPath,
@@ -18,6 +17,7 @@ import {
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
+import { isGlobalValueSetType } from '../global-values/types';
 
 const MAX_DEPTH = 3;
 
@@ -28,24 +28,6 @@ const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
     _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(
         (ref) => !prevRefs.some((prevRef) => prevRef._id === ref._id)
     );
-
-// TODO: update for new system
-const getCaseTimeMacroReferences = (content: Content) => {
-    if (content.type !== 'no.nav.navno:case-processing-time-set') {
-        return [];
-    }
-
-    const { _id } = content;
-
-    const contentsWithCaseTimeMacro = findContentsWithCaseTimeMacro(_id);
-    if (contentsWithCaseTimeMacro.length > 0) {
-        logger.info(
-            `Found ${contentsWithCaseTimeMacro.length} pages with macro-references to case time id ${_id}`
-        );
-    }
-
-    return contentsWithCaseTimeMacro;
-};
 
 const getFragmentMacroReferences = (content: Content) => {
     if (content.type !== 'portal:fragment') {
@@ -79,7 +61,7 @@ const getProductCardMacroReferences = (content: Content) => {
 };
 
 const getGlobalValueReferences = (content: Content) => {
-    if (content.type !== globalValueTypes) {
+    if (!isGlobalValueSetType(content)) {
         return [];
     }
 
@@ -107,7 +89,6 @@ const getLooseReferences = (content: Content | null) => {
         ...getGlobalValueReferences(content),
         ...getProductCardMacroReferences(content),
         ...getFragmentMacroReferences(content),
-        ...getCaseTimeMacroReferences(content),
     ];
 };
 
