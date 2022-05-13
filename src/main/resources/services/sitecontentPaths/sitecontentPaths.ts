@@ -7,6 +7,7 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { appDescriptor, navnoRootPath, redirectsRootPath } from '../../lib/constants';
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { contentTypesRenderedByPublicFrontend } from '../../lib/contenttype-lists';
+import { logger } from '../../lib/utils/logging';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -72,7 +73,7 @@ const getPathsToRender = (isTest?: boolean) => {
 
         return removeDuplicates([...contentPaths, ...redirectPaths]);
     } catch (e) {
-        log.error(`Error while retrieving content paths - ${e}`);
+        logger.error(`Error while retrieving content paths - ${e}`);
         return null;
     }
 };
@@ -84,7 +85,7 @@ const getFromCache = (isTest: boolean) => {
 
         return cache.get(isTest ? 'test' : 'full', () => getPathsToRender(isTest));
     } catch (e) {
-        log.error(`Error getting content paths - ${e}`);
+        logger.error(`Error getting content paths - ${e}`);
         return null;
     } finally {
         isRunning = false;
@@ -120,7 +121,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    log.info(
+    logger.info(
         `Retrieved paths for ${paths.length} entries - Time spent: ${
             (Date.now() - startTime) / 1000
         } sec`

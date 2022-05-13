@@ -11,6 +11,7 @@ import {
 } from './nav-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
 import { runInBranchContext } from './branch-context';
+import { logger } from './logging';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
@@ -108,9 +109,11 @@ export const getModifiedTimeIncludingFragments = (contentRef: string, branch: Re
         return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
             const fragment = contentLib.get({ key: fragmentId });
             if (!fragment) {
-                log.error(
-                    `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
-                );
+                if (branch === 'master') {
+                    logger.error(
+                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
+                    );
+                }
                 return latestModifiedTime;
             }
 

@@ -2,6 +2,7 @@ import schedulerLib, { ScheduledJob } from '/lib/xp/scheduler';
 import taskLib from '/lib/xp/task';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
+import { logger } from '../../lib/utils/logging';
 
 const fifteenSeconds = 15000;
 
@@ -19,12 +20,12 @@ const oneTimeJobFailedToRun = (job: ScheduledJob) => {
     const jobLastRunTime = getUnixTimeFromDateTimeString(job.lastRun);
 
     if (!jobLastRunTime) {
-        log.error(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
+        logger.error(`Job ${job.name} should have ran at ${job.schedule.value} but never ran`);
         return true;
     }
 
     if (jobLastRunTime < jobScheduleTime) {
-        log.error(
+        logger.error(
             `Job ${job.name} should have ran at ${job.schedule.value} but last ran at ${job.lastRun}`
         );
         return true;
@@ -39,12 +40,14 @@ export const run = () => {
     taskLib.sleep(fifteenSeconds);
 
     if (app.config.env !== 'localhost') {
-        log.info('Running fail-safe task for one-time scheduled jobs');
+        logger.info('Running fail-safe task for one-time scheduled jobs');
     }
 
     schedulerLib.list().forEach((job) => {
         if (oneTimeJobFailedToRun(job)) {
-            log.error(`Running task for failed one-time job ${job.name} - ${JSON.stringify(job)}`);
+            logger.info(
+                `Running task for failed one-time job ${job.name} - ${JSON.stringify(job)}`
+            );
             runInBranchContext(
                 () =>
                     schedulerLib.delete({

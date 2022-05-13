@@ -6,6 +6,7 @@ import { forceArray } from '../../../utils/nav-utils';
 import { RepoBranch } from '../../../../types/common';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
+import { logger } from '../../../utils/logging';
 
 type AnchorLink = {
     anchorId: string;
@@ -39,6 +40,9 @@ const getAnchorLink = (
 };
 
 const getPartAnchorLink = (part: NodeComponent<'part'>['part']) => {
+    if (!part) {
+        return null;
+    }
     const { descriptor, config } = part;
 
     if (!config) {
@@ -94,6 +98,10 @@ const getFragmentAnchorLink = (
 ) => {
     const { id } = fragment;
 
+    if (!id) {
+        return null;
+    }
+
     const content = repo.get<Content<'portal:fragment'>>({ key: id });
 
     if (!content) {
@@ -141,7 +149,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
     params.fields.anchorLinks.resolve = (env) => {
         const { contentId } = env.args;
         if (!contentId) {
-            log.error(
+            logger.error(
                 'Attempted to resolve a page navigation menu without providing a content id for the page'
             );
             return null;
@@ -172,7 +180,9 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
             const isDupe = acc.some((_anchorLink) => _anchorLink.anchorId === anchorId);
 
             if (isDupe && context.branch === 'master') {
-                log.error(`Duplicate anchor id ${anchorId} found under content id ${contentId}`);
+                logger.warning(
+                    `Duplicate anchor id ${anchorId} found under content id ${contentId}`
+                );
             }
 
             return [

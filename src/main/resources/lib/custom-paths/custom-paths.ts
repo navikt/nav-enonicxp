@@ -2,6 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { stripPathPrefix } from '../utils/nav-utils';
+import { logger } from '../utils/logging';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
@@ -79,7 +80,7 @@ export const getInternalContentPathFromCustomPath = (xpPath: string) => {
     }
 
     if (content.length > 1) {
-        log.error(`Custom public path ${path} exists on multiple content objects!`);
+        logger.critical(`Custom public path ${path} exists on multiple content objects!`);
         return null;
     }
 

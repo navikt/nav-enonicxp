@@ -4,6 +4,7 @@ import { Content } from '/lib/xp/content';
 import { urls } from '../constants';
 import { getFrontendPathname, isRenderedType } from './utils';
 import { getCustomPathFromContent } from '../custom-paths/custom-paths';
+import { logger } from '../utils/logging';
 
 const numRetries = 3;
 const timeoutMs = 10000;
@@ -26,18 +27,18 @@ const requestInvalidatePaths = (paths: string[], eventId: string, retriesLeft = 
             if (retriesLeft > 0) {
                 requestInvalidatePaths(paths, eventId, retriesLeft - 1);
             } else {
-                log.error(
+                logger.critical(
                     `Revalidate request to frontend failed for ${eventId} - ${response.body}`
                 );
             }
         } else {
-            log.info(`Revalidate request to frontend acknowledged for ${eventId}`);
+            logger.info(`Revalidate request to frontend acknowledged for ${eventId}`);
         }
     } catch (e) {
         if (retriesLeft > 0) {
             requestInvalidatePaths(paths, eventId, retriesLeft - 1);
         } else {
-            log.error(`Revalidate request to frontend failed for ${eventId} - ${e}`);
+            logger.critical(`Revalidate request to frontend failed for ${eventId} - ${e}`);
         }
     }
 };
@@ -54,12 +55,12 @@ const requestWipeAll = (eventId: string, retriesLeft = numRetries) => {
                 eventid: eventId,
             },
         });
-        log.info(`Wipe-all request to frontend acknowledged for event ${eventId}`);
+        logger.info(`Wipe-all request to frontend acknowledged for event ${eventId}`);
     } catch (e) {
         if (retriesLeft > 0) {
             requestWipeAll(eventId, retriesLeft - 1);
         } else {
-            log.error(`Wipe-all request to frontend failed - ${e}`);
+            logger.critical(`Wipe-all request to frontend failed - ${e}`);
         }
     }
 };
@@ -90,7 +91,9 @@ export const frontendCacheInvalidate = ({
             ];
 
             if (frontendPaths.length === 0) {
-                log.info(`Nothing to invalidate for event ${eventId} - aborting frontend request`);
+                logger.info(
+                    `Nothing to invalidate for event ${eventId} - aborting frontend request`
+                );
                 return;
             }
 

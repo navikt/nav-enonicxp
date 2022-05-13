@@ -3,6 +3,7 @@ import { getNodeKey, getTargetUnixTime } from '../utils/version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { nodeLibConnectStandard } from './time-travel-hooks';
 import { TimeTravelConfig } from './types';
+import { logger } from '../utils/logging';
 
 // Stores config-objects for time travel for threads that requested content from
 // a certain timestamp. Keyed with thread-id. Any thread with an entry in this map
@@ -26,7 +27,7 @@ export const timeTravelConfig: TimeTravelConfig = {
             branch,
         });
 
-        log.info(`Adding time travel config for thread ${threadId}`);
+        logger.info(`Adding time travel config for thread ${threadId}`);
 
         this.configs[threadId] = {
             repo,
@@ -42,7 +43,7 @@ export const timeTravelConfig: TimeTravelConfig = {
         // Check for 'undefined' to account for a rare/strange nashorn behaviour where a deleted object
         // entry sometimes returns an object of the Undefined Java class, which evalutes to true
         if (config?.toString() === 'undefined') {
-            log.error(`Time travel config returned an unexpected object for thread ${threadId}`);
+            logger.error(`Time travel config returned an unexpected object for thread ${threadId}`);
             return undefined;
         }
 

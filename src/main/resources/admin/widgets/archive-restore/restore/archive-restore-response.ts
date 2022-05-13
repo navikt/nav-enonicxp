@@ -2,6 +2,7 @@ import contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { getParentPath } from '../../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../../lib/utils/branch-context';
+import { logger } from '../../../../lib/utils/logging';
 
 const view = resolve('./archive-restore-response.html');
 
@@ -35,7 +36,7 @@ const restoreFromArchive = (
 
             // Workaround for a bug where the target path for restore is occasionally ignored
             if (getParentPath(restoredContent._path) !== targetPath) {
-                log.warning(
+                logger.warning(
                     `Content (${restoredId}) was not restored to the selected path (${targetPath}), moving the content...`
                 );
                 contentLib.move({
@@ -49,7 +50,7 @@ const restoreFromArchive = (
                 message: `Gjenoppretting av "${restoredContent.displayName}" var vellykket`,
             };
         } catch (e) {
-            log.warning(`Archive restore exception: ${e}`);
+            logger.warning(`Archive restore exception: ${e}`);
             return {
                 success: false,
                 message: 'Feil: det valgte innholdet ble ikke funnet i arkivet',
@@ -74,7 +75,7 @@ export const archiveRestoreResponse = (req: XP.Request) => {
         message,
     };
 
-    log.info(
+    logger.info(
         `Restore from archive ${
             success ? 'succeeded' : 'failed'
         } for ${selectedContent} -> ${contentId} - ${message}`

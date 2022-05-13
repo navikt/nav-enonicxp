@@ -18,6 +18,7 @@ import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
 import { TimeTravelConfig } from './types';
+import { logger } from '../utils/logging';
 
 export let timeTravelHooksEnabled = false;
 
@@ -29,7 +30,7 @@ export const nodeLibConnectStandard = nodeLib.connect;
 // registered with a time travel config will be affected.
 export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
     if (timeTravelHooksEnabled) {
-        log.error(`Time travel hooks are already enabled!`);
+        logger.error(`Time travel hooks are already enabled!`);
         return;
     }
 
@@ -42,7 +43,16 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
         // If the function is called while hooked, only threads with time travel parameters set
         // should get non-standard functionality
         if (!configForThread) {
-            return contentLibGetStandard(args);
+            // Catch errors here as a temp fix for contentLib.get throwing errors when attempting
+            // to get a content which has been archived
+            try {
+                return contentLibGetStandard(args);
+            } catch (e) {
+                logger.warning(
+                    `Error from contentLib.get - args: ${JSON.stringify(args)} - error: ${e}`
+                );
+                return null;
+            }
         }
 
         const key = args?.key;

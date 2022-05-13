@@ -8,6 +8,7 @@ import {
 import { runInBranchContext } from '../../../lib/utils/branch-context';
 import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
+import { logger } from '../../../lib/utils/logging';
 
 const generateKey = () => `gv_${generateUUID()}`;
 
@@ -48,7 +49,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                log.info(`new item: ${JSON.stringify(newItem)}`);
+                logger.info(`new item: ${JSON.stringify(newItem)}`);
                 _content.data.valueItems = [...valueItems, newItem];
 
                 return _content;
@@ -64,7 +65,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
             },
         };
     } catch (e) {
-        log.error(`Error while adding new value to ${contentId} - ${e}`);
+        logger.critical(`Error while adding new value to ${contentId} - ${e}`);
         return {
             status: 500,
             contentType: 'application/json',

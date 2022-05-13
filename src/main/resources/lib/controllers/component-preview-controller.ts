@@ -6,6 +6,7 @@ import {
     insertComponentsIntoRegions,
 } from '../guillotine/utils/process-components';
 import { runGuillotineComponentsQuery } from '../guillotine/queries/run-components-query';
+import { logger } from '../utils/logging';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -54,7 +55,7 @@ export const componentPreviewController = (req: XP.Request) => {
     const componentProps = getComponentProps();
 
     if (!componentProps) {
-        log.info('Failed to get component props for preview');
+        logger.warning('Failed to get component props for preview');
         return fallbackResponse;
     }
 
@@ -76,9 +77,9 @@ export const componentPreviewController = (req: XP.Request) => {
             };
         }
     } catch (e) {
-        log.error(`Error while fetching component preview - ${e}`);
+        logger.error(`Error while fetching component preview - ${e}`);
     }
 
-    log.error(`Failed to fetch preview for component ${componentProps.descriptor}`);
+    logger.error(`Failed to fetch preview for component ${componentProps.descriptor}`);
     return fallbackResponse;
 };

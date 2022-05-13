@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig.json",
+    "exclude": [
+        "node_modules/enonic-types/index.d.ts",
+        "node_modules/enonic-types/content.d.ts",
+        "node_modules/enonic-types/portal.d.ts",
+        "node_modules/enonic-types/node.d.ts",
+        "./src/**/*.test.ts",
+        "./src/main/resources/_test"
+    ]
+}

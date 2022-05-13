@@ -10,6 +10,7 @@ import {
 import { NodeEventData } from './utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { cacheInvalidateEventName, invalidateCacheForNode } from './cache-invalidate';
+import { logger } from '../utils/logging';
 
 let hasSetupListeners = false;
 
@@ -32,7 +33,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
 
 const manualInvalidationCallback = (event: EnonicEvent<NodeEventData>) => {
     const { id, path } = event.data;
-    log.info(`Received cache-invalidation event for ${path} - ${id}`);
+    logger.info(`Received cache-invalidation event for ${path} - ${id}`);
     runInBranchContext(() =>
         invalidateCacheForNode({
             node: event.data,
@@ -67,9 +68,9 @@ export const activateCacheEventListeners = () => {
             callback: manualInvalidationCallback,
         });
 
-        log.info('Started: Cache eventListener on node events');
+        logger.info('Started: Cache eventListener on node events');
         hasSetupListeners = true;
     } else {
-        log.warning('Cache node listeners already running');
+        logger.error('Cache node listeners already running');
     }
 };
