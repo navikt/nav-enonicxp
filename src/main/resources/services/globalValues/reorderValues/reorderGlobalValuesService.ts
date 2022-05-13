@@ -16,7 +16,7 @@ const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) =>
 export const reorderGlobalValuesService = (req: XP.Request) => {
     const { contentId, orderedKeys } = req.params;
 
-    if (!orderedKeys || !contentId) {
+    if (!contentId || !orderedKeys) {
         return gvServiceInvalidRequestResponse(
             `Missing parameters:${!orderedKeys && ' "orderedKeys"'}${!contentId && ' "contentId"'}`
         );

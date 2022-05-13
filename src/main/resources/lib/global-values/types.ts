@@ -1,6 +1,9 @@
 import { Content } from '/lib/xp/content';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
-import { CaseProcessingTimeItem } from '../../types/content-types/case-processing-time-set';
+import {
+    CaseProcessingTimeItem,
+    CaseProcessingTimeUnit,
+} from '../../types/content-types/case-processing-time-set';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
 export type GlobalValueContentDescriptor =
@@ -18,10 +21,11 @@ const globalValueContentTypesSet: { [key in ContentDescriptor]?: true } = {
     'no.nav.navno:case-processing-time-set': true,
 };
 
-export const globalValueContentTypes: GlobalValueContentDescriptor[] = [
-    'no.nav.navno:global-value-set',
-    'no.nav.navno:case-processing-time-set',
-];
-
 export const isGlobalValueSetType = (content: Content): content is GlobalValueContentTypes =>
     !!globalValueContentTypesSet[content.type];
+
+export const validCaseTimeUnits: { [key in CaseProcessingTimeUnit]: true } = {
+    days: true,
+    weeks: true,
+    months: true,
+};

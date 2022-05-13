@@ -1,7 +1,7 @@
 import nodeLib from '/lib/xp/node';
 import { generateUUID } from '../../../lib/utils/uuid';
 import {
-    GlobalValueInput,
+    GlobalValueInputParams,
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
@@ -18,7 +18,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, itemName, numberValue } = req.params as unknown as GlobalValueInput;
+    const { contentId, itemName, numberValue } = req.params as unknown as GlobalValueInputParams;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content) {

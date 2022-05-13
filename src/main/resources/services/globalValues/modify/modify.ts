@@ -1,6 +1,6 @@
 import nodeLib from '/lib/xp/node';
 import {
-    GlobalValueInput,
+    GlobalValueInputParams,
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
@@ -19,9 +19,10 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, key, itemName, numberValue } = req.params as unknown as GlobalValueInput & {
-        key?: string;
-    };
+    const { contentId, key, itemName, numberValue } =
+        req.params as unknown as GlobalValueInputParams & {
+            key?: string;
+        };
 
     if (!key) {
         return gvServiceInvalidRequestResponse(`Parameter 'key' missing`);
