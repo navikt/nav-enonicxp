@@ -34,9 +34,4 @@ export interface Overview {
    * Skal ikke vises i eksternt søk
    */
   noindex: boolean;
-
-  /**
-   * -
-   */
-  allProducts?: undefined;
 }

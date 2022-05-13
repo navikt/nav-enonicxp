@@ -38,7 +38,9 @@ const getAllProducts = (start = 0) => {
             count: batchCount,
             contentTypes: includedContentTypes,
         })
-        .hits.map(cleanProduct);
+        .hits.map(cleanProduct)
+        .filter((product) => product.language === 'no' && !!product.title)
+        .sort((a, b) => a?.title.localeCompare(b?.title));
     return entriesBatch;
 };
 
