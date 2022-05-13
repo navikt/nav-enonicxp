@@ -5,7 +5,7 @@ export type CaseProcessingTimeUnit = 'days' | 'weeks' | 'months';
 
 export type CaseProcessingTimeItem = {
     key: string;
-    name: string;
+    itemName: string;
     value: number;
     unit: CaseProcessingTimeUnit;
     type: 'casetime';

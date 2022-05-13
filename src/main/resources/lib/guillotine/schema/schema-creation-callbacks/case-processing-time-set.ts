@@ -19,7 +19,7 @@ export const caseProcessingTimeSetCallback: CreationCallback = (context, params)
                     key: { type: graphQlLib.GraphQLString },
                     unit: { type: graphQlLib.GraphQLString },
                     value: { type: graphQlLib.GraphQLInt },
-                    name: { type: graphQlLib.GraphQLInt },
+                    itemName: { type: graphQlLib.GraphQLInt },
                 } as Record<keyof CaseProcessingTimeItem, any>,
             })
         ),

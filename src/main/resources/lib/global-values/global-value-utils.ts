@@ -5,7 +5,7 @@ import { forceArray } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
 import { CaseProcessingTimeItem } from '../../types/content-types/case-processing-time-set';
-import { GlobalValueContentTypes } from './types';
+import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
 
 const uniqueKeySeparator = '::';
 
@@ -83,11 +83,7 @@ export const getGlobalValueSet = (contentId?: string): GlobalValueContentTypes |
     }
 
     const content = contentLib.get({ key: contentId });
-    if (
-        !content ||
-        (content.type !== 'no.nav.navno:global-value-set' &&
-            content.type !== 'no.nav.navno:case-processing-time-set')
-    ) {
+    if (!content || !isGlobalValueSetType(content)) {
         return null;
     }
 

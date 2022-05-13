@@ -13,9 +13,9 @@ const enToNo: Record<CaseProcessingTimeUnit, string> = {
     months: 'måneder',
 };
 
-const buildNameValueString = (valueItem: GlobalValueItem) => {
+export const buildGlobalValuePreviewString = (valueItem: GlobalValueItem) => {
     if (valueItem.type === 'casetime') {
-        return `Navn: ${valueItem.name} - Behandlingstid: ${valueItem.unit} ${
+        return `Navn: ${valueItem.itemName} - Behandlingstid: ${valueItem.unit} ${
             enToNo[valueItem.unit]
         }`;
     }
@@ -50,7 +50,7 @@ export const createGlobalValueMacroPreview = (key: string) => {
             <span style='color:#888888'>${_path}</span><br/>
             <a href='${contentStudioEditPathPrefix}/${contentId}' target='_blank'>[Åpne i editoren]</a><br/>
             <br/>
-            ${buildNameValueString(valueItem)}
+            ${buildGlobalValuePreviewString(valueItem)}
         </div>
     `;
 };

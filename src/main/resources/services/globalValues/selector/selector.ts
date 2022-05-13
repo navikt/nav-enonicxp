@@ -1,19 +1,28 @@
 import contentLib, { Content } from '/lib/xp/content';
 import {
     getGlobalValueItem,
+    getGlobalValueSet,
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
-    globalValueTypes,
 } from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { GlobalNumberValueItem } from '../../../types/content-types/global-value-set';
+import {
+    GlobalValueItem,
+    globalValueContentTypes,
+    GlobalValueContentDescriptor,
+} from '../../../lib/global-values/types';
+import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
+type ReqParams = XP.Request['params'] & {
+    valueType: GlobalValueContentDescriptor;
+};
+
 const hitFromValueItem = (
-    valueItem: GlobalNumberValueItem,
+    valueItem: GlobalValueItem,
     content: Content,
     withDescription?: boolean
 ): Hit => {
@@ -23,11 +32,15 @@ const hitFromValueItem = (
     return {
         id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
         displayName: `${displayName} - ${valueItem.key}`,
-        description: `${valueItem.itemName} - Verdi: ${valueItem.numberValue}`,
+        description: buildGlobalValuePreviewString(valueItem),
     };
 };
 
-const getHitsFromQuery = (query: string | undefined, withDescription?: boolean) => {
+const getHitsFromQuery = (
+    type: GlobalValueContentDescriptor,
+    query: string | undefined,
+    withDescription?: boolean
+) => {
     const wordsWithWildcard = query
         ?.split(' ')
         .map((word) => `${word}*`)
@@ -37,7 +50,7 @@ const getHitsFromQuery = (query: string | undefined, withDescription?: boolean) 
         .query({
             start: 0,
             count: 10000,
-            contentTypes: [globalValueTypes],
+            contentTypes: [type],
             query:
                 query &&
                 `fulltext("data.valueItems.itemName, data.valueItems.key, displayName", "${wordsWithWildcard}", "AND")`,
@@ -68,15 +81,13 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
             return acc;
         }
 
-        const valueItem = getGlobalValueItem(gvKey, contentId);
-
-        if (!valueItem) {
+        const content = getGlobalValueSet(contentId);
+        if (!content) {
             return acc;
         }
 
-        const content = contentLib.get({ key: contentId });
-
-        if (!content) {
+        const valueItem = getGlobalValueItem(gvKey, content);
+        if (!valueItem) {
             return acc;
         }
 
@@ -90,7 +101,9 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
     }, [] as Hit[]);
 
 export const globalValueSelectorService = (req: XP.Request) => {
-    const { query, ids } = req.params;
+    const { query, ids, valueType } = req.params as ReqParams;
+
+    log.info(valueType);
 
     const withDescription = req.params.withDescription === 'true';
 
@@ -98,7 +111,7 @@ export const globalValueSelectorService = (req: XP.Request) => {
         () =>
             ids
                 ? getHitsFromSelectedIds(ids, withDescription)
-                : getHitsFromQuery(query, withDescription),
+                : getHitsFromQuery(valueType, query, withDescription),
         'master'
     );
 
