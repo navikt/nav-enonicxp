@@ -1,14 +1,7 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Ekstraordinær varselboks</display-name>
     <form>
-        <input name="link" type="TextLine">
-            <label>Lenke</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
-        <input name="header" type="TextLine">
-            <label>Overskrift</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
+        <mixin name="link"/>
         <input name="ingress" type="TextArea">
             <label>Ingress (valgfri)</label>
             <occurrences minimum="0" maximum="1"/>
