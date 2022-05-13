@@ -15,6 +15,10 @@ export const globalValueCalculatorConfigCallback: CreationCallback = (context, p
             }
 
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
+            if (!gvKey || !contentId) {
+                return null;
+            }
+
             return runInBranchContext(
                 () => getGlobalValueSetNumberValue(gvKey, contentId),
                 'master'

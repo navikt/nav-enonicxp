@@ -12,6 +12,10 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
+            if (!gvKey || !contentId) {
+                return null;
+            }
+
             return runInBranchContext(
                 () => getGlobalValueSetNumberValue(gvKey, contentId),
                 'master'
@@ -30,6 +34,9 @@ export const globalValueWithMathMacroConfigCallback: CreationCallback = (context
                 () =>
                     keys.reduce((acc, key) => {
                         const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
+                        if (!gvKey || !contentId) {
+                            return acc;
+                        }
 
                         const value = getGlobalValueSetNumberValue(gvKey, contentId);
                         return value ? [...acc, value] : acc;

@@ -11,6 +11,10 @@ export const caseProcessingTimeMacroConfigCallback: CreationCallback = (context,
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
+            if (!gvKey || !contentId) {
+                return null;
+            }
+
             return runInBranchContext(
                 () => getGlobalValueSetNumberValue(gvKey, contentId),
                 'master'
