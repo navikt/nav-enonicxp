@@ -7,10 +7,10 @@ import {
 import { runInBranchContext } from '../../../lib/utils/branch-context';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
-import { GlobalNumberValueItem } from '../../../types/content-types/global-value-set';
 import { logger } from '../../../lib/utils/logging';
+import { GlobalValueItem } from '../../../lib/global-values/types';
 
-const itemNameExists = (valueItems: GlobalNumberValueItem[], itemName: string, key: string) =>
+const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
 
 export const modifyGlobalValueItemService = (req: XP.Request) => {

@@ -2,11 +2,11 @@ import nodeLib from '/lib/xp/node';
 import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
-import { GlobalNumberValueItem } from '../../../types/content-types/global-value-set';
 import { logger } from '../../../lib/utils/logging';
+import { GlobalValueItem } from '../../../lib/global-values/types';
 
 // Verify that the keys-array from the request matches the keys in the global values set
-const validateKeys = (keysFromParam: string[], valueItems: GlobalNumberValueItem[]) => {
+const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
     return (
         keysFromParam.length === valueItems.length &&
         valueItems.every((item) => keysFromParam.includes(item.key))
