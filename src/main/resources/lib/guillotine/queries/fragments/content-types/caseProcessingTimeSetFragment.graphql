@@ -5,6 +5,7 @@ fragment contentCaseProcessingTimeSet on no_nav_navno_CaseProcessingTimeSet {
             itemName
             value
             unit
+            type
         }
     }
 }

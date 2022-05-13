@@ -45,14 +45,14 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
 };
 
 export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['params']) => {
-    const { contentId, itemName, contentType } = params;
+    const { contentId, itemName, type } = params;
 
-    if (!contentId || !itemName || !contentType) {
+    if (!contentId || !itemName || !type) {
         return gvServiceInvalidRequestResponse(
             'Missing parameters:' +
-                `${!contentId && ' contentId'}` +
-                `${!itemName && ' itemName'}` +
-                `${!contentType && ' contentType'}`
+                `${!contentId ? ' contentId' : ''}` +
+                `${!itemName ? ' itemName' : ''}` +
+                `${!type ? ' type' : ''}`
         );
     }
 
@@ -60,13 +60,13 @@ export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['
         return insufficientPermissionResponse('MODIFY');
     }
 
-    if (contentType === 'no.nav.navno:global-value-set') {
+    if (type === 'numberValue') {
         return validateNumberValueParams(params);
-    } else if (contentType === 'no.nav.navno:case-processing-time-set') {
+    } else if (type === 'caseTime') {
         return validateCaseTimeParams(params);
     }
 
-    return gvServiceInvalidRequestResponse(`Invalid content type ${contentType}`);
+    return gvServiceInvalidRequestResponse(`Invalid value type ${type}`);
 };
 
 export const gvServiceInvalidRequestResponse = (msg: string) => ({

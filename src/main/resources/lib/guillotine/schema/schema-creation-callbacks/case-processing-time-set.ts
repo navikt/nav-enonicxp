@@ -8,8 +8,11 @@ import {
 
 export const caseProcessingTimeSetCallback: CreationCallback = (context, params) => {
     const valueItems: GraphQLResolver = {
-        resolve: (env) => {
-            return forceArray(env.source.valueItems);
+        resolve: (env): CaseProcessingTimeItem[] => {
+            return forceArray(env.source.valueItems).map((item) => ({
+                ...item,
+                type: 'caseTime',
+            }));
         },
         type: graphQlLib.list(
             graphQlCreateObjectType(context, {
@@ -19,7 +22,8 @@ export const caseProcessingTimeSetCallback: CreationCallback = (context, params)
                     key: { type: graphQlLib.GraphQLString },
                     unit: { type: graphQlLib.GraphQLString },
                     value: { type: graphQlLib.GraphQLInt },
-                    itemName: { type: graphQlLib.GraphQLInt },
+                    itemName: { type: graphQlLib.GraphQLString },
+                    type: { type: graphQlLib.GraphQLString },
                 } as Record<keyof CaseProcessingTimeItem, any>,
             })
         ),

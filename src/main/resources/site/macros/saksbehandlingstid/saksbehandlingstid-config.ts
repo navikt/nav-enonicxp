@@ -4,9 +4,4 @@ export interface SaksbehandlingstidConfig {
    * Velg saksbehandlingstid
    */
   key: string;
-
-  /**
-   * -
-   */
-  value?: undefined;
 }

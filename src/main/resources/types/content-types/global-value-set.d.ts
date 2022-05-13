@@ -5,7 +5,7 @@ export type GlobalNumberValueItem = {
     key: string;
     itemName: string;
     numberValue: number;
-    type?: undefined;
+    type: 'numberValue';
 };
 
 export type GlobalNumberValueSetData = {

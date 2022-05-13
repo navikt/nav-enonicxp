@@ -8,7 +8,7 @@ export type CaseProcessingTimeItem = {
     itemName: string;
     value: number;
     unit: CaseProcessingTimeUnit;
-    type: 'casetime';
+    type: 'caseTime';
 };
 
 export type CaseProcessingTimeData = {

@@ -48,7 +48,3 @@ export const findContentsWithFragmentMacro = (fragmentId: string) => {
 export const findContentsWithProductCardMacro = (targetPageId: string) => {
     return findContentsWithHtmlAreaText(`targetPage=\\"${targetPageId}`);
 };
-
-export const findContentsWithCaseTimeMacro = (casetimeContentId: string) => {
-    return findContentsWithHtmlAreaText(`caseTime=\\"${casetimeContentId}`);
-};

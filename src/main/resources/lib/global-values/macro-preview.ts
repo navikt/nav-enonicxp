@@ -14,7 +14,7 @@ const enToNo: Record<CaseProcessingTimeUnit, string> = {
 };
 
 export const buildGlobalValuePreviewString = (valueItem: GlobalValueItem) => {
-    if (valueItem.type === 'casetime') {
+    if (valueItem.type === 'caseTime') {
         return `Navn: ${valueItem.itemName} - Behandlingstid: ${valueItem.unit} ${
             enToNo[valueItem.unit]
         }`;
