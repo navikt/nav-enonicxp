@@ -2,25 +2,25 @@ import {
     insufficientPermissionResponse,
     validateCurrentUserPermissionForContent,
 } from '../../lib/utils/auth-utils';
-import { GlobalValueContentDescriptor, validCaseTimeUnits } from '../../lib/global-values/types';
+import { validCaseTimeUnits } from '../../lib/global-values/types';
 import { CaseProcessingTimeUnit } from '../../types/content-types/case-processing-time-set';
+
+export type GlobalValueCommonInputParams = {
+    key: string;
+    contentId: string;
+    itemName: string;
+};
 
 export type GlobalNumberValueInputParams = {
     numberValue: number;
     contentType: 'no.nav.navno:global-value-set';
-};
+} & GlobalValueCommonInputParams;
 
 export type GlobalCaseTimesInputParams = {
     unit: CaseProcessingTimeUnit;
     value: number;
     contentType: 'no.nav.navno:case-processing-time-set';
-};
-
-export type GlobalValueInputParams = {
-    contentId: string;
-    itemName: string;
-    contentType: GlobalValueContentDescriptor;
-} & (GlobalNumberValueInputParams | GlobalCaseTimesInputParams);
+} & GlobalValueCommonInputParams;
 
 const validateNumberValueParams = ({ numberValue }: Partial<GlobalNumberValueInputParams>) => {
     if (numberValue !== undefined && isNaN(numberValue)) {
@@ -44,9 +44,7 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
     return null;
 };
 
-export const validateGlobalValueInputAndGetErrorResponse = (
-    params: Partial<GlobalValueInputParams>
-) => {
+export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['params']) => {
     const { contentId, itemName, contentType } = params;
 
     if (!contentId || !itemName || !contentType) {

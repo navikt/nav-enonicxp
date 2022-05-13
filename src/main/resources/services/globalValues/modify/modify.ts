@@ -1,6 +1,5 @@
 import nodeLib from '/lib/xp/node';
 import {
-    GlobalValueInputParams,
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
@@ -19,10 +18,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, key, itemName, numberValue } =
-        req.params as unknown as GlobalValueInputParams & {
-            key?: string;
-        };
+    const { contentId, key, itemName } = req.params;
 
     if (!key) {
         return gvServiceInvalidRequestResponse(`Parameter 'key' missing`);
@@ -53,13 +49,18 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         const modifiedItem = {
             key,
             itemName,
-            ...(numberValue !== undefined && { numberValue }),
+            ...(content.type === 'no.nav.navno:global-value-set'
+                ? { numberValue: req.params.numberValue }
+                : {
+                      unit: req.params.unit,
+                      value: req.params.value,
+                  }),
         };
 
         repo.modify({
-            key: contentId,
+            key: content._id,
             editor: (_content) => {
-                _content.data.valueItems = valueItems.map((item) =>
+                _content.data.valueItems = forceArray(content.data.valueItems).map((item) =>
                     item.key === key ? modifiedItem : item
                 );
 

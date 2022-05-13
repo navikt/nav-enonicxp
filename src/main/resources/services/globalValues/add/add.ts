@@ -1,7 +1,6 @@
 import nodeLib from '/lib/xp/node';
 import { generateUUID } from '../../../lib/utils/uuid';
 import {
-    GlobalValueInputParams,
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
@@ -18,10 +17,10 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, itemName, numberValue } = req.params as unknown as GlobalValueInputParams;
+    const { contentId, itemName } = req.params;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
-    if (!content) {
+    if (!content || !contentId) {
         return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);
     }
 
@@ -43,7 +42,12 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         const newItem = {
             key: generateKey(),
             itemName,
-            ...(numberValue !== undefined && { numberValue }),
+            ...(content.type === 'no.nav.navno:global-value-set'
+                ? { numberValue: req.params.numberValue }
+                : {
+                      unit: req.params.unit,
+                      value: req.params.value,
+                  }),
         };
 
         repo.modify({
