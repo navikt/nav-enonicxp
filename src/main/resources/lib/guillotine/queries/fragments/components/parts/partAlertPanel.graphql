@@ -1,0 +1,16 @@
+fragment partComponentAlertPanel on Part_no_nav_navno_alert_panel {
+    link {
+        _selected
+        external {
+            text
+            url
+        }
+        internal {
+            text
+            target {
+                ...internalLinkTargetMixin
+            }
+        }
+    }
+    ingress
+}
