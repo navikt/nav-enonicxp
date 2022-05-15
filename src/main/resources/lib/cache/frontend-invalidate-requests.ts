@@ -23,7 +23,7 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
             type: 'ONE_TIME',
             value: nowPlusOneMinute,
         },
-        taskDescriptor: `${appDescriptor}:cache-wipe-all`,
+        taskDescriptor: `${appDescriptor}:cache-invalidate-all`,
         taskConfig: {
             retryIfFail: true,
             eventId,
