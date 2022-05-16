@@ -99,8 +99,6 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
 export const globalValueSelectorService = (req: XP.Request) => {
     const { query, ids, contentType } = req.params as ReqParams;
 
-    log.info(contentType);
-
     const withDescription = req.params.withDescription === 'true';
 
     const hits = runInBranchContext(
