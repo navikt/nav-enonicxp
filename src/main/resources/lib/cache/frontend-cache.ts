@@ -1,5 +1,6 @@
 import httpClient, { HttpResponse } from '/lib/http-client';
 import taskLib from '/lib/xp/task';
+import schedulerLib from '/lib/xp/scheduler';
 import { Content } from '/lib/xp/content';
 import { appDescriptor, urls } from '../constants';
 import { getFrontendPathname, isRenderedType } from './utils';
@@ -14,14 +15,28 @@ const timeoutMs = 10000;
 const revalidatorProxyUrl = `${urls.revalidatorProxyOrigin}/revalidator-proxy`;
 const revalidatorProxyUrlWipeAll = `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`;
 
+const deferredJobName = 'invalidate-all-job';
+const deferredTimeMs = 60000;
+
 export const frontendInvalidateAllDeferred = (eventId: string) => {
-    const nowPlusOneMinute = new Date(Date.now() + 60000).toISOString();
+    const existingJob = schedulerLib.get({ name: deferredJobName });
+
+    const now = new Date();
+    const targetScheduleTime = new Date(now.getTime() + deferredTimeMs);
+
+    if (existingJob) {
+        const currentScheduleTime = new Date(existingJob.schedule.value);
+        if (currentScheduleTime > now && currentScheduleTime < targetScheduleTime) {
+            logger.info('Invalidation job is already scheduled within the target timeframe');
+            return;
+        }
+    }
 
     createOrUpdateSchedule<CacheInvalidateAllConfig>({
-        jobName: 'invalidate-all-job',
+        jobName: deferredJobName,
         jobSchedule: {
             type: 'ONE_TIME',
-            value: nowPlusOneMinute,
+            value: targetScheduleTime.toISOString(),
         },
         taskDescriptor: `${appDescriptor}:cache-invalidate-all`,
         taskConfig: {
@@ -30,7 +45,7 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
         },
     });
 
-    logger.info(`Scheduled cache invalidation job at ${nowPlusOneMinute}`);
+    logger.info(`Scheduled cache invalidation job at ${targetScheduleTime}`);
 };
 
 const frontendInvalidatePathsRequest = (
