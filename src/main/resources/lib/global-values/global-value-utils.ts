@@ -90,7 +90,7 @@ export const getGlobalValueSet = (contentId?: string): GlobalValueContentTypes |
     return content;
 };
 
-export const getGlobalValueSetNumberValue = (gvKey: string, contentId: string) => {
+export const getGlobalNumberValue = (gvKey: string, contentId: string) => {
     const content = getGlobalValueSet(contentId);
     if (!content || content.type !== 'no.nav.navno:global-value-set') {
         logger.info(`No global number value set found for contentId ${contentId}`);
