@@ -139,3 +139,6 @@ export const isMedia = (content: Content): content is Content & { type: MediaDes
 const Thread = Java.type('java.lang.Thread');
 
 export const getCurrentThreadId = () => Number(Thread.currentThread().getId());
+
+export const serializableObjectsAreEqual = (obj1: object, obj2: object) =>
+    JSON.stringify(obj1) === JSON.stringify(obj2);

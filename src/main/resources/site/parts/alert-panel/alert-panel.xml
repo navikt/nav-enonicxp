@@ -1,0 +1,13 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Ekstraordinær varselboks</display-name>
+    <form>
+        <mixin name="link"/>
+        <input name="ingress" type="TextArea">
+            <label>Ingress (valgfri)</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:dynamic-page</allow-on-content-type>
+    </config>
+</part>
