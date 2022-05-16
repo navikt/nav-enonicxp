@@ -19,7 +19,7 @@ export const globalValueSetCallback: CreationCallback = (context, params) => {
                     key: { type: graphQlLib.GraphQLString },
                     itemName: { type: graphQlLib.GraphQLString },
                     numberValue: { type: graphQlLib.GraphQLFloat },
-                    type: { type: graphQlLib.GraphQLFloat },
+                    type: { type: graphQlLib.GraphQLString },
                 },
             })
         ),
