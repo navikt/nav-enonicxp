@@ -4,7 +4,7 @@ import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { forceArray } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
-import { CaseProcessingTimeItem } from '../../types/content-types/global-case-time-set';
+import { CaseTimeItem } from '../../types/content-types/global-case-time-set';
 import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
 
 const uniqueKeySeparator = '::';
@@ -119,5 +119,5 @@ export const getGlobalCaseTime = (gvKey: string, contentId: string) => {
         return null;
     }
 
-    return valueItem as CaseProcessingTimeItem;
+    return valueItem as CaseTimeItem;
 };

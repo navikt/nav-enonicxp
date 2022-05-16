@@ -3,7 +3,7 @@ import {
     validateCurrentUserPermissionForContent,
 } from '../../lib/utils/auth-utils';
 import { validCaseTimeUnits } from '../../lib/global-values/types';
-import { CaseProcessingTimeUnit } from '../../types/content-types/global-case-time-set';
+import { CaseTimeUnit } from '../../types/content-types/global-case-time-set';
 
 export type GlobalValueCommonInputParams = {
     key: string;
@@ -17,7 +17,7 @@ export type GlobalNumberValueInputParams = {
 } & GlobalValueCommonInputParams;
 
 export type GlobalCaseTimesInputParams = {
-    unit: CaseProcessingTimeUnit;
+    unit: CaseTimeUnit;
     value: number;
     contentType: 'no.nav.navno:global-case-time-set';
 } & GlobalValueCommonInputParams;
@@ -35,7 +35,7 @@ const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputPar
         return gvServiceInvalidRequestResponse(`value ${value} must be a number`);
     }
 
-    if (!validCaseTimeUnits[unit as CaseProcessingTimeUnit]) {
+    if (!validCaseTimeUnits[unit as CaseTimeUnit]) {
         return gvServiceInvalidRequestResponse(
             `unit ${unit} must be one of ${Object.keys(validCaseTimeUnits).join(', ')}`
         );

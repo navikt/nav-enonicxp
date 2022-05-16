@@ -27,7 +27,7 @@ import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
-import { CaseProcessingTimeData } from './global-case-time-set';
+import { GlobalCaseTimeSetData } from './global-case-time-set';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -37,7 +37,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
-    'global-case-time-set': CaseProcessingTimeData;
+    'global-case-time-set': GlobalCaseTimeSetData;
     'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;
     'internal-link': InternalLink;

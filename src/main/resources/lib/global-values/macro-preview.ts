@@ -5,9 +5,9 @@ import {
 } from './global-value-utils';
 import { contentStudioEditPathPrefix } from '../constants';
 import { GlobalValueItem } from './types';
-import { CaseProcessingTimeUnit } from '../../types/content-types/global-case-time-set';
+import { CaseTimeUnit } from '../../types/content-types/global-case-time-set';
 
-const enToNo: Record<CaseProcessingTimeUnit, string> = {
+const enToNo: Record<CaseTimeUnit, string> = {
     days: 'dager',
     weeks: 'uker',
     months: 'måneder',
