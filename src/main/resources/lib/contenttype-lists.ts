@@ -57,7 +57,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
     `${appDescriptor}:content-list`,
     `${appDescriptor}:global-value-set`,
-    `${appDescriptor}:case-processing-time-set`,
+    `${appDescriptor}:global-case-time-set`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
@@ -81,6 +81,6 @@ export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
 export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     ...contentTypesRenderedByPublicFrontend,
     `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
-    `${appDescriptor}:case-processing-time-set`,
 ];

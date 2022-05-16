@@ -3,7 +3,7 @@ import {
     validateCurrentUserPermissionForContent,
 } from '../../lib/utils/auth-utils';
 import { validCaseTimeUnits } from '../../lib/global-values/types';
-import { CaseProcessingTimeUnit } from '../../types/content-types/case-processing-time-set';
+import { CaseProcessingTimeUnit } from '../../types/content-types/global-case-time-set';
 
 export type GlobalValueCommonInputParams = {
     key: string;
@@ -19,7 +19,7 @@ export type GlobalNumberValueInputParams = {
 export type GlobalCaseTimesInputParams = {
     unit: CaseProcessingTimeUnit;
     value: number;
-    contentType: 'no.nav.navno:case-processing-time-set';
+    contentType: 'no.nav.navno:global-case-time-set';
 } & GlobalValueCommonInputParams;
 
 const validateNumberValueParams = ({ numberValue }: Partial<GlobalNumberValueInputParams>) => {

@@ -4,7 +4,7 @@ import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { forceArray } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
-import { CaseProcessingTimeItem } from '../../types/content-types/case-processing-time-set';
+import { CaseProcessingTimeItem } from '../../types/content-types/global-case-time-set';
 import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
 
 const uniqueKeySeparator = '::';
@@ -106,10 +106,10 @@ export const getGlobalValueSetNumberValue = (gvKey: string, contentId: string) =
     return (valueItem as GlobalNumberValueItem).numberValue;
 };
 
-export const getCaseProcessingTime = (gvKey: string, contentId: string) => {
+export const getGlobalCaseTime = (gvKey: string, contentId: string) => {
     const content = getGlobalValueSet(contentId);
-    if (!content || content.type !== 'no.nav.navno:case-processing-time-set') {
-        logger.info(`No case processing time set found for contentId ${contentId}`);
+    if (!content || content.type !== 'no.nav.navno:global-case-time-set') {
+        logger.info(`No global case time set found for contentId ${contentId}`);
         return null;
     }
 

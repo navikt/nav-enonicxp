@@ -1,7 +1,7 @@
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import {
-    getCaseProcessingTime,
+    getGlobalCaseTime,
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../global-values/global-value-utils';
 import { runInBranchContext } from '../../../utils/branch-context';
@@ -9,7 +9,7 @@ import { runInBranchContext } from '../../../utils/branch-context';
 export const saksbehandlingstidMacroCallback: CreationCallback = (context, params) => {
     params.fields.caseTime = {
         type: graphQlCreateObjectType(context, {
-            name: 'CaseProcessingTimeMacroData',
+            name: 'SaksbehandlingstidMacroData',
             description: 'Saksbehandlingstid macro data',
             fields: {
                 unit: { type: graphQlLib.GraphQLString },
@@ -23,7 +23,7 @@ export const saksbehandlingstidMacroCallback: CreationCallback = (context, param
             }
 
             const caseTimeData = runInBranchContext(
-                () => getCaseProcessingTime(gvKey, contentId),
+                () => getGlobalCaseTime(gvKey, contentId),
                 'master'
             );
 

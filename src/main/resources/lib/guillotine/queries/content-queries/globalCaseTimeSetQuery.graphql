@@ -1,11 +1,11 @@
 #import "../fragments/contentCommonFragment.graphql"
-#import "../fragments/content-types/caseProcessingTimeSetFragment.graphql"
+#import "../fragments/content-types/globalCaseTimeSetFragment.graphql"
 
 query caseProcessingTimeSetQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommon
-            ...contentCaseProcessingTimeSet
+            ...contentGlobalCaseTimeSet
         }
     }
 }

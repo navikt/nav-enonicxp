@@ -1,4 +1,4 @@
-fragment contentCaseProcessingTimeSet on no_nav_navno_CaseProcessingTimeSet {
+fragment contentGlobalCaseTimeSet on no_nav_navno_GlobalCaseTimeSet {
     data {
         valueItems {
             key

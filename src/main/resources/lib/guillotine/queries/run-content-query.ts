@@ -51,7 +51,7 @@ import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
-import caseProcessingTimeSetQuery from './content-queries/caseProcessingTimeSetQuery.graphql';
+import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -67,13 +67,13 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:unknown': mediaUnknownQuery,
     'media:vector': mediaVectorQuery,
     'media:video': mediaVideoQuery,
-    'no.nav.navno:case-processing-time-set': caseProcessingTimeSetQuery,
     'no.nav.navno:contact-information': contantInformationQuery,
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
     'no.nav.navno:product-details': productDetailsQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
+    'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
     'no.nav.navno:guide-page': guidePageQuery,
     'no.nav.navno:large-table': largeTableQuery,
