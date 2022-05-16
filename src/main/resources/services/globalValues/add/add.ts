@@ -53,7 +53,6 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                logger.info(`new item: ${JSON.stringify(newItem)}`);
                 _content.data.valueItems = [...valueItems, newItem];
 
                 return _content;

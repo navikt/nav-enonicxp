@@ -10,11 +10,14 @@ export const getGlobalValueSetService = (req: XP.Request) => {
         return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);
     }
 
+    const type = content.type === 'no.nav.navno:global-value-set' ? 'numberValue' : 'caseTime';
+    const items = forceArray(content.data?.valueItems).map((item) => ({ ...item, type }));
+
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            items: forceArray(content.data?.valueItems),
+            items,
         },
     };
 };

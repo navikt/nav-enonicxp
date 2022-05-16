@@ -18,7 +18,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, key, itemName } = req.params;
+    const { contentId, key, itemName, type } = req.params as Record<string, string>;
 
     if (!key) {
         return gvServiceInvalidRequestResponse(`Parameter 'key' missing`);
@@ -36,7 +36,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         gvServiceInvalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
-    if (itemName && itemNameExists(valueItems, itemName, key)) {
+    if (itemNameExists(valueItems, itemName, key)) {
         gvServiceInvalidRequestResponse(`Item name ${itemName} already exists on ${contentId}`);
     }
 
@@ -49,11 +49,12 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         const modifiedItem = {
             key,
             itemName,
+            type,
             ...(content.type === 'no.nav.navno:global-value-set'
-                ? { numberValue: req.params.numberValue }
+                ? { numberValue: Number(req.params.numberValue) }
                 : {
                       unit: req.params.unit,
-                      value: req.params.value,
+                      value: Number(req.params.value),
                   }),
         };
 
