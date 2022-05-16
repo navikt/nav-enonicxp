@@ -50,12 +50,12 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
             key,
             itemName,
             type,
-            ...(content.type === 'no.nav.navno:global-value-set'
-                ? { numberValue: Number(req.params.numberValue) }
-                : {
+            ...(type === 'caseTime'
+                ? {
                       unit: req.params.unit,
                       value: Number(req.params.value),
-                  }),
+                  }
+                : { numberValue: Number(req.params.numberValue) }),
         };
 
         repo.modify({

@@ -17,7 +17,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, itemName } = req.params;
+    const { contentId, itemName, type } = req.params;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
     if (!content || !contentId) {
@@ -42,12 +42,13 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         const newItem = {
             key: generateKey(),
             itemName,
-            ...(content.type === 'no.nav.navno:global-value-set'
-                ? { numberValue: req.params.numberValue }
-                : {
+            type,
+            ...(type === 'caseTime'
+                ? {
                       unit: req.params.unit,
-                      value: req.params.value,
-                  }),
+                      value: Number(req.params.value),
+                  }
+                : { numberValue: Number(req.params.numberValue) }),
         };
 
         repo.modify({
