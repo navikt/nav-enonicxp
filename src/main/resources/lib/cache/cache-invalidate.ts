@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
 import taskLib from '/lib/xp/task';
-import { frontendInvalidatePaths } from './frontend-cache';
+import { frontendInvalidatePaths } from './frontend-invalidate-requests';
 import { runInBranchContext } from '../utils/branch-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
