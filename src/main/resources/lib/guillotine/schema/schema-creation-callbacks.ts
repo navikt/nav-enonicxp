@@ -29,6 +29,8 @@ import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-b
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
+import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
+import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
 
 export const schemaCreationCallbacks = {
     Attachment: attachmentCallback,
@@ -46,6 +48,7 @@ export const schemaCreationCallbacks = {
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
+    no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
     Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter:
         contentListCallback('publish.first'),
@@ -55,6 +58,7 @@ export const schemaCreationCallbacks = {
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
     Page_no_nav_navno_page_with_side_menus_OverstyrLenketekster: anchorLinksCallback,
     Part_no_nav_navno_filters_menu_Filter: filterCallback,
+    Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,

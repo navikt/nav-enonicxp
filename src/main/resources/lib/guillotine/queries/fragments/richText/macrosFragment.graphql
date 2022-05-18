@@ -82,12 +82,8 @@ fragment macros on Macro {
         }
         saksbehandlingstid {
             caseTime {
-                ... on no_nav_navno_CaseProcessingTime {
-                    data {
-                        number
-                        unit
-                    }
-                }
+                value
+                unit
             }
         }
         varselBoks {

@@ -4,6 +4,7 @@ fragment contentGlobalValueSet on no_nav_navno_GlobalValueSet {
             key
             itemName
             numberValue
+            type
         }
     }
 }

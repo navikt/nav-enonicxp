@@ -3,6 +3,15 @@ import {
     ContentDescriptor,
     CustomContentDescriptor,
 } from '../../../types/content-types/content-config';
+import { isMedia } from '../../utils/nav-utils';
+import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
+import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
+import { runInBranchContext } from '../../utils/branch-context';
+import { getBreadcrumbs } from '../utils/breadcrumbs';
+import { getPathMapForReferences } from '../../custom-paths/custom-paths';
+import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
+import { PortalComponent } from '../../../types/components/component-portal';
+import { NodeComponent } from '../../../types/components/component-node';
 
 import mediaArchiveQuery from './media-queries/mediaArchiveQuery.graphql';
 import mediaAudioQuery from './media-queries/mediaAudioQuery.graphql';
@@ -42,15 +51,7 @@ import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
-import { isMedia } from '../../utils/nav-utils';
-import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
-import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
-import { runInBranchContext } from '../../utils/branch-context';
-import { getBreadcrumbs } from '../utils/breadcrumbs';
-import { getPathMapForReferences } from '../../custom-paths/custom-paths';
-import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
-import { PortalComponent } from '../../../types/components/component-portal';
-import { NodeComponent } from '../../../types/components/component-node';
+import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -72,6 +73,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
+    'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
     'no.nav.navno:guide-page': guidePageQuery,
     'no.nav.navno:large-table': largeTableQuery,

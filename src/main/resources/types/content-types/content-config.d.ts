@@ -1,4 +1,4 @@
-import { GlobalValueSetData } from './global-value-set';
+import { GlobalNumberValueSetData } from './global-value-set';
 import { Component } from '/lib/xp/portal';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 import { Calculator } from '../../site/content-types/calculator/calculator';
@@ -27,18 +27,18 @@ import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
-import { CaseProcessingTime } from '../../site/content-types/case-processing-time/case-processing-time';
+import { GlobalCaseTimeSetData } from './global-case-time-set';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
     calculator: Calculator;
-    'case-processing-time': CaseProcessingTime;
     'contact-information': ContactInformation;
     'content-list': ContentList;
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
-    'global-value-set': GlobalValueSetData;
+    'global-case-time-set': GlobalCaseTimeSetData;
+    'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;

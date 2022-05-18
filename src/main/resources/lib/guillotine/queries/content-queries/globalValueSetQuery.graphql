@@ -1,7 +1,7 @@
 #import "../fragments/contentCommonFragment.graphql"
 #import "../fragments/content-types/globalValueSetFragment.graphql"
 
-query urlQuery($ref: ID!) {
+query globalValueSetQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommon

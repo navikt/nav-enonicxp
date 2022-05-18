@@ -1,0 +1,11 @@
+#import "../fragments/contentCommonFragment.graphql"
+#import "../fragments/content-types/globalCaseTimeSetFragment.graphql"
+
+query globalCaseTimeSetQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommon
+            ...contentGlobalCaseTimeSet
+        }
+    }
+}
