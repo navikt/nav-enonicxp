@@ -8,6 +8,8 @@ export const globalValueSetCallback: CreationCallback = (context, params) => {
         resolve: (env) => {
             return forceArray(env.source.valueItems).map((item) => ({
                 ...item,
+                // Set the type here for backwards compatibility with values created
+                // when we only had one global value type (and this field did not exist)
                 type: 'numberValue',
             }));
         },
