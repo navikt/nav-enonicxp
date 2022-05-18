@@ -43,7 +43,11 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
             return insufficientPermissionResponse('administrator');
         }
 
-        logger.critical(`Removing in-use values with key ${key} - uses: ${JSON.stringify(usage)}`);
+        logger.critical(
+            `Removing in-use value with key ${key} - uses: ${usage
+                .map((hit) => hit._path)
+                .join(', ')}`
+        );
     }
 
     try {
