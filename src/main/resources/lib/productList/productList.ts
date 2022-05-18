@@ -6,7 +6,7 @@ import { ContentDescriptor } from 'types/content-types/content-config';
 
 const batchCount = 1000;
 
-const includedContentTypes = ['content-page-with-sidemenus'].map(
+const includedContentTypes = ['content-page-with-sidemenus', 'guide-page'].map(
     (contentType) => `${app.name}:${contentType}`
 ) as ContentDescriptor[];
 
