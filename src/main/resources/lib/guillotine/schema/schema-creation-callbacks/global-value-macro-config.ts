@@ -26,7 +26,7 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
                 'master'
             );
 
-            if (!value === null) {
+            if (value === null) {
                 logger.error(
                     `Invalid global value reference in macro: ${env.source.key} (code 2)`,
                     true
@@ -50,16 +50,16 @@ export const globalValueWithMathMacroConfigCallback: CreationCallback = (context
                         const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(key);
                         if (!gvKey || !contentId) {
                             logger.error(
-                                `Invalid global value reference in calculator: ${key} (code 1)`,
+                                `Invalid global value reference in math macro: ${key} (code 1)`,
                                 true
                             );
                             return acc;
                         }
 
                         const value = getGlobalNumberValue(gvKey, contentId);
-                        if (!value === null) {
+                        if (value === null) {
                             logger.error(
-                                `Invalid global value reference in calculator: ${key} (code 2)`,
+                                `Invalid global value reference in math macro: ${key} (code 2)`,
                                 true
                             );
                             return acc;
