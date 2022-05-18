@@ -5,6 +5,7 @@ import {
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../global-values/global-value-utils';
 import { runInBranchContext } from '../../../utils/branch-context';
+import { logger } from '../../../utils/logging';
 
 export const saksbehandlingstidMacroCallback: CreationCallback = (context, params) => {
     params.fields.caseTime = {
@@ -19,6 +20,10 @@ export const saksbehandlingstidMacroCallback: CreationCallback = (context, param
         resolve: (env) => {
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
             if (!gvKey || !contentId) {
+                logger.error(
+                    `Invalid global case time reference in macro: ${env.source.key} (code 1)`,
+                    true
+                );
                 return null;
             }
 
@@ -28,6 +33,10 @@ export const saksbehandlingstidMacroCallback: CreationCallback = (context, param
             );
 
             if (!caseTimeData) {
+                logger.error(
+                    `Invalid global case time reference in macro: ${env.source.key} (code 2)`,
+                    true
+                );
                 return null;
             }
 
