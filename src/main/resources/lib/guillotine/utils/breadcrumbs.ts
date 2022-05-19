@@ -23,7 +23,7 @@ const rootPaths = stringArrayToSet([
 ]);
 
 const generateBreadcrumb = (content: Content): Breadcrumb => ({
-    title: content.displayName,
+    title: content.displayName || 'Uten tittel',
     url: stripPathPrefix(content._path),
 });
 
