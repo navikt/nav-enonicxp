@@ -31,15 +31,15 @@ const cleanProduct = (product: any) => {
     };
 };
 
-const getAllProducts = (start = 0) => {
+const getAllProducts = (language = 'no') => {
     const entriesBatch = contentLib
         .query({
-            start,
+            start: 0,
             count: batchCount,
             contentTypes: includedContentTypes,
         })
         .hits.map(cleanProduct)
-        .filter((product) => product.language === 'no' && !!product.title)
+        .filter((product) => product.language === language && !!product.title)
         .sort((a, b) => a?.title.localeCompare(b?.title));
     return entriesBatch;
 };
