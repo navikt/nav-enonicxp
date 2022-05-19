@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
 import taskLib from '/lib/xp/task';
-import { frontendCacheInvalidate } from './frontend-invalidate-requests';
+import { frontendInvalidatePaths } from './frontend-cache';
 import { runInBranchContext } from '../utils/branch-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
@@ -77,7 +77,7 @@ const _invalidateCacheForNode = ({
                 );
             }
 
-            frontendCacheInvalidate({
+            frontendInvalidatePaths({
                 contents: contentToInvalidate,
                 paths: changedPaths,
                 eventId,

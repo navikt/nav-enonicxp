@@ -2,7 +2,7 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
-import { frontendCacheWipeAll } from '../lib/cache/frontend-invalidate-requests';
+import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
 import { generateUUID } from '../lib/utils/uuid';
@@ -19,7 +19,7 @@ const validActions: ActionsMap = {
     wipeCache: {
         description: 'Slett frontend-cache',
         callback: () => {
-            frontendCacheWipeAll(`manual-wipe-${generateUUID()}`);
+            frontendInvalidateAllAsync(`manual-wipe-${generateUUID()}`);
         },
     },
     generateSitemap: {

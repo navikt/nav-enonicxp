@@ -1,0 +1,11 @@
+fragment contentGlobalCaseTimeSet on no_nav_navno_GlobalCaseTimeSet {
+    data {
+        valueItems {
+            key
+            itemName
+            value
+            unit
+            type
+        }
+    }
+}

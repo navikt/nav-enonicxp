@@ -1,7 +1,6 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import macroLib from '/lib/guillotine/macro';
-import contextLib from '/lib/xp/context';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
 import { HtmlAreaPartConfig } from '../../../../site/parts/html-area/html-area-part-config';
@@ -20,14 +19,10 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             const content = contentLib.get({ key });
             if (!content) {
-                const msg = `Content not found for fragment in html-fragment macro: ${fragmentId}`;
-                const branch = contextLib.get()?.branch;
-
-                if (branch === 'master') {
-                    logger.critical(msg);
-                } else {
-                    logger.warning(msg);
-                }
+                logger.critical(
+                    `Content not found for fragment in html-fragment macro: ${fragmentId}`,
+                    true
+                );
                 return null;
             }
 

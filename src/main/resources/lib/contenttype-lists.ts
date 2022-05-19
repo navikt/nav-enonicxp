@@ -55,8 +55,9 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
 
 export const typesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
-    `${appDescriptor}:global-value-set`,
     `${appDescriptor}:content-list`,
+    `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:global-case-time-set`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
@@ -80,5 +81,6 @@ export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
 export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     ...contentTypesRenderedByPublicFrontend,
     `${appDescriptor}:global-value-set`,
+    `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
 ];

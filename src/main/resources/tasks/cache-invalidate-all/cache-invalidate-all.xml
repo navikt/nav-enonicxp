@@ -1,0 +1,12 @@
+<task>
+    <description>Wipe cache on pre-publish</description>
+    <form>
+        <input type="Checkbox" name="retryIfFail">
+            <label>Retry if failed</label>
+        </input>
+        <input type="TextLine" name="eventId">
+            <label>Event id</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+</task>

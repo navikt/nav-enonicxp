@@ -2,38 +2,71 @@ import {
     insufficientPermissionResponse,
     validateCurrentUserPermissionForContent,
 } from '../../lib/utils/auth-utils';
+import { validCaseTimeUnits } from '../../lib/global-values/types';
+import { CaseTimeUnit } from '../../types/content-types/global-case-time-set';
 
-export type GlobalValueInput = {
+export type GlobalValueCommonInputParams = {
+    key: string;
     contentId: string;
     itemName: string;
-    numberValue: number;
 };
 
-export const validateGlobalValueInputAndGetErrorResponse = ({
-    contentId,
-    itemName,
-    numberValue,
-}: Partial<GlobalValueInput>) => {
-    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
-        return insufficientPermissionResponse('MODIFY');
-    }
+export type GlobalNumberValueInputParams = {
+    numberValue: number;
+    contentType: 'no.nav.navno:global-value-set';
+} & GlobalValueCommonInputParams;
 
-    const hasValue = numberValue !== undefined;
+export type GlobalCaseTimesInputParams = {
+    unit: CaseTimeUnit;
+    value: number;
+    contentType: 'no.nav.navno:global-case-time-set';
+} & GlobalValueCommonInputParams;
 
-    if (!contentId || !itemName || !hasValue) {
-        return gvServiceInvalidRequestResponse(
-            'Missing parameters:' +
-                `${!contentId && ' contentId'}` +
-                `${!itemName && ' itemName'}` +
-                `${!hasValue && ' numberValue'}`
-        );
-    }
-
+const validateNumberValueParams = ({ numberValue }: Partial<GlobalNumberValueInputParams>) => {
     if (numberValue !== undefined && isNaN(numberValue)) {
         return gvServiceInvalidRequestResponse(`numberValue ${numberValue} must be a number`);
     }
 
     return null;
+};
+
+const validateCaseTimeParams = ({ value, unit }: Partial<GlobalCaseTimesInputParams>) => {
+    if (value !== undefined && isNaN(value)) {
+        return gvServiceInvalidRequestResponse(`value ${value} must be a number`);
+    }
+
+    if (!validCaseTimeUnits[unit as CaseTimeUnit]) {
+        return gvServiceInvalidRequestResponse(
+            `unit ${unit} must be one of ${Object.keys(validCaseTimeUnits).join(', ')}`
+        );
+    }
+
+    return null;
+};
+
+export const validateGlobalValueInputAndGetErrorResponse = (params: XP.Request['params']) => {
+    const { contentId, itemName, type } = params;
+
+    if (!contentId || !itemName || !type) {
+        return gvServiceInvalidRequestResponse(
+            'Missing parameters:' +
+                `${!contentId ? ' contentId' : ''}` +
+                `${!itemName ? ' itemName' : ''}` +
+                `${!type ? ' type' : ''}`
+        );
+    }
+
+    if (!validateCurrentUserPermissionForContent(contentId, 'MODIFY')) {
+        return insufficientPermissionResponse('MODIFY');
+    }
+
+    if (type === 'numberValue') {
+        return validateNumberValueParams(params);
+    } else if (type === 'caseTime') {
+        return validateCaseTimeParams(params);
+    }
+
+    return gvServiceInvalidRequestResponse(`Invalid value type ${type}`);
 };
 
 export const gvServiceInvalidRequestResponse = (msg: string) => ({
