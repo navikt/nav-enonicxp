@@ -1,12 +1,11 @@
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
-// const contentLib = require('/lib/xp/content');
-const graphQlLib = require('/lib/guillotine/graphql.js');
+import graphQlLib from '/lib/graphql';
 
-const { getAllProducts } = require('../../../productList/productList');
+import { getAllProducts } from '../../../productList/productList';
 
 export const overviewCallback: CreationCallback = (context, params) => {
-    const xpImage = graphQlLib.createObjectType(context, {
+    const xpImage = graphQlCreateObjectType(context, {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
         fields: {
@@ -15,7 +14,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const icon = graphQlLib.createObjectType(context, {
+    const icon = graphQlCreateObjectType(context, {
         name: context.uniqueName('Icon'),
         description: 'Icon',
         fields: {
@@ -23,7 +22,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const icons = graphQlLib.createObjectType(context, {
+    const icons = graphQlCreateObjectType(context, {
         name: context.uniqueName('Icons'),
         description: 'Icons',
         fields: {
@@ -31,7 +30,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const illustration = graphQlLib.createObjectType(context, {
+    const illustration = graphQlCreateObjectType(context, {
         name: context.uniqueName('Illustration'),
         description: 'Illustration',
         fields: {
@@ -39,7 +38,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const productType = graphQlLib.createObjectType(context, {
+    const productType = graphQlCreateObjectType(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
