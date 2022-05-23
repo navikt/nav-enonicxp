@@ -51,10 +51,10 @@ Document describing useful tools to query the database and look for changes in t
 ## Monitoring errors with slack alerts to #xpnavno-alerts
 
 We have some rules which triggers an alert to the #xpnavno-alerts channel, these are there to give
-us a heads up if some spesific rules are triggered in kibana.
+us a heads up if some specific rules are triggered in kibana.
 
 1. If the numbers of log messages on error level exceeds 100 in the last hour
-2. If we have an error from the invalidator code (cache invalidation), we'll get a warning.
+2. If _any_ errors marked as critical have been logged in the last 10 minutes
 
 We also have 3 triggers which monitor cluster health.
 
@@ -163,12 +163,12 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
   }
 }
 ```
-### Sitecache error
+### Critical errors
 ```
 {
   "trigger": {
     "schedule": {
-      "interval": "5m"
+      "interval": "3m"
     }
   },
   "input": {
@@ -212,7 +212,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
                 },
                 {
                   "query_string": {
-                    "query": """+("(/lib/siteCache/invalidator.js)")"""
+                    "query": """+("(/lib/utils/logging.js) [critical]")"""
                   }
                 },
                 {
@@ -220,7 +220,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
                     "@timestamp": {
                       "include_lower": true,
                       "include_upper": true,
-                      "from": "now-30m",
+                      "from": "now-10m",
                       "boost": 1,
                       "to": null
                     }
@@ -242,7 +242,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
   },
   "actions": {
     "notify-slack": {
-      "throttle_period_in_millis": 1800000,
+      "throttle_period_in_millis": 600000,
       "slack": {
         "account": "logganalyse",
         "proxy": {
@@ -257,9 +257,8 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
           "attachments": [
             {
               "color": "danger",
-              "title": """<!channel> "(/lib/siteCache/invalidator.js)" error
- har blitt logget {{ctx.payload.hits.total}} ganger siste 30 minutter :rotating_light:""",
-              "title_link": "https://logs.adeo.no/goto/731b1dd18d725b69de5d80927e581dc06",
+              "title": "Det har blitt logget kritiske feil siste 10 minutter! :rotating_light:",
+              "title_link": "https://logs.adeo.no/goto/c398867f3e7f0cf2f2e6dd7191942b91",
               "fields": [
                 {
                   "title": "Program",
