@@ -43,6 +43,7 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
             retryIfFail: true,
             eventId,
         },
+        masterOnly: false,
     });
 
     logger.info(`Scheduled cache invalidation job at ${targetScheduleTime}`);
