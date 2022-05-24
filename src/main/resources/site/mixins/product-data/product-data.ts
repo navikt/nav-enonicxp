@@ -18,7 +18,7 @@ export interface ProductData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
    * Kategori
@@ -28,7 +28,7 @@ export interface ProductData {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
 
   /**
    * Velg piktogram

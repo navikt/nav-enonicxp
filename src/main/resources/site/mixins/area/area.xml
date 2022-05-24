@@ -10,7 +10,8 @@
             <option value="accessibility">Hjelpemidler og tilrettelegging</option>
             <option value="pension">Pensjon</option>
             <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
-            <option value="municipality">For kommunen</option>            
+            <option value="municipality">For kommunen</option>
+            <option value="self_employed">For selvstendig næringsdrivende</option>            
             <option value="other">Annet</option>
         </config>
     </input>
