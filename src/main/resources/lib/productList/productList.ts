@@ -16,7 +16,6 @@ const cleanProduct = (product: any) => {
     const idOrPath = product.data.customPath || product._id;
 
     return {
-        _id: product._id,
         idOrPath,
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,

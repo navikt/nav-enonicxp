@@ -42,7 +42,6 @@ export const overviewCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
-            _id: { type: graphQlLib.GraphQLString },
             idOrPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
