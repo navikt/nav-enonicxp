@@ -8,7 +8,7 @@ fragment contentOverviewPage on no_nav_navno_Overview {
         }
         productList {
             _id
-            path
+            idOrPath
             title
             ingress
             taxonomy

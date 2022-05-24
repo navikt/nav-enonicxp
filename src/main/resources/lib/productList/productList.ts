@@ -13,9 +13,13 @@ const includedContentTypes = ['content-page-with-sidemenus', 'guide-page'].map(
 const cleanProduct = (product: any) => {
     const icons = getProductIllustrationIcons(product);
 
+    log.info(JSON.stringify(product));
+
+    const idOrPath = product.data.customPath || product._id;
+
     return {
         _id: product._id,
-        path: product._path,
+        idOrPath,
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
         audience: product.data.audience,
