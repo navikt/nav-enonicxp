@@ -1,0 +1,9 @@
+#import "../fragments/contentCommonWithPageFragment.graphql"
+
+query portalPageTemplateQuery($ref: ID!) {
+    guillotine {
+        get(key: $ref) {
+            ...contentCommonWithPage
+        }
+    }
+}

@@ -15,6 +15,7 @@ type Props<TaskConfig> = {
     taskDescriptor: NavNoDescriptor;
     taskConfig: TaskConfig;
     enabled?: boolean;
+    masterOnly?: boolean;
     user?: PrincipalKeyUser;
     onScheduleExistsAction?: 'modify' | 'overwrite' | 'abort';
 };
@@ -26,10 +27,11 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
     taskDescriptor,
     taskConfig,
     enabled = true,
+    masterOnly = true,
     user = 'user:system:su',
     onScheduleExistsAction = 'modify',
 }: Props<TaskConfig>) => {
-    if (!clusterLib.isMaster()) {
+    if (masterOnly && !clusterLib.isMaster()) {
         return;
     }
 

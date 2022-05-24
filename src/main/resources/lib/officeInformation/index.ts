@@ -246,6 +246,7 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
             taskConfig: {
                 retry,
             },
+            masterOnly: false,
         });
     } else {
         taskLib.submitTask<UpdateOfficeInfoConfig>({

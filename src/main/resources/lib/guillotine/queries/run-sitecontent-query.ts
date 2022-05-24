@@ -9,7 +9,10 @@ import { runGuillotineComponentsQuery } from './run-components-query';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
-const dynamicPageContentTypesSet = stringArrayToSet(dynamicPageContentTypes);
+const contentTypesWithComponents = stringArrayToSet([
+    ...dynamicPageContentTypes,
+    'portal:page-template',
+]);
 
 export const runSitecontentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
     const baseQueryParams = {
@@ -22,7 +25,7 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
 
     // Skip the components query and processing for content types which are not intended for use
     // with components
-    if (!dynamicPageContentTypesSet[baseContent.type]) {
+    if (!contentTypesWithComponents[baseContent.type]) {
         return contentQueryResult;
     }
 

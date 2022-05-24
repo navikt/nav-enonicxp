@@ -52,6 +52,7 @@ import guidePageQuery from './content-queries/guidePageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
+import portalPageTemplate from './content-queries/portalPageTemplateQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -92,6 +93,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
     'portal:site': portalSiteQuery,
+    'portal:page-template': portalPageTemplate,
 };
 
 // TODO: improve these types if/when Guillotine gets better Typescript support
