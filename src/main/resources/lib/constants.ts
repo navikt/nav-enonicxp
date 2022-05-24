@@ -7,12 +7,14 @@ const portalAdminOrigin = {
     localhost: 'http://localhost:8080',
 }[env];
 
-const frontendOrigin = {
-    p: 'https://www.nav.no',
-    dev: 'https://www.dev.nav.no',
-    q6: 'https://www-2.dev.nav.no',
-    localhost: 'http://localhost:3000',
-}[env];
+const frontendOrigin =
+    app.config.frontendOrigin ||
+    {
+        p: 'https://www.nav.no',
+        dev: 'https://www.dev.nav.no',
+        q6: 'https://www-2.dev.nav.no',
+        localhost: 'http://localhost:3000',
+    }[env];
 
 const revalidatorProxyOrigin = {
     p: 'https://www.nav.no/revalidator-proxy',

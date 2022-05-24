@@ -8,6 +8,7 @@ services:
       XP_OPTS: -Xms1230M -Xmx1230M -XX:-HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/enonic-xp/home/data/oom.hprof
     ports:
       - 8080:8080
+      - 2609:2609
     volumes:
       - blobstore:/enonic-xp/home/repo/blob
       - data:/enonic-xp/home/data
@@ -16,6 +17,7 @@ services:
       - snapshots:/enonic-xp/home/snapshots
       - ./config:/enonic-xp/home/config
       - ./setenv.sh:/enonic-xp/home/setenv.sh
+      - ../build/libs/navno.jar:/enonic-xp/home/navno.jar
 volumes:
   blobstore:
   data:
