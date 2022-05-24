@@ -1,3 +1,3 @@
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 
-exports.get = componentPreviewController;
+export const get = componentPreviewController;
