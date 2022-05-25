@@ -18,7 +18,7 @@ export interface OverviewData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
    * Type oversiktsside
