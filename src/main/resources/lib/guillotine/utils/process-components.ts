@@ -91,7 +91,7 @@ export const insertComponentsIntoRegions = (
 ): PortalComponent => {
     const { path, regions } = parentComponent;
 
-    if (!regions) {
+    if (!regions || !path) {
         return parentComponent;
     }
 
