@@ -12,6 +12,7 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
+    `${appDescriptor}:melding`,
 ];
 
 export const productPageContentTypes: ContentTypeList = [
@@ -84,4 +85,6 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
+    'portal:page-template',
+    'portal:fragment',
 ];
