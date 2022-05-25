@@ -82,6 +82,11 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
           data: { supports?: CustomContentDescriptor | CustomContentDescriptor[] };
           page: Component<'page'> | EmptyObject;
       }
+    : Type extends 'portal:site'
+    ? {
+          type: 'portal:site';
+          data: undefined;
+      }
     : never;
 
 export type BuiltinContentDescriptor =
