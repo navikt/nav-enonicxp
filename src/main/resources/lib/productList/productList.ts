@@ -1,6 +1,5 @@
 import contentLib from '/lib/xp/content';
 import { forceArray } from '../utils/nav-utils';
-
 import { getProductIllustrationIcons } from './productListHelpers';
 import { ContentDescriptor } from 'types/content-types/content-config';
 
@@ -13,10 +12,32 @@ const includedContentTypes = ['content-page-with-sidemenus', 'guide-page'].map(
 const cleanProduct = (product: any) => {
     const icons = getProductIllustrationIcons(product);
 
-    const idOrPath = product.data.customPath || product._id;
+    const productDetailsPaths = contentLib
+        .query({
+            count: 100,
+            contentTypes: ['no.nav.navno:product-details'],
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'data.pageUsageReference',
+                            values: [product._id],
+                        },
+                    },
+                },
+            },
+        })
+        .hits.map((hit) => hit._path);
+
+    log.info(`Hits for ${product._path}: ${JSON.stringify(productDetailsPaths)}`);
+
+    if (productDetailsPaths.length === 0) {
+        return null;
+    }
 
     return {
-        idOrPath,
+        idOrPath: product.data.customPath || product._path,
+        productDetailsPaths,
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
         audience: product.data.audience,
@@ -40,7 +61,7 @@ const getAllProducts = (language = 'no') => {
             contentTypes: includedContentTypes,
         })
         .hits.map(cleanProduct)
-        .filter((product) => product.language === language && !!product.title)
+        .filter((product) => product && product.language === language && !!product.title)
         .sort((a, b) => a?.title.localeCompare(b?.title));
     return entriesBatch;
 };

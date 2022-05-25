@@ -7,6 +7,7 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             ...languagesMixin
         }
         productList {
+            productDetailsPaths
             idOrPath
             title
             ingress

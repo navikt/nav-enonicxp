@@ -9,7 +9,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
         fields: {
-            _type: { type: graphQlLib.GraphQLString },
+            __typename: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
         },
     });
@@ -43,6 +43,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         description: 'Produkttype',
         fields: {
             idOrPath: { type: graphQlLib.GraphQLString },
+            productDetailsPaths: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             title: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
