@@ -1,6 +1,6 @@
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
-import { dynamicPageContentTypes } from '../../contenttype-lists';
+import { contentTypesWithComponents } from '../../contenttype-lists';
 import { stringArrayToSet } from '../../utils/nav-utils';
 import { ComponentType } from '../../../types/components/component-config';
 import { buildPageComponentTree, GuillotineComponent } from '../utils/process-components';
@@ -9,10 +9,7 @@ import { runGuillotineComponentsQuery } from './run-components-query';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
-const contentTypesWithComponents = stringArrayToSet([
-    ...dynamicPageContentTypes,
-    'portal:page-template',
-]);
+const contentTypesWithComponentsSet = stringArrayToSet(contentTypesWithComponents);
 
 export const runSitecontentGuillotineQuery = (baseContent: Content, branch: RepoBranch) => {
     const baseQueryParams = {
@@ -25,7 +22,7 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
 
     // Skip the components query and processing for content types which are not intended for use
     // with components
-    if (!contentTypesWithComponents[baseContent.type]) {
+    if (!contentTypesWithComponentsSet[baseContent.type]) {
         return contentQueryResult;
     }
 
