@@ -2,6 +2,7 @@ import contentLib from '/lib/xp/content';
 import { forceArray } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { ContentDescriptor } from 'types/content-types/content-config';
+import { logger } from '../utils/logging';
 
 const batchCount = 1000;
 
@@ -35,9 +36,14 @@ const cleanProduct = (product: any) => {
         return null;
     }
 
+    // TODO: handle this (preferably prevent the possibility)
+    if (productDetailsPaths.length > 1) {
+        logger.critical(`Found more than 1 entry for product details!`);
+    }
+
     return {
         idOrPath: product.data.customPath || product._path,
-        productDetailsPaths,
+        productDetailsPath: productDetailsPaths[0],
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
         audience: product.data.audience,
