@@ -3,12 +3,13 @@ import { forceArray } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { ContentDescriptor } from 'types/content-types/content-config';
 import { logger } from '../utils/logging';
+import { Overview } from '../../site/content-types/overview/overview';
 
 const includedContentTypes = ['content-page-with-sidemenus', 'guide-page'].map(
     (contentType) => `${app.name}:${contentType}`
 ) as ContentDescriptor[];
 
-const cleanProduct = (product: any) => {
+const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
     const icons = getProductIllustrationIcons(product);
 
     const productDetailsPaths = contentLib
@@ -17,22 +18,30 @@ const cleanProduct = (product: any) => {
             contentTypes: ['no.nav.navno:product-details'],
             filters: {
                 boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'data.pageUsageReference',
-                            values: [product._id],
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.pageUsageReference',
+                                values: [product._id],
+                            },
                         },
-                    },
+                        {
+                            hasValue: {
+                                field: 'data.detailType',
+                                values: [overviewType],
+                            },
+                        },
+                    ],
                 },
             },
         })
         .hits.map((hit) => hit._path);
 
-    log.info(`Hits for ${product._path}: ${JSON.stringify(productDetailsPaths)}`);
-
     if (productDetailsPaths.length === 0) {
         return null;
     }
+
+    log.info(`Hits for ${product._path}: ${JSON.stringify(productDetailsPaths)}`);
 
     // TODO: handle this (preferably prevent the possibility)
     if (productDetailsPaths.length > 1) {
@@ -57,7 +66,7 @@ const cleanProduct = (product: any) => {
     };
 };
 
-export const getAllProducts = (language = 'no') => {
+export const getAllProducts = (language: string, overviewType: Overview['overviewType']) => {
     const products = contentLib
         .query({
             start: 0,
@@ -74,7 +83,7 @@ export const getAllProducts = (language = 'no') => {
                 },
             },
         })
-        .hits.map(cleanProduct)
+        .hits.map((product) => cleanProduct(product, overviewType))
         .filter(Boolean)
         .sort((a, b) => a?.title.localeCompare(b?.title));
 
