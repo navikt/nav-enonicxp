@@ -61,13 +61,13 @@ export const overviewCallback: CreationCallback = (context, params) => {
             const { contentId } = env.args;
             if (!contentId) {
                 logger.error('No contentId provided for overview-page resolver');
-                return null;
+                return [];
             }
 
             const content = contentLib.get({ key: contentId });
             if (content?.type !== 'no.nav.navno:overview') {
                 logger.error(`Content not found for overview page id ${contentId}`);
-                return null;
+                return [];
             }
 
             const { language, data } = content;
@@ -75,7 +75,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
 
             if (!overviewType) {
                 logger.error(`Type not set for overview page id ${contentId}`);
-                return null;
+                return [];
             }
 
             const productList = getAllProducts(language || 'no', overviewType);
