@@ -7,8 +7,8 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             ...languagesMixin
         }
         productList {
+            _id
             productDetailsPath
-            idOrPath
             title
             ingress
             taxonomy

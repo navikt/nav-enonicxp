@@ -4,8 +4,6 @@ import { getProductIllustrationIcons } from './productListHelpers';
 import { ContentDescriptor } from 'types/content-types/content-config';
 import { logger } from '../utils/logging';
 
-const batchCount = 1000;
-
 const includedContentTypes = ['content-page-with-sidemenus', 'guide-page'].map(
     (contentType) => `${app.name}:${contentType}`
 ) as ContentDescriptor[];
@@ -42,7 +40,7 @@ const cleanProduct = (product: any) => {
     }
 
     return {
-        idOrPath: product.data.customPath || product._path,
+        _id: product._id,
         productDetailsPath: productDetailsPaths[0],
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
@@ -59,17 +57,26 @@ const cleanProduct = (product: any) => {
     };
 };
 
-const getAllProducts = (language = 'no') => {
-    const entriesBatch = contentLib
+export const getAllProducts = (language = 'no') => {
+    const products = contentLib
         .query({
             start: 0,
-            count: batchCount,
+            count: 1000,
             contentTypes: includedContentTypes,
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'language',
+                            values: [language],
+                        },
+                    },
+                },
+            },
         })
         .hits.map(cleanProduct)
-        .filter((product) => product && product.language === language && !!product.title)
+        .filter(Boolean)
         .sort((a, b) => a?.title.localeCompare(b?.title));
-    return entriesBatch;
-};
 
-export { getAllProducts };
+    return products;
+};
