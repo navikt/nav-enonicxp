@@ -37,8 +37,6 @@ const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
         return null;
     }
 
-    log.info(`Hits for ${product._path}: ${JSON.stringify(productDetailsPaths)}`);
-
     // TODO: handle this (preferably prevent the possibility)
     if (productDetailsPaths.length > 1) {
         logger.critical(`Found more than 1 entry for product details!`);
