@@ -12,6 +12,11 @@ export type GuillotineUnresolvedComponentType = { type: ComponentType; path: str
 
 const contentTypesWithComponentsSet = stringArrayToSet(contentTypesWithComponents);
 
+const contentTypesWithProductDetails = stringArrayToSet([
+    'no.nav.navno:content-page-with-sidemenus',
+    'no.nav.navno:guide-page',
+]);
+
 // The product-details part requires an additional query to retrieve the components
 // to render in the part
 const handleProductDetailsPart = (
@@ -87,9 +92,11 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
         return contentQueryResult;
     }
 
-    const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams);
+    if (contentTypesWithProductDetails[baseContent.type]) {
+        // do things
+    }
 
-    handleProductDetailsPart(components, contentQueryResult, branch);
+    const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams);
 
     return {
         ...contentQueryResult,
