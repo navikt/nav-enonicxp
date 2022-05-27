@@ -1,6 +1,6 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
-import { generateFulltextQuery, parseJsonArray, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 
 type ProductDetailsType = ProductDetails['detailType'];
@@ -19,7 +19,7 @@ const transformHit = (content: Content<'no.nav.navno:product-details'>): Selecto
 const getHitsWithQuery = (
     detailType: ProductDetailsType,
     query?: string,
-    ids?: string[]
+    ids?: string
 ): SelectorHit[] => {
     const { hits } = contentLib.query({
         count: 1000,
@@ -36,7 +36,7 @@ const getHitsWithQuery = (
             },
             ...(ids && {
                 ids: {
-                    values: ids,
+                    values: [ids],
                 },
             }),
         },
@@ -48,12 +48,7 @@ const getHitsWithQuery = (
 export const get = (req: XP.Request) => {
     const { detailType, query, ids } = req.params as Params;
 
-    const idsParsed = ids && parseJsonArray<string>(ids);
-
-    const hits = runInBranchContext(
-        () => getHitsWithQuery(detailType, query, idsParsed || undefined),
-        'master'
-    );
+    const hits = runInBranchContext(() => getHitsWithQuery(detailType, query, ids), 'master');
 
     return {
         status: 200,

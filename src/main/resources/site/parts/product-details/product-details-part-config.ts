@@ -3,7 +3,7 @@ export interface ProductDetailsPartConfig {
   /**
    * Velg produktdetalj
    */
-  productDetailsTarget: string;
+  detailType: "processing_times" | "payout_dates" | "rates";
 
   /**
    * Utvidbar
