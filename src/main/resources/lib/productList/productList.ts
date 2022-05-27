@@ -1,13 +1,9 @@
 import contentLib from '/lib/xp/content';
 import { forceArray } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
-import { ContentDescriptor } from 'types/content-types/content-config';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
-
-const includedContentTypes = ['content-page-with-sidemenus', 'guide-page'].map(
-    (contentType) => `${app.name}:${contentType}`
-) as ContentDescriptor[];
+import { contentTypesWithOverviewPages } from '../contenttype-lists';
 
 const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
     const icons = getProductIllustrationIcons(product);
@@ -71,7 +67,7 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
         .query({
             start: 0,
             count: 1000,
-            contentTypes: includedContentTypes,
+            contentTypes: contentTypesWithOverviewPages,
             filters: {
                 boolean: {
                     must: {
