@@ -48,16 +48,12 @@ const getHitsWithQuery = (
 export const get = (req: XP.Request) => {
     const { detailType, query, ids } = req.params as Params;
 
-    log.info(`Params: ${JSON.stringify(req.params)}`);
-
     const idsParsed = ids && parseJsonArray<string>(ids);
 
     const hits = runInBranchContext(
         () => getHitsWithQuery(detailType, query, idsParsed || undefined),
         'master'
     );
-
-    log.info(`Hits: ${JSON.stringify(hits)}`);
 
     return {
         status: 200,

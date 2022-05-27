@@ -13,6 +13,6 @@
         </mapping>
     </mappings>
     <processors>
-        <response-processor name="page-template-processor"/>
+        <response-processor name="frontend-response-relay"/>
     </processors>
 </site>
