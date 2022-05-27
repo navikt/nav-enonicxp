@@ -142,3 +142,16 @@ export const getCurrentThreadId = () => Number(Thread.currentThread().getId());
 
 export const serializableObjectsAreEqual = (obj1: object, obj2: object) =>
     JSON.stringify(obj1) === JSON.stringify(obj2);
+
+export const generateFulltextQuery = (
+    query: string,
+    fieldsToSearch: string[],
+    logicOp: 'AND' | 'OR'
+) => {
+    const wordsWithWildcard = query
+        ?.split(' ')
+        .map((word) => `${word}*`)
+        .join(' ');
+
+    return `fulltext("${fieldsToSearch.join(',')}", "${wordsWithWildcard}", "${logicOp}")`;
+};

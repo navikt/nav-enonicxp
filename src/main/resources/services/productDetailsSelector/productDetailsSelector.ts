@@ -1,6 +1,6 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
-import { parseJsonArray, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { generateFulltextQuery, parseJsonArray, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 
 type ProductDetailsType = ProductDetails['detailType'];
@@ -13,7 +13,7 @@ type Params = {
 const transformHit = (content: Content<'no.nav.navno:product-details'>): SelectorHit => ({
     id: content._id,
     displayName: content.displayName,
-    description: `Språk: ${content.language} - Path: ${stripPathPrefix(content._path)}`,
+    description: `[Språk: ${content.language}] ${stripPathPrefix(content._path)}`,
 });
 
 const getHitsWithQuery = (
@@ -24,7 +24,7 @@ const getHitsWithQuery = (
     const { hits } = contentLib.query({
         count: 1000,
         contentTypes: ['no.nav.navno:product-details'],
-        query,
+        query: query && generateFulltextQuery(query, ['displayName'], 'AND'),
         filters: {
             boolean: {
                 must: {
