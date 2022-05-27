@@ -15,4 +15,8 @@
         <mixin name="filter-selector"/>
         <mixin name="auth-render-option"/>
     </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+        <allow-on-content-type>${app}:guide-page</allow-on-content-type>
+    </config>
 </part>
