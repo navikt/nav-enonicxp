@@ -27,7 +27,7 @@ export const getUnixTimeFromDateTimeString = (datetime?: string): number => {
     return new Date(validDateTime).getTime();
 };
 
-export const parseJsonArray = (json: string): any[] | null => {
+export const parseJsonArray = <Type = any>(json: string): Type[] | null => {
     try {
         const array = JSON.parse(json);
         if (Array.isArray(array)) {

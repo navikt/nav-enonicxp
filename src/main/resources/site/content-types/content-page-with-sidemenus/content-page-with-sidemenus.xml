@@ -7,6 +7,7 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="product-data"/>
+        <mixin name="product-details-selector"/>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>

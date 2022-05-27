@@ -1,0 +1,17 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Produktdetaljer</label>
+            <items>
+                <input name="rates" type="CustomSelector">
+                    <label>Velg saksbehandlingstider</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">rates</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>
