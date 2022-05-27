@@ -41,9 +41,10 @@ const getTargetPath = (menuItem: MenuItemContent) => {
     if (target.type === 'no.nav.navno:external-link') {
         return target.data.url;
     } else {
-        return `${urls.frontendOrigin}${
-            hasValidCustomPath(target) ? target.data.customPath : stripPathPrefix(target._path)
-        }`;
+        const path = hasValidCustomPath(target)
+            ? target.data.customPath
+            : stripPathPrefix(target._path);
+        return `${urls.frontendOrigin}${path}`;
     }
 };
 
