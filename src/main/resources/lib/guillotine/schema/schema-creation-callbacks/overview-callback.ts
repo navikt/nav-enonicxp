@@ -1,15 +1,15 @@
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-
+import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
-
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getAllProducts } from '../../../productList/productList';
+import { logger } from '../../../utils/logging';
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlCreateObjectType(context, {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
         fields: {
-            _type: { type: graphQlLib.GraphQLString },
+            __typename: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
         },
     });
@@ -42,7 +42,8 @@ export const overviewCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
-            idOrPath: { type: graphQlLib.GraphQLString },
+            _id: { type: graphQlLib.GraphQLID },
+            productDetailsPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
@@ -54,9 +55,30 @@ export const overviewCallback: CreationCallback = (context, params) => {
     });
 
     params.fields.productList = {
+        args: { contentId: graphQlLib.GraphQLID },
         type: graphQlLib.list(productType),
-        resolve: () => {
-            const productList = getAllProducts('no');
+        resolve: (env) => {
+            const { contentId } = env.args;
+            if (!contentId) {
+                logger.error('No contentId provided for overview-page resolver');
+                return [];
+            }
+
+            const content = contentLib.get({ key: contentId });
+            if (content?.type !== 'no.nav.navno:overview') {
+                logger.error(`Content not found for overview page id ${contentId}`);
+                return [];
+            }
+
+            const { language, data } = content;
+            const { overviewType } = data;
+
+            if (!overviewType) {
+                logger.error(`Type not set for overview page id ${contentId}`);
+                return [];
+            }
+
+            const productList = getAllProducts(language || 'no', overviewType);
             return productList;
         },
     };
