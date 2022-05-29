@@ -2,6 +2,8 @@ import contentLib, { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
+import { contentStudioEditPathPrefix } from '../../lib/constants';
+import { customSelectorHitWithLink } from '../service-utils';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
@@ -10,11 +12,15 @@ type Params = {
     detailType: ProductDetailsType;
 } & XP.CustomSelectorServiceRequestParams;
 
-const transformHit = (content: Content<'no.nav.navno:product-details'>): SelectorHit => ({
-    id: content._id,
-    displayName: content.displayName,
-    description: `[Språk: ${content.language}] ${stripPathPrefix(content._path)}`,
-});
+const transformHit = (content: Content<'no.nav.navno:product-details'>): SelectorHit =>
+    customSelectorHitWithLink(
+        {
+            id: content._id,
+            displayName: content.displayName,
+            description: `[${content.language}] ${stripPathPrefix(content._path)}`,
+        },
+        `${contentStudioEditPathPrefix}/${content._id}`
+    );
 
 const getHitsWithQuery = (
     detailType: ProductDetailsType,

@@ -13,7 +13,9 @@ export type GuillotineUnresolvedComponentType = { type: ComponentType; path: str
 const contentTypesWithComponents = stringArrayToSet(_contentTypesWithComponents);
 
 // The product-details part requires an additional query to retrieve the components
-// to render in the part
+// to render in the part.
+// TODO: when server-components in react/next reach a more mature state, see if this
+// can be refactored into a separate call/query from the frontend
 const handleProductDetailsPart = (
     components: GuillotineComponent[],
     contentQueryResult: any,
@@ -37,16 +39,16 @@ const handleProductDetailsPart = (
                 return;
             }
 
-            const detailId = contentQueryResult.data?.[detailType];
-            if (!detailId) {
+            const detailContentId = contentQueryResult.data?.[detailType];
+            if (!detailContentId) {
                 logger.error(`No product detail id specified - Base content id ${baseContentId}`);
                 return;
             }
 
-            const detailBaseContent = contentLib.get({ key: detailId });
+            const detailBaseContent = contentLib.get({ key: detailContentId });
             if (!detailBaseContent) {
                 logger.error(
-                    `No product detail content found for id ${detailId} - Base content id ${baseContentId}`
+                    `No product detail content found for id ${detailContentId} - Base content id ${baseContentId}`
                 );
                 return;
             }
@@ -54,7 +56,7 @@ const handleProductDetailsPart = (
             const detailContent = runSitecontentGuillotineQuery(detailBaseContent, branch);
             if (!detailContent) {
                 logger.error(
-                    `Product detail content query failed for id ${detailId} - Base content id ${baseContentId}`
+                    `Product detail content query failed for id ${detailContentId} - Base content id ${baseContentId}`
                 );
                 return;
             }
@@ -62,13 +64,13 @@ const handleProductDetailsPart = (
             const detailComponents = detailContent.page?.regions?.main?.components;
             if (!detailComponents) {
                 logger.error(
-                    `No product detail main region components found for id ${detailId} - Base content id ${baseContentId}`
+                    `No product detail main region components found for id ${detailContentId} - Base content id ${baseContentId}`
                 );
                 return;
             }
 
             productDetailsPartConfig.components = detailComponents;
-            productDetailsPartConfig.id = detailId;
+            productDetailsPartConfig.contentId = detailContentId;
         }
     });
 };
