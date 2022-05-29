@@ -18,6 +18,7 @@ import {
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
+import { getProductDetailsUsage } from '../productList/productDetails';
 
 const MAX_DEPTH = 3;
 
@@ -78,9 +79,23 @@ const getGlobalValueReferences = (content: Content) => {
     return references;
 };
 
+const getProductDetailsReferences = (content: Content) => {
+    if (content.type !== 'no.nav.navno:product-details') {
+        return [];
+    }
+
+    const references = getProductDetailsUsage(content);
+
+    logger.info(
+        `Found ${references.length} pages with references to product details id ${content._id}`
+    );
+
+    return references;
+};
+
 // "References" from macros and global value keys does not create explicit references in the content
 // structure. We must use our own implementations to find such references.
-const getLooseReferences = (content: Content | null) => {
+const getCustomReferences = (content: Content | null) => {
     if (!content) {
         return [];
     }
@@ -89,6 +104,7 @@ const getLooseReferences = (content: Content | null) => {
         ...getGlobalValueReferences(content),
         ...getProductCardMacroReferences(content),
         ...getFragmentMacroReferences(content),
+        ...getProductDetailsReferences(content),
     ];
 };
 
@@ -162,7 +178,7 @@ const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]
     const refs = removeDuplicates(
         [
             ...getExplicitReferences(id),
-            ...getLooseReferences(content),
+            ...getCustomReferences(content),
             ...getReferencesFromParent(content),
         ],
         prevReferences
