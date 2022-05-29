@@ -1,5 +1,5 @@
 import contentLib from '/lib/xp/content';
-import { AnimatedIcons } from 'site/content-types/animated-icons/animated-icons';
+import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 
 export const getProductIllustrationIcons = (product: any) => {
     const illustrationId = product?.data?.illustration;

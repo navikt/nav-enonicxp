@@ -1,6 +1,6 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
-import { contentTypesWithComponents } from '../../contenttype-lists';
+import { contentTypesWithComponents as _contentTypesWithComponents } from '../../contenttype-lists';
 import { stringArrayToSet } from '../../utils/nav-utils';
 import { ComponentType } from '../../../types/components/component-config';
 import { buildPageComponentTree, GuillotineComponent } from '../utils/process-components';
@@ -10,12 +10,7 @@ import { logger } from '../../utils/logging';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 
-const contentTypesWithComponentsSet = stringArrayToSet(contentTypesWithComponents);
-
-const contentTypesWithProductDetails = stringArrayToSet([
-    'no.nav.navno:content-page-with-sidemenus',
-    'no.nav.navno:guide-page',
-]);
+const contentTypesWithComponents = stringArrayToSet(_contentTypesWithComponents);
 
 // The product-details part requires an additional query to retrieve the components
 // to render in the part
@@ -73,6 +68,7 @@ const handleProductDetailsPart = (
             }
 
             productDetailsPartConfig.components = detailComponents;
+            productDetailsPartConfig.id = detailId;
         }
     });
 };
@@ -88,15 +84,13 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
 
     // Skip the components query and processing for content types which are not intended for use
     // with components
-    if (!contentTypesWithComponentsSet[baseContent.type]) {
+    if (!contentTypesWithComponents[baseContent.type]) {
         return contentQueryResult;
     }
 
-    if (contentTypesWithProductDetails[baseContent.type]) {
-        // do things
-    }
-
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams);
+
+    handleProductDetailsPart(components, contentQueryResult, branch);
 
     return {
         ...contentQueryResult,
