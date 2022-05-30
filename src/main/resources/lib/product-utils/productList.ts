@@ -40,7 +40,7 @@ const cleanProduct = (
         audience: data.audience,
         language: product.language || 'no',
         taxonomy: forceArray(data.taxonomy),
-        area: data.area,
+        area: forceArray(data.area),
         illustration: {
             data: {
                 icons,

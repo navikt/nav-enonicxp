@@ -20,8 +20,8 @@ export type OverviewPageProductData = {
     ingress: string;
     audience: ProductData['audience'];
     language: string;
-    taxonomy: ProductData['taxonomy'];
-    area: ProductData['area'];
+    taxonomy: ProductData['taxonomy'][];
+    area: ProductData['area'][];
     illustration: {
         data: {
             icons: OverviewPageIllustrationIcon[];

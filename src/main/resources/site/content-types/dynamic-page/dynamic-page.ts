@@ -36,7 +36,7 @@ export interface DynamicPage {
   noindex: boolean;
 
   /**
-   * Skriv inn ønsket url
+   * Skriv inn ønsket kort-url
    */
   customPath?: string;
 }
