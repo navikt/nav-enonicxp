@@ -1,7 +1,7 @@
 import { Content } from '/lib/xp/content';
 import { MediaDescriptor } from '../../types/content-types/content-config';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { contentTypesWithProductDetails as _contentTypesWithProductDetails } from 'lib/contenttype-lists';
+import { contentTypesWithProductDetails as _contentTypesWithProductDetails } from '../contenttype-lists';
 import { stringArrayToSet } from '../utils/nav-utils';
 
 const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductDetails);
