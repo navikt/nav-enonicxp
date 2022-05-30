@@ -2,15 +2,21 @@
     <display-name>Produktdetaljer</display-name>
     <description>Viser valgt produktdetaljer som en del av produktsiden</description>
     <form>
-        <input name="productDetailsTarget" type="ContentSelector">
+        <input name="detailType" type="RadioButton">
             <label>Velg produktdetalj</label>
             <occurrences minimum="1" maximum="1"/>
             <config>
-                <allowContentType>${app}:product-details</allowContentType>
+                <option value="processing_times">Saksbehandlingstider</option>
+                <option value="payout_dates">Utbetalingsdatoer</option>
+                <option value="rates">Satser</option>
             </config>
         </input>
         <mixin name="expandable"/>
         <mixin name="filter-selector"/>
         <mixin name="auth-render-option"/>
     </form>
+    <config>
+        <allow-on-content-type>${app}:content-page-with-sidemenus</allow-on-content-type>
+        <allow-on-content-type>${app}:guide-page</allow-on-content-type>
+    </config>
 </part>

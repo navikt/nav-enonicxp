@@ -14,17 +14,18 @@ import { runInBranchContext } from '../utils/branch-context';
 import {
     productPageContentTypes,
     typesWithDeepReferences as _typesWithDeepReferences,
-    contentTypesWithOverviewPages,
+    contentTypesWithProductDetails,
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
+import { getProductDetailsUsage } from '../product-utils/productDetails';
 
 const MAX_DEPTH = 3;
 
 const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
-const typesWithOverviewPages = stringArrayToSet(contentTypesWithOverviewPages);
+const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
 const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
     _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(
@@ -94,6 +95,20 @@ const getOverviewReferences = (content: Content) => {
     return overviewPages;
 };
 
+const getProductDetailsReferences = (content: Content) => {
+    if (content.type !== 'no.nav.navno:product-details') {
+        return [];
+    }
+
+    const references = getProductDetailsUsage(content);
+
+    logger.info(
+        `Found ${references.length} pages with references to product details id ${content._id}`
+    );
+
+    return references;
+};
+
 // Some content relations are not defined through explicit references in XP. This includes references
 // from macros. We must use our own implementations to find such references.
 const getCustomReferences = (content: Content | null) => {
@@ -106,6 +121,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getProductCardMacroReferences(content),
         ...getFragmentMacroReferences(content),
         ...getOverviewReferences(content),
+        ...getProductDetailsReferences(content),
     ];
 };
 

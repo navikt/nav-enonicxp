@@ -59,6 +59,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${appDescriptor}:content-list`,
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
+    `${appDescriptor}:product-details`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
@@ -79,7 +80,7 @@ export const contentTypesWithComponents: ContentTypeList = [
     'portal:page-template',
 ];
 
-export const contentTypesWithOverviewPages: ContentTypeList = [
+export const contentTypesWithProductDetails: ContentTypeList = [
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
 ];
