@@ -11,8 +11,11 @@
         <mapping controller="/lib/controllers/site-info-controller.js">
             <match>type:'portal:site'</match>
         </mapping>
+        <mapping controller="/lib/controllers/admin-frontend-proxy.js">
+            <match>type:'^(?!portal:page-template).+'</match>
+        </mapping>
     </mappings>
     <processors>
-        <response-processor name="frontend-response-relay"/>
+        <response-processor name="page-template-processor"/>
     </processors>
 </site>
