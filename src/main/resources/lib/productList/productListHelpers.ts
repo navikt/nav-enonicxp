@@ -1,41 +1,45 @@
 import contentLib from '/lib/xp/content';
 import portalLib from '/lib/xp/portal';
-import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
+import { sanitizeText } from '/lib/guillotine/util/naming';
+import { forceArray } from '../utils/nav-utils';
+import { OverviewPageIllustrationIcon } from './productList';
 
 export const getProductIllustrationIcons = (product: any) => {
     const illustrationId = product?.data?.illustration;
-
     if (!illustrationId) {
-        return null;
+        return [];
     }
 
     const illustrationDocument = contentLib.get({ key: illustrationId });
-
-    if (!illustrationDocument) {
-        return null;
+    if (!illustrationDocument || illustrationDocument.type !== 'no.nav.navno:animated-icons') {
+        return [];
     }
 
-    const { icons = [] } = illustrationDocument.data as AnimatedIcons;
+    const icons = forceArray(illustrationDocument.data.icons);
 
-    return icons
-        .filter(({ icon }: any) => !!icon)
-        .map(({ icon }: any) => {
-            const resource = contentLib.get({ key: icon });
+    return icons.reduce((acc, icon) => {
+        if (!icon.icon) {
+            return acc;
+        }
 
-            if (!resource) {
-                return null;
-            }
+        const resource = contentLib.get({ key: icon.icon });
+        if (!resource) {
+            return acc;
+        }
 
-            const mediaUrl = portalLib.attachmentUrl({
-                id: resource._id,
-                download: true
-              });
+        const mediaUrl = portalLib.attachmentUrl({
+            id: resource._id,
+            download: false,
+        });
 
-            return {
+        return [
+            ...acc,
+            {
                 icon: {
-                    _type: 'media_Vector',
+                    __typename: sanitizeText(resource.type),
                     mediaUrl,
                 },
-            };
-        });
+            },
+        ];
+    }, [] as OverviewPageIllustrationIcon[]);
 };

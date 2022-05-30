@@ -4,16 +4,46 @@ import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
 import { contentTypesWithOverviewPages } from '../contenttype-lists';
+import { ProductData } from '../../site/mixins/product-data/product-data';
+import { PortalComponent } from '../../types/components/component-portal';
+import { MediaDescriptor } from '../../types/content-types/content-config';
 
-const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
+export type OverviewPageIllustrationIcon = {
+    icon: {
+        __typename: MediaDescriptor;
+        mediaUrl: string;
+    };
+};
+
+export type OverviewPageProductData = {
+    _id: string;
+    productDetailsPath: string;
+    title: string;
+    ingress: string;
+    audience: ProductData['audience'];
+    language: string;
+    taxonomy: ProductData['taxonomy'];
+    area: ProductData['area'];
+    page: PortalComponent<'page'>;
+    illustration: {
+        data: {
+            icons: OverviewPageIllustrationIcon[];
+        };
+    };
+};
+
+const cleanProduct = (
+    product: any,
+    overviewType: Overview['overviewType']
+): OverviewPageProductData | null => {
     const detailsContentId = product.data[overviewType];
     if (!detailsContentId) {
         logger.info(`No product details set for content ${product._id} with type ${overviewType}`);
         return null;
     }
 
-    const productDetailsPath = contentLib.get({ key: detailsContentId });
-    if (!productDetailsPath) {
+    const productDetails = contentLib.get({ key: detailsContentId });
+    if (!productDetails) {
         logger.info(
             `Product details with id ${detailsContentId} and type ${overviewType} not found for content id ${product._id}`
         );
@@ -24,7 +54,7 @@ const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
 
     return {
         _id: product._id,
-        productDetailsPath,
+        productDetailsPath: productDetails._path,
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
         audience: product.data.audience,
@@ -41,25 +71,30 @@ const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
 };
 
 export const getAllProducts = (language: string, overviewType: Overview['overviewType']) => {
-    const products = contentLib
-        .query({
-            start: 0,
-            count: 1000,
-            contentTypes: contentTypesWithOverviewPages,
-            filters: {
-                boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'language',
-                            values: [language],
-                        },
+    const products = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: contentTypesWithOverviewPages,
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'language',
+                        values: [language],
                     },
                 },
             },
-        })
-        .hits.map((product) => cleanProduct(product, overviewType))
-        .filter(Boolean)
-        .sort((a, b) => a?.title.localeCompare(b?.title));
+        },
+    }).hits;
 
-    return products;
+    return products
+        .reduce((acc, content) => {
+            const productData = cleanProduct(content, overviewType);
+            if (!productData) {
+                return acc;
+            }
+
+            return [...acc, productData];
+        }, [] as OverviewPageProductData[])
+        .sort((a, b) => a?.title.localeCompare(b?.title));
 };
