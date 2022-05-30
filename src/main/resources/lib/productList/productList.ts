@@ -39,7 +39,7 @@ const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
 
     // TODO: handle this (preferably prevent the possibility)
     if (productDetailsPaths.length > 1) {
-        logger.critical(`Found more than 1 entry for product details!`);
+        logger.warning(`Found more than 1 entry for product details!`);
     }
 
     return {
