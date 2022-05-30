@@ -1,12 +1,12 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { getAllProducts } from '../../../product-utils/productList';
+import { logger } from '../../../utils/logging';
 import {
-    getAllProducts,
     OverviewPageIllustrationIcon,
     OverviewPageProductData,
-} from '../../../productList/productList';
-import { logger } from '../../../utils/logging';
+} from '../../../product-utils/types';
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlCreateObjectType(context, {

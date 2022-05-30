@@ -2,7 +2,7 @@ import contentLib from '/lib/xp/content';
 import portalLib from '/lib/xp/portal';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { forceArray } from '../utils/nav-utils';
-import { OverviewPageIllustrationIcon } from './productList';
+import { OverviewPageIllustrationIcon } from './types';
 
 export const getProductIllustrationIcons = (product: any) => {
     const illustrationId = product?.data?.illustration;

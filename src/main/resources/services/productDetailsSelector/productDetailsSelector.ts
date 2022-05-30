@@ -4,7 +4,7 @@ import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-util
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
-import { getProductDetailsUsage } from '../../lib/productList/productDetails';
+import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
 
 type ProductDetailsType = ProductDetails['detailType'];

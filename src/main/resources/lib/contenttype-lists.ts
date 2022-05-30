@@ -80,7 +80,7 @@ export const contentTypesWithComponents: ContentTypeList = [
     'portal:page-template',
 ];
 
-export const contentTypesWithOverviewPages: ContentTypeList = [
+export const contentTypesWithProductDetails: ContentTypeList = [
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
 ];

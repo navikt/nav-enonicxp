@@ -4,21 +4,9 @@ import { RepoBranch } from '../../../types/common';
 import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';
 import { runSitecontentGuillotineQuery } from './run-sitecontent-query';
+import { isContentWithProductDetails } from '../../product-utils/types';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
-
-type ContentTypeWithProductDetails =
-    | 'no.nav.navno:content-page-with-sidemenus'
-    | 'no.nav.navno:guide-page';
-
-const isContentWithProductDetails = (
-    content: Content
-): content is Content<ContentTypeWithProductDetails> => {
-    return (
-        content.type === 'no.nav.navno:content-page-with-sidemenus' ||
-        content.type === 'no.nav.navno:guide-page'
-    );
-};
 
 const handleProductDetailsPart = (
     component: GuillotineComponent,
@@ -88,6 +76,7 @@ export const guillotineTransformSpecialComponents = ({
     components,
     baseContent,
     branch,
+    // pass this as an arg rather than import, as nashorn stack overflows on cyclic dependencies
     runSitecontentGuillotineQuery,
 }: {
     components: GuillotineComponent[];

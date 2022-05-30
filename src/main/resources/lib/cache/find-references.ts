@@ -14,18 +14,18 @@ import { runInBranchContext } from '../utils/branch-context';
 import {
     productPageContentTypes,
     typesWithDeepReferences as _typesWithDeepReferences,
-    contentTypesWithOverviewPages,
+    contentTypesWithProductDetails,
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
-import { getProductDetailsUsage } from '../productList/productDetails';
+import { getProductDetailsUsage } from '../product-utils/productDetails';
 
 const MAX_DEPTH = 3;
 
 const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
-const typesWithOverviewPages = stringArrayToSet(contentTypesWithOverviewPages);
+const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
 const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
     _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(

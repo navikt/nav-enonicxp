@@ -1,41 +1,19 @@
-import contentLib from '/lib/xp/content';
+import contentLib, { Content } from '/lib/xp/content';
 import { forceArray } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
-import { contentTypesWithOverviewPages } from '../contenttype-lists';
-import { ProductData } from '../../site/mixins/product-data/product-data';
-import { PortalComponent } from '../../types/components/component-portal';
-import { MediaDescriptor } from '../../types/content-types/content-config';
-
-export type OverviewPageIllustrationIcon = {
-    icon: {
-        __typename: MediaDescriptor;
-        mediaUrl: string;
-    };
-};
-
-export type OverviewPageProductData = {
-    _id: string;
-    productDetailsPath: string;
-    title: string;
-    ingress: string;
-    audience: ProductData['audience'];
-    language: string;
-    taxonomy: ProductData['taxonomy'];
-    area: ProductData['area'];
-    page: PortalComponent<'page'>;
-    illustration: {
-        data: {
-            icons: OverviewPageIllustrationIcon[];
-        };
-    };
-};
+import { contentTypesWithProductDetails } from '../contenttype-lists';
+import { isContentWithProductDetails, OverviewPageProductData } from './types';
 
 const cleanProduct = (
-    product: any,
+    product: Content,
     overviewType: Overview['overviewType']
 ): OverviewPageProductData | null => {
+    if (!isContentWithProductDetails(product)) {
+        return null;
+    }
+
     const detailsContentId = product.data[overviewType];
     if (!detailsContentId) {
         return null;
@@ -51,16 +29,18 @@ const cleanProduct = (
 
     const icons = getProductIllustrationIcons(product);
 
+    // Generated type definitions are incorrect due to nested mixins
+    const data = product.data as any;
+
     return {
         _id: product._id,
         productDetailsPath: productDetails._path,
-        title: product.data.title || product.displayName,
-        ingress: product.data.ingress,
-        audience: product.data.audience,
-        language: product.language,
-        taxonomy: forceArray(product.data.taxonomy),
-        area: product.data.area,
-        page: product.page,
+        title: data.title || product.displayName,
+        ingress: data.ingress,
+        audience: data.audience,
+        language: product.language || 'no',
+        taxonomy: forceArray(data.taxonomy),
+        area: data.area,
         illustration: {
             data: {
                 icons,
@@ -73,7 +53,7 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
     const products = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: contentTypesWithOverviewPages,
+        contentTypes: contentTypesWithProductDetails,
         filters: {
             boolean: {
                 must: {
