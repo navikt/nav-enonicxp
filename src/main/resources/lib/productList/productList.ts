@@ -38,13 +38,12 @@ const cleanProduct = (
 ): OverviewPageProductData | null => {
     const detailsContentId = product.data[overviewType];
     if (!detailsContentId) {
-        logger.info(`No product details set for content ${product._id} with type ${overviewType}`);
         return null;
     }
 
     const productDetails = contentLib.get({ key: detailsContentId });
     if (!productDetails) {
-        logger.info(
+        logger.warning(
             `Product details with id ${detailsContentId} and type ${overviewType} not found for content id ${product._id}`
         );
         return null;

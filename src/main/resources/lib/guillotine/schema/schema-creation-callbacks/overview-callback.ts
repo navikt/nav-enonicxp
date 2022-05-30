@@ -1,7 +1,11 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { getAllProducts } from '../../../productList/productList';
+import {
+    getAllProducts,
+    OverviewPageIllustrationIcon,
+    OverviewPageProductData,
+} from '../../../productList/productList';
 import { logger } from '../../../utils/logging';
 
 export const overviewCallback: CreationCallback = (context, params) => {
@@ -11,7 +15,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         fields: {
             __typename: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
-        },
+        } as Record<keyof OverviewPageIllustrationIcon['icon'], any>,
     });
 
     const icon = graphQlCreateObjectType(context, {
@@ -51,7 +55,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.GraphQLString },
             illustration: { type: illustration },
-        },
+        } as Record<keyof OverviewPageProductData, any>,
     });
 
     params.fields.productList = {
