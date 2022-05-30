@@ -1,9 +1,19 @@
+import portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { urls } from '../constants';
-import { stripPathPrefix } from '../utils/nav-utils';
+import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
+import { contentTypesRenderedByEditorFrontend } from '../contenttype-lists';
 
 const loopbackCheckParam = 'fromXp';
+
+const contentTypesForFrontendProxy = stringArrayToSet(contentTypesRenderedByEditorFrontend);
+
+const noRenderResponse = (): XP.Response => ({
+    status: 200,
+    contentType: 'text/html; charset=UTF-8',
+    body: '<div style="text-align: center;font-size: 2rem"><span>Ingen forhåndsvisning tilgjengelig for denne innholdstypen</span></div>',
+});
 
 const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
@@ -35,6 +45,11 @@ export const adminFrontendProxy = (req: XP.Request) => {
             body: `<div>Error: request to frontend looped back to XP</div>`,
             status: 200,
         };
+    }
+
+    const content = portalLib.getContent();
+    if (!contentTypesForFrontendProxy[content.type]) {
+        return noRenderResponse();
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
