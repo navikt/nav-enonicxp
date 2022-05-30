@@ -5,6 +5,15 @@
                 <mixin name="page-header"/>
                 <mixin name="ingress-required" />
                 <mixin name="audience" />
+                <input name="overviewType" type="ComboBox">
+                    <label>Type oversiktsside</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="rates">Satser</option>
+                        <option value="payout_dates">Utbetalingdatoer</option>
+                        <option value="processing_times">Saksbehandlingstider</option>
+                    </config>
+                </input>
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>

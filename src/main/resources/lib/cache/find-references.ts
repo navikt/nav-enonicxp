@@ -14,6 +14,7 @@ import { runInBranchContext } from '../utils/branch-context';
 import {
     productPageContentTypes,
     typesWithDeepReferences as _typesWithDeepReferences,
+    contentTypesWithOverviewPages,
 } from '../contenttype-lists';
 import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
@@ -24,6 +25,7 @@ const MAX_DEPTH = 3;
 
 const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
+const typesWithOverviewPages = stringArrayToSet(contentTypesWithOverviewPages);
 
 const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
     _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(
@@ -79,6 +81,20 @@ const getGlobalValueReferences = (content: Content) => {
     return references;
 };
 
+const getOverviewReferences = (content: Content) => {
+    if (!typesWithOverviewPages[content.type]) {
+        return [];
+    }
+
+    const overviewPages = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:overview'],
+    }).hits;
+
+    return overviewPages;
+};
+
 const getProductDetailsReferences = (content: Content) => {
     if (content.type !== 'no.nav.navno:product-details') {
         return [];
@@ -93,8 +109,8 @@ const getProductDetailsReferences = (content: Content) => {
     return references;
 };
 
-// "References" from macros and global value keys does not create explicit references in the content
-// structure. We must use our own implementations to find such references.
+// Some content relations are not defined through explicit references in XP. This includes references
+// from macros. We must use our own implementations to find such references.
 const getCustomReferences = (content: Content | null) => {
     if (!content) {
         return [];
@@ -104,6 +120,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getGlobalValueReferences(content),
         ...getProductCardMacroReferences(content),
         ...getFragmentMacroReferences(content),
+        ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
     ];
 };

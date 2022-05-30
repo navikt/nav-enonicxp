@@ -1,4 +1,5 @@
 import contentLib from '/lib/xp/content';
+import portalLib from '/lib/xp/portal';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 
 export const getProductIllustrationIcons = (product: any) => {
@@ -25,10 +26,15 @@ export const getProductIllustrationIcons = (product: any) => {
                 return null;
             }
 
+            const mediaUrl = portalLib.attachmentUrl({
+                id: resource._id,
+                download: true
+              });
+
             return {
                 icon: {
                     _type: 'media_Vector',
-                    mediaUrl: resource._path.toString(),
+                    mediaUrl,
                 },
             };
         });

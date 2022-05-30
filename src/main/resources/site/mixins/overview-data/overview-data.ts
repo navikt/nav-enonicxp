@@ -21,6 +21,11 @@ export interface OverviewData {
   audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
+   * Type oversiktsside
+   */
+  overviewType: "rates" | "payout_dates" | "processing_times";
+
+  /**
    * Skriv inn ønsket url
    */
   customPath: string;

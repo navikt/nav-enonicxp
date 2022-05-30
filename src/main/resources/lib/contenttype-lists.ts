@@ -74,10 +74,15 @@ export const contentTypesWithBreadcrumbs: ContentTypeList = [
     `${appDescriptor}:publishing-calendar`,
 ];
 
-export const contentTypesWithComponents = [
+export const contentTypesWithComponents: ContentTypeList = [
     ...dynamicPageContentTypes,
     `${appDescriptor}:product-details`,
     'portal:page-template',
+];
+
+export const contentTypesWithOverviewPages: ContentTypeList = [
+    `${appDescriptor}:guide-page`,
+    `${appDescriptor}:content-page-with-sidemenus`,
 ];
 
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
