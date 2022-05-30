@@ -3,14 +3,20 @@ import { ProductDetails } from '../../site/content-types/product-details/product
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
-import { customSelectorHitWithLink } from '../service-utils';
+import { customSelectorHitWithLink, getSubPath } from '../service-utils';
+import { getProductDetailsUsage } from '../../lib/productList/productDetails';
+import { logger } from '../../lib/utils/logging';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
-type Params = {
+type SelectorParams = {
     detailType: ProductDetailsType;
 } & XP.CustomSelectorServiceRequestParams;
+
+type UsageCheckParams = {
+    id: string;
+};
 
 const transformHit = (content: Content<'no.nav.navno:product-details'>): SelectorHit =>
     customSelectorHitWithLink(
@@ -51,8 +57,34 @@ const getHitsWithQuery = (
     return hits.map(transformHit);
 };
 
-export const get = (req: XP.Request) => {
-    const { detailType, query, ids } = req.params as Params;
+const usageCheckHandler = (req: XP.Request) => {
+    const { id } = req.params as UsageCheckParams;
+
+    const detailsContent = contentLib.get({ key: id });
+    if (!detailsContent || detailsContent.type !== 'no.nav.navno:product-details') {
+        logger.warning(`Product details usage check for id ${id} failed - content does not exist`);
+        return {
+            status: 404,
+            contentType: 'application/json',
+            body: {
+                usage: [],
+            },
+        };
+    }
+
+    const contentWithDetails = getProductDetailsUsage(detailsContent);
+
+    return {
+        status: 200,
+        contentType: 'application/json',
+        body: {
+            usage: contentWithDetails,
+        },
+    };
+};
+
+const selectorHandler = (req: XP.Request) => {
+    const { detailType, query, ids } = req.params as SelectorParams;
 
     const hits = runInBranchContext(() => getHitsWithQuery(detailType, query, ids), 'master');
 
@@ -65,4 +97,14 @@ export const get = (req: XP.Request) => {
             total: hits.length,
         },
     };
+};
+
+export const get = (req: XP.Request) => {
+    const subPath = getSubPath(req);
+
+    if (subPath === 'usage') {
+        return usageCheckHandler(req);
+    }
+
+    return selectorHandler(req);
 };
