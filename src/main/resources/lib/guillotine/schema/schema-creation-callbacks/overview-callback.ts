@@ -1,21 +1,20 @@
-import { CreationCallback } from '../../utils/creation-callback-utils';
-
-// const contentLib = require('/lib/xp/content');
-const graphQlLib = require('/lib/guillotine/graphql.js');
-
-const { getAllProducts } = require('../../../productList/productList');
+import contentLib from '/lib/xp/content';
+import graphQlLib from '/lib/graphql';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { getAllProducts } from '../../../productList/productList';
+import { logger } from '../../../utils/logging';
 
 export const overviewCallback: CreationCallback = (context, params) => {
-    const xpImage = graphQlLib.createObjectType(context, {
+    const xpImage = graphQlCreateObjectType(context, {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
         fields: {
-            _type: { type: graphQlLib.GraphQLString },
+            __typename: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
         },
     });
 
-    const icon = graphQlLib.createObjectType(context, {
+    const icon = graphQlCreateObjectType(context, {
         name: context.uniqueName('Icon'),
         description: 'Icon',
         fields: {
@@ -23,7 +22,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const icons = graphQlLib.createObjectType(context, {
+    const icons = graphQlCreateObjectType(context, {
         name: context.uniqueName('Icons'),
         description: 'Icons',
         fields: {
@@ -31,7 +30,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const illustration = graphQlLib.createObjectType(context, {
+    const illustration = graphQlCreateObjectType(context, {
         name: context.uniqueName('Illustration'),
         description: 'Illustration',
         fields: {
@@ -39,12 +38,12 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const productType = graphQlLib.createObjectType(context, {
+    const productType = graphQlCreateObjectType(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
-            _id: { type: graphQlLib.GraphQLString },
-            path: { type: graphQlLib.GraphQLString },
+            _id: { type: graphQlLib.GraphQLID },
+            productDetailsPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
             language: { type: graphQlLib.GraphQLString },
             ingress: { type: graphQlLib.GraphQLString },
@@ -56,9 +55,30 @@ export const overviewCallback: CreationCallback = (context, params) => {
     });
 
     params.fields.productList = {
+        args: { contentId: graphQlLib.GraphQLID },
         type: graphQlLib.list(productType),
-        resolve: () => {
-            const productList = getAllProducts('no');
+        resolve: (env) => {
+            const { contentId } = env.args;
+            if (!contentId) {
+                logger.error('No contentId provided for overview-page resolver');
+                return [];
+            }
+
+            const content = contentLib.get({ key: contentId });
+            if (content?.type !== 'no.nav.navno:overview') {
+                logger.error(`Content not found for overview page id ${contentId}`);
+                return [];
+            }
+
+            const { language, data } = content;
+            const { overviewType } = data;
+
+            if (!overviewType) {
+                logger.error(`Type not set for overview page id ${contentId}`);
+                return [];
+            }
+
+            const productList = getAllProducts(language || 'no', overviewType);
             return productList;
         },
     };

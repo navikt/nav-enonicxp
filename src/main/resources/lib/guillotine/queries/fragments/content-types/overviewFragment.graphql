@@ -6,9 +6,9 @@ fragment contentOverviewPage on no_nav_navno_Overview {
         languages {
             ...languagesMixin
         }
-        productList {
+        productList(contentId: $ref) {
             _id
-            path
+            productDetailsPath
             title
             ingress
             taxonomy
