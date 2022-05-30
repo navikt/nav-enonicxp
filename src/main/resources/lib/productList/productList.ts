@@ -6,45 +6,25 @@ import { Overview } from '../../site/content-types/overview/overview';
 import { contentTypesWithOverviewPages } from '../contenttype-lists';
 
 const cleanProduct = (product: any, overviewType: Overview['overviewType']) => {
-    const icons = getProductIllustrationIcons(product);
-
-    const productDetailsPaths = contentLib
-        .query({
-            count: 100,
-            contentTypes: ['no.nav.navno:product-details'],
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: 'data.pageUsageReference',
-                                values: [product._id],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: 'data.detailType',
-                                values: [overviewType],
-                            },
-                        },
-                    ],
-                },
-            },
-        })
-        .hits.map((hit) => hit._path);
-
-    if (productDetailsPaths.length === 0) {
+    const detailsContentId = product.data[overviewType];
+    if (!detailsContentId) {
+        logger.info(`No product details set for content ${product._id} with type ${overviewType}`);
         return null;
     }
 
-    // TODO: handle this (preferably prevent the possibility)
-    if (productDetailsPaths.length > 1) {
-        logger.warning(`Found more than 1 entry for product details!`);
+    const productDetailsPath = contentLib.get({ key: detailsContentId });
+    if (!productDetailsPath) {
+        logger.info(
+            `Product details with id ${detailsContentId} and type ${overviewType} not found for content id ${product._id}`
+        );
+        return null;
     }
+
+    const icons = getProductIllustrationIcons(product);
 
     return {
         _id: product._id,
-        productDetailsPath: productDetailsPaths[0],
+        productDetailsPath,
         title: product.data.title || product.displayName,
         ingress: product.data.ingress,
         audience: product.data.audience,
