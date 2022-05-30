@@ -4,7 +4,12 @@ import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
-import { isContentWithProductDetails, OverviewPageProductData } from './types';
+import {
+    ContentTypeWithProductDetails,
+    isContentWithProductDetails,
+    OverviewPageProductData,
+} from './types';
+import { ProductData } from '../../site/mixins/product-data/product-data';
 
 const cleanProduct = (
     product: Content,
@@ -30,7 +35,7 @@ const cleanProduct = (
     const icons = getProductIllustrationIcons(product);
 
     // Generated type definitions are incorrect due to nested mixins
-    const data = product.data as any;
+    const data = product.data as Content<ContentTypeWithProductDetails>['data'] & ProductData;
 
     return {
         _id: product._id,
@@ -40,7 +45,7 @@ const cleanProduct = (
         audience: data.audience,
         language: product.language || 'no',
         taxonomy: forceArray(data.taxonomy),
-        area: data.area,
+        area: forceArray(data.area),
         illustration: {
             data: {
                 icons,

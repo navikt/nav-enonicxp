@@ -26,7 +26,7 @@ export interface OverviewData {
   overviewType: "rates" | "payout_dates" | "processing_times";
 
   /**
-   * Skriv inn ønsket url
+   * Skriv inn ønsket kort-url
    */
   customPath: string;
 }

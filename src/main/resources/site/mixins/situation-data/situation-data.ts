@@ -36,7 +36,7 @@ export interface SituationData {
   externalProductUrl?: string;
 
   /**
-   * Skriv inn ønsket url
+   * Skriv inn ønsket kort-url
    */
   customPath: string;
 }

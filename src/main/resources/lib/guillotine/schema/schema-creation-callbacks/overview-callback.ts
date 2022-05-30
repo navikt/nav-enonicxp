@@ -53,7 +53,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
             ingress: { type: graphQlLib.GraphQLString },
             audience: { type: graphQlLib.GraphQLString },
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
-            area: { type: graphQlLib.GraphQLString },
+            area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             illustration: { type: illustration },
         } as Record<keyof OverviewPageProductData, any>,
     });
