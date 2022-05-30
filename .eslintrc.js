@@ -1,4 +1,15 @@
-{
+const enonicLibraryImports = [
+    "^/lib/xp",
+    "^/lib/http-client",
+    "^/lib/cache",
+    "^/lib/thymeleaf",
+    "^/lib/guillotine",
+    "^/lib/graphql",
+    "^/lib/graphql-rx",
+    "^/assets"
+]
+
+module.exports = {
     "extends": [
         "prettier",
         "eslint:recommended",
@@ -18,20 +29,16 @@
         "dot-notation": "off",
         "func-names": "off",
         "global-require": "off",
-        "import/no-absolute-path": "off",
+        "import/no-absolute-path": [
+            "error",
+            {
+                "ignore": enonicLibraryImports
+            }
+        ],
         "import/no-unresolved": [
             "error",
             {
-                "ignore": [
-                    "^/lib/xp",
-                    "^/lib/http-client",
-                    "^/lib/cache",
-                    "^/lib/thymeleaf",
-                    "^/lib/guillotine",
-                    "^/lib/graphql",
-                    "^/lib/graphql-rx",
-                    "^/assets"
-                ]
+                "ignore": enonicLibraryImports
             }
         ],
         "no-case-declarations": "off",
