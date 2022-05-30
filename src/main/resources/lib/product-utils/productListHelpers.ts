@@ -1,11 +1,12 @@
-import contentLib from '/lib/xp/content';
+import contentLib, { Content } from '/lib/xp/content';
 import portalLib from '/lib/xp/portal';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { forceArray } from '../utils/nav-utils';
-import { OverviewPageIllustrationIcon } from './types';
+import { ContentTypeWithProductDetails, OverviewPageIllustrationIcon } from './types';
 
-export const getProductIllustrationIcons = (product: any) => {
-    const illustrationId = product?.data?.illustration;
+export const getProductIllustrationIcons = (product: Content<ContentTypeWithProductDetails>) => {
+    // Generated type definitions are incorrect due to nested mixins
+    const illustrationId = (product?.data as any)?.illustration;
     if (!illustrationId) {
         return [];
     }
