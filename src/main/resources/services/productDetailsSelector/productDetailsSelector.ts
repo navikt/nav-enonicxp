@@ -3,7 +3,7 @@ import { ProductDetails } from '../../site/content-types/product-details/product
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
-import { customSelectorHitWithLink, getSubPath } from '../service-utils';
+import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/productList/productDetails';
 import { logger } from '../../lib/utils/logging';
 
@@ -72,13 +72,13 @@ const usageCheckHandler = (req: XP.Request) => {
         };
     }
 
-    const contentWithDetails = getProductDetailsUsage(detailsContent);
+    const usageHits = getProductDetailsUsage(detailsContent).map(transformUsageHit);
 
     return {
         status: 200,
         contentType: 'application/json',
         body: {
-            usage: contentWithDetails,
+            usage: usageHits,
         },
     };
 };
