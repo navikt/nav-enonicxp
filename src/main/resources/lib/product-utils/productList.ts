@@ -75,5 +75,5 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
 
             return [...acc, productData];
         }, [] as OverviewPageProductData[])
-        .sort((a, b) => a?.title.localeCompare(b?.title));
+        .sort((a, b) => a.title.localeCompare(b.title));
 };
