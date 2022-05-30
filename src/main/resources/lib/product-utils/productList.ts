@@ -20,7 +20,7 @@ const cleanProduct = (
     }
 
     const productDetails = contentLib.get({ key: detailsContentId });
-    if (!productDetails) {
+    if (!productDetails || productDetails.type !== 'no.nav.navno:product-details') {
         logger.warning(
             `Product details with id ${detailsContentId} and type ${overviewType} not found for content id ${product._id}`
         );
