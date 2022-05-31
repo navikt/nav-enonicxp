@@ -34,6 +34,5 @@ export const contentRepo = 'com.enonic.cms.default';
 export const redirectsRootPath = '/redirects';
 export const navnoRootPath = '/www.nav.no';
 export const frontendAppName = 'nav-enonicxp-frontend';
-// TODO: remove the "#" after upgrade to CS 4.1
 export const contentStudioEditPathPrefix =
-    '/admin/tool/com.enonic.app.contentstudio/main#/default/edit';
+    '/admin/tool/com.enonic.app.contentstudio/main/default/edit';
