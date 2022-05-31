@@ -14,6 +14,7 @@
                         <option value="processing_times">Saksbehandlingstider</option>
                     </config>
                 </input>
+                <mixin name="illustration" />
                 <mixin name="custom-path-selector-required"/>
             </items>
         </field-set>

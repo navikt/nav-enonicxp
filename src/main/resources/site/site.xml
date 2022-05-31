@@ -12,7 +12,7 @@
             <match>type:'portal:site'</match>
         </mapping>
         <mapping controller="/lib/controllers/admin-frontend-proxy.js">
-            <match>type:'^(?!portal:page-template).+'</match>
+            <match>type:'^(?!(portal:page-template)|(media:.+)).+'</match>
         </mapping>
     </mappings>
     <processors>
