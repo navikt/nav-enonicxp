@@ -31,7 +31,8 @@ export type OverviewPageProductData = {
 
 export type ContentTypeWithProductDetails =
     | 'no.nav.navno:content-page-with-sidemenus'
-    | 'no.nav.navno:guide-page';
+    | 'no.nav.navno:guide-page'
+    | 'no.nav.navno:themed-article-page';
 
 export const isContentWithProductDetails = (
     content: Content
