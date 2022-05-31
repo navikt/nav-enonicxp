@@ -23,7 +23,6 @@ export const getSubPath = (req: XP.Request) =>
 // If no icon was provided with the selector hit, use this as default
 // (edit/pencil icon from nav-ds)
 const defaultIcon =
-    '' +
     '<svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img">' +
     '<path' +
     ' fill-rule="evenodd"' +
@@ -33,8 +32,11 @@ const defaultIcon =
     '</path>' +
     '</svg>';
 
+// We can't use target or onclick to make the link open in a new tab, as content studio removes
+// these attributes when parsing the dom elements from the customselector icon. We set a classname
+// instead and work around this in the frontend.
 const iconWithLink = (href: string, iconData: string = defaultIcon) => {
-    return `<a href="${href}" onclick='(e) => {e.preventDefault();window.open(${href}, "_blank")}'>${iconData}</a>`;
+    return `<a href="${href}" class="custom-selector-link">${iconData}</a>`;
 };
 
 // Injects a link in the optional icon field of a customselector hit object
