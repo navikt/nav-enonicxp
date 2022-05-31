@@ -82,6 +82,7 @@ export const contentTypesWithComponents: ContentTypeList = [
 
 export const contentTypesWithProductDetails: ContentTypeList = [
     `${appDescriptor}:guide-page`,
+    `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
 ];
 
