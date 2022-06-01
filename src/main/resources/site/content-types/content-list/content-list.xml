@@ -25,6 +25,7 @@
                         <allowContentType>${app}:tools-page</allowContentType>
                         <allowContentType>${app}:guide-page</allowContentType>
                         <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
                     </config>
                 </input>
             </items>
