@@ -18,33 +18,38 @@ const handleProductDetailsPart = (
 
     if (!isContentWithProductDetails(baseContent)) {
         logger.error(
-            `Base content is not a valid type for product details - Base content id ${baseContentId}`
+            `Base content is not a valid type for product details - Base content id ${baseContentId}`,
+            true
         );
         return;
     }
 
     const productDetailsPartConfig = component.part.config?.no_nav_navno?.product_details;
     if (!productDetailsPartConfig) {
-        logger.error(`Product detail part is not configured - Base content id ${baseContentId}`);
+        logger.error(
+            `Product detail part is not configured - Base content id ${baseContentId}`,
+            true
+        );
         return;
     }
 
     const detailType = productDetailsPartConfig.detailType;
     if (!detailType) {
-        logger.error(`No product detail type specified - Base content id ${baseContentId}`);
+        logger.error(`No product detail type specified - Base content id ${baseContentId}`, true);
         return;
     }
 
     const detailContentId = baseContent.data?.[detailType as ProductDetails['detailType']];
     if (!detailContentId) {
-        logger.error(`No product detail id specified - Base content id ${baseContentId}`);
+        logger.error(`No product detail id specified - Base content id ${baseContentId}`, true);
         return;
     }
 
     const detailBaseContent = contentLib.get({ key: detailContentId });
     if (!detailBaseContent) {
         logger.error(
-            `No product detail content found for id ${detailContentId} - Base content id ${baseContentId}`
+            `No product detail content found for id ${detailContentId} - Base content id ${baseContentId}`,
+            true
         );
         return;
     }
@@ -52,7 +57,8 @@ const handleProductDetailsPart = (
     const detailContent = runSitecontentGuillotineQuery(detailBaseContent, branch);
     if (!detailContent) {
         logger.error(
-            `Product detail content query failed for id ${detailContentId} - Base content id ${baseContentId}`
+            `Product detail content query failed for id ${detailContentId} - Base content id ${baseContentId}`,
+            true
         );
         return;
     }
@@ -60,7 +66,8 @@ const handleProductDetailsPart = (
     const detailComponents = detailContent.page?.regions?.main?.components;
     if (!detailComponents) {
         logger.error(
-            `No product detail main region components found for id ${detailContentId} - Base content id ${baseContentId}`
+            `No product detail main region components found for id ${detailContentId} - Base content id ${baseContentId}`,
+            true
         );
         return;
     }
