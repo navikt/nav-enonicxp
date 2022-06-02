@@ -26,6 +26,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -53,6 +54,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -79,6 +81,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -105,6 +108,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -140,6 +144,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -166,6 +171,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -192,6 +198,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -218,6 +225,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -244,6 +252,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>
@@ -270,6 +279,7 @@
                                 <allowContentType>${app}:tools-page</allowContentType>
                                 <allowContentType>${app}:guide-page</allowContentType>
                                 <allowContentType>${app}:themed-article-page</allowContentType>
+                                <allowContentType>${app}:overview</allowContentType>
                                 <allowContentType>media:*</allowContentType>
                                 <showStatus>true</showStatus>
                             </config>

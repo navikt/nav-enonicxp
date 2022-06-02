@@ -12,6 +12,7 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
+    `${appDescriptor}:melding`,
 ];
 
 export const productPageContentTypes: ContentTypeList = [
@@ -24,8 +25,8 @@ export const productPageContentTypes: ContentTypeList = [
 
 export const dynamicPageContentTypes: ContentTypeList = [
     ...productPageContentTypes,
-    `${appDescriptor}:product-details`,
     `${appDescriptor}:dynamic-page`,
+    `${appDescriptor}:overview`,
 ];
 
 export const linkContentTypes: ContentTypeList = [
@@ -58,6 +59,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${appDescriptor}:content-list`,
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
+    `${appDescriptor}:product-details`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
@@ -72,6 +74,18 @@ export const contentTypesWithBreadcrumbs: ContentTypeList = [
     `${appDescriptor}:publishing-calendar`,
 ];
 
+export const contentTypesWithComponents: ContentTypeList = [
+    ...dynamicPageContentTypes,
+    `${appDescriptor}:product-details`,
+    'portal:page-template',
+];
+
+export const contentTypesWithProductDetails: ContentTypeList = [
+    `${appDescriptor}:guide-page`,
+    `${appDescriptor}:themed-article-page`,
+    `${appDescriptor}:content-page-with-sidemenus`,
+];
+
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
     ...dynamicPageContentTypes,
@@ -83,4 +97,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
+    `${appDescriptor}:product-details`,
+    'portal:page-template',
+    'portal:fragment',
 ];

@@ -6,6 +6,21 @@ export interface ThemedArticlePage {
   customCategory?: string;
 
   /**
+   * Saksbehandlingstider
+   */
+  processing_times?: string;
+
+  /**
+   * Utbetalingsdatoer
+   */
+  payout_dates?: string;
+
+  /**
+   * Satser
+   */
+  rates?: string;
+
+  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string>;

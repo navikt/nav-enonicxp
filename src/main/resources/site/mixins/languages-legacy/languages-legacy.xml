@@ -18,6 +18,7 @@
                         <allowContentType>${app}:guide-page</allowContentType>
                         <allowContentType>${app}:tools-page</allowContentType>
                         <allowContentType>${app}:themed-article-page</allowContentType>
+                        <allowContentType>${app}:overview</allowContentType>
                         <showStatus>true</showStatus>
                     </config>
                 </input>

@@ -18,12 +18,12 @@ export interface SituationData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
 
   /**
    * Velg piktogram
@@ -36,7 +36,7 @@ export interface SituationData {
   externalProductUrl?: string;
 
   /**
-   * Skriv inn ønsket url
+   * Skriv inn ønsket kort-url
    */
   customPath: string;
 }

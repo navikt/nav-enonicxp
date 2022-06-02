@@ -7,6 +7,7 @@
             <option value="person">Privatperson</option>
             <option value="employer">Arbeidsgiver</option>
             <option value="provider">Samarbeidspartner</option>
+            <option value="self_employed">Selvstendig næringsdrivende</option>
         </config>
     </input>
   </form>

@@ -6,18 +6,23 @@ import {
 } from '../../lib/utils/component-utils';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
-import { getSubPath } from '../service-utils';
+import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
+import { contentStudioEditPathPrefix } from '../../lib/constants';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
-const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?: boolean): Hit => ({
-    id: withDescription
-        ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
-        : fragment._id,
-    displayName: fragment.displayName,
-    description: fragment._path,
-});
+const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?: boolean): Hit =>
+    customSelectorHitWithLink(
+        {
+            id: withDescription
+                ? appendMacroDescriptionToKey(fragment._id, fragment.displayName)
+                : fragment._id,
+            displayName: fragment.displayName,
+            description: fragment._path,
+        },
+        `${contentStudioEditPathPrefix}/${fragment._id}`
+    );
 
 const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
     const { query, withDescription, ids } = req.params;
@@ -67,11 +72,7 @@ const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
 };
 
 const transformContentToResponseData = (contentArray: ReadonlyArray<Content>) => {
-    return contentArray.map((content) => ({
-        name: content.displayName,
-        path: content._path,
-        id: content._id,
-    }));
+    return contentArray.map(transformUsageHit);
 };
 
 const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {

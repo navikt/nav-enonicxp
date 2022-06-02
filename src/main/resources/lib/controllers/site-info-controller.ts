@@ -169,8 +169,5 @@ export const get = (req: XP.Request) => {
         body: JSON.stringify(requestBody),
     });
 
-    return {
-        body: frontendResponse.body,
-        contentType: 'text/html; charset=UTF-8',
-    };
+    return frontendResponse;
 };

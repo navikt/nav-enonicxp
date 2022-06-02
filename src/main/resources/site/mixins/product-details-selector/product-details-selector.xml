@@ -1,0 +1,33 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Produktdetaljer</label>
+            <items>
+                <input name="processing_times" type="CustomSelector">
+                    <label>Saksbehandlingstider</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">processing_times</param>
+                    </config>
+                </input>
+                <input name="payout_dates" type="CustomSelector">
+                    <label>Utbetalingsdatoer</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">payout_dates</param>
+                    </config>
+                </input>
+                <input name="rates" type="CustomSelector">
+                    <label>Satser</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <service>productDetailsSelector</service>
+                        <param value="detailType">rates</param>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

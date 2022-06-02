@@ -1,4 +1,5 @@
 #import "../mixins/languagesFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
 
 fragment contentOverviewPage on no_nav_navno_Overview {
     dataAsJson
@@ -6,9 +7,12 @@ fragment contentOverviewPage on no_nav_navno_Overview {
         languages {
             ...languagesMixin
         }
-        productList {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+        productList(contentId: $ref) {
             _id
-            path
+            productDetailsPath
             title
             ingress
             taxonomy

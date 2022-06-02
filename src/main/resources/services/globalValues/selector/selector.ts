@@ -6,10 +6,12 @@ import {
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
-import { forceArray } from '../../../lib/utils/nav-utils';
+import { forceArray, generateFulltextQuery } from '../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
+import { customSelectorHitWithLink } from '../../service-utils';
+import { contentStudioEditPathPrefix } from '../../../lib/constants';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -25,11 +27,14 @@ const hitFromValueItem = (
     const displayName = `${content.displayName} - ${valueItem.itemName}`;
     const key = getGlobalValueUniqueKey(valueItem.key, content._id);
 
-    return {
-        id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
-        displayName: `${displayName} - ${valueItem.key}`,
-        description: buildGlobalValuePreviewString(valueItem),
-    };
+    return customSelectorHitWithLink(
+        {
+            id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
+            displayName: `${displayName} - ${valueItem.key}`,
+            description: buildGlobalValuePreviewString(valueItem),
+        },
+        `${contentStudioEditPathPrefix}/${content._id}`
+    );
 };
 
 const getHitsFromQuery = (
@@ -37,11 +42,6 @@ const getHitsFromQuery = (
     query: string | undefined,
     withDescription?: boolean
 ) => {
-    const wordsWithWildcard = query
-        ?.split(' ')
-        .map((word) => `${word}*`)
-        .join(' ');
-
     return contentLib
         .query({
             start: 0,
@@ -49,7 +49,11 @@ const getHitsFromQuery = (
             contentTypes: [type],
             query:
                 query &&
-                `fulltext("data.valueItems.itemName, data.valueItems.key, displayName", "${wordsWithWildcard}", "AND")`,
+                generateFulltextQuery(
+                    query,
+                    ['data.valueItems.itemName', 'data.valueItems.key', 'displayName'],
+                    'AND'
+                ),
             filters: {
                 boolean: {
                     must: [

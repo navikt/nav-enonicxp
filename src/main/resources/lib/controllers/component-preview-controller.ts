@@ -5,8 +5,8 @@ import {
     destructureComponent,
     insertComponentsIntoRegions,
 } from '../guillotine/utils/process-components';
-import { runGuillotineComponentsQuery } from '../guillotine/queries/run-components-query';
 import { logger } from '../utils/logging';
+import { runGuillotineComponentsQuery } from '../guillotine/queries/run-sitecontent-query';
 
 const fallbackResponse = {
     contentType: 'text/html',
@@ -17,12 +17,15 @@ const getComponentProps = () => {
     const content = portalLib.getContent();
     const portalComponent = portalLib.getComponent();
 
-    const { components, fragments } = runGuillotineComponentsQuery({
-        params: {
-            ref: content._id,
+    const { components, fragments } = runGuillotineComponentsQuery(
+        {
+            params: {
+                ref: content._id,
+            },
+            branch: 'draft',
         },
-        branch: 'draft',
-    });
+        content
+    );
 
     const componentPath = portalComponent.path || '/';
 

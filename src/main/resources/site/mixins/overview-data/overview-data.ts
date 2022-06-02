@@ -18,10 +18,20 @@ export interface OverviewData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
-   * Skriv inn ønsket url
+   * Type oversiktsside
+   */
+  overviewType: "rates" | "payout_dates" | "processing_times";
+
+  /**
+   * Velg piktogram
+   */
+  illustration: string;
+
+  /**
+   * Skriv inn ønsket kort-url
    */
   customPath: string;
 }
