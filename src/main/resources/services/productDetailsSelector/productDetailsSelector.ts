@@ -6,8 +6,10 @@ import { contentStudioEditPathPrefix } from '../../lib/constants';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
+import { customSelectorErrorIcon } from '../custom-selector-icons';
 
 type ProductDetailsType = ProductDetails['detailType'];
+type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
 type SelectorParams = {
@@ -18,21 +20,73 @@ type UsageCheckParams = {
     id: string;
 };
 
-const transformHit = (content: Content<'no.nav.navno:product-details'>): SelectorHit =>
+const makeDescription = (content: Content) =>
+    `[${content.language}] ${stripPathPrefix(content._path)}`;
+
+const transformHit = (content: ProductDetailsContentType): SelectorHit =>
     customSelectorHitWithLink(
         {
             id: content._id,
             displayName: content.displayName,
-            description: `[${content.language}] ${stripPathPrefix(content._path)}`,
+            description: makeDescription(content),
         },
         `${contentStudioEditPathPrefix}/${content._id}`
     );
 
-const getHitsWithQuery = (
-    detailType: ProductDetailsType,
-    query?: string,
-    ids?: string
-): SelectorHit[] => {
+const makeErrorHit = (id: string, displayName: string, description?: string): SelectorHit =>
+    customSelectorHitWithLink(
+        {
+            id,
+            displayName,
+            description,
+            icon: customSelectorErrorIcon,
+        },
+        `${contentStudioEditPathPrefix}/${id}`
+    );
+
+const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
+    const publishedContent = runInBranchContext(
+        () => contentLib.get({ key: selectedId }),
+        'master'
+    );
+
+    if (!publishedContent) {
+        const unpublishedContent = runInBranchContext(
+            () => contentLib.get({ key: selectedId }),
+            'draft'
+        );
+
+        if (!unpublishedContent) {
+            return makeErrorHit(selectedId, 'Feil: produktdetaljene finnes ikke');
+        }
+
+        return makeErrorHit(
+            selectedId,
+            'Feil: produktdetaljene er ikke publisert',
+            makeDescription(unpublishedContent)
+        );
+    }
+
+    if (publishedContent.type !== 'no.nav.navno:product-details') {
+        return makeErrorHit(
+            selectedId,
+            'Feil: produktdetaljene har feil innholdstype',
+            makeDescription(publishedContent)
+        );
+    }
+
+    if (publishedContent.data.detailType !== detailType) {
+        return makeErrorHit(
+            selectedId,
+            'Feil: produktdetaljene har feil type',
+            makeDescription(publishedContent)
+        );
+    }
+
+    return transformHit(publishedContent);
+};
+
+const getHitsFromQuery = (detailType: ProductDetailsType, query?: string): SelectorHit[] => {
     const { hits } = contentLib.query({
         count: 1000,
         contentTypes: ['no.nav.navno:product-details'],
@@ -46,15 +100,29 @@ const getHitsWithQuery = (
                     },
                 },
             },
-            ...(ids && {
-                ids: {
-                    values: [ids],
-                },
-            }),
         },
     });
 
     return hits.map(transformHit);
+};
+
+const selectorHandler = (req: XP.Request) => {
+    const { detailType, query, ids } = req.params as SelectorParams;
+
+    const hitsFromQuery = runInBranchContext(() => getHitsFromQuery(detailType, query), 'master');
+    const selectedHit = ids && getSelectedHit(ids, detailType);
+
+    const hits = [selectedHit, ...hitsFromQuery];
+
+    return {
+        status: 200,
+        contentType: 'application/json',
+        body: {
+            hits,
+            count: hits.length,
+            total: hits.length,
+        },
+    };
 };
 
 const usageCheckHandler = (req: XP.Request) => {
@@ -79,22 +147,6 @@ const usageCheckHandler = (req: XP.Request) => {
         contentType: 'application/json',
         body: {
             usage: usageHits,
-        },
-    };
-};
-
-const selectorHandler = (req: XP.Request) => {
-    const { detailType, query, ids } = req.params as SelectorParams;
-
-    const hits = runInBranchContext(() => getHitsWithQuery(detailType, query, ids), 'master');
-
-    return {
-        status: 200,
-        contentType: 'application/json',
-        body: {
-            hits,
-            count: hits.length,
-            total: hits.length,
         },
     };
 };

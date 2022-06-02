@@ -6,27 +6,14 @@ import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-pa
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { logger } from '../../lib/utils/logging';
-
-const errorIcon = {
-    data: `<svg width='32' height='32'>\
-<circle r='16' cx='16' cy='16' fill='#ba3a26'/>\
-</svg>`,
-    type: 'image/svg+xml',
-};
-
-const warningIcon = {
-    data: `<svg width='32' height='32'>\
-<circle r='16' cx='16' cy='16' fill='#ffaa33'/>\
-</svg>`,
-    type: 'image/svg+xml',
-};
+import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
     id: `error-${Date.now()}`,
     displayName,
     description,
-    icon: errorIcon,
+    icon: customSelectorErrorIcon,
 });
 
 const verifyIngressOwner = (path: string) => {
@@ -112,7 +99,7 @@ const getResult = ({
                 id: suggestedPath,
                 displayName: suggestedPath,
                 description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
-                icon: warningIcon,
+                icon: customSelectorWarningIcon,
             },
         ];
     }
