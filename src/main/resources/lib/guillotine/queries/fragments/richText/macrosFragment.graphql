@@ -67,6 +67,11 @@ fragment macros on Macro {
             }
             text
         }
+        payout_dates {
+            dates {
+                ...contentPayoutDates
+            }
+        }
         phone_link {
             chevron
             phoneNumber

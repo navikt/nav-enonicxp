@@ -11,6 +11,7 @@
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
+#import "./parts/partPayoutDates.graphql"
 #import "./parts/partProductCard.graphql"
 #import "./parts/partProductCardMicro.graphql"
 #import "./parts/partProductCardMini.graphql"
@@ -60,6 +61,9 @@ fragment partComponents on PartComponentData {
                 }
                 page_navigation_menu {
                     ...partComponentPageNavigationMenu
+                }
+                payout_dates {
+                    ...partComponentPayoutDates
                 }
                 product_card {
                     ...partComponentProductCard
