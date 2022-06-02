@@ -1,7 +1,7 @@
 version: '3'
 services:
   xp:
-    image: enonic/xp:7.8.5-ubuntu
+    image: enonic/xp:7.9.2-ubuntu
     restart: always
     environment:
       # Assuming this computer has 4 GB of RAM, set JVM heap to 30% of available heap or 1230 MB. Also enable JVM OOME heap dump
@@ -9,6 +9,10 @@ services:
     ports:
       - 8080:8080
       - 2609:2609
+      - 4848:4848
+      - 5701:5701
+      - 9200:9200
+      - 9300:9300
     volumes:
       - blobstore:/enonic-xp/home/repo/blob
       - data:/enonic-xp/home/data
