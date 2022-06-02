@@ -33,7 +33,7 @@ const transformHit = (content: ProductDetailsContentType): SelectorHit =>
         `${contentStudioEditPathPrefix}/${content._id}`
     );
 
-const makeErrorHit = (id: string, displayName: string, description?: string): SelectorHit =>
+const makeErrorHit = (id: string, displayName: string, description: string): SelectorHit =>
     customSelectorHitWithLink(
         {
             id,
@@ -57,12 +57,12 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
         );
 
         if (!unpublishedContent) {
-            return makeErrorHit(selectedId, 'Feil: produktdetaljene finnes ikke');
+            return makeErrorHit(selectedId, 'Feil: Valgte produktdetaljer finnes ikke', selectedId);
         }
 
         return makeErrorHit(
             selectedId,
-            'Feil: produktdetaljene er ikke publisert',
+            'Feil: Valgte produktdetaljer er ikke publisert',
             makeDescription(unpublishedContent)
         );
     }
@@ -70,7 +70,7 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
     if (publishedContent.type !== 'no.nav.navno:product-details') {
         return makeErrorHit(
             selectedId,
-            'Feil: produktdetaljene har feil innholdstype',
+            'Feil: Valgte produktdetaljer har feil innholdstype',
             makeDescription(publishedContent)
         );
     }
@@ -78,7 +78,7 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
     if (publishedContent.data.detailType !== detailType) {
         return makeErrorHit(
             selectedId,
-            'Feil: produktdetaljene har feil type',
+            'Feil: Valgte produktdetaljer har feil type',
             makeDescription(publishedContent)
         );
     }
