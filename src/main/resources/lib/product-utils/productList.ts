@@ -38,10 +38,13 @@ const cleanProduct = (
     // Generated type definitions are incorrect due to nested mixins
     const data = product.data as Content<ContentTypeWithProductDetails>['data'] & ProductData;
 
+    const fullTitle = data.title || product.displayName;
+
     return {
         _id: product._id,
         productDetailsPath: productDetails._path,
-        title: data.title || product.displayName,
+        title: fullTitle,
+        sortTitle: data.sortTitle || fullTitle,
         ingress: data.ingress,
         audience: data.audience,
         language: product.language || 'no',
@@ -81,5 +84,5 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
 
             return [...acc, productData];
         }, [] as OverviewPageProductData[])
-        .sort((a, b) => a.title.localeCompare(b.title));
+        .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };

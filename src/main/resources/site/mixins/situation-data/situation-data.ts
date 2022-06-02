@@ -6,6 +6,11 @@ export interface SituationData {
   title?: string;
 
   /**
+   * Sett for utlisting og sortering
+   */
+  sortTitle?: string;
+
+  /**
    * Norsk tittel (hvis fremmedspråklig innhold)
    */
   norwegianTitle?: string;

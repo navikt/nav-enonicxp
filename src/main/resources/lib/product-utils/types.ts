@@ -17,6 +17,7 @@ export type OverviewPageProductData = {
     _id: string;
     productDetailsPath: string;
     title: string;
+    sortTitle: string;
     ingress: string;
     audience: ProductData['audience'];
     language: string;
