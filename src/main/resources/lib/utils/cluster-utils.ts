@@ -1,4 +1,5 @@
 import httpClient from '/lib/http-client';
+import { logger } from './logging';
 
 type LocalNodeInfo = {
     isMaster: boolean;
@@ -37,13 +38,13 @@ export const requestClusterInfo = () => {
         });
 
         if (response.status !== 200 || !response.body) {
-            log.error(`Failed to get cluster info - ${response.message}`);
+            logger.error(`Failed to get cluster info - ${response.message}`);
             return null;
         }
 
         return JSON.parse(response.body) as ClusterInfo;
     } catch (e) {
-        log.error(`Failed to get cluster info - ${e}`);
+        logger.error(`Failed to get cluster info - ${e}`);
         return null;
     }
 };
@@ -73,7 +74,7 @@ export const updateClusterInfo = () => {
     clusterInfo.localServerName = getLocalServerName(clusterInfoResponse);
     clusterInfo.nodeCount = clusterInfoResponse.members.length;
 
-    log.info(
+    logger.info(
         `Local server name: ${clusterInfo.localServerName} - Nodes in cluster: ${clusterInfo.nodeCount}`
     );
 };

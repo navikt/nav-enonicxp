@@ -4,6 +4,7 @@ import { sanitize } from '/lib/xp/common';
 import { forceArray, getParentPath } from '../../../../lib/utils/nav-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
 import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
+import { isUUID } from '../../../../lib/utils/uuid';
 
 type ArchiveEntry = {
     name: string;
@@ -12,17 +13,27 @@ type ArchiveEntry = {
 
 const view = resolve('./archive-query-response.html');
 
+const buildQueryString = (query?: string) => {
+    const archivePathQuery = '_path LIKE "/archive/*"';
+
+    if (!query) {
+        return archivePathQuery;
+    }
+
+    if (isUUID(query)) {
+        return `${archivePathQuery} AND _id="${query}"`;
+    }
+
+    return `${archivePathQuery} AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")`;
+};
+
 const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): ArchiveEntry[] => {
     const repo = nodeLib.connect({ repoId, branch: 'draft' });
-
-    const queryString = `_path LIKE "/archive/*"${
-        query ? ` AND fulltext("displayName, _path", "${sanitize(query)}*", "AND")` : ''
-    }`;
 
     const archivedContentIds = batchedNodeQuery({
         repo,
         queryParams: {
-            query: queryString,
+            query: buildQueryString(query),
             sort: '_path ASC',
         },
     }).hits.map((node) => node.id);

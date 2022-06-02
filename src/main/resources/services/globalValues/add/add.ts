@@ -1,13 +1,13 @@
 import nodeLib from '/lib/xp/node';
 import { generateUUID } from '../../../lib/utils/uuid';
 import {
-    GlobalValueInput,
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
+import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
+import { logger } from '../../../lib/utils/logging';
 
 const generateKey = () => `gv_${generateUUID()}`;
 
@@ -17,10 +17,10 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, itemName, numberValue } = req.params as unknown as GlobalValueInput;
+    const { contentId, itemName, type } = req.params;
 
     const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
-    if (!content) {
+    if (!content || !contentId) {
         return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);
     }
 
@@ -42,13 +42,18 @@ export const addGlobalValueItemService = (req: XP.Request) => {
         const newItem = {
             key: generateKey(),
             itemName,
-            ...(numberValue !== undefined && { numberValue }),
+            type,
+            ...(type === 'caseTime'
+                ? {
+                      unit: req.params.unit,
+                      value: Number(req.params.value),
+                  }
+                : { numberValue: Number(req.params.numberValue) }),
         };
 
         repo.modify({
             key: contentId,
             editor: (_content) => {
-                log.info(`new item: ${JSON.stringify(newItem)}`);
                 _content.data.valueItems = [...valueItems, newItem];
 
                 return _content;
@@ -64,7 +69,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
             },
         };
     } catch (e) {
-        log.error(`Error while adding new value to ${contentId} - ${e}`);
+        logger.critical(`Error while adding new value to ${contentId} - ${e}`);
         return {
             status: 500,
             contentType: 'application/json',

@@ -1,4 +1,3 @@
-// @ts-nocheck (this requires some effort for sensible typing, and it will probably be removed soon'ish anyway)
 import nodeLib from '/lib/xp/node';
 import contextLib from '/lib/xp/context';
 import eventLib from '/lib/xp/event';
@@ -7,11 +6,13 @@ import taskLib from '/lib/xp/task';
 import repoLib from '/lib/xp/repo';
 import {
     createObjectChecksum,
+    serializableObjectsAreEqual,
     fixDateFormat,
     forceArray,
-    pushLiveElements,
     removeDuplicates,
 } from '../utils/nav-utils';
+import { contentRepo } from '../constants';
+import { logger } from '../utils/logging';
 
 const repo = nodeLib.connect({
     repoId: 'com.enonic.cms.default',
@@ -19,12 +20,56 @@ const repo = nodeLib.connect({
     principals: ['role:system.admin'],
 });
 
-let toCheckOnNext = [];
+let toCheckOnNext: any[] = [];
 const debounceTime = 5000;
 let lastUpdate = 0;
-let currentTask = null;
+let currentTask: any = null;
 
-const getLastFacetConfig = (contentId) => {
+// Pushes nodes from draft to master, checking if theire already live
+const pushLiveElements = (targetIds: string[]) => {
+    // publish changes
+    const targets = targetIds.filter((elem) => {
+        return !!elem;
+    });
+
+    const repoDraft = nodeLib.connect({
+        repoId: contentRepo,
+        branch: 'draft',
+        principals: ['role:system.admin'],
+    });
+    const repoMaster = nodeLib.connect({
+        repoId: contentRepo,
+        branch: 'master',
+        principals: ['role:system.admin'],
+    });
+    const masterHits = repoMaster.query({
+        count: targets.length,
+        filters: {
+            ids: {
+                values: targets,
+            },
+        },
+    }).hits;
+    const masterIds = masterHits.map((el) => el.id);
+
+    // important that we use resolve false when pushing objects to master, else we can get objects
+    // which were unpublished back to master without a published.from property
+    if (masterIds.length > 0) {
+        const pushResult = repoDraft.push({
+            keys: masterIds,
+            resolve: false,
+            target: 'master',
+        });
+
+        logger.info(`Pushed ${masterIds.length} elements to master`);
+        logger.info(JSON.stringify(pushResult, null, 4));
+        return pushResult;
+    }
+    logger.info('No content was updated in master');
+    return [];
+};
+
+const getLastFacetConfig = (contentId: string) => {
     const versionFinder = __.newBean('tools.PublishedVersions');
     const versionTimestamps = JSON.parse(versionFinder.getLiveVersions(contentId));
 
@@ -43,7 +88,7 @@ const getLastFacetConfig = (contentId) => {
         .filter(({ article }) => {
             return article.workflow?.state !== 'IN_PROGRESS' && article.timestamp !== '';
         })
-        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        .sort((a, b) => (new Date(a.timestamp) as any) - (new Date(b.timestamp) as any))
         .reverse();
     return content.length > 2 ? content[1].article : [];
 };
@@ -62,7 +107,7 @@ const getNavRepo = () => {
         () => {
             const hasNavRepo = repoLib.get('no.nav.navno');
             if (!hasNavRepo) {
-                log.info('Create no.nav.navno repo');
+                logger.info('Create no.nav.navno repo');
                 repoLib.create({
                     id: 'no.nav.navno',
                 });
@@ -86,7 +131,7 @@ export const getFacetValidation = () => {
     const navRepo = getNavRepo();
     let facetValidation = navRepo.get('/facetValidation');
     if (!facetValidation) {
-        log.info('Create facet validation node');
+        logger.info('Create facet validation node');
         facetValidation = navRepo.create({
             _name: 'facetValidation',
             parentPath: '/',
@@ -101,7 +146,7 @@ export const getFacetValidation = () => {
     return facetValidation;
 };
 
-const setUpdateAll = (updateAll) => {
+const setUpdateAll = (updateAll: any) => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
@@ -132,7 +177,7 @@ const isUpdatingAll = () => {
     return getFacetValidation().data.updateAll;
 };
 
-const addValidatedNodes = (ids) => {
+const addValidatedNodes = (ids: string[]) => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
@@ -149,11 +194,11 @@ const addValidatedNodes = (ids) => {
     });
 };
 
-const removeValidatedNodes = (ids) => {
+const removeValidatedNodes = (ids: string[]) => {
     getNavRepo().modify({
         key: getFacetValidation()._path,
         editor: (facetValidation) => {
-            let justValidatedNodes = [];
+            let justValidatedNodes: any[] = [];
             if (facetValidation.data.justValidatedNodes) {
                 justValidatedNodes = forceArray(facetValidation.data.justValidatedNodes);
             }
@@ -175,9 +220,9 @@ const getJustValidatedNodes = () => {
         : [];
 };
 
-const updateFacets = (fasetter, ids) => {
+const updateFacets = (fasetter: any, ids: string[]) => {
     // create queries for each facet and subfacet
-    const resolver = fasetter.reduce((t, el) => {
+    const resolver = fasetter.reduce((t: any, el: any) => {
         const underfasett = forceArray(el.underfasetter);
         if (underfasett.length === 0 || !underfasett[0]) {
             t.push({
@@ -205,15 +250,15 @@ const updateFacets = (fasetter, ids) => {
     }, []);
 
     if (ids) {
-        log.info('*** UPDATE FACETS ON ' + ids.join(', ') + ' ***');
+        logger.info('*** UPDATE FACETS ON ' + ids.join(', ') + ' ***');
     }
     // iterate over each facet update the ids which have been published
-    resolver.forEach(function (value) {
+    resolver.forEach(function (value: any) {
         if (!ids) {
-            log.info(`Update facets on ${value.fasett} - ${value.underfasett}`);
+            logger.info(`Update facets on ${value.fasett} - ${value.underfasett}`);
         }
 
-        const query = {
+        const query: any = {
             query: value.query,
         };
 
@@ -226,13 +271,13 @@ const updateFacets = (fasetter, ids) => {
             };
         }
 
-        const fasett = {
+        const fasett: any = {
             fasett: value.fasett,
         };
         if (value.underfasett) fasett.underfasett = value.underfasett;
         let start = 0;
         let count = 1000;
-        let hits = [];
+        let hits: any = [];
 
         // make sure we get all the content, query 1k at a time.
         while (count === 1000) {
@@ -245,9 +290,19 @@ const updateFacets = (fasetter, ids) => {
             hits = hits.concat(res);
         }
 
-        addValidatedNodes(hits.map((c) => c.id));
-        const modifiedContent = hits.map((hit) => {
-            log.info(`adding ${fasett.fasett} and ${fasett.underfasett} to ${hit.id}`);
+        addValidatedNodes(hits.map((c: any) => c.id));
+        const modifiedContent = hits.reduce((acc: any, hit: any) => {
+            const contentNode = repo.get({ key: hit.id });
+            if (!contentNode) {
+                return acc;
+            }
+
+            const currentFasett = contentNode.x?.['no-nav-navno']?.fasetter;
+            if (currentFasett && serializableObjectsAreEqual(currentFasett, fasett)) {
+                return acc;
+            }
+
+            logger.info(`Adding ${fasett.fasett} and ${fasett.underfasett} to ${hit.id}`);
 
             const modifiedNode = repo.modify({
                 key: hit.id,
@@ -259,8 +314,10 @@ const updateFacets = (fasetter, ids) => {
                     return n;
                 },
             });
-            return modifiedNode ? modifiedNode._id : undefined;
-        });
+
+            return modifiedNode ? [...acc, modifiedNode._id] : acc;
+        }, []);
+
         if (modifiedContent.length > 0) {
             pushLiveElements(modifiedContent);
         }
@@ -272,11 +329,11 @@ const updateFacets = (fasetter, ids) => {
     }
 };
 
-const bulkUpdateFacets = (facetConfig, ids) => {
+const bulkUpdateFacets = (facetConfig: any, ids?: any) => {
     let fasetter = forceArray(facetConfig.data.fasetter);
 
     if (!ids) {
-        log.info('TAG ALL FACETS');
+        logger.info('TAG ALL FACETS');
         const previousFacetConfig = getLastFacetConfig(facetConfig._id);
         if (previousFacetConfig) {
             const previous = forceArray(previousFacetConfig.data.fasetter);
@@ -306,10 +363,10 @@ const getFacetConfig = () => {
     return hits.length > 0 ? repo.get(hits[0].id) : null;
 };
 
-export const checkIfUpdateNeeded = (nodeIds) => {
+export const checkIfUpdateNeeded = (nodeIds: any) => {
     // stop if update all is running
     if (isUpdatingAll()) {
-        log.info('blocked by update all');
+        logger.info('blocked by update all');
         return;
     }
     const facetConfig = getFacetConfig();
@@ -318,7 +375,7 @@ export const checkIfUpdateNeeded = (nodeIds) => {
     if (facetConfig) {
         // run bulkUpdateFacets if the facet config is part of the nodes to update
         const isFacetConfigPartOfUpdate =
-            nodeIds.filter((nodeId) => {
+            nodeIds.filter((nodeId: any) => {
                 return nodeId === facetConfig._id;
             }).length > 0;
 
@@ -332,7 +389,7 @@ export const checkIfUpdateNeeded = (nodeIds) => {
 
         // sort nodes into update and ignore
         const nodeInfo = nodeIds.reduce(
-            (c, nodeId) => {
+            (c: any, nodeId: any) => {
                 if (justValidatedNodes.indexOf(nodeId) === -1) {
                     c.update.push(nodeId);
                 } else {
@@ -343,7 +400,7 @@ export const checkIfUpdateNeeded = (nodeIds) => {
             { ignore: [], update: [] }
         );
 
-        log.info('ignore ' + nodeInfo.ignore.length);
+        logger.info('ignore ' + nodeInfo.ignore.length);
 
         // remove ignored nodes from just validated
         if (nodeInfo.ignore.length > 0) {
@@ -355,13 +412,13 @@ export const checkIfUpdateNeeded = (nodeIds) => {
             bulkUpdateFacets(facetConfig, nodeInfo.update);
         }
     } else {
-        log.error('no facetconfig');
+        logger.error('no facetconfig');
     }
 };
 
-const facetHandler = (event) => {
+const facetHandler = (event: any) => {
     // stop fasett update if the node change is in another repo
-    const cmsNodesChanged = event.data.nodes.filter((node) => {
+    const cmsNodesChanged = event.data.nodes.filter((node: any) => {
         return node.repo === 'com.enonic.cms.default';
     });
     if (cmsNodesChanged.length === 0) return;
@@ -370,7 +427,7 @@ const facetHandler = (event) => {
     lastUpdate = Date.now();
     // add node ids to next check
     toCheckOnNext = toCheckOnNext.concat(
-        cmsNodesChanged.map((node) => {
+        cmsNodesChanged.map((node: any) => {
             return node.id;
         })
     );
@@ -393,7 +450,7 @@ const facetHandler = (event) => {
             },
         });
     } else {
-        log.info(`${currentTask} is blocking the new execution`);
+        logger.info(`${currentTask} is blocking the new execution`);
     }
 };
 
@@ -420,5 +477,5 @@ export const activateFacetsEventListener = () => {
         },
         localOnly: false,
     });
-    log.info('Started: facet-handler listening on node.pushed');
+    logger.info('Started: facet-handler listening on node.pushed');
 };

@@ -4,11 +4,16 @@
 fragment contentContentPageWithSidemenus on no_nav_navno_ContentPageWithSidemenus {
     dataAsJson
     data {
+        area
+        taxonomy
         languages {
             ...languagesMixin
         }
         illustration {
             ...animatedIconsTargetMixin
         }
+        processing_times
+        payout_dates
+        rates
     }
 }

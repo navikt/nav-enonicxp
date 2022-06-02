@@ -1,8 +1,9 @@
 import nodeLib from '/lib/xp/node';
 import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
-import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
+import { logger } from '../../../lib/utils/logging';
+import { GlobalValueItem } from '../../../lib/global-values/types';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
@@ -15,7 +16,7 @@ const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) =>
 export const reorderGlobalValuesService = (req: XP.Request) => {
     const { contentId, orderedKeys } = req.params;
 
-    if (!orderedKeys || !contentId) {
+    if (!contentId || !orderedKeys) {
         return gvServiceInvalidRequestResponse(
             `Missing parameters:${!orderedKeys && ' "orderedKeys"'}${!contentId && ' "contentId"'}`
         );
@@ -65,7 +66,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
         };
     } catch (e) {
         const message = `Error reordering values on ${contentId} - ${e}`;
-        log.error(message);
+        logger.error(message);
         return {
             status: 500,
             contentType: 'application/json',

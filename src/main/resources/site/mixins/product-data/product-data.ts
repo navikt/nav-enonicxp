@@ -6,6 +6,11 @@ export interface ProductData {
   title?: string;
 
   /**
+   * Sett for utlisting og sortering
+   */
+  sortTitle?: string;
+
+  /**
    * Norsk tittel (hvis fremmedspråklig innhold)
    */
   norwegianTitle?: string;
@@ -18,7 +23,7 @@ export interface ProductData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
    * Kategori
@@ -28,7 +33,7 @@ export interface ProductData {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
 
   /**
    * Velg piktogram
@@ -41,7 +46,7 @@ export interface ProductData {
   externalProductUrl?: string;
 
   /**
-   * Skriv inn ønsket url
+   * Skriv inn ønsket kort-url
    */
   customPath: string;
 }

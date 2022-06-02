@@ -3,6 +3,15 @@ import {
     ContentDescriptor,
     CustomContentDescriptor,
 } from '../../../types/content-types/content-config';
+import { isMedia } from '../../utils/nav-utils';
+import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
+import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
+import { runInBranchContext } from '../../utils/branch-context';
+import { getBreadcrumbs } from '../utils/breadcrumbs';
+import { getPathMapForReferences } from '../../custom-paths/custom-paths';
+import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
+import { PortalComponent } from '../../../types/components/component-portal';
+import { NodeComponent } from '../../../types/components/component-node';
 
 import mediaArchiveQuery from './media-queries/mediaArchiveQuery.graphql';
 import mediaAudioQuery from './media-queries/mediaAudioQuery.graphql';
@@ -33,22 +42,17 @@ import pageListQuery from './content-queries/pageListQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
+import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
 import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
 import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
 import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
+import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
-import { isMedia } from '../../utils/nav-utils';
-import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
-import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
-import { runInBranchContext } from '../../utils/branch-context';
-import { getBreadcrumbs } from '../utils/breadcrumbs';
-import { getPathMapForReferences } from '../../custom-paths/custom-paths';
-import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
-import { PortalComponent } from '../../../types/components/component-portal';
-import { NodeComponent } from '../../../types/components/component-node';
+import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
+import portalPageTemplate from './content-queries/portalPageTemplateQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -66,9 +70,11 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:video': mediaVideoQuery,
     'no.nav.navno:contact-information': contantInformationQuery,
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
+    'no.nav.navno:product-details': productDetailsQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
+    'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
     'no.nav.navno:guide-page': guidePageQuery,
     'no.nav.navno:large-table': largeTableQuery,
@@ -80,12 +86,14 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
     'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:situation-page': situationPageQuery,
+    'no.nav.navno:overview': overviewPageQuery,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,
     'no.nav.navno:transport-page': transportPageQuery,
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
     'portal:site': portalSiteQuery,
+    'portal:page-template': portalPageTemplate,
 };
 
 // TODO: improve these types if/when Guillotine gets better Typescript support

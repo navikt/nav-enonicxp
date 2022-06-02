@@ -4,11 +4,15 @@
 fragment contentGuidePage on no_nav_navno_GuidePage {
     dataAsJson
     data {
+        area
         languages {
             ...languagesMixin
         }
         illustration {
             ...animatedIconsTargetMixin
         }
+        processing_times
+        payout_dates
+        rates
     }
 }

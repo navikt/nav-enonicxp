@@ -1,0 +1,35 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment contentOverviewPage on no_nav_navno_Overview {
+    dataAsJson
+    data {
+        languages {
+            ...languagesMixin
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+        productList(contentId: $ref) {
+            _id
+            productDetailsPath
+            title
+            sortTitle
+            ingress
+            taxonomy
+            language
+            audience
+            area
+            illustration {
+                __typename
+                data {
+                    icons {
+                        icon {
+                            mediaUrl
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -4,6 +4,7 @@ import macroLib from '/lib/guillotine/macro';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
 import { HtmlAreaPartConfig } from '../../../../site/parts/html-area/html-area-part-config';
+import { logger } from '../../../utils/logging';
 
 export const macroHtmlFragmentCallback: CreationCallback = (context, params) => {
     params.fields.processedHtml = {
@@ -18,20 +19,25 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             const content = contentLib.get({ key });
             if (!content) {
-                log.warning(`Content not found for fragment in html-fragment macro: ${fragmentId}`);
+                logger.critical(
+                    `Content not found for fragment in html-fragment macro: ${fragmentId}`,
+                    true
+                );
                 return null;
             }
 
             if (content.type !== 'portal:fragment') {
-                log.warning(
-                    `Content content specified for html-fragment macro is not a fragment: ${fragmentId}`
+                logger.error(
+                    `Content specified for html-fragment macro is not a fragment: ${fragmentId}`
                 );
                 return null;
             }
 
             const html = (content.fragment?.config as HtmlAreaPartConfig)?.html;
             if (!html) {
-                log.warning(`Fragment in html-fragment macro did not contain html: ${fragmentId}`);
+                logger.warning(
+                    `Fragment in html-fragment macro did not contain html: ${fragmentId}`
+                );
                 return null;
             }
 

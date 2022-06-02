@@ -8,6 +8,7 @@ import {
     scheduleCacheInvalidation,
     scheduleUnpublish,
 } from './scheduled-publish';
+import { logger } from '../utils/logging';
 
 const schedulePrepublishTasks = () => {
     const result = runInBranchContext(
@@ -19,7 +20,7 @@ const schedulePrepublishTasks = () => {
         'draft'
     ).hits;
 
-    log.info(`Updating scheduled prepublish jobs for ${result.length} items`);
+    logger.info(`Updating scheduled prepublish jobs for ${result.length} items`);
 
     result.forEach((content) => {
         if (content.publish?.from) {
@@ -46,7 +47,7 @@ const scheduleUnpublishTasks = () => {
         'master'
     ).hits;
 
-    log.info(`Updating scheduled unpublish jobs for ${result.length} items`);
+    logger.info(`Updating scheduled unpublish jobs for ${result.length} items`);
 
     result.forEach((content) => {
         if (content.publish?.to) {
@@ -68,6 +69,6 @@ export const updateScheduledPublishJobs = () => {
         schedulePrepublishTasks();
         scheduleUnpublishTasks();
     } else {
-        log.warning('updateScheduledPublishJobs will only run on master');
+        logger.warning('updateScheduledPublishJobs will only run on master');
     }
 };

@@ -6,6 +6,7 @@ import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/pre
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
 import { NodeEventData } from '../cache/utils';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
+import { logger } from '../utils/logging';
 
 const getPublish = (node: NodeEventData) => {
     const repo = nodeLib.connect({
@@ -16,12 +17,12 @@ const getPublish = (node: NodeEventData) => {
     const content = repo.get<Content>({ key: node.id });
 
     if (!content) {
-        log.error(`Content for ${node.id} not found!`);
+        logger.error(`Content for ${node.id} not found!`);
         return null;
     }
 
     if (!content.publish) {
-        log.error(`No publish object found for content ${node.id}!`);
+        logger.error(`No publish object found for content ${node.id}!`);
         return null;
     }
 

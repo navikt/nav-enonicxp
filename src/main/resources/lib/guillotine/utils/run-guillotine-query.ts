@@ -3,6 +3,7 @@ import { schema } from '../schema/schema';
 import { runInBranchContext } from '../../utils/branch-context';
 import { RepoBranch } from '../../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './merge-json';
+import { logger } from '../../utils/logging';
 
 // We don't have any good Typescript integration with Guillotine/GraphQL atm
 // so just return as any for now...
@@ -52,7 +53,7 @@ export const runGuillotineQuery = ({
                     .join(' :: ')}`
             );
         } else {
-            log.error(errorMsg);
+            logger.error(errorMsg);
         }
     }
 

@@ -2,6 +2,7 @@ import nodeLib from '/lib/xp/node';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { stringArrayToSet } from '../../lib/utils/nav-utils';
+import { logger } from '../../lib/utils/logging';
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
@@ -34,9 +35,9 @@ const setContentType = (
                 return content;
             },
         });
-        log.info(`Changed content type for ${contentId} to ${contentType}`);
+        logger.info(`Changed content type for ${contentId} to ${contentType}`);
     } catch (e) {
-        log.error(
+        logger.error(
             `Error while attempting to change content type for ${contentId} to ${contentType} - ${e}`
         );
     }
@@ -54,7 +55,7 @@ export const get = (req: XP.Request) => {
     log.info(JSON.stringify(req.params));
 
     if (!repoId || !contentId || !contentType) {
-        log.warning(
+        logger.warning(
             `Malformed content-type switch request occured - repoId: ${repoId} - contentId: ${contentId} - contentType: ${contentType}`
         );
         return {
@@ -63,7 +64,7 @@ export const get = (req: XP.Request) => {
     }
 
     if (!validateCurrentUserPermissionForContent(contentId, 'PUBLISH')) {
-        log.warning(
+        logger.warning(
             `Unauthorized content-type switch request occured - repoId: ${repoId} - contentId: ${contentId} - contentType: ${contentType}`
         );
         return {
@@ -72,7 +73,7 @@ export const get = (req: XP.Request) => {
     }
 
     if (!contentTypesMap[contentType]) {
-        log.warning(
+        logger.warning(
             `Attempted to switch to a content type that is not allowed - repoId: ${repoId} - contentId: ${contentId} - contentType: ${contentType}`
         );
         return {

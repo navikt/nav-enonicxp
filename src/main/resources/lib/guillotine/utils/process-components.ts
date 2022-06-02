@@ -80,18 +80,18 @@ export const destructureComponent = (component: GuillotineComponent) => {
 
     return {
         ...destructuredComponent,
-        ...(config && { config }),
+        config,
     };
 };
 
-const insertsComponentsIntoRegions = (
+export const insertComponentsIntoRegions = (
     parentComponent: PortalComponent,
     components: GuillotineComponent[],
     fragments: PortalComponent<'fragment'>[]
 ): PortalComponent => {
     const { path, regions } = parentComponent;
 
-    if (!regions) {
+    if (!regions || !path) {
         return parentComponent;
     }
 
@@ -133,7 +133,7 @@ const insertsComponentsIntoRegions = (
 
             return [
                 ...acc,
-                insertsComponentsIntoRegions(
+                insertComponentsIntoRegions(
                     { ...regionComponent, ...destructureComponent(component) },
                     components,
                     fragments
@@ -177,7 +177,7 @@ export const buildPageComponentTree = ({
         return page;
     }
 
-    return insertsComponentsIntoRegions(
+    return insertComponentsIntoRegions(
         { ...page, ...destructureComponent(pageComponent) },
         components,
         fragments

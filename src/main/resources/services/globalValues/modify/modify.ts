@@ -1,13 +1,13 @@
 import nodeLib from '/lib/xp/node';
 import {
-    GlobalValueInput,
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { getGlobalValueSet } from '../../../lib/utils/global-value-utils';
+import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
-import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { logger } from '../../../lib/utils/logging';
+import { GlobalValueItem } from '../../../lib/global-values/types';
 
 const itemNameExists = (valueItems: GlobalValueItem[], itemName: string, key: string) =>
     itemName && valueItems.find((item) => item.itemName === itemName && item.key !== key);
@@ -18,9 +18,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         return errorResponse;
     }
 
-    const { contentId, key, itemName, numberValue } = req.params as unknown as GlobalValueInput & {
-        key?: string;
-    };
+    const { contentId, key, itemName, type } = req.params as Record<string, string>;
 
     if (!key) {
         return gvServiceInvalidRequestResponse(`Parameter 'key' missing`);
@@ -38,7 +36,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         gvServiceInvalidRequestResponse(`Item with key ${key} not found on ${contentId}`);
     }
 
-    if (itemName && itemNameExists(valueItems, itemName, key)) {
+    if (itemNameExists(valueItems, itemName, key)) {
         gvServiceInvalidRequestResponse(`Item name ${itemName} already exists on ${contentId}`);
     }
 
@@ -51,13 +49,19 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
         const modifiedItem = {
             key,
             itemName,
-            ...(numberValue !== undefined && { numberValue }),
+            type,
+            ...(type === 'caseTime'
+                ? {
+                      unit: req.params.unit,
+                      value: Number(req.params.value),
+                  }
+                : { numberValue: Number(req.params.numberValue) }),
         };
 
         repo.modify({
-            key: contentId,
+            key: content._id,
             editor: (_content) => {
-                _content.data.valueItems = valueItems.map((item) =>
+                _content.data.valueItems = forceArray(content.data.valueItems).map((item) =>
                     item.key === key ? modifiedItem : item
                 );
 
@@ -74,7 +78,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
             },
         };
     } catch (e) {
-        log.error(`Error modifying ${key} on ${contentId} - ${e}`);
+        logger.critical(`Error modifying ${key} on ${contentId} - ${e}`);
         return {
             status: 500,
             contentType: 'application/json',

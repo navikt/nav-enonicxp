@@ -4,11 +4,16 @@
 fragment contentThemedArticlePage on no_nav_navno_ThemedArticlePage {
     dataAsJson
     data {
+        area
+        taxonomy
         languages {
             ...languagesMixin
         }
         illustration {
             ...animatedIconsTargetMixin
         }
+        processing_times
+        payout_dates
+        rates
     }
 }

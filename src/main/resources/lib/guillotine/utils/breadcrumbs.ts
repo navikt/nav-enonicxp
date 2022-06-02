@@ -2,6 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { contentTypesWithBreadcrumbs } from '../../contenttype-lists';
 import { componentAppKey, navnoRootPath } from '../../constants';
 import { getParentPath, stringArrayToSet, stripPathPrefix } from '../../utils/nav-utils';
+import { logger } from '../../utils/logging';
 
 type Breadcrumb = {
     title: string;
@@ -22,7 +23,7 @@ const rootPaths = stringArrayToSet([
 ]);
 
 const generateBreadcrumb = (content: Content): Breadcrumb => ({
-    title: content.displayName,
+    title: content.displayName || 'Uten tittel',
     url: stripPathPrefix(content._path),
 });
 
@@ -36,7 +37,7 @@ const getParentContent = (content: Content): Content | null => {
         if (virtualParentContent) {
             return virtualParentContent;
         } else {
-            log.error(
+            logger.error(
                 `Invalid virtual parent specified for content ${content._id} (${content._path})`
             );
         }
@@ -55,7 +56,7 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
     const parentContent = getParentContent(content);
 
     if (!parentContent) {
-        log.error(`Content has invalid parent: ${content._id} (${content._path})`);
+        logger.error(`Content has invalid parent: ${content._id} (${content._path})`);
         return null;
     }
 
@@ -63,7 +64,7 @@ const getParentBreadcrumbs = (content: Content, segments: Content[]): Breadcrumb
     // is possible to end up with a circular breadcrumbs trail if a descendant of a content (or the
     // content itself) is set as its parent.
     if (segments.some((segmentContent) => segmentContent._id === parentContent._id)) {
-        log.error(`Content has circular breadcrumbs: ${content._id} (${content._path})`);
+        logger.error(`Content has circular breadcrumbs: ${content._id} (${content._path})`);
         return null;
     }
 

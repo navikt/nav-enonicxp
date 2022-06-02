@@ -1,16 +1,23 @@
 import contentLib, { Content } from '/lib/xp/content';
 import {
     getGlobalValueItem,
+    getGlobalValueSet,
     getGlobalValueUniqueKey,
     getGvKeyAndContentIdFromUniqueKey,
-    globalValuesContentType,
-} from '../../../lib/utils/global-value-utils';
+} from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
-import { forceArray } from '../../../lib/utils/nav-utils';
+import { forceArray, generateFulltextQuery } from '../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../lib/utils/branch-context';
-import { GlobalValueItem } from '../../../types/content-types/global-value-set';
+import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
+import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
+import { customSelectorHitWithLink } from '../../service-utils';
+import { contentStudioEditPathPrefix } from '../../../lib/constants';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
+
+type ReqParams = XP.Request['params'] & {
+    contentType: GlobalValueContentDescriptor;
+};
 
 const hitFromValueItem = (
     valueItem: GlobalValueItem,
@@ -20,27 +27,33 @@ const hitFromValueItem = (
     const displayName = `${content.displayName} - ${valueItem.itemName}`;
     const key = getGlobalValueUniqueKey(valueItem.key, content._id);
 
-    return {
-        id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
-        displayName: `${displayName} - ${valueItem.key}`,
-        description: `${valueItem.itemName} - Verdi: ${valueItem.numberValue}`,
-    };
+    return customSelectorHitWithLink(
+        {
+            id: withDescription ? appendMacroDescriptionToKey(key, displayName) : key,
+            displayName: `${displayName} - ${valueItem.key}`,
+            description: buildGlobalValuePreviewString(valueItem),
+        },
+        `${contentStudioEditPathPrefix}/${content._id}`
+    );
 };
 
-const getHitsFromQuery = (query: string | undefined, withDescription?: boolean) => {
-    const wordsWithWildcard = query
-        ?.split(' ')
-        .map((word) => `${word}*`)
-        .join(' ');
-
+const getHitsFromQuery = (
+    type: GlobalValueContentDescriptor,
+    query: string | undefined,
+    withDescription?: boolean
+) => {
     return contentLib
         .query({
             start: 0,
             count: 10000,
-            contentTypes: [globalValuesContentType],
+            contentTypes: [type],
             query:
                 query &&
-                `fulltext("data.valueItems.itemName, data.valueItems.key, displayName", "${wordsWithWildcard}", "AND")`,
+                generateFulltextQuery(
+                    query,
+                    ['data.valueItems.itemName', 'data.valueItems.key', 'displayName'],
+                    'AND'
+                ),
             filters: {
                 boolean: {
                     must: [
@@ -68,15 +81,13 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
             return acc;
         }
 
-        const valueItem = getGlobalValueItem(gvKey, contentId);
-
-        if (!valueItem) {
+        const content = getGlobalValueSet(contentId);
+        if (!content) {
             return acc;
         }
 
-        const content = contentLib.get({ key: contentId });
-
-        if (!content) {
+        const valueItem = getGlobalValueItem(gvKey, content);
+        if (!valueItem) {
             return acc;
         }
 
@@ -90,7 +101,7 @@ const getHitsFromSelectedIds = (ids: string | string[], withDescription?: boolea
     }, [] as Hit[]);
 
 export const globalValueSelectorService = (req: XP.Request) => {
-    const { query, ids } = req.params;
+    const { query, ids, contentType } = req.params as ReqParams;
 
     const withDescription = req.params.withDescription === 'true';
 
@@ -98,7 +109,7 @@ export const globalValueSelectorService = (req: XP.Request) => {
         () =>
             ids
                 ? getHitsFromSelectedIds(ids, withDescription)
-                : getHitsFromQuery(query, withDescription),
+                : getHitsFromQuery(contentType, query, withDescription),
         'master'
     );
 

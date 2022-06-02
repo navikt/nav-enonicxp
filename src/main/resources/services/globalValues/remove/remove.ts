@@ -5,8 +5,12 @@ import {
     validateCurrentUserPermissionForContent,
 } from '../../../lib/utils/auth-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { getGlobalValueSet, getGlobalValueUsage } from '../../../lib/utils/global-value-utils';
+import {
+    getGlobalValueSet,
+    getGlobalValueUsage,
+} from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
+import { logger } from '../../../lib/utils/logging';
 
 export const removeGlobalValueItemService = (req: XP.Request) => {
     const { key, contentId } = req.params;
@@ -39,8 +43,10 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
             return insufficientPermissionResponse('administrator');
         }
 
-        log.warning(
-            `Warning: removing in-use values with key ${key} - uses: ${JSON.stringify(usage)}`
+        logger.critical(
+            `Removing in-use value with key ${key} - uses: ${usage
+                .map((hit) => hit._path)
+                .join(', ')}`
         );
     }
 
@@ -67,7 +73,7 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
             },
         };
     } catch (e) {
-        log.error(`Error deleting ${key} on ${contentId} - ${e}`);
+        logger.critical(`Error deleting value ${key} on ${contentId} - ${e}`);
         return {
             status: 500,
             contentType: 'application/json',

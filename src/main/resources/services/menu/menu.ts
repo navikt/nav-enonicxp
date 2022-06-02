@@ -1,9 +1,12 @@
 import contentLib, { Content } from '/lib/xp/content';
 import cacheLib from '/lib/cache';
-import portalLib from '/lib/xp/portal';
+import { logger } from '../../lib/utils/logging';
+import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
+import { stripPathPrefix } from '../../lib/utils/nav-utils';
 
 const cacheKey = 'decorator-menu-cache';
 const menuPath = '/www.nav.no/dekorator-meny/';
+const myPageMenuPathSegment = '/my-page-menu';
 
 const cache = cacheLib.newCache({ size: 1, expire: 60 });
 
@@ -18,22 +21,18 @@ type MenuItem = {
     path: string;
     id: string;
     displayLock: boolean;
+    isMyPageMenu?: boolean;
     hasChildren: boolean;
     children: MenuItem[];
 };
 
 const getTargetPath = (menuItem: MenuItemContent) => {
     const targetId = menuItem.data.target;
-
     if (!targetId) {
         return '';
     }
 
-    const target = contentLib.get({
-        key: targetId,
-    });
-
-    // Don't include elements which are unpublished
+    const target = contentLib.get({ key: targetId });
     if (!target) {
         return '';
     }
@@ -41,9 +40,7 @@ const getTargetPath = (menuItem: MenuItemContent) => {
     if (target.type === 'no.nav.navno:external-link') {
         return target.data.url;
     } else {
-        return portalLib.pageUrl({
-            id: target._id,
-        });
+        return hasValidCustomPath(target) ? target.data.customPath : stripPathPrefix(target._path);
     }
 };
 
@@ -54,6 +51,7 @@ const menuItemContentTransformer = (menuItem: MenuItemContent): MenuItem => {
         displayName: menuItem.displayName,
         path: getTargetPath(menuItem),
         displayLock: menuItem.data.displayLock,
+        isMyPageMenu: menuItem._path.includes(myPageMenuPathSegment) || undefined,
         id: menuItem._id,
         hasChildren: children.length > 0,
         children,
@@ -95,7 +93,7 @@ export const get = () => {
             contentType: 'application/json',
         };
     } catch (e) {
-        log.error(`Could not retrieve decorator menu! - ${e}`);
+        logger.critical(`Could not retrieve decorator menu! - ${e}`);
 
         return {
             status: 500,

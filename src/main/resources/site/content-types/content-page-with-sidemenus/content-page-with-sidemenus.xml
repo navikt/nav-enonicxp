@@ -1,12 +1,13 @@
 <content-type>
-    <display-name>Produktside med sidemenyer</display-name>
-    <description>Produktside med intern-navigasjon og dynamiske komponenter</description>
+    <display-name>Produktside</display-name>
+    <description>Produktside med navigasjonsmeny og dynamiske komponenter</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="product-data"/>
+        <mixin name="product-details-selector"/>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>

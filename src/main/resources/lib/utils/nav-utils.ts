@@ -1,7 +1,7 @@
-import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { contentRepo, navnoRootPath } from '../constants';
+import { navnoRootPath } from '../constants';
 import { MediaDescriptor } from '../../types/content-types/content-config';
+import { logger } from './logging';
 
 // TODO: rydd i denne fila
 
@@ -27,16 +27,16 @@ export const getUnixTimeFromDateTimeString = (datetime?: string): number => {
     return new Date(validDateTime).getTime();
 };
 
-export const parseJsonArray = (json: string): any[] | null => {
+export const parseJsonArray = <Type = any>(json: string): Type[] | null => {
     try {
         const array = JSON.parse(json);
         if (Array.isArray(array)) {
             return array;
         }
-        log.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
+        logger.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
         return null;
     } catch (e) {
-        log.error(`Failed to parse JSON string ${json} - ${e}`);
+        logger.error(`Failed to parse JSON string ${json} - ${e}`);
         return null;
     }
 };
@@ -60,50 +60,6 @@ export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {
 
 export const notEmpty = <TValue>(value: TValue | null | undefined): value is TValue => {
     return value !== null && value !== undefined;
-};
-
-// Pushes nodes from draft to master, checking if theire already live
-export const pushLiveElements = (targetIds: string[]) => {
-    // publish changes
-    const targets = targetIds.filter((elem) => {
-        return !!elem;
-    });
-
-    const repoDraft = nodeLib.connect({
-        repoId: contentRepo,
-        branch: 'draft',
-        principals: ['role:system.admin'],
-    });
-    const repoMaster = nodeLib.connect({
-        repoId: contentRepo,
-        branch: 'master',
-        principals: ['role:system.admin'],
-    });
-    const masterHits = repoMaster.query({
-        count: targets.length,
-        filters: {
-            ids: {
-                values: targets,
-            },
-        },
-    }).hits;
-    const masterIds = masterHits.map((el) => el.id);
-
-    // important that we use resolve false when pushing objects to master, else we can get objects
-    // which were unpublished back to master without a published.from property
-    if (masterIds.length > 0) {
-        const pushResult = repoDraft.push({
-            keys: masterIds,
-            resolve: false,
-            target: 'master',
-        });
-
-        log.info(`Pushed ${masterIds.length} elements to master`);
-        log.info(JSON.stringify(pushResult, null, 4));
-        return pushResult;
-    }
-    log.info('No content was updated in master');
-    return [];
 };
 
 // Get a nested object value from an array of keys
@@ -183,3 +139,19 @@ export const isMedia = (content: Content): content is Content & { type: MediaDes
 const Thread = Java.type('java.lang.Thread');
 
 export const getCurrentThreadId = () => Number(Thread.currentThread().getId());
+
+export const serializableObjectsAreEqual = (obj1: object, obj2: object) =>
+    JSON.stringify(obj1) === JSON.stringify(obj2);
+
+export const generateFulltextQuery = (
+    query: string,
+    fieldsToSearch: string[],
+    logicOp: 'AND' | 'OR'
+) => {
+    const wordsWithWildcard = query
+        ?.split(' ')
+        .map((word) => `${word}*`)
+        .join(' ');
+
+    return `fulltext("${fieldsToSearch.join(',')}", "${wordsWithWildcard}", "${logicOp}")`;
+};

@@ -1,12 +1,13 @@
 import contentLib from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
 import taskLib from '/lib/xp/task';
-import { frontendCacheInvalidate } from './frontend-invalidate-requests';
+import { frontendInvalidatePaths } from './frontend-cache';
 import { runInBranchContext } from '../utils/branch-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
 import { clearLocalCaches, getCachesToClear, sendLocalCacheInvalidationEvent } from './local-cache';
+import { logger } from '../utils/logging';
 
 export const cacheInvalidateEventName = 'invalidate-cache';
 
@@ -55,7 +56,7 @@ const _invalidateCacheForNode = ({
 
         clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
 
-        log.info(
+        logger.info(
             `Invalidate event ${eventId} - Invalidating ${
                 contentToInvalidate.length
             } paths for root node ${node.id}: ${JSON.stringify(
@@ -69,14 +70,14 @@ const _invalidateCacheForNode = ({
             const changedPaths = findChangedPaths({ id: node.id, path: node.path });
 
             if (changedPaths.length > 0) {
-                log.info(
+                logger.info(
                     `Invalidating changed paths for node ${
                         node.id
                     } (event id ${eventId}): ${changedPaths.join(', ')}`
                 );
             }
 
-            frontendCacheInvalidate({
+            frontendInvalidatePaths({
                 contents: contentToInvalidate,
                 paths: changedPaths,
                 eventId,

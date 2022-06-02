@@ -3,13 +3,14 @@ import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
 import { cacheInvalidateEventName } from '../../lib/cache/cache-invalidate';
 import { NodeEventData } from '../../lib/cache/utils';
 import { contentRepo } from '../../lib/constants';
+import { logger } from '../../lib/utils/logging';
 
 export const get = (req: XP.Request) => {
     const { contentId } = req.params;
 
     if (!contentId) {
         const msg = 'No contentId specified for cache invalidate service';
-        log.info(msg);
+        logger.info(msg);
         return {
             status: 400,
             message: msg,
@@ -20,7 +21,7 @@ export const get = (req: XP.Request) => {
 
     if (!content) {
         const msg = `No content found for id ${contentId}`;
-        log.info(msg);
+        logger.info(msg);
         return {
             status: 400,
             message: msg,
@@ -32,7 +33,7 @@ export const get = (req: XP.Request) => {
         data: { id: content._id, path: content._path, branch: 'master', repo: contentRepo },
     });
 
-    log.info(`Manually triggered cache invalidation for ${content._path}`);
+    logger.info(`Manually triggered cache invalidation for ${content._path}`);
 
     return { status: 204 };
 };

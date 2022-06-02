@@ -1,4 +1,4 @@
-import { GlobalValueSetData } from './global-value-set';
+import { GlobalNumberValueSetData } from './global-value-set';
 import { Component } from '/lib/xp/portal';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 import { Calculator } from '../../site/content-types/calculator/calculator';
@@ -16,8 +16,10 @@ import { MegamenuItem } from '../../site/content-types/megamenu-item/megamenu-it
 import { Melding } from '../../site/content-types/melding/melding';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { PageList } from '../../site/content-types/page-list/page-list';
+import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { PublishingCalendar } from '../../site/content-types/publishing-calendar/publishing-calendar';
 import { SectionPage } from '../../site/content-types/section-page/section-page';
+import { Overview } from '../../site/content-types/overview/overview';
 import { SituationPage } from '../../site/content-types/situation-page/situation-page';
 import { ToolsPage } from '../../site/content-types/tools-page/tools-page';
 import { TransportPage } from '../../site/content-types/transport-page/transport-page';
@@ -25,6 +27,7 @@ import { NavNoDescriptor } from '../common';
 import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
+import { GlobalCaseTimeSetData } from './global-case-time-set';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -34,7 +37,8 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
-    'global-value-set': GlobalValueSetData;
+    'global-case-time-set': GlobalCaseTimeSetData;
+    'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;
     'internal-link': InternalLink;
     'large-table': LargeTable;
@@ -46,7 +50,9 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'page-list': PageList;
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
+    'product-details': ProductDetails;
     'section-page': SectionPage;
+    overview: Overview;
     'situation-page': SituationPage;
     'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
@@ -68,6 +74,17 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
     ? {
           type: 'portal:fragment';
           fragment: Component<'part' | 'layout'>;
+          data: undefined;
+      }
+    : Type extends 'portal:page-template'
+    ? {
+          type: 'portal:page-template';
+          data: { supports?: CustomContentDescriptor | CustomContentDescriptor[] };
+          page: Component<'page'> | EmptyObject;
+      }
+    : Type extends 'portal:site'
+    ? {
+          type: 'portal:site';
           data: undefined;
       }
     : never;

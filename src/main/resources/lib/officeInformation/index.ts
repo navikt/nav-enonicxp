@@ -7,6 +7,7 @@ import { OfficeInformation } from '../../site/content-types/office-information/o
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
+import { logger } from '../utils/logging';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -30,12 +31,6 @@ const selectedEnhetTypes: { [key: string]: boolean } = {
     TILTAK: true,
     YTA: true,
     OPPFUTLAND: true,
-};
-
-const logger = {
-    info: (message: string) => log.info(`[office information] ${message}`),
-    warning: (message: string) => log.warning(`[office information] ${message}`),
-    error: (message: string) => log.error(`[office information] ${message}`),
 };
 
 // If non-office information content already exists on the path for an office, delete it
@@ -113,7 +108,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             }),
                         });
                     } catch (e) {
-                        logger.error(
+                        logger.critical(
                             `Failed to modify office info content ${existingOffice._path} - ${e}`
                         );
                     }
@@ -143,7 +138,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             },
                         });
                     } catch (e) {
-                        logger.error(
+                        logger.critical(
                             `Failed to updated office information name for ${existingOffice._path} - ${e}`
                         );
                     }
@@ -159,7 +154,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     });
                     newOffices.push(result._path);
                 } catch (e) {
-                    logger.error(`Failed to create new office page for ${enhet.navn} - ${e}`);
+                    logger.critical(`Failed to create new office page for ${enhet.navn} - ${e}`);
                 }
             }
         }
@@ -212,11 +207,11 @@ const fetchOfficeInfo = () => {
         if (response.status === 200 && response.body) {
             return JSON.parse(response.body);
         } else {
-            logger.error(`Bad response from norg2: ${response.status} - ${response.message}`);
+            logger.critical(`Bad response from norg2: ${response.status} - ${response.message}`);
             return null;
         }
     } catch (e) {
-        logger.error(`Exception from norg2 request: ${e}`);
+        logger.critical(`Exception from norg2 request: ${e}`);
         return null;
     }
 };
@@ -228,7 +223,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
             logger.error('Failed to fetch office info, retrying in 5 minutes');
             runOfficeInfoUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
         } else {
-            logger.error('Failed to fetch office info');
+            logger.critical('Failed to fetch office info');
         }
         return;
     }
@@ -251,6 +246,7 @@ export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) 
             taskConfig: {
                 retry,
             },
+            masterOnly: false,
         });
     } else {
         taskLib.submitTask<UpdateOfficeInfoConfig>({

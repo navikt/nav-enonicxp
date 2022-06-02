@@ -1,30 +1,19 @@
 import contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
+import portalLib from '/lib/xp/portal';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
 import { runInBranchContext } from '../../lib/utils/branch-context';
-
-const errorIcon = {
-    data: `<svg width='32' height='32'>\
-<circle r='16' cx='16' cy='16' fill='#ba3a26'/>\
-</svg>`,
-    type: 'image/svg+xml',
-};
-
-const warningIcon = {
-    data: `<svg width='32' height='32'>\
-<circle r='16' cx='16' cy='16' fill='#ffaa33'/>\
-</svg>`,
-    type: 'image/svg+xml',
-};
+import { logger } from '../../lib/utils/logging';
+import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
     id: `error-${Date.now()}`,
     displayName,
     description,
-    icon: errorIcon,
+    icon: customSelectorErrorIcon,
 });
 
 const verifyIngressOwner = (path: string) => {
@@ -38,7 +27,7 @@ const verifyIngressOwner = (path: string) => {
 
         return response.headers['app-name'] === frontendAppName;
     } catch (e) {
-        log.warning(`Error determining ingress owner for ${path} - ${e}`);
+        logger.error(`Error determining ingress owner for ${path} - ${e}`);
         return false;
     }
 };
@@ -63,14 +52,17 @@ const getResult = ({
     }
 
     if (suggestedPath !== currentSelection) {
-        const contentWithCustomPath = getContentFromCustomPath(suggestedPath);
-        if (contentWithCustomPath.length > 0) {
-            return [
-                generateErrorHit(
-                    `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
-                    `"${contentWithCustomPath[0]._path}" bruker allerede denne kort-url'en`
-                ),
-            ];
+        const contentWithCustomPath = getContentFromCustomPath(suggestedPath)[0];
+        if (contentWithCustomPath) {
+            const currentContent = portalLib.getContent();
+            if (currentContent._id !== contentWithCustomPath._id) {
+                return [
+                    generateErrorHit(
+                        `Feil: "${suggestedPath}" er allerede i bruk som kort-url`,
+                        `"${contentWithCustomPath._path}" bruker allerede denne kort-url'en`
+                    ),
+                ];
+            }
         }
     }
 
@@ -107,7 +99,7 @@ const getResult = ({
                 id: suggestedPath,
                 displayName: suggestedPath,
                 description: `Advarsel: ${suggestedPath} er i bruk som redirect url - redirect vil overstyres av kort-url`,
-                icon: warningIcon,
+                icon: customSelectorWarningIcon,
             },
         ];
     }
