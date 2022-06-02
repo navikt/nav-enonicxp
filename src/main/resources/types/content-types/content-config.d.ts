@@ -28,6 +28,7 @@ import { EmptyObject } from '../util-types';
 import { ContactInformation } from '../../site/content-types/contact-information/contact-information';
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
 import { GlobalCaseTimeSetData } from './global-case-time-set';
+import { PayoutDates } from '../../site/content-types/payout-dates/payout-dates';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -48,6 +49,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     melding: Melding;
     'office-information': OfficeInformation;
     'page-list': PageList;
+    'payout-dates': PayoutDates;
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
     'product-details': ProductDetails;
