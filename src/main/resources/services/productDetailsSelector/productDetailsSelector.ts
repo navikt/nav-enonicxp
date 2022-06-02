@@ -87,21 +87,25 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
 };
 
 const getHitsFromQuery = (detailType: ProductDetailsType, query?: string): SelectorHit[] => {
-    const { hits } = contentLib.query({
-        count: 1000,
-        contentTypes: ['no.nav.navno:product-details'],
-        query: query && generateFulltextQuery(query, ['displayName'], 'AND'),
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.detailType',
-                        values: [detailType],
+    const { hits } = runInBranchContext(
+        () =>
+            contentLib.query({
+                count: 1000,
+                contentTypes: ['no.nav.navno:product-details'],
+                query: query && generateFulltextQuery(query, ['displayName'], 'AND'),
+                filters: {
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'data.detailType',
+                                values: [detailType],
+                            },
+                        },
                     },
                 },
-            },
-        },
-    });
+            }),
+        'master'
+    );
 
     return hits.map(transformHit);
 };
@@ -109,10 +113,7 @@ const getHitsFromQuery = (detailType: ProductDetailsType, query?: string): Selec
 const selectorHandler = (req: XP.Request) => {
     const { detailType, query, ids } = req.params as SelectorParams;
 
-    const hitsFromQuery = runInBranchContext(() => getHitsFromQuery(detailType, query), 'master');
-    const selectedHit = ids && getSelectedHit(ids, detailType);
-
-    const hits = [selectedHit, ...hitsFromQuery];
+    const hits = ids ? [getSelectedHit(ids, detailType)] : getHitsFromQuery(detailType, query);
 
     return {
         status: 200,
