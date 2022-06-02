@@ -52,8 +52,6 @@ export const get = (req: XP.Request) => {
         wipeComponents: string;
     };
 
-    log.info(JSON.stringify(req.params));
-
     if (!repoId || !contentId || !contentType) {
         logger.warning(
             `Malformed content-type switch request occured - repoId: ${repoId} - contentId: ${contentId} - contentType: ${contentType}`
