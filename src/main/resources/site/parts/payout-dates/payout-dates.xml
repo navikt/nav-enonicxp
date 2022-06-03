@@ -12,4 +12,7 @@
         <mixin name="expandable"/>
         <mixin name="auth-render-option"/>
     </form>
+    <config>
+        <allow-on-content-type>${app}:product-details</allow-on-content-type>
+    </config>
 </part>
