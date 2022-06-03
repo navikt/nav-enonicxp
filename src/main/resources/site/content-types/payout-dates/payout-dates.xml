@@ -4,8 +4,22 @@
     <display-name-label>Test</display-name-label>
     <super-type>base:structured</super-type>
     <form>
+        <field-set>
+            <label>Årstall</label>
+            <items>
+                <input name="year" type="Long">
+                    <label>Velg år</label>
+                    <default>2022</default>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1980</min>
+                        <max>2099</max>
+                    </config>
+                </input>
+            </items>
+        </field-set>
         <item-set name="dates">
-            <label>Utbetalingsdatoer</label>
+            <label>Datoer per måned</label>
             <occurrences minimum="1" maximum="1"/>
             <items>
                 <input name="jan" type="Long">
