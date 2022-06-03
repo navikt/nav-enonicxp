@@ -1,3 +1,14 @@
+#import "../richText/macrosFragment.graphql"
+
 fragment contentPayoutDates on no_nav_navno_PayoutDates {
     dataAsJson
+    data {
+        notes(contentId: $ref) {
+            processedHtml
+            macros {
+                ...macros
+                ...html_fragmentMacro
+            }
+        }
+    }
 }

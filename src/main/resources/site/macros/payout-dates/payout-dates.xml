@@ -2,7 +2,7 @@
     <display-name>Utbetalingsdatoer</display-name>
     <description>Setter inn en tabell med utbetalingsdatoer</description>
     <form>
-        <input name="dates" type="ContentSelector">
+        <input name="payoutDates" type="ContentSelector">
             <label>Velg utbetalingsdatoer</label>
             <occurrences minimum="1" maximum="1"/>
             <config>

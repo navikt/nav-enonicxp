@@ -31,6 +31,7 @@ import { overviewCallback } from './schema-creation-callbacks/overview-callback'
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
+import { payoutDatesDataCallback } from './schema-creation-callbacks/payout-dates';
 
 export const schemaCreationCallbacks = {
     Attachment: attachmentCallback,
@@ -50,6 +51,7 @@ export const schemaCreationCallbacks = {
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
+    no_nav_navno_PayoutDates_Data: payoutDatesDataCallback,
     Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter:
         contentListCallback('publish.first'),
     Part_no_nav_navno_dynamic_link_list_HentLenkerFraInnholdsliste: contentListCallback(),

@@ -6,7 +6,13 @@ export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.dynamic-alert.content',
 ];
 
-export const htmlAreaDataPaths = ['text', 'fact', 'article.data.text', 'article.data.fact'];
+export const htmlAreaDataPaths = [
+    'text',
+    'fact',
+    'article.data.text',
+    'article.data.fact',
+    'notes.html',
+];
 
 export const htmlAreaNodePaths = [
     ...htmlAreaDataPaths.map((path) => `data.${path}`),
@@ -47,4 +53,8 @@ export const findContentsWithFragmentMacro = (fragmentId: string) => {
 
 export const findContentsWithProductCardMacro = (targetPageId: string) => {
     return findContentsWithHtmlAreaText(`targetPage=\\"${targetPageId}`);
+};
+
+export const findContentsWithPayoutDatesMacro = (payoutDatesId: string) => {
+    return findContentsWithHtmlAreaText(`payoutDates=\\"${payoutDatesId}`);
 };

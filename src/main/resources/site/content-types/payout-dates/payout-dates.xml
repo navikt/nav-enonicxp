@@ -4,11 +4,13 @@
     <display-name-label>Test</display-name-label>
     <super-type>base:structured</super-type>
     <form>
-        <field-set>
+        <item-set name="dates">
             <label>Utbetalingsdatoer</label>
+            <occurrences minimum="1" maximum="1"/>
             <items>
                 <input name="jan" type="Long">
                     <label>Januar</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
@@ -16,6 +18,7 @@
                 </input>
                 <input name="feb" type="Long">
                     <label>Februar</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>29</max>
@@ -23,6 +26,7 @@
                 </input>
                 <input name="mar" type="Long">
                     <label>Mars</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
@@ -30,6 +34,7 @@
                 </input>
                 <input name="apr" type="Long">
                     <label>April</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>30</max>
@@ -37,6 +42,7 @@
                 </input>
                 <input name="may" type="Long">
                     <label>Mai</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
@@ -44,6 +50,7 @@
                 </input>
                 <input name="jun" type="Long">
                     <label>Juni</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>30</max>
@@ -51,6 +58,7 @@
                 </input>
                 <input name="jul" type="Long">
                     <label>Juli</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
@@ -58,6 +66,7 @@
                 </input>
                 <input name="aug" type="Long">
                     <label>August</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
@@ -65,6 +74,7 @@
                 </input>
                 <input name="sep" type="Long">
                     <label>September</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>30</max>
@@ -72,6 +82,7 @@
                 </input>
                 <input name="oct" type="Long">
                     <label>Oktober</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
@@ -79,6 +90,7 @@
                 </input>
                 <input name="nov" type="Long">
                     <label>November</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>30</max>
@@ -86,12 +98,41 @@
                 </input>
                 <input name="dec" type="Long">
                     <label>Desember</label>
+                    <occurrences minimum="1" maximum="1"/>
                     <config>
                         <min>1</min>
                         <max>31</max>
                     </config>
                 </input>
             </items>
-        </field-set>
+        </item-set>
+        <item-set name="notes">
+            <label>Merknader</label>
+            <help-text>Når datoene settes inn på en side, vil kun merknader for språket på siden vises</help-text>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input name="locale" type="ComboBox">
+                    <label>Språk</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>no</default>
+                    <config>
+                        <option value="no">Norsk</option>
+                        <option value="nn">Nynorsk</option>
+                        <option value="en">Engelsk</option>
+                        <option value="se">Samisk</option>
+                        <option value="pl">Polsk</option>
+                    </config>
+                </input>
+                <input name="html" type="HtmlArea">
+                    <label>Rik tekst</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <include>Undo Redo</include>
+                        <exclude>JustifyBlock Underline</exclude>
+                        <allowHeadings>h3 h4 normal</allowHeadings>
+                    </config>
+                </input>
+            </items>
+        </item-set>
     </form>
 </content-type>

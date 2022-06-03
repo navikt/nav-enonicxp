@@ -98,6 +98,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
     `${appDescriptor}:product-details`,
+    `${appDescriptor}:payout-dates`,
     'portal:page-template',
     'portal:fragment',
 ];

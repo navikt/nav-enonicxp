@@ -1,9 +1,11 @@
 #import "./macrosFragment.graphql"
+#import "./payoutDatesMacroFragment.graphql"
 
 fragment richText on RichText {
     processedHtml
     macros {
         ...macros
         ...html_fragmentMacro
+        ...payout_datesMacro
     }
 }

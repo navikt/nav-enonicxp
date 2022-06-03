@@ -9,5 +9,7 @@
                 <allowContentType>${app}:payout-dates</allowContentType>
             </config>
         </input>
+        <mixin name="expandable"/>
+        <mixin name="auth-render-option"/>
     </form>
 </part>
