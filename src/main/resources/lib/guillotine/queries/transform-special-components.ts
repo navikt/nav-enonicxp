@@ -72,6 +72,7 @@ const handleProductDetailsPart = (
         return;
     }
 
+    productDetailsPartConfig.language = detailContent.language;
     productDetailsPartConfig.components = detailComponents;
 };
 
