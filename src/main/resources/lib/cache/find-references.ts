@@ -1,6 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import {
     findContentsWithFragmentMacro,
+    findContentsWithPayoutDatesMacro,
     findContentsWithProductCardMacro,
 } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage } from '../global-values/global-value-utils';
@@ -109,6 +110,20 @@ const getProductDetailsReferences = (content: Content) => {
     return references;
 };
 
+const getPayoutDatesReferences = (content: Content) => {
+    if (content.type !== 'no.nav.navno:payout-dates') {
+        return [];
+    }
+
+    const references = findContentsWithPayoutDatesMacro(content._id);
+
+    logger.info(
+        `Found ${references.length} pages with references to payout dates id ${content._id}`
+    );
+
+    return references;
+};
+
 // Some content relations are not defined through explicit references in XP. This includes references
 // from macros. We must use our own implementations to find such references.
 const getCustomReferences = (content: Content | null) => {
@@ -122,6 +137,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getFragmentMacroReferences(content),
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
+        ...getPayoutDatesReferences(content),
     ];
 };
 

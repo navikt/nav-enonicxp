@@ -1,0 +1,7 @@
+#import "../../content-types/payoutDatesFragment.graphql"
+
+fragment partComponentPayoutDates on Part_no_nav_navno_payout_dates {
+    dates {
+        ...contentPayoutDates
+    }
+}
