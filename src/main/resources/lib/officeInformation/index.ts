@@ -207,11 +207,11 @@ const fetchOfficeInfo = () => {
         if (response.status === 200 && response.body) {
             return JSON.parse(response.body);
         } else {
-            logger.critical(`Bad response from norg2: ${response.status} - ${response.message}`);
+            logger.error(`Bad response from norg2: ${response.status} - ${response.message}`);
             return null;
         }
     } catch (e) {
-        logger.critical(`Exception from norg2 request: ${e}`);
+        logger.error(`Exception from norg2 request: ${e}`);
         return null;
     }
 };
@@ -223,7 +223,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
             logger.error('Failed to fetch office info, retrying in 5 minutes');
             runOfficeInfoUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
         } else {
-            logger.critical('Failed to fetch office info');
+            logger.critical('Failed to fetch office info from norg2');
         }
         return;
     }
