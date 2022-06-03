@@ -68,15 +68,60 @@ export interface PayoutDates {
   /**
    * Merknader
    */
-  notes?: Array<{
+  notes?: {
     /**
-     * Språk
+     * Selected
      */
-    locale: "no" | "nn" | "en" | "se" | "pl";
-
+    _selected: Array<"no" | "nn" | "en" | "se" | "pl">;
+    
     /**
-     * Rik tekst
+     * Norsk
      */
-    html: string;
-  }>;
+    no: {
+      /**
+       * Tekst
+       */
+      html: string;
+    };
+    
+    /**
+     * Nynorsk
+     */
+    nn: {
+      /**
+       * Tekst
+       */
+      html: string;
+    };
+    
+    /**
+     * Engelsk
+     */
+    en: {
+      /**
+       * Tekst
+       */
+      html: string;
+    };
+    
+    /**
+     * Samisk
+     */
+    se: {
+      /**
+       * Tekst
+       */
+      html: string;
+    };
+    
+    /**
+     * Polsk
+     */
+    pl: {
+      /**
+       * Tekst
+       */
+      html: string;
+    };
+  };
 }
