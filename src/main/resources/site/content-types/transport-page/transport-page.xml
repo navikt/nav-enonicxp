@@ -4,7 +4,6 @@
     <super-type>
         base:structured
     </super-type>
-    <is-abstract>true</is-abstract>
     <form>
         <mixin name="ingress"/>
         <mixin name="link-panels"/>
