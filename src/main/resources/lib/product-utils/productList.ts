@@ -46,6 +46,7 @@ const buildSimpleBaseProduct = (product: Content<ContentTypeWithProductDetails>)
 
     return {
         _id: product._id,
+        path: product._path,
         title: fullTitle,
         sortTitle: data.sortTitle || fullTitle,
         ingress: data.ingress,
@@ -65,7 +66,6 @@ const buildProductData = (
     product: Content,
     overviewType: Overview['overviewType']
 ): OverviewPageProductData | null => {
-    log.info(overviewType);
     if (!isContentWithProductDetails(product)) {
         return null;
     }
