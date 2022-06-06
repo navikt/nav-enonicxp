@@ -3,7 +3,7 @@ export interface Overview {
   /**
    * Type oversiktsside
    */
-  overviewType: "rates" | "payout_dates" | "processing_times";
+  overviewType: "rates" | "payout_dates" | "processing_times" | "all_products";
 
   /**
    * Legg til andre språkversjoner

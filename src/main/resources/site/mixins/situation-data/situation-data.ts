@@ -6,7 +6,7 @@ export interface SituationData {
   title?: string;
 
   /**
-   * Sett for utlisting og sortering
+   * Tittel for utlisting og sortering
    */
   sortTitle?: string;
 

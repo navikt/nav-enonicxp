@@ -8,18 +8,18 @@ import {
     ContentTypeWithProductDetails,
     isContentWithProductDetails,
     OverviewPageProductData,
+    ProductDetailsType,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
+import { appDescriptor } from '../constants';
+import { ContentDescriptor } from 'types/content-types/content-config';
 
-const cleanProduct = (
-    product: Content,
-    overviewType: Overview['overviewType']
-): OverviewPageProductData | null => {
-    if (!isContentWithProductDetails(product)) {
-        return null;
-    }
+const getProductDetails = (product: Content, overviewType: ProductDetailsType) => {
+    // Generated type definitions are incorrect due to nested mixins
+    const data = product.data as Content<ContentTypeWithProductDetails>['data'] & ProductData;
 
-    const detailsContentId = product.data[overviewType];
+    const detailsContentId = data[overviewType];
+
     if (!detailsContentId) {
         return null;
     }
@@ -33,6 +33,10 @@ const cleanProduct = (
         return null;
     }
 
+    return productDetails;
+};
+
+const buildSimpleBaseProduct = (product: Content<ContentTypeWithProductDetails>) => {
     const icons = getProductIllustrationIcons(product);
 
     // Generated type definitions are incorrect due to nested mixins
@@ -42,7 +46,6 @@ const cleanProduct = (
 
     return {
         _id: product._id,
-        productDetailsPath: productDetails._path,
         title: fullTitle,
         sortTitle: data.sortTitle || fullTitle,
         ingress: data.ingress,
@@ -58,11 +61,46 @@ const cleanProduct = (
     };
 };
 
+const buildProductData = (
+    product: Content,
+    overviewType: Overview['overviewType']
+): OverviewPageProductData | null => {
+    log.info(overviewType);
+    if (!isContentWithProductDetails(product)) {
+        return null;
+    }
+
+    if (overviewType === 'all_products') {
+        return buildSimpleBaseProduct(product);
+    }
+
+    const productDetails = getProductDetails(product, overviewType);
+
+    if (!productDetails) {
+        return null;
+    }
+
+    const simpleBaseProduct = buildSimpleBaseProduct(product);
+
+    return {
+        ...simpleBaseProduct,
+        productDetailsPath: productDetails._path,
+    };
+};
+
+const getRelevantContentTypes = (overviewType: string): ContentDescriptor[] => {
+    if (overviewType === 'product_list') {
+        return [`${appDescriptor}:content-page-with-sidemenus`];
+    }
+
+    return contentTypesWithProductDetails;
+};
+
 export const getAllProducts = (language: string, overviewType: Overview['overviewType']) => {
     const products = contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: contentTypesWithProductDetails,
+        contentTypes: getRelevantContentTypes(overviewType),
         filters: {
             boolean: {
                 must: {
@@ -77,7 +115,7 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
 
     return products
         .reduce((acc, content) => {
-            const productData = cleanProduct(content, overviewType);
+            const productData = buildProductData(content, overviewType);
             if (!productData) {
                 return acc;
             }

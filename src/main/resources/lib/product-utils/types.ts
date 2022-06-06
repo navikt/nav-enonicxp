@@ -15,7 +15,7 @@ export type OverviewPageIllustrationIcon = {
 
 export type OverviewPageProductData = {
     _id: string;
-    productDetailsPath: string;
+    productDetailsPath?: string;
     title: string;
     sortTitle: string;
     ingress: string;
@@ -29,6 +29,16 @@ export type OverviewPageProductData = {
         };
     };
 };
+
+export type ProductDetailsType = 'rates' | 'payout_dates' | 'processing_times';
+
+/*
+export enum ProductDetailsType {
+    RATES = 'rates',
+    PAYOUT_DATES = 'payout_dates',
+    PROCESSING_TIMES = 'processing_times',
+}
+*/
 
 export type ContentTypeWithProductDetails =
     | 'no.nav.navno:content-page-with-sidemenus'
