@@ -60,6 +60,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:product-details`,
+    `${appDescriptor}:payout-dates`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
@@ -98,6 +99,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
     `${appDescriptor}:product-details`,
+    `${appDescriptor}:payout-dates`,
     'portal:page-template',
     'portal:fragment',
 ];

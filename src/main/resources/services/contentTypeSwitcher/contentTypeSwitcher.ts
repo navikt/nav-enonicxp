@@ -6,7 +6,13 @@ import { logger } from '../../lib/utils/logging';
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
-const setContentType = (repoId: string, contentId: string, contentType: string) => {
+const setContentType = (
+    repoId: string,
+    contentId: string,
+    contentType: string,
+    wipeData: boolean,
+    wipeComponents: boolean
+) => {
     try {
         const repo = nodeLib.connect({
             repoId: repoId,
@@ -17,8 +23,14 @@ const setContentType = (repoId: string, contentId: string, contentType: string) 
             key: contentId,
             editor: (content) => {
                 content.type = contentType;
-                content.components = [];
-                content.data = {};
+
+                if (wipeComponents) {
+                    content.components = [];
+                }
+
+                if (wipeData) {
+                    content.data = {};
+                }
 
                 return content;
             },
@@ -32,10 +44,12 @@ const setContentType = (repoId: string, contentId: string, contentType: string) 
 };
 
 export const get = (req: XP.Request) => {
-    const { repoId, contentId, contentType } = req.params as {
+    const { repoId, contentId, contentType, wipeData, wipeComponents } = req.params as {
         repoId: string;
         contentId: string;
         contentType: string;
+        wipeData: string;
+        wipeComponents: string;
     };
 
     if (!repoId || !contentId || !contentType) {
@@ -65,7 +79,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    setContentType(repoId, contentId, contentType);
+    setContentType(repoId, contentId, contentType, wipeData === 'true', wipeComponents === 'true');
 
     return {
         status: 204,

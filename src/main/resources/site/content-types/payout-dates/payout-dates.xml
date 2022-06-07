@@ -1,0 +1,124 @@
+<content-type xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Utbetalingsdatoer</display-name>
+    <description>Utbetalingsdatoer per måned, kan settes inn som komponent eller macro</description>
+    <display-name-label>Test</display-name-label>
+    <super-type>base:structured</super-type>
+    <form>
+        <field-set>
+            <label>Årstall</label>
+            <items>
+                <input name="year" type="Long">
+                    <label>Velg år</label>
+                    <default>2022</default>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1980</min>
+                        <max>2099</max>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="dates">
+            <label>Datoer per måned</label>
+            <occurrences minimum="1" maximum="1"/>
+            <items>
+                <input name="jan" type="Long">
+                    <label>Januar</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+                <input name="feb" type="Long">
+                    <label>Februar</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>29</max>
+                    </config>
+                </input>
+                <input name="mar" type="Long">
+                    <label>Mars</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+                <input name="apr" type="Long">
+                    <label>April</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>30</max>
+                    </config>
+                </input>
+                <input name="may" type="Long">
+                    <label>Mai</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+                <input name="jun" type="Long">
+                    <label>Juni</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>30</max>
+                    </config>
+                </input>
+                <input name="jul" type="Long">
+                    <label>Juli</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+                <input name="aug" type="Long">
+                    <label>August</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+                <input name="sep" type="Long">
+                    <label>September</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>30</max>
+                    </config>
+                </input>
+                <input name="oct" type="Long">
+                    <label>Oktober</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+                <input name="nov" type="Long">
+                    <label>November</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>30</max>
+                    </config>
+                </input>
+                <input name="dec" type="Long">
+                    <label>Desember</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <min>1</min>
+                        <max>31</max>
+                    </config>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>
