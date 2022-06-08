@@ -1,0 +1,3 @@
+fragment contentPayoutDates on no_nav_navno_PayoutDates {
+    dataAsJson
+}

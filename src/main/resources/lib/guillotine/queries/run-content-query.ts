@@ -27,32 +27,33 @@ import mediaUnknownQuery from './media-queries/mediaUnknownQuery.graphql';
 import mediaVectorQuery from './media-queries/mediaVectorQuery.graphql';
 import mediaVideoQuery from './media-queries/mediaVideoQuery.graphql';
 
-import largeTableQuery from './content-queries/largeTableQuery.graphql';
-import urlQuery from './content-queries/urlQuery.graphql';
-import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
-import transportPageQuery from './content-queries/transportPageQuery.graphql';
-import internalLinkQuery from './content-queries/internalLinkQuery.graphql';
+import contactInformationQuery from './content-queries/contactInformationQuery.graphql';
+import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
+import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
 import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
-import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
-import meldingQuery from './content-queries/meldingQuery.graphql';
+import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
-import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
-import contantInformationQuery from './content-queries/contactInformationQuery.graphql';
-import pageListQuery from './content-queries/pageListQuery.graphql';
-import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
+import guidePageQuery from './content-queries/guidePageQuery.graphql';
+import internalLinkQuery from './content-queries/internalLinkQuery.graphql';
+import largeTableQuery from './content-queries/largeTableQuery.graphql';
 import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
-import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
-import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
-import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
-import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
-import situationPageQuery from './content-queries/situationPageQuery.graphql';
+import meldingQuery from './content-queries/meldingQuery.graphql';
+import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
-import guidePageQuery from './content-queries/guidePageQuery.graphql';
+import pageListQuery from './content-queries/pageListQuery.graphql';
+import payoutDatesQuery from './content-queries/payoutDatesQuery.graphql';
+import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
+import portalPageTemplateQuery from './content-queries/portalPageTemplateQuery.graphql';
+import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
+import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
+import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
+import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
+import situationPageQuery from './content-queries/situationPageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
-import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
-import portalPageTemplate from './content-queries/portalPageTemplateQuery.graphql';
+import transportPageQuery from './content-queries/transportPageQuery.graphql';
+import urlQuery from './content-queries/urlQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -68,7 +69,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:unknown': mediaUnknownQuery,
     'media:vector': mediaVectorQuery,
     'media:video': mediaVideoQuery,
-    'no.nav.navno:contact-information': contantInformationQuery,
+    'no.nav.navno:contact-information': contactInformationQuery,
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
     'no.nav.navno:product-details': productDetailsQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
@@ -82,6 +83,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
     'no.nav.navno:melding': meldingQuery,
     'no.nav.navno:office-information': officeInformationQuery,
+    'no.nav.navno:payout-dates': payoutDatesQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
     'no.nav.navno:section-page': sectionPageQuery,
@@ -93,7 +95,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
     'portal:site': portalSiteQuery,
-    'portal:page-template': portalPageTemplate,
+    'portal:page-template': portalPageTemplateQuery,
 };
 
 // TODO: improve these types if/when Guillotine gets better Typescript support
