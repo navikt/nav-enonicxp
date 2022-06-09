@@ -1,0 +1,32 @@
+# ---------- Exposer service ------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: giropops-service
+  namespace: girons
+spec:
+  selector:
+    name: giropops
+  ports:
+    - name:  xp-port
+      port:  8080
+      targetPort:  8080
+
+---
+# ---------- Internal service ------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: giropops-intra-service
+  namespace: girons
+spec:
+  clusterIP: None
+  selector:
+    name: giropops
+  ports:
+    - port: 5701
+      name: hazelcast
+    - port: 9300
+      name: elasticsearch
+  type: ClusterIP
+  publishNotReadyAddresses: true

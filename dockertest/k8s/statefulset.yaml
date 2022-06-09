@@ -1,0 +1,60 @@
+# ---------- Deploy ------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: giropops
+  namespace: girons
+spec:
+  serviceName: giropops-service
+  selector:
+    matchLabels:
+      name: giropops
+  template:
+    metadata:
+      labels:
+        name: giropops
+    spec:
+      containers:
+        - image: enonic/xp:7.9.2-ubuntu
+          name: xp-app
+          volumeMounts:
+            - mountPath: /enonic-xp/home/config/
+              name: config-volume
+            - mountPath: /enonic-xp/home/repo/blob/
+              name: blobs
+            - mountPath: /enonic-xp/home/snapshots/
+              name: snapshots
+            - mountPath: /enonic-xp/home/data/
+              name: data
+            - mountPath: /enonic-xp/home/deploy/
+              name: deploy
+          livenessProbe:
+            httpGet:
+              path: /cluster.manager
+              port: 2609
+            failureThreshold: 2
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /cluster.manager
+              port: 2609
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      terminationGracePeriodSeconds: 180
+      volumes:
+        - name: config-volume
+          configMap:
+            name: giropops-config
+        - name: blobs
+          persistentVolumeClaim:
+            claimName: giropops-blobs
+        - name: snapshots
+          persistentVolumeClaim:
+            claimName: giropops-snapshots
+        - name: data
+          persistentVolumeClaim:
+            claimName: giropops-data
+        - name: deploy
+          persistentVolumeClaim:
+            claimName: giropops-deploy

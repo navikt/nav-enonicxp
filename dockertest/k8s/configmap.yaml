@@ -1,0 +1,177 @@
+apiVersion: v1
+data:
+  README.txt: ""
+  com.enonic.app.contentstudio.cfg: "contentWizard.enableCollaboration=true\r\ncontentSecurityPolicy.enabled=false"
+  com.enonic.xp.app.cfg: "#filter = *\r\n"
+  com.enonic.xp.app.main.cfg: "# Disable the \"Welcome tour\" from the XP Home Screen.
+    Default enabled.\r\n# tourDisabled = false\r\n"
+  com.enonic.xp.app.standardidprovider.cfg: '#loginWithoutUser=true'
+  com.enonic.xp.audit.cfg: "# enabled = true\r\n# outputLogs = false\r\n# ageThreshold
+    ="
+  com.enonic.xp.blobstore.cfg: "#provider = file\r\n#cache = true\r\n#cache.sizeThreshold
+    = 1mb\r\n#cache.memoryCapacity = 100mb"
+  com.enonic.xp.blobstore.file.cfg: '#baseDir = ${xp.home}/repo/blob'
+  com.enonic.xp.cluster.cfg: "cluster.enabledtrue\r\n#node.name=<generated-UUID>\r\n#discovery.unicast.hosts=127.0.0.1\r\nnetwork.host=_eth0_\r\nnetwork.publish.host=_eth0_\r\n"
+  com.enonic.xp.content.cfg: "#auditlog.enabled = true\r\n\r\n#attachments.allowUnsafeNames
+    = false\r\n"
+  com.enonic.xp.elasticsearch.cfg: "#node.data = true\r\n#node.master = true\r\n\r\n#path
+    = ${xp.home}/repo/index\r\n#path.home = ${path}\r\n#path.data = ${path}/data\r\n#path.repo
+    = ${xp.home}/snapshots\r\n#path.work = ${path}/work\r\n#path.conf = ${path}/conf\r\n#path.logs
+    = ${path}/logs\r\n#path.plugins = ${path}/plugins\r\n\r\n#cluster.name = mycluster\r\n#cluster.routing.allocation.disk.threshold_enabled
+    = false\r\n\r\n#http.enabled = false\r\n#transport.tcp.port = 9300\r\n\r\n#gateway.expected_nodes
+    = 1\r\n#gateway.recover_after_time = 5m\r\n#gateway.recover_after_nodes = 1\r\n#discovery.zen.minimum_master_nodes
+    = 1\r\n#discovery.unicast.port=9300\r\n#index.recovery.initial_shards = 1\r\n\r\n##
+    Set to override cluster unicast settings\r\n## Example: discovery.unicast.sockets
+    = 192.168.0.1:9300,192.168.0.2:9301\r\ndiscovery.unicast.sockets = giropops-intra-service.girons.svc.cluster.local\r\n\r\n#index.translog.durability
+    = async\r\n#index.max_result_window = 500000\r\n"
+  com.enonic.xp.export.cfg: "exports.dir = ${xp.home}/data/export\r\n"
+  com.enonic.xp.extractor.cfg: '# body.size.limit = 500000'
+  com.enonic.xp.hazelcast.cfg: "## If true some properties are set based on xp cluster
+    configuration.\r\nclusterConfigDefaults=false\r\n\r\n## Hazelcast Lite member
+    which does not own any partitions.\r\n#lightMember=false\r\n\r\n#network.port=5701\r\n#network.portCount=100\r\n#network.portAutoIncrement=false\r\n\r\n##
+    Overrides the public address of a member. It should be set in the format \"host
+    IP address:port number\".\r\n## Ignored when clusterConfigDefaults is true.\r\n#network.publicAddress=\r\n\r\n#network.join.multicast.enabled=false\r\n\r\nnetwork.join.kubernetes.enabled=true\r\n\r\n##
+    kubernetes service DNS\r\nnetwork.join.kubernetes.serviceDns=giropops-intra-service.girons.svc.cluster.local\r\n\r\n##
+    kubernetes API\r\n#network.join.kubernetes.namespace=\r\n#network.join.kubernetes.serviceName=\r\n#network.join.kubernetes.serviceLabelName=\r\n#network.join.kubernetes.serviceLabelValue=\r\n#network.join.kubernetes.podLabelName=\r\n#network.join.kubernetes.podLabelValue=\r\n#network.join.kubernetes.resolveNotReadyAddresses=false\r\n#network.join.kubernetes.useNodeNameAsExternalAddress=false\r\n#network.join.kubernetes.kubernetesApiRetries=3\r\n\r\nnetwork.join.tcpIp.enabled=false\r\n\r\n##
+    Comma separated list of well known members.\r\n## If not provided and clusterConfigDefaults
+    is true then cluster's discovery.unicast.hosts used instead.\r\n#network.join.tcpIp.members=\r\n\r\n##
+    Enable network.interfaces\r\n## Ignored when clusterConfigDefaults is true\r\n#network.interfaces.enabled=false\r\n\r\n##
+    Comma separated list of ip addresses for binding.\r\n## Ignored when clusterConfigDefaults
+    is true\r\n#network.interfaces=\r\n\r\n## Advanced partition grouping\r\n#partition.group.enabled=false\r\n#partition.group.groupType=PER_MEMBER\r\n\r\n##
+    Enable Hazelcast REST API.\r\n#network.restApi.enabled=false\r\n\r\n## Comma separated
+    list of REST API Endpoint Groups.\r\n#network.restApi.restEndpointGroups=HEALTH_CHECK,
+    CLUSTER_READ\r\n\r\n## Enable or disable the sending of phone home data to Hazelcast's
+    phone home server.\r\n#system.hazelcast.phone.home.enabled=true\r\n\r\n## Bind
+    both server-socket and client-sockets to any local interface.\r\n#system.hazelcast.socket.bind.any=true\r\n\r\n#
+    Initial expected cluster size to wait before node to start completely\r\nsystem.hazelcast.initial.min.cluster.size=1\r\n\r\n#
+    Prefer IPv4 Stack, don't use IPv6\r\n#system.hazelcast.prefer.ipv4.stack=true\r\n\r\n#
+    The number of incremental ports, starting with the port number defined in the
+    network configuration, that is used to connect to a host.\r\n#system.hazelcast.tcp.join.port.try.count=1\r\n\r\n#
+    Maximum timeout of heartbeat in seconds for a member to assume it is dead.\r\n#system.hazelcast.max.no.heartbeat.seconds=60\r\n\r\n#
+    Heartbeat send interval in seconds.\r\n#system.hazelcast.heartbeat.interval.seconds=5\r\n\r\n#
+    Timeout which defines when master candidate gives up waiting for response to its
+    mastership claim.\r\n#system.hazelcast.mastership.claim.timeout.seconds=120\r\n\r\n#
+    Wait time before join operation\r\n#hazelcast.wait.seconds.before.join=5\r\n\r\n#
+    Maximum wait time before join operation\r\n#hazelcast.max.wait.seconds.before.join=20\r\n"
+  com.enonic.xp.image.cfg: "#scale.maxDimension = 8000\r\n#filters.maxTotal = 25\r\n#memoryLimit
+    = 10%\r\n"
+  com.enonic.xp.mail.cfg: "# smtpHost=localhost\r\n# smtpPort=25\r\n# smtpAuth=false\r\n#
+    smtpUser=user\r\n# smtpPassword=password\r\n# smtpTLS=false"
+  com.enonic.xp.media.cfg: "\r\n# Media type mappings\r\n# ext.mp3 = audio/mpeg3\r\n#
+    ext.p = text/x-pascal\r\n"
+  com.enonic.xp.portal.cfg: "#asset.cacheControl = public, max-age=31536000, immutable\r\n#media.public.cacheControl
+    = public, max-age=31536000, immutable\r\n#media.private.cacheControl = private,
+    max-age=31536000, immutable\r\n"
+  com.enonic.xp.repo.cfg: "#\r\n# Where to store snapshots\r\n#\r\nsnapshots.dir =
+    ${xp.home}/snapshots\r\n"
+  com.enonic.xp.scheduler.cfg: "# init-job.audit-log-cleanup.enabled=false\r\n# init-job.audit-log-cleanup.cron=0
+    5 * * *\r\n# init-job.audit-log-cleanup.descriptor=com.enonic.xp.app.system:audit-log-cleanup\r\n#
+    init-job.audit-log-cleanup.description=Job to clean up old audit log history\r\n#
+    init-job.audit-log-cleanup.user=system:su\r\n\r\n# init-job.vacuum.enabled=false\r\n#
+    init-job.vacuum.cron=0 5 * * *\r\n# init-job.vacuum.descriptor=com.enonic.xp.app.system:vacuum\r\n#
+    init-job.vacuum.description=Job to run vacuum\r\n# init-job.vacuum.user=system:su\r\n\r\n#
+    auditlog.enabled=true\r\n"
+  com.enonic.xp.server.deploy.cfg: "#\r\n# Deploy folder settings.\r\n#\r\n#interval
+    = 1000\r\n\r\n#\r\n# List of applications to deploy on startup or changes to this
+    file. If one of the entries is deleted, the application\r\n# is not deleted in
+    the database. You will manually have to uninstall.\r\n#\r\n#deploy.1 = <url>\r\n#deploy.2
+    = <url>\r\n"
+  com.enonic.xp.server.shell.cfg: "#\r\n# Remote shell configuration\r\n#\r\n\r\nenabled
+    = false\r\ntelnet.ip = 127.0.0.1\r\ntelnet.port = 5555\r\ntelnet.maxConnect =
+    2\r\ntelnet.socketTimeout = 0\r\n"
+  com.enonic.xp.server.trace.cfg: "#\r\n# Server trace configuration\r\n#\r\n\r\nenabled
+    = false\r\n"
+  com.enonic.xp.server.udc.cfg: "#\r\n# Set to false to disable usage data collector
+    (UDC)\r\n#\r\n# enabled = true\r\n"
+  com.enonic.xp.task.cfg: "#distributable.acceptInbound = true\r\n#distributable.acceptSystem
+    = true\r\n\r\n#clustered.timeout = PT5S\r\n"
+  com.enonic.xp.vacuum.cfg: "\r\n# ageThreshold = P21D #21 days\r\n\r\n# can not be
+    more than the index.max_result_window index setting of repository\r\n# versionsBatchSize
+    = 10000"
+  com.enonic.xp.web.dos.cfg: "\r\n# Enable dos filter (true/false)\r\nenabled = false\r\n\r\n#
+    Maximum number of requests from a connection per second. Requests in excess of
+    this are first delayed, then throttled.\r\nmaxRequestsPerSec = 25\r\n\r\n# Delay
+    imposed on all requests over the rate limit. -1 = reject request, 0 delay.\r\ndelayMs
+    = 100\r\n\r\n# Length of time, in ms, to blocking wait for the throttle semaphore.\r\nmaxWaitMs
+    = 50\r\n\r\n# Number of requests over the rate limit able to be considered at
+    once.\r\nthrottledRequests = 5\r\n\r\n# Length of time, in ms, to async wait for
+    semaphore.\r\nthrottleMs = 30000\r\n\r\n# Length of time, in ms, to allow the
+    request to run.\r\nmaxRequestMs = 30000\r\n\r\n# Length of time, in ms, to keep
+    track of request rates for a connection, before deciding that the user has gone
+    away, and discarding it.\r\nmaxIdleTrackerMs = 30000\r\n\r\n# If true, insert
+    the DoSFilter headers into the response.\r\ninsertHeaders = true\r\n\r\n# If true,
+    usage rate is tracked by session if a session exists.\r\ntrackSessions = true\r\n\r\n#
+    If true and session tracking is not used, then rate is tracked by IP+port (effectively
+    connection).\r\nremotePort = false\r\n\r\n# A comma-separated list of IP addresses
+    that will not be rate limited.\r\nipWhitelist =\r\n"
+  com.enonic.xp.web.header.cfg: "## Set or Add headers to every response\r\n## Format
+    [action] [header name]: [header value]\r\n## Supported header actions: set add
+    setDate addDate\r\n## Each action must be separated by a comma\r\n## Example:
+    headerConfig = set X-Frame-Options: SAMEORIGIN,set X-XSS-Protection: 1; mode=block,set
+    X-Content-Type-Options: nosniff\r\n#headerConfig ="
+  com.enonic.xp.web.jetty.cfg: "# host =\r\n# timeout = 60000\r\n# sendServerHeader
+    = false\r\n\r\n# http.enabled = true\r\n# http.xp.port = 8080\r\n# http.management.port
+    = 4848\r\n# http.monitor.port = 2609\r\n# http.requestHeaderSize = 32000\r\n#
+    http.responseHeaderSize = 32000\r\n# http.compliance = RFC7230_NO_AMBIGUOUS_URIS\r\n\r\n#
+    session.timeout = 60\r\n# session.cookieName = JSESSIONID\r\n# session.cookieSameSite
+    = Lax\r\n# session.cookieAlwaysSecure = false\r\n\r\n# multipart.store =\r\n#
+    multipart.maxFileSize = 16106127360\r\n# multipart.maxRequestSize = 16106127360\r\n#
+    multipart.fileSizeThreshold = 10240\r\n\r\n# gzip.enabled = true\r\n# gzip.minSize
+    = 23\r\n\r\n# log.enabled = false\r\n# log.file = ${xp.home}/logs/jetty-yyyy_mm_dd.request.log\r\n#
+    log.append = true\r\n# log.extended = true\r\n# log.timeZone = GMT\r\n# log.retainDays
+    = 31\r\n\r\n# threadPool.maxThreads = 200\r\n# threadPool.minThreads = 8\r\n#
+    threadPool.idleTimeout = 60000\r\n\r\n# websocket.idleTimeout = 300000\r\n"
+  com.enonic.xp.web.sessionstore.cfg: "#replicated or non-persistent\r\nstoreMode
+    = replicated\r\n\r\n# A non-zero value means that session won't be persisted if
+    only the access time changed\r\n# and it has been less than savePeriodSeconds
+    since the last time the session was written.\r\n# Has no effect in non-persistent
+    storeMode.\r\n# savePeriodSeconds = 0\r\n\r\n# Specifies how many seconds to wait
+    for non-session-owner nodes to be checked\r\n# to verify an expired session is
+    in fact expired throughout the cluster before closing it.\r\n# Has no effect in
+    non-persistent storeMode.\r\n# gracePeriodSeconds = 3600\r\n\r\n# Controls whether
+    a session that is newly created will be immediately (true)\r\n# or lazily (false)
+    persisted as the last request for the session exits.\r\n# Has no effect in non-persistent
+    storeMode.\r\nsaveOnCreate = true\r\n\r\n# Controls whether a session that is
+    changed (\"dirty\") will be persisted as the response is about to commit.\r\n#
+    If false, a dirty session will only be persisted when the last simultaneous request
+    for it leaves the session.\r\n# Has no effect in non-persistent storeMode.\r\nflushOnResponseCommit
+    = true"
+  com.enonic.xp.web.vhost.cfg: "enabled = true\r\n\r\nmapping.public.host = localhost\r\nmapping.public.source
+    = /\r\nmapping.public.target = /site/default/master/www.nav.no/\r\nmapping.public.idProvider.system
+    = default\r\n\r\nmapping.webapp.host = localhost\r\nmapping.webapp.source = /webapp\r\nmapping.webapp.target
+    = /webapp\r\nmapping.webapp.idProvider.system = default\r\n\r\nmapping.admin.host
+    = localhost\r\nmapping.admin.source = /admin\r\nmapping.admin.target = /admin\r\nmapping.admin.idProvider.system
+    = default\r\n\r\n# Fixes long content-selector queries from Content Studio\r\nmapping.selectorQueryIntercept.host
+    = localhost\r\nmapping.selectorQueryIntercept.source = /admin/rest/cms/default/base/content/selectorQuery\r\nmapping.selectorQueryIntercept.target
+    = /_/service/no.nav.navno/selectorQuery\r\nmapping.selectorQueryIntercept.idProvider.system
+    = default\r\n\r\nmapping.selectorQuery.host = localhost\r\nmapping.selectorQuery.source
+    = /selectorQuery\r\nmapping.selectorQuery.target = /admin/rest/cms/default/base/content/selectorQuery\r\nmapping.selectorQuery.idProvider.system
+    = default\r\n"
+  logback.xml: "<?xml version=\"1.0\"?>\r\n<configuration scan=\"true\" scanPeriod=\"60
+    seconds\">\r\n\r\n  <appender name=\"FILE\" class=\"ch.qos.logback.core.rolling.RollingFileAppender\">\r\n
+    \   <file>${xp.home}/logs/server.log</file>\r\n    <rollingPolicy class=\"ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy\">\r\n
+    \     <fileNamePattern>${xp.home}/logs/server.%d{yyyy-MM-dd}.%i.log</fileNamePattern>\r\n
+    \     <maxFileSize>100MB</maxFileSize>\r\n      <maxHistory>7</maxHistory>\r\n
+    \     <totalSizeCap>3GB</totalSizeCap>\r\n    </rollingPolicy>\r\n    <encoder>\r\n
+    \     <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>\r\n    </encoder>\r\n
+    \ </appender>\r\n\r\n  <appender name=\"STDOUT\" class=\"ch.qos.logback.core.ConsoleAppender\">\r\n
+    \   <withJansi>true</withJansi>\r\n    <encoder>\r\n      <pattern>%date{ISO8601}
+    %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>\r\n    </encoder>\r\n
+    \ </appender>\r\n\r\n  <root level=\"info\">\r\n    <appender-ref ref=\"STDOUT\"/>\r\n
+    \   <appender-ref ref=\"FILE\"/>\r\n  </root>\r\n\r\n  <logger name=\"Events.Service\"
+    level=\"WARN\" additivity=\"false\">\r\n    <appender-ref ref=\"STDOUT\"/>\r\n
+    \   <appender-ref ref=\"FILE\"/>\r\n  </logger>\r\n\r\n  <logger name=\"Events.Bundle\"
+    level=\"WARN\" additivity=\"false\">\r\n    <appender-ref ref=\"STDOUT\"/>\r\n
+    \   <appender-ref ref=\"FILE\"/>\r\n  </logger>\r\n\r\n</configuration>\r\n"
+  no.nav.navno.cfg: "env=localhost\r\nnorg2=http://localhost:5000\r\nnorg2ApiKey=myKey\r\nnorg2ConsumerId=myConsumerId\r\nxpOrigin=http://localhost:8080\r\nserviceSecret=dummyToken\r\nfrontendOrigin=http://host.docker.internal:3000"
+  system.properties: "#\r\n# Installation settings\r\n#\r\n# xp.name = demo\r\n\r\n#\r\n#
+    Global security settings\r\n#\r\nxp.suPassword = su\r\n\r\n#\r\n# Initialization
+    settings\r\n#\r\n# xp.init.adminUserCreation = true\r\n# xp.init.maxTries = 300\r\n\r\n#\r\n#
+    Configuration FileMonitor properties\r\n#\r\n# felix.fileinstall.poll = 1000\r\n#
+    felix.fileinstall.noInitialDelay = true\r\n#\r\n# Config loading properties\r\n#\r\n#
+    xp.config.paths = ${xp.home}/config\r\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: giropops-config
+  namespace: girons
