@@ -53,6 +53,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
     'product-details': ProductDetails;
+    'generic-page': ContentPageWithSidemenus;
     'section-page': SectionPage;
     overview: Overview;
     'situation-page': SituationPage;

@@ -27,6 +27,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     ...productPageContentTypes,
     `${appDescriptor}:dynamic-page`,
     `${appDescriptor}:overview`,
+    `${appDescriptor}:generic-page`,
 ];
 
 export const linkContentTypes: ContentTypeList = [
@@ -98,6 +99,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
+    `${appDescriptor}:generic-page`,
     `${appDescriptor}:product-details`,
     `${appDescriptor}:payout-dates`,
     'portal:page-template',
