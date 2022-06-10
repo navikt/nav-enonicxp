@@ -93,6 +93,10 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                 const existingChecksum = createObjectChecksum(existingOffice.data);
                 const updatedChecksum = createObjectChecksum(updatedOfficeData);
 
+                logger.info(
+                    `Checksums for ${updatedName}: ${existingChecksum} // ${updatedChecksum}`
+                );
+
                 if (
                     existingChecksum !== updatedChecksum ||
                     existingOffice.displayName !== enhet.navn
