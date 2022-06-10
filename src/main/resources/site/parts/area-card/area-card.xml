@@ -1,0 +1,9 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Områdekort</display-name>
+    <form>
+        <mixin name="link"/>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:dynamic-page</allow-on-content-type>
+    </config>
+</part>

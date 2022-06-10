@@ -26,6 +26,9 @@ fragment partComponents on PartComponentData {
                 alert_panel {
                     ...partComponentAlertPanel
                 }
+                area_card {
+                    ...partComponentAreaCard
+                }
                 button {
                     ...partComponentButton
                 }
