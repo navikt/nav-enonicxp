@@ -34,6 +34,7 @@ import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
 import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
+import genericPageQuery from './content-queries/genericPageQuery.graphql';
 import internalLinkQuery from './content-queries/internalLinkQuery.graphql';
 import largeTableQuery from './content-queries/largeTableQuery.graphql';
 import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
@@ -78,6 +79,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
     'no.nav.navno:guide-page': guidePageQuery,
+    'no.nav.navno:generic-page': genericPageQuery,
     'no.nav.navno:large-table': largeTableQuery,
     'no.nav.navno:main-article': mainArticleQuery,
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
