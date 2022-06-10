@@ -1,10 +1,12 @@
 <content-type>
-    <display-name>Generic page - Skal ikke brukes</display-name>
-    <description>
-        Utgått innholdstype - må være definert for å unngå krasj i Content Studio
-    </description>
+    <display-name>Generisk side</display-name>
+    <description>Side med innholdsmeny som brukes til enkelstående sider. Skal brukes unntaksvis.</description>
     <super-type>base:structured</super-type>
-    <is-abstract>true</is-abstract>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
     <form>
+        <mixin name="generic-page-data"/>
+        <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
