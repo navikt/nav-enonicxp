@@ -6,6 +6,8 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
+        <mixin name="audience"/>
+        <mixin name="custom-path-selector-required"/>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
