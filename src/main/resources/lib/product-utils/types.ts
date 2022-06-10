@@ -32,14 +32,6 @@ export type OverviewPageProductData = {
 
 export type ProductDetailsType = 'rates' | 'payout_dates' | 'processing_times';
 
-/*
-export enum ProductDetailsType {
-    RATES = 'rates',
-    PAYOUT_DATES = 'payout_dates',
-    PROCESSING_TIMES = 'processing_times',
-}
-*/
-
 export type ContentTypeWithProductDetails =
     | 'no.nav.navno:content-page-with-sidemenus'
     | 'no.nav.navno:guide-page'
