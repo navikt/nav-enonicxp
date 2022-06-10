@@ -1,0 +1,11 @@
+<content-type>
+    <display-name>Områdeside</display-name>
+    <description>Områdeside</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>
