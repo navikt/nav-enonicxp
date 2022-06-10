@@ -89,7 +89,7 @@ const buildProductData = (
 };
 
 const getRelevantContentTypes = (overviewType: string): ContentDescriptor[] => {
-    if (overviewType === 'product_list') {
+    if (overviewType === 'all_products') {
         return [`${appDescriptor}:content-page-with-sidemenus`];
     }
 
