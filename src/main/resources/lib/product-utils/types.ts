@@ -3,6 +3,7 @@ import { MediaDescriptor } from '../../types/content-types/content-config';
 import { ProductData } from '../../site/mixins/product-data/product-data';
 import { contentTypesWithProductDetails as _contentTypesWithProductDetails } from '../contenttype-lists';
 import { stringArrayToSet } from '../utils/nav-utils';
+import { Overview } from 'site/content-types/overview/overview';
 
 const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductDetails);
 
@@ -16,6 +17,7 @@ export type OverviewPageIllustrationIcon = {
 export type OverviewPageProductData = {
     _id: string;
     productDetailsPath?: string;
+    path: string;
     title: string;
     sortTitle: string;
     ingress: string;
