@@ -31,6 +31,7 @@ import contactInformationQuery from './content-queries/contactInformationQuery.g
 import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
 import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
 import externalLinkQuery from './content-queries/externalLinkQuery.graphql';
+import frontPageQuery from './content-queries/frontPageQuery.graphql';
 import globalCaseTimeQuery from './content-queries/globalCaseTimeSetQuery.graphql';
 import globalValueSetQuery from './content-queries/globalValueSetQuery.graphql';
 import guidePageQuery from './content-queries/guidePageQuery.graphql';
@@ -75,6 +76,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:product-details': productDetailsQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
+    'no.nav.navno:front-page': frontPageQuery,
     'no.nav.navno:internal-link': internalLinkQuery,
     'no.nav.navno:global-case-time-set': globalCaseTimeQuery,
     'no.nav.navno:global-value-set': globalValueSetQuery,
@@ -119,7 +121,6 @@ export const runGuillotineContentQuery = (
     const { _id } = baseContent;
 
     const contentQuery = graphQlContentQueries[baseContent.type];
-
     if (!contentQuery) {
         return null;
     }
