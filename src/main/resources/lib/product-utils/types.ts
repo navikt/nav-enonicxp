@@ -30,7 +30,7 @@ export type OverviewPageProductData = {
     };
 };
 
-export type ProductDetailsType = 'rates' | 'payout_dates' | 'processing_times';
+export type ProductDetailsType = Exclude<Overview['overviewType'], 'all_products'>;
 
 export type ContentTypeWithProductDetails =
     | 'no.nav.navno:content-page-with-sidemenus'
