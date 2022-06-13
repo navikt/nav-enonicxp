@@ -27,6 +27,7 @@ import mediaUnknownQuery from './media-queries/mediaUnknownQuery.graphql';
 import mediaVectorQuery from './media-queries/mediaVectorQuery.graphql';
 import mediaVideoQuery from './media-queries/mediaVideoQuery.graphql';
 
+import areaPageQuery from './content-queries/areaPageQuery.graphql';
 import contactInformationQuery from './content-queries/contactInformationQuery.graphql';
 import contentPageWithSidemenusQuery from './content-queries/contentPageWithSidemenusQuery.graphql';
 import dynamicPageQuery from './content-queries/dynamicPageQuery.graphql';
@@ -71,6 +72,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:unknown': mediaUnknownQuery,
     'media:vector': mediaVectorQuery,
     'media:video': mediaVideoQuery,
+    'no.nav.navno:area-page': areaPageQuery,
     'no.nav.navno:contact-information': contactInformationQuery,
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
     'no.nav.navno:product-details': productDetailsQuery,
