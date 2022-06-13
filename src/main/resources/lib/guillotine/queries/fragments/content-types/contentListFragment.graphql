@@ -1,6 +1,8 @@
 #import "../mixins/legacyShortFragments.graphql"
+#import "../contentCommonFragment.graphql"
 
 fragment contentContentList on no_nav_navno_ContentList {
+    ...contentCommon
     data {
         sortedBy
         sectionContents {
