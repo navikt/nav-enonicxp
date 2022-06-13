@@ -30,15 +30,19 @@ import { ContactInformation } from '../../site/content-types/contact-information
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
 import { GlobalCaseTimeSetData } from './global-case-time-set';
 import { PayoutDates } from '../../site/content-types/payout-dates/payout-dates';
+import { FrontPage } from '../../site/content-types/front-page/front-page';
+import { AreaPage } from '../../site/content-types/area-page/area-page';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
+    'area-page': AreaPage;
     calculator: Calculator;
     'contact-information': ContactInformation;
     'content-list': ContentList;
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
+    'front-page': FrontPage;
     'global-case-time-set': GlobalCaseTimeSetData;
     'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;

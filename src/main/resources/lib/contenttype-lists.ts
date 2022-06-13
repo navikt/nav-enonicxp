@@ -28,6 +28,8 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:dynamic-page`,
     `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
+    `${appDescriptor}:front-page`,
+    `${appDescriptor}:area-page`,
 ];
 
 export const linkContentTypes: ContentTypeList = [
