@@ -4,6 +4,7 @@ import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-
 import { Calculator } from '../../site/content-types/calculator/calculator';
 import { ContentList } from '../../site/content-types/content-list/content-list';
 import { ContentPageWithSidemenus } from '../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import { GenericPage } from '../../site/content-types/generic-page/generic-page';
 import { DynamicPage } from '../../site/content-types/dynamic-page/dynamic-page';
 import { ExternalLink } from '../../site/content-types/external-link/external-link';
 import { GuidePage } from '../../site/content-types/guide-page/guide-page';
@@ -53,6 +54,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
     'product-details': ProductDetails;
+    'generic-page': GenericPage;
     'section-page': SectionPage;
     overview: Overview;
     'situation-page': SituationPage;

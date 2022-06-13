@@ -1,0 +1,15 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../mixins/animatedIconsTargetFragment.graphql"
+
+fragment genericPage on no_nav_navno_GenericPage {
+    dataAsJson
+    data {
+        audience
+        languages {
+            ...languagesMixin
+        }
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}
