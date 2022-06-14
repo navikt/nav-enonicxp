@@ -90,7 +90,7 @@ const buildProductData = (
 
 const getRelevantContentTypes = (overviewType: string): ContentDescriptor[] => {
     if (overviewType === 'all_products') {
-        return [`${appDescriptor}:content-page-with-sidemenus`];
+        return [`${appDescriptor}:content-page-with-sidemenus`, `${appDescriptor}:guide-page`];
     }
 
     return contentTypesWithProductDetails;
@@ -103,12 +103,20 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
         contentTypes: getRelevantContentTypes(overviewType),
         filters: {
             boolean: {
-                must: {
-                    hasValue: {
-                        field: 'language',
-                        values: [language],
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [language],
+                        },
                     },
-                },
+                    {
+                        hasValue: {
+                            field: 'data.audience',
+                            values: ['person'],
+                        },
+                    },
+                ],
             },
         },
     }).hits;

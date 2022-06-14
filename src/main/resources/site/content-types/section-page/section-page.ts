@@ -53,6 +53,16 @@ export interface SectionPage {
   /**
    * Hvor mange elementer i undermenyene er tillatt
    */
+  nrNTK?: number;
+
+  /**
+   * Velg innhold
+   */
+  ntkContents?: string;
+
+  /**
+   * Hvor mange elementer i undermenyene er tillatt
+   */
   nrNews?: number;
 
   /**
@@ -68,27 +78,12 @@ export interface SectionPage {
   /**
    * Hvor mange elementer i undermenyene er tillatt
    */
-  nrNTK?: number;
-
-  /**
-   * Velg innhold
-   */
-  ntkContents?: string;
-
-  /**
-   * Hvor mange elementer i undermenyene er tillatt
-   */
   nrSC?: number;
 
   /**
    * Velg innhold
    */
   scContents?: string;
-
-  /**
-   * Velg innhold
-   */
-  breaking_news?: Array<string>;
 
   /**
    * Legg til andre språkversjoner
