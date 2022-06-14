@@ -67,7 +67,10 @@ export const typesWithDeepReferences: ContentTypeList = [
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
-    ...dynamicPageContentTypes,
+    ...productPageContentTypes,
+    `${appDescriptor}:dynamic-page`,
+    `${appDescriptor}:generic-page`,
+    `${appDescriptor}:overview`,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,

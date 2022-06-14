@@ -7,12 +7,13 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Overskrift</label>
+            <label>Områdedata</label>
             <items>
                 <input name="header" type="TextLine">
                     <label>Overskrift</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
+                <mixin name="area"/>
             </items>
         </field-set>
         <mixin name="area-navigation"/>
