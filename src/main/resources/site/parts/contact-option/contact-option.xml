@@ -1,6 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Kontakt-oss kanal</display-name>
-    <description>Chat, skriv til oss eller telefon</description>
+    <description>Skriv til oss, ring oss, chat etc</description>
     <form>
         <option-set name="contactOptions">
             <label>Kontakt-oss kanaler</label>
@@ -45,6 +45,28 @@
                         <input name="phoneNumber" type="RadioButton">
                             <label>-</label>
                             <occurrences minimum="0" maximum="1"/>
+                        </input>
+                    </items>
+                </option>
+                <option name="navoffice">
+                    <label>Finn ditt NAV-kontor</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                        </input>
+                        <input name="ingress" type="TextArea">
+                            <label>Overstyr ingress</label>
+                        </input>
+                    </items>
+                </option>
+                <option name="aidcentral">
+                    <label>Finn din hjelpemiddelsentral</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                        </input>
+                        <input name="ingress" type="TextArea">
+                            <label>Overstyr ingress</label>
                         </input>
                     </items>
                 </option>
