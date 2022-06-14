@@ -1,0 +1,16 @@
+<mixin>
+    <form>
+        <field-set>
+            <label>Områdenavigasjon</label>
+            <items>
+                <input name="areasRefs" type="ContentSelector">
+                    <label>Velg områder</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <config>
+                        <allowContentType>${app}:area-page</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
+</mixin>

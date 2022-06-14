@@ -6,7 +6,22 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="custom-path-selector-required"/>
+        <field-set>
+            <label>Overskrift</label>
+            <items>
+                <input name="header" type="TextLine">
+                    <label>Overskrift</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="area-navigation"/>
+        <field-set>
+            <label>Kort-url</label>
+            <items>
+                <mixin name="custom-path-selector"/>
+            </items>
+        </field-set>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>

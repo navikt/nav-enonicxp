@@ -1,10 +1,14 @@
 #import "../mixins/languagesFragment.graphql"
+#import "../mixins/areasFragment.graphql"
 
 fragment contentAreaPage on no_nav_navno_AreaPage {
     dataAsJson
     data {
         languages {
             ...languagesMixin
+        }
+        areasRefs {
+            ...areasMixin
         }
     }
 }

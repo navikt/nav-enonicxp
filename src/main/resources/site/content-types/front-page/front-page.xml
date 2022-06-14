@@ -7,28 +7,21 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Header for områdenavigasjon</label>
+            <label>Overskrift for områdenavigasjon</label>
             <items>
                 <input name="areasHeader" type="TextLine">
-                    <label>Skriv inn</label>
+                    <label>Overskrift</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
             </items>
         </field-set>
+        <mixin name="area-navigation"/>
         <field-set>
-            <label>Områder under denne forsiden</label>
+            <label>Kort-url</label>
             <items>
-                <input name="areas" type="ContentSelector">
-                    <label>Velg områder</label>
-                    <help-text>Velg innhold som det skal henvises til</help-text>
-                    <occurrences maximum="0" minimum="0"/>
-                    <config>
-                        <allowContentType>${app}:area-page</allowContentType>
-                    </config>
-                </input>
+                <mixin name="custom-path-selector"/>
             </items>
         </field-set>
-        <mixin name="custom-path-selector"/>
         <mixin name="dynamic-page-common"/>
     </form>
 </content-type>
