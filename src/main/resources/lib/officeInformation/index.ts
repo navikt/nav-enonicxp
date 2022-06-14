@@ -90,7 +90,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
 
             // if the office page already exists, update the existing content
             if (existingOffice) {
-                const existingChecksum = createObjectChecksum(existingOffice.data);
+                const existingChecksum = existingOffice.data.checksum;
                 const updatedChecksum = createObjectChecksum(updatedOfficeData);
 
                 if (
@@ -104,7 +104,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                             editor: (content) => ({
                                 ...content,
                                 displayName: enhet.navn,
-                                data: updatedOfficeData,
+                                data: { ...updatedOfficeData, checksum: updatedChecksum },
                             }),
                         });
                     } catch (e) {
