@@ -145,14 +145,15 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                 }
             } else {
                 try {
-                    const checksum = createObjectChecksum(updatedOfficeData);
-
                     const result = contentLib.create({
                         name: updatedName,
                         parentPath: parentPath,
                         displayName: enhet.navn,
                         contentType: officeInfoContentType,
-                        data: { ...updatedOfficeData, checksum },
+                        data: {
+                            ...updatedOfficeData,
+                            checksum: createObjectChecksum(updatedOfficeData),
+                        },
                     });
                     newOffices.push(result._path);
                 } catch (e) {
