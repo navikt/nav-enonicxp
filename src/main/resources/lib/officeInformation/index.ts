@@ -88,7 +88,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                 (content) => content.data?.enhet?.enhetId === enhet.enhetId
             );
 
-            // if the office page already exists, update the existing content
+            // If the office page already exists, update the existing content
             if (existingOffice) {
                 const existingChecksum = existingOffice.data.checksum;
                 const updatedChecksum = createObjectChecksum(updatedOfficeData);
