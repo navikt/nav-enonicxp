@@ -97,7 +97,6 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                     existingChecksum !== updatedChecksum ||
                     existingOffice.displayName !== enhet.navn
                 ) {
-                    updated.push(existingOffice._path);
                     try {
                         contentLib.modify<OfficeInformationDescriptor>({
                             key: existingOffice._id,
@@ -107,6 +106,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                                 data: { ...updatedOfficeData, checksum: updatedChecksum },
                             }),
                         });
+                        updated.push(existingOffice._path);
                     } catch (e) {
                         logger.critical(
                             `Failed to modify office info content ${existingOffice._path} - ${e}`
@@ -145,12 +145,14 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                 }
             } else {
                 try {
+                    const checksum = createObjectChecksum(updatedOfficeData);
+
                     const result = contentLib.create({
                         name: updatedName,
                         parentPath: parentPath,
                         displayName: enhet.navn,
                         contentType: officeInfoContentType,
-                        data: updatedOfficeData,
+                        data: { ...updatedOfficeData, checksum },
                     });
                     newOffices.push(result._path);
                 } catch (e) {
