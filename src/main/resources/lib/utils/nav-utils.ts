@@ -2,6 +2,7 @@ import { Content } from '/lib/xp/content';
 import { navnoRootPath } from '../constants';
 import { MediaDescriptor } from '../../types/content-types/content-config';
 import { logger } from './logging';
+import { generateUUID } from './uuid';
 
 // TODO: rydd i denne fila
 
@@ -83,46 +84,8 @@ export const getNestedValue = (obj: Record<string, any>, keysString: string) => 
     return getNestedValueFromKeyArray(obj, keysString?.split('.'));
 };
 
-const hashCode = (str: string) => {
-    let hash = 0;
-    if (str.length === 0) return hash;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        // eslint-disable-next-line
-        hash = (hash << 5) - hash + char;
-        // eslint-disable-next-line
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-};
-
-const removeNullProperties = (obj: Record<string, any>) => {
-    return Object.keys(obj).reduce((acc, key) => {
-        const value = obj[key];
-        if (typeof value === 'object' && value !== null) {
-            if (!Array.isArray(value) && Object.keys(value).length > 0) {
-                acc[key] = removeNullProperties(value);
-            }
-            if (Array.isArray(value) && value.length > 0) {
-                const moddedList = value.map((item) => {
-                    if (typeof item === 'object') {
-                        return removeNullProperties(item);
-                    }
-                    return typeof value === 'string' ? value : `${value}`;
-                });
-                acc[key] = moddedList.length === 1 ? moddedList[0] : moddedList;
-            }
-        } else if (value !== null) {
-            acc[key] = typeof value === 'string' ? value : `${value}`;
-        }
-        return acc;
-    }, {} as Record<string, any>);
-};
-
 export const createObjectChecksum = (obj: Record<string, any>) => {
-    const cleanObj = removeNullProperties(obj);
-    const serializedObj = JSON.stringify(cleanObj).split('').sort().join();
-    return hashCode(serializedObj);
+    return generateUUID(JSON.stringify(obj));
 };
 
 const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
