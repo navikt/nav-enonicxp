@@ -80,87 +80,88 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
         const { enhet } = updatedOfficeData;
 
         // ignore closed offices and include only selected types
-        if (enhet.status !== 'Nedlagt' && selectedEnhetTypes[enhet.type]) {
-            officesInNorg[enhet.enhetId] = true;
+        if (enhet.status === 'Nedlagt' || !selectedEnhetTypes[enhet.type]) {
+            return;
+        }
 
-            const updatedName = commonLib.sanitize(enhet.navn);
-            deleteIfContentExists(updatedName);
+        officesInNorg[enhet.enhetId] = true;
 
-            const existingOffice = existingOffices.find(
-                (content) => content.data?.enhet?.enhetId === enhet.enhetId
-            );
+        const updatedName = commonLib.sanitize(enhet.navn);
+        deleteIfContentExists(updatedName);
 
-            // If the office page already exists, update the existing content
-            if (existingOffice) {
-                const existingChecksum = existingOffice.data.checksum;
-                const updatedChecksum = createObjectChecksum(updatedOfficeData);
+        const existingOffice = existingOffices.find(
+            (content) => content.data?.enhet?.enhetId === enhet.enhetId
+        );
 
-                if (
-                    existingChecksum !== updatedChecksum ||
-                    existingOffice.displayName !== enhet.navn
-                ) {
-                    try {
-                        contentLib.modify<OfficeInformationDescriptor>({
-                            key: existingOffice._id,
-                            editor: (content) => ({
-                                ...content,
-                                displayName: enhet.navn,
-                                data: { ...updatedOfficeData, checksum: updatedChecksum },
-                            }),
-                        });
-                        updated.push(existingOffice._path);
-                    } catch (e) {
-                        logger.critical(
-                            `Failed to modify office info content ${existingOffice._path} - ${e}`
-                        );
-                    }
-                }
+        // If the office page already exists, update the existing content
+        if (existingOffice) {
+            const updatedChecksum = createObjectChecksum(updatedOfficeData);
 
-                const currentName = existingOffice._name;
-
-                if (updatedName !== currentName) {
-                    try {
-                        logger.info(`Updating name/path: ${currentName} -> ${updatedName}`);
-
-                        // Move the office info page to a new path if the name changed
-                        contentLib.move({
-                            source: existingOffice._path,
-                            target: updatedName,
-                        });
-
-                        // Create a redirect from the old path
-                        contentLib.create<'no.nav.navno:internal-link'>({
-                            name: currentName,
-                            parentPath: parentPath,
-                            displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
-                            contentType: `${app.name}:internal-link`,
-                            data: {
-                                target: existingOffice._id,
-                                permanentRedirect: false,
-                            },
-                        });
-                    } catch (e) {
-                        logger.critical(
-                            `Failed to updated office information name for ${existingOffice._path} - ${e}`
-                        );
-                    }
-                }
-            } else {
+            if (
+                existingOffice.data.checksum !== updatedChecksum ||
+                existingOffice.displayName !== enhet.navn
+            ) {
                 try {
-                    const result = contentLib.create({
-                        name: updatedName,
+                    contentLib.modify<OfficeInformationDescriptor>({
+                        key: existingOffice._id,
+                        editor: (content) => ({
+                            ...content,
+                            displayName: enhet.navn,
+                            data: { ...updatedOfficeData, checksum: updatedChecksum },
+                        }),
+                    });
+                    updated.push(existingOffice._path);
+                } catch (e) {
+                    logger.critical(
+                        `Failed to modify office info content ${existingOffice._path} - ${e}`
+                    );
+                }
+            }
+
+            const currentName = existingOffice._name;
+
+            if (updatedName !== currentName) {
+                try {
+                    logger.info(`Updating name/path: ${currentName} -> ${updatedName}`);
+
+                    // Move the office info page to a new path if the name changed
+                    contentLib.move({
+                        source: existingOffice._path,
+                        target: updatedName,
+                    });
+
+                    // Create a redirect from the old path
+                    contentLib.create<'no.nav.navno:internal-link'>({
+                        name: currentName,
                         parentPath: parentPath,
-                        displayName: enhet.navn,
-                        contentType: officeInfoContentType,
+                        displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
+                        contentType: `${app.name}:internal-link`,
                         data: {
-                            ...updatedOfficeData,
-                            checksum: createObjectChecksum(updatedOfficeData),
+                            target: existingOffice._id,
+                            permanentRedirect: false,
                         },
                     });
-                    newOffices.push(result._path);
                 } catch (e) {
-                    logger.critical(`Failed to create new office page for ${enhet.navn} - ${e}`);
+                    logger.critical(
+                        `Failed to updated office information name for ${existingOffice._path} - ${e}`
+                    );
                 }
+            }
+        } else {
+            try {
+                const result = contentLib.create({
+                    name: updatedName,
+                    parentPath: parentPath,
+                    displayName: enhet.navn,
+                    contentType: officeInfoContentType,
+                    data: {
+                        ...updatedOfficeData,
+                        checksum: createObjectChecksum(updatedOfficeData),
+                    },
+                });
+                newOffices.push(result._path);
+            } catch (e) {
+                logger.critical(`Failed to create new office page for ${enhet.navn} - ${e}`);
             }
         }
     });
