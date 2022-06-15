@@ -8,6 +8,7 @@ import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
+import { runInBranchContext } from '../utils/branch-context';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -233,7 +234,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
     logger.info('Fetched office info from norg2, updating site data...');
 
-    updateOfficeInfo(newOfficeInfo);
+    runInBranchContext(() => updateOfficeInfo(newOfficeInfo), 'draft');
 };
 
 export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) => {
