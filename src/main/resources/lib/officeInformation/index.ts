@@ -2,13 +2,14 @@ import contentLib, { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import commonLib from '/lib/xp/common';
 import taskLib from '/lib/xp/task';
+import contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
-import { runInBranchContext } from '../utils/branch-context';
+import { contentRepo } from '../constants';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -234,7 +235,17 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
     logger.info('Fetched office info from norg2, updating site data...');
 
-    runInBranchContext(() => updateOfficeInfo(newOfficeInfo), 'draft');
+    contextLib.run(
+        {
+            repository: contentRepo,
+            user: {
+                login: 'su',
+                idProvider: 'system',
+            },
+            principals: ['role:system.admin'],
+        },
+        () => updateOfficeInfo(newOfficeInfo)
+    );
 };
 
 export const runOfficeInfoUpdateTask = (retry: boolean, scheduledTime?: string) => {
