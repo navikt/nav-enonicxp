@@ -30,6 +30,9 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
     };
 
     const contentQueryResult = runGuillotineContentQuery(baseContent, baseQueryParams);
+    if (!contentQueryResult) {
+        return null;
+    }
 
     // Skip the components query and processing for content types which are not intended for use
     // with components

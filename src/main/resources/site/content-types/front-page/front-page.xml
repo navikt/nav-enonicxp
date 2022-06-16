@@ -1,0 +1,27 @@
+<content-type>
+    <display-name>Forside (Obs: ikke klar til prod-bruk!)</display-name>
+    <description>Forside med navigasjon til områdesider</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Overskrift for områdenavigasjon</label>
+            <items>
+                <input name="areasHeader" type="TextLine">
+                    <label>Overskrift</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="area-navigation"/>
+        <field-set>
+            <label>Kort-url</label>
+            <items>
+                <mixin name="custom-path-selector"/>
+            </items>
+        </field-set>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>
