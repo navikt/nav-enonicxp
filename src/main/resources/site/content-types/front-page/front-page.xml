@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Forside</display-name>
+    <display-name>Forside (Obs: ikke klar til prod-bruk!)</display-name>
     <description>Forside med navigasjon til områdesider</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>

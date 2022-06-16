@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Områdeside</display-name>
+    <display-name>Områdeside (Obs: ikke klar til prod-bruk!)</display-name>
     <description>Områdeside</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
