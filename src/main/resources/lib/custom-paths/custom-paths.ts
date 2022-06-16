@@ -6,7 +6,7 @@ import { logger } from '../utils/logging';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
-const validCustomPathPattern = new RegExp('^/[0-9a-z-/]+$');
+const validCustomPathPattern = new RegExp('^/[0-9a-z-/]*$');
 
 export const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
 
