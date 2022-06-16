@@ -1,0 +1,17 @@
+<layout>
+    <display-name>Innholdsseksjon</display-name>
+    <description>Seksjon med header og en kolonne</description>
+    <form>
+        <input type="TextLine" name="title">
+            <label>Tittel</label>
+            <default>Hva er situasjonen din?</default>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+    <regions>
+        <region name="situations"/>
+    </regions>
+    <config>
+        <allow-on-content-type>${app}:area-page</allow-on-content-type>
+    </config>
+</layout>

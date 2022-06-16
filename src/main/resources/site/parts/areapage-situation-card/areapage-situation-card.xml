@@ -1,0 +1,13 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Situasjonskort</display-name>
+    <description>Lenker til en situasjons-side</description>
+    <form>
+        <input type="CheckBox" name="disabled">
+            <label>Skjul denne situasjonen</label>
+            <default>unchecked</default>
+        </input>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:area-page</allow-on-content-type>
+    </config>
+</part>
