@@ -76,6 +76,48 @@ export interface ContactOptionPartConfig {
         /**
          * Selected
          */
+        _selected: "navoffice";
+
+        /**
+         * Finn ditt NAV-kontor
+         */
+        navoffice: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr ingress
+           */
+          ingress?: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "aidcentral";
+
+        /**
+         * Finn din hjelpemiddelsentral
+         */
+        aidcentral: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr ingress
+           */
+          ingress?: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
         _selected: "custom";
 
         /**
