@@ -1,4 +1,5 @@
 #import "./parts/partAlertPanel.graphql"
+#import "./parts/partAreaCard.graphql"
 #import "./parts/partButton.graphql"
 #import "./parts/partCalculator.graphql"
 #import "./parts/partContactOption.graphql"

@@ -1,4 +1,6 @@
-fragment partComponentAreaCard on Part_no_nav_navno_alert_panel {
+#import "../../mixins/internalLinkTargetFragment.graphql"
+
+fragment partComponentAreaCard on Part_no_nav_navno_area_card {
     link {
         _selected
         external {
