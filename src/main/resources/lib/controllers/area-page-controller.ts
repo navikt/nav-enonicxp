@@ -102,6 +102,18 @@ const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string
             componentIsValidSituationCard(component, situations)
     ) as SituationPartComponent[];
 
+    const needsUpdate =
+        situations.length === currentValidParts.length &&
+        situations.every((situation) =>
+            currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
+        );
+    if (!needsUpdate) {
+        logger.info(
+            `${nodeContent._id} already has every relevant situation part, skipping update`
+        );
+        return null;
+    }
+
     logger.info(`Found ${currentValidParts.length} valid existing parts`);
     const missingSituations = situations.filter(
         (situation) => !currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
@@ -141,7 +153,11 @@ const populateSituationLayout = (req: XP.Request) => {
     }
 
     const pathPrefix = `${situationLayout.path}/situations`;
+
     const situationParts = buildNewPartsArray(nodeContent, pathPrefix);
+    if (!situationParts) {
+        return;
+    }
 
     repo.modify({
         key: content._id,
