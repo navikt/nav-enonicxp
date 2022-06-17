@@ -24,6 +24,7 @@ import { ProductCardMicroPartConfig } from '../../site/parts/product-card-micro/
 import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/product-card-mini-part-config';
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
 import { AreapageSituationsConfig } from '../../site/layouts/areapage-situations/areapage-situations-config';
+import { AreapageSituationCardPartConfig } from '../../site/parts/areapage-situation-card/areapage-situation-card-part-config';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 // | 'text';
@@ -44,6 +45,7 @@ type LayoutConfigs = {
 };
 
 type PartConfigs = {
+    'areapage-situation-card': AreapageSituationCardPartConfig;
     button: ButtonPartConfig;
     calculator: CalculatorPartConfig;
     'contact-option': ContactOptionPartConfig;

@@ -9,6 +9,7 @@ import { NodeComponent } from '../../types/components/component-node';
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
+type SituationPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
 
 const getSituationLayout = (content: AreaPageNodeContent): SituationsLayoutComponent | null => {
     const situationLayouts = content.components.filter(
@@ -50,15 +51,71 @@ const getRelevantSituations = (area: AreaPage['area']) => {
     return situations;
 };
 
-const buildSituationsLayout = (nodeContent: AreaPageNodeContent) => {
-    const situationLayout = getSituationLayout(nodeContent);
-    if (!situationLayout) {
-        return null;
+const buildPart = (
+    path: string,
+    target: string
+): NodeComponent<'part', 'areapage-situation-card'> => {
+    return {
+        type: 'part',
+        path,
+        part: {
+            descriptor: 'no.nav.navno:areapage-situation-card',
+            config: {
+                'no-nav-navno': {
+                    'areapage-situation-card': {
+                        disabled: false,
+                        target,
+                    },
+                },
+            },
+        },
+    };
+};
+
+const partHasSituationAsTarget = (
+    component: SituationPartComponent,
+    situation: Content<'no.nav.navno:situation-page'>
+) => component.part.config?.['no-nav-navno']?.['areapage-situation-card']?.target === situation._id;
+
+const componentIsValidSituationCard = (
+    component: NodeComponent,
+    situations: Content<'no.nav.navno:situation-page'>[]
+): component is SituationPartComponent => {
+    const isSituationCard =
+        component.type === 'part' &&
+        component.part.descriptor === 'no.nav.navno:areapage-situation-card';
+    if (!isSituationCard) {
+        return false;
     }
 
+    return situations.some((situation) =>
+        partHasSituationAsTarget(component as SituationPartComponent, situation)
+    );
+};
+
+const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string) => {
     const situations = getRelevantSituations(nodeContent.data.area);
 
-    return situationLayout;
+    const { components } = nodeContent;
+
+    const currentValidParts = components.filter(
+        (component) =>
+            component.path.startsWith(pathPrefix) &&
+            componentIsValidSituationCard(component, situations)
+    ) as SituationPartComponent[];
+
+    logger.info(`Found ${currentValidParts.length} valid existing parts`);
+    const missingSituations = situations.filter(
+        (situation) => !currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
+    );
+
+    const numCurrentParts = currentValidParts.length;
+    const newParts = missingSituations.map((situation, index) =>
+        buildPart(`${pathPrefix}/${index + numCurrentParts}`, situation._id)
+    );
+    logger.info(`Creating ${newParts.length} new parts`);
+
+    return [...currentValidParts, ...newParts];
 };
 
 const populateSituationLayout = (req: XP.Request) => {
@@ -76,22 +133,26 @@ const populateSituationLayout = (req: XP.Request) => {
     const repo = nodeLib.connect({ repoId: req.repositoryId, branch: 'draft' });
     const nodeContent = repo.get({ key: content._id });
 
-    const situationLayout = buildSituationsLayout(nodeContent);
+    const situationLayout = getSituationLayout(nodeContent);
     if (!situationLayout) {
-        return;
+        return null;
     }
 
-    logger.info(JSON.stringify(nodeContent));
-    logger.info(JSON.stringify(situationLayout));
+    const pathPrefix = `${situationLayout.path}/situations`;
+    const situationParts = buildNewPartsArray(nodeContent, pathPrefix);
 
     repo.modify({
         key: content._id,
         editor: (content: AreaPageRepoNode) => {
-            const layout = content.components.find(
-                (component) => component.path === situationLayout.path
+            const otherComponents = content.components.filter(
+                (component) => !component.path.startsWith(pathPrefix)
             );
 
-            return content;
+            const components = [...otherComponents, ...situationParts];
+
+            logger.info(`Components! ${JSON.stringify(components)}`);
+
+            return { ...content, components };
         },
     });
 };
