@@ -80,7 +80,8 @@ const buildPart = (
 const partHasSituationAsTarget = (
     component: SituationPartComponent,
     situation: Content<'no.nav.navno:situation-page'>
-) => component.part.config?.['no-nav-navno']?.['areapage-situation-card']?.target === situation._id;
+) =>
+    component.part?.config?.['no-nav-navno']?.['areapage-situation-card']?.target === situation._id;
 
 const componentIsValidSituationCard = (
     component: NodeComponent,
@@ -101,16 +102,14 @@ const componentIsValidSituationCard = (
 const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string) => {
     const situations = getRelevantSituations(nodeContent.data.area);
 
-    const currentValidParts = nodeContent.components.filter(
-        (component) =>
-            component.path.startsWith(pathPrefix) &&
-            componentIsValidSituationCard(component, situations)
+    const currentParts = nodeContent.components.filter((component) =>
+        component.path.startsWith(pathPrefix)
     ) as SituationPartComponent[];
 
     const needsUpdate =
-        situations.length !== currentValidParts.length ||
+        situations.length !== currentParts.length ||
         !situations.every((situation) =>
-            currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
+            currentParts.some((part) => partHasSituationAsTarget(part, situation))
         );
     if (!needsUpdate) {
         logger.info(
@@ -118,6 +117,10 @@ const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string
         );
         return null;
     }
+
+    const currentValidParts = currentParts.filter((component) =>
+        componentIsValidSituationCard(component, situations)
+    );
 
     logger.info(`Found ${currentValidParts.length} valid existing parts`);
     const missingSituations = situations.filter(
