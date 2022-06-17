@@ -6,9 +6,9 @@ export interface AreaPage {
   header: string;
 
   /**
-   * Områdekategori
+   * Område
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
+  area: "work" | "family" | "health" | "accessibility" | "pension" | "social_counselling";
 
   /**
    * Topp-banner

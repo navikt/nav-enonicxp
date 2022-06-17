@@ -23,6 +23,7 @@ import { ProductCardPartConfig } from '../../site/parts/product-card/product-car
 import { ProductCardMicroPartConfig } from '../../site/parts/product-card-micro/product-card-micro-part-config';
 import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/product-card-mini-part-config';
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
+import { AreapageSituationsConfig } from '../../site/layouts/areapage-situations/areapage-situations-config';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 // | 'text';
@@ -39,6 +40,7 @@ type LayoutConfigs = {
     'dynamic-flex-cols': DynamicFlexColsConfig;
     'section-with-header': SectionWithHeaderConfig;
     'situation-flex-cols': SituationFlexColsConfig;
+    'areapage-situations': AreapageSituationsConfig;
 };
 
 type PartConfigs = {

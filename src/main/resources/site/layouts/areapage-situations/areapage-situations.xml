@@ -1,6 +1,6 @@
 <layout>
-    <display-name>Innholdsseksjon</display-name>
-    <description>Seksjon med header og en kolonne</description>
+    <display-name>Situasjonsliste</display-name>
+    <description>Utlisting av situasjoner for områdeside</description>
     <form>
         <input type="TextLine" name="title">
             <label>Tittel</label>

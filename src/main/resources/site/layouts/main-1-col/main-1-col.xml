@@ -1,8 +1,10 @@
 <layout>
     <display-name>main-1-col</display-name>
     <description>Legacy-layout med en kolonne (deprecated)</description>
-    <config/>
     <regions>
         <region name="first"/>
     </regions>
+    <config>
+        <allow-on-content-type>^$</allow-on-content-type>
+    </config>
 </layout>

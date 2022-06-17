@@ -1,9 +1,11 @@
 <layout>
     <display-name>main</display-name>
     <description>Legacy-layout med to kolonner (deprecated)</description>
-    <config/>
     <regions>
         <region name="first"/>
         <region name="second"/>
     </regions>
+    <config>
+        <allow-on-content-type>^$</allow-on-content-type>
+    </config>
 </layout>

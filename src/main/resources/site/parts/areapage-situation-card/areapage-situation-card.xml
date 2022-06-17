@@ -6,6 +6,12 @@
             <label>Skjul denne situasjonen</label>
             <default>unchecked</default>
         </input>
+        <input type="ContentSelector" name="target">
+            <label>Situasjon</label>
+            <config>
+                <allowContentType>${app}:situation-page</allowContentType>
+            </config>
+        </input>
     </form>
     <config>
         <allow-on-content-type>${app}:area-page</allow-on-content-type>
