@@ -5,6 +5,7 @@ import { adminFrontendProxy } from './admin-frontend-proxy';
 import { logger } from '../utils/logging';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { NodeComponent } from '../../types/components/component-node';
+import { runInBranchContext } from '../utils/branch-context';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
@@ -30,21 +31,25 @@ const getSituationLayout = (content: AreaPageNodeContent): SituationsLayoutCompo
 };
 
 const getRelevantSituations = (area: AreaPage['area']) => {
-    const situations = contentLib.query({
-        start: 0,
-        count: 1000,
-        contentTypes: ['no.nav.navno:situation-page'],
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'data.area',
-                        values: [area],
+    const situations = runInBranchContext(
+        () =>
+            contentLib.query({
+                start: 0,
+                count: 1000,
+                contentTypes: ['no.nav.navno:situation-page'],
+                filters: {
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'data.area',
+                                values: [area],
+                            },
+                        },
                     },
                 },
-            },
-        },
-    }).hits;
+            }).hits,
+        'master'
+    );
 
     logger.info(`Found ${situations.length} situations for ${area}`);
 
