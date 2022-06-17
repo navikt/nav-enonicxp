@@ -96,9 +96,7 @@ const componentIsValidSituationCard = (
 const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string) => {
     const situations = getRelevantSituations(nodeContent.data.area);
 
-    const { components } = nodeContent;
-
-    const currentValidParts = components.filter(
+    const currentValidParts = nodeContent.components.filter(
         (component) =>
             component.path.startsWith(pathPrefix) &&
             componentIsValidSituationCard(component, situations)
@@ -131,7 +129,11 @@ const populateSituationLayout = (req: XP.Request) => {
     }
 
     const repo = nodeLib.connect({ repoId: req.repositoryId, branch: 'draft' });
+
     const nodeContent = repo.get({ key: content._id });
+    if (!nodeContent?.components) {
+        return null;
+    }
 
     const situationLayout = getSituationLayout(nodeContent);
     if (!situationLayout) {
