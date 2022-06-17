@@ -6,11 +6,12 @@ import { logger } from '../utils/logging';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInBranchContext } from '../utils/branch-context';
+import { contentRepo } from '../constants';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
-type SituationPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
+type SituationCardPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
 
 const getSituationLayout = (content: AreaPageNodeContent): SituationsLayoutComponent | null => {
     const situationLayouts = content.components.filter(
@@ -24,13 +25,13 @@ const getSituationLayout = (content: AreaPageNodeContent): SituationsLayoutCompo
     }
 
     if (situationLayouts.length > 1) {
-        logger.warning(`Multiple situation-layouts found on area page - ${content._id}`);
+        logger.error(`Multiple situation-layouts found on area page - ${content._id}`);
     }
 
     return situationLayouts[0];
 };
 
-const getRelevantSituations = (area: AreaPage['area']) => {
+const getRelevantSituations = (area: AreaPage['area'], audience: AreaPage['audience']) => {
     const situations = runInBranchContext(
         () =>
             contentLib.query({
@@ -39,19 +40,27 @@ const getRelevantSituations = (area: AreaPage['area']) => {
                 contentTypes: ['no.nav.navno:situation-page'],
                 filters: {
                     boolean: {
-                        must: {
-                            hasValue: {
-                                field: 'data.area',
-                                values: [area],
+                        must: [
+                            {
+                                hasValue: {
+                                    field: 'data.area',
+                                    values: [area],
+                                },
                             },
-                        },
+                            {
+                                hasValue: {
+                                    field: 'data.audience',
+                                    values: [audience],
+                                },
+                            },
+                        ],
                     },
                 },
             }).hits,
         'master'
     );
 
-    logger.info(`Found ${situations.length} situations for ${area}`);
+    logger.info(`Found ${situations.length} situations for ${area} ${audience}`);
 
     return situations;
 };
@@ -78,7 +87,7 @@ const buildPart = (
 };
 
 const partHasSituationAsTarget = (
-    component: SituationPartComponent,
+    component: SituationCardPartComponent,
     situation: Content<'no.nav.navno:situation-page'>
 ) =>
     component.part?.config?.['no-nav-navno']?.['areapage-situation-card']?.target === situation._id;
@@ -86,7 +95,7 @@ const partHasSituationAsTarget = (
 const componentIsValidSituationCard = (
     component: NodeComponent,
     situations: Content<'no.nav.navno:situation-page'>[]
-): component is SituationPartComponent => {
+): component is SituationCardPartComponent => {
     const isSituationCard =
         component.type === 'part' &&
         component.part.descriptor === 'no.nav.navno:areapage-situation-card';
@@ -95,51 +104,70 @@ const componentIsValidSituationCard = (
     }
 
     return situations.some((situation) =>
-        partHasSituationAsTarget(component as SituationPartComponent, situation)
+        partHasSituationAsTarget(component as SituationCardPartComponent, situation)
     );
 };
 
-const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string) => {
-    const situations = getRelevantSituations(nodeContent.data.area);
+// Builds a new parts array for the situations layout
+// We want the layout to contains one situation card part for every relevant
+// situation, and nothing else
+const buildNewPartsArray = (nodeContent: AreaPageNodeContent, regionPath: string) => {
+    const situations = getRelevantSituations(nodeContent.data.area, nodeContent.data.audience);
 
     const currentParts = nodeContent.components.filter((component) =>
-        component.path.startsWith(pathPrefix)
-    ) as SituationPartComponent[];
+        component.path.startsWith(regionPath)
+    );
 
-    const needsUpdate =
-        situations.length !== currentParts.length ||
-        !situations.every((situation) =>
-            currentParts.some((part) => partHasSituationAsTarget(part, situation))
+    // If the region already has the right parts, we don't have to do anything
+    const regionHasCorrectParts =
+        situations.length === currentParts.length &&
+        situations.every((situation) =>
+            currentParts.some(
+                (part) =>
+                    part.type === 'part' &&
+                    part.part.descriptor === 'no.nav.navno:areapage-situation-card' &&
+                    partHasSituationAsTarget(part as SituationCardPartComponent, situation)
+            )
         );
-    if (!needsUpdate) {
-        logger.info(
-            `${nodeContent._id} already has every relevant situation part, skipping update`
-        );
+    if (regionHasCorrectParts) {
         return null;
     }
 
-    const currentValidParts = currentParts.filter((component) =>
-        componentIsValidSituationCard(component, situations)
-    );
+    // Filter out any unwanted parts in the region, and reindex the component paths
+    // to ensure no gaps exists in the index
+    const currentValidParts = currentParts
+        .filter((component) => componentIsValidSituationCard(component, situations))
+        .map((component, index) => ({ ...component, path: `${regionPath}/${index}` }));
 
     logger.info(`Found ${currentValidParts.length} valid existing parts`);
     const missingSituations = situations.filter(
-        (situation) => !currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
+        (situation) =>
+            !currentValidParts.some((part) =>
+                partHasSituationAsTarget(part as SituationCardPartComponent, situation)
+            )
     );
 
+    // Create new parts for any missing situations
     const numCurrentParts = currentValidParts.length;
     const newParts = missingSituations.map((situation, index) =>
-        buildPart(`${pathPrefix}/${index + numCurrentParts}`, situation._id)
+        buildPart(`${regionPath}/${index + numCurrentParts}`, situation._id)
     );
     logger.info(`Creating ${newParts.length} new parts`);
 
     return [...currentValidParts, ...newParts];
 };
 
+// If an areapage-situations layout is present on the page, populate
+// it with situation cards appropriate for the page.
 const populateSituationLayout = (req: XP.Request) => {
     const content = portalLib.getContent();
+    if (!content) {
+        logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
+        return;
+    }
+
     if (content.type !== 'no.nav.navno:area-page') {
-        logger.warning(`Invalid type for area page controller - ${content._id}`);
+        logger.error(`Invalid type for area page controller - ${content._id}`);
         return;
     }
 
@@ -148,37 +176,41 @@ const populateSituationLayout = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: req.repositoryId, branch: 'draft' });
+    if (!content.data.audience) {
+        logger.warning(`No audience specified for area page - ${content._id}`);
+        return;
+    }
+
+    const repo = nodeLib.connect({ repoId: contentRepo, branch: 'draft' });
 
     const nodeContent = repo.get({ key: content._id });
     if (!nodeContent?.components) {
-        return null;
+        return;
     }
 
     const situationLayout = getSituationLayout(nodeContent);
     if (!situationLayout) {
-        return null;
+        return;
     }
 
-    const pathPrefix = `${situationLayout.path}/situations`;
+    const situationsRegionPath = `${situationLayout.path}/situations`;
 
-    const situationParts = buildNewPartsArray(nodeContent, pathPrefix);
+    const situationParts = buildNewPartsArray(nodeContent, situationsRegionPath);
     if (!situationParts) {
         return;
     }
 
     repo.modify({
-        key: content._id,
+        key: nodeContent._id,
         editor: (content: AreaPageRepoNode) => {
             const otherComponents = content.components.filter(
-                (component) => !component.path.startsWith(pathPrefix)
+                (component) => !component.path.startsWith(situationsRegionPath)
             );
 
-            const components = [...otherComponents, ...situationParts];
-
-            logger.info(`Components! ${JSON.stringify(components)}`);
-
-            return { ...content, components };
+            return {
+                ...content,
+                components: [...otherComponents, ...situationParts],
+            };
         },
     });
 };

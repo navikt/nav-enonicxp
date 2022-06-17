@@ -6,6 +6,11 @@ export interface AreaPage {
   header: string;
 
   /**
+   * Målgruppe
+   */
+  audience: "person" | "employer" | "provider" | "self_employed";
+
+  /**
    * Område
    */
   area: "work" | "family" | "health" | "accessibility" | "pension" | "social_counselling";

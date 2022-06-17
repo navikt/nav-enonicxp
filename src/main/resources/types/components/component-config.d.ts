@@ -25,6 +25,7 @@ import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/pr
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
 import { AreapageSituationsConfig } from '../../site/layouts/areapage-situations/areapage-situations-config';
 import { AreapageSituationCardPartConfig } from '../../site/parts/areapage-situation-card/areapage-situation-card-part-config';
+import { EmptyObject } from '../util-types';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
 // | 'text';
@@ -69,6 +70,7 @@ export type ComponentConfigs = {
     page: PageConfigs;
     layout: LayoutConfigs;
     part: PartConfigs;
+    fragment: EmptyObject;
 };
 
 type ConfigMapper<Type, Name> = Type extends keyof ComponentConfigs
