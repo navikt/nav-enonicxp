@@ -31,7 +31,7 @@ import { overviewCallback } from './schema-creation-callbacks/overview-callback'
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
-import { areapageSituationCardPartCallback } from './schema-creation-callbacks/areapage-situations';
+import { areapageSituationCardPartCallback } from './schema-creation-callbacks/areapage-situation-card';
 
 export const schemaCreationCallbacks = {
     Attachment: attachmentCallback,

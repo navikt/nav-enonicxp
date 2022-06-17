@@ -3,18 +3,22 @@ import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
 import contentLib, { Content } from '/lib/xp/content';
 import { adminFrontendProxy } from './admin-frontend-proxy';
 import { logger } from '../utils/logging';
-import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInBranchContext } from '../utils/branch-context';
 import { contentRepo } from '../constants';
+import { forceArray } from '../utils/nav-utils';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
+type SituationPageContent = Content<'no.nav.navno:situation-page'>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
 type SituationCardPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
 
-const getSituationLayout = (content: AreaPageNodeContent): SituationsLayoutComponent | null => {
-    const situationLayouts = content.components.filter(
+const getSituationLayout = (
+    components: NodeComponent[],
+    contentId: string
+): SituationsLayoutComponent | null => {
+    const situationLayouts = components.filter(
         (component) =>
             component.type === 'layout' &&
             component.layout.descriptor === 'no.nav.navno:areapage-situations'
@@ -25,13 +29,15 @@ const getSituationLayout = (content: AreaPageNodeContent): SituationsLayoutCompo
     }
 
     if (situationLayouts.length > 1) {
-        logger.error(`Multiple situation-layouts found on area page - ${content._id}`);
+        logger.error(`Multiple situation-layouts found on area page - ${contentId}`);
     }
 
     return situationLayouts[0];
 };
 
-const getRelevantSituations = (area: AreaPage['area'], audience: AreaPage['audience']) => {
+const getRelevantSituations = (content: AreaPageNodeContent) => {
+    const { area, audience } = content.data;
+
     const situations = runInBranchContext(
         () =>
             contentLib.query({
@@ -83,13 +89,13 @@ const buildSituationCardPart = (path: string, target: string): SituationCardPart
 
 const partHasSituationAsTarget = (
     component: SituationCardPartComponent,
-    situation: Content<'no.nav.navno:situation-page'>
+    situation: SituationPageContent
 ) =>
     component.part?.config?.['no-nav-navno']?.['areapage-situation-card']?.target === situation._id;
 
 const componentIsValidSituationCard = (
     component: NodeComponent,
-    situations: Content<'no.nav.navno:situation-page'>[]
+    situations: SituationPageContent[]
 ): component is SituationCardPartComponent => {
     const isSituationCard =
         component.type === 'part' &&
@@ -106,12 +112,12 @@ const componentIsValidSituationCard = (
 // Builds a new parts array for the situations layout
 // We want the layout to contains one situation card part for every relevant
 // situation, and nothing else
-const buildNewPartsArray = (nodeContent: AreaPageNodeContent, regionPath: string) => {
-    const situations = getRelevantSituations(nodeContent.data.area, nodeContent.data.audience);
-
-    const currentParts = nodeContent.components.filter((component) =>
-        component.path.startsWith(regionPath)
-    );
+const buildNewPartsArray = (
+    situations: SituationPageContent[],
+    components: NodeComponent[],
+    regionPath: string
+) => {
+    const currentParts = components.filter((component) => component.path.startsWith(regionPath));
 
     // If the region already has the right parts, we don't have to do anything
     const regionHasCorrectParts =
@@ -185,14 +191,17 @@ const populateSituationLayout = (req: XP.Request) => {
         return;
     }
 
-    const situationLayout = getSituationLayout(nodeContent);
+    const components = forceArray(nodeContent.components);
+
+    const situationLayout = getSituationLayout(components, nodeContent._id);
     if (!situationLayout) {
         return;
     }
 
     const situationsRegionPath = `${situationLayout.path}/situations`;
+    const situations = getRelevantSituations(nodeContent);
 
-    const situationParts = buildNewPartsArray(nodeContent, situationsRegionPath);
+    const situationParts = buildNewPartsArray(situations, components, situationsRegionPath);
     if (!situationParts) {
         return;
     }
@@ -200,7 +209,7 @@ const populateSituationLayout = (req: XP.Request) => {
     repo.modify({
         key: nodeContent._id,
         editor: (content: AreaPageRepoNode) => {
-            const otherComponents = content.components.filter(
+            const otherComponents = forceArray(content.components).filter(
                 (component) => !component.path.startsWith(situationsRegionPath)
             );
 

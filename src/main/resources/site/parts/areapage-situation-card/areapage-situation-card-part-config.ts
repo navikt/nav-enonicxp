@@ -4,9 +4,4 @@ export interface AreapageSituationCardPartConfig {
    * Skjul denne situasjonen
    */
   disabled: boolean;
-
-  /**
-   * Situasjon
-   */
-  target?: string;
 }

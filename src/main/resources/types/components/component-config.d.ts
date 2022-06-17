@@ -46,7 +46,7 @@ type LayoutConfigs = {
 };
 
 type PartConfigs = {
-    'areapage-situation-card': AreapageSituationCardPartConfig;
+    'areapage-situation-card': AreapageSituationCardPartConfig & { target: string };
     button: ButtonPartConfig;
     calculator: CalculatorPartConfig;
     'contact-option': ContactOptionPartConfig;
