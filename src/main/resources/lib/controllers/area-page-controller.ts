@@ -103,8 +103,8 @@ const buildNewPartsArray = (nodeContent: AreaPageNodeContent, pathPrefix: string
     ) as SituationPartComponent[];
 
     const needsUpdate =
-        situations.length === currentValidParts.length &&
-        situations.every((situation) =>
+        situations.length !== currentValidParts.length ||
+        !situations.every((situation) =>
             currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
         );
     if (!needsUpdate) {
