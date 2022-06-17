@@ -65,26 +65,21 @@ const getRelevantSituations = (area: AreaPage['area'], audience: AreaPage['audie
     return situations;
 };
 
-const buildPart = (
-    path: string,
-    target: string
-): NodeComponent<'part', 'areapage-situation-card'> => {
-    return {
-        type: 'part',
-        path,
-        part: {
-            descriptor: 'no.nav.navno:areapage-situation-card',
-            config: {
-                'no-nav-navno': {
-                    'areapage-situation-card': {
-                        disabled: false,
-                        target,
-                    },
+const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
+    type: 'part',
+    path,
+    part: {
+        descriptor: 'no.nav.navno:areapage-situation-card',
+        config: {
+            'no-nav-navno': {
+                'areapage-situation-card': {
+                    disabled: false,
+                    target,
                 },
             },
         },
-    };
-};
+    },
+});
 
 const partHasSituationAsTarget = (
     component: SituationCardPartComponent,
@@ -140,6 +135,7 @@ const buildNewPartsArray = (nodeContent: AreaPageNodeContent, regionPath: string
         .map((component, index) => ({ ...component, path: `${regionPath}/${index}` }));
 
     logger.info(`Found ${currentValidParts.length} valid existing parts`);
+
     const missingSituations = situations.filter(
         (situation) =>
             !currentValidParts.some((part) =>
@@ -150,8 +146,9 @@ const buildNewPartsArray = (nodeContent: AreaPageNodeContent, regionPath: string
     // Create new parts for any missing situations
     const numCurrentParts = currentValidParts.length;
     const newParts = missingSituations.map((situation, index) =>
-        buildPart(`${regionPath}/${index + numCurrentParts}`, situation._id)
+        buildSituationCardPart(`${regionPath}/${index + numCurrentParts}`, situation._id)
     );
+
     logger.info(`Creating ${newParts.length} new parts`);
 
     return [...currentValidParts, ...newParts];
