@@ -79,6 +79,7 @@ const buildSituationCardPart = (path: string, target: string): SituationCardPart
         config: {
             'no-nav-navno': {
                 'areapage-situation-card': {
+                    dummyTarget: target,
                     disabled: false,
                     target,
                 },
@@ -90,8 +91,14 @@ const buildSituationCardPart = (path: string, target: string): SituationCardPart
 const partHasSituationAsTarget = (
     component: SituationCardPartComponent,
     situation: SituationPageContent
-) =>
-    component.part?.config?.['no-nav-navno']?.['areapage-situation-card']?.target === situation._id;
+) => {
+    const config = component.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
+    if (!config) {
+        return false;
+    }
+
+    return config.target === situation._id && config.dummyTarget === situation._id;
+};
 
 // Builds a new components array for the situations layout
 // We want the layout to contain one situation card part for every relevant

@@ -2,6 +2,17 @@
     <display-name>Situasjonskort</display-name>
     <description>Lenker til en situasjons-side</description>
     <form>
+        <!--
+         This field exists purely to show the editor link for the situation page in Content Studio
+         The actual target field can only be set programmatically
+        -->
+        <input type="ContentSelector" name="dummyTarget">
+            <label>Situasjon (settes automatisk)</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowContentType>${app}:situation-page</allowContentType>
+            </config>
+        </input>
         <input type="CheckBox" name="disabled">
             <label>Skjul denne situasjonen</label>
             <default>unchecked</default>
