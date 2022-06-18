@@ -21,4 +21,9 @@ export const areapageSituationCardPartCallback: CreationCallback = (context, par
             return contentLib.get({ key: target });
         },
     };
+
+    params.fields.dummyTarget = {
+        type: graphQlLib.GraphQLID,
+        resolve: () => null,
+    };
 };

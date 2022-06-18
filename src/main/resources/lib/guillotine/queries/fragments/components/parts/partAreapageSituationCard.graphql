@@ -7,4 +7,5 @@ fragment partAreapageSituationCard on Part_no_nav_navno_areapage_situation_card 
         ...contentCommon
         ...contentSituationPage
     }
+    dummyTarget
 }
