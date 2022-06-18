@@ -89,10 +89,10 @@ const buildSituationCardPart = (path: string, target: string): SituationCardPart
 });
 
 const partHasSituationAsTarget = (
-    component: SituationCardPartComponent,
+    part: SituationCardPartComponent,
     situation: SituationPageContent
 ) => {
-    const config = component.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
+    const config = part.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
     if (!config) {
         return false;
     }
@@ -144,18 +144,15 @@ const buildSituationCardArray = (
 const validateRegionComponents = (
     components: NodeComponent[],
     situations: SituationPageContent[]
-) => {
-    return (
-        situations.length === components.length &&
-        situations.every((situation) =>
-            components.some(
-                (component) =>
-                    componentIsSituationCard(component) &&
-                    partHasSituationAsTarget(component, situation)
-            )
+) =>
+    situations.length === components.length &&
+    situations.every((situation) =>
+        components.some(
+            (component) =>
+                componentIsSituationCard(component) &&
+                partHasSituationAsTarget(component, situation)
         )
     );
-};
 
 // If an areapage-situations layout is present on the page, populate
 // it with situation cards appropriate for the page.
@@ -183,7 +180,7 @@ const populateSituationsLayout = (req: XP.Request) => {
 
     const repo = nodeLib.connect({ repoId: contentRepo, branch: 'draft' });
 
-    const nodeContent = repo.get({ key: content._id });
+    const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
     if (!nodeContent?.components) {
         return;
     }

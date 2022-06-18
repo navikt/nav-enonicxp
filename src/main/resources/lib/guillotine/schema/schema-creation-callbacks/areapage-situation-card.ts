@@ -4,6 +4,7 @@ import contextLib from '/lib/xp/context';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
 export const areapageSituationCardPartCallback: CreationCallback = (context, params) => {
+    // This field is only set programmatically, and is not included in the part descriptor
     params.fields.target = {
         type: graphQlLib.reference('Content'),
         resolve: (env) => {
@@ -12,8 +13,8 @@ export const areapageSituationCardPartCallback: CreationCallback = (context, par
                 return null;
             }
 
-            // Do not return disabled situation cards from master
-            // For draft, we still want to show them in the editor
+            // We don't need to resolve disabled situation cards from master
+            // as they will not be included in the response anyway
             if (disabled && contextLib.get().branch === 'master') {
                 return null;
             }
@@ -22,6 +23,7 @@ export const areapageSituationCardPartCallback: CreationCallback = (context, par
         },
     };
 
+    // This field is only relevant for Content Studio
     params.fields.dummyTarget = {
         type: graphQlLib.GraphQLID,
         resolve: () => null,
