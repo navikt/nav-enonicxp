@@ -96,12 +96,12 @@ export const runGuillotineComponentsQuery = (
         ];
     }, [] as PortalComponent<'fragment'>[]);
 
-    guillotineTransformSpecialComponents({
+    const transformedComponents = guillotineTransformSpecialComponents({
         components,
         baseContent,
         branch: baseQueryParams.branch,
         runSitecontentGuillotineQuery,
     });
 
-    return { components, fragments };
+    return { components: transformedComponents, fragments };
 };

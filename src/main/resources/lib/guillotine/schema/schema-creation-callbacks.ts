@@ -32,8 +32,9 @@ import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragm
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
 import { areapageSituationCardPartCallback } from './schema-creation-callbacks/areapage-situation-card';
+import { CreationCallback } from '../utils/creation-callback-utils';
 
-export const schemaCreationCallbacks = {
+export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
     FragmentComponentData: fragmentComponentDataCallback,
     media_Code: mediaCodeCallback,
