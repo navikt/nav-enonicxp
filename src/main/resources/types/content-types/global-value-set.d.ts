@@ -1,3 +1,5 @@
+import { ArrayOrSingle } from '../util-types';
+
 // The data fields for this type are set through a custom editor, and
 // are not defined in the descriptor file
 
@@ -9,5 +11,5 @@ export type GlobalNumberValueItem = {
 };
 
 export type GlobalNumberValueSetData = {
-    valueItems?: GlobalNumberValueItem[] | GlobalNumberValueItem;
+    valueItems?: ArrayOrSingle<GlobalNumberValueItem>;
 };

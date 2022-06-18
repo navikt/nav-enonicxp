@@ -164,7 +164,7 @@ const validateRegionComponents = (
 
 // If an areapage-situations layout is present on the page, populate
 // it with situation cards appropriate for the page.
-const populateSituationLayout = (req: XP.Request) => {
+const populateSituationsLayout = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!content) {
         logger.error(`Could not get contextual content from request path - ${req.rawPath}`);
@@ -236,7 +236,7 @@ const populateSituationLayout = (req: XP.Request) => {
 
 const areaPageController = (req: XP.Request) => {
     if (req.mode === 'edit' && req.method === 'GET') {
-        populateSituationLayout(req);
+        populateSituationsLayout(req);
     }
 
     return adminFrontendProxy(req);

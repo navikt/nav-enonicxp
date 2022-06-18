@@ -26,7 +26,7 @@ declare module '*/lib/xp/node' {
 
         type NodeContent<Content> = Omit<Content, 'attachment' | 'page' | 'childOrder'> &
             Content & {
-                components: NodeComponent[];
+                components?: NodeComponent | NodeComponent[];
             };
 
         type RepoNode<NodeData> = {
