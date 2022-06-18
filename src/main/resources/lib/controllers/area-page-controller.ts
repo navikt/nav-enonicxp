@@ -19,10 +19,10 @@ const getSituationsLayout = (
     contentId: string
 ): SituationsLayoutComponent | null => {
     const situationsLayouts = components.filter(
-        (component) =>
+        (component): component is SituationsLayoutComponent =>
             component.type === 'layout' &&
             component.layout.descriptor === 'no.nav.navno:areapage-situations'
-    ) as SituationsLayoutComponent[];
+    );
 
     if (situationsLayouts.length === 0) {
         return null;
@@ -100,6 +100,12 @@ const partHasSituationAsTarget = (
     return config.target === situation._id && config.dummyTarget === situation._id;
 };
 
+const componentIsSituationCard = (
+    component: NodeComponent
+): component is SituationCardPartComponent =>
+    component.type === 'part' &&
+    component.part.descriptor === 'no.nav.navno:areapage-situation-card';
+
 // Builds a new components array for the situations layout
 // We want the layout to contain one situation card part for every relevant
 // situation, and nothing else
@@ -111,27 +117,17 @@ const buildSituationCardArray = (
     // Filter out any unwanted components from the region, and reindex the component paths
     // to ensure no gaps exists in the index
     const currentValidParts = components
-        .filter((component): component is SituationCardPartComponent => {
-            if (
-                component.type !== 'part' ||
-                component.part.descriptor !== 'no.nav.navno:areapage-situation-card'
-            ) {
-                return false;
-            }
-
-            return situations.some((situation) =>
-                partHasSituationAsTarget(component as SituationCardPartComponent, situation)
-            );
-        })
+        .filter(
+            (component): component is SituationCardPartComponent =>
+                componentIsSituationCard(component) &&
+                situations.some((situation) => partHasSituationAsTarget(component, situation))
+        )
         .map((component, index) => ({ ...component, path: `${regionPath}/${index}` }));
 
     logger.info(`Found ${currentValidParts.length} valid existing parts`);
 
     const missingSituations = situations.filter(
-        (situation) =>
-            !currentValidParts.some((part) =>
-                partHasSituationAsTarget(part as SituationCardPartComponent, situation)
-            )
+        (situation) => !currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
     );
 
     // Create new parts for any missing situations
@@ -153,10 +149,9 @@ const validateRegionComponents = (
         situations.length === components.length &&
         situations.every((situation) =>
             components.some(
-                (part) =>
-                    part.type === 'part' &&
-                    part.part.descriptor === 'no.nav.navno:areapage-situation-card' &&
-                    partHasSituationAsTarget(part as SituationCardPartComponent, situation)
+                (component) =>
+                    componentIsSituationCard(component) &&
+                    partHasSituationAsTarget(component, situation)
             )
         )
     );
