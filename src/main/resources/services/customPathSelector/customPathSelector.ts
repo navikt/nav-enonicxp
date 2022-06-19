@@ -93,7 +93,7 @@ const getResult = ({
         () => contentLib.get({ key: `${redirectsRootPath}${suggestedPath}` }),
         'master'
     );
-    if (redirectContent) {
+    if (redirectContent && redirectContent.type !== 'base:folder') {
         return [
             {
                 id: suggestedPath,
