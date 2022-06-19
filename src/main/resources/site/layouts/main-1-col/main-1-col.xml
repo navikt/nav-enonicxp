@@ -5,6 +5,13 @@
         <region name="first"/>
     </regions>
     <config>
-        <allow-on-content-type>^$</allow-on-content-type>
+        <allow-on-content-type>${app}:main-article</allow-on-content-type>
+        <allow-on-content-type>${app}:main-article-chapter</allow-on-content-type>
+        <allow-on-content-type>${app}:melding</allow-on-content-type>
+        <allow-on-content-type>${app}:office-information</allow-on-content-type>
+        <allow-on-content-type>${app}:page-list</allow-on-content-type>
+        <allow-on-content-type>${app}:publishing-calendar</allow-on-content-type>
+        <allow-on-content-type>${app}:section-page</allow-on-content-type>
+        <allow-on-content-type>${app}:transport-page</allow-on-content-type>
     </config>
 </layout>
