@@ -1,14 +1,18 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
-import { stripPathPrefix } from '../utils/nav-utils';
+import { stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
 const validCustomPathPattern = new RegExp('^/[0-9a-z-/]*$');
 
-export const isValidCustomPath = (path: string) => !!path && validCustomPathPattern.test(path);
+// For custom paths, we need the leading slash on the root path
+const stripPathPrefix = (path: string) => _stripPathPrefix(path) || '/';
+
+export const isValidCustomPath = (path?: string) =>
+    typeof path === 'string' && validCustomPathPattern.test(path);
 
 export const hasValidCustomPath = (content: Content): content is ContentWithCustomPath => {
     return isValidCustomPath((content as ContentWithCustomPath).data?.customPath);
