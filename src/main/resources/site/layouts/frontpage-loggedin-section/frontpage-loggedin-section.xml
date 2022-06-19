@@ -1,6 +1,6 @@
 <layout>
     <display-name>Innloggede tjenester</display-name>
-    <description>Panel med lenker til innloggede tjenester - vises kun for innlogget bruker</description>
+    <description>Seksjon med lenker til innloggede tjenester - vises kun for innlogget bruker</description>
     <form>
         <field-set>
             <label>Overskrift</label>

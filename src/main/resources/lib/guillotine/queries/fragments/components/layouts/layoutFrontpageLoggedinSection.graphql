@@ -1,6 +1,6 @@
 #import "../../mixins/internalLinkTargetFragment.graphql"
 
-fragment layoutComponentFrontpageLoggedinPanel on Layout_no_nav_navno_frontpage_loggedin_panel {
+fragment layoutComponentFrontpageLoggedinSection on Layout_no_nav_navno_frontpage_loggedin_section {
     header
     mypage {
         link {
