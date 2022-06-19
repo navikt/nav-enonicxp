@@ -1,0 +1,19 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Kort for innlogget bruker</display-name>
+    <description>Brukertilpasset informasjon om en tjenste for innlogget bruker</description>
+    <form>
+        <option-set name="type">
+            <label>Velg type kort</label>
+            <occurrences minimum="1" maximum="1"/>
+            <options minimum="1" maximum="1">
+                <option name="meldekort">
+                    <label>Meldekort</label>
+                    <help-text>Vises kun for meldekort-brukere</help-text>
+                    <items>
+                        <mixin name="link"/>
+                    </items>
+                </option>
+            </options>
+        </option-set>
+    </form>
+</part>
