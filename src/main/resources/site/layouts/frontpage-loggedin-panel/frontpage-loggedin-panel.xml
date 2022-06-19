@@ -1,4 +1,4 @@
-<part xmlns="urn:enonic:xp:model:1.0">
+<layout>
     <display-name>Innloggede tjenester</display-name>
     <description>Panel med lenker til innloggede tjenester - vises kun for innlogget bruker</description>
     <form>
@@ -13,30 +13,18 @@
                 </input>
             </items>
         </field-set>
-        <item-set name="cards">
-            <label>Lenkekort</label>
-            <occurrences minimum="0" maximum="3"/>
+        <item-set name="mypage">
+            <label>Min side lenke</label>
+            <occurrences minimum="0" maximum="1"/>
             <items>
                 <mixin name="link"/>
-                <input name="graphic" type="ComboBox">
-                    <label>Grafikk</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <option value="wallet">Utbetalinger (lommebok)</option>
-                        <option value="document">Saker (dokumnet)</option>
-                        <option value="wallet">Meldekort (brev)</option>
-                    </config>
-                </input>
             </items>
         </item-set>
-        <field-set>
-            <label>Min side lenke</label>
-            <items>
-                <mixin name="link"/>
-            </items>
-        </field-set>
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>
     </config>
-</part>
+    <regions>
+        <region name="cards"/>
+    </regions>
+</layout>

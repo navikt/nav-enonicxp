@@ -1,0 +1,20 @@
+#import "../../mixins/internalLinkTargetFragment.graphql"
+
+fragment layoutComponentFrontpageLoggedinPanel on Layout_no_nav_navno_frontpage_loggedin_panel {
+    header
+    mypage {
+        link {
+            _selected
+            external {
+                text
+                url
+            }
+            internal {
+                text
+                target {
+                    ...internalLinkTargetMixin
+                }
+            }
+        }
+    }
+}
