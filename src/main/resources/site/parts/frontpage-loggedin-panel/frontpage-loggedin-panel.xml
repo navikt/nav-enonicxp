@@ -1,0 +1,65 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Innloggede tjenester</display-name>
+    <description>Panel med lenker til innloggede tjenester - vises kun for innlogget bruker</description>
+    <form>
+        <field-set>
+            <label>Overskrift</label>
+            <items>
+                <input name="header" type="TextLine">
+                    <label>Tekst</label>
+                    <help-text>"$navn" vil erstattes av navn på innlogget bruker</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>Hei, $navn</default>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="utbetalinger">
+            <label>Dine utbetalinger</label>
+            <occurrences minimum="1" maximum="1"/>
+            <items>
+                <input name="text" type="TextLine">
+                    <label>Tekst</label>
+                    <default>Dine utbetalinger</default>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <mixin name="link"/>
+            </items>
+        </item-set>
+        <item-set name="saker">
+            <label>Dine saker</label>
+            <items>
+                <input name="text" type="TextLine">
+                    <label>Tekst</label>
+                    <default>Dine saker</default>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <mixin name="link"/>
+            </items>
+        </item-set>
+        <item-set name="meldekort">
+            <label>Meldekort</label>
+            <items>
+                <input name="text" type="TextLine">
+                    <label>Tekst</label>
+                    <default>Dine utbetalinger</default>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <mixin name="link"/>
+            </items>
+        </item-set>
+        <field-set>
+            <label>Ditt NAV</label>
+            <items>
+                <input name="text" type="TextLine">
+                    <label>Tekst</label>
+                    <default>Ditt NAV</default>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <mixin name="link"/>
+            </items>
+        </field-set>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+    </config>
+</part>
