@@ -13,7 +13,19 @@
                     <label>Overskrift</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
-                <mixin name="area"/>
+                <mixin name="audience" />
+                <input name="area" type="ComboBox">
+                    <label>Område</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="work">Arbeid</option>
+                        <option value="family">Familie og barn</option>
+                        <option value="health">Helse og sykdom</option>
+                        <option value="accessibility">Hjelpemidler og tilrettelegging</option>
+                        <option value="pension">Pensjon</option>
+                        <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
+                    </config>
+                </input>
                 <input type="HtmlArea" name="banner">
                     <label>Topp-banner</label>
                     <occurrences minimum="0" maximum="1"/>

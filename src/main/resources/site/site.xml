@@ -11,8 +11,13 @@
         <mapping controller="/lib/controllers/site-info-controller.js">
             <match>type:'portal:site'</match>
         </mapping>
+        <mapping controller="/lib/controllers/area-page-controller.js">
+            <match>type:'no.nav.navno:area-page'</match>
+        </mapping>
         <mapping controller="/lib/controllers/admin-frontend-proxy.js">
-            <match>type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'</match>
+            <match>
+                type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'
+            </match>
         </mapping>
     </mappings>
     <processors>
