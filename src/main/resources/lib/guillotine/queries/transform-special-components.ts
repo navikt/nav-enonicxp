@@ -79,6 +79,7 @@ const transformProductDetailsPart = (
         part: {
             ...component.part,
             config: {
+                ...component.part.config,
                 no_nav_navno: {
                     product_details: {
                         ...productDetailsPartConfig,
