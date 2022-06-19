@@ -66,8 +66,6 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) => {
         'master'
     );
 
-    logger.info(`Found ${situationPages.length} situation pages for ${area} ${audience}`);
-
     return situationPages;
 };
 
@@ -88,16 +86,16 @@ const buildSituationCardPart = (path: string, target: string): SituationCardPart
     },
 });
 
-const partHasSituationAsTarget = (
-    part: SituationCardPartComponent,
-    situation: SituationPageContent
+const situationCardHasTarget = (
+    situationCard: SituationCardPartComponent,
+    situationPageTarget: SituationPageContent
 ) => {
-    const config = part.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
+    const config = situationCard.part?.config?.['no-nav-navno']?.['areapage-situation-card'];
     if (!config) {
         return false;
     }
 
-    return config.target === situation._id && config.dummyTarget === situation._id;
+    return config.target === situationPageTarget._id && config.dummyTarget === situationPageTarget._id;
 };
 
 const componentIsSituationCard = (
@@ -120,14 +118,12 @@ const buildSituationCardArray = (
         .filter(
             (component): component is SituationCardPartComponent =>
                 componentIsSituationCard(component) &&
-                situations.some((situation) => partHasSituationAsTarget(component, situation))
+                situations.some((situation) => situationCardHasTarget(component, situation))
         )
         .map((component, index) => ({ ...component, path: `${regionPath}/${index}` }));
 
-    logger.info(`Found ${currentValidParts.length} valid existing parts`);
-
     const missingSituations = situations.filter(
-        (situation) => !currentValidParts.some((part) => partHasSituationAsTarget(part, situation))
+        (situation) => !currentValidParts.some((part) => situationCardHasTarget(part, situation))
     );
 
     // Create new parts for any missing situations
@@ -135,8 +131,6 @@ const buildSituationCardArray = (
     const newParts = missingSituations.map((situation, index) =>
         buildSituationCardPart(`${regionPath}/${index + numCurrentParts}`, situation._id)
     );
-
-    logger.info(`Creating ${newParts.length} new parts`);
 
     return [...currentValidParts, ...newParts];
 };
@@ -149,8 +143,7 @@ const validateRegionComponents = (
     situations.every((situation) =>
         components.some(
             (component) =>
-                componentIsSituationCard(component) &&
-                partHasSituationAsTarget(component, situation)
+                componentIsSituationCard(component) && situationCardHasTarget(component, situation)
         )
     );
 
