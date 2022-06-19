@@ -9,7 +9,7 @@
 #import "./parts/partDynamicLinkPanel.graphql"
 #import "./parts/partDynamicNewsList.graphql"
 #import "./parts/partFiltersMenu.graphql"
-#import "./parts/partFrontpageLoggedinCard.graphql"
+#import "./parts/partLoggedinCard.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -58,11 +58,11 @@ fragment partComponents on PartComponentData {
                 filters_menu {
                     ...partComponentFiltersMenu
                 }
-                frontpage_loggedin_card {
-                    ...partComponentFrontpageLoggedinCard
-                }
                 html_area {
                     ...partComponentHtmlArea
+                }
+                loggedin_card {
+                    ...partComponentLoggedinCard
                 }
                 page_header {
                     ...partComponentPageHeader

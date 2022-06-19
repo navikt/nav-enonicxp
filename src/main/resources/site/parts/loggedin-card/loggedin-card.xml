@@ -2,7 +2,7 @@
     <display-name>Kort for innlogget bruker</display-name>
     <description>Brukertilpasset informasjon om en tjenste for innlogget bruker</description>
     <form>
-        <option-set name="type">
+        <option-set name="card">
             <label>Velg type kort</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">

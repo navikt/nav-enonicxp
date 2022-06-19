@@ -1,7 +1,7 @@
 #import "../../mixins/internalLinkTargetFragment.graphql"
 
-fragment partComponentFrontpageLoggedinCard on Part_no_nav_navno_frontpage_loggedin_card {
-    type {
+fragment partComponentLoggedinCard on Part_no_nav_navno_loggedin_card {
+    card {
         _selected
         meldekort {
             link {
