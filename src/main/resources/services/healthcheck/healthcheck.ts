@@ -1,8 +1,10 @@
 import httpClient from '/lib/http-client';
 import { logger } from '../../lib/utils/logging';
-import { clusterInfo, getLocalServerName } from '../../lib/utils/cluster-utils';
+import { clusterInfo } from '../../lib/utils/cluster-utils';
 
-const sitecontentUrl = `http://localhost:8080/_/service/no.nav.navno/sitecontent?id=/www.nav.no/`;
+const sitecontentUrl =
+    'http://localhost:8080/_/service/no.nav.navno/sitecontent?id=/www.nav.no/sadfasdf';
+const cachePeriodMs = 3000;
 
 const errorResponse = () => {
     return {
@@ -24,44 +26,34 @@ const okResponse = () => {
     };
 };
 
-const checkPeriod = 3000;
-let lastCheckTime = 0;
-let lastCheckResponse = {};
+export const get = () => {
+    // Use cache on the sitecontent service to prevent spammy requests from overloading anything
+    const cacheKey = Math.floor(Date.now() / cachePeriodMs);
+    const url = `${sitecontentUrl}&cacheKey=${cacheKey}`;
 
-export const get = (req: XP.Request) => {
-    const time = Date.now();
-
-    if (time - lastCheckTime < checkPeriod) {
-        return lastCheckResponse;
-    }
-
-    lastCheckTime = time;
+    logger.info(cacheKey.toString());
 
     try {
         const response = httpClient.request({
-            url: sitecontentUrl,
+            url,
             headers: {
                 secret: app.config.serviceSecret,
             },
         });
 
-        logger.info(response.contentType);
-
         if (response.status >= 400 || response.contentType !== 'application/json') {
             logger.critical(
-                `Bad response from health check request - ${response.status} ${response.message}`
+                `Bad response from health check request on server ${clusterInfo.localServerName} - ${response.status} ${response.message}`
             );
 
-            lastCheckResponse = errorResponse();
-        } else {
-            lastCheckResponse = okResponse();
+            return errorResponse();
         }
+
+        return okResponse();
     } catch (e) {
-        logger.critical(`Error from health check request - ${e}`);
-        lastCheckResponse = errorResponse();
+        logger.critical(
+            `Error from health check request on server ${clusterInfo.localServerName} - ${e}`
+        );
+        return errorResponse();
     }
-
-    logger.info(`Response on ${clusterInfo.localServerName}: ${JSON.stringify(lastCheckResponse)}`);
-
-    return lastCheckResponse;
 };
