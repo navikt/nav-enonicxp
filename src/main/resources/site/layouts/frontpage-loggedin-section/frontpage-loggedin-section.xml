@@ -1,0 +1,30 @@
+<layout>
+    <display-name>Innloggede tjenester</display-name>
+    <description>Seksjon med lenker til innloggede tjenester - vises kun for innlogget bruker</description>
+    <form>
+        <field-set>
+            <label>Overskrift</label>
+            <items>
+                <input name="header" type="TextLine">
+                    <label>Tekst</label>
+                    <help-text>"$navn" vil erstattes av navn på innlogget bruker</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>Hei, $navn</default>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="mypage">
+            <label>Min side lenke</label>
+            <occurrences minimum="0" maximum="1"/>
+            <items>
+                <mixin name="link"/>
+            </items>
+        </item-set>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+    </config>
+    <regions>
+        <region name="cards"/>
+    </regions>
+</layout>
