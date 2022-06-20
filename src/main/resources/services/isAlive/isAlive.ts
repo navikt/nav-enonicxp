@@ -1,3 +1,4 @@
+// Used for health check - do not remove
 export const get = () => {
     return {
         status: 200,
