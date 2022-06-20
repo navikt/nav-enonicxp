@@ -36,6 +36,6 @@
         <region name="flexcols"/>
     </regions>
     <config>
-        <allow-on-content-type>^(?!(${app}:situation-page$))</allow-on-content-type>
+        <allow-on-content-type>^(?!(${app}:situation-page)).+</allow-on-content-type>
     </config>
 </layout>
