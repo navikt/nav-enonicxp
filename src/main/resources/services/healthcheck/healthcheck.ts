@@ -2,8 +2,7 @@ import httpClient from '/lib/http-client';
 import { logger } from '../../lib/utils/logging';
 import { clusterInfo } from '../../lib/utils/cluster-utils';
 
-const sitecontentUrl =
-    'http://localhost:8080/_/service/no.nav.navno/sitecontent?id=/www.nav.no/sadfasdf';
+const sitecontentUrl = 'http://localhost:8080/_/service/no.nav.navno/sitecontent?id=/www.nav.no';
 const cachePeriodMs = 3000;
 
 const errorResponse = () => {
