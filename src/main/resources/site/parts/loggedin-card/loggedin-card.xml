@@ -16,4 +16,7 @@
             </options>
         </option-set>
     </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+    </config>
 </part>
