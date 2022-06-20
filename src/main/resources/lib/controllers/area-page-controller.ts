@@ -36,7 +36,8 @@ const getSituationsLayout = (
 };
 
 const getRelevantSituationPages = (content: AreaPageNodeContent) => {
-    const { area, audience } = content.data;
+    const { language, data } = content;
+    const { area, audience } = data;
 
     const situationPages = runInBranchContext(
         () =>
@@ -57,6 +58,12 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) => {
                                 hasValue: {
                                     field: 'data.audience',
                                     values: [audience],
+                                },
+                            },
+                            {
+                                hasValue: {
+                                    field: 'language',
+                                    values: [language],
                                 },
                             },
                         ],
@@ -95,7 +102,9 @@ const situationCardHasTarget = (
         return false;
     }
 
-    return config.target === situationPageTarget._id && config.dummyTarget === situationPageTarget._id;
+    return (
+        config.target === situationPageTarget._id && config.dummyTarget === situationPageTarget._id
+    );
 };
 
 const componentIsSituationCard = (
