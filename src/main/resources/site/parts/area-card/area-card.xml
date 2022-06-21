@@ -4,6 +4,6 @@
         <mixin name="link"/>
     </form>
     <config>
-        <allow-on-content-type>${app}:dynamic-page</allow-on-content-type>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
     </config>
 </part>
