@@ -6,6 +6,11 @@ export interface DynamicLinkListPartConfig {
   title?: string;
 
   /**
+   * Skjul tittel
+   */
+  hideTitle: boolean;
+
+  /**
    * Lenker med chevron
    */
   chevron: boolean;

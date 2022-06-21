@@ -1,0 +1,18 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../mixins/areasFragment.graphql"
+#import "../richText/richTextFragment.graphql"
+
+fragment contentAreaPage on no_nav_navno_AreaPage {
+    dataAsJson
+    data {
+        banner(processHtml: { type: server }) {
+            ...richText
+        }
+        languages {
+            ...languagesMixin
+        }
+        areasRefs {
+            ...areasMixin
+        }
+    }
+}

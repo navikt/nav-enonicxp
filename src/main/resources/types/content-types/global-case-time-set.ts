@@ -1,3 +1,5 @@
+import { ArrayOrSingle } from '../util-types';
+
 // The data fields for this type are set through a custom editor, and
 // are not defined in the descriptor file
 
@@ -12,5 +14,5 @@ export type CaseTimeItem = {
 };
 
 export type GlobalCaseTimeSetData = {
-    valueItems?: CaseTimeItem[] | CaseTimeItem;
+    valueItems?: ArrayOrSingle<CaseTimeItem>;
 };

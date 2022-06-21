@@ -1,0 +1,11 @@
+#import "../../contentCommonFragment.graphql"
+#import "../../content-types/contentPageWithSidemenusFragment.graphql"
+
+fragment partAreapageSituationCard on Part_no_nav_navno_areapage_situation_card {
+    disabled
+    target {
+        ...contentCommon
+        ...contentSituationPage
+    }
+    dummyTarget
+}

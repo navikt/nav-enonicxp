@@ -6,6 +6,11 @@ export interface DynamicNewsListPartConfig {
   title?: string;
 
   /**
+   * Skjul tittel
+   */
+  hideTitle: boolean;
+
+  /**
    * Innholdsliste for nyheter
    */
   contentList: {

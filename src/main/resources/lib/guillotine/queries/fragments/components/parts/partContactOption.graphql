@@ -11,6 +11,14 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
             title
             url
         }
+        navoffice {
+            ingress
+            title
+        }
+        aidcentral {
+            ingress
+            title
+        }
         call {
             ingress
             phoneNumber

@@ -119,7 +119,7 @@ const getContentOrRedirect = (
             type: 'no.nav.navno:internal-link',
             data: { target: { _path: baseContent.data.customPath } },
             page: undefined,
-        } as Content<'no.nav.navno:internal-link'>;
+        } as unknown as Content<'no.nav.navno:internal-link'>;
     }
 
     const content = runSitecontentGuillotineQuery(baseContent, branch);

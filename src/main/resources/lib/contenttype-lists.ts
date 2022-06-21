@@ -26,7 +26,10 @@ export const productPageContentTypes: ContentTypeList = [
 export const dynamicPageContentTypes: ContentTypeList = [
     ...productPageContentTypes,
     `${appDescriptor}:dynamic-page`,
+    `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
+    `${appDescriptor}:front-page`,
+    `${appDescriptor}:area-page`,
 ];
 
 export const linkContentTypes: ContentTypeList = [
@@ -64,7 +67,10 @@ export const typesWithDeepReferences: ContentTypeList = [
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
-    ...dynamicPageContentTypes,
+    ...productPageContentTypes,
+    `${appDescriptor}:dynamic-page`,
+    `${appDescriptor}:generic-page`,
+    `${appDescriptor}:overview`,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,

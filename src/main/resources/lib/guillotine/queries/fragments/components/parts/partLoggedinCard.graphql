@@ -1,0 +1,22 @@
+#import "../../mixins/internalLinkTargetFragment.graphql"
+
+fragment partComponentLoggedinCard on Part_no_nav_navno_loggedin_card {
+    card {
+        _selected
+        meldekort {
+            link {
+                _selected
+                external {
+                    text
+                    url
+                }
+                internal {
+                    text
+                    target {
+                        ...internalLinkTargetMixin
+                    }
+                }
+            }
+        }
+    }
+}

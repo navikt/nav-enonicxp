@@ -28,7 +28,7 @@ export interface OverviewData {
   /**
    * Type oversiktsside
    */
-  overviewType: "rates" | "payout_dates" | "processing_times";
+  overviewType: "rates" | "payout_dates" | "processing_times" | "all_products";
 
   /**
    * Velg piktogram

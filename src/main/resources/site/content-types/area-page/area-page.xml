@@ -1,0 +1,48 @@
+<content-type>
+    <display-name>Områdeside (Obs: ikke klar til prod-bruk!)</display-name>
+    <description>Områdeside</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Områdedata</label>
+            <items>
+                <input name="header" type="TextLine">
+                    <label>Overskrift</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <mixin name="audience" />
+                <input name="area" type="ComboBox">
+                    <label>Område</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="work">Arbeid</option>
+                        <option value="family">Familie og barn</option>
+                        <option value="health">Helse og sykdom</option>
+                        <option value="accessibility">Hjelpemidler og tilrettelegging</option>
+                        <option value="pension">Pensjon</option>
+                        <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
+                    </config>
+                </input>
+                <input type="HtmlArea" name="banner">
+                    <label>Topp-banner</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <config>
+                        <exclude>JustifyBlock Underline</exclude>
+                        <allowHeadings>normal</allowHeadings>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="area-navigation"/>
+        <field-set>
+            <label>Kort-url</label>
+            <items>
+                <mixin name="custom-path-selector"/>
+            </items>
+        </field-set>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>

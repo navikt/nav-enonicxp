@@ -8,12 +8,14 @@ import { isContentWithProductDetails } from '../../product-utils/types';
 
 type SitecontentQueryFunc = typeof runSitecontentGuillotineQuery;
 
-const handleProductDetailsPart = (
+// The product-details part requires an additional query to retrieve the components
+// to render in the part.
+const transformProductDetailsPart = (
     component: GuillotineComponent,
     baseContent: Content,
     branch: RepoBranch,
     runSitecontentGuillotineQuery: SitecontentQueryFunc
-) => {
+): GuillotineComponent => {
     const baseContentId = baseContent._id;
 
     if (!isContentWithProductDetails(baseContent)) {
@@ -21,7 +23,7 @@ const handleProductDetailsPart = (
             `Base content is not a valid type for product details - Base content id ${baseContentId}`,
             true
         );
-        return;
+        return component;
     }
 
     const productDetailsPartConfig = component.part.config?.no_nav_navno?.product_details;
@@ -30,19 +32,19 @@ const handleProductDetailsPart = (
             `Product detail part is not configured - Base content id ${baseContentId}`,
             true
         );
-        return;
+        return component;
     }
 
     const detailType = productDetailsPartConfig.detailType;
     if (!detailType) {
         logger.error(`No product detail type specified - Base content id ${baseContentId}`, true);
-        return;
+        return component;
     }
 
     const detailContentId = baseContent.data?.[detailType as ProductDetails['detailType']];
     if (!detailContentId) {
         logger.error(`No product detail id specified - Base content id ${baseContentId}`, true);
-        return;
+        return component;
     }
 
     const detailBaseContent = contentLib.get({ key: detailContentId });
@@ -51,7 +53,7 @@ const handleProductDetailsPart = (
             `No product detail content found for id ${detailContentId} - Base content id ${baseContentId}`,
             true
         );
-        return;
+        return component;
     }
 
     const detailContent = runSitecontentGuillotineQuery(detailBaseContent, branch);
@@ -60,7 +62,7 @@ const handleProductDetailsPart = (
             `Product detail content query failed for id ${detailContentId} - Base content id ${baseContentId}`,
             true
         );
-        return;
+        return component;
     }
 
     const detailComponents = detailContent.page?.regions?.main?.components;
@@ -69,17 +71,44 @@ const handleProductDetailsPart = (
             `No product detail main region components found for id ${detailContentId} - Base content id ${baseContentId}`,
             true
         );
-        return;
+        return component;
     }
 
-    productDetailsPartConfig.language = detailContent.language;
-    productDetailsPartConfig.components = detailComponents;
+    return {
+        ...component,
+        part: {
+            ...component.part,
+            config: {
+                ...component.part.config,
+                no_nav_navno: {
+                    product_details: {
+                        ...productDetailsPartConfig,
+                        language: detailContent.language,
+                        components: detailComponents,
+                    },
+                },
+            },
+        },
+    };
 };
 
-// The product-details part requires an additional query to retrieve the components
-// to render in the part.
-// TODO: when server-components in react/next reach a more mature state, see if this
-// can be refactored into a separate call/query from the frontend
+// We don't want to return disabled cards to the public/master frontend
+const transformAreapageSituationCardPart = (
+    component: GuillotineComponent | null,
+    branch: RepoBranch
+) => {
+    if (
+        branch === 'master' &&
+        component?.part.config?.no_nav_navno?.areapage_situation_card?.disabled
+    ) {
+        return null;
+    }
+
+    return component;
+};
+
+// Certain components need some extra processing which is more convenient to handle
+// after the main Graphql query
 export const guillotineTransformSpecialComponents = ({
     components,
     baseContent,
@@ -91,10 +120,22 @@ export const guillotineTransformSpecialComponents = ({
     baseContent: Content;
     branch: RepoBranch;
     runSitecontentGuillotineQuery: SitecontentQueryFunc;
-}) => {
-    components.forEach((component) => {
-        if (component.part?.descriptor === 'no.nav.navno:product-details') {
-            handleProductDetailsPart(component, baseContent, branch, runSitecontentGuillotineQuery);
-        }
-    });
+}): GuillotineComponent[] => {
+    return components
+        .map((component) => {
+            switch (component.part?.descriptor) {
+                case 'no.nav.navno:product-details':
+                    return transformProductDetailsPart(
+                        component,
+                        baseContent,
+                        branch,
+                        runSitecontentGuillotineQuery
+                    );
+                case 'no.nav.navno:areapage-situation-card':
+                    return transformAreapageSituationCardPart(component, branch);
+                default:
+                    return component;
+            }
+        })
+        .filter((component): component is GuillotineComponent => component !== null);
 };

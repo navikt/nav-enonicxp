@@ -1,5 +1,6 @@
 #import "./parts/partAlertPanel.graphql"
 #import "./parts/partAreaCard.graphql"
+#import "./parts/partAreapageSituationCard.graphql"
 #import "./parts/partButton.graphql"
 #import "./parts/partCalculator.graphql"
 #import "./parts/partContactOption.graphql"
@@ -9,6 +10,7 @@
 #import "./parts/partDynamicLinkPanel.graphql"
 #import "./parts/partDynamicNewsList.graphql"
 #import "./parts/partFiltersMenu.graphql"
+#import "./parts/partLoggedinCard.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -29,6 +31,9 @@ fragment partComponents on PartComponentData {
                 }
                 area_card {
                     ...partComponentAreaCard
+                }
+                areapage_situation_card {
+                    ...partAreapageSituationCard
                 }
                 button {
                     ...partComponentButton
@@ -59,6 +64,9 @@ fragment partComponents on PartComponentData {
                 }
                 html_area {
                     ...partComponentHtmlArea
+                }
+                loggedin_card {
+                    ...partComponentLoggedinCard
                 }
                 page_header {
                     ...partComponentPageHeader

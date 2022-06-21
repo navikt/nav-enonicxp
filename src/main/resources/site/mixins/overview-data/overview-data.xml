@@ -12,6 +12,7 @@
                         <option value="rates">Satser</option>
                         <option value="payout_dates">Utbetalingdatoer</option>
                         <option value="processing_times">Saksbehandlingstider</option>
+                        <option value="all_products">Alle produkter</option>
                     </config>
                 </input>
                 <mixin name="illustration"/>
