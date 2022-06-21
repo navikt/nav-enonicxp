@@ -2,7 +2,6 @@ import { PageWithSideMenusPageConfig } from '../../site/pages/page-with-side-men
 import { Dynamic1ColConfig } from '../../site/layouts/dynamic-1-col/dynamic-1-col-config';
 import { Dynamic2ColConfig } from '../../site/layouts/dynamic-2-col/dynamic-2-col-config';
 import { Dynamic3ColConfig } from '../../site/layouts/dynamic-3-col/dynamic-3-col-config';
-import { Dynamic4ColConfig } from '../../site/layouts/dynamic-4-col/dynamic-4-col-config';
 import { DynamicFlexColsConfig } from '../../site/layouts/dynamic-flex-cols/dynamic-flex-cols-config';
 import { SectionWithHeaderConfig } from '../../site/layouts/section-with-header/section-with-header-config';
 import { SituationFlexColsConfig } from '../../site/layouts/situation-flex-cols/situation-flex-cols-config';
@@ -28,7 +27,6 @@ import { AreapageSituationCardPartConfig } from '../../site/parts/areapage-situa
 import { EmptyObject } from '../util-types';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
-// | 'text';
 
 type PageConfigs = {
     'page-with-side-menus': PageWithSideMenusPageConfig;
@@ -38,7 +36,6 @@ type LayoutConfigs = {
     'dynamic-1-col': Dynamic1ColConfig;
     'dynamic-2-col': Dynamic2ColConfig;
     'dynamic-3-col': Dynamic3ColConfig;
-    'dynamic-4-col': Dynamic4ColConfig;
     'dynamic-flex-cols': DynamicFlexColsConfig;
     'section-with-header': SectionWithHeaderConfig;
     'situation-flex-cols': SituationFlexColsConfig;
@@ -85,5 +82,3 @@ type PageComponentName = keyof ComponentConfigs['page'];
 type LayoutComponentName = keyof ComponentConfigs['layout'];
 type PartComponentName = keyof ComponentConfigs['part'];
 export type ComponentName = PageComponentName | LayoutComponentName | PartComponentName;
-
-// TODO: add text components?
