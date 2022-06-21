@@ -2,20 +2,18 @@ import thymeleafLib from '/lib/thymeleaf';
 import { adminFrontendProxy } from '../../lib/controllers/admin-frontend-proxy';
 import { navnoRootPath } from '../../lib/constants';
 
-const view = resolve('error.html');
+const basicErrorView = resolve('error.html');
 
 export const handleError = (req: XP.ErrorRequest) => {
     // For non-404 errors, return a basic error message
     if (req.status !== 404) {
-        const model = {
-            status: req.status,
-            message: req.message,
-        };
-
         return {
             status: req.status,
             contentType: 'text/html; charset=UTF-8',
-            body: thymeleafLib.render(view, model),
+            body: thymeleafLib.render(basicErrorView, {
+                status: req.status,
+                message: req.message,
+            }),
         };
     }
 
