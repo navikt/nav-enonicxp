@@ -229,7 +229,7 @@ const populateSituationsLayout = (req: XP.Request) => {
 };
 
 const areaPageController = (req: XP.Request) => {
-    if (req.mode === 'edit' && req.method === 'GET') {
+    if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         populateSituationsLayout(req);
     }
 
