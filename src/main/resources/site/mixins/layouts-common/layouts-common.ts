@@ -75,13 +75,18 @@ export interface LayoutsCommon {
         _selected: "custom";
 
         /**
-         * Tilpasset
+         * Tilpasset (rem-enheter)
          */
         custom: {
           /**
-           * (rem-enheter)
+           * Topp-padding
            */
-          remValue?: number;
+          top?: number;
+
+          /**
+           * Bunn-padding
+           */
+          bottom?: number;
         };
       };
 
