@@ -1,7 +1,22 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Områdekort</display-name>
     <form>
-        <mixin name="link"/>
+        <mixin name="link" />
+        <input name="area" type="ComboBox">
+            <label>Grafikk</label>
+            <occurrences minimum="1" maximum="1" />
+            <config>
+                <option value="payments">Dine utbetalinger</option>
+                <option value="cases">Dine saker</option>
+                <option value="employment-status-form">Dine meldekort</option>
+                <option value="work">Arbeid</option>
+                <option value="family">Familie og barn</option>
+                <option value="health">Helse og sykdom</option>
+                <option value="accessibility">Hjelpemidler og tilrettelegging</option>
+                <option value="pension">Pensjon</option>
+                <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
+            </config>
+        </input>
     </form>
     <config>
         <allow-on-content-type>${app}:front-page</allow-on-content-type>

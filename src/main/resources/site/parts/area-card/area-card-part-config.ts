@@ -24,4 +24,9 @@ export interface AreaCardPartConfig {
          */
         external: Record<string, unknown>;
       };
+
+  /**
+   * Grafikk
+   */
+  area: "payments" | "cases" | "employment-status-form" | "work" | "family" | "health" | "accessibility" | "pension" | "social_counselling";
 }
