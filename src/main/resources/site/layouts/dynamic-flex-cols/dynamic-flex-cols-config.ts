@@ -110,13 +110,18 @@ export interface DynamicFlexColsConfig {
         _selected: "custom";
 
         /**
-         * Tilpasset
+         * Tilpasset (rem-enheter)
          */
         custom: {
           /**
-           * (rem-enheter)
+           * Topp
            */
-          remValue?: number;
+          top?: number;
+
+          /**
+           * Bunn
+           */
+          bottom?: number;
         };
       };
 
