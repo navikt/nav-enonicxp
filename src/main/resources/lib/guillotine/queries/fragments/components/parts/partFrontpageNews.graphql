@@ -1,0 +1,8 @@
+#import "../../mixins/frontpageNewsFragment.graphql"
+
+fragment partFrontpageNews on Part_no_nav_navno_frontpage_news {
+    title
+    newsList {
+        ...newsListMixin
+    }
+}

@@ -10,6 +10,7 @@
 #import "./parts/partDynamicNewsList.graphql"
 #import "./parts/partFiltersMenu.graphql"
 #import "./parts/partLoggedinCard.graphql"
+#import "./parts/partFrontpageNews.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -66,6 +67,9 @@ fragment partComponents on PartComponentData {
                 }
                 page_header {
                     ...partComponentPageHeader
+                }
+                frontpage_news {
+                    ...partFrontpageNews
                 }
                 page_navigation_menu {
                     ...partComponentPageNavigationMenu
