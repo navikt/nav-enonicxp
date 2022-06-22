@@ -139,6 +139,7 @@ const updateOfficeInfo = (officeInformationUpdated: OfficeInformation[]) => {
                         data: {
                             target: existingOffice._id,
                             permanentRedirect: false,
+                            redirectSubpaths: false,
                         },
                     });
                 } catch (e) {
