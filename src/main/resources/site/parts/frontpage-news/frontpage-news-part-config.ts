@@ -9,4 +9,19 @@ export interface FrontpageNewsPartConfig {
    * Velg maks 2 nyhetsartikler
    */
   newsList?: Array<string>;
+
+  /**
+   * Flere nyheter
+   */
+  moreNews?: {
+    /**
+     * Lenke
+     */
+    url: string;
+
+    /**
+     * Lenketekst
+     */
+    text: string;
+  };
 }
