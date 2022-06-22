@@ -79,12 +79,12 @@ export interface LayoutsCommon {
          */
         custom: {
           /**
-           * Topp-padding
+           * Topp
            */
           top?: number;
 
           /**
-           * Bunn-padding
+           * Bunn
            */
           bottom?: number;
         };
