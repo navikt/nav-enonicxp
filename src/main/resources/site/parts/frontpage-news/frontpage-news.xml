@@ -1,0 +1,14 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Forsidenyheter</display-name>
+    <description>Viser prioriterte nyheter på forsiden som velges i innstillingene.</description>
+    <form>
+        <input name="target" type="ContentSelector">
+            <label>Velg maks 2 nyhetsartikler</label>
+            <occurrences minimum="0" maximum="2"/>
+            <config>
+                <allowContentType>no.nav.navno:main-article</allowContentType>
+                <allowPath>${site}/*</allowPath>
+            </config>
+        </input>        
+    </form>
+</part>
