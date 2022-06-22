@@ -65,7 +65,7 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
 
 // Find the nearest parent for a not-found content. If it is an internal link with the
 // redirectSubpaths flag, use this as a redirect
-const getParentRedirectId = (path: string): null | Content => {
+const getParentRedirectContent = (path: string): null | Content => {
     if (!path) {
         return null;
     }
@@ -77,7 +77,7 @@ const getParentRedirectId = (path: string): null | Content => {
 
     const parentContent = contentLib.get({ key: parentPath });
     if (!parentContent) {
-        return getParentRedirectId(parentPath);
+        return getParentRedirectContent(parentPath);
     }
 
     if (
@@ -120,7 +120,10 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         return runSitecontentGuillotineQuery(redirectContent, branch);
     }
 
-    const parentRedirectContent = runInBranchContext(() => getParentRedirectId(idOrPath), branch);
+    const parentRedirectContent = runInBranchContext(
+        () => getParentRedirectContent(idOrPath),
+        branch
+    );
     if (parentRedirectContent) {
         return runSitecontentGuillotineQuery(parentRedirectContent, branch);
     }
