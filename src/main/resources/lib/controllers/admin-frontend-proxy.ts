@@ -30,7 +30,7 @@ const errorResponse = (url: string, status: number, message: string) => {
 
 // This proxies requests made directly to XP to the frontend. Normally this will
 // only be used in the portal-admin content studio previews
-export const adminFrontendProxy = (req: XP.Request) => {
+export const adminFrontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
         return {
             status: 200,
@@ -47,13 +47,15 @@ export const adminFrontendProxy = (req: XP.Request) => {
         };
     }
 
-    const content = portalLib.getContent();
-    if (!contentTypesForFrontendProxy[content.type]) {
-        return noRenderResponse();
+    if (!path) {
+        const content = portalLib.getContent();
+        if (!contentTypesForFrontendProxy[content?.type]) {
+            return noRenderResponse();
+        }
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
-    const contentPath = stripPathPrefix(req.rawPath.slice(pathStartIndex));
+    const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
     const frontendUrl = `${urls.frontendOrigin}${
         req.branch === 'draft' ? '/draft' : ''
     }${contentPath}`;

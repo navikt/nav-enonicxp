@@ -11,6 +11,11 @@ export interface InternalLink {
   target?: string;
 
   /**
+   * Redirect alle url'er under denne til valgt link (unntatt url'er med publisert innhold)
+   */
+  redirectSubpaths: boolean;
+
+  /**
    * Permanent redirect (innhold flyttet til ny url)
    */
   permanentRedirect: boolean;
