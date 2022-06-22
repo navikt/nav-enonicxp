@@ -8,7 +8,7 @@ import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
-import { isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { getParentPath, isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
@@ -63,6 +63,33 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
     } as Content<'no.nav.navno:internal-link'>;
 };
 
+// Find the nearest parent for a not-found content. If it is an internal link with the
+// redirectSubpaths flag, use this as a redirect
+const getParentRedirectContent = (path: string): null | Content => {
+    if (!path) {
+        return null;
+    }
+
+    const parentPath = getParentPath(path);
+    if (!parentPath) {
+        return null;
+    }
+
+    const parentContent = contentLib.get({ key: parentPath });
+    if (!parentContent) {
+        return getParentRedirectContent(parentPath);
+    }
+
+    if (
+        parentContent.type === 'no.nav.navno:internal-link' &&
+        parentContent.data.redirectSubpaths
+    ) {
+        return parentContent;
+    }
+
+    return null;
+};
+
 const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | null => {
     if (isUUID(idOrPath)) {
         return null;
@@ -89,11 +116,19 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         branch
     );
 
-    if (!redirectContent) {
-        return null;
+    if (redirectContent) {
+        return runSitecontentGuillotineQuery(redirectContent, branch);
     }
 
-    return runSitecontentGuillotineQuery(redirectContent, branch);
+    const parentRedirectContent = runInBranchContext(
+        () => getParentRedirectContent(idOrPath),
+        branch
+    );
+    if (parentRedirectContent) {
+        return runSitecontentGuillotineQuery(parentRedirectContent, branch);
+    }
+
+    return null;
 };
 
 const getContentOrRedirect = (
