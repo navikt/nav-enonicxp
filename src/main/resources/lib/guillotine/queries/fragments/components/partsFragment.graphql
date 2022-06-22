@@ -11,6 +11,7 @@
 #import "./parts/partFiltersMenu.graphql"
 #import "./parts/partLoggedinCard.graphql"
 #import "./parts/partFrontpageNews.graphql"
+#import "./parts/partFrontpageShortcuts.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -70,6 +71,9 @@ fragment partComponents on PartComponentData {
                 }
                 frontpage_news {
                     ...partFrontpageNews
+                }
+                frontpage_shortcuts {
+                    ...partFrontpageShortcuts
                 }
                 page_navigation_menu {
                     ...partComponentPageNavigationMenu

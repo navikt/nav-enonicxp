@@ -1,0 +1,5 @@
+#import "../contentCommonFragment.graphql"
+
+fragment shortcutListMixin on Content {
+    ...contentCommon
+}
