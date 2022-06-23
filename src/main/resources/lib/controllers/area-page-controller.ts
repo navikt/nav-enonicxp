@@ -1,7 +1,7 @@
 import portalLib from '/lib/xp/portal';
 import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
 import contentLib, { Content } from '/lib/xp/content';
-import { adminFrontendProxy } from './admin-frontend-proxy';
+import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInBranchContext } from '../utils/branch-context';
@@ -233,7 +233,7 @@ const areaPageController = (req: XP.Request) => {
         populateSituationsLayout(req);
     }
 
-    return adminFrontendProxy(req);
+    return frontendProxy(req);
 };
 
 export const get = areaPageController;

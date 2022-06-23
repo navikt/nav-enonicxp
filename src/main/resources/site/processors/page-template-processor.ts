@@ -1,5 +1,5 @@
 import portalLib from '/lib/xp/portal';
-import { adminFrontendProxy } from '../../lib/controllers/admin-frontend-proxy';
+import { frontendProxy } from '../../lib/controllers/frontend-proxy';
 
 // This is a post-processing step which runs after the request has gone through the regular request pipeline. We do some
 // special silly handling of the page-template type, in order to get the page-controller selector for empty
@@ -11,7 +11,7 @@ export const responseProcessor = (req: XP.Request, res: XP.Response) => {
     // we let it through the regular XP request pipeline and only send it through the frontend-proxy if the template
     // is not empty. For empty templates, we only want to show the default response.
     if (content.type === 'portal:page-template' && content.page?.descriptor) {
-        return adminFrontendProxy(req);
+        return frontendProxy(req);
     }
 
     return res;

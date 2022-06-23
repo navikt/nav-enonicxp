@@ -1,5 +1,5 @@
 import thymeleafLib from '/lib/thymeleaf';
-import { adminFrontendProxy } from '../../lib/controllers/admin-frontend-proxy';
+import { frontendProxy } from '../../lib/controllers/frontend-proxy';
 import { navnoRootPath } from '../../lib/constants';
 
 const basicErrorView = resolve('error.html');
@@ -19,7 +19,7 @@ export const handleError = (req: XP.ErrorRequest) => {
 
     // Get 404 from the frontend for request to master (from the public)
     if (req.request.branch === 'master') {
-        return adminFrontendProxy(req.request, '/404');
+        return frontendProxy(req.request, '/404');
     }
 
     // If the requested path is a customPath, or some other custom mapping that the frontend + sitecontent
@@ -27,5 +27,5 @@ export const handleError = (req: XP.ErrorRequest) => {
     // return 404)
     const possiblePaths = req.request.rawPath.split(navnoRootPath);
 
-    return adminFrontendProxy(req.request, possiblePaths[1] || possiblePaths[0]);
+    return frontendProxy(req.request, possiblePaths[1] || possiblePaths[0]);
 };

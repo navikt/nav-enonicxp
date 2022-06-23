@@ -29,8 +29,8 @@ const errorResponse = (url: string, status: number, message: string) => {
 };
 
 // This proxies requests made directly to XP to the frontend. Normally this will
-// only be used in the portal-admin content studio previews
-export const adminFrontendProxy = (req: XP.Request, path?: string) => {
+// only be used in the portal-admin content studio previews and from the error controller
+export const frontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
         return {
             status: 200,
@@ -82,7 +82,7 @@ export const adminFrontendProxy = (req: XP.Request, path?: string) => {
 
         const { status, message } = response;
 
-        if (status >= 400) {
+        if (status >= 400 && status !== 404) {
             logger.warning(
                 `Error response from frontend for ${frontendUrl}: ${status} - ${message}`
             );
@@ -100,5 +100,5 @@ export const adminFrontendProxy = (req: XP.Request, path?: string) => {
     }
 };
 
-export const get = adminFrontendProxy;
-export const handleError = adminFrontendProxy;
+export const get = frontendProxy;
+export const handleError = frontendProxy;
