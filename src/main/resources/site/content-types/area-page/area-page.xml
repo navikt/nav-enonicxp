@@ -9,11 +9,7 @@
         <field-set>
             <label>Områdedata</label>
             <items>
-                <input name="header" type="TextLine">
-                    <label>Overskrift</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <mixin name="audience" />
+                <mixin name="audience"/>
                 <input name="area" type="ComboBox">
                     <label>Område</label>
                     <occurrences minimum="1" maximum="1"/>
@@ -26,14 +22,33 @@
                         <option value="social_counselling">Økonomisk sosialhjelp, råd og veiledning</option>
                     </config>
                 </input>
-                <input type="HtmlArea" name="banner">
-                    <label>Topp-banner</label>
-                    <occurrences minimum="0" maximum="1"/>
-                    <config>
-                        <exclude>JustifyBlock Underline</exclude>
-                        <allowHeadings>normal</allowHeadings>
-                    </config>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Header</label>
+            <items>
+                <input name="header" type="TextLine">
+                    <label>Overskrift</label>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
+                <item-set name="banner">
+                    <label>Banner</label>
+                    <occurrences minimum="0" maximum="1"/>
+                    <items>
+                        <mixin name="link"/>
+                        <mixin name="color-picker"/>
+                        <input type="HtmlArea" name="html">
+                            <label>Innhold</label>
+                            <occurrences minimum="0" maximum="1"/>
+                            <config>
+                                <exclude>JustifyBlock JustifyLeft JustifyCenter JustifyRight BulletedList NumberedList
+                                    Outdent Indent Anchor Link Unlink Table
+                                </exclude>
+                                <allowHeadings>normal</allowHeadings>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
             </items>
         </field-set>
         <mixin name="area-navigation"/>

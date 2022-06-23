@@ -1,12 +1,29 @@
 #import "../mixins/languagesFragment.graphql"
 #import "../mixins/areasFragment.graphql"
+#import "../mixins/internalLinkTargetFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 
 fragment contentAreaPage on no_nav_navno_AreaPage {
     dataAsJson
     data {
-        banner(processHtml: { type: server }) {
-            ...richText
+        banner {
+            link {
+                _selected
+                external {
+                    text
+                    url
+                }
+                internal {
+                    text
+                    target {
+                        ...internalLinkTargetMixin
+                    }
+                }
+            }
+            html(processHtml: { type: server }) {
+                ...richText
+            }
+            color
         }
         languages {
             ...languagesMixin
