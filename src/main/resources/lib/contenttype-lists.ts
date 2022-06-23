@@ -15,16 +15,22 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:melding`,
 ];
 
-export const productPageContentTypes: ContentTypeList = [
+export const productCardPartContentTypes: ContentTypeList = [
     `${appDescriptor}:situation-page`,
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
     `${appDescriptor}:tools-page`,
+    `${appDescriptor}:overview`,
+    `${appDescriptor}:generic-page`,
 ];
 
 export const dynamicPageContentTypes: ContentTypeList = [
-    ...productPageContentTypes,
+    `${appDescriptor}:situation-page`,
+    `${appDescriptor}:guide-page`,
+    `${appDescriptor}:themed-article-page`,
+    `${appDescriptor}:content-page-with-sidemenus`,
+    `${appDescriptor}:tools-page`,
     `${appDescriptor}:dynamic-page`,
     `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
@@ -67,7 +73,7 @@ export const typesWithDeepReferences: ContentTypeList = [
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
-    ...productPageContentTypes,
+    ...productCardPartContentTypes,
     `${appDescriptor}:dynamic-page`,
     `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
