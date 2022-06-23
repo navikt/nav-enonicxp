@@ -8,7 +8,7 @@
         </input>
         <item-set name="card-list">
             <label>Produkt eller livssituasjon</label>
-            <occurrences minimum="0" maximum="5"/>
+            <occurrences minimum="1" maximum="0"/>
             <items>
                 <mixin name="product-target-selector"/>
             </items>

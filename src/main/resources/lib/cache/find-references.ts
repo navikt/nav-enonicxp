@@ -13,7 +13,7 @@ import {
 } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import {
-    productPageContentTypes,
+    productCardPartContentTypes,
     typesWithDeepReferences as _typesWithDeepReferences,
     contentTypesWithProductDetails,
 } from '../contenttype-lists';
@@ -24,7 +24,7 @@ import { getProductDetailsUsage } from '../product-utils/productDetails';
 
 const MAX_DEPTH = 3;
 
-const productCardTargetTypes = stringArrayToSet(productPageContentTypes);
+const productCardTargetTypes = stringArrayToSet(productCardPartContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
