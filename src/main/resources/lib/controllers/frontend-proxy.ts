@@ -28,8 +28,8 @@ const errorResponse = (url: string, status: number, message: string) => {
     };
 };
 
-// This proxies requests made directly to XP to the frontend. Normally this will
-// only be used in the portal-admin content studio previews and from the error controller
+// Proxy requests to XP to the frontend. Normally this will only be used in the portal-admin
+// content studio previews and from the error controller
 export const frontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
         return {
