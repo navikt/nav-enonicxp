@@ -1,0 +1,32 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Forsidesnarveier</display-name>
+    <description>Viser utvalgte snarveier til andre sider fra forsiden.</description>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+        </input>
+        <input name="shortcutList" type="ContentSelector">
+            <label>Velg maks 3 snarveier</label>
+            <occurrences minimum="0" maximum="3"/>
+            <config>
+                <allowContentType>${app}:main-article</allowContentType>
+                <allowContentType>${app}:main-article-chapter</allowContentType>
+                <allowContentType>${app}:internal-link</allowContentType>
+                <allowContentType>${app}:external-link</allowContentType>
+                <allowContentType>${app}:page-list</allowContentType>
+                <allowContentType>${app}:dynamic-page</allowContentType>
+                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                <allowContentType>${app}:situation-page</allowContentType>
+                <allowContentType>${app}:guide-page</allowContentType>
+                <allowContentType>${app}:tools-page</allowContentType>
+                <allowContentType>${app}:guide-page</allowContentType>
+                <allowContentType>${app}:themed-article-page</allowContentType>
+                <allowContentType>${app}:overview</allowContentType>
+                <allowPath>${site}/*</allowPath>
+            </config>
+        </input> 
+    </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+    </config>
+</part>

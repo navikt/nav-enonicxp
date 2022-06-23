@@ -1,0 +1,8 @@
+#import "../../mixins/frontpageShortcutsFragment.graphql"
+
+fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
+    title
+    shortcutList {
+        ...shortcutListMixin
+    }
+}
