@@ -1,6 +1,4 @@
-#import "../../mixins/internalLinkTargetFragment.graphql"
-
-fragment partComponentAlertPanel on Part_no_nav_navno_frontpage_contact {
+fragment partComponentFrontpageContact on Part_no_nav_navno_frontpage_contact {
     chatTitle
     chatIngress
     contactUsTitle

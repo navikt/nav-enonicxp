@@ -13,6 +13,7 @@
 #import "./parts/partLoggedinCard.graphql"
 #import "./parts/partFrontpageNews.graphql"
 #import "./parts/partFrontpageShortcuts.graphql"
+#import "./parts/partFrontpageContact.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -63,6 +64,9 @@ fragment partComponents on PartComponentData {
                 }
                 filters_menu {
                     ...partComponentFiltersMenu
+                }
+                frontpage_contact {
+                    ...partComponentFrontpageContact
                 }
                 html_area {
                     ...partComponentHtmlArea
