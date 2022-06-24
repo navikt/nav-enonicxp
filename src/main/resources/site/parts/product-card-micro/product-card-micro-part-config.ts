@@ -8,7 +8,7 @@ export interface ProductCardMicroPartConfig {
   /**
    * Produkt eller livssituasjon
    */
-  "card-list"?: Array<{
+  "card-list": Array<{
     /**
      * Velg side
      */
