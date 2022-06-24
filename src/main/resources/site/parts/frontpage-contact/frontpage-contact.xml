@@ -1,0 +1,31 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Kontakt-modul til forside</display-name>
+    <form>
+        <field-set>
+            <label>Chat</label>
+            <items>
+                <input type="TextLine" name="chatTitle">
+                    <label>Header</label>
+                </input>
+                <input type="TextArea" name="chatIngress">
+                    <label>Ingress</label>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Kontakt oss</label>
+            <items>
+                <input type="TextLine" name="contactUsTitle">
+                    <label>Header</label>
+                </input>
+                <input type="TextArea" name="contactUsIngress">
+                    <label>Ingress</label>
+                </input>
+            </items>
+        </field-set>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+        <allow-on-content-type>portal:page-template</allow-on-content-type>
+    </config>
+</part>
