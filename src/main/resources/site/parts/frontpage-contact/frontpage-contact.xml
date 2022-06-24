@@ -6,9 +6,11 @@
             <items>
                 <input type="TextLine" name="chatTitle">
                     <label>Header</label>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextArea" name="chatIngress">
                     <label>Ingress</label>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
             </items>
         </field-set>
@@ -17,9 +19,19 @@
             <items>
                 <input type="TextLine" name="contactUsTitle">
                     <label>Header</label>
+                    <occurrences minimum="1" maximum="1"/>
                 </input>
                 <input type="TextArea" name="contactUsIngress">
                     <label>Ingress</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="ContentSelector" name="contactUsLink">
+                    <label>Lenke til kontakt-oss side</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <allowPath>/www.nav.no/*</allowPath>
+                        <allowContentType>${app}:generic-page</allowContentType>
+                    </config>
                 </input>
             </items>
         </field-set>

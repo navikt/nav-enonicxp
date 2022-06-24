@@ -3,20 +3,25 @@ export interface FrontpageContactPartConfig {
   /**
    * Header
    */
-  chatTitle?: string;
+  chatTitle: string;
 
   /**
    * Ingress
    */
-  chatIngress?: string;
+  chatIngress: string;
 
   /**
    * Header
    */
-  contactUsTitle?: string;
+  contactUsTitle: string;
 
   /**
    * Ingress
    */
-  contactUsIngress?: string;
+  contactUsIngress: string;
+
+  /**
+   * Lenke til kontakt-oss side
+   */
+  contactUsLink: string;
 }

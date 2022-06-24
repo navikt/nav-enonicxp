@@ -1,0 +1,11 @@
+#import "../../mixins/internalLinkTargetFragment.graphql"
+
+fragment partComponentAlertPanel on Part_no_nav_navno_frontpage_contact {
+    chatTitle
+    chatIngress
+    contactUsTitle
+    contactUsIngress
+    contactUsLink {
+        _path
+    }
+}
