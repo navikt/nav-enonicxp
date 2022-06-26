@@ -1,0 +1,10 @@
+fragment contentListShortMixin on no_nav_navno_ContentList {
+    data {
+        sectionContents {
+            _id
+            _path
+            displayName
+            modifiedTime
+        }
+    }
+}
