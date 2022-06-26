@@ -1,5 +1,5 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Seksjon for snarveier</display-name>
+    <display-name>Seksjon for aktuelle temaer</display-name>
     <description>Til bruk på forsider</description>
     <form>
         <input name="title" type="TextLine">

@@ -1,5 +1,6 @@
 <part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Kontakt-modul til forside</display-name>
+    <display-name>Seksjon for kontakt-informasjon</display-name>
+    <description>Til bruk på forsider</description>
     <form>
         <field-set>
             <label>Chat</label>

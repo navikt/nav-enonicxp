@@ -1,5 +1,0 @@
-#import "../contentCommonFragment.graphql"
-
-fragment newsListMixin on Content {
-    ...contentCommon
-}

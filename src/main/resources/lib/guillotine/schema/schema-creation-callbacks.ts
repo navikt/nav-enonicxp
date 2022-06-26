@@ -53,9 +53,17 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
-    Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter:
-        contentListCallback('publish.first'),
-    Part_no_nav_navno_dynamic_link_list_HentLenkerFraInnholdsliste: contentListCallback(),
+    Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter: contentListCallback(
+        'target',
+        'numLinks',
+        'publish.first'
+    ),
+    Part_no_nav_navno_dynamic_link_list_HentLenkerFraInnholdsliste: contentListCallback(
+        'target',
+        'numLinks'
+    ),
+    Part_no_nav_navno_frontpage_current_topics: contentListCallback('contentList', 'maxItems'),
+    Part_no_nav_navno_frontpage_shortcuts: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
     Part_no_nav_navno_page_navigation_menu_OverstyrLenketekster: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
