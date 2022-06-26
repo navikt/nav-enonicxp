@@ -149,17 +149,19 @@ const getPathMapForAreaPage = (contentId: string) => {
         start: 0,
         count: 1000,
         contentTypes: ['no.nav.navno:situation-page'],
-        filters: { ids: situationIds },
+        filters: { ids: { values: situationIds } },
     }).hits;
 
-    return situationContents.reduce((acc, content) =>
-        hasValidCustomPath(content)
-            ? { ...acc, [stripPathPrefix(content._path)]: content.data.customPath }
-            : acc
+    return situationContents.reduce(
+        (acc, content) =>
+            hasValidCustomPath(content)
+                ? { ...acc, [stripPathPrefix(content._path)]: content.data.customPath }
+                : acc,
+        {}
     );
 };
 
-// TODO: rewrite this system from scratch
+// TODO: rewrite this system
 export const buildCustomPathMap = (contentId: string) => {
     const pathMapFromDependencies = getPathMapFromDependencies(contentId);
     const pathMapFromAreasPage = getPathMapForAreaPage(contentId);
