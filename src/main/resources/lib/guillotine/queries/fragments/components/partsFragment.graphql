@@ -11,9 +11,9 @@
 #import "./parts/partDynamicNewsList.graphql"
 #import "./parts/partFiltersMenu.graphql"
 #import "./parts/partLoggedinCard.graphql"
-#import "./parts/partFrontpageNews.graphql"
-#import "./parts/partFrontpageShortcuts.graphql"
 #import "./parts/partFrontpageContact.graphql"
+#import "./parts/partFrontpageCurrentTopics.graphql"
+#import "./parts/partFrontpageShortcuts.graphql"
 #import "./parts/partHtmlArea.graphql"
 #import "./parts/partPageHeader.graphql"
 #import "./parts/partPageNavigationMenu.graphql"
@@ -68,6 +68,12 @@ fragment partComponents on PartComponentData {
                 frontpage_contact {
                     ...partComponentFrontpageContact
                 }
+                frontpage_current_topics {
+                    ...partFrontpageCurrentTopics
+                }
+                frontpage_shortcuts {
+                    ...partFrontpageShortcuts
+                }
                 html_area {
                     ...partComponentHtmlArea
                 }
@@ -76,12 +82,6 @@ fragment partComponents on PartComponentData {
                 }
                 page_header {
                     ...partComponentPageHeader
-                }
-                frontpage_news {
-                    ...partFrontpageNews
-                }
-                frontpage_shortcuts {
-                    ...partFrontpageShortcuts
                 }
                 page_navigation_menu {
                     ...partComponentPageNavigationMenu

@@ -1,5 +1,5 @@
 <layout>
-    <display-name>Innloggede tjenester</display-name>
+    <display-name>Seksjon for innloggede tjenester</display-name>
     <description>Seksjon med lenker til innloggede tjenester - vises kun for innlogget bruker</description>
     <form>
         <field-set>
