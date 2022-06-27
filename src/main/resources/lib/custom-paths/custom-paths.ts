@@ -1,8 +1,10 @@
 import contentLib, { Content } from '/lib/xp/content';
+import nodeLib from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
-import { stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';
+import { forceArray, stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
+import { componentAppKey, contentRepo } from '../constants';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 
@@ -91,7 +93,7 @@ export const getInternalContentPathFromCustomPath = (xpPath: string) => {
     return content[0]._path;
 };
 
-export const getPathMapForReferences = (contentId: string) => {
+const getPathMapFromDependencies = (contentId: string) => {
     // getOutboundDependencies throws an error if the key does not exist
     try {
         return contentLib
@@ -114,4 +116,55 @@ export const getPathMapForReferences = (contentId: string) => {
     } catch (e) {
         return {};
     }
+};
+
+const getPathMapForAreaPage = (contentId: string) => {
+    const repo = nodeLib.connect({ repoId: contentRepo, branch: 'master' });
+    const content = repo.get({ key: contentId });
+    if (!content || content.type !== 'no.nav.navno:area-page') {
+        return {};
+    }
+
+    const situationIds = forceArray(content.components).reduce((acc, component) => {
+        if (
+            component.type !== 'part' ||
+            component.part.descriptor !== 'no.nav.navno:areapage-situation-card'
+        ) {
+            return acc;
+        }
+
+        const target = component.part.config?.[componentAppKey]['areapage-situation-card'].target;
+        if (!target) {
+            return acc;
+        }
+
+        return [...acc, target];
+    }, []);
+
+    if (situationIds.length === 0) {
+        return {};
+    }
+
+    const situationContents = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:situation-page'],
+        filters: { ids: { values: situationIds } },
+    }).hits;
+
+    return situationContents.reduce(
+        (acc, content) =>
+            hasValidCustomPath(content)
+                ? { ...acc, [stripPathPrefix(content._path)]: content.data.customPath }
+                : acc,
+        {}
+    );
+};
+
+// TODO: rewrite this system
+export const buildCustomPathMap = (contentId: string) => {
+    const pathMapFromDependencies = getPathMapFromDependencies(contentId);
+    const pathMapFromAreasPage = getPathMapForAreaPage(contentId);
+
+    return { ...pathMapFromDependencies, ...pathMapFromAreasPage };
 };
