@@ -22,9 +22,17 @@ const errorResponse = (url: string, status: number, message: string) => {
     }
 
     return {
-        contentType: 'text/html',
+        contentType: 'text/html; charset=UTF-8',
         body: `<div>${msg}</div>`,
         status,
+    };
+};
+
+// The legacy health check expects an html-response on /no/person
+const healthCheckDummyResponse = () => {
+    return {
+        contentType: 'text/html; charset=UTF-8',
+        body: '<!DOCTYPE html><html lang="no"><head><meta charset="utf-8"><title>Nav.no</title></head><body><div>Hei, jeg er en ex-forside</div></body></html>',
     };
 };
 
@@ -49,6 +57,13 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
 
     if (!path) {
         const content = portalLib.getContent();
+
+        // Ensures our legacy health-check still works after the old /no/person page is removed
+        // TODO: remove this asap after the health-check has been updated
+        if (req.url.endsWith('/no/person') && content?.type !== 'no.nav.navno:dynamic-page') {
+            return healthCheckDummyResponse();
+        }
+
         if (!contentTypesForFrontendProxy[content?.type]) {
             return noRenderResponse();
         }
