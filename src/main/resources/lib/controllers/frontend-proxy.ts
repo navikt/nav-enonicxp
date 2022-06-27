@@ -28,7 +28,7 @@ const errorResponse = (url: string, status: number, message: string) => {
     };
 };
 
-// Prevents outdated health-check from blocking routing to our servers...
+// The legacy health check expects an html-response on /no/person
 const healthCheckDummyResponse = () => {
     return {
         contentType: 'text/html; charset=UTF-8',
