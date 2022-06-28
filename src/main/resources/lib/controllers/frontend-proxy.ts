@@ -29,6 +29,7 @@ const errorResponse = (url: string, status: number, message: string) => {
 };
 
 // The legacy health check expects an html-response on /no/person
+// "Nyheter" must be part of the response!
 const healthCheckDummyResponse = () => {
     return {
         contentType: 'text/html; charset=UTF-8',
