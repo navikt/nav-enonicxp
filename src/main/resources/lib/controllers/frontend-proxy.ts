@@ -32,7 +32,7 @@ const errorResponse = (url: string, status: number, message: string) => {
 const healthCheckDummyResponse = () => {
     return {
         contentType: 'text/html; charset=UTF-8',
-        body: '<!DOCTYPE html><html lang="no"><head><meta charset="utf-8"><title>Nav.no</title></head><body><div>Hei, jeg er en ex-forside</div></body></html>',
+        body: '<html lang="no"><head><meta charset="utf-8"><title>Nav.no</title></head><body><div>Hei, jeg er en ex-forside</div></body></html>',
     };
 };
 
