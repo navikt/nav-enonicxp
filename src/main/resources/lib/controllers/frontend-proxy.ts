@@ -55,14 +55,14 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         };
     }
 
+    // Ensures our legacy health-check still works after the old /no/person page is removed
+    // TODO: remove this asap after the health-check has been updated
+    if (req.mode === 'live' && req.url.endsWith('/no/person')) {
+        return healthCheckDummyResponse();
+    }
+
     if (!path) {
         const content = portalLib.getContent();
-
-        // Ensures our legacy health-check still works after the old /no/person page is removed
-        // TODO: remove this asap after the health-check has been updated
-        if (req.url.endsWith('/no/person') && content?.type !== 'no.nav.navno:dynamic-page') {
-            return healthCheckDummyResponse();
-        }
 
         if (!contentTypesForFrontendProxy[content?.type]) {
             return noRenderResponse();
