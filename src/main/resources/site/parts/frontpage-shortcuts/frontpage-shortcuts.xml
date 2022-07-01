@@ -14,11 +14,10 @@
         </input>
         <input name="maxItems" type="Long">
             <label>Maks antall lenker</label>
-            <help-text>(Kan ikke endres her)</help-text>
             <default>3</default>
             <config>
-                <min>3</min>
-                <max>3</max>
+                <min>1</min>
+                <max>4</max>
             </config>
         </input>
     </form>
