@@ -7,6 +7,7 @@ import {
 import { runInBranchContext } from '../../../utils/branch-context';
 import { forceArray } from '../../../utils/nav-utils';
 import { logger } from '../../../utils/logging';
+import contextLib from '/lib/xp/context';
 
 export const globalValueMacroConfigCallback: CreationCallback = (context, params) => {
     params.fields.value = {
@@ -26,7 +27,7 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
                 'master'
             );
 
-            if (value === null) {
+            if (value === null && contextLib.get().branch === 'master') {
                 logger.error(
                     `Invalid global value reference in macro: ${env.source.key} (code 2)`,
                     true
@@ -57,7 +58,7 @@ export const globalValueWithMathMacroConfigCallback: CreationCallback = (context
                         }
 
                         const value = getGlobalNumberValue(gvKey, contentId);
-                        if (value === null) {
+                        if (value === null && contextLib.get().branch === 'master') {
                             logger.error(
                                 `Invalid global value reference in math macro: ${key} (code 2)`,
                                 true
