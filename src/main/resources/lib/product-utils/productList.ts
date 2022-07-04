@@ -41,13 +41,9 @@ const getProductDetails = (
         return productDetails;
     }
 
-    log.info(`Languages for ${product._path} - ${JSON.stringify(productDetails.data.languages)}`);
-
     const productDetailsWithLanguage = forceArray(productDetails.data.languages)
         .map((contentRef) => contentLib.get({ key: contentRef }))
         .find((languageContent) => languageContent?.language === language);
-
-    log.info(`Found language version: ${JSON.stringify(productDetailsWithLanguage)}`);
 
     return productDetailsWithLanguage;
 };
