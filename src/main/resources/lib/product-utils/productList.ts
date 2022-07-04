@@ -119,8 +119,8 @@ const getRelevantContentTypes = (overviewType: string): ContentDescriptor[] => {
 };
 
 export const getAllProducts = (language: string, overviewType: Overview['overviewType']) => {
-    // We use the norwegian pages as a baseline, in order to enabled retrieval of product details
-    // for languages with an incomplete set of product pages.
+    // We use the norwegian pages as a baseline, then look for alternative language versions
+    // of the attached norwegian product details for other languages
     const norwegianProductPages = contentLib.query({
         start: 0,
         count: 1000,
