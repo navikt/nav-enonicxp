@@ -20,6 +20,7 @@ export type OverviewPageProductData = {
     path: string;
     title: string;
     sortTitle: string;
+    localeSortTitle?: string;
     ingress: string;
     audience: ProductData['audience'];
     language: string;

@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
@@ -103,14 +103,9 @@ const buildProductData = (
 
     const simpleBaseProduct = buildSimpleBaseProduct(product);
 
-    const sortTitle =
-        simpleBaseProduct.language === productDetails.language
-            ? simpleBaseProduct.sortTitle
-            : productDetails.displayName;
-
     return {
         ...simpleBaseProduct,
-        sortTitle,
+        localeSortTitle: productDetails.displayName,
         productDetailsPath: productDetails._path,
     };
 };
@@ -150,17 +145,20 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
         },
     }).hits;
 
-    return norwegianProductPages
+    const allProducts = norwegianProductPages
         .reduce((acc, content) => {
             const productData = buildProductData(content, overviewType, language);
-            if (
-                !productData ||
-                acc.some((_content) => _content.sortTitle === productData.sortTitle)
-            ) {
+            if (!productData) {
                 return acc;
             }
 
             return [...acc, productData];
         }, [] as OverviewPageProductData[])
         .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+
+    if (language === 'no') {
+        return allProducts;
+    }
+
+    return removeDuplicates(allProducts, (a, b) => a.localeSortTitle === b.localeSortTitle);
 };
