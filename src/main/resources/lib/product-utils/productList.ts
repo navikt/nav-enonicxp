@@ -41,9 +41,17 @@ const getProductDetails = (
         return productDetails;
     }
 
+    // If the product details are not in the requested language, try to find the correct language content
+    // from the alternative language references
     const productDetailsWithLanguage = forceArray(productDetails.data.languages)
         .map((contentRef) => contentLib.get({ key: contentRef }))
         .find((languageContent) => languageContent?.language === language);
+
+    if (!productDetailsWithLanguage) {
+        logger.error(
+            `Missing product details for content ${product._id} with language ${language}`
+        );
+    }
 
     return productDetailsWithLanguage;
 };
@@ -111,7 +119,9 @@ const getRelevantContentTypes = (overviewType: string): ContentDescriptor[] => {
 };
 
 export const getAllProducts = (language: string, overviewType: Overview['overviewType']) => {
-    const products = contentLib.query({
+    // We use the norwegian pages as a baseline, in order to enabled retrieval of product details
+    // for languages with an incomplete set of product pages.
+    const norwegianProductPages = contentLib.query({
         start: 0,
         count: 1000,
         contentTypes: getRelevantContentTypes(overviewType),
@@ -135,7 +145,7 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
         },
     }).hits;
 
-    return products
+    return norwegianProductPages
         .reduce((acc, content) => {
             const productData = buildProductData(content, overviewType, language);
             if (!productData) {
