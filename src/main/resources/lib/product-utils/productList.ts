@@ -103,9 +103,14 @@ const buildProductData = (
 
     const simpleBaseProduct = buildSimpleBaseProduct(product);
 
+    const sortTitle =
+        simpleBaseProduct.language === productDetails.language
+            ? simpleBaseProduct.sortTitle
+            : productDetails.displayName;
+
     return {
         ...simpleBaseProduct,
-        title: productDetails.displayName,
+        sortTitle,
         productDetailsPath: productDetails._path,
     };
 };
@@ -148,7 +153,10 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
     return norwegianProductPages
         .reduce((acc, content) => {
             const productData = buildProductData(content, overviewType, language);
-            if (!productData) {
+            if (
+                !productData ||
+                acc.some((_content) => _content.sortTitle === productData.sortTitle)
+            ) {
                 return acc;
             }
 
