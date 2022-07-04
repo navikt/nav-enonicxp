@@ -14,7 +14,11 @@ import { ProductData } from '../../site/mixins/product-data/product-data';
 import { appDescriptor } from '../constants';
 import { ContentDescriptor } from 'types/content-types/content-config';
 
-const getProductDetails = (product: Content, overviewType: ProductDetailsType) => {
+const getProductDetails = (
+    product: Content,
+    overviewType: ProductDetailsType,
+    language: string
+) => {
     // Generated type definitions are incorrect due to nested mixins
     const data = product.data as Content<ContentTypeWithProductDetails>['data'] & ProductData;
 
@@ -33,7 +37,19 @@ const getProductDetails = (product: Content, overviewType: ProductDetailsType) =
         return null;
     }
 
-    return productDetails;
+    if (productDetails.language === language) {
+        return productDetails;
+    }
+
+    log.info(`Languages for ${product._path} - ${JSON.stringify(productDetails.data.languages)}`);
+
+    const productDetailsWithLanguage = forceArray(productDetails.data.languages)
+        .map((contentRef) => contentLib.get({ key: contentRef }))
+        .find((languageContent) => languageContent?.language === language);
+
+    log.info(`Found language version: ${JSON.stringify(productDetailsWithLanguage)}`);
+
+    return productDetailsWithLanguage;
 };
 
 const buildSimpleBaseProduct = (product: Content<ContentTypeWithProductDetails>) => {
@@ -64,7 +80,8 @@ const buildSimpleBaseProduct = (product: Content<ContentTypeWithProductDetails>)
 
 const buildProductData = (
     product: Content,
-    overviewType: Overview['overviewType']
+    overviewType: Overview['overviewType'],
+    language: string
 ): OverviewPageProductData | null => {
     if (!isContentWithProductDetails(product)) {
         return null;
@@ -74,7 +91,7 @@ const buildProductData = (
         return buildSimpleBaseProduct(product);
     }
 
-    const productDetails = getProductDetails(product, overviewType);
+    const productDetails = getProductDetails(product, overviewType, language);
 
     if (!productDetails) {
         return null;
@@ -84,6 +101,7 @@ const buildProductData = (
 
     return {
         ...simpleBaseProduct,
+        title: productDetails.displayName,
         productDetailsPath: productDetails._path,
     };
 };
@@ -107,7 +125,7 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
                     {
                         hasValue: {
                             field: 'language',
-                            values: [language],
+                            values: ['no'],
                         },
                     },
                     {
@@ -123,7 +141,7 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
 
     return products
         .reduce((acc, content) => {
-            const productData = buildProductData(content, overviewType);
+            const productData = buildProductData(content, overviewType, language);
             if (!productData) {
                 return acc;
             }
