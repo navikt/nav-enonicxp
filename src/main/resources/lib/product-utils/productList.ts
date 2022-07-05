@@ -25,9 +25,6 @@ const contentTypesInAllProductsList = [
     `${appDescriptor}:guide-page`,
 ] as const;
 
-const sortByTitle = (a: OverviewPageProductData, b: OverviewPageProductData) =>
-    a.sortTitle.localeCompare(b.sortTitle);
-
 const getProductDetails = (
     product: Content,
     overviewType: DetailedOverviewType,
@@ -267,5 +264,5 @@ export const getProductDataForOverviewPage = (
             ? getProductDataFromProductPages(norwegianProductPages, overviewType, language)
             : getLocalizedProductData(norwegianProductPages, language, overviewType);
 
-    return productData.sort(sortByTitle);
+    return productData.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };
