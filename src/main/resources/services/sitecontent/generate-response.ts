@@ -105,7 +105,6 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     }
 
     const redirectPath = stripPathPrefix(idOrPath);
-
     if (!redirectPath) {
         return null;
     }
@@ -128,7 +127,7 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     }
 
     const parentRedirectContentFromRedirectsFolder = runInBranchContext(
-        () => getParentRedirectContent(`${redirectsRootPath}${idOrPath}`),
+        () => getParentRedirectContent(`${redirectsRootPath}${redirectPath}`),
         branch
     );
     if (parentRedirectContentFromRedirectsFolder) {
