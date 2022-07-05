@@ -17,6 +17,7 @@ import { contentTypesWithProductDetails } from '../contenttype-lists';
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience'];
 type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
+// Generated data type definitions are incorrect due to nested mixins
 type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ProductData;
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
@@ -26,11 +27,10 @@ const contentTypesInAllProductsList = [
 ] as const;
 
 const getProductDetails = (
-    product: Content,
+    product: ContentWithProductDetails,
     overviewType: DetailedOverviewType,
     language: string
 ): ProductDetailsContent | null => {
-    // Generated data type definitions are incorrect due to nested mixins
     const data = product.data as ContentWithProductDetailsData;
 
     const detailsContentId = data[overviewType];
@@ -52,7 +52,7 @@ const getProductDetails = (
     }
 
     // If the product details on the product page are not in the requested language, try to find the correct localized
-    // content from the alternative language references of the product details
+    // product details from the alternative language references
     const productDetailsWithLanguage = forceArray(productDetails.data.languages)
         .map((contentRef) => contentLib.get({ key: contentRef }))
         .find((languageContent) => languageContent?.language === language);
@@ -71,12 +71,9 @@ const getProductDetails = (
 };
 
 const buildCommonProductData = (product: ContentWithProductDetails) => {
-    const icons = getProductIllustrationIcons(product);
-
-    // Generated type definitions are incorrect due to nested mixins
     const data = product.data as ContentWithProductDetailsData;
-
     const fullTitle = data.title || product.displayName;
+    const icons = getProductIllustrationIcons(product);
 
     return {
         _id: product._id,
@@ -129,7 +126,7 @@ const buildProductData = (
         return null;
     }
 
-    // The "all products" type only links to relevant product pages, and does not include product details
+    // The "all products" overview type only links to relevant product pages, and does not include product details
     if (overviewType === 'all_products') {
         return buildCommonProductData(productPageContent);
     }
@@ -137,7 +134,7 @@ const buildProductData = (
     return buildDetailedProductData(productPageContent, overviewType, language);
 };
 
-const getProductPages = (
+const getProductPagesForOverview = (
     language: string,
     overviewType: OverviewType,
     audience: ProductAudience = 'person'
@@ -257,7 +254,7 @@ export const getProductDataForOverviewPage = (
     overviewType: OverviewType,
     audience: ProductAudience = 'person'
 ) => {
-    const norwegianProductPages = getProductPages('no', overviewType, audience);
+    const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
 
     const productData =
         language === 'no'
