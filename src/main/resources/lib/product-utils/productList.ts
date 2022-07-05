@@ -13,6 +13,7 @@ import {
 import { ProductData } from '../../site/mixins/product-data/product-data';
 import { appDescriptor } from '../constants';
 import { ContentDescriptor } from 'types/content-types/content-config';
+import { Audience } from '../../site/mixins/audience/audience';
 
 const getProductDetails = (
     product: Content,
@@ -105,45 +106,55 @@ const buildProductData = (
 
     return {
         ...simpleBaseProduct,
-        localeSortTitle: productDetails.displayName,
         productDetailsPath: productDetails._path,
     };
 };
 
-const getRelevantContentTypes = (overviewType: string): ContentDescriptor[] => {
-    if (overviewType === 'all_products') {
-        return [`${appDescriptor}:content-page-with-sidemenus`, `${appDescriptor}:guide-page`];
-    }
-
-    return contentTypesWithProductDetails;
-};
-
-export const getAllProducts = (language: string, overviewType: Overview['overviewType']) => {
-    // We use the norwegian pages as a baseline, then look for alternative language versions
-    // of the attached norwegian product details for other languages
-    const norwegianProductPages = contentLib.query({
+const getProductPages = (
+    language: string,
+    overviewType: Overview['overviewType'],
+    audience: Audience['audience'] = 'person'
+) => {
+    return contentLib.query({
         start: 0,
         count: 1000,
-        contentTypes: getRelevantContentTypes(overviewType),
+        contentTypes:
+            overviewType === 'all_products'
+                ? [`${appDescriptor}:content-page-with-sidemenus`, `${appDescriptor}:guide-page`]
+                : [
+                      `${appDescriptor}:content-page-with-sidemenus`,
+                      `${appDescriptor}:guide-page`,
+                      `${appDescriptor}:themed-article-page`,
+                  ],
         filters: {
             boolean: {
                 must: [
                     {
                         hasValue: {
                             field: 'language',
-                            values: ['no'],
+                            values: [language],
                         },
                     },
                     {
                         hasValue: {
                             field: 'data.audience',
-                            values: ['person'],
+                            values: [audience],
                         },
                     },
                 ],
             },
         },
     }).hits;
+};
+
+export const getAllProducts = (
+    language: string,
+    overviewType: Overview['overviewType'],
+    audience: Audience['audience'] = 'person'
+) => {
+    // We use the norwegian pages as a baseline, then look for alternative language versions
+    // of the attached norwegian product details for other languages
+    const norwegianProductPages = getProductPages('no', overviewType, audience);
 
     const allProducts = norwegianProductPages
         .reduce((acc, content) => {
@@ -160,5 +171,26 @@ export const getAllProducts = (language: string, overviewType: Overview['overvie
         return allProducts;
     }
 
-    return removeDuplicates(allProducts, (a, b) => a.localeSortTitle === b.localeSortTitle);
+    const { norwegianOnlyPages, localizedPages } = norwegianProductPages.reduce(
+        (acc, content) => {
+            if (!content.data.languages) {
+                acc.norwegianOnlyPages.push(content);
+                return acc;
+            }
+
+            const localizedContent = forceArray(content.data.languages).find((contentId) => {
+                const content = contentLib.get({ key: contentId });
+                if (content?.language === language) {
+                }
+            });
+
+            return acc;
+        },
+        { norwegianOnlyPages: [], localizedPages: [] } as {
+            norwegianOnlyPages: Content[];
+            localizedPages: Content[];
+        }
+    );
+
+    return [];
 };
