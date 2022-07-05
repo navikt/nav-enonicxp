@@ -105,7 +105,6 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     }
 
     const redirectPath = stripPathPrefix(idOrPath);
-
     if (!redirectPath) {
         return null;
     }
@@ -115,7 +114,6 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         () => contentLib.get({ key: `${redirectsRootPath}${redirectPath}` }),
         branch
     );
-
     if (redirectContent) {
         return runSitecontentGuillotineQuery(redirectContent, branch);
     }
@@ -126,6 +124,14 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     );
     if (parentRedirectContent) {
         return runSitecontentGuillotineQuery(parentRedirectContent, branch);
+    }
+
+    const parentRedirectContentFromRedirectsFolder = runInBranchContext(
+        () => getParentRedirectContent(`${redirectsRootPath}${redirectPath}`),
+        branch
+    );
+    if (parentRedirectContentFromRedirectsFolder) {
+        return runSitecontentGuillotineQuery(parentRedirectContentFromRedirectsFolder, branch);
     }
 
     return null;
