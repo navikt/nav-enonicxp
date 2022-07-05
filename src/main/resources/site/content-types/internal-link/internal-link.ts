@@ -6,9 +6,14 @@ export interface InternalLink {
   description?: string;
 
   /**
-   * Link
+   * Lenke
    */
   target?: string;
+
+  /**
+   * Anker-id
+   */
+  anchorId?: string;
 
   /**
    * Redirect alle url'er under denne til valgt link (unntatt url'er med publisert innhold)

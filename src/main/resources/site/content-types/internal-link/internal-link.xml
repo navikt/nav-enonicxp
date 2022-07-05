@@ -8,11 +8,19 @@
             <occurrences maximum="1" minimum="0"/>
         </input>
         <input name="target" type="ContentSelector">
-            <label>Link</label>
+            <label>Lenke</label>
             <occurrences maximum="1" minimum="0"/>
             <config>
                 <allowPath>/www.nav.no/*</allowPath>
                 <showStatus>true</showStatus>
+            </config>
+        </input>
+        <input name="anchorId" type="TextLine">
+            <label>Anker-id</label>
+            <help-text>Sett denne for å lenke til en anker-id på siden. Må starte med #</help-text>
+            <occurrences maximum="1" minimum="0"/>
+            <config>
+                <regexp>^#.+</regexp>
             </config>
         </input>
         <input name="redirectSubpaths" type="CheckBox">
