@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
@@ -104,6 +104,7 @@ const buildProductData = (
     return {
         ...simpleBaseProduct,
         productDetailsPath: productDetails._path,
+        productDetailsDisplayName: productDetails.displayName,
     };
 };
 
@@ -148,7 +149,7 @@ const getAllProductData = (
     productPages: Content[],
     overviewType: Overview['overviewType'],
     language: string
-) => {
+): OverviewPageProductData[] => {
     return productPages.reduce((acc, content) => {
         const productData = buildProductData(content, overviewType, language);
         if (!productData) {
@@ -209,17 +210,21 @@ export const getAllProducts = (
     const productsFromLocalizedPages = getAllProductData(localizedPages, overviewType, language);
 
     // Filter out product data that we already got from the fully localized product pages
-    const productsFromNorwegianPages = getAllProductData(
-        norwegianOnlyPages,
-        overviewType,
-        language
-    ).filter(
-        (productDataFromNorwegianPage) =>
-            !productsFromLocalizedPages.some(
-                (productDataFromLocalizedPage) =>
-                    productDataFromLocalizedPage.productDetailsPath ===
-                    productDataFromNorwegianPage.productDetailsPath
-            )
+    const productsFromNorwegianPages = removeDuplicates(
+        getAllProductData(norwegianOnlyPages, overviewType, language)
+            .map((productData) => ({
+                ...productData,
+                sortTitle: productData.productDetailsDisplayName || productData.sortTitle,
+            }))
+            .filter(
+                (productDataFromNorwegianPage) =>
+                    !productsFromLocalizedPages.some(
+                        (productDataFromLocalizedPage) =>
+                            productDataFromLocalizedPage.productDetailsPath ===
+                            productDataFromNorwegianPage.productDetailsPath
+                    )
+            ),
+        (a, b) => a.productDetailsPath === b.productDetailsPath
     );
 
     return [...productsFromLocalizedPages, ...productsFromNorwegianPages].sort((a, b) =>

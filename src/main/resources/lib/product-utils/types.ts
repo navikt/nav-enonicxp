@@ -17,6 +17,7 @@ export type OverviewPageIllustrationIcon = {
 export type OverviewPageProductData = {
     _id: string;
     productDetailsPath?: string;
+    productDetailsDisplayName?: string;
     path: string;
     title: string;
     sortTitle: string;
