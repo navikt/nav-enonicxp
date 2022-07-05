@@ -73,7 +73,7 @@ const getProductDetails = (
     return productDetailsWithLanguage;
 };
 
-const productDataForAllProducts = (product: ContentWithProductDetails) => {
+const buildCommonProductData = (product: ContentWithProductDetails) => {
     const icons = getProductIllustrationIcons(product);
 
     // Generated type definitions are incorrect due to nested mixins
@@ -99,12 +99,12 @@ const productDataForAllProducts = (product: ContentWithProductDetails) => {
     };
 };
 
-const productDataForDetailedOverview = (
+const buildDetailedProductData = (
     product: ContentWithProductDetails,
     overviewType: DetailedOverviewType,
     language: string
 ) => {
-    const commonData = productDataForAllProducts(product);
+    const commonData = buildCommonProductData(product);
 
     const productDetails = getProductDetails(product, overviewType, language);
     if (!productDetails) {
@@ -134,10 +134,10 @@ const buildProductData = (
 
     // The "all products" type only links to relevant product pages, and does not include product details
     if (overviewType === 'all_products') {
-        return productDataForAllProducts(productPageContent);
+        return buildCommonProductData(productPageContent);
     }
 
-    return productDataForDetailedOverview(productPageContent, overviewType, language);
+    return buildDetailedProductData(productPageContent, overviewType, language);
 };
 
 const getProductPages = (
