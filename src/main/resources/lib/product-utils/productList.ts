@@ -7,19 +7,31 @@ import {
     ContentTypeWithProductDetails,
     isContentWithProductDetails,
     OverviewPageProductData,
-    ProductDetailsType,
+    DetailedOverviewType,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
 import { appDescriptor } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
+import { contentTypesWithProductDetails } from '../contenttype-lists';
+
+type OverviewType = Overview['overviewType'];
+type ProductAudience = Audience['audience'];
+type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
+// Generated data type definitions are incorrect due to nested mixins
+type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ProductData;
+type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
+
+const contentTypesInAllProductsList = [
+    `${appDescriptor}:content-page-with-sidemenus`,
+    `${appDescriptor}:guide-page`,
+] as const;
 
 const getProductDetails = (
-    product: Content,
-    overviewType: ProductDetailsType,
+    product: ContentWithProductDetails,
+    overviewType: DetailedOverviewType,
     language: string
-) => {
-    // Generated type definitions are incorrect due to nested mixins
-    const data = product.data as Content<ContentTypeWithProductDetails>['data'] & ProductData;
+): ProductDetailsContent | null => {
+    const data = product.data as ContentWithProductDetailsData;
 
     const detailsContentId = data[overviewType];
     if (!detailsContentId) {
@@ -39,28 +51,29 @@ const getProductDetails = (
         return productDetails;
     }
 
-    // If the product details are not in the requested language, try to find the correct language content
-    // from the alternative language references
+    // If the product details on the product page are not in the requested language, try to find the correct localized
+    // product details from the alternative language references
     const productDetailsWithLanguage = forceArray(productDetails.data.languages)
         .map((contentRef) => contentLib.get({ key: contentRef }))
         .find((languageContent) => languageContent?.language === language);
 
-    if (!productDetailsWithLanguage) {
-        logger.error(
+    if (
+        !productDetailsWithLanguage ||
+        productDetailsWithLanguage.type !== 'no.nav.navno:product-details'
+    ) {
+        logger.warning(
             `Missing product details for content ${product._id} with language ${language}`
         );
+        return null;
     }
 
     return productDetailsWithLanguage;
 };
 
-const buildSimpleBaseProduct = (product: Content<ContentTypeWithProductDetails>) => {
-    const icons = getProductIllustrationIcons(product);
-
-    // Generated type definitions are incorrect due to nested mixins
-    const data = product.data as Content<ContentTypeWithProductDetails>['data'] & ProductData;
-
+const buildCommonProductData = (product: ContentWithProductDetails) => {
+    const data = product.data as ContentWithProductDetailsData;
     const fullTitle = data.title || product.displayName;
+    const icons = getProductIllustrationIcons(product);
 
     return {
         _id: product._id,
@@ -80,50 +93,59 @@ const buildSimpleBaseProduct = (product: Content<ContentTypeWithProductDetails>)
     };
 };
 
-const buildProductData = (
-    product: Content,
-    overviewType: Overview['overviewType'],
+const buildDetailedProductData = (
+    product: ContentWithProductDetails,
+    overviewType: DetailedOverviewType,
     language: string
-): OverviewPageProductData | null => {
-    if (!isContentWithProductDetails(product)) {
-        return null;
-    }
-
-    if (overviewType === 'all_products') {
-        return buildSimpleBaseProduct(product);
-    }
+) => {
+    const commonData = buildCommonProductData(product);
 
     const productDetails = getProductDetails(product, overviewType, language);
-
     if (!productDetails) {
         return null;
     }
 
-    const simpleBaseProduct = buildSimpleBaseProduct(product);
-
     return {
-        ...simpleBaseProduct,
+        ...commonData,
+        // If the product details are in a different language from the product page
+        // we use the name of the product details as the displayed/sorted title
+        sortTitle:
+            productDetails.language !== product.language
+                ? productDetails.displayName
+                : commonData.sortTitle,
         productDetailsPath: productDetails._path,
-        productDetailsDisplayName: productDetails.displayName,
     };
 };
 
-const getProductPages = (
+const buildProductData = (
+    productPageContent: ContentWithProductDetails,
+    overviewType: OverviewType,
+    language: string
+): OverviewPageProductData | null => {
+    if (!isContentWithProductDetails(productPageContent)) {
+        return null;
+    }
+
+    // The "all products" overview type only links to relevant product pages, and does not include product details
+    if (overviewType === 'all_products') {
+        return buildCommonProductData(productPageContent);
+    }
+
+    return buildDetailedProductData(productPageContent, overviewType, language);
+};
+
+const getProductPagesForOverview = (
     language: string,
-    overviewType: Overview['overviewType'],
-    audience: Audience['audience'] = 'person'
+    overviewType: OverviewType,
+    audience: ProductAudience = 'person'
 ) => {
     return contentLib.query({
         start: 0,
         count: 1000,
         contentTypes:
             overviewType === 'all_products'
-                ? [`${appDescriptor}:content-page-with-sidemenus`, `${appDescriptor}:guide-page`]
-                : [
-                      `${appDescriptor}:content-page-with-sidemenus`,
-                      `${appDescriptor}:guide-page`,
-                      `${appDescriptor}:themed-article-page`,
-                  ],
+                ? contentTypesInAllProductsList
+                : contentTypesWithProductDetails,
         filters: {
             boolean: {
                 must: [
@@ -145,9 +167,9 @@ const getProductPages = (
     }).hits;
 };
 
-const getAllProductData = (
-    productPages: Content[],
-    overviewType: Overview['overviewType'],
+const getProductDataFromProductPages = (
+    productPages: ContentWithProductDetails[],
+    overviewType: OverviewType,
     language: string
 ): OverviewPageProductData[] => {
     return productPages.reduce((acc, content) => {
@@ -160,74 +182,84 @@ const getAllProductData = (
     }, [] as OverviewPageProductData[]);
 };
 
-export const getAllProducts = (
+// When putting together product data for alternative languages, we first get product data from any fully localized
+// product poges in that language, and fall back to localized standalone product details for everything else.
+// If neither a product page nor product details exists for the requested language, that product will not be included
+const getLocalizedProductData = (
+    norwegianProductPages: ContentWithProductDetails[],
     language: string,
-    overviewType: Overview['overviewType'],
-    audience: Audience['audience'] = 'person'
+    overviewType: OverviewType
 ) => {
-    // We use the norwegian pages as a baseline, then look for alternative language versions
-    // of the attached norwegian product details for other languages
-    const norwegianProductPages = getProductPages('no', overviewType, audience);
+    const norwegianOnlyProductPages: ContentWithProductDetails[] = [];
+    const localizedProductPages: ContentWithProductDetails[] = [];
 
-    if (language === 'no') {
-        return getAllProductData(norwegianProductPages, overviewType, language).sort((a, b) =>
-            a.sortTitle.localeCompare(b.sortTitle)
-        );
-    }
-
-    const { norwegianOnlyPages, localizedPages } = norwegianProductPages.reduce(
-        (acc, content) => {
-            if (!content.data.languages) {
-                acc.norwegianOnlyPages.push(content);
-                return acc;
-            }
-
-            let localizedContent: Content | null = null;
-
-            forceArray(content.data.languages).some((contentId) => {
-                const content = contentLib.get({ key: contentId });
-                if (content?.language === language) {
-                    localizedContent = content;
-                    return true;
-                }
-                return false;
-            });
-
-            if (localizedContent) {
-                acc.localizedPages.push(localizedContent);
-            } else {
-                acc.norwegianOnlyPages.push(content);
-            }
-
-            return acc;
-        },
-        { norwegianOnlyPages: [], localizedPages: [] } as {
-            norwegianOnlyPages: Content[];
-            localizedPages: Content[];
+    norwegianProductPages.forEach((content) => {
+        if (!content.data.languages) {
+            norwegianOnlyProductPages.push(content);
+            return;
         }
+
+        // If there is a localized version of the product page in the language we want
+        // we can get product data directly from there.
+        const foundLocalized = forceArray(content.data.languages).some((contentId) => {
+            const content = contentLib.get({ key: contentId });
+            if (content?.language === language && isContentWithProductDetails(content)) {
+                localizedProductPages.push(content);
+                return true;
+            }
+            return false;
+        });
+
+        // Else we will have to go via the norwegian page
+        if (!foundLocalized) {
+            norwegianOnlyProductPages.push(content);
+        }
+    });
+
+    // Get product data from fully localized product pages when they exist
+    const productDataFromLocalizedPages = getProductDataFromProductPages(
+        localizedProductPages,
+        overviewType,
+        language
     );
 
-    const productsFromLocalizedPages = getAllProductData(localizedPages, overviewType, language);
+    // If the norwegian page has no alternative language versions, we go via the product
+    // details on the norwegian page to find localized product details
+    const productDataFromNorwegianPages = getProductDataFromProductPages(
+        norwegianOnlyProductPages,
+        overviewType,
+        language
+    )
+        // Don't include product data which already is included in a localized pages
+        .filter(
+            (fromNorwegian) =>
+                !productDataFromLocalizedPages.some(
+                    (fromLocalized) =>
+                        fromLocalized.productDetailsPath === fromNorwegian.productDetailsPath
+                )
+        );
 
-    // Filter out product data that we already got from the fully localized product pages
-    const productsFromNorwegianPages = removeDuplicates(
-        getAllProductData(norwegianOnlyPages, overviewType, language)
-            .map((productData) => ({
-                ...productData,
-                sortTitle: productData.productDetailsDisplayName || productData.sortTitle,
-            }))
-            .filter(
-                (productDataFromNorwegianPage) =>
-                    !productsFromLocalizedPages.some(
-                        (productDataFromLocalizedPage) =>
-                            productDataFromLocalizedPage.productDetailsPath ===
-                            productDataFromNorwegianPage.productDetailsPath
-                    )
-            ),
-        (a, b) => a.productDetailsPath === b.productDetailsPath
-    );
+    return [
+        ...productDataFromLocalizedPages,
+        // Remove duplicates, as some product details are used on multiple pages
+        ...removeDuplicates(
+            productDataFromNorwegianPages,
+            (a, b) => a.productDetailsPath === b.productDetailsPath
+        ),
+    ];
+};
 
-    return [...productsFromLocalizedPages, ...productsFromNorwegianPages].sort((a, b) =>
-        a.sortTitle.localeCompare(b.sortTitle)
-    );
+export const getProductDataForOverviewPage = (
+    language: string,
+    overviewType: OverviewType,
+    audience: ProductAudience = 'person'
+) => {
+    const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
+
+    const productData =
+        language === 'no'
+            ? getProductDataFromProductPages(norwegianProductPages, overviewType, language)
+            : getLocalizedProductData(norwegianProductPages, language, overviewType);
+
+    return productData.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };

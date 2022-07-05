@@ -1,7 +1,10 @@
 import { Content } from '/lib/xp/content';
 import { MediaDescriptor } from '../../types/content-types/content-config';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { contentTypesWithProductDetails as _contentTypesWithProductDetails } from '../contenttype-lists';
+import {
+    contentTypesWithProductDetails,
+    contentTypesWithProductDetails as _contentTypesWithProductDetails,
+} from '../contenttype-lists';
 import { stringArrayToSet } from '../utils/nav-utils';
 import { Overview } from 'site/content-types/overview/overview';
 
@@ -17,7 +20,6 @@ export type OverviewPageIllustrationIcon = {
 export type OverviewPageProductData = {
     _id: string;
     productDetailsPath?: string;
-    productDetailsDisplayName?: string;
     path: string;
     title: string;
     sortTitle: string;
@@ -33,12 +35,9 @@ export type OverviewPageProductData = {
     };
 };
 
-export type ProductDetailsType = Exclude<Overview['overviewType'], 'all_products'>;
+export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 
-export type ContentTypeWithProductDetails =
-    | 'no.nav.navno:content-page-with-sidemenus'
-    | 'no.nav.navno:guide-page'
-    | 'no.nav.navno:themed-article-page';
+export type ContentTypeWithProductDetails = typeof contentTypesWithProductDetails[number];
 
 export const isContentWithProductDetails = (
     content: Content

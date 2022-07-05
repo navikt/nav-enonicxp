@@ -98,11 +98,11 @@ export const contentTypesWithComponents: ContentTypeList = [
     'portal:page-template',
 ];
 
-export const contentTypesWithProductDetails: ContentTypeList = [
+export const contentTypesWithProductDetails = [
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
-];
+] as const;
 
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,
