@@ -5,7 +5,7 @@ import { logger } from '../../lib/utils/logging';
 
 export const get = (req: XP.Request) => {
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch = 'master', time, cacheKey } = req.params;
+    const { id: idOrPath, branch = 'master', preview, time, cacheKey } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -41,7 +41,7 @@ export const get = (req: XP.Request) => {
     try {
         const content = getResponseFromCache(
             idOrPath,
-            () => getSitecontentResponse(idOrPath, branch, time),
+            () => getSitecontentResponse(idOrPath, branch, preview === 'true', time),
             cacheKey
         );
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x-data>
+    <display-name>Vis som utkast</display-name>
+    <form>
+        <input name="previewOnly" type="CheckBox">
+            <label>Viser publisert innhold kun under nav.no/utkast/</label>
+            <help-text>For innhold som er under arbeid, men som skal kunne deles utenfor Enonic</help-text>
+            <default>unchecked</default>
+        </input>
+    </form>
+</x-data>
