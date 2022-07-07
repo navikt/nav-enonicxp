@@ -131,9 +131,18 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     return null;
 };
 
+// The previewOnly x-data flag is used on content which should only be publicly accessible
+// through the /utkast route in the frontend. Calls from this route comes with the "preview"
+// query param
+const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boolean) => {
+    const previewOnlyFlag = content.x?.[componentAppKey]?.previewOnly?.previewOnly;
+    return branch === 'master' && previewOnlyFlag && !isPreview;
+};
+
 const getContentOrRedirect = (
     requestedPathOrId: string,
     branch: RepoBranch,
+    preview: boolean,
     retries = 2
 ): Content | null => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
@@ -145,8 +154,12 @@ const getContentOrRedirect = (
         return getRedirectContent(contentRef, branch);
     }
 
-    // If the content has a custom path, we generally want to redirect requests from the internal path
+    if (shouldBlockPreview(baseContent, branch, preview)) {
+        return null;
+    }
+
     if (shouldRedirectToCustomPath(baseContent, requestedPathOrId, branch)) {
+        // If the content has a custom path, we generally want to redirect requests from the internal path
         return {
             ...baseContent,
             // @ts-ignore (__typename is not a content field but is presently used by the frontend)
@@ -167,12 +180,12 @@ const getContentOrRedirect = (
                     retries > 1 ? 's' : ''
                 }`
             );
-            return getContentOrRedirect(contentRef, branch, retries - 1);
+            return getContentOrRedirect(contentRef, branch, preview, retries - 1);
         }
 
         logger.critical(`Time travel permanently disabled on this node`);
         unhookTimeTravel();
-        return getContentOrRedirect(contentRef, branch);
+        return getContentOrRedirect(contentRef, branch, preview);
     }
 
     if (!content) {
@@ -186,12 +199,6 @@ const getContentOrRedirect = (
     };
 };
 
-const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boolean) => {
-    const previewOnlyFlag = content.x?.[componentAppKey]?.previewOnly?.previewOnly;
-
-    return branch === 'master' && previewOnlyFlag && !isPreview;
-};
-
 export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
@@ -202,13 +209,9 @@ export const getSitecontentResponse = (
         return getContentVersionFromDateTime(requestedPathOrId, branch, datetime);
     }
 
-    const content = getContentOrRedirect(requestedPathOrId, branch);
+    const content = getContentOrRedirect(requestedPathOrId, branch, preview);
 
     if (!content) {
-        return null;
-    }
-
-    if (shouldBlockPreview(content, branch, preview)) {
         return null;
     }
 
