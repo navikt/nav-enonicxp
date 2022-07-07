@@ -1,7 +1,10 @@
 import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { forceArray } from '../../../utils/nav-utils';
-import { GlobalNumberValueSetData } from '../../../../types/content-types/global-value-set';
+import {
+    GlobalNumberValueItem,
+    GlobalNumberValueSetData,
+} from '../../../../types/content-types/global-value-set';
 
 export const globalValueSetCallback: CreationCallback = (context, params) => {
     const valueItems: GraphQLResolver = {
@@ -14,7 +17,7 @@ export const globalValueSetCallback: CreationCallback = (context, params) => {
             }));
         },
         type: graphQlLib.list(
-            graphQlCreateObjectType(context, {
+            graphQlCreateObjectType<keyof GlobalNumberValueItem>(context, {
                 name: context.uniqueName('GlobalValueItem'),
                 description: 'Global verdi',
                 fields: {
@@ -28,10 +31,10 @@ export const globalValueSetCallback: CreationCallback = (context, params) => {
     };
 
     params.fields.data = {
-        type: graphQlCreateObjectType(context, {
+        type: graphQlCreateObjectType<keyof GlobalNumberValueSetData>(context, {
             name: context.uniqueName('no_nav_navno_GlobalValueSet_Data'),
             description: 'Data for globale verdier',
-            fields: { valueItems } as Record<keyof GlobalNumberValueSetData, any>,
+            fields: { valueItems },
         }),
     };
 };
