@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { redirectsRootPath } from '../../lib/constants';
+import { componentAppKey, redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
     getInternalContentPathFromCustomPath,
@@ -186,9 +186,16 @@ const getContentOrRedirect = (
     };
 };
 
+const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boolean) => {
+    const previewOnlyFlag = content.x?.[componentAppKey]?.previewOnly?.previewOnly;
+
+    return branch === 'master' && previewOnlyFlag && !isPreview;
+};
+
 export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
+    preview: boolean,
     datetime?: string
 ) => {
     if (datetime) {
@@ -198,6 +205,10 @@ export const getSitecontentResponse = (
     const content = getContentOrRedirect(requestedPathOrId, branch);
 
     if (!content) {
+        return null;
+    }
+
+    if (shouldBlockPreview(content, branch, preview)) {
         return null;
     }
 
