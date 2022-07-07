@@ -1,4 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
+import { sanitize } from '/lib/xp/common';
 import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
@@ -105,14 +106,17 @@ const buildDetailedProductData = (
         return null;
     }
 
+    const sortTitle =
+        productDetails.language !== product.language
+            ? productDetails.displayName
+            : commonData.sortTitle;
+
     return {
         ...commonData,
         // If the product details are in a different language from the product page
         // we use the name of the product details as the displayed/sorted title
-        sortTitle:
-            productDetails.language !== product.language
-                ? productDetails.displayName
-                : commonData.sortTitle,
+        sortTitle,
+        anchorId: sanitize(sortTitle),
         productDetailsPath: productDetails._path,
     };
 };
@@ -256,10 +260,10 @@ export const getProductDataForOverviewPage = (
 ) => {
     const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
 
-    const productData =
+    const productDataList =
         language === 'no'
             ? getProductDataFromProductPages(norwegianProductPages, overviewType, language)
             : getLocalizedProductData(norwegianProductPages, language, overviewType);
 
-    return productData.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+    return productDataList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };

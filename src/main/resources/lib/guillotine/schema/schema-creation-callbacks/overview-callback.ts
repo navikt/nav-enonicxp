@@ -9,13 +9,13 @@ import {
 } from '../../../product-utils/types';
 
 export const overviewCallback: CreationCallback = (context, params) => {
-    const xpImage = graphQlCreateObjectType(context, {
+    const xpImage = graphQlCreateObjectType<keyof OverviewPageIllustrationIcon['icon']>(context, {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
         fields: {
             __typename: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
-        } as Record<keyof OverviewPageIllustrationIcon['icon'], any>,
+        },
     });
 
     const icon = graphQlCreateObjectType(context, {
@@ -42,11 +42,12 @@ export const overviewCallback: CreationCallback = (context, params) => {
         },
     });
 
-    const productType = graphQlCreateObjectType(context, {
+    const productType = graphQlCreateObjectType<keyof OverviewPageProductData>(context, {
         name: context.uniqueName('ProductType'),
         description: 'Produkttype',
         fields: {
             _id: { type: graphQlLib.GraphQLID },
+            anchorId: { type: graphQlLib.GraphQLID },
             path: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
@@ -57,7 +58,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
             taxonomy: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             area: { type: graphQlLib.list(graphQlLib.GraphQLString) },
             illustration: { type: illustration },
-        } as Record<keyof OverviewPageProductData, any>,
+        },
     });
 
     params.fields.productList = {
