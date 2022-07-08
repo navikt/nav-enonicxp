@@ -1,9 +1,9 @@
 <part xmlns="urn:enonic:xp:model:1.0">
     <display-name>Kort</display-name>
-    <description>Lenker til en produkt- eller livssituasjons-side</description>
+    <description>Kort med lenke</description>
     <form>
         <field-set>
-            <label>Produkt eller livssituasjon</label>
+            <label>Valgt side</label>
             <items>
                 <mixin name="product-target-selector"/>
                 <input name="ingressOverride" type='TextArea'>
