@@ -5,7 +5,7 @@ query genericPageQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
-            ...genericPage
+            ...contentGenericPage
         }
     }
 }

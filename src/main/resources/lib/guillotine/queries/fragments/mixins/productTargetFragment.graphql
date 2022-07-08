@@ -4,6 +4,8 @@
 #import "../content-types/themedArticlePageFragment.graphql"
 #import "../content-types/guidePageFragment.graphql"
 #import "../content-types/toolsPageFragment.graphql"
+#import "../content-types/genericPageFragment.graphql"
+#import "../content-types/overviewFragment.graphql"
 
 fragment productTargetMixin on Content {
     ...contentCommon
@@ -12,4 +14,6 @@ fragment productTargetMixin on Content {
     ...contentThemedArticlePage
     ...contentGuidePage
     ...contentToolsPage
+    ...contentOverviewPage
+    ...contentGenericPage
 }
