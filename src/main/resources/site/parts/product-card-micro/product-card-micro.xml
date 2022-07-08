@@ -7,7 +7,7 @@
             <help-text>Overskrift er ikke påkrevet</help-text>
         </input>
         <item-set name="card-list">
-            <label>Produkt eller livssituasjon</label>
+            <label>Valgt side</label>
             <occurrences minimum="1" maximum="0"/>
             <items>
                 <mixin name="product-target-selector"/>

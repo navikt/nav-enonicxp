@@ -1,7 +1,7 @@
 <mixin>
     <form>
         <field-set>
-            <label>Produkt eller livssituasjon</label>
+            <label>Valgt side</label>
             <items>
                 <input name="header" type="TextLine">
                     <label>Overskrift</label>

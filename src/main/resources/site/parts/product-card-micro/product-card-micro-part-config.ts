@@ -6,7 +6,7 @@ export interface ProductCardMicroPartConfig {
   header?: string;
 
   /**
-   * Produkt eller livssituasjon
+   * Valgt side
    */
   "card-list": Array<{
     /**
