@@ -6,6 +6,7 @@
 #import "../content-types/toolsPageFragment.graphql"
 #import "../content-types/genericPageFragment.graphql"
 #import "../content-types/overviewFragment.graphql"
+#import "./overviewProductCardFragment.graphql"
 
 fragment productTargetMixin on Content {
     ...contentCommon
@@ -16,4 +17,5 @@ fragment productTargetMixin on Content {
     ...contentToolsPage
     ...contentOverviewPage
     ...contentGenericPage
+    ...contentOverviewPageProductCard
 }
