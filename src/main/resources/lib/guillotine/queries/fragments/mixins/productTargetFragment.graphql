@@ -16,4 +16,10 @@ fragment productTargetMixin on Content {
     ...contentToolsPage
     ...contentOverviewPage
     ...contentGenericPage
+    ...contentOverviewPageProductCard
+}
+
+fragment productTargetMicroMixin on Content {
+    ...contentCommon
+    dataAsJson
 }

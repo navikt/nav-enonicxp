@@ -35,3 +35,12 @@ fragment contentOverviewPage on no_nav_navno_Overview {
         }
     }
 }
+
+fragment contentOverviewPageProductCard on no_nav_navno_Overview {
+    dataAsJson
+    data {
+        illustration {
+            ...animatedIconsTargetMixin
+        }
+    }
+}
