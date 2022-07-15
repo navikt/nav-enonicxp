@@ -10,11 +10,6 @@ fragment contentAnimatedIcons on no_nav_navno_AnimatedIcons {
             transformEnd
             transformOrigin
         }
-        lottieActive {
-            ... on media_Code {
-                mediaText
-            }
-        }
         lottieHover {
             ... on media_Code {
                 mediaText
