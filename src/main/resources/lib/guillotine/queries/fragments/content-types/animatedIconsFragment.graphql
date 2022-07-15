@@ -12,7 +12,7 @@ fragment contentAnimatedIcons on no_nav_navno_AnimatedIcons {
         }
         lottieHover {
             ... on media_Code {
-                mediaText
+                mediaUrl(type: server, download: false)
             }
         }
     }
