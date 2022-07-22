@@ -31,19 +31,24 @@ export interface ContactOptionPartConfig {
          */
         write: {
           /**
-           * Overstyr tittel
+           * Velg skriv til oss
            */
-          title?: string;
-
-          /**
-           * Overstyr URL
-           */
-          url?: string;
+          sharedContactInformation?: string;
 
           /**
            * Overstyr ingress
            */
           ingress?: string;
+
+          /**
+           * -
+           */
+          url?: undefined;
+
+          /**
+           * -
+           */
+          title?: undefined;
         };
       }
     | {

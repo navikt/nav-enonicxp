@@ -8,6 +8,32 @@ export interface ContactInformation {
         /**
          * Selected
          */
+        _selected: "write";
+
+        /**
+         * Skriv til oss
+         */
+        write: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr URL
+           */
+          url?: string;
+
+          /**
+           * Overstyr ingress
+           */
+          ingress?: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
         _selected: "telephone";
 
         /**

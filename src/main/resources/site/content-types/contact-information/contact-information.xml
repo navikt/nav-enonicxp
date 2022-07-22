@@ -7,6 +7,20 @@
             <label>Kontakttype</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">
+                <option name="write">
+                    <label>Skriv til oss</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Overstyr tittel</label>
+                        </input>
+                        <input name="url" type="TextLine">
+                            <label>Overstyr URL</label>
+                        </input>
+                        <input name="ingress" type="HtmlArea">
+                            <label>Overstyr ingress</label>
+                        </input>
+                    </items>
+                </option>
                 <option name="telephone">
                     <label>Telefonnummer</label>
                     <items>
