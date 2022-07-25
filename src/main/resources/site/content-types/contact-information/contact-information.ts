@@ -15,17 +15,17 @@ export interface ContactInformation {
          */
         write: {
           /**
-           * Overstyr tittel
+           * Tittel
            */
           title?: string;
 
           /**
-           * Overstyr URL
+           * URL
            */
           url?: string;
 
           /**
-           * Overstyr ingress
+           * Ingress
            */
           ingress?: string;
         };

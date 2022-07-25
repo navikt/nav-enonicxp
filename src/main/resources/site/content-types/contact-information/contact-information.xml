@@ -11,13 +11,14 @@
                     <label>Skriv til oss</label>
                     <items>
                         <input name="title" type="TextLine">
-                            <label>Overstyr tittel</label>
+                            <label>Tittel</label>
                         </input>
                         <input name="url" type="TextLine">
-                            <label>Overstyr URL</label>
+                            <label>URL</label>
+                            <default>https://www.nav.no/kontaktoss#skriv-til-oss</default>
                         </input>
                         <input name="ingress" type="HtmlArea">
-                            <label>Overstyr ingress</label>
+                            <label>Ingress</label>
                         </input>
                     </items>
                 </option>
