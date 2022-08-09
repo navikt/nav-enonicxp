@@ -12,6 +12,9 @@ export const internalLinkCallback: CreationCallback = (context: any, params) => 
         if (!content) {
             return null;
         }
-        return content;
+        return {
+            ...env.source,
+            targetUrl: content._path,
+        };
     }
 };
