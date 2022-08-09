@@ -48,6 +48,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         fields: {
             _id: { type: graphQlLib.GraphQLID },
             anchorId: { type: graphQlLib.GraphQLID },
+            type: { type: graphQlLib.GraphQLString },
             path: { type: graphQlLib.GraphQLString },
             productDetailsPath: { type: graphQlLib.GraphQLString },
             title: { type: graphQlLib.GraphQLString },
