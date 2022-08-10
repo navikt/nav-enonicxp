@@ -1,20 +1,34 @@
 import contentLib from '/lib/xp/content';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import graphQlLib from '/lib/graphql';
+import { logger } from '../../../utils/logging';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
 export const internalLinkCallback: CreationCallback = (context: any, params) => {
-    // Resolve target
-    params.fields.data.resolve = (env) => {
 
-        if (!env.source.target) {
-            return null;
+    const internalLinkUrl = graphQlCreateObjectType(context, {
+        name: context.uniqueName('resolvedInternalLink'),
+        description: 'resolvedInternalLink',
+        fields: {
+            targetUrl: { type: graphQlLib.GraphQLString }
+        },
+    });
+
+    // Resolve targetUrl
+    params.fields.targetUrl = {
+        args: { contentId: graphQlLib.GraphQLID },
+        type: internalLinkUrl,
+        resolve: (env) => {
+            const { contentId } = env.args;
+            if (!contentId) {
+                logger.error('No contentId provided for internal-link resolver');
+                return undefined;
+            }
+            const content = contentLib.get({key: contentId});
+            if (!content) {
+                logger.error(`Content not found for internal-link id ${contentId}`);
+                return undefined;
+            }
+            return content._path;
         }
-        const content = contentLib.get({ key: env.source.target._id });
-        if (!content) {
-            return null;
-        }
-        return {
-            ...env.source,
-            targetUrl: content._path,
-        };
     }
 };
