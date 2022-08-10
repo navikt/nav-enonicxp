@@ -28,6 +28,7 @@ export const internalLinkCallback: CreationCallback = (context: any, params) => 
                 logger.error(`Content not found for internal-link id ${contentId}`);
                 return undefined;
             }
+            logger.info(`targetUrl: ${content._path}`)
             return content._path;
         }
     }
