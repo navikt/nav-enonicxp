@@ -22,7 +22,7 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
         return content;
     };
 
-    logger.info(`internalLinkCallback: ${params.fields}`);
+    logger.info(`internalLinkCallback: ${JSON.stringify(params.fields, null, 4)}`);
 
     // Resolve target
     params.fields.data.resolve = (env) => {
