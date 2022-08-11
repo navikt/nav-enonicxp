@@ -2,9 +2,7 @@ import contentLib from '/lib/xp/content';
 import { logger } from '../../../utils/logging';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
-export const internalLinkCallback: CreationCallback = (context: any, params) => {
-
-    logger.info('internalLinkCallback');
+export const internalLinkCallback: CreationCallback = (context, params) => {
 
     const getTarget = (contentId: string): contentLib.Content | null => {
         if (!contentId) {
@@ -23,6 +21,8 @@ export const internalLinkCallback: CreationCallback = (context: any, params) => 
         }
         return content;
     };
+
+    logger.info(`internalLinkCallback: ${params.fields}`);
 
     // Resolve target
     params.fields.data.resolve = (env) => {
