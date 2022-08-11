@@ -5,9 +5,6 @@ fragment contentInternalLink on no_nav_navno_InternalLink {
         description
         permanentRedirect
         anchorId
-        targetUrl {
-            targetUrl
-        }
         target {
             ...contentCommon
         }
