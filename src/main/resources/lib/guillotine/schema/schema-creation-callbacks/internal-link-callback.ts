@@ -3,6 +3,8 @@ import graphQlLib from '/lib/graphql';
 import { logger } from '../../../utils/logging';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
+let count = 0;
+
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
     const internalLinkUrl = graphQlCreateObjectType(context, {
@@ -36,8 +38,9 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
         args: { contentId: graphQlLib.GraphQLID },
         type: internalLinkUrl,
         resolve: (env) => {
-            logger.info(`internalLinkCallback-resolve: ${JSON.stringify(env, null, 4)}`);
+            count++;
             const {contentId} = env.args;
+            logger.info(`internalLinkCallback[${count}]: contentID=${contentId}`);
             if (!contentId) {
                 logger.error('No contentId provided for internal-link resolver');
                 return undefined;
