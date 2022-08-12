@@ -1,9 +1,17 @@
 import contentLib from '/lib/xp/content';
+import graphQlLib from '/lib/graphql';
 import { logger } from '../../../utils/logging';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
+    const internalLinkUrl = graphQlCreateObjectType(context, {
+        name: context.uniqueName('resolvedInternalLink'),
+        description: 'resolvedInternalLink',
+        fields: {
+            targetUrl: { type: graphQlLib.GraphQLString }
+        },
+    });
     const getTarget = (contentId: string): contentLib.Content | null => {
         if (!contentId) {
             return null;
@@ -24,19 +32,23 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
 
     logger.info(`internalLinkCallback: ${JSON.stringify(params.fields, null, 4)}`);
 
-    // Resolve target
-    params.fields.data.resolve = (env) => {
-        const { contentId } = env.args;
-        if (!contentId) {
-            logger.error('No contentId provided for internal-link resolver');
-            return undefined;
+    // Resolve targetUrl
+    params.fields.targetUrl = {
+        args: { contentId: graphQlLib.GraphQLID },
+        type: internalLinkUrl,
+        resolve: (env) => {
+            const {contentId} = env.args;
+            if (!contentId) {
+                logger.error('No contentId provided for internal-link resolver');
+                return undefined;
+            }
+            const content = getTarget(contentId);
+            if (!content) {
+                logger.error(`Content not found for internal-link id ${contentId}`);
+                return undefined;
+            }
+            logger.info(`targetUrl: ${content._path}`);
+            return content._path;
         }
-        const content = getTarget(contentId);
-        if (!content) {
-            logger.error(`Content not found for internal-link id ${contentId}`);
-            return undefined;
-        }
-        logger.info(`target: ${content.data}`);
-        return content.data;
     }
 };

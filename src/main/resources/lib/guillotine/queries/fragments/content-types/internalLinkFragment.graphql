@@ -8,5 +8,6 @@ fragment contentInternalLink on no_nav_navno_InternalLink {
         target {
             ...contentCommon
         }
+        targetUrl
     }
 }
