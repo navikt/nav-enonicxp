@@ -12,6 +12,7 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
             targetUrl: { type: graphQlLib.GraphQLString }
         },
     });
+
     const getTarget = (contentId: string): contentLib.Content | null => {
         if (!contentId) {
             return null;
@@ -30,13 +31,12 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
         return content;
     };
 
-    logger.info(`internalLinkCallback: ${JSON.stringify(params.fields, null, 4)}`);
-
     // Resolve targetUrl
     params.fields.targetUrl = {
         args: { contentId: graphQlLib.GraphQLID },
         type: internalLinkUrl,
         resolve: (env) => {
+            logger.info(`internalLinkCallback-resolve: ${JSON.stringify(env, null, 4)}`);
             const {contentId} = env.args;
             if (!contentId) {
                 logger.error('No contentId provided for internal-link resolver');

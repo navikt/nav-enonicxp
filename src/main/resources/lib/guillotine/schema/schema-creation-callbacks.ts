@@ -40,7 +40,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     FragmentComponentData: fragmentComponentDataCallback,
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
-    no_nav_navno_InternalLink_Data: internalLinkCallback,
+    no_nav_navno_InternalLink: internalLinkCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
     no_nav_navno_MainArticle_Data: mainArticleDataCallback,
     no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
