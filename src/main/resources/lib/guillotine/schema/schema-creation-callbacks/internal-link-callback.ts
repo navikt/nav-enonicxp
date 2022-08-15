@@ -7,13 +7,7 @@ let count = 0;
 
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
-    const internalLinkUrl = graphQlCreateObjectType(context, {
-        name: context.uniqueName('resolvedInternalLink'),
-        description: 'resolvedInternalLink',
-        fields: {
-            targetUrl: { type: graphQlLib.GraphQLString }
-        },
-    });
+    let count = 0;
 
     const getTarget = (contentId: string): contentLib.Content | null => {
         if (!contentId) {
