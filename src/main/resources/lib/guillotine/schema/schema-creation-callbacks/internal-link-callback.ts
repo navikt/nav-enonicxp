@@ -34,7 +34,7 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
     };
 
     // Resolve targetUrl
-    params.fields.targetUrl = {
+    params.fields.target = {
         args: { contentId: graphQlLib.GraphQLID },
         type: internalLinkUrl,
         resolve: (env) => {
@@ -50,8 +50,8 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
                 logger.error(`Content not found for internal-link id ${contentId}`);
                 return undefined;
             }
-            logger.info(`targetUrl: ${content._path}`);
-            return content._path;
+            logger.info(`targetPath: ${content._path}`);
+            return content;
         }
     }
 };
