@@ -1,9 +1,6 @@
 import contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
 import { logger } from '../../../utils/logging';
-import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-
-let count = 0;
+import { CreationCallback } from '../../utils/creation-callback-utils';
 
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
@@ -27,25 +24,21 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
         return content;
     };
 
-    // Resolve targetUrl
-    params.fields.target = {
-        args: { contentId: graphQlLib.GraphQLID },
-        type: internalLinkUrl,
-        resolve: (env) => {
-            count++;
-            const {contentId} = env.args;
-            logger.info(`internalLinkCallback[${count}]: contentID=${contentId}`);
-            if (!contentId) {
-                logger.error('No contentId provided for internal-link resolver');
-                return undefined;
-            }
-            const content = getTarget(contentId);
-            if (!content) {
-                logger.error(`Content not found for internal-link id ${contentId}`);
-                return undefined;
-            }
-            logger.info(`targetPath: ${content._path}`);
-            return content;
+    // Resolve final target
+    params.fields.target.resolve = (env) => {
+        count++;
+        const {contentId} = env.args;
+        logger.info(`internalLinkCallback[${count}]: contentID=${contentId}`);
+        if (!contentId) {
+            logger.error('No contentId provided for internal-link resolver');
+            return undefined;
         }
+        const content = getTarget(contentId);
+        if (!content) {
+            logger.error(`Content not found for internal-link id ${contentId}`);
+            return undefined;
+        }
+        logger.info(`targetPath: ${content._path}`);
+        return content;
     }
 };
