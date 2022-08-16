@@ -24,6 +24,8 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
         return content;
     };
 
+    logger.info(`internalLinkCallback: target=[${JSON.stringify(params.fields.target, null, 2)}]`);
+
     // Resolve final target
     params.fields.target.resolve = (env) => {
         count++;
