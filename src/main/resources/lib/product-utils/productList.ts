@@ -78,6 +78,7 @@ const buildCommonProductData = (product: ContentWithProductDetails) => {
 
     return {
         _id: product._id,
+        type: product.type,
         path: product._path,
         title: fullTitle,
         sortTitle: data.sortTitle || fullTitle,
