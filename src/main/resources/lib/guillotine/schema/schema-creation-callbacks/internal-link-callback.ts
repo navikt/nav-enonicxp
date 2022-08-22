@@ -24,9 +24,9 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
         return content;
     };
 
-    logger.info(`internalLinkCallback: data=[${JSON.stringify(params.fields.data, null, 2)}]`);
+    logger.info(`internalLinkCallback: count=[${count}]`);
     // Resolve final target
-    params.fields.data.resolve = (env) => {
+    params.fields.target.resolve = (env) => {
         count++;
         const {contentId} = env.args;
         logger.info(`internalLinkCallback[${count}]: contentID=${contentId}`);
@@ -39,9 +39,7 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
             logger.error(`Content not found for internal-link id ${contentId}`);
             return undefined;
         }
-        logger.info(`internalLinkCallback: target.data=[${JSON.stringify(content.data, null, 2)}]`);
-        return {
-            ...content.data
-        };
+        logger.info(`internalLinkCallback: final target=[${JSON.stringify(content, null, 2)}]`);
+        return content;
     }
 };
