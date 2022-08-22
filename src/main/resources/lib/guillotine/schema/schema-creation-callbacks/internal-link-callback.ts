@@ -7,11 +7,28 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
 
     let count = 0;
 
+    const publish = graphQlCreateObjectType(context, {
+        name: context.uniqueName('Publish'),
+        description: 'Publish',
+        fields: {
+            first: { type: graphQlLib.DateTime },
+            from: { type: graphQlLib.DateTime },
+        },
+    });
+
     const internalLinkUrl = graphQlCreateObjectType(context, {
         name: context.uniqueName('resolvedInternalLink'),
         description: 'resolvedInternalLink',
         fields: {
-            _path: { type: graphQlLib.GraphQLString }
+            __typename: { type: graphQlLib.GraphQLString },
+            _id: { type: graphQlLib.GraphQLString },
+            _path: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
+            created: { type: graphQlLib.DateTime },
+            modifiedTime: { type: graphQlLib.DateTime },
+            displayName: { type: graphQlLib.GraphQLString },
+            language: { type: graphQlLib.GraphQLString },
+            publish: { type: publish },
         },
     });
 
