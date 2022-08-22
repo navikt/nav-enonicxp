@@ -1,10 +1,19 @@
 import contentLib from '/lib/xp/content';
+import graphQlLib from '/lib/graphql';
 import { logger } from '../../../utils/logging';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
     let count = 0;
+
+    const internalLinkUrl = graphQlCreateObjectType(context, {
+        name: context.uniqueName('resolvedInternalLink'),
+        description: 'resolvedInternalLink',
+        fields: {
+            _path: { type: graphQlLib.GraphQLString }
+        },
+    });
 
     const getTarget = (contentId: string): contentLib.Content | null => {
         if (!contentId) {
@@ -26,20 +35,24 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
 
     logger.info(`internalLinkCallback: count=[${count}]`);
     // Resolve final target
-    params.fields.target.resolve = (env) => {
-        count++;
-        const {contentId} = env.args;
-        logger.info(`internalLinkCallback[${count}]: contentID=${contentId}`);
-        if (!contentId) {
-            logger.error('No contentId provided for internal-link resolver');
-            return undefined;
+    params.fields.target = {
+        args: { contentId: graphQlLib.GraphQLID },
+        type: internalLinkUrl,
+        resolve: (env) => {
+            count++;
+            const {contentId} = env.args;
+            logger.info(`internalLinkCallback[${count}]: contentID=${contentId}`);
+            if (!contentId) {
+                logger.error('No contentId provided for internal-link resolver');
+                return undefined;
+            }
+            const content = getTarget(contentId);
+            if (!content) {
+                logger.error(`Content not found for internal-link id ${contentId}`);
+                return undefined;
+            }
+            logger.info(`internalLinkCallback: final target=[${JSON.stringify(content, null, 2)}]`);
+            return content;
         }
-        const content = getTarget(contentId);
-        if (!content) {
-            logger.error(`Content not found for internal-link id ${contentId}`);
-            return undefined;
-        }
-        logger.info(`internalLinkCallback: final target=[${JSON.stringify(content, null, 2)}]`);
-        return content;
     }
 };
