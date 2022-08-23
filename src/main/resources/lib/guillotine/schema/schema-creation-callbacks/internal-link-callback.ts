@@ -6,6 +6,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
     let count = 0; // For max-depth check
+    logger.info(`internalLinkCallback`);
 
     const getTarget = (contentId: string): contentLib.Content | null => {
 
