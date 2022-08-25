@@ -1,5 +1,4 @@
 import contentLib from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
 import { logger } from '../../../utils/logging';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
@@ -9,8 +8,9 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
     const getTarget = (contentId: string): contentLib.Content | null => {
 
         count++;
+        logger.info(`internalLinkCallback: count=[${count}]`);
         if (count > 10) {
-            logger.error('Max depth (10) reached for internal-link resolver');
+            logger.critical(`internalLinkCallback: Max depth (10)/redirect loop - ContentId=${contentId}`);
             return null;
         }
         if (!contentId) {
@@ -33,21 +33,18 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
     };
 
     // Resolve final target
-    params.fields.target = {
-        type: graphQlLib.reference('Content'),
-        resolve: (env) => {
-            const { target } = env.source;
-            if (!target) {
-                logger.error('No valid target provided for internal-link resolver');
-                return null;
-            }
-            const content = getTarget(target);
-            if (!content) {
-                logger.error(`Content not found for internal-link resolver target=${target}`);
-                return null;
-            }
-            logger.info(`internalLinkCallback: final target path=[${content._path}]`);
-            return content;
+    params.fields.target.resolve = (env) => {
+        const { target } = env.source;
+        if (!target) {
+            logger.error('internalLinkCallback: No valid target provided');
+            return null;
         }
+        const content = getTarget(target);
+        if (!content) {
+            logger.error(`internalLinkCallback: Content not found target=${target}`);
+            return null;
+        }
+        logger.info(`internalLinkCallback: final target path=[${content._path}]`);
+        return content;
     }
 };
