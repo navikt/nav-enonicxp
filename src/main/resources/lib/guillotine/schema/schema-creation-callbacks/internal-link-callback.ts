@@ -4,8 +4,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 
 export const internalLinkCallback: CreationCallback = (context, params) => {
 
-    let count = 0; // For max-depth check
-    const getTarget = (contentId: string): contentLib.Content | null => {
+    const getTarget = (contentId: string, count: number): contentLib.Content | null => {
 
         count++;
         logger.info(`internalLinkCallback: count=[${count}]`);
@@ -27,7 +26,7 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
             if (!content.data.target) {
                 return null;
             }
-            content = getTarget(content.data.target);
+            content = getTarget(content.data.target, count);
         }
         return content;
     };
@@ -39,7 +38,7 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
             logger.error('internalLinkCallback: No valid target provided');
             return null;
         }
-        const content = getTarget(target);
+        const content = getTarget(target, 0);
         if (!content) {
             logger.error(`internalLinkCallback: Content not found target=${target}`);
             return null;
