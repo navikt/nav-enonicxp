@@ -7,7 +7,6 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
     const getTarget = (contentId: string, count: number): contentLib.Content | null => {
 
         count++;
-        logger.info(`internalLinkCallback: count=[${count}]`);
         if (count > 10) {
             logger.critical(`internalLinkCallback: Max depth (10)/redirect loop - ContentId=${contentId}`);
             return null;
@@ -43,7 +42,6 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
             logger.error(`internalLinkCallback: Content not found target=${target}`);
             return null;
         }
-        logger.info(`internalLinkCallback: final target path=[${content._path}]`);
         return content;
     }
 };
