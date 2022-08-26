@@ -1,6 +1,7 @@
 import { macroHtmlFragmentCallback } from './schema-creation-callbacks/macro-html-fragment';
 import { attachmentCallback } from './schema-creation-callbacks/attachment';
 import { mediaCodeCallback, mediaImageCallback } from './schema-creation-callbacks/media';
+import { internalLinkCallback } from './schema-creation-callbacks/internal-link-callback';
 import {
     mainArticleCallback,
     mainArticleDataCallback,
@@ -39,6 +40,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     FragmentComponentData: fragmentComponentDataCallback,
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
+    no_nav_navno_InternalLink_Data: internalLinkCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
     no_nav_navno_MainArticle_Data: mainArticleDataCallback,
     no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
