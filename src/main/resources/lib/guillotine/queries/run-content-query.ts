@@ -8,7 +8,6 @@ import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guilloti
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
 import { runInBranchContext } from '../../utils/branch-context';
 import { getBreadcrumbs } from '../utils/breadcrumbs';
-import { buildCustomPathMap } from '../../custom-paths/custom-paths';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { NodeComponent } from '../../../types/components/component-node';
@@ -162,7 +161,6 @@ export const runGuillotineContentQuery = (
 
     return {
         ...contentQueryResult,
-        pathMap: buildCustomPathMap(_id),
         ...(breadcrumbs && { breadcrumbs }),
     };
 };
