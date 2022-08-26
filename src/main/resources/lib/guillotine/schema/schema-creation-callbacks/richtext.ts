@@ -22,7 +22,6 @@ const insertCustomPaths = (processedHtml: string, links?: Links[]) => {
     return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
         if (!contentId || !linkRef) {
-            log.info(`Missing ${contentId} ${linkRef}`);
             return html;
         }
 
