@@ -14,8 +14,12 @@ const linebreakFilter = new RegExp(/(\r\n|\n|\r|\s)/g);
 
 const macroTagFilter = new RegExp(`<${macroTagName}[^>]*>(.*?)</${macroTagName}>`, 'g');
 
-const insertCustomPaths = (processedHtml: string, links: Links[]) =>
-    links.reduce((html, link) => {
+const insertCustomPaths = (processedHtml: string, links?: Links[]) => {
+    if (!links || links.length === 0) {
+        return processedHtml;
+    }
+
+    return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
         if (!contentId || !linkRef) {
             log.info(`Missing ${contentId} ${linkRef}`);
@@ -34,6 +38,7 @@ const insertCustomPaths = (processedHtml: string, links: Links[]) =>
             `<a href="${customPath}"`
         );
     }, processedHtml);
+};
 
 export const richTextCallback: CreationCallback = (context, params) => {
     params.fields.processedHtml.resolve = (env) => {
