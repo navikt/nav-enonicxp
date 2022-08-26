@@ -1,10 +1,15 @@
+#import "../contentCommonFragment.graphql"
+#import "../content-types/internalLinkFragment.graphql"
+#import "../content-types/externalLinkFragment.graphql"
+#import "../content-types/urlFragment.graphql"
+
 fragment contentListShortMixin on no_nav_navno_ContentList {
     data {
         sectionContents {
-            _id
-            _path
-            displayName
-            modifiedTime
+            ...contentCommon
+            ...contentInternalLink
+            ...contentExternalLink
+            ...contentUrl
         }
     }
 }
