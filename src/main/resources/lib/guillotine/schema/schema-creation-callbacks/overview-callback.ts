@@ -7,6 +7,7 @@ import {
     OverviewPageIllustrationIcon,
     OverviewPageProductData,
 } from '../../../product-utils/types';
+import { forceArray } from '../../../utils/nav-utils';
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlCreateObjectType<keyof OverviewPageIllustrationIcon['icon']>(context, {
@@ -94,7 +95,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
             const productList = getProductDataForOverviewPage(
                 language || 'no',
                 overviewType,
-                audience
+                forceArray(audience)
             );
             return productList;
         },
