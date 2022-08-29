@@ -79,14 +79,18 @@ export const overviewCallback: CreationCallback = (context, params) => {
             }
 
             const { language, data } = content;
-            const { overviewType } = data;
+            const { overviewType, audience } = data;
 
             if (!overviewType) {
                 logger.error(`Type not set for overview page id ${contentId}`);
                 return [];
             }
 
-            const productList = getProductDataForOverviewPage(language || 'no', overviewType);
+            const productList = getProductDataForOverviewPage(
+                language || 'no',
+                overviewType,
+                audience
+            );
             return productList;
         },
     };
