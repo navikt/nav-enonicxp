@@ -1,33 +1,49 @@
 #import "../../content-types/contactInformationFragment.graphql"
+#import "../../richText/richTextFragment.graphql"
 
 fragment partComponentContactOption on Part_no_nav_navno_contact_option {
     contactOptions {
         _selected
         chat {
-            ingress
+            ingress(processHtml: { type: server }) {
+                ...richText
+            }
         }
         write {
-            ingress
+            ingress(processHtml: { type: server }) {
+                ...richText
+            }
             title
             url
+            sharedContactInformation {
+                ...contentContactInformation
+            }
         }
         navoffice {
-            ingress
+            ingress(processHtml: { type: server }) {
+                ...richText
+            }
             title
         }
         aidcentral {
-            ingress
+            ingress(processHtml: { type: server }) {
+                ...richText
+            }
             title
         }
         call {
-            ingress
+            ingress(processHtml: { type: server }) {
+                ...richText
+            }
             phoneNumber
             sharedContactInformation {
                 ...contentContactInformation
             }
         }
         custom {
-            ingress
+            ingress(processHtml: { type: server }) {
+                ...richText
+            }
             icon
             title
             url

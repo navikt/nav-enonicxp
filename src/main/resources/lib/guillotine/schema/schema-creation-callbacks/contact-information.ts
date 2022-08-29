@@ -8,9 +8,13 @@ import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-
  * If this is the case, retrieve the content manually. Otherwise,
  * just return the original  specialOpeningHoursobject.
  */
-const getSpecialOpeningHoursObject = (
-    specialOpeningHours: ContactInformation['contactType']['telephone']['specialOpeningHours']
-) => {
+
+type SpecialOpeningHours = Extract<
+    ContactInformation['contactType'],
+    { _selected: 'telephone' }
+>['telephone']['specialOpeningHours'];
+
+const getSpecialOpeningHoursObject = (specialOpeningHours: SpecialOpeningHours) => {
     if (!specialOpeningHours) {
         return null;
     }
@@ -23,7 +27,7 @@ const getSpecialOpeningHoursObject = (
 
         const openingHoursDocument = contentLib.get<'no.nav.navno:contact-information'>({
             key: id,
-        });
+        }) as any;
         if (!openingHoursDocument?.data?.contactType) {
             return null;
         }

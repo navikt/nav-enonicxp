@@ -10,7 +10,7 @@
                 <option name="chat">
                     <label>Chat</label>
                     <items>
-                        <input name="ingress" type="TextArea">
+                        <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
                     </items>
@@ -18,14 +18,24 @@
                 <option name="write">
                     <label>Skriv til oss</label>
                     <items>
-                        <input name="title" type="TextLine">
-                            <label>Overstyr tittel</label>
+                        <input name="sharedContactInformation" type="ContentSelector">
+                            <label>Velg skriv til oss</label>
+                            <config>
+                                <allowContentType>${app}:contact-information</allowContentType>
+                            </config>
                         </input>
-                        <input name="url" type="TextLine">
-                            <label>Overstyr URL</label>
-                        </input>
-                        <input name="ingress" type="TextArea">
+                        <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                        </input>
+                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
+                        <input name="url" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
+                        <input name="title" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
                         </input>
                     </items>
                 </option>
@@ -38,7 +48,7 @@
                                 <allowContentType>${app}:contact-information</allowContentType>
                             </config>
                         </input>
-                        <input name="ingress" type="TextArea">
+                        <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
                         <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
@@ -54,7 +64,7 @@
                         <input name="title" type="TextLine">
                             <label>Overstyr tittel</label>
                         </input>
-                        <input name="ingress" type="TextArea">
+                        <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
                     </items>
@@ -65,7 +75,7 @@
                         <input name="title" type="TextLine">
                             <label>Overstyr tittel</label>
                         </input>
-                        <input name="ingress" type="TextArea">
+                        <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
                         </input>
                     </items>
@@ -90,7 +100,7 @@
                             <label>Url</label>
                             <occurrences minimum="1" maximum="1"/>
                         </input>
-                        <input name="ingress" type="TextArea">
+                        <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>
                         </input>
                     </items>
