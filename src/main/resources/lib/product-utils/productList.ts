@@ -142,7 +142,7 @@ const buildProductData = (
 const getProductPagesForOverview = (
     language: string,
     overviewType: OverviewType,
-    audience: ProductAudience = 'person'
+    audience: ProductAudience[]
 ) => {
     return contentLib.query({
         start: 0,
@@ -163,7 +163,7 @@ const getProductPagesForOverview = (
                     {
                         hasValue: {
                             field: 'data.audience',
-                            values: [audience],
+                            values: audience,
                         },
                     },
                 ],
@@ -257,7 +257,7 @@ const getLocalizedProductData = (
 export const getProductDataForOverviewPage = (
     language: string,
     overviewType: OverviewType,
-    audience: ProductAudience = 'person'
+    audience: ProductAudience[]
 ) => {
     const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
 

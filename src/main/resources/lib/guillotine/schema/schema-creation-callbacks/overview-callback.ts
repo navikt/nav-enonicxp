@@ -7,6 +7,7 @@ import {
     OverviewPageIllustrationIcon,
     OverviewPageProductData,
 } from '../../../product-utils/types';
+import { forceArray } from '../../../utils/nav-utils';
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlCreateObjectType<keyof OverviewPageIllustrationIcon['icon']>(context, {
@@ -79,14 +80,23 @@ export const overviewCallback: CreationCallback = (context, params) => {
             }
 
             const { language, data } = content;
-            const { overviewType } = data;
+            const { overviewType, audience } = data;
 
             if (!overviewType) {
                 logger.error(`Type not set for overview page id ${contentId}`);
                 return [];
             }
 
-            const productList = getProductDataForOverviewPage(language || 'no', overviewType);
+            if (!audience) {
+                logger.error(`Audience not set for overview page id ${contentId}`);
+                return [];
+            }
+
+            const productList = getProductDataForOverviewPage(
+                language || 'no',
+                overviewType,
+                forceArray(audience)
+            );
             return productList;
         },
     };
