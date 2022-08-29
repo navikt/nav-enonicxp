@@ -86,6 +86,11 @@ export const overviewCallback: CreationCallback = (context, params) => {
                 return [];
             }
 
+            if (!audience) {
+                logger.error(`Audience not set for overview page id ${contentId}`);
+                return [];
+            }
+
             const productList = getProductDataForOverviewPage(
                 language || 'no',
                 overviewType,

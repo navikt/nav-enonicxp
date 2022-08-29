@@ -257,7 +257,7 @@ const getLocalizedProductData = (
 export const getProductDataForOverviewPage = (
     language: string,
     overviewType: OverviewType,
-    audience: ProductAudience[] = ['person']
+    audience: ProductAudience[]
 ) => {
     const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
 
