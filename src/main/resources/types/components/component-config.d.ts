@@ -2,7 +2,6 @@ import { PageWithSideMenusPageConfig } from '../../site/pages/page-with-side-men
 import { Dynamic1ColConfig } from '../../site/layouts/dynamic-1-col/dynamic-1-col-config';
 import { Dynamic2ColConfig } from '../../site/layouts/dynamic-2-col/dynamic-2-col-config';
 import { Dynamic3ColConfig } from '../../site/layouts/dynamic-3-col/dynamic-3-col-config';
-import { Dynamic4ColConfig } from '../../site/layouts/dynamic-4-col/dynamic-4-col-config';
 import { DynamicFlexColsConfig } from '../../site/layouts/dynamic-flex-cols/dynamic-flex-cols-config';
 import { SectionWithHeaderConfig } from '../../site/layouts/section-with-header/section-with-header-config';
 import { SituationFlexColsConfig } from '../../site/layouts/situation-flex-cols/situation-flex-cols-config';
@@ -23,9 +22,11 @@ import { ProductCardPartConfig } from '../../site/parts/product-card/product-car
 import { ProductCardMicroPartConfig } from '../../site/parts/product-card-micro/product-card-micro-part-config';
 import { ProductCardMiniPartConfig } from '../../site/parts/product-card-mini/product-card-mini-part-config';
 import { ProviderCardPartConfig } from '../../site/parts/provider-card/provider-card-part-config';
+import { AreapageSituationsConfig } from '../../site/layouts/areapage-situations/areapage-situations-config';
+import { AreapageSituationCardPartConfig } from '../../site/parts/areapage-situation-card/areapage-situation-card-part-config';
+import { EmptyObject } from '../util-types';
 
 export type ComponentType = 'page' | 'layout' | 'part' | 'fragment';
-// | 'text';
 
 type PageConfigs = {
     'page-with-side-menus': PageWithSideMenusPageConfig;
@@ -35,13 +36,14 @@ type LayoutConfigs = {
     'dynamic-1-col': Dynamic1ColConfig;
     'dynamic-2-col': Dynamic2ColConfig;
     'dynamic-3-col': Dynamic3ColConfig;
-    'dynamic-4-col': Dynamic4ColConfig;
     'dynamic-flex-cols': DynamicFlexColsConfig;
     'section-with-header': SectionWithHeaderConfig;
     'situation-flex-cols': SituationFlexColsConfig;
+    'areapage-situations': AreapageSituationsConfig;
 };
 
 type PartConfigs = {
+    'areapage-situation-card': AreapageSituationCardPartConfig & { target: string };
     button: ButtonPartConfig;
     calculator: CalculatorPartConfig;
     'contact-option': ContactOptionPartConfig;
@@ -65,6 +67,7 @@ export type ComponentConfigs = {
     page: PageConfigs;
     layout: LayoutConfigs;
     part: PartConfigs;
+    fragment: EmptyObject;
 };
 
 type ConfigMapper<Type, Name> = Type extends keyof ComponentConfigs
@@ -79,5 +82,3 @@ type PageComponentName = keyof ComponentConfigs['page'];
 type LayoutComponentName = keyof ComponentConfigs['layout'];
 type PartComponentName = keyof ComponentConfigs['part'];
 export type ComponentName = PageComponentName | LayoutComponentName | PartComponentName;
-
-// TODO: add text components?

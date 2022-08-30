@@ -69,7 +69,7 @@ declare module '*/lib/xp/content' {
             ContentType extends ContentDescriptor = ContentDescriptor,
             AggregationKeys extends string = never
         > = {
-            contentTypes?: ContentType[];
+            contentTypes?: ContentType[] | ReadonlyArray<ContentType>;
             start?: number;
             count: number;
             query?: string;

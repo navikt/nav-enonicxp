@@ -31,19 +31,24 @@ export interface ContactOptionPartConfig {
          */
         write: {
           /**
-           * Overstyr tittel
+           * Velg skriv til oss
            */
-          title?: string;
-
-          /**
-           * Overstyr URL
-           */
-          url?: string;
+          sharedContactInformation?: string;
 
           /**
            * Overstyr ingress
            */
           ingress?: string;
+
+          /**
+           * -
+           */
+          url?: undefined;
+
+          /**
+           * -
+           */
+          title?: undefined;
         };
       }
     | {
@@ -70,6 +75,48 @@ export interface ContactOptionPartConfig {
            * -
            */
           phoneNumber?: undefined;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "navoffice";
+
+        /**
+         * Finn ditt NAV-kontor
+         */
+        navoffice: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr ingress
+           */
+          ingress?: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "aidcentral";
+
+        /**
+         * Finn din hjelpemiddelsentral
+         */
+        aidcentral: {
+          /**
+           * Overstyr tittel
+           */
+          title?: string;
+
+          /**
+           * Overstyr ingress
+           */
+          ingress?: string;
         };
       }
     | {

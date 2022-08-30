@@ -1,0 +1,6 @@
+#import "../contentCommonFragment.graphql"
+
+fragment productTargetMicroMixin on Content {
+    ...contentCommon
+    dataAsJson
+}

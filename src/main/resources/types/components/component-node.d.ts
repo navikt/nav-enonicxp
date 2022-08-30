@@ -17,7 +17,7 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
                   descriptor: NavNoDescriptor<Name>;
                   config?: {
                       [componentAppKey]: {
-                          [key in Name]: ComponentConfigs[Type][Name];
+                          [name in Name]: ComponentConfigs[Type][Name];
                       };
                   };
               };

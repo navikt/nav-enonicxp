@@ -75,13 +75,18 @@ export interface Dynamic1ColConfig {
         _selected: "custom";
 
         /**
-         * Tilpasset
+         * Tilpasset (rem-enheter)
          */
         custom: {
           /**
-           * (rem-enheter)
+           * Topp
            */
-          remValue?: number;
+          top?: number;
+
+          /**
+           * Bunn
+           */
+          bottom?: number;
         };
       };
 

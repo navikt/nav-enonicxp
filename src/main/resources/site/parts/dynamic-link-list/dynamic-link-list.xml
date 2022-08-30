@@ -5,6 +5,10 @@
             <label>Tittel</label>
             <default>Lenker</default>
         </input>
+        <input name="hideTitle" type="CheckBox">
+            <label>Skjul tittel</label>
+            <default>unchecked</default>
+        </input>
         <input name="chevron" type="CheckBox">
             <label>Lenker med chevron</label>
             <default>unchecked</default>

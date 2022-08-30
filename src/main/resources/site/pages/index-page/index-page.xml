@@ -1,0 +1,8 @@
+<page>
+    <display-name>Layout for forside og områdersider</display-name>
+    <description>Page-layout med to regioner. Navigasjon til/mellom områdesider settes inn mellom regionene.</description>
+    <regions>
+        <region name="contentTop"/>
+        <region name="contentBottom"/>
+    </regions>
+</page>

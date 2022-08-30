@@ -12,5 +12,9 @@
             <label>Nivå 4 - Vis hengelås</label>
             <help-text>Tjenesten krever nivå 4 innlogging</help-text>
         </input>
+        <input name="flatten" type="CheckBox">
+            <label>Ekspander underelementer</label>
+            <help-text>Viser underelementer uten undermeny på mobil. Gjelder kun dersom dette elementet har underelementer.</help-text>
+        </input>
     </form>
 </content-type>

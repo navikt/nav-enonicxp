@@ -20,7 +20,8 @@ type MenuItem = {
     displayName: string;
     path: string;
     id: string;
-    displayLock: boolean;
+    displayLock?: boolean;
+    flatten?: boolean;
     isMyPageMenu?: boolean;
     hasChildren: boolean;
     children: MenuItem[];
@@ -51,6 +52,7 @@ const menuItemContentTransformer = (menuItem: MenuItemContent): MenuItem => {
         displayName: menuItem.displayName,
         path: getTargetPath(menuItem),
         displayLock: menuItem.data.displayLock,
+        flatten: menuItem.data.flatten,
         isMyPageMenu: menuItem._path.includes(myPageMenuPathSegment) || undefined,
         id: menuItem._id,
         hasChildren: children.length > 0,

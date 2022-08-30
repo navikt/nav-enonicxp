@@ -41,10 +41,13 @@
                     <default>true</default>
                 </option>
                 <option name="custom">
-                    <label>Tilpasset</label>
+                    <label>Tilpasset (rem-enheter)</label>
                     <items>
-                        <input type="Double" name="remValue">
-                            <label>(rem-enheter)</label>
+                        <input type="Double" name="top">
+                            <label>Topp</label>
+                        </input>
+                        <input type="Double" name="bottom">
+                            <label>Bunn</label>
                         </input>
                     </items>
                 </option>

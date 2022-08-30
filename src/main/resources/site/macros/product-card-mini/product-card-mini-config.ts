@@ -3,5 +3,5 @@ export interface ProductCardMiniConfig {
   /**
    * Velg side
    */
-  targetPage?: string;
+  targetPage: string;
 }

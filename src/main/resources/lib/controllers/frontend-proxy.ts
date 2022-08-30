@@ -22,15 +22,24 @@ const errorResponse = (url: string, status: number, message: string) => {
     }
 
     return {
-        contentType: 'text/html',
+        contentType: 'text/html; charset=UTF-8',
         body: `<div>${msg}</div>`,
         status,
     };
 };
 
-// This proxies requests made directly to XP to the frontend. Normally this will
-// only be used in the portal-admin content studio previews
-export const adminFrontendProxy = (req: XP.Request) => {
+// The legacy health check expects an html-response on /no/person
+// "Nyheter" must be part of the response!
+const healthCheckDummyResponse = () => {
+    return {
+        contentType: 'text/html; charset=UTF-8',
+        body: '<html lang="no"><head><meta charset="utf-8"><title>Nav.no</title></head><body><div>Hei, jeg er en ex-forside. Her var det blant annet Nyheter og nyheter.</div></body></html>',
+    };
+};
+
+// Proxy requests to XP to the frontend. Normally this will only be used in the portal-admin
+// content studio previews and from the error controller
+export const frontendProxy = (req: XP.Request, path?: string) => {
     if (req.method === 'HEAD') {
         return {
             status: 200,
@@ -47,13 +56,22 @@ export const adminFrontendProxy = (req: XP.Request) => {
         };
     }
 
-    const content = portalLib.getContent();
-    if (!contentTypesForFrontendProxy[content.type]) {
-        return noRenderResponse();
+    // Ensures our legacy health-check still works after the old /no/person page is removed
+    // TODO: remove this asap after the health-check has been updated
+    if (req.mode === 'live' && req.url.endsWith('/no/person')) {
+        return healthCheckDummyResponse();
+    }
+
+    if (!path) {
+        const content = portalLib.getContent();
+
+        if (!contentTypesForFrontendProxy[content?.type]) {
+            return noRenderResponse();
+        }
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
-    const contentPath = stripPathPrefix(req.rawPath.slice(pathStartIndex));
+    const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
     const frontendUrl = `${urls.frontendOrigin}${
         req.branch === 'draft' ? '/draft' : ''
     }${contentPath}`;
@@ -80,7 +98,7 @@ export const adminFrontendProxy = (req: XP.Request) => {
 
         const { status, message } = response;
 
-        if (status >= 400) {
+        if (status >= 400 && status !== 404) {
             logger.warning(
                 `Error response from frontend for ${frontendUrl}: ${status} - ${message}`
             );
@@ -98,5 +116,5 @@ export const adminFrontendProxy = (req: XP.Request) => {
     }
 };
 
-export const get = adminFrontendProxy;
-export const handleError = adminFrontendProxy;
+export const get = frontendProxy;
+export const handleError = frontendProxy;

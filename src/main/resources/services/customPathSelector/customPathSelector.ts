@@ -70,7 +70,7 @@ const getResult = ({
         () => contentLib.get({ key: `${navnoRootPath}${suggestedPath}` }),
         'master'
     );
-    if (contentWithInternalPath) {
+    if (contentWithInternalPath && contentWithInternalPath.type !== 'portal:site') {
         return [
             generateErrorHit(
                 `Feil: "${suggestedPath}" er allerede i bruk som vanlig url`,
@@ -93,7 +93,7 @@ const getResult = ({
         () => contentLib.get({ key: `${redirectsRootPath}${suggestedPath}` }),
         'master'
     );
-    if (redirectContent) {
+    if (redirectContent && redirectContent.type !== 'base:folder') {
         return [
             {
                 id: suggestedPath,

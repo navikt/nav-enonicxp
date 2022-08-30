@@ -5,6 +5,10 @@
             <label>Tittel</label>
             <default>Nyheter</default>
         </input>
+        <input name="hideTitle" type="CheckBox">
+            <label>Skjul tittel</label>
+            <default>unchecked</default>
+        </input>
         <item-set name="contentList">
             <label>Innholdsliste for nyheter</label>
             <occurrences minimum="1" maximum="1" />

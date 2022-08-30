@@ -9,4 +9,9 @@ export interface MegamenuItem {
    * Nivå 4 - Vis hengelås
    */
   displayLock: boolean;
+
+  /**
+   * Ekspander underelementer
+   */
+  flatten: boolean;
 }

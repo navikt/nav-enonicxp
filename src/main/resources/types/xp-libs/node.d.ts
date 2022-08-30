@@ -2,6 +2,7 @@ declare module '*/lib/xp/node' {
     import { RepoBranch } from 'types/common';
     import { NodeComponent } from 'types/components/component-node';
     import { Content } from '*/lib/xp/content';
+    import { ArrayOrSingle } from 'types/util-types';
 
     // Replacements for enonic-types definitions
     namespace nodeLib {
@@ -26,7 +27,7 @@ declare module '*/lib/xp/node' {
 
         type NodeContent<Content> = Omit<Content, 'attachment' | 'page' | 'childOrder'> &
             Content & {
-                components: NodeComponent[];
+                components?: ArrayOrSingle<NodeComponent>;
             };
 
         type RepoNode<NodeData> = {

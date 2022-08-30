@@ -4,7 +4,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import commonLib from '/lib/xp/common';
 import { NodeComponent } from '../../types/components/component-node';
 import { forceArray } from './nav-utils';
-import { PickByFieldType } from '../../types/util-types';
+import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { componentAppKey } from '../constants';
 
@@ -43,7 +43,10 @@ export const getComponentConfig = (component?: NodeComponent) => {
     return config?.[componentAppKey]?.[componentKey];
 };
 
-export const getComponentConfigByPath = (path: string, components: NodeComponent[]) => {
+export const getComponentConfigByPath = (
+    path: string,
+    components?: ArrayOrSingle<NodeComponent>
+) => {
     const foundComponent = forceArray(components).find((component) => component.path === path);
     return getComponentConfig(foundComponent);
 };

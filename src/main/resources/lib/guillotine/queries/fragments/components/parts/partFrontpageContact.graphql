@@ -1,0 +1,15 @@
+fragment partComponentFrontpageContact on Part_no_nav_navno_frontpage_contact {
+    chatTitle
+    chatIngress
+    contactUsTitle
+    contactUsIngress
+    contactUsLink {
+        __typename
+        _path
+        ... on no_nav_navno_ExternalLink {
+            data {
+                url
+            }
+        }
+    }
+}

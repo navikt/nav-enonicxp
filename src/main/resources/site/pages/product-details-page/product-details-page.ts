@@ -1,3 +1,3 @@
-import { adminFrontendProxy } from '../../../lib/controllers/admin-frontend-proxy';
+import { frontendProxy } from '../../../lib/controllers/frontend-proxy';
 
-export default adminFrontendProxy;
+export default frontendProxy;

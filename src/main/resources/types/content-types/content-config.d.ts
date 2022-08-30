@@ -4,6 +4,7 @@ import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-
 import { Calculator } from '../../site/content-types/calculator/calculator';
 import { ContentList } from '../../site/content-types/content-list/content-list';
 import { ContentPageWithSidemenus } from '../../site/content-types/content-page-with-sidemenus/content-page-with-sidemenus';
+import { GenericPage } from '../../site/content-types/generic-page/generic-page';
 import { DynamicPage } from '../../site/content-types/dynamic-page/dynamic-page';
 import { ExternalLink } from '../../site/content-types/external-link/external-link';
 import { GuidePage } from '../../site/content-types/guide-page/guide-page';
@@ -29,15 +30,19 @@ import { ContactInformation } from '../../site/content-types/contact-information
 import { PublishingCalendarEntry } from '../../site/content-types/publishing-calendar-entry/publishing-calendar-entry';
 import { GlobalCaseTimeSetData } from './global-case-time-set';
 import { PayoutDates } from '../../site/content-types/payout-dates/payout-dates';
+import { FrontPage } from '../../site/content-types/front-page/front-page';
+import { AreaPage } from '../../site/content-types/area-page/area-page';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
+    'area-page': AreaPage;
     calculator: Calculator;
     'contact-information': ContactInformation;
     'content-list': ContentList;
     'content-page-with-sidemenus': ContentPageWithSidemenus;
     'dynamic-page': DynamicPage;
     'external-link': ExternalLink;
+    'front-page': FrontPage;
     'global-case-time-set': GlobalCaseTimeSetData;
     'global-value-set': GlobalNumberValueSetData;
     'guide-page': GuidePage;
@@ -53,6 +58,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
     'product-details': ProductDetails;
+    'generic-page': GenericPage;
     'section-page': SectionPage;
     overview: Overview;
     'situation-page': SituationPage;
@@ -84,9 +90,9 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
           data: { supports?: CustomContentDescriptor | CustomContentDescriptor[] };
           page: Component<'page'> | EmptyObject;
       }
-    : Type extends 'portal:site'
+    : Type extends 'portal:site' | 'base:folder'
     ? {
-          type: 'portal:site';
+          type: Type;
           data: undefined;
       }
     : never;

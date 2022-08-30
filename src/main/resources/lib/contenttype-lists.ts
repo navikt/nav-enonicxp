@@ -15,18 +15,27 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:melding`,
 ];
 
-export const productPageContentTypes: ContentTypeList = [
+export const productCardPartContentTypes: ContentTypeList = [
     `${appDescriptor}:situation-page`,
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
     `${appDescriptor}:tools-page`,
+    `${appDescriptor}:overview`,
+    `${appDescriptor}:generic-page`,
 ];
 
 export const dynamicPageContentTypes: ContentTypeList = [
-    ...productPageContentTypes,
+    `${appDescriptor}:situation-page`,
+    `${appDescriptor}:guide-page`,
+    `${appDescriptor}:themed-article-page`,
+    `${appDescriptor}:content-page-with-sidemenus`,
+    `${appDescriptor}:tools-page`,
     `${appDescriptor}:dynamic-page`,
+    `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
+    `${appDescriptor}:front-page`,
+    `${appDescriptor}:area-page`,
 ];
 
 export const linkContentTypes: ContentTypeList = [
@@ -64,7 +73,15 @@ export const typesWithDeepReferences: ContentTypeList = [
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
-    ...dynamicPageContentTypes,
+    `${appDescriptor}:situation-page`,
+    `${appDescriptor}:guide-page`,
+    `${appDescriptor}:themed-article-page`,
+    `${appDescriptor}:content-page-with-sidemenus`,
+    `${appDescriptor}:tools-page`,
+    `${appDescriptor}:overview`,
+    `${appDescriptor}:dynamic-page`,
+    `${appDescriptor}:generic-page`,
+    `${appDescriptor}:overview`,
     `${appDescriptor}:main-article`,
     `${appDescriptor}:main-article-chapter`,
     `${appDescriptor}:section-page`,
@@ -81,11 +98,11 @@ export const contentTypesWithComponents: ContentTypeList = [
     'portal:page-template',
 ];
 
-export const contentTypesWithProductDetails: ContentTypeList = [
+export const contentTypesWithProductDetails = [
     `${appDescriptor}:guide-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
-];
+] as const;
 
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
     ...legacyPageContentTypes,

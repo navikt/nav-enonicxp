@@ -12,3 +12,5 @@ export type ArrayItem<ArrayType> = ArrayType extends
     | (infer ItemType)[]
     ? ItemType
     : never;
+
+export type ArrayOrSingle<Type> = Type[] | Type;

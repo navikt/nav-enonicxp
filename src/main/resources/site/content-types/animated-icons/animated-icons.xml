@@ -40,14 +40,6 @@
                         <hideToggleIcon>true</hideToggleIcon>
                     </config>
                 </input>
-                <input name="lottieActive" type="MediaSelector">
-                    <label>Lottieanimasjon ved klikk (active)</label>
-                    <config>
-                        <allowContentType>media:code</allowContentType>
-                        <allowPath>./*.json</allowPath>
-                        <hideToggleIcon>true</hideToggleIcon>
-                    </config>
-                </input>
             </items>
         </field-set>
     </form>

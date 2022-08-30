@@ -15,7 +15,7 @@ export const globalCaseTimeSetCallback: CreationCallback = (context, params) => 
             }));
         },
         type: graphQlLib.list(
-            graphQlCreateObjectType(context, {
+            graphQlCreateObjectType<keyof CaseTimeItem>(context, {
                 name: context.uniqueName('CaseTimeItem'),
                 description: 'Saksbehandlingstid',
                 fields: {
@@ -24,16 +24,16 @@ export const globalCaseTimeSetCallback: CreationCallback = (context, params) => 
                     value: { type: graphQlLib.GraphQLInt },
                     itemName: { type: graphQlLib.GraphQLString },
                     type: { type: graphQlLib.GraphQLString },
-                } as Record<keyof CaseTimeItem, any>,
+                },
             })
         ),
     };
 
     params.fields.data = {
-        type: graphQlCreateObjectType(context, {
+        type: graphQlCreateObjectType<keyof GlobalCaseTimeSetData>(context, {
             name: context.uniqueName('no_nav_navno_GlobalCaseTimeSet_Data'),
             description: 'Data for saksbehandlingstider',
-            fields: { valueItems } as Record<keyof GlobalCaseTimeSetData, any>,
+            fields: { valueItems },
         }),
     };
 };

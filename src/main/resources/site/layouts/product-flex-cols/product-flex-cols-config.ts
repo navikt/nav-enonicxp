@@ -19,9 +19,4 @@ export interface ProductFlexColsConfig {
    * Toggle "kopier lenke" knapp
    */
   toggleCopyButton: boolean;
-
-  /**
-   * Bruksområde
-   */
-  usageContext?: "contact-channels" | "other";
 }

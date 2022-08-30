@@ -1,3 +1,4 @@
+#import "./layouts/layoutFrontpageLoggedinSection.graphql"
 #import "./layouts/layoutSectionWithHeader.graphql"
 #import "./layouts/layoutSituationFlexCols.graphql"
 
@@ -6,6 +7,9 @@ fragment layoutComponents on LayoutComponentData {
     configAsJson
     config {
         no_nav_navno {
+            frontpage_loggedin_section {
+                ...layoutComponentFrontpageLoggedinSection
+            }
             section_with_header {
                 ...layoutComponentSectionWithHeader
             }

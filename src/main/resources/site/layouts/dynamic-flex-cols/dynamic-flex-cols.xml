@@ -2,13 +2,21 @@
     <display-name>Fleksibelt kolonne-layout</display-name>
     <description>Responsive flexbox-kolonner</description>
     <form>
+        <mixin name="header-with-anchor"/>
         <input type="Long" name="numCols">
             <label>Antall kolonner ved full skjermbredde</label>
             <default>3</default>
             <config>
                 <min>1</min>
-                <max>4</max>
+                <max>3</max>
             </config>
+        </input>
+        <input type="CheckBox" name="collapse">
+            <label>Fullstendige rader</label>
+            <help-text>
+                Kollapser 3-kolonner til 2-kolonner dersom layoutet inneholder et liketalls antall komponenter
+            </help-text>
+            <default>unchecked</default>
         </input>
         <input type="RadioButton" name="justifyContent">
             <label>Justering</label>
@@ -27,4 +35,7 @@
     <regions>
         <region name="flexcols"/>
     </regions>
+    <config>
+        <allow-on-content-type>^(?!(${app}:situation-page)).+</allow-on-content-type>
+    </config>
 </layout>

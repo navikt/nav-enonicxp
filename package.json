@@ -24,8 +24,8 @@
         "@babel/preset-typescript": "^7.16.7",
         "@types/jest": "^27.5.0",
         "@types/node": "^10.17.60",
-        "@typescript-eslint/eslint-plugin": "^5.21.0",
-        "@typescript-eslint/parser": "^5.21.0",
+        "@typescript-eslint/eslint-plugin": "^5.28.0",
+        "@typescript-eslint/parser": "^5.28.0",
         "core-js": "^3.22.2",
         "enonic-types": "0.3.12",
         "eslint": "^8.14.0",
@@ -41,6 +41,6 @@
         "prettier": "^2.6.2",
         "striptags": "3.1.1",
         "ts-node": "^10.7.0",
-        "typescript": "^4.6.3"
+        "typescript": "^4.7.3"
     }
 }

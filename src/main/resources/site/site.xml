@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+    <x-data name="previewOnly" optional="true"/>
     <x-data name="virtualParent" optional="true"/>
     <x-data name="fasetter" optional="true"/>
     <x-data name="cmsContent" optional="true" allowContentTypes="^$"/>
@@ -11,8 +12,13 @@
         <mapping controller="/lib/controllers/site-info-controller.js">
             <match>type:'portal:site'</match>
         </mapping>
-        <mapping controller="/lib/controllers/admin-frontend-proxy.js">
-            <match>type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'</match>
+        <mapping controller="/lib/controllers/area-page-controller.js">
+            <match>type:'no.nav.navno:area-page'</match>
+        </mapping>
+        <mapping controller="/lib/controllers/frontend-proxy.js">
+            <match>
+                type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'
+            </match>
         </mapping>
     </mappings>
     <processors>

@@ -1,0 +1,18 @@
+<layout>
+    <display-name>Situasjonsliste</display-name>
+    <description>Utlisting av situasjoner for områdeside</description>
+    <form>
+        <input type="TextLine" name="title">
+            <label>Tittel</label>
+            <default>Hva er situasjonen din?</default>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+    <regions>
+        <region name="situations"/>
+    </regions>
+    <config>
+        <allow-on-content-type>${app}:area-page</allow-on-content-type>
+        <allow-on-content-type>portal:page-template</allow-on-content-type>
+    </config>
+</layout>

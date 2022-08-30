@@ -1,0 +1,29 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Seksjon for aktuelle temaer</display-name>
+    <description>Til bruk på forsider</description>
+    <form>
+        <input name="title" type="TextLine">
+            <label>Tittel</label>
+        </input>
+        <input name="contentList" type="ContentSelector">
+            <label>Velg innholdsliste</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowContentType>no.nav.navno:content-list</allowContentType>
+            </config>
+        </input>
+        <input name="maxItems" type="Long">
+            <label>Maks antall lenker</label>
+            <help-text>(Kan ikke endres her)</help-text>
+            <default>2</default>
+            <config>
+                <min>2</min>
+                <max>2</max>
+            </config>
+        </input>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:front-page</allow-on-content-type>
+        <allow-on-content-type>portal:page-template</allow-on-content-type>
+    </config>
+</part>

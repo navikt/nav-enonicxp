@@ -1,3 +1,5 @@
+#import "../richText/richTextFragment.graphql"
+
 fragment contentContactInformation on no_nav_navno_ContactInformation {
     _path
     data {
@@ -24,6 +26,13 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                         to
                         status
                     }
+                }
+            }
+            write {
+                title
+                url
+                ingress(processHtml: { type: server }) {
+                    ...richText
                 }
             }
         }

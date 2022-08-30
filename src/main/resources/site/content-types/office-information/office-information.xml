@@ -3,6 +3,9 @@
     <description>Kontorinformasjon</description>
     <super-type>base:unstructured</super-type>
     <form>
+        <input name="checksum" type="TextLine">
+            <label>Checksum</label>
+        </input>
         <item-set name="enhet">
             <label>Enhet</label>
             <occurrences minimum="1" maximum="1"/>
@@ -128,7 +131,7 @@
                 </item-set>
                 <item-set name="postadresse">
                     <label>Postadresse</label>
-                        <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="1"/>
                     <items>
                         <input type="TextLine" name="type">
                             <label>Type</label>

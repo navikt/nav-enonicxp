@@ -29,9 +29,4 @@ export interface AnimatedIcons {
    * Lottie-animasjon ved hover
    */
   lottieHover?: string;
-
-  /**
-   * Lottieanimasjon ved klikk (active)
-   */
-  lottieActive?: string;
 }
