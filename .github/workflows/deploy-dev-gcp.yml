@@ -1,0 +1,17 @@
+name: Deploy to nais dev-gcp
+on:
+  workflow_dispatch
+
+jobs:
+  deploy:
+    name: Deploy to nais
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Deploy to nais
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          CLUSTER: dev-gcp
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          RESOURCE: .nais/config.yaml
