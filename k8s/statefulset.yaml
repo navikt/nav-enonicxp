@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: giropops
-  namespace: girons
+  name: xp-set
+  namespace: xp
 spec:
-  serviceName: giropops-service
   selector:
     matchLabels:
-      name: giropops
+      app: xp-app
+  serviceName: xp-service
   template:
     metadata:
       labels:
-        name: giropops
+        app: xp-app
     spec:
       containers:
         - image: enonic/xp:7.9.2-ubuntu
-          name: xp-app
+          name: xp-container
           volumeMounts:
             - mountPath: /enonic-xp/home/config/
               name: config-volume
@@ -45,16 +45,16 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: giropops-config
+            name: xp-config
         - name: blobs
           persistentVolumeClaim:
-            claimName: giropops-blobs
+            claimName: xp-blobs
         - name: snapshots
           persistentVolumeClaim:
-            claimName: giropops-snapshots
+            claimName: xp-snapshots
         - name: data
           persistentVolumeClaim:
-            claimName: giropops-data
+            claimName: xp-data
         - name: deploy
           persistentVolumeClaim:
-            claimName: giropops-deploy
+            claimName: xp-deploy

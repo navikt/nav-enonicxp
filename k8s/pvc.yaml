@@ -1,50 +1,50 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: giropops-blobs
-  namespace: girons
+  name: xp-blobs
+  namespace: xp
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3Gi
+      storage: 1Gi
 
 ---
 
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: giropops-data
-  namespace: girons
+  name: xp-data
+  namespace: xp
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3Gi
+      storage: 1Gi
 
 ---
 
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: giropops-snapshots
-  namespace: girons
+  name: xp-snapshots
+  namespace: xp
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3Gi
+      storage: 1Gi
 
 ---
 
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: giropops-deploy
-  namespace: girons
+  name: xp-deploy
+  namespace: xp
 spec:
   accessModes:
     - ReadWriteMany

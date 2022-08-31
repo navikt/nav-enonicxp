@@ -2,27 +2,31 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: giropops-service
-  namespace: girons
+  name: xp-service
+  namespace: xp
 spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
   selector:
-    name: giropops
+    statefulset.kubernetes.io/pod-name: xp-set-0
   ports:
-    - name:  xp-port
-      port:  8080
-      targetPort:  8080
+    - name: xp-port
+      port: 8080
+      targetPort: 8080
 
 ---
 # ---------- Internal service ------------
 apiVersion: v1
 kind: Service
 metadata:
-  name: giropops-intra-service
-  namespace: girons
+  name: xp-intra-service
+  namespace: xp
+  labels:
+    app: xp-app
 spec:
   clusterIP: None
   selector:
-    name: giropops
+    app: xp-app
   ports:
     - port: 5701
       name: hazelcast
