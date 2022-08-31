@@ -8,11 +8,14 @@ spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
   selector:
-    statefulset.kubernetes.io/pod-name: xp-set-0
+    app: xp-app
   ports:
-    - name: xp-port
+    - name: admin-port
       port: 8080
       targetPort: 8080
+    - name: statistics-port
+      port: 2609
+      targetPort: 2609
 
 ---
 # ---------- Internal service ------------

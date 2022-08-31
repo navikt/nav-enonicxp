@@ -17,6 +17,10 @@ spec:
       containers:
         - image: enonic/xp:7.9.2-ubuntu
           name: xp-container
+          resources:
+            requests:
+              cpu: "4"
+              memory: 16000Mi
           volumeMounts:
             - mountPath: /enonic-xp/home/config/
               name: config-volume
