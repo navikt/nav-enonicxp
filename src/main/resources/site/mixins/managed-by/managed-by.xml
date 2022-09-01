@@ -1,0 +1,15 @@
+<mixin>
+  <form>
+    <input name="managed-by" type="ComboBox">
+        <label>Forvaltes av</label>
+        <occurrences minimum="0" maximum="99"/>
+        <config>
+            <option value="po_aap">PO AAP</option>
+            <option value="po_arbeid">PO Arbeid</option>      
+            <option value="po_familie">PO Familie</option>
+            <option value="po_helse">PO Helse</option>
+            <option value="po_pensjon">PO Pensjon</option>        
+        </config>
+    </input>
+  </form>
+</mixin>
