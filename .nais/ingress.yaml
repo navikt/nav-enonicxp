@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: xp-ingress
+  namespace: personbruker
+  labels:
+    team: personbruker
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: xp-ingressclass
+  rules:
+    - http:
+        paths:
+          - path: /test
+            pathType: Prefix
+            backend:
+              service:
+                name: xp-service
+                port:
+                  number: 8080

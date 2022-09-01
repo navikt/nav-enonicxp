@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: xp-statefulset
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  selector:
+    matchLabels:
+      app: xp-app
+  serviceName: xp-service
+  template:
+    metadata:
+      labels:
+        app: xp-app
+    spec:
+      containers:
+        - image: enonic/xp:7.9.2-ubuntu
+          name: xp-container
+          resources:
+            requests:
+              cpu: "4"
+              memory: 16000Mi
+          volumeMounts:
+            - mountPath: /enonic-xp/home/config/
+              name: config-volume
+            - mountPath: /enonic-xp/home/repo/blob/
+              name: blobs
+            - mountPath: /enonic-xp/home/snapshots/
+              name: snapshots
+            - mountPath: /enonic-xp/home/data/
+              name: data
+            - mountPath: /enonic-xp/home/deploy/
+              name: deploy
+          livenessProbe:
+            httpGet:
+              path: /cluster.manager
+              port: 2609
+            failureThreshold: 2
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /cluster.manager
+              port: 2609
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      terminationGracePeriodSeconds: 180
+      volumes:
+        - name: config-volume
+          configMap:
+            name: xp-config
+        - name: blobs
+          persistentVolumeClaim:
+            claimName: xp-blobs
+        - name: snapshots
+          persistentVolumeClaim:
+            claimName: xp-snapshots
+        - name: data
+          persistentVolumeClaim:
+            claimName: xp-data
+        - name: deploy
+          persistentVolumeClaim:
+            claimName: xp-deploy

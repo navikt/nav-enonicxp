@@ -1,0 +1,61 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: xp-blobs
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: xp-data
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: xp-snapshots
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: xp-deploy
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 400Mi

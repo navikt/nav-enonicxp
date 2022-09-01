@@ -1,0 +1,41 @@
+# ---------- Exposer service ------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: xp-service
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  type: ClusterIP
+  selector:
+    app: xp-app
+  ports:
+    - name: admin-port
+      port: 8080
+      targetPort: 8080
+    - name: statistics-port
+      port: 2609
+      targetPort: 2609
+
+---
+# ---------- Internal service ------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: xp-intra-service
+  namespace: personbruker
+  labels:
+    app: xp-app
+    team: personbruker
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: xp-app
+  ports:
+    - port: 5701
+      name: hazelcast
+    - port: 9300
+      name: elasticsearch
+  publishNotReadyAddresses: true
