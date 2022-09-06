@@ -42,7 +42,7 @@ type LayoutConfigs = {
     'areapage-situations': AreapageSituationsConfig;
 };
 
-type PartConfigs = {
+export type PartConfigs = {
     'areapage-situation-card': AreapageSituationCardPartConfig & { target: string };
     button: ButtonPartConfig;
     calculator: CalculatorPartConfig;

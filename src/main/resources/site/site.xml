@@ -15,6 +15,9 @@
         <mapping controller="/lib/controllers/area-page-controller.js">
             <match>type:'no.nav.navno:area-page'</match>
         </mapping>
+        <mapping controller="/lib/controllers/content-page-with-sidemenus-controller.js">
+            <match>type:'no.nav.navno:content-page-with-sidemenus'</match>
+        </mapping>
         <mapping controller="/lib/controllers/frontend-proxy.js">
             <match>
                 type:'^(?!(portal:page-template)|(media:(document|image|vector|text|video))).+'
