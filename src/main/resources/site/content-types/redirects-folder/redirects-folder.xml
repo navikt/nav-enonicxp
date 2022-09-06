@@ -5,6 +5,7 @@
     <is-abstract>true</is-abstract>
     <allow-child-content-type>${app}:internal-link</allow-child-content-type>
     <allow-child-content-type>${app}:external-link</allow-child-content-type>
+    <allow-child-content-type>${app}:redirects-folder</allow-child-content-type>
     <form>
     </form>
 </content-type>
