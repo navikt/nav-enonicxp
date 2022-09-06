@@ -61,6 +61,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'generic-page': GenericPage;
     'section-page': SectionPage;
     overview: Overview;
+    'redirects-folder': EmptyObject;
     'situation-page': SituationPage;
     'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
