@@ -124,6 +124,30 @@ const getPayoutDatesReferences = (content: Content) => {
     return references;
 };
 
+const getSituationAreaPageReferences = (content: Content) => {
+    if (content.type !== 'no.nav.navno:situation-page') {
+        return [];
+    }
+
+    const areaPages = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:area-page'],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'data.area',
+                        values: forceArray(content.data.area),
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    return areaPages;
+};
+
 // Some content relations are not defined through explicit references in XP. This includes references
 // from macros. We must use our own implementations to find such references.
 const getCustomReferences = (content: Content | null) => {
@@ -138,6 +162,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
         ...getPayoutDatesReferences(content),
+        ...getSituationAreaPageReferences(content),
     ];
 };
 
