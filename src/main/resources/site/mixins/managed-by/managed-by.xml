@@ -1,7 +1,7 @@
 <mixin>
   <form>
     <input name="managed-by" type="ComboBox">
-        <label>Forvaltes av</label>
+        <label>Forvaltes av (hvis annet enn eier):</label>
         <occurrences minimum="0" maximum="99"/>
         <config>
             <option value="po_aap">PO AAP</option>
