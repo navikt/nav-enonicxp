@@ -32,7 +32,6 @@ export const componentAppKey = 'no-nav-navno';
 export const appDescriptor = 'no.nav.navno';
 export const contentRepo = 'com.enonic.cms.default';
 export const navnoRootPath = '/www.nav.no';
-export const redirectsRootPathLegacy = '/redirects';
 export const redirectsRootPath = `${navnoRootPath}/redirects`;
 export const frontendAppName = 'nav-enonicxp-frontend';
 export const contentStudioEditPathPrefix =

@@ -28,8 +28,9 @@ const kunnskapRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/kunnskap/`;
 
 const statistikkContent = `type LIKE '${appDescriptor}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${appDescriptor}:main-article*')`;
 const newsAndPressReleases = `type LIKE '${appDescriptor}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
+const redirects = `_path LIKE '${redirectsRootPath}*'`;
 
-const excludedOldContent = `(${statistikkContent}) OR (${newsAndPressReleases})`;
+const excludedContent = `(${statistikkContent}) OR (${newsAndPressReleases}) OR (${redirects})`;
 
 // Prevent concurrent queries
 let isRunning = false;
@@ -52,7 +53,7 @@ const getPathsToRender = (isTest?: boolean) => {
             start: 0,
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
-            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
+            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedContent}))`,
             filters: {
                 boolean: {
                     mustNot: {
