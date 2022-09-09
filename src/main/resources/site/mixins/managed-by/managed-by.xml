@@ -8,7 +8,9 @@
             <option value="po_arbeid">PO Arbeid</option>      
             <option value="po_familie">PO Familie</option>
             <option value="po_helse">PO Helse</option>
-            <option value="po_pensjon">PO Pensjon</option>        
+            <option value="po_pensjon">PO Pensjon</option>
+            <option value="po_arbeidsgiver">PO Arbeidsgiver</option>
+            <option value="digisos">Digisos</option>            
         </config>
     </input>
   </form>
