@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { appDescriptor, navnoRootPath, redirectsRootPath } from '../constants';
+import { appDescriptor, navnoRootPath, redirectsRootPathLegacy } from '../constants';
 import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
@@ -14,7 +14,7 @@ export type NodeEventData = {
 };
 
 // Matches [/content]/www.nav.no/* and [/content]/redirects/*
-const pathnameFilter = new RegExp(`^(/content)?(${redirectsRootPath}|${navnoRootPath})/`);
+const pathnameFilter = new RegExp(`^(/content)?(${redirectsRootPathLegacy}|${navnoRootPath})/`);
 
 export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 

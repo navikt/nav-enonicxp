@@ -1,0 +1,10 @@
+<content-type>
+    <display-name>Redirects-mappe</display-name>
+    <description>Mappe kun for redirects</description>
+    <super-type>base:folder</super-type>
+    <is-abstract>true</is-abstract>
+    <allow-child-content-type>${app}:internal-link</allow-child-content-type>
+    <allow-child-content-type>${app}:external-link</allow-child-content-type>
+    <form>
+    </form>
+</content-type>
