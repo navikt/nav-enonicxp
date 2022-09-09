@@ -24,7 +24,9 @@ type Filter = CategoryRaw['filters'][number] & {
     id: string;
 };
 
-const getAvailableFilterIds = (components: GenericComponent[]): string[] => {
+// Valid filter ids are determined from FilterMenu where all
+// filters are first defined before attached to actual content further down the page.
+const getValidFilterIds = (components: GenericComponent[]): string[] => {
     const filterMenus = components.filter((component): component is FilterMenuComponent => {
         return component?.part?.descriptor === 'no.nav.navno:filters-menu';
     });
@@ -33,18 +35,22 @@ const getAvailableFilterIds = (components: GenericComponent[]): string[] => {
         return [];
     }
 
+    // Note: There should only be one filter-menu on a product page
+    // but for the sake of 'catch em all' - do a map on the array anyway.
     const availableFilterIds = filterMenus
-        .map((menu: FilterMenuComponent): string[] => {
+        .map((filterMenu: FilterMenuComponent): string[] => {
             const filterCategories = forceArray(
-                menu.part.config?.['no-nav-navno']['filters-menu'].categories
+                filterMenu.part.config?.['no-nav-navno']['filters-menu'].categories
             );
 
-            const filterIds = filterCategories.map((category) => {
-                const filters = category.filters as Filter[];
-                return filters.map((filter) => filter.id);
-            });
+            const filterIds = filterCategories
+                .map((category) => {
+                    const filters = category.filters as Filter[];
+                    return filters.map((filter) => filter.id);
+                })
+                .flat();
 
-            return [...filterIds.flat()];
+            return [...filterIds];
         })
         .flat();
 
@@ -61,29 +67,27 @@ const cleanComponentForInvalidFilterId = (
         return component;
     }
 
-    log.info('Valid filters');
-    log.info(JSON.stringify(validFilterIds));
-
     const part = component.part.config?.['no-nav-navno'] as any;
 
     if (!part) {
         return component;
     }
 
-    const key = Object.keys(part)[0] as keyof PartConfigs;
+    const partType = Object.keys(part)[0] as keyof PartConfigs;
 
-    if (!part[key].filters) {
+    if (!part[partType].filters) {
         return component;
     }
 
-    const filtersAsArray = forceArray(part[key].filters);
+    const filtersAsArray = forceArray(part[partType].filters);
+
+    if (filtersAsArray.length === 0) {
+        return component;
+    }
 
     const cleanedFilters = filtersAsArray.filter((filter: any) => validFilterIds.includes(filter));
 
-    log.info('Cleaned filters');
-    log.info(JSON.stringify(cleanedFilters));
-
-    part[key].filters = cleanedFilters;
+    part[partType].filters = cleanedFilters;
 
     return component;
 };
@@ -112,13 +116,11 @@ const removeInvalidFilterIds = (req: XP.Request) => {
 
     const components = forceArray(nodeContent.components) as GenericComponent[];
 
-    const validFilterIds = getAvailableFilterIds(components);
+    const validFilterIds = getValidFilterIds(components);
 
     const cleanedComponents = components.map((component) =>
         cleanComponentForInvalidFilterId(component, validFilterIds)
     );
-
-    log.info(JSON.stringify(cleanedComponents));
 
     repo.modify({
         key: nodeContent._id,
