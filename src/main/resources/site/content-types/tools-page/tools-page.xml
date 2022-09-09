@@ -7,6 +7,8 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <mixin name="product-data"/>
+        <mixin name="owner"/>
+        <mixin name="managed-by"/>
         <mixin name="languages-legacy"/>
     </form>
 </content-type>

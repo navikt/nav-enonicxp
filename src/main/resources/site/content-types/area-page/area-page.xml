@@ -52,6 +52,7 @@
                 </item-set>
             </items>
         </field-set>
+        <mixin name="owner" />
         <mixin name="area-navigation"/>
         <field-set>
             <label>Kort-url</label>
