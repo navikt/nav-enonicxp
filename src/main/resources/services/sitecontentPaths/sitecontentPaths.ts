@@ -53,6 +53,16 @@ const getPathsToRender = (isTest?: boolean) => {
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
             query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: ['true'],
+                        },
+                    },
+                },
+            },
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
 
