@@ -124,6 +124,8 @@ const getPayoutDatesReferences = (content: Content) => {
     return references;
 };
 
+// AreaPage references to Situation pages are set programatically, which does
+// not seem to generate dependencies in XP. We need to handle this ourselves.
 const getSituationAreaPageReferences = (content: Content) => {
     if (content.type !== 'no.nav.navno:situation-page') {
         return [];
