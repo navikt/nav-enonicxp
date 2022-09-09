@@ -21,16 +21,15 @@ const testContentTypes: ContentDescriptor[] = [
 
 const oneYearMs = 1000 * 3600 * 24 * 365;
 
-const siteRootPath = `/content${navnoRootPath}/`;
+const includedPaths = `_path LIKE '/content${navnoRootPath}/*' AND _path NOT LIKE '/content${redirectsRootPath}/*'`;
 
 const statistikkRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/statistikk/`;
 const kunnskapRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/kunnskap/`;
 
 const statistikkContent = `type LIKE '${appDescriptor}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${appDescriptor}:main-article*')`;
 const newsAndPressReleases = `type LIKE '${appDescriptor}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
-const redirects = `_path LIKE '${redirectsRootPath}*'`;
 
-const excludedContent = `(${statistikkContent}) OR (${newsAndPressReleases}) OR (${redirects})`;
+const excludedOldContent = `(${statistikkContent}) OR (${newsAndPressReleases})`;
 
 // Prevent concurrent queries
 let isRunning = false;
@@ -53,7 +52,7 @@ const getPathsToRender = (isTest?: boolean) => {
             start: 0,
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
-            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedContent}))`,
+            query: `(${includedPaths}) AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
             filters: {
                 boolean: {
                     mustNot: {
