@@ -61,6 +61,7 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
     ...linkContentTypes,
+    `${appDescriptor}:redirects-folder`,
 ];
 
 export const typesWithDeepReferences: ContentTypeList = [
