@@ -21,7 +21,7 @@ const testContentTypes: ContentDescriptor[] = [
 
 const oneYearMs = 1000 * 3600 * 24 * 365;
 
-const siteRootPath = `/content${navnoRootPath}/`;
+const includedPaths = `_path LIKE '/content${navnoRootPath}/*' AND _path NOT LIKE '/content${redirectsRootPath}/*'`;
 
 const statistikkRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/statistikk/`;
 const kunnskapRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/kunnskap/`;
@@ -52,7 +52,17 @@ const getPathsToRender = (isTest?: boolean) => {
             start: 0,
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
-            query: `_path LIKE '${siteRootPath}*' AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
+            query: `(${includedPaths}) AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: ['true'],
+                        },
+                    },
+                },
+            },
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
 

@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { componentAppKey, redirectsRootPath, redirectsRootPathLegacy } from '../../lib/constants';
+import { componentAppKey, redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import {
     getInternalContentPathFromCustomPath,
@@ -109,11 +109,9 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         return null;
     }
 
-    // Gets content from the /redirects folder outside the site content tree
+    // Gets content from the /redirects folder
     const redirectContent = runInBranchContext(
-        () =>
-            contentLib.get({ key: `${redirectsRootPath}${redirectPath}` }) ||
-            contentLib.get({ key: `${redirectsRootPathLegacy}${redirectPath}` }), // TODO: remove this after legacy redirects have been moved
+        () => contentLib.get({ key: `${redirectsRootPath}${redirectPath}` }),
         branch
     );
     if (redirectContent) {
@@ -129,9 +127,7 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     }
 
     const parentRedirectContentFromRedirectsFolder = runInBranchContext(
-        () =>
-            getParentRedirectContent(`${redirectsRootPath}${redirectPath}`) ||
-            getParentRedirectContent(`${redirectsRootPathLegacy}${redirectPath}`), // TODO: remove this after legacy redirects have been moved
+        () => getParentRedirectContent(`${redirectsRootPath}${redirectPath}`),
         branch
     );
     if (parentRedirectContentFromRedirectsFolder) {
