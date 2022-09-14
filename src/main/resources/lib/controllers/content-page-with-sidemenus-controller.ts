@@ -45,7 +45,8 @@ const getValidFilterIds = (components: GenericComponent[]): string[] => {
 
             const filterIds = filterCategories
                 .map((category) => {
-                    const filters = category.filters as Filter[];
+                    const filters = forceArray(category.filters) as Filter[];
+
                     return filters.map((filter) => filter.id);
                 })
                 .flat();

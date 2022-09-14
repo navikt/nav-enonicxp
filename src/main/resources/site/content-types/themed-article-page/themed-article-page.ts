@@ -13,7 +13,7 @@ export interface ThemedArticlePage {
   /**
    * Forvaltes av (hvis annet enn eier):
    */
-  "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon">;
+  "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
 
   /**
    * Saksbehandlingstider
