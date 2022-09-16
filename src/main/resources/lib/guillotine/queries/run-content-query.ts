@@ -52,6 +52,7 @@ import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
+import officePageQuery from './content-queries/officePageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
@@ -93,6 +94,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
     'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:situation-page': situationPageQuery,
+    'no.nav.navno:office-page': officePageQuery,
     'no.nav.navno:overview': overviewPageQuery,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,
