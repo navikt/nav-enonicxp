@@ -51,7 +51,7 @@ const getValidFilterIds = (components: GenericComponent[]): string[] => {
                 })
                 .flat();
 
-            return [...filterIds];
+            return filterIds;
         })
         .flat();
 
@@ -93,8 +93,6 @@ const cleanComponentForInvalidFilterId = (
     return component;
 };
 
-// If an areapage-situations layout is present on the page, populate
-// it with situation cards appropriate for the page.
 const removeInvalidFilterIds = (req: XP.Request) => {
     const content = portalLib.getContent();
     if (!content) {
@@ -103,7 +101,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
     }
 
     if (content.type !== 'no.nav.navno:content-page-with-sidemenus') {
-        logger.error(`Invalid type for area page controller - ${content._id}`);
+        logger.error(`Invalid type for content page controller - ${content._id}`);
         return;
     }
 
@@ -111,7 +109,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
 
     const nodeContent = repo.get<ContentPageWithSideMenusNodeContent>({ key: content._id });
 
-    if (!nodeContent || !nodeContent?.components) {
+    if (!nodeContent?.components) {
         return;
     }
 
@@ -128,7 +126,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         editor: (content: ContentPageWithSidemenusRepoNode) => {
             return {
                 ...content,
-                components: [...cleanedComponents],
+                components: cleanedComponents,
             };
         },
     });
