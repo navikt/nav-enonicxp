@@ -17,7 +17,7 @@ type ContentPageWithSidemenusRepoNode = RepoNode<
 >;
 
 type FilterMenuComponent = NodeComponent<'part', 'filters-menu'>;
-type GenericComponent = NodeComponent<'part'>;
+type PartComponent = NodeComponent<'part'>;
 
 type CategoryRaw = Required<FiltersMenuPartConfig>['categories'][number];
 type Filter = CategoryRaw['filters'][number] & {
@@ -26,7 +26,7 @@ type Filter = CategoryRaw['filters'][number] & {
 
 // Valid filter ids are determined from FilterMenu where all
 // filters are first defined before attached to actual content further down the page.
-const getValidFilterIds = (components: GenericComponent[]): string[] => {
+const getValidFilterIds = (components: PartComponent[]): string[] => {
     const filterMenus = components.filter((component): component is FilterMenuComponent => {
         return component?.part?.descriptor === 'no.nav.navno:filters-menu';
     });
@@ -58,10 +58,7 @@ const getValidFilterIds = (components: GenericComponent[]): string[] => {
     return availableFilterIds;
 };
 
-const cleanComponentForInvalidFilterId = (
-    component: GenericComponent,
-    validFilterIds: string[]
-) => {
+const cleanComponentForInvalidFilterId = (component: PartComponent, validFilterIds: string[]) => {
     const isComponentFilterable = !!findObjectByKey(component, 'filters');
 
     if (!isComponentFilterable || component.part.descriptor === 'no.nav.navno:filters-menu') {
@@ -113,12 +110,16 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    const components = forceArray(nodeContent.components) as GenericComponent[];
+    const partComponents = forceArray(nodeContent.components).filter(
+        (component) => component.type === 'part'
+    ) as PartComponent[];
 
-    const validFilterIds = getValidFilterIds(components);
+    log.info(JSON.stringify(partComponents));
 
-    const cleanedComponents = components.map((component) =>
-        cleanComponentForInvalidFilterId(component, validFilterIds)
+    const validFilterIds = getValidFilterIds(partComponents);
+
+    const cleanedComponents = partComponents.map((partComponents) =>
+        cleanComponentForInvalidFilterId(partComponents, validFilterIds)
     );
 
     repo.modify({
