@@ -9,5 +9,6 @@
         <mixin name="page-header"/>
         <mixin name="ingress-required" />
         <mixin name="dynamic-page-common"/>
+        <mixin name="custom-path-selector-required"/>
     </form>
 </content-type>
