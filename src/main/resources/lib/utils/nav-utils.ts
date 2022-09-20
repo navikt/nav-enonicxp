@@ -63,32 +63,6 @@ export const notEmpty = <TValue>(value: TValue | null | undefined): value is TVa
     return value !== null && value !== undefined;
 };
 
-export const findObjectByKey = (theObject: any, key: string): any => {
-    let result = null;
-    if (theObject instanceof Array) {
-        for (let i = 0; i < theObject.length; i++) {
-            result = findObjectByKey(theObject[i], key);
-            if (result) {
-                break;
-            }
-        }
-    } else {
-        for (const prop in theObject) {
-            // console.log(prop + ': ' + theObject[prop]);
-            if (prop == key) {
-                return theObject;
-            }
-            if (theObject[prop] instanceof Object || theObject[prop] instanceof Array) {
-                result = findObjectByKey(theObject[prop], key);
-                if (result) {
-                    break;
-                }
-            }
-        }
-    }
-    return result;
-};
-
 // Get a nested object value from an array of keys
 export const getNestedValueFromKeyArray = (obj: Record<string, any>, keys: string[]): any => {
     if (!keys || keys.length === 0 || !obj || typeof obj !== 'object') {

@@ -5,9 +5,9 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { contentRepo } from '../constants';
-import { findObjectByKey, forceArray } from '../utils/nav-utils';
 import { FiltersMenuPartConfig } from 'site/parts/filters-menu/filters-menu-part-config';
-import { PartConfigs } from 'types/components/component-config';
+import { PartComponentName, PartConfigs } from 'types/components/component-config';
+import { forceArray } from '../utils/nav-utils';
 
 type ContentPageWithSideMenusNodeContent = NodeContent<
     Content<'no.nav.navno:content-page-with-sidemenus'>
@@ -59,25 +59,20 @@ const getValidFilterIds = (components: PartComponent[]): string[] => {
 };
 
 const cleanComponentForInvalidFilterId = (component: PartComponent, validFilterIds: string[]) => {
-    const isComponentFilterable = !!findObjectByKey(component, 'filters');
+    const partName = component.part.descriptor.split(':')[1] as PartComponentName;
 
-    if (!isComponentFilterable || component.part.descriptor === 'no.nav.navno:filters-menu') {
+    if (partName === 'filters-menu') {
         return component;
     }
 
-    const part = component.part.config?.['no-nav-navno'] as any;
+    const config = (component.part.config?.['no-nav-navno'] as PartConfigs)[partName] as any;
+    const filters = config?.filters as string[];
 
-    if (!part) {
+    if (!filters) {
         return component;
     }
 
-    const partType = Object.keys(part)[0] as keyof PartConfigs;
-
-    if (!part[partType].filters) {
-        return component;
-    }
-
-    const filtersAsArray = forceArray(part[partType].filters);
+    const filtersAsArray = forceArray(filters);
 
     if (filtersAsArray.length === 0) {
         return component;
@@ -85,7 +80,7 @@ const cleanComponentForInvalidFilterId = (component: PartComponent, validFilterI
 
     const cleanedFilters = filtersAsArray.filter((filter: any) => validFilterIds.includes(filter));
 
-    part[partType].filters = cleanedFilters;
+    config.filters = cleanedFilters;
 
     return component;
 };
@@ -110,17 +105,16 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    const partComponents = forceArray(nodeContent.components).filter(
-        (component) => component.type === 'part'
-    ) as PartComponent[];
+    const allComponents = forceArray(nodeContent.components) as PartComponent[];
 
-    log.info(JSON.stringify(partComponents));
+    const validFilterIds = getValidFilterIds(allComponents);
 
-    const validFilterIds = getValidFilterIds(partComponents);
-
-    const cleanedComponents = partComponents.map((partComponents) =>
-        cleanComponentForInvalidFilterId(partComponents, validFilterIds)
-    );
+    const cleanedComponents = allComponents.map((partComponent) => {
+        if (partComponent.type !== 'part') {
+            return partComponent;
+        }
+        return cleanComponentForInvalidFilterId(partComponent, validFilterIds);
+    });
 
     repo.modify({
         key: nodeContent._id,
