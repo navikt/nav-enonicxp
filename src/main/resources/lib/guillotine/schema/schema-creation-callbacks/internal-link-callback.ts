@@ -57,9 +57,9 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
     // Find the original content type for the internal-link.
     //
     // Old content is sometimes converted to an internal-link in order to redirect to newer content.
-    // We use this originalType-field in the frontend to show a warning in Content Studio that the
-    // content was originally a different type, which may have had content that should be retained
-    // for archival purposes
+    // We use this originalType-field in the frontend to show a warning in Content Studio when the
+    // content was originally a different type, and may have content that should be retained for
+    // archival purposes
     params.fields.originalType = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
