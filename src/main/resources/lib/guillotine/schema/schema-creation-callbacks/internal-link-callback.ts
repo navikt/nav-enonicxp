@@ -1,13 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
-import nodeLib from '/lib/xp/node';
-import graphQlLib from '/lib/graphql';
-import contextLib from '/lib/xp/context';
 import { logger } from '../../../utils/logging';
 import { CreationCallback } from '../../utils/creation-callback-utils';
-import { getNodeVersions } from '../../../utils/version-utils';
-import { appDescriptor, contentRepo } from '../../../constants';
-
-const internalLinkContentType = `${appDescriptor}:internal-link`;
+import { insertOriginalContentTypeField } from './common/original-content-type';
 
 export const internalLinkDataCallback: CreationCallback = (context, params) => {
     const getTarget = (contentId: string, count: number): Content | null => {
@@ -54,51 +48,5 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
 };
 
 export const internalLinkCallback: CreationCallback = (context, params) => {
-    // Find the original content type for the internal-link.
-    //
-    // Old content is sometimes converted to an internal-link in order to redirect to newer content.
-    // We use this originalType-field in the frontend to show a warning in Content Studio when the
-    // content was originally a different type, and may have content that should be retained for
-    // archival purposes
-    params.fields.originalType = {
-        type: graphQlLib.GraphQLString,
-        resolve: (env) => {
-            if (contextLib.get().branch !== 'draft') {
-                return null;
-            }
-
-            const versions = getNodeVersions({
-                nodeKey: env.source._id,
-                repo: nodeLib.connect({
-                    repoId: contentRepo,
-                    branch: 'draft',
-                }),
-                branch: 'draft',
-            });
-
-            const firstVersion = versions[versions.length - 1];
-
-            const firstContent = contentLib.get({
-                key: firstVersion.nodeId,
-                versionId: firstVersion.versionId,
-            });
-
-            if (!firstContent) {
-                logger.error(
-                    `Could not get first version of content node ${firstVersion.nodeId} - ${firstVersion.versionId}`
-                );
-                return null;
-            }
-
-            const { type } = firstContent;
-
-            if (type === internalLinkContentType) {
-                return null;
-            }
-
-            const typeProps = contentLib.getType(type);
-
-            return typeProps?.displayName || null;
-        },
-    };
+    insertOriginalContentTypeField(params);
 };
