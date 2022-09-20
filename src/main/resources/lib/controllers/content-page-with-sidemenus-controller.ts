@@ -17,7 +17,7 @@ type ContentPageWithSidemenusRepoNode = RepoNode<
 >;
 
 type FilterMenuComponent = NodeComponent<'part', 'filters-menu'>;
-type PartComponent = NodeComponent<'part'>;
+type Component = NodeComponent<'part'>;
 
 type CategoryRaw = Required<FiltersMenuPartConfig>['categories'][number];
 type Filter = CategoryRaw['filters'][number] & {
@@ -26,7 +26,7 @@ type Filter = CategoryRaw['filters'][number] & {
 
 // Valid filter ids are determined from FilterMenu where all
 // filters are first defined before attached to actual content further down the page.
-const getValidFilterIds = (components: PartComponent[]): string[] => {
+const getValidFilterIds = (components: Component[]): string[] => {
     const filterMenus = components.filter((component): component is FilterMenuComponent => {
         return component?.part?.descriptor === 'no.nav.navno:filters-menu';
     });
@@ -58,7 +58,7 @@ const getValidFilterIds = (components: PartComponent[]): string[] => {
     return availableFilterIds;
 };
 
-const cleanComponentForInvalidFilterId = (component: PartComponent, validFilterIds: string[]) => {
+const cleanComponentForInvalidFilterId = (component: Component, validFilterIds: string[]) => {
     const partName = component.part.descriptor.split(':')[1] as PartComponentName;
 
     if (partName === 'filters-menu') {
@@ -105,7 +105,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    const allComponents = forceArray(nodeContent.components) as PartComponent[];
+    const allComponents = forceArray(nodeContent.components) as Component[];
 
     const validFilterIds = getValidFilterIds(allComponents);
 
