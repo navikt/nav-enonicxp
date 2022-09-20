@@ -58,31 +58,45 @@ const getValidFilterIds = (components: Component[]): string[] => {
     return availableFilterIds;
 };
 
-const cleanComponentForInvalidFilterId = (component: Component, validFilterIds: string[]) => {
+const cleanComponentForInvalidFilterId = (
+    component: Component,
+    validFilterIds: string[]
+): { component: Component; wasCleaned: boolean } => {
     const partName = component.part.descriptor.split(':')[1] as PartComponentName;
 
     if (partName === 'filters-menu') {
-        return component;
+        return { component, wasCleaned: false };
     }
 
     const config = (component.part.config?.['no-nav-navno'] as PartConfigs)[partName] as any;
     const filters = config?.filters as string[];
 
     if (!filters) {
-        return component;
+        return { component, wasCleaned: false };
     }
 
     const filtersAsArray = forceArray(filters);
 
     if (filtersAsArray.length === 0) {
-        return component;
+        return { component, wasCleaned: false };
     }
 
-    const cleanedFilters = filtersAsArray.filter((filter: any) => validFilterIds.includes(filter));
+    const componentHasInvalidFilters = filtersAsArray.some(
+        (filter: string) => !validFilterIds.includes(filter)
+    );
 
+    if (!componentHasInvalidFilters) {
+        return { component, wasCleaned: false };
+    }
+
+    const cleanedFilters = filtersAsArray.filter((filter: string) =>
+        validFilterIds.includes(filter)
+    );
+
+    // Mutates the component before returning
     config.filters = cleanedFilters;
 
-    return component;
+    return { component, wasCleaned: componentHasInvalidFilters };
 };
 
 const removeInvalidFilterIds = (req: XP.Request) => {
@@ -106,15 +120,29 @@ const removeInvalidFilterIds = (req: XP.Request) => {
     }
 
     const allComponents = forceArray(nodeContent.components) as Component[];
-
     const validFilterIds = getValidFilterIds(allComponents);
+
+    let somePartsWereCleaned = false;
 
     const cleanedComponents = allComponents.map((partComponent) => {
         if (partComponent.type !== 'part') {
             return partComponent;
         }
-        return cleanComponentForInvalidFilterId(partComponent, validFilterIds);
+        const { component, wasCleaned } = cleanComponentForInvalidFilterId(
+            partComponent,
+            validFilterIds
+        );
+
+        if (wasCleaned) {
+            somePartsWereCleaned = true;
+        }
+
+        return component;
     });
+
+    if (!somePartsWereCleaned) {
+        return;
+    }
 
     repo.modify({
         key: nodeContent._id,
@@ -128,6 +156,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
 };
 
 const contentPageWithSidemenusController = (req: XP.Request) => {
+    log.info(JSON.stringify(req));
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         removeInvalidFilterIds(req);
     }
