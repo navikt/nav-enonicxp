@@ -156,7 +156,6 @@ const removeInvalidFilterIds = (req: XP.Request) => {
 };
 
 const contentPageWithSidemenusController = (req: XP.Request) => {
-    log.info(JSON.stringify(req));
     if ((req.mode === 'edit' || req.mode === 'inline') && req.method === 'GET') {
         removeInvalidFilterIds(req);
     }
