@@ -1,4 +1,5 @@
 fragment contentExternalLink on no_nav_navno_ExternalLink {
+    originalType
     data {
         description
         permanentRedirect
