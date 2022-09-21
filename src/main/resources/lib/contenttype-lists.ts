@@ -12,6 +12,7 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
+    `${appDescriptor}:publishing-calendar-entry`,
     `${appDescriptor}:melding`,
 ];
 
