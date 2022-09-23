@@ -33,6 +33,7 @@ import { GlobalCaseTimeSetData } from './global-case-time-set';
 import { PayoutDates } from '../../site/content-types/payout-dates/payout-dates';
 import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
+import { OfficeData } from 'site/content-types/office-data/office-data';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -54,6 +55,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'megamenu-item': MegamenuItem;
     melding: Melding;
     'office-information': OfficeInformation;
+    'office-data': OfficeData;
     'page-list': PageList;
     'payout-dates': PayoutDates;
     'publishing-calendar': PublishingCalendar;

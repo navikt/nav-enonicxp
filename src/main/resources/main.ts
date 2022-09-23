@@ -14,6 +14,7 @@ import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
+import { startOfficeDataPeriodicUpdateSchedule } from 'lib/officeData';
 
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
@@ -45,6 +46,7 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
+    startOfficeDataPeriodicUpdateSchedule();
 }
 
 log.info('Finished running main');

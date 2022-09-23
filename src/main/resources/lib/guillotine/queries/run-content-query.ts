@@ -42,6 +42,7 @@ import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
 import meldingQuery from './content-queries/meldingQuery.graphql';
 import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
+import officeDataQuery from './content-queries/officeDataQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
 import payoutDatesQuery from './content-queries/payoutDatesQuery.graphql';
@@ -89,6 +90,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
     'no.nav.navno:melding': meldingQuery,
     'no.nav.navno:office-information': officeInformationQuery,
+    'no.nav.navno:office-data': officeDataQuery,
     'no.nav.navno:payout-dates': payoutDatesQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,

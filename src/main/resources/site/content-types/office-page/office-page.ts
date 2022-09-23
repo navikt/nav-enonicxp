@@ -54,4 +54,9 @@ export interface OfficePage {
    * Skal ikke vises i eksternt søk
    */
   noindex: boolean;
+
+  /**
+   * Skriv inn ønsket kort-url
+   */
+  customPath: string;
 }
