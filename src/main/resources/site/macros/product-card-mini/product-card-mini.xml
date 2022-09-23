@@ -1,7 +1,20 @@
 <macro>
     <display-name>Produkt-kort (mini)</display-name>
     <description>Lenker til en produkt- eller livssituasjons-side</description>
+    <!-- TODO: Use the product-card-mini mixin here when the guillotine macros/mixin bug is fixed -->
     <form>
-        <mixin name="product-card-mini"/>
+        <input name="targetPage" type="ContentSelector">
+            <label>Velg side</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                <allowContentType>${app}:situation-page</allowContentType>
+                <allowContentType>${app}:guide-page</allowContentType>
+                <allowContentType>${app}:tools-page</allowContentType>
+                <allowContentType>${app}:themed-article-page</allowContentType>
+                <allowContentType>${app}:overview</allowContentType>
+                <allowContentType>${app}:generic-page</allowContentType>
+            </config>
+        </input>
     </form>
 </macro>
