@@ -41,6 +41,9 @@ export const runGuillotineQuery = ({
 
     const { data, errors } = result;
 
+    // TODO: Remove when query OK
+    logger.info(`runGuillotineQuery - Data: ${JSON.stringify(data)}`);
+
     if (errors) {
         const errorMsg = `GraphQL errors for ${JSON.stringify(params)}: ${errors
             .map((error) => error.message)
