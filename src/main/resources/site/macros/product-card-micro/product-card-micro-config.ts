@@ -6,12 +6,7 @@ export interface ProductCardMicroConfig {
   header?: string;
 
   /**
-   * Valgt side
+   * Velg side
    */
-  "card-list": Array<{
-    /**
-     * Velg side
-     */
-    targetPage: string;
-  }>;
+  "card-list": Array<string>;
 }

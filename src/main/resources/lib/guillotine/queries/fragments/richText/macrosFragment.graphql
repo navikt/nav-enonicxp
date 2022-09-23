@@ -81,9 +81,7 @@ fragment macros on Macro {
         product_card_micro {
             header
             card_list {
-                targetPage {
-                    ...productTargetMicroMixin
-                }
+                ...productTargetMicroMixin
             }
         }
         product_card_mini {

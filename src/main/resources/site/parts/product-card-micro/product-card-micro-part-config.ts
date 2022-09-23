@@ -9,6 +9,9 @@ export interface ProductCardMicroPartConfig {
    * Valgt side
    */
   "card-list": Array<{
-
+    /**
+     * Velg side
+     */
+    targetPage?: string;
   }>;
 }
