@@ -1,7 +1,7 @@
-<part xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Produkt-kort (mini)</display-name>
+<macro>
+    <display-name>Produkt-kort (micro)</display-name>
     <description>Lenker til en produkt- eller livssituasjons-side</description>
     <form>
         <mixin name="product-card-micro"/>
     </form>
-</part>
+</macro>

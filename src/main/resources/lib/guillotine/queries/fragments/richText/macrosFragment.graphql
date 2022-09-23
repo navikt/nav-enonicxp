@@ -83,6 +83,11 @@ fragment macros on Macro {
                 ...productTargetMixin
             }
         }
+        product_card_mini {
+            targetPage {
+                ...productTargetMixin
+            }
+        }
         quote {
             quote
         }

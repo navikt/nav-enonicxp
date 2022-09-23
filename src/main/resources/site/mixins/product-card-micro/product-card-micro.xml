@@ -1,0 +1,15 @@
+<mixin>
+    <form>
+        <input name="header" type="TextLine">
+            <label>Overskrift</label>
+            <help-text>Overskrift er ikke påkrevet</help-text>
+        </input>
+        <item-set name="card-list">
+            <label>Valgt side</label>
+            <occurrences minimum="1" maximum="0"/>
+            <items>
+                <mixin name="product-target-selector"/>
+            </items>
+        </item-set>
+    </form>
+</mixin>
