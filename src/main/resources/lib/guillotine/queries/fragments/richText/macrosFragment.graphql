@@ -1,4 +1,5 @@
 #import "../mixins/productTargetFragment.graphql"
+#import "../mixins/productTargetMicroFragment.graphql"
 #import "../content-types/payoutDatesFragment.graphql"
 
 fragment macros on Macro {
