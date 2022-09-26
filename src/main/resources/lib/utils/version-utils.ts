@@ -18,7 +18,7 @@ export const getNodeVersions = ({
     const versions = repo.findVersions({
         key: nodeKey,
         start: 0,
-        count: 10000,
+        count: 1000,
     }).hits;
     if (branch === 'master') {
         return versions.filter((version) => !!version.commitId);

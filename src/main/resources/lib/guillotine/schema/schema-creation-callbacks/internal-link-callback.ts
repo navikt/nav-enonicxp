@@ -1,21 +1,22 @@
-import contentLib from '/lib/xp/content';
+import contentLib, { Content } from '/lib/xp/content';
 import { logger } from '../../../utils/logging';
 import { CreationCallback } from '../../utils/creation-callback-utils';
+import { insertOriginalContentTypeField } from './common/original-content-type';
 
-export const internalLinkCallback: CreationCallback = (context, params) => {
-
-    const getTarget = (contentId: string, count: number): contentLib.Content | null => {
-
+export const internalLinkDataCallback: CreationCallback = (context, params) => {
+    const getTarget = (contentId: string, count: number): Content | null => {
         count++;
         if (count > 10) {
-            logger.critical(`internalLinkCallback: Max depth (10)/redirect loop - ContentId=${contentId}`);
+            logger.critical(
+                `internalLinkCallback: Max depth (10)/redirect loop - ContentId=${contentId}`
+            );
             return null;
         }
         if (!contentId) {
             return null;
         }
 
-        let content = contentLib.get({key: contentId});
+        let content = contentLib.get({ key: contentId });
         if (!content) {
             return null;
         }
@@ -43,5 +44,9 @@ export const internalLinkCallback: CreationCallback = (context, params) => {
             return null;
         }
         return content;
-    }
+    };
+};
+
+export const internalLinkCallback: CreationCallback = (context, params) => {
+    insertOriginalContentTypeField(params);
 };
