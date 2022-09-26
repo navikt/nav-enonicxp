@@ -78,6 +78,12 @@ fragment macros on Macro {
             phoneNumber
             text
         }
+        product_card_micro {
+            header
+            card_list {
+                ...productTargetMicroMixin
+            }
+        }
         product_card_mini {
             targetPage {
                 ...productTargetMixin
