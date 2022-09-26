@@ -22,7 +22,7 @@ import { PublishingCalendar } from '../../site/content-types/publishing-calendar
 import { SectionPage } from '../../site/content-types/section-page/section-page';
 import { Overview } from '../../site/content-types/overview/overview';
 import { SituationPage } from '../../site/content-types/situation-page/situation-page';
-import { OfficePage } from '../../site/content-types/office-page/office-page';
+import { OfficeEditorialPage } from '../../site/content-types/office-editorial-page/office-editorial-page';
 import { ToolsPage } from '../../site/content-types/tools-page/tools-page';
 import { TransportPage } from '../../site/content-types/transport-page/transport-page';
 import { NavNoDescriptor } from '../common';
@@ -66,7 +66,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     overview: Overview;
     'redirects-folder': EmptyObject;
     'situation-page': SituationPage;
-    'office-page': OfficePage;
+    'office-editorial-page': OfficeEditorialPage;
     'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
     'transport-page': TransportPage;

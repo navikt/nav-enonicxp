@@ -29,6 +29,7 @@ import {
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
+import { officeDataCallback } from './schema-creation-callbacks/office-data-callback';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
@@ -50,6 +51,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_SectionPage_Data: sectionPageDataCallback,
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
+    no_nav_navno_OfficeData: officeDataCallback,
     no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,

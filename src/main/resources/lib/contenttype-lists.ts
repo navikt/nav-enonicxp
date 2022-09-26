@@ -28,7 +28,7 @@ export const productCardPartContentTypes: ContentTypeList = [
 export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:situation-page`,
     `${appDescriptor}:guide-page`,
-    `${appDescriptor}:office-page`,
+    `${appDescriptor}:office-editorial-page`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
     `${appDescriptor}:tools-page`,
