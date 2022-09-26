@@ -1,7 +1,10 @@
 import { macroHtmlFragmentCallback } from './schema-creation-callbacks/macro-html-fragment';
 import { attachmentCallback } from './schema-creation-callbacks/attachment';
 import { mediaCodeCallback, mediaImageCallback } from './schema-creation-callbacks/media';
-import { internalLinkCallback } from './schema-creation-callbacks/internal-link-callback';
+import {
+    internalLinkCallback,
+    internalLinkDataCallback,
+} from './schema-creation-callbacks/internal-link-callback';
 import {
     mainArticleCallback,
     mainArticleDataCallback,
@@ -36,6 +39,7 @@ import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/sak
 import { areapageSituationCardPartCallback } from './schema-creation-callbacks/areapage-situation-card';
 import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
+import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -43,7 +47,9 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     FragmentComponentData: fragmentComponentDataCallback,
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
-    no_nav_navno_InternalLink_Data: internalLinkCallback,
+    no_nav_navno_ExternalLink: externalLinkCallback,
+    no_nav_navno_InternalLink: internalLinkCallback,
+    no_nav_navno_InternalLink_Data: internalLinkDataCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
     no_nav_navno_MainArticle_Data: mainArticleDataCallback,
     no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,

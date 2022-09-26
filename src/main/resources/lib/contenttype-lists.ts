@@ -121,4 +121,5 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:payout-dates`,
     'portal:page-template',
     'portal:fragment',
+    'portal:site',
 ];

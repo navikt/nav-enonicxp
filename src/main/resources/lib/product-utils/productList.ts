@@ -167,6 +167,14 @@ const getProductPagesForOverview = (
                         },
                     },
                 ],
+                mustNot: [
+                    {
+                        hasValue: {
+                            field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: [true],
+                        },
+                    },
+                ],
             },
         },
     }).hits;

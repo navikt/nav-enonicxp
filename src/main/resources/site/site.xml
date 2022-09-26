@@ -10,10 +10,14 @@
     <x-data name="oldContentType" optional="true" allowContentTypes="^$"/>
     <mappings>
         <mapping controller="/lib/controllers/site-info-controller.js">
-            <match>type:'portal:site'</match>
+            <!-- Match root path without query parameters -->
+            <pattern>^/?(?!(\?))$</pattern>
         </mapping>
         <mapping controller="/lib/controllers/area-page-controller.js">
             <match>type:'no.nav.navno:area-page'</match>
+        </mapping>
+        <mapping controller="/lib/controllers/content-page-with-sidemenus-controller.js">
+            <match>type:'no.nav.navno:content-page-with-sidemenus'</match>
         </mapping>
         <mapping controller="/lib/controllers/frontend-proxy.js">
             <match>
