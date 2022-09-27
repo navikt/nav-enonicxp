@@ -4,18 +4,18 @@ import commonLib from '/lib/xp/common';
 import taskLib from '/lib/xp/task';
 import contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
-import { OfficeData } from '../../site/content-types/office-data/office-data';
+import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
-import { UpdateOfficeDataConfig } from '../../tasks/update-office-data/update-office-data-config';
+import { UpdateOfficeBranchConfig } from '../../tasks/update-office-branch/update-office-branch-config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 
-type OfficeDataDescriptor = NavNoDescriptor<'office-data'>;
+type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 
-const officeDataContentType: OfficeDataDescriptor = `no.nav.navno:office-data`;
-const parentPath = '/www.nav.no/person/kontor-data';
-const officeDataUpdateTaskDescriptor = 'no.nav.navno:update-office-data';
+const officeBranchContentType: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
+const parentPath = '/www.nav.no/person/kontor-sider';
+const officeBranchUpdateTaskDescriptor = 'no.nav.navno:update-office-branch';
 const fiveMinutes = 5 * 60 * 1000;
 
 const selectedEnhetTypes: { [key: string]: boolean } = {
@@ -35,14 +35,14 @@ const selectedEnhetTypes: { [key: string]: boolean } = {
     OPPFUTLAND: true,
 };
 
-// If non-office data content already exists on the path for an office, delete it
+// If non-office branch content already exists on the path for an office, delete it
 // (the main purpose of this is to get rid of redirects in the event of an office changing name
 // to a name that was previously in use)
 const deleteIfContentExists = (name: string) => {
     const updatedPath = `${parentPath}/${name}`;
     const existingContentOnPath = contentLib.get({ key: updatedPath });
 
-    if (existingContentOnPath && existingContentOnPath.type !== officeDataContentType) {
+    if (existingContentOnPath && existingContentOnPath.type !== officeBranchContentType) {
         logger.info(
             `Content already exists on path ${updatedPath} - deleting to make room for office page`
         );
@@ -60,15 +60,15 @@ const deleteIfContentExists = (name: string) => {
     }
 };
 
-const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
+const updateOfficeBranch = (officeBranchUpdated: OfficeBranch[]) => {
     const existingOffices = contentLib
         .getChildren({
             key: parentPath,
             count: 2000,
         })
         .hits.filter(
-            (office) => office.type === officeDataContentType
-        ) as Content<OfficeDataDescriptor>[];
+            (office) => office.type === officeBranchContentType
+        ) as Content<OfficeBranchDescriptor>[];
 
     const officesInNorg: { [key: number]: boolean } = {};
 
@@ -76,8 +76,8 @@ const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
     const updated: string[] = [];
     const deleted: string[] = [];
 
-    officeDataUpdated.forEach((updatedOfficeData) => {
-        const { enhet } = updatedOfficeData;
+    officeBranchUpdated.forEach((updatedOfficeBranch) => {
+        const { enhet } = updatedOfficeBranch;
 
         // ignore closed offices and include only selected types
         if (enhet.status === 'Nedlagt' || !selectedEnhetTypes[enhet.type]) {
@@ -95,25 +95,25 @@ const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
 
         // If the office page already exists, update the existing content
         if (existingOffice) {
-            const updatedChecksum = createObjectChecksum(updatedOfficeData);
+            const updatedChecksum = createObjectChecksum(updatedOfficeBranch);
 
             if (
                 existingOffice.data.checksum !== updatedChecksum ||
                 existingOffice.displayName !== enhet.navn
             ) {
                 try {
-                    contentLib.modify<OfficeDataDescriptor>({
+                    contentLib.modify<OfficeBranchDescriptor>({
                         key: existingOffice._id,
                         editor: (content) => ({
                             ...content,
                             displayName: enhet.navn,
-                            data: { ...updatedOfficeData, checksum: updatedChecksum },
+                            data: { ...updatedOfficeBranch, checksum: updatedChecksum },
                         }),
                     });
                     updated.push(existingOffice._path);
                 } catch (e) {
                     logger.critical(
-                        `Failed to modify office data content ${existingOffice._path} - ${e}`
+                        `Failed to modify office branch content ${existingOffice._path} - ${e}`
                     );
                 }
             }
@@ -124,7 +124,7 @@ const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
                 try {
                     logger.info(`Updating name/path: ${currentName} -> ${updatedName}`);
 
-                    // Move the office data page to a new path if the name changed
+                    // Move the office branch page to a new path if the name changed
                     contentLib.move({
                         source: existingOffice._path,
                         target: updatedName,
@@ -144,7 +144,7 @@ const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
                     });
                 } catch (e) {
                     logger.critical(
-                        `Failed to updated office data name for ${existingOffice._path} - ${e}`
+                        `Failed to updated office branch name for ${existingOffice._path} - ${e}`
                     );
                 }
             }
@@ -154,10 +154,10 @@ const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
                     name: updatedName,
                     parentPath: parentPath,
                     displayName: enhet.navn,
-                    contentType: officeDataContentType,
+                    contentType: officeBranchContentType,
                     data: {
-                        ...updatedOfficeData,
-                        checksum: createObjectChecksum(updatedOfficeData),
+                        ...updatedOfficeBranch,
+                        checksum: createObjectChecksum(updatedOfficeBranch),
                     },
                 });
                 newOffices.push(result._path);
@@ -200,7 +200,7 @@ const updateOfficeData = (officeDataUpdated: OfficeData[]) => {
     }
 };
 
-const fetchOfficeData = () => {
+const fetchOfficeBranch = () => {
     try {
         const response = httpClient.request({
             url: app.config.norg2,
@@ -223,19 +223,19 @@ const fetchOfficeData = () => {
     }
 };
 
-export const fetchAndUpdateOfficeData = (retry?: boolean) => {
-    const newOfficeData = fetchOfficeData();
-    if (!newOfficeData) {
+export const fetchAndUpdateOfficeBranch = (retry?: boolean) => {
+    const newOfficeBranch = fetchOfficeBranch();
+    if (!newOfficeBranch) {
         if (retry) {
-            logger.error('Failed to fetch office data, retrying in 5 minutes');
-            runOfficeDataUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
+            logger.error('Failed to fetch office branch, retrying in 5 minutes');
+            runOfficeBranchUpdateTask(false, new Date(Date.now() + fiveMinutes).toISOString());
         } else {
-            logger.critical('Failed to fetch office data from norg2');
+            logger.critical('Failed to fetch office branch from norg2');
         }
         return;
     }
 
-    logger.info('Fetched office data from norg2, updating site data...');
+    logger.info('Fetched office branch from norg2, updating site data...');
 
     contextLib.run(
         {
@@ -246,16 +246,16 @@ export const fetchAndUpdateOfficeData = (retry?: boolean) => {
             },
             principals: ['role:system.admin'],
         },
-        () => updateOfficeData(newOfficeData)
+        () => updateOfficeBranch(newOfficeBranch)
     );
 };
 
-export const runOfficeDataUpdateTask = (retry: boolean, scheduledTime?: string) => {
+export const runOfficeBranchUpdateTask = (retry: boolean, scheduledTime?: string) => {
     if (scheduledTime) {
-        createOrUpdateSchedule<UpdateOfficeDataConfig>({
-            jobName: 'office_data_update',
-            jobDescription: 'Updates office data from norg',
-            taskDescriptor: officeDataUpdateTaskDescriptor,
+        createOrUpdateSchedule<UpdateOfficeBranchConfig>({
+            jobName: 'office_branch_update',
+            jobDescription: 'Updates office branch from norg',
+            taskDescriptor: officeBranchUpdateTaskDescriptor,
             jobSchedule: {
                 type: 'ONE_TIME',
                 value: scheduledTime,
@@ -266,8 +266,8 @@ export const runOfficeDataUpdateTask = (retry: boolean, scheduledTime?: string) 
             masterOnly: false,
         });
     } else {
-        taskLib.submitTask<UpdateOfficeDataConfig>({
-            descriptor: officeDataUpdateTaskDescriptor,
+        taskLib.submitTask<UpdateOfficeBranchConfig>({
+            descriptor: officeBranchUpdateTaskDescriptor,
             config: {
                 retry,
             },
@@ -275,16 +275,16 @@ export const runOfficeDataUpdateTask = (retry: boolean, scheduledTime?: string) 
     }
 };
 
-export const startOfficeDataPeriodicUpdateSchedule = () => {
-    createOrUpdateSchedule<UpdateOfficeDataConfig>({
-        jobName: 'office_data_norg2_hourly',
-        jobDescription: 'Updates office data from norg2 every hour',
+export const startOfficeBranchPeriodicUpdateSchedule = () => {
+    createOrUpdateSchedule<UpdateOfficeBranchConfig>({
+        jobName: 'office_branch_norg2_hourly',
+        jobDescription: 'Updates office branch from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '50 * * * *',
+            value: '30 * * * *',
             timeZone: 'GMT+2:00',
         },
-        taskDescriptor: officeDataUpdateTaskDescriptor,
+        taskDescriptor: officeBranchUpdateTaskDescriptor,
         taskConfig: { retry: app.config.env !== 'localhost' },
     });
 };

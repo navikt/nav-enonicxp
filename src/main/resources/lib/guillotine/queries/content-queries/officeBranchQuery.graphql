@@ -1,11 +1,11 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
-#import "../fragments/content-types/officeDataFragment.graphql"
+#import "../fragments/content-types/officeBranchFragment.graphql"
 
-query officeDataQuery($ref: ID!) {
+query officeBranchQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
-            ...contentOfficeData
+            ...contentOfficeBranch
         }
     }
 }

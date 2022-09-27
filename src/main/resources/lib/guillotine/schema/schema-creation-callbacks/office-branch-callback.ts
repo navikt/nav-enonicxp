@@ -2,21 +2,8 @@ import graphQlLib from '/lib/graphql';
 import contentLib from '/lib/xp/content';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
-import { RepoBranch } from '../../../../types/common';
 
-import { runGuillotineComponentsQuery } from '../../queries/run-sitecontent-query';
-
-type BaseQueryParams = {
-    branch: RepoBranch;
-    params: {
-        ref: string;
-    };
-    throwOnErrors: boolean;
-};
-
-export const officeDataCallback: CreationCallback = (context, params) => {
-    log.info('callback');
-
+export const officeBranchCallback: CreationCallback = (context, params) => {
     params.fields.editorial = {
         args: { contentId: graphQlLib.GraphQLID },
         type: graphQlLib.reference('no_nav_navno_OfficeEditorialPage'),
@@ -62,15 +49,6 @@ export const officeDataCallback: CreationCallback = (context, params) => {
             if (!testResult) {
                 return null;
             }
-
-            const baseQueryParams: BaseQueryParams = {
-                branch: 'master',
-                params: { ref: testResult._id },
-                throwOnErrors: true,
-            };
-
-            const siteTest = runGuillotineComponentsQuery(baseQueryParams, testResult);
-            logger.info(JSON.stringify(siteTest));
 
             return editorialContent;
         },
