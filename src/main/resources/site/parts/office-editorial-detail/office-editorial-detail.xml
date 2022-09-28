@@ -1,0 +1,16 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Detaljinformasjon for det aktuelle kontoret</display-name>
+    <description>Detaljinformasjon blir hentet fra NORG og flettet inn her</description>
+    <form>
+        <input name="detailType" type="RadioButton">
+            <label>Velg detaljinformasjon</label>
+            <occurrences minimum="1" maximum="1"/>
+            <config>
+                <option value="serviceInformation">Dette kan vi hjelpe deg med</option>
+                <option value="socialHelpLink">Lenke til søk om økonomisk sosialhjelp</option>
+                <option value="socialHelpPostalInformation">Postkasse for økonomisk sosialhjelp</option>
+                <option value="socialHelpPayoutInformation">Utbetaling av økonomisk sosialhjelp</option>
+            </config>
+        </input>
+    </form>
+</part>

@@ -1,0 +1,3 @@
+fragment partComponentOfficeEditorialDetail on Part_no_nav_navno_office_editorial_detail {
+    detailType
+}

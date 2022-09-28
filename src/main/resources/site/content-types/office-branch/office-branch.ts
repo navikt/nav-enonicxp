@@ -6,11 +6,6 @@ export interface OfficeBranch {
   checksum?: string;
 
   /**
-   * Skriv inn ønsket kort-url
-   */
-  customPath?: string;
-
-  /**
    * Enhet
    */
   enhet: {
