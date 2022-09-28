@@ -14,7 +14,7 @@ import { contentRepo } from '../constants';
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 
 const officeBranchContentType: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
-const parentPath = '/www.nav.no/person/kontor-sider';
+const parentPath = '/www.nav.no/kontor';
 const officeBranchUpdateTaskDescriptor = 'no.nav.navno:update-office-branch';
 const fiveMinutes = 5 * 60 * 1000;
 
@@ -281,7 +281,7 @@ export const startOfficeBranchPeriodicUpdateSchedule = () => {
         jobDescription: 'Updates office branch from norg2 every hour',
         jobSchedule: {
             type: 'CRON',
-            value: '30 * * * *',
+            value: '50 * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeBranchUpdateTaskDescriptor,

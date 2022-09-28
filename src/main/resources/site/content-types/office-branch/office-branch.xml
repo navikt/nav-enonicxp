@@ -6,7 +6,6 @@
         <input name="checksum" type="TextLine">
             <label>Checksum</label>
         </input>
-        <mixin name="custom-path-selector"/>
         <item-set name="enhet">
             <label>Enhet</label>
             <occurrences minimum="1" maximum="1"/>
