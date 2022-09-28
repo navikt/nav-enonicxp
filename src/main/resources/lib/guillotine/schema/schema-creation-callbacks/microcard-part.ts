@@ -21,7 +21,7 @@ const getLocalizedTargetPageFromProductDetailsLink = (
         }
     );
     if (!targetLocalizedContentId) {
-        return targetBaseContent;
+        return null;
     }
 
     return contentLib.get({ key: targetLocalizedContentId });
