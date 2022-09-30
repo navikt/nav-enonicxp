@@ -33,14 +33,14 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
 
     // Resolve final target
     params.fields.target.resolve = (env) => {
-        const { target } = env.source;
+        const { target, _path } = env.source;
         if (!target) {
-            logger.error('internalLinkCallback: No valid target provided');
+            logger.error(`internalLinkCallback: No valid target provided for path=${_path}`);
             return null;
         }
         const content = getTarget(target, 0);
         if (!content) {
-            logger.error(`internalLinkCallback: Content not found target=${target}`);
+            logger.content(`internalLinkCallback: Content not found for path=${_path}`);
             return null;
         }
         return content;

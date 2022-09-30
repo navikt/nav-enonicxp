@@ -14,6 +14,10 @@ const logInfo = (msg: string) => {
     log.info(`[info] ${msg}`);
 };
 
+const logContent = (msg: string, logAsInfoInDraftContext?: boolean) => {
+    checkContextAndLog(`[content] ${msg}`, 'info', logAsInfoInDraftContext);
+};
+
 const logWarning = (msg: string, logAsInfoInDraftContext?: boolean) => {
     checkContextAndLog(`[warning] ${msg}`, 'warning', logAsInfoInDraftContext);
 };
@@ -28,6 +32,7 @@ const logCriticalError = (msg: string, logAsInfoInDraftContext?: boolean) => {
 
 export const logger = {
     info: logInfo,
+    content: logContent,
     warning: logWarning,
     error: logError,
     critical: logCriticalError,
