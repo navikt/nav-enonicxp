@@ -42,13 +42,5 @@ export const findContentsWithHtmlAreaText = (text: string) => {
 };
 
 export const findContentsWithFragmentMacro = (fragmentId: string) => {
-    return findContentsWithHtmlAreaText(`fragmentId=\\"${fragmentId}`);
-};
-
-export const findContentsWithProductCardMacro = (targetPageId: string) => {
-    return findContentsWithHtmlAreaText(`targetPage=\\"${targetPageId}`);
-};
-
-export const findContentsWithPayoutDatesMacro = (payoutDatesId: string) => {
-    return findContentsWithHtmlAreaText(`payoutDates=\\"${payoutDatesId}`);
+    return findContentsWithHtmlAreaText(fragmentId);
 };
