@@ -14,7 +14,6 @@ import componentsQuery from './component-queries/components.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
-import { logger } from 'lib/utils/logging';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {
@@ -47,8 +46,15 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
             count: 2,
         }).hits[0];
 
+        const officeEditorialQueryParams = {
+            ...baseQueryParams,
+            params: {
+                ref: officeEditorialPageContent._id,
+            },
+        };
+
         const { components, fragments } = runGuillotineComponentsQuery(
-            baseQueryParams,
+            officeEditorialQueryParams,
             officeEditorialPageContent
         );
 
