@@ -40,6 +40,7 @@ import { areapageSituationCardPartCallback } from './schema-creation-callbacks/a
 import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
+import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -80,6 +81,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Part_no_nav_navno_page_navigation_menu_OverstyrLenketekster: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
     Page_no_nav_navno_page_with_side_menus_OverstyrLenketekster: anchorLinksCallback,
+    Part_no_nav_navno_product_card_micro_ValgtSide: microCardTargetPageCallback,
     Part_no_nav_navno_filters_menu_Filter: filterCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
