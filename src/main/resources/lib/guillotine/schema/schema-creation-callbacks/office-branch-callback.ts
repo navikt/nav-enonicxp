@@ -45,11 +45,6 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
             // so select the first hit.
             const editorialContent = queryResult.hits[0];
 
-            const testResult = contentLib.get({ key: editorialContent._id });
-            if (!testResult) {
-                return null;
-            }
-
             return editorialContent;
         },
     };
