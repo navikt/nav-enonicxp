@@ -19,6 +19,13 @@ export type GuillotineUnresolvedComponentType = { type: ComponentType; path: str
 export type GuillotineComponentQueryResult = {
     components: GuillotineComponent[];
 };
+type BaseQueryParams = {
+    branch: RepoBranch;
+    params: {
+        ref: string;
+    };
+    throwOnErrors: boolean;
+};
 
 const contentTypesWithComponents = stringArrayToSet(_contentTypesWithComponents);
 
@@ -40,35 +47,9 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
         return contentQueryResult;
     }
 
+    // Certain pages need extra queries for resolving.
     if (baseContent.type === 'no.nav.navno:office-branch') {
-        const officeEditorialPageContent = contentLib.query({
-            contentTypes: ['no.nav.navno:office-editorial-page'],
-            count: 2,
-        }).hits[0];
-
-        const officeEditorialQueryParams = {
-            ...baseQueryParams,
-            params: {
-                ref: officeEditorialPageContent._id,
-            },
-        };
-
-        const { components, fragments } = runGuillotineComponentsQuery(
-            officeEditorialQueryParams,
-            officeEditorialPageContent
-        );
-
-        return {
-            ...contentQueryResult,
-            editorial: {
-                ...contentQueryResult.editorial,
-                page: buildPageComponentTree({
-                    page: contentQueryResult.editorial.page,
-                    components,
-                    fragments,
-                }),
-            },
-        };
+        return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams, baseContent);
@@ -135,4 +116,54 @@ export const runGuillotineComponentsQuery = (
     });
 
     return { components: transformedComponents, fragments };
+};
+
+export const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
+    const queryResult = contentLib.query({
+        contentTypes: ['no.nav.navno:office-editorial-page'],
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [contentQueryResult.language],
+                        },
+                    },
+                ],
+            },
+        },
+        count: 1,
+    });
+
+    if (queryResult.hits.length === 0) {
+        return;
+    }
+
+    const officeEditorialPageContent = queryResult.hits[0];
+
+    const officeEditorialQueryParams: BaseQueryParams = {
+        branch: 'master',
+        throwOnErrors: true,
+        params: {
+            ref: officeEditorialPageContent._id,
+        },
+    };
+
+    const { components, fragments } = runGuillotineComponentsQuery(
+        officeEditorialQueryParams,
+        officeEditorialPageContent
+    );
+
+    return {
+        ...contentQueryResult,
+        editorial: {
+            ...contentQueryResult.editorial,
+            page: buildPageComponentTree({
+                page: contentQueryResult.editorial.page,
+                components,
+                fragments,
+            }),
+        },
+    };
 };
