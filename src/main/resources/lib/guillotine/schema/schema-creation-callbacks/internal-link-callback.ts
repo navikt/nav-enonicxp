@@ -31,17 +31,19 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
         return content;
     };
 
+    log.info(JSON.stringify(params));
+    const path = "dummy";
+
     // Resolve final target
     params.fields.target.resolve = (env) => {
-        log.info(JSON.stringify(env));
-        const { target, _path } = env.source;
+        const { target } = env.source;
         if (!target) {
-            logger.error(`internalLinkCallback: No valid target provided for path=${_path}`);
+            logger.error(`internalLinkCallback: No valid target provided for path=${path}`);
             return null;
         }
         const content = getTarget(target, 0);
         if (!content) {
-            logger.content(`internalLinkCallback: Content not found for path=${_path}`);
+            logger.content(`internalLinkCallback: Content not found for path=${path}`);
             return null;
         }
         return content;
