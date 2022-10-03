@@ -1,4 +1,4 @@
-import { Content } from '/lib/xp/content';
+import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
 import { contentTypesWithComponents as _contentTypesWithComponents } from '../../contenttype-lists';
 import { stringArrayToSet } from '../../utils/nav-utils';
@@ -38,6 +38,30 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
     // with components
     if (!contentTypesWithComponents[baseContent.type]) {
         return contentQueryResult;
+    }
+
+    if (baseContent.type === 'no.nav.navno:office-branch') {
+        const officeEditorialPageContent = contentLib.query({
+            contentTypes: ['no.nav.navno:office-editorial-page'],
+            count: 2,
+        }).hits[0];
+
+        const { components, fragments } = runGuillotineComponentsQuery(
+            baseQueryParams,
+            officeEditorialPageContent
+        );
+
+        return {
+            ...contentQueryResult,
+            editorial: {
+                ...contentQueryResult.editorial,
+                page: buildPageComponentTree({
+                    page: contentQueryResult.editorial.page,
+                    components,
+                    fragments,
+                }),
+            },
+        };
     }
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams, baseContent);
