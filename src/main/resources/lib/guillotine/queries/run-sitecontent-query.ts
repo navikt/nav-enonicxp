@@ -14,6 +14,7 @@ import componentsQuery from './component-queries/components.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
+import { logger } from 'lib/utils/logging';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {

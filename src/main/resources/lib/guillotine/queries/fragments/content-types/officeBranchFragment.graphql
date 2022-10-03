@@ -1,12 +1,8 @@
 #import "../contentCommonWithPageFragment.graphql"
-#import "../components/allComponentsFragment.graphql"
 
 fragment contentOfficeBranch on no_nav_navno_OfficeBranch {
     dataAsJson
     editorial(contentId: $ref) {
-        components(resolveTemplate: true, resolveFragment: false) {
-            ...allComponents
-        }
         ...contentCommonWithPage
     }
 }
