@@ -1,10 +1,11 @@
-<mixin>   
+<mixin>
+    <display-name>Kategori</display-name>
     <form>
         <input name="taxonomy" type="ComboBox">
             <label>Kategori</label>
             <occurrences minimum="0" maximum="8"/>
             <config>
-              <display-name>Kategori</display-name>   <option value="assistive_tools">Hjelpemiddel</option>
+                <option value="assistive_tools">Hjelpemiddel</option>
                 <option value="followup">Oppfølging</option>
                 <option value="benefits">Pengestøtte</option>
                 <option value="measures">Tiltak</option>
