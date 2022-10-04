@@ -26,9 +26,9 @@ export interface ThemedArticleData {
   audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
-   * Kategori
+   * Kategorier
    */
-  taxonomy?: Array<"assistive_tools" | "followup" | "benefits" | "measures" | "rights" | "for_employers" | "for_providers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
+  taxonomy?: Array<"tips_job" | "help_work" | "when_sick" | "payment" | "complaint_rights" | "user_support" | "about_nav" | "membership_national_insurance" | "recruitment">;
 
   /**
    * Tilleggskategori
