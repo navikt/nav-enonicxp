@@ -1,15 +1,17 @@
 import contentLib, { Content } from '/lib/xp/content';
-import graphQlLib from '*/lib/graphql';
-import { logger } from '../../../utils/logging';
-import { CreationCallback } from '../../utils/creation-callback-utils';
+import graphQlLib from '/lib/graphql';
+import { logger } from 'lib/utils/logging';
+import { CreationCallback } from 'lib/guillotine/utils/creation-callback-utils';
 import { insertOriginalContentTypeField } from './common/original-content-type';
 
 export const internalLinkDataCallback: CreationCallback = (context, params) => {
-    const getTarget = (contentId: string, count: number): Content | null => {
+    const getTarget = (baseContentId: string, contentId: string, count: number): Content | null => {
         count++;
         if (count > 10) {
             logger.critical(
-                `internalLinkCallback: Max depth (10)/redirect loop - ContentId=${contentId}`
+                `internalLinkCallback: Max depth (10)/redirect loop 
+                - baseContentId=${baseContentId} 
+                - contentId=${contentId}`
             );
             return null;
         }
@@ -27,7 +29,7 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
             if (!content.data.target) {
                 return null;
             }
-            content = getTarget(content.data.target, count);
+            content = getTarget(baseContentId, content.data.target, count);
         }
         return content;
     };
@@ -41,7 +43,7 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
             logger.error(`internalLinkCallback: No valid target provided - ${baseContentId}`);
             return null;
         }
-        const content = getTarget(target, 0);
+        const content = getTarget(baseContentId, target, 0);
         if (!content) {
             logger.content(`internalLinkCallback: Content not found - ${baseContentId}`);
             return null;
