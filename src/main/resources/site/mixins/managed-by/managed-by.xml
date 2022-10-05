@@ -1,8 +1,7 @@
 <mixin>
     <form>
         <field-set>
-            <label>Forvaltes av</label>
-            <help-text>Hvis annet enn eier</help-text>
+            <label>Forvaltes av (hvis annet enn eier)</label>
             <items>
                 <input name="managed-by" type="ComboBox">
                     <label>Velg forvalter</label>
