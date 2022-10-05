@@ -1,5 +1,4 @@
 #import "../mixins/languagesFragment.graphql"
-#import "../mixins/areasFragment.graphql"
 #import "../mixins/internalLinkTargetFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 
