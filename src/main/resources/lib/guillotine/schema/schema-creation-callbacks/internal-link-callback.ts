@@ -37,7 +37,6 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
     params.fields.target.resolve = (env) => {
         const { target } = env.source;
         const { baseContentId } = env.args;
-        log.info(`internalLinkCallback: ${baseContentId}`);
         if (!target) {
             logger.error(`internalLinkCallback: No valid target provided in ${baseContentId}`);
             return null;
