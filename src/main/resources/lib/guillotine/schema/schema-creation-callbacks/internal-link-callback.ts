@@ -5,6 +5,9 @@ import { CreationCallback } from 'lib/guillotine/utils/creation-callback-utils';
 import { insertOriginalContentTypeField } from './common/original-content-type';
 
 export const internalLinkDataCallback: CreationCallback = (context, params) => {
+
+    log.info(`*** internalLinkCallback ***}`);
+
     const getTarget = (baseContentId: string, contentId: string, count: number): Content | null => {
         count++;
         if (count > 10) {
