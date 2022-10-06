@@ -12,9 +12,7 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
         count++;
         if (count > 10) {
             logger.critical(
-                `internalLinkCallback: Max depth (10)/redirect loop 
-                - baseContentId=${baseContentId} 
-                - contentId=${contentId}`
+                `internalLinkCallback: Max depth (10)/redirect loop - baseContentId=${baseContentId} - contentId=${contentId}`
             );
             return null;
         }
