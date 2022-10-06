@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-//import graphQlLib from '/lib/graphql';
+import graphQlLib from '/lib/graphql';
 import { logger } from '../../../utils/logging';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { insertOriginalContentTypeField } from './common/original-content-type';
@@ -33,11 +33,10 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
     };
 
     // Resolve final target
-    //params.fields.target.args = { baseContentId: graphQlLib.GraphQLID };
+    params.fields.target.args = { baseContentId: graphQlLib.GraphQLID };
     params.fields.target.resolve = (env) => {
         const { target } = env.source;
-        //const { baseContentId } = env.args;
-        const baseContentId = '*dummy*';
+        const { baseContentId } = env.args;
         log.info(`internalLinkCallback: ${baseContentId}`);
         if (!target) {
             logger.error(`internalLinkCallback: No valid target provided in ${baseContentId}`);
