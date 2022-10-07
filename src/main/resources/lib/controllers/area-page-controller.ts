@@ -84,6 +84,8 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
             return situationPages;
         }
 
+        // If a situation page is not available in the requested language
+        // we use the norwegian page instead as a fallback
         const requestedLanguageSituationPages = situationPages.map((masterLanguagePage) => {
             let requestedLanguagePage;
 
