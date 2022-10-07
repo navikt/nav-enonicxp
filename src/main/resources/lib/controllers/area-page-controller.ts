@@ -14,6 +14,8 @@ type SituationPageContent = Content<'no.nav.navno:situation-page'>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
 type SituationCardPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
 
+const masterLanguage = 'no';
+
 const getSituationsLayout = (
     components: NodeComponent[],
     contentId: string
@@ -35,54 +37,75 @@ const getSituationsLayout = (
     return situationsLayouts[0];
 };
 
-const getRelevantSituationPages = (content: AreaPageNodeContent) => {
-    const { language, data } = content;
-    const { area, audience } = data;
+const getRelevantSituationPages = (content: AreaPageNodeContent) =>
+    runInBranchContext(() => {
+        const { language: requestedLanguage, data } = content;
+        const { area, audience } = data;
 
-    const situationPages = runInBranchContext(
-        () =>
-            contentLib.query({
-                start: 0,
-                count: 1000,
-                contentTypes: ['no.nav.navno:situation-page'],
-                filters: {
-                    boolean: {
-                        must: [
-                            {
-                                hasValue: {
-                                    field: 'data.area',
-                                    values: [area],
-                                },
+        const situationPages = contentLib.query({
+            start: 0,
+            count: 1000,
+            contentTypes: ['no.nav.navno:situation-page'],
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'data.area',
+                                values: [area],
                             },
-                            {
-                                hasValue: {
-                                    field: 'data.audience',
-                                    values: [audience],
-                                },
+                        },
+                        {
+                            hasValue: {
+                                field: 'data.audience',
+                                values: [audience],
                             },
-                            {
-                                hasValue: {
-                                    field: 'language',
-                                    values: [language],
-                                },
+                        },
+                        {
+                            hasValue: {
+                                field: 'language',
+                                values: [masterLanguage],
                             },
-                        ],
-                        mustNot: [
-                            {
-                                hasValue: {
-                                    field: 'x.no-nav-navno.previewOnly.previewOnly',
-                                    values: [true],
-                                },
+                        },
+                    ],
+                    mustNot: [
+                        {
+                            hasValue: {
+                                field: 'x.no-nav-navno.previewOnly.previewOnly',
+                                values: [true],
                             },
-                        ],
-                    },
+                        },
+                    ],
                 },
-            }).hits,
-        'master'
-    );
+            },
+        }).hits;
 
-    return situationPages;
-};
+        if (requestedLanguage === masterLanguage) {
+            return situationPages;
+        }
+
+        const requestedLanguageSituationPages = situationPages.map((masterLanguagePage) => {
+            let requestedLanguagePage;
+
+            forceArray(masterLanguagePage.data.languages).some((languageContentId) => {
+                const languageVersion = contentLib.get({ key: languageContentId });
+                if (
+                    languageVersion &&
+                    languageVersion.language === requestedLanguage &&
+                    languageVersion.type === 'no.nav.navno:situation-page'
+                ) {
+                    requestedLanguagePage = languageVersion;
+                    return true;
+                }
+
+                return false;
+            });
+
+            return requestedLanguagePage || masterLanguagePage;
+        });
+
+        return requestedLanguageSituationPages;
+    }, 'master');
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
     type: 'part',
