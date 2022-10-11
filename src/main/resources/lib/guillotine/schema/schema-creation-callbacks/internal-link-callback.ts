@@ -38,12 +38,12 @@ export const internalLinkDataCallback: CreationCallback = (context, params) => {
         const { target } = env.source;
         const { baseContentId } = env.args;
         if (!target) {
-            logger.error(`internalLinkCallback: No valid target provided in ${baseContentId}`);
+            logger.error(`internalLinkCallback: No valid target provided in ${baseContentId}`, false, true);
             return null;
         }
         const content = getTarget(baseContentId, target, 0);
         if (!content) {
-            logger.content(`internalLinkCallback: Content not found in ${baseContentId}`);
+            logger.error(`internalLinkCallback: Content not found in ${baseContentId}`, false, true);
             return null;
         }
         return content;
