@@ -1,31 +1,40 @@
 <mixin>
-  <form>
-    <input name="owner" type="ComboBox">
-        <label>Eier</label>
-        <help-text> Data til intern bruk for å definere eierskap og se innholdsmengde</help-text>
-        <occurrences minimum="1" maximum="99"/>
-        <config>
-            <option value="ytelsesavdelingen">Ytelsesavdelingen</option>
-            <option value="arbeids_og_tjenesteavdelingen">Arbeids- og tjenesteavdelingen</option>
-            <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser Styringsenhet</option>
-            <option value="familie_og_pensjonsytelser_styringsenhet"> Ytelsesavdelingen / Familie- og pensjonsytelser styringsenhet</option>            
-            <option value="hr_avdelingen">HR-avdelingen</option>
-            <option value="juridisk_avdeling">Juridisk avdeling</option>
-            <option value="kunnskapsavdelingen">Kunnskapsavdelingen</option>
-            <option value="kommunikasjonsavdelingen">Kommunikasjonsavdelingen</option>
-            <option value="okonomi">Økonomi</option>
-            <option value="statistikk">Statistikk</option>
-            <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging</option>
-            <option value="kontaktsenteret">Kontaktsenteret</option>
-            <option value="team_personbruker">Team Personbruker</option>
-            <option value="it_avdelingen">IT-avdelingen</option>
-            <option value="fylke">Fylke</option>
-            <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen</option>     
-            <option value="arbeidslivssenter">Arbeidslivssenter</option>           
-            <option value="min_side">Min Side</option>
-            <option value="direktoratet">Direktoratet</option>
-            <option value="annet">Annet</option>           
-        </config>
-    </input>
-  </form>
+    <form>
+        <field-set>
+            <label>Eier</label>
+            <items>
+                <input name="owner" type="ComboBox">
+                    <label>Velg eier</label>
+                    <help-text>Data til intern bruk for å definere eierskap og se innholdsmengde</help-text>
+                    <occurrences minimum="1" maximum="99"/>
+                    <config>
+                        <option value="ytelsesavdelingen">Ytelsesavdelingen</option>
+                        <option value="arbeids_og_tjenesteavdelingen">Arbeids- og tjenesteavdelingen</option>
+                        <option value="arbeid_og_ytelser_styringsenhet">Ytelsesavdelingen / Arbeid og ytelser
+                            Styringsenhet
+                        </option>
+                        <option value="familie_og_pensjonsytelser_styringsenhet">Ytelsesavdelingen / Familie- og
+                            pensjonsytelser styringsenhet
+                        </option>
+                        <option value="hr_avdelingen">HR-avdelingen</option>
+                        <option value="juridisk_avdeling">Juridisk avdeling</option>
+                        <option value="kunnskapsavdelingen">Kunnskapsavdelingen</option>
+                        <option value="kommunikasjonsavdelingen">Kommunikasjonsavdelingen</option>
+                        <option value="okonomi">Økonomi</option>
+                        <option value="statistikk">Statistikk</option>
+                        <option value="hjelpemidler_og_tilrettelegging">Hjelpemidler og tilrettelegging</option>
+                        <option value="kontaktsenteret">Kontaktsenteret</option>
+                        <option value="team_personbruker">Team Personbruker</option>
+                        <option value="it_avdelingen">IT-avdelingen</option>
+                        <option value="fylke">Fylke</option>
+                        <option value="hjelpemiddelsentralen">Hjelpemiddelsentralen</option>
+                        <option value="arbeidslivssenter">Arbeidslivssenter</option>
+                        <option value="min_side">Min Side</option>
+                        <option value="direktoratet">Direktoratet</option>
+                        <option value="annet">Annet</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
 </mixin>

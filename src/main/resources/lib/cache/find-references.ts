@@ -1,9 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import {
-    findContentsWithFragmentMacro,
-    findContentsWithPayoutDatesMacro,
-    findContentsWithProductCardMacro,
-} from '../utils/htmlarea-utils';
+import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage } from '../global-values/global-value-utils';
 import {
     forceArray,
@@ -13,7 +9,6 @@ import {
 } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import {
-    productCardPartContentTypes,
     typesWithDeepReferences as _typesWithDeepReferences,
     contentTypesWithProductDetails,
 } from '../contenttype-lists';
@@ -24,7 +19,6 @@ import { getProductDetailsUsage } from '../product-utils/productDetails';
 
 const MAX_DEPTH = 3;
 
-const productCardTargetTypes = stringArrayToSet(productCardPartContentTypes);
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
@@ -33,33 +27,12 @@ const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
         (ref) => !prevRefs.some((prevRef) => prevRef._id === ref._id)
     );
 
-const getFragmentMacroReferences = (content: Content) => {
-    if (content.type !== 'portal:fragment') {
-        return [];
-    }
-
+const getHtmlAreaReferences = (content: Content) => {
     const { _id } = content;
 
-    const contentsWithFragmentId = findContentsWithFragmentMacro(_id);
-    if (contentsWithFragmentId.length > 0) {
-        logger.info(
-            `Found ${contentsWithFragmentId.length} pages with macro-references to fragment id ${_id}`
-        );
-    }
+    const references = findContentsWithHtmlAreaText(_id);
 
-    return contentsWithFragmentId;
-};
-
-const getProductCardMacroReferences = (content: Content) => {
-    if (!productCardTargetTypes[content.type]) {
-        return [];
-    }
-
-    const { _id } = content;
-
-    const references = findContentsWithProductCardMacro(_id);
-
-    logger.info(`Found ${references.length} pages with macro-references to product page id ${_id}`);
+    logger.info(`Found ${references.length} pages with htmlarea-references to content id ${_id}`);
 
     return references;
 };
@@ -110,20 +83,6 @@ const getProductDetailsReferences = (content: Content) => {
     return references;
 };
 
-const getPayoutDatesReferences = (content: Content) => {
-    if (content.type !== 'no.nav.navno:payout-dates') {
-        return [];
-    }
-
-    const references = findContentsWithPayoutDatesMacro(content._id);
-
-    logger.info(
-        `Found ${references.length} pages with references to payout dates id ${content._id}`
-    );
-
-    return references;
-};
-
 // AreaPage references to Situation pages are set programatically, which does
 // not seem to generate dependencies in XP. We need to handle this ourselves.
 const getSituationAreaPageReferences = (content: Content) => {
@@ -158,12 +117,10 @@ const getCustomReferences = (content: Content | null) => {
     }
 
     return [
+        ...getHtmlAreaReferences(content),
         ...getGlobalValueReferences(content),
-        ...getProductCardMacroReferences(content),
-        ...getFragmentMacroReferences(content),
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
-        ...getPayoutDatesReferences(content),
         ...getSituationAreaPageReferences(content),
     ];
 };
