@@ -164,7 +164,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
         const anchorLinkOverrides = forceArray(env.source.anchorLinks);
         const components = getComponents(contentId, repo);
 
-        const anchorLinksResolved = components.reduce((acc: AnchorLink[], component) => {
+        return components.reduce((acc: AnchorLink[], component) => {
             const anchorLink = getComponentAnchorLink(component, repo);
             if (!anchorLink) {
                 return acc;
@@ -181,8 +181,10 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
 
             if (isDupe && context.branch === 'master') {
                 logger.warning(
-                    `Duplicate anchor id ${anchorId} found under content id ${contentId}`
-                );
+                    `Duplicate anchor id ${anchorId} found under content id ${contentId}`,
+                    false,
+                    true
+            );
             }
 
             return [
@@ -194,7 +196,5 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
                 },
             ];
         }, [] as AnchorLink[]);
-
-        return anchorLinksResolved;
     };
 };
