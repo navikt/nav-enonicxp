@@ -3,11 +3,10 @@ import contextLib from '/lib/xp/context';
 type LogLevel = 'info' | 'warning' | 'error';
 
 const checkContextAndLog = (msg: string, level: LogLevel, logAsInfoInDraftContext?: boolean, content?: boolean) => {
-    const logMsg = `${content?'[content]':''}${msg}`;
     if (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft') {
-        log.info(logMsg);
+        log.info(msg);
     } else {
-        log[level](logMsg);
+        log[level](`${content?'[content]':''}${msg}`);
     }
 };
 
