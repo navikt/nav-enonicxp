@@ -21,6 +21,7 @@ const transformProductDetailsPart = (
     if (!isContentWithProductDetails(baseContent)) {
         logger.error(
             `Base content is not a valid type for product details - Base content id ${baseContentId}`,
+            true,
             true
         );
         return component;
@@ -30,6 +31,7 @@ const transformProductDetailsPart = (
     if (!productDetailsPartConfig) {
         logger.error(
             `Product detail part is not configured - Base content id ${baseContentId}`,
+            true,
             true
         );
         return component;
@@ -37,13 +39,19 @@ const transformProductDetailsPart = (
 
     const detailType = productDetailsPartConfig.detailType;
     if (!detailType) {
-        logger.error(`No product detail type specified - Base content id ${baseContentId}`, true);
+        logger.error(
+            `No product detail type specified - Base content id ${baseContentId}`,
+            true,
+            true);
         return component;
     }
 
     const detailContentId = baseContent.data?.[detailType as ProductDetails['detailType']];
     if (!detailContentId) {
-        logger.error(`No product detail id specified - Base content id ${baseContentId}`, true);
+        logger.error(
+            `No product detail id specified - Base content id ${baseContentId}`,
+            true,
+            true);
         return component;
     }
 
@@ -51,6 +59,7 @@ const transformProductDetailsPart = (
     if (!detailBaseContent) {
         logger.error(
             `No product detail content found for id ${detailContentId} - Base content id ${baseContentId}`,
+            true,
             true
         );
         return component;
@@ -60,6 +69,7 @@ const transformProductDetailsPart = (
     if (!detailContent) {
         logger.error(
             `Product detail content query failed for id ${detailContentId} - Base content id ${baseContentId}`,
+            true,
             true
         );
         return component;
@@ -69,6 +79,7 @@ const transformProductDetailsPart = (
     if (!detailComponents) {
         logger.error(
             `No product detail main region components found for id ${detailContentId} - Base content id ${baseContentId}`,
+            true,
             true
         );
         return component;
