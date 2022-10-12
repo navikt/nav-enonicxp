@@ -42,7 +42,8 @@ const transformProductDetailsPart = (
         logger.error(
             `No product detail type specified - Base content id ${baseContentId}`,
             true,
-            true);
+            true
+        );
         return component;
     }
 
@@ -51,7 +52,8 @@ const transformProductDetailsPart = (
         logger.error(
             `No product detail id specified - Base content id ${baseContentId}`,
             true,
-            true);
+            true
+        );
         return component;
     }
 
