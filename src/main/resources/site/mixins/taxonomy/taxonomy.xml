@@ -9,6 +9,7 @@
                 <option value="followup">Oppfølging</option>
                 <option value="benefits">Pengestøtte</option>
                 <option value="measures">Tiltak</option>
+                <option value="service">Tjeneste</option>
                 <option value="rights">Veiledning</option>
                 <option value="for_employers">For arbeidsgivere</option>
                 <option value="for_providers">For samarbeidspartnere</option>

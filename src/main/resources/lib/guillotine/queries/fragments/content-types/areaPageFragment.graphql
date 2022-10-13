@@ -1,5 +1,4 @@
 #import "../mixins/languagesFragment.graphql"
-#import "../mixins/areasFragment.graphql"
 #import "../mixins/internalLinkTargetFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 
@@ -27,9 +26,6 @@ fragment contentAreaPage on no_nav_navno_AreaPage {
         }
         languages {
             ...languagesMixin
-        }
-        areasRefs {
-            ...areasMixin
         }
     }
 }

@@ -1,17 +1,22 @@
 <mixin>
-  <form>
-    <input name="managed-by" type="ComboBox">
-        <label>Forvaltes av (hvis annet enn eier):</label>
-        <occurrences minimum="0" maximum="99"/>
-        <config>
-            <option value="po_aap">PO AAP</option>
-            <option value="po_arbeid">PO Arbeid</option>      
-            <option value="po_familie">PO Familie</option>
-            <option value="po_helse">PO Helse</option>
-            <option value="po_pensjon">PO Pensjon</option>
-            <option value="po_arbeidsgiver">PO Arbeidsgiver</option>
-            <option value="digisos">Digisos</option>            
-        </config>
-    </input>
-  </form>
+    <form>
+        <field-set>
+            <label>Forvaltes av (hvis annet enn eier)</label>
+            <items>
+                <input name="managed-by" type="ComboBox">
+                    <label>Velg forvalter</label>
+                    <occurrences minimum="0" maximum="99"/>
+                    <config>
+                        <option value="po_aap">PO AAP</option>
+                        <option value="po_arbeid">PO Arbeid</option>
+                        <option value="po_familie">PO Familie</option>
+                        <option value="po_helse">PO Helse</option>
+                        <option value="po_pensjon">PO Pensjon</option>
+                        <option value="po_arbeidsgiver">PO Arbeidsgiver</option>
+                        <option value="digisos">Digisos</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </form>
 </mixin>

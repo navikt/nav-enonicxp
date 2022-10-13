@@ -8,7 +8,21 @@
                 <field-set>
                     <label>Kategori</label>
                     <items>
-                        <mixin name="taxonomy" />
+                        <input name="taxonomy" type="ComboBox">
+                            <label>Kategorier</label>
+                            <occurrences minimum="0" maximum="99"/>
+                            <config>
+                                <option value="tips_job">Jobbsøkertips</option>
+                                <option value="help_work">Hjelp til å komme i jobb</option>
+                                <option value="when_sick">Når du er syk</option>
+                                <option value="payment">Utbetaling</option>
+                                <option value="complaint_rights">Klagerettigheter</option>
+                                <option value="user_support">Brukerstøtte</option>
+                                <option value="about_nav">Om NAV</option>
+                                <option value="membership_national_insurance">Medlemskap i folketrygden</option>            
+                                <option value="recruitment">Rekruttering (for arbeidsgivere)</option>
+                            </config>
+                        </input>                    
                         <input name="customCategory" type="TextLine">
                             <label>Tilleggskategori</label>
                             <help-text>Du kan også bruke denne dersom ingen kategorier i listen ovenfor er relevante.</help-text>
