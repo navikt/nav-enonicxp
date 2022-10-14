@@ -1,12 +1,19 @@
 import contextLib from '/lib/xp/context';
 
-type LogLevel = 'info' | 'warning' | 'error';
+// Includes custom loglevel 'critical' with uses log.error()
+type LogLevel = 'info' | 'warning' | 'error' | 'critical';
 
-const checkContextAndLog = (level: LogLevel, msg: string, logAsInfoInDraftContext?: boolean, content?: boolean) => {
+const checkContextAndLog = (
+        customLevel: LogLevel,
+        msg: string,
+        logAsInfoInDraftContext?: boolean,
+        content?: boolean
+    ) => {
+    const level = (customLevel ==='critical' ? 'error' : customLevel);
     if (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft') {
         log.info(msg);
     } else {
-        log[level](`[${level}]${content?'[editorial]':''} ${msg}`);
+        log[level](`[${customLevel}]${content?'[editorial]':''} ${msg}`);
     }
 };
 
@@ -23,7 +30,7 @@ const logError = (msg: string, logAsInfoInDraftContext?: boolean, content?: bool
 };
 
 const logCriticalError = (msg: string, logAsInfoInDraftContext?: boolean, content?: boolean) => {
-    checkContextAndLog('error', msg, logAsInfoInDraftContext, content);
+    checkContextAndLog('critical', msg, logAsInfoInDraftContext, content);
 };
 
 export const logger = {
