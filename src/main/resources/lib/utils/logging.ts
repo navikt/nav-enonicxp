@@ -6,7 +6,7 @@ const checkContextAndLog = (level: LogLevel, msg: string, logAsInfoInDraftContex
     if (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft') {
         log.info(msg);
     } else {
-        log[level](`'[${level}]'${content?'[editorial]':''}' '${msg}`);
+        log[level](`[${level}]${content?'[editorial]':''} ${msg}`);
     }
 };
 
