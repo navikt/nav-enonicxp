@@ -9,12 +9,10 @@ const checkContextAndLog = (
         logAsInfoInDraftContext?: boolean,
         content?: boolean
     ) => {
-    const level = (customLevel ==='critical' ? 'error' : customLevel);
-    if (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft') {
-        log.info(msg);
-    } else {
-        log[level](`[${customLevel}]${content?'[editorial]':''} ${msg}`);
-    }
+    const level = (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft' ? 'info'
+        : customLevel === 'critical' ? 'error' : customLevel
+    );
+    log[level](`[${customLevel}]${content?'[editorial]':''} ${msg}`);
 };
 
 const logInfo = (msg: string) => {
