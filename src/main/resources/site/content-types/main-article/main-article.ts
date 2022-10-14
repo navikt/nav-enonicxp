@@ -26,6 +26,11 @@ export interface MainArticle {
   hasTableOfContents?: "none" | "h3";
 
   /**
+   * Gjelder saken statistikk, analyse eller FoU?
+   */
+  subContentType: "statistics" | "none";
+
+  /**
    * Innhold i høyremenyen
    */
   menuListItems?: {
