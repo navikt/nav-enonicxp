@@ -1,29 +1,34 @@
 import contextLib from '/lib/xp/context';
 
-type LogLevel = 'info' | 'warning' | 'error';
+// Includes custom loglevel 'critical' with uses log.error()
+type LogLevel = 'info' | 'warning' | 'error' | 'critical';
 
-const checkContextAndLog = (msg: string, level: LogLevel, logAsInfoInDraftContext?: boolean) => {
-    if (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft') {
-        log.info(msg);
-    } else {
-        log[level](msg);
-    }
+const checkContextAndLog = (
+        customLevel: LogLevel,
+        msg: string,
+        logAsInfoInDraftContext?: boolean,
+        content?: boolean
+    ) => {
+    const level = (logAsInfoInDraftContext && contextLib.get()?.branch === 'draft' ? 'info'
+        : customLevel === 'critical' ? 'error' : customLevel
+    );
+    log[level](`[${customLevel}]${content?'[editorial]':''} ${msg}`);
 };
 
 const logInfo = (msg: string) => {
     log.info(`[info] ${msg}`);
 };
 
-const logWarning = (msg: string, logAsInfoInDraftContext?: boolean) => {
-    checkContextAndLog(`[warning] ${msg}`, 'warning', logAsInfoInDraftContext);
+const logWarning = (msg: string, logAsInfoInDraftContext?: boolean, content?: boolean) => {
+    checkContextAndLog('warning', msg, logAsInfoInDraftContext, content);
 };
 
-const logError = (msg: string, logAsInfoInDraftContext?: boolean) => {
-    checkContextAndLog(`[error] ${msg}`, 'error', logAsInfoInDraftContext);
+const logError = (msg: string, logAsInfoInDraftContext?: boolean, content?: boolean) => {
+    checkContextAndLog('error', msg, logAsInfoInDraftContext, content);
 };
 
-const logCriticalError = (msg: string, logAsInfoInDraftContext?: boolean) => {
-    checkContextAndLog(`[critical] ${msg}`, 'error', logAsInfoInDraftContext);
+const logCriticalError = (msg: string, logAsInfoInDraftContext?: boolean, content?: boolean) => {
+    checkContextAndLog('critical', msg, logAsInfoInDraftContext, content);
 };
 
 export const logger = {
