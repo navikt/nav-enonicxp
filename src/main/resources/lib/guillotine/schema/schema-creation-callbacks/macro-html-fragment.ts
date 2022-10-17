@@ -21,6 +21,7 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
             if (!content) {
                 logger.critical(
                     `Content not found for fragment in html-fragment macro: ${fragmentId}`,
+                    true,
                     true
                 );
                 return null;
@@ -28,7 +29,9 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             if (content.type !== 'portal:fragment') {
                 logger.error(
-                    `Content specified for html-fragment macro is not a fragment: ${fragmentId}`
+                    `Content specified for html-fragment macro is not a fragment: ${fragmentId}`,
+                    false,
+                    true
                 );
                 return null;
             }
@@ -36,7 +39,9 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
             const html = (content.fragment?.config as HtmlAreaPartConfig)?.html;
             if (!html) {
                 logger.warning(
-                    `Fragment in html-fragment macro did not contain html: ${fragmentId}`
+                    `Fragment in html-fragment macro did not contain html: ${fragmentId}`,
+                    false,
+                    true
                 );
                 return null;
             }

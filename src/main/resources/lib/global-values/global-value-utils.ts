@@ -65,12 +65,12 @@ export const getGlobalValueItem = <Type extends GlobalValueContentTypes>(
     const valuesFound = forceArray(content.data.valueItems).filter((value) => value.key === gvKey);
 
     if (valuesFound.length === 0) {
-        logger.warning(`Value not found for global value key ${gvKey}`);
+        logger.warning(`Value not found for global value key ${gvKey}`, false, true);
         return null;
     }
 
     if (valuesFound.length > 1) {
-        logger.critical(`Found multiple values with global value key ${gvKey}!`);
+        logger.critical(`Found multiple values with global value key ${gvKey}!`, false, true);
         return null;
     }
 
