@@ -42,7 +42,9 @@ const getProductDetails = (
     const productDetails = contentLib.get({ key: detailsContentId });
     if (!productDetails || productDetails.type !== 'no.nav.navno:product-details') {
         logger.error(
-            `Product details with id ${detailsContentId} and type ${overviewType} not found for content id ${product._id}`,
+            `Product details with id ${detailsContentId} and type ${overviewType} 
+            not found for content id ${product._id}`,
+            true,
             true
         );
         return null;
@@ -63,7 +65,9 @@ const getProductDetails = (
         productDetailsWithLanguage.type !== 'no.nav.navno:product-details'
     ) {
         logger.warning(
-            `Missing product details for content ${product._id} with language ${language}`
+            `Missing product details for content ${product._id} with language ${language}`,
+            false,
+            true
         );
         return null;
     }

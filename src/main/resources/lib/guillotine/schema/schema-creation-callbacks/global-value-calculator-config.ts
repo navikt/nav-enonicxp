@@ -19,6 +19,7 @@ export const globalValueCalculatorConfigCallback: CreationCallback = (context, p
             if (!gvKey || !contentId) {
                 logger.error(
                     `Invalid global value reference in calculator: ${env.source.key} (code 1)`,
+                    true,
                     true
                 );
                 return null;
@@ -31,6 +32,7 @@ export const globalValueCalculatorConfigCallback: CreationCallback = (context, p
             if (value === null) {
                 logger.error(
                     `Invalid global value reference in calculator: ${env.source.key} (code 2)`,
+                    true,
                     true
                 );
             }

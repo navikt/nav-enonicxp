@@ -6,7 +6,7 @@ fragment contentInternalLink on no_nav_navno_InternalLink {
         description
         permanentRedirect
         anchorId
-        target {
+        target(baseContentId: $ref) {
             ...contentCommon
         }
     }

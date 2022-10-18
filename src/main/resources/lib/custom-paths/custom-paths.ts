@@ -84,7 +84,7 @@ export const getInternalContentPathFromCustomPath = (xpPath: string) => {
     }
 
     if (content.length > 1) {
-        logger.critical(`Custom public path ${path} exists on multiple content objects!`);
+        logger.critical(`Custom public path ${path} exists on multiple content objects!`, false, true);
         return null;
     }
 

@@ -22,6 +22,7 @@ export const saksbehandlingstidMacroCallback: CreationCallback = (context, param
             if (!gvKey || !contentId) {
                 logger.error(
                     `Invalid global case time reference in macro: ${env.source.key} (code 1)`,
+                    true,
                     true
                 );
                 return null;
@@ -35,6 +36,7 @@ export const saksbehandlingstidMacroCallback: CreationCallback = (context, param
             if (!caseTimeData) {
                 logger.error(
                     `Invalid global case time reference in macro: ${env.source.key} (code 2)`,
+                    true,
                     true
                 );
                 return null;
