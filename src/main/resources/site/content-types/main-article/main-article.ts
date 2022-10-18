@@ -26,7 +26,7 @@ export interface MainArticle {
   hasTableOfContents?: "none" | "h3";
 
   /**
-   * Gjelder saken statistikk, analyse eller FoU?
+   * Gjelder saken statistikk, analyse eller FoU? (kun intern bruk)
    */
   subContentType: "statistics" | "none";
 
