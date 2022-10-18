@@ -41,7 +41,7 @@
                     <default>none</default>
                 </input>
                 <input type="RadioButton" name="subContentType">
-                    <label>Gjelder saken statistikk, analyse eller FoU?</label>
+                    <label>Gjelder saken statistikk, analyse eller FoU? (kun intern bruk)</label>
                     <occurrences minimum="1" maximum="1"/>
                     <default>none</default>
                     <config>
