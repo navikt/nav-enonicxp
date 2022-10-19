@@ -21,14 +21,14 @@ export interface MainArticle {
   contentType: "news" | "pressRelease" | "lastingContent";
 
   /**
+   * Gjelder saken statistikk, analyse eller forskning? (kun intern bruk)
+   */
+  subContentType: "statistics" | "none";
+
+  /**
    * Sett inn innholdsfortegnelse
    */
   hasTableOfContents?: "none" | "h3";
-
-  /**
-   * Gjelder saken statistikk, analyse eller FoU? (kun intern bruk)
-   */
-  subContentType: "statistics" | "none";
 
   /**
    * Innhold i høyremenyen
