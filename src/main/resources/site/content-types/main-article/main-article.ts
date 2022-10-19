@@ -21,7 +21,7 @@ export interface MainArticle {
   contentType: "news" | "pressRelease" | "lastingContent";
 
   /**
-   * Gjelder saken statistikk, analyse eller forskning? (kun intern bruk)
+   * Gjelder saken statistikk, analyse eller forskning?
    */
   subContentType: "statistics" | "none";
 

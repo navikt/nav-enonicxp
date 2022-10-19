@@ -32,7 +32,7 @@
                     </config>
                 </input>
                 <input type="RadioButton" name="subContentType">
-                    <label>Gjelder saken statistikk, analyse eller forskning? (kun intern bruk)</label>
+                    <label>Gjelder saken statistikk, analyse eller forskning?</label>
                     <help-text>Dette valget gir oss mulighet til å lage interne oversikter over innholdet på nav.no</help-text>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
