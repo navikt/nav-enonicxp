@@ -27,6 +27,7 @@ plugins {
     id "com.moowork.node" version '1.3.1'
     id 'java'
     id 'no.item.xp.codegen' version '1.1.9'
+    id 'com.github.ben-manes.versions' version '0.42.0'
 }
 node {
     version = '16.14.0'
@@ -76,9 +77,9 @@ dependencies {
     include "com.enonic.xp:lib-cluster:${xpVersion}"
     include "com.enonic.xp:lib-scheduler:${xpVersion}"
     include 'com.enonic.lib:lib-urlredirect:3.0.0'
-    include "com.enonic.lib:lib-http-client:2.4.0"
+    include "com.enonic.lib:lib-http-client:3.2.1"
     include "com.enonic.lib:lib-cache:2.1.1"
-    include "com.enonic.lib:lib-guillotine:5.5.0"
+    include "com.enonic.lib:lib-guillotine:6.0.5"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
     webjar "org.webjars.npm:html-entities:2.1.0"
     webjar "org.webjars.npm:striptags:3.1.1"
