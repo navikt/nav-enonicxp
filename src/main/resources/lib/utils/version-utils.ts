@@ -34,8 +34,8 @@ export const getNodeVersions = ({
 
         // Filter out versions with no changes, ie commits as a result of moving or
         // unpublishing/republishing without modifications
-        // Reverse and unreverse to ensure the newest unmodified versions are removed
-        // if several versions have the same modified time
+        // Reverse and unreverse to ensure the initial version is the one kept
+        // if multiple versions have the same modified time
         const modifiedVersions = removeDuplicates(
             commitedVersions.reverse(),
             (versionA, versionB) => {
