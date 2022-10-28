@@ -7,6 +7,7 @@ import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
+import { userIsAdmin } from '../lib/utils/auth-utils';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -41,6 +42,13 @@ type Params = {
 };
 
 export const get = (req: XP.Request) => {
+    if (!userIsAdmin()) {
+        return {
+            body: '<div>Administrator-tilgang er påkrevd</div>',
+            contentType: 'text/html; charset=UTF-8',
+        };
+    }
+
     const { cmd } = req.params as Params;
 
     const actionToRun = validActions[cmd];
