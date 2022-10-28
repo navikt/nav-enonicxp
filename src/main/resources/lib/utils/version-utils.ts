@@ -34,18 +34,23 @@ export const getNodeVersions = ({
 
         // Filter out versions with no changes, ie commits as a result of moving or
         // unpublishing/republishing without modifications
-        const modifiedVersions = removeDuplicates(commitedVersions, (versionA, versionB) => {
-            const contentA = contentLibGetStandard({
-                key: versionA.nodeId,
-                versionId: versionA.versionId,
-            });
-            const contentB = contentLibGetStandard({
-                key: versionB.nodeId,
-                versionId: versionB.versionId,
-            });
+        // Reverse and unreverse to ensure the newest unmodified versions are removed
+        // if several versions have the same modified time
+        const modifiedVersions = removeDuplicates(
+            commitedVersions.reverse(),
+            (versionA, versionB) => {
+                const contentA = contentLibGetStandard({
+                    key: versionA.nodeId,
+                    versionId: versionA.versionId,
+                });
+                const contentB = contentLibGetStandard({
+                    key: versionB.nodeId,
+                    versionId: versionB.versionId,
+                });
 
-            return contentA?.modifiedTime === contentB?.modifiedTime;
-        });
+                return contentA?.modifiedTime === contentB?.modifiedTime;
+            }
+        ).reverse();
 
         return modifiedVersions;
     }
