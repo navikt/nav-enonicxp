@@ -21,6 +21,11 @@ export interface MainArticle {
   contentType: "news" | "pressRelease" | "lastingContent";
 
   /**
+   * Gjelder saken statistikk, analyse eller forskning?
+   */
+  subContentType: "statistics" | "none";
+
+  /**
    * Sett inn innholdsfortegnelse
    */
   hasTableOfContents?: "none" | "h3";

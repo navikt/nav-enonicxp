@@ -12,5 +12,29 @@ export const getProductDetailsUsage = (content: Content<'no.nav.navno:product-de
         },
     }).hits;
 
-    return contentWithUsage;
+    const overviewPages = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:overview'],
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'data.overviewType',
+                            values: [content.data.detailType, 'all_products'],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [content.language],
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    return [...contentWithUsage, ...overviewPages];
 };
