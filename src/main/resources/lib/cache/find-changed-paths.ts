@@ -12,7 +12,12 @@ export const findChangedPaths = ({ id, path }: { id: string; path: string }) => 
 
     const changedPaths = [];
 
-    const previousVersion = getNodeVersions({ nodeKey: id, repo, branch: 'master' })?.[1];
+    const previousVersion = getNodeVersions({
+        nodeKey: id,
+        repo,
+        branch: 'master',
+        modifiedOnly: false,
+    })?.[1];
 
     if (previousVersion) {
         const previousPath = getFrontendPathname(previousVersion.nodePath);

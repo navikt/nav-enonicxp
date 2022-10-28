@@ -1,7 +1,8 @@
 import contextLib from '/lib/xp/context';
 import nodeLib, { RepoConnection } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
-import { getUnixTimeFromDateTimeString } from './nav-utils';
+import { getUnixTimeFromDateTimeString, removeDuplicates } from './nav-utils';
+import { contentLibGetStandard } from '../time-travel/standard-functions';
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
@@ -10,19 +11,45 @@ export const getNodeVersions = ({
     nodeKey,
     repo,
     branch,
+    modifiedOnly = true,
 }: {
     nodeKey: string;
     repo: RepoConnection;
     branch: RepoBranch;
+    modifiedOnly?: boolean;
 }) => {
     const versions = repo.findVersions({
         key: nodeKey,
         start: 0,
         count: 1000,
     }).hits;
+
     if (branch === 'master') {
-        return versions.filter((version) => !!version.commitId);
+        // Get only versions that have been committed to master
+        const commitedVersions = versions.filter((version) => !!version.commitId);
+
+        if (!modifiedOnly) {
+            return commitedVersions;
+        }
+
+        // Filter out versions with no changes, ie commits as a result of moving or
+        // unpublishing/republishing without modifications
+        const modifiedVersions = removeDuplicates(commitedVersions, (versionA, versionB) => {
+            const contentA = contentLibGetStandard({
+                key: versionA.nodeId,
+                versionId: versionA.versionId,
+            });
+            const contentB = contentLibGetStandard({
+                key: versionB.nodeId,
+                versionId: versionB.versionId,
+            });
+
+            return contentA?.modifiedTime === contentB?.modifiedTime;
+        });
+
+        return modifiedVersions;
     }
+
     return versions;
 };
 
