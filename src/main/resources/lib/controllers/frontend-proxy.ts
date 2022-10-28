@@ -80,7 +80,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
         const response = httpClient.request({
             url: frontendUrl,
             contentType: 'text/html',
-            connectionTimeout: 5000,
+            connectionTimeout: 15000,
             headers: {
                 secret: app.config.serviceSecret,
             },
