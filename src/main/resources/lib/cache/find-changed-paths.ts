@@ -16,7 +16,6 @@ export const findChangedPaths = ({ id, path }: { id: string; path: string }) => 
         nodeKey: id,
         repo,
         branch: 'master',
-        modifiedOnly: false,
     })?.[1];
 
     if (previousVersion) {
