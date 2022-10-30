@@ -55,3 +55,6 @@ export const validateCurrentUserPermissionForContent = (
 
     return currentUserHasAccess;
 };
+
+export const validateServiceSecretHeader = (req: XP.Request) =>
+    req.headers.secret === app.config.serviceSecret;

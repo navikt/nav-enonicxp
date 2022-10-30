@@ -3,7 +3,7 @@ import { isValidBranch } from '../../lib/utils/branch-context';
 import { logger } from '../../lib/utils/logging';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { getSubPath } from '../service-utils';
-import { userIsAuthenticated } from '../../lib/utils/auth-utils';
+import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { publishedVersionsReqHandler } from './publishedVersions/publisedVersions';
 
 const isValidTime = (time?: string): time is string => {
@@ -85,7 +85,7 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    if (req.headers.secret !== app.config.serviceSecret && !userIsAuthenticated()) {
+    if (validateServiceSecretHeader(req) && !userIsAuthenticated()) {
         return {
             status: 401,
             body: {
