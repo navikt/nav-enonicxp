@@ -1,11 +1,18 @@
+import { isUUID } from '../../lib/utils/uuid';
 import { isValidBranch } from '../../lib/utils/branch-context';
-import { getResponseFromCache } from './cache';
-import { getSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
+import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
+
+const isValidTime = (time: string) => {
+    try {
+        return !!new Date(time);
+    } catch (e) {
+        logger.info(`Invalid time parameter ${time} - ${e}`);
+        return false;
+    }
+};
 
 export const get = (req: XP.Request) => {
-    // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch = 'master', preview, cacheKey } = req.params;
     const { secret } = req.headers;
 
     if (secret !== app.config.serviceSecret) {
@@ -18,11 +25,23 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!idOrPath) {
+    const { id, branch = 'master', time } = req.params;
+
+    if (!id || !isUUID(id)) {
         return {
             status: 400,
             body: {
-                message: 'No content id or path was provided',
+                message: 'No valid id parameter was provided',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    if (!time || !isValidTime(time)) {
+        return {
+            status: 400,
+            body: {
+                message: 'No valid time parameter was provided',
             },
             contentType: 'application/json',
         };
@@ -39,21 +58,16 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const content = getResponseFromCache(
-            idOrPath,
-            () => getSitecontentResponse(idOrPath, branch, preview === 'true'),
-            cacheKey
-        );
+        const content = getContentVersionFromDateTime(id, branch, time);
 
         if (!content) {
-            logger.info(`Content not found: ${idOrPath}`);
+            const msg = `Content version not found: ${id} - ${time}`;
+            logger.info(msg);
+
             return {
                 status: 404,
                 body: {
-                    // This message is used by the frontend to differentiate between
-                    // 404 returned from this service and general 404 from the server
-                    // Don't change it without also changing the implementation in the frontend!
-                    message: 'Site path not found',
+                    message: msg,
                 },
                 contentType: 'application/json',
             };
@@ -65,13 +79,9 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
         };
     } catch (e) {
-        const msg = `Error fetching content for ${idOrPath} - ${e}`;
+        const msg = `Error fetching content version for ${id} ${time} - ${e}`;
 
-        if (branch === 'master') {
-            logger.critical(msg);
-        } else {
-            logger.error(msg);
-        }
+        logger.error(msg);
 
         return {
             status: 500,

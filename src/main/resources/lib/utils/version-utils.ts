@@ -1,7 +1,7 @@
 import contextLib from '/lib/xp/context';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import nodeLib, { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
-import { getUnixTimeFromDateTimeString, removeDuplicates } from './nav-utils';
+import { getUnixTimeFromDateTimeString } from './nav-utils';
 import { contentLibGetStandard } from '../time-travel/standard-functions';
 
 export const getNodeKey = (contentRef: string) =>
@@ -34,23 +34,18 @@ export const getNodeVersions = ({
 
         // Filter out versions with no changes, ie commits as a result of moving or
         // unpublishing/republishing without modifications
-        // Reverse and unreverse to ensure the initial version is the one kept
-        // if multiple versions have the same modified time
-        const modifiedVersions = removeDuplicates(
-            commitedVersions.reverse(),
-            (versionA, versionB) => {
-                const contentA = contentLibGetStandard({
-                    key: versionA.nodeId,
-                    versionId: versionA.versionId,
-                });
-                const contentB = contentLibGetStandard({
-                    key: versionB.nodeId,
-                    versionId: versionB.versionId,
-                });
+        const modifiedVersions = commitedVersions.reverse().reduce((acc, version) => {
+            const content = contentLibGetStandard({
+                key: version.nodeId,
+                versionId: version.versionId,
+            });
 
-                return contentA?.modifiedTime === contentB?.modifiedTime;
+            if (!content || content.modifiedTime === acc[0]?.modifiedTime) {
+                return acc;
             }
-        ).reverse();
+
+            return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
+        }, [] as (NodeVersionMetadata & { modifiedTime?: string })[]);
 
         return modifiedVersions;
     }
@@ -120,7 +115,7 @@ export const getPublishedVersionTimestamps = (
     // In production, requests from master should not include version timestamps
     // This check must be removed if/when we decide to make version history public
     if (app.config.env === 'p' && branch === 'master') {
-        return {};
+        return [];
     }
 
     return getVersionTimestamps(contentRef, 'master', modifiedOnly);
