@@ -3,46 +3,28 @@ import { isValidBranch } from '../../lib/utils/branch-context';
 import { logger } from '../../lib/utils/logging';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { getSubPath } from '../service-utils';
-import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
 import { userIsAuthenticated } from '../../lib/utils/auth-utils';
+import { publishedVersionsReqHandler } from './publishedVersions/publisedVersions';
 
-const isValidTime = (time: string) => {
+const isValidTime = (time?: string): time is string => {
     try {
-        return !!new Date(time);
+        return !!(time && !!new Date(time));
     } catch (e) {
         logger.info(`Invalid time parameter ${time} - ${e}`);
         return false;
     }
 };
 
-export const get = (req: XP.Request) => {
-    if (req.headers.secret !== app.config.serviceSecret && !userIsAuthenticated()) {
-        return {
-            status: 401,
-            body: {
-                message: 'Not authorized',
-            },
-            contentType: 'application/json',
-        };
-    }
-
+const sitecontentVersionsReqHandler = (req: XP.Request) => {
     const { id, branch = 'master', time } = req.params;
 
-    if (!id || !isUUID(id)) {
+    if (!isUUID(id)) {
         return {
             status: 400,
             body: {
                 message: 'No valid id parameter was provided',
             },
             contentType: 'application/json',
-        };
-    }
-
-    if (getSubPath(req) === 'publishedVersions') {
-        return {
-            status: 200,
-            contentType: 'application/json',
-            body: getPublishedVersionTimestamps(id, 'master'),
         };
     }
 
@@ -56,7 +38,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!time || !isValidTime(time)) {
+    if (!isValidTime(time)) {
         return {
             status: 400,
             body: {
@@ -100,4 +82,30 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
         };
     }
+};
+
+export const get = (req: XP.Request) => {
+    if (req.headers.secret !== app.config.serviceSecret && !userIsAuthenticated()) {
+        return {
+            status: 401,
+            body: {
+                message: 'Not authorized',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    const subPath = getSubPath(req);
+
+    if (!subPath) {
+        return sitecontentVersionsReqHandler(req);
+    }
+
+    if (getSubPath(req) === 'publishedVersions') {
+        return publishedVersionsReqHandler(req);
+    }
+
+    return {
+        status: 404,
+    };
 };

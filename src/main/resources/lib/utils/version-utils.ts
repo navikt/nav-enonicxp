@@ -99,40 +99,22 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
-const getVersionTimestamps = (
-    contentRef: string,
-    branch: RepoBranch = 'master',
-    modifiedOnly = false
-) => {
+// Used by the version history selector in the frontend
+export const getPublishedVersionTimestamps = (contentRef: string) => {
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,
-        branch: branch,
+        branch: 'master',
     });
 
     const versions = getNodeVersions({
         nodeKey: getNodeKey(contentRef),
-        branch,
+        branch: 'master',
         repo,
-        modifiedOnly,
+        modifiedOnly: true,
     });
 
     return versions.map((version) => version.timestamp);
-};
-
-// Used by the version history selector in the frontend
-export const getPublishedVersionTimestamps = (
-    contentRef: string,
-    branch: RepoBranch,
-    modifiedOnly = true
-) => {
-    // In production, requests from master should not include version timestamps
-    // This check must be removed if/when we decide to make version history public
-    if (app.config.env === 'p' && branch === 'master') {
-        return [];
-    }
-
-    return getVersionTimestamps(contentRef, 'master', modifiedOnly);
 };
 
 // If the requested time is older than the oldest version of the content,
