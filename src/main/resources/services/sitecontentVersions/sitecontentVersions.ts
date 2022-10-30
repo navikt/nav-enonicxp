@@ -2,6 +2,9 @@ import { isUUID } from '../../lib/utils/uuid';
 import { isValidBranch } from '../../lib/utils/branch-context';
 import { logger } from '../../lib/utils/logging';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
+import { getSubPath } from '../service-utils';
+import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
+import { userIsAuthenticated } from '../../lib/utils/auth-utils';
 
 const isValidTime = (time: string) => {
     try {
@@ -13,9 +16,7 @@ const isValidTime = (time: string) => {
 };
 
 export const get = (req: XP.Request) => {
-    const { secret } = req.headers;
-
-    if (secret !== app.config.serviceSecret) {
+    if (req.headers.secret !== app.config.serviceSecret && !userIsAuthenticated()) {
         return {
             status: 401,
             body: {
@@ -37,13 +38,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (!time || !isValidTime(time)) {
+    if (getSubPath(req) === 'publishedVersions') {
         return {
-            status: 400,
-            body: {
-                message: 'No valid time parameter was provided',
-            },
+            status: 200,
             contentType: 'application/json',
+            body: getPublishedVersionTimestamps(id, 'master'),
         };
     }
 
@@ -52,6 +51,16 @@ export const get = (req: XP.Request) => {
             status: 400,
             body: {
                 message: 'Invalid branch specified',
+            },
+            contentType: 'application/json',
+        };
+    }
+
+    if (!time || !isValidTime(time)) {
+        return {
+            status: 400,
+            body: {
+                message: 'No valid time parameter was provided',
             },
             contentType: 'application/json',
         };
