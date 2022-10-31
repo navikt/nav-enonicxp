@@ -7,7 +7,7 @@
             <occurrences minimum="1" maximum="1"/>
             <config>
                 <option value="serviceInformation">Dette kan vi hjelpe deg med</option>
-                <option value="socialHelpLink">Lenke til søk om økonomisk sosialhjelp</option>
+                <option value="socialHelpLinks">Søknadslenker til økonomisk sosialhjelp</option>
                 <option value="socialHelpPostalInformation">Postkasse for økonomisk sosialhjelp</option>
                 <option value="socialHelpPayoutInformation">Utbetaling av økonomisk sosialhjelp</option>
             </config>
