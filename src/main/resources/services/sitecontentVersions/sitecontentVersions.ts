@@ -85,7 +85,7 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    if (validateServiceSecretHeader(req) && !userIsAuthenticated()) {
+    if (!validateServiceSecretHeader(req) && !userIsAuthenticated()) {
         return {
             status: 401,
             body: {
