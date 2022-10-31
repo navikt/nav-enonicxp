@@ -8,7 +8,7 @@ import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
-import { getParentPath, isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
@@ -212,10 +212,6 @@ export const getSitecontentResponse = (
 
     if (!content) {
         return null;
-    }
-
-    if (isMedia(content)) {
-        return content;
     }
 
     return content;
