@@ -43,6 +43,7 @@ import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.g
 import meldingQuery from './content-queries/meldingQuery.graphql';
 import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
 import officeBranchQuery from './content-queries/officeBranchQuery.graphql';
+import officeEditorialPageQuery from './content-queries/officeEditorialPageQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
 import payoutDatesQuery from './content-queries/payoutDatesQuery.graphql';
@@ -53,7 +54,6 @@ import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
-import officeEditorialPageQuery from './content-queries/officeEditorialPageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';

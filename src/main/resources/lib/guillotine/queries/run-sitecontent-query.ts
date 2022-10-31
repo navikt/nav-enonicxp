@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import { RepoBranch } from '../../../types/common';
+import { BaseQueryParams, RepoBranch } from '../../../types/common';
 import { contentTypesWithComponents as _contentTypesWithComponents } from '../../contenttype-lists';
 import { stringArrayToSet } from '../../utils/nav-utils';
 import { ComponentType } from '../../../types/components/component-config';
@@ -18,13 +18,6 @@ import { guillotineTransformSpecialComponents } from './transform-special-compon
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {
     components: GuillotineComponent[];
-};
-type BaseQueryParams = {
-    branch: RepoBranch;
-    params: {
-        ref: string;
-    };
-    throwOnErrors: boolean;
 };
 
 const contentTypesWithComponents = stringArrayToSet(_contentTypesWithComponents);
@@ -119,28 +112,7 @@ export const runGuillotineComponentsQuery = (
 };
 
 export const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
-    const queryResult = contentLib.query({
-        contentTypes: ['no.nav.navno:office-editorial-page'],
-        filters: {
-            boolean: {
-                must: [
-                    {
-                        hasValue: {
-                            field: 'language',
-                            values: [contentQueryResult.language],
-                        },
-                    },
-                ],
-            },
-        },
-        count: 1,
-    });
-
-    if (queryResult.hits.length === 0) {
-        return;
-    }
-
-    const officeEditorialPageContent = queryResult.hits[0];
+    const officeEditorialPageContent = contentQueryResult.editorial;
 
     const officeEditorialQueryParams: BaseQueryParams = {
         branch: 'master',
@@ -150,6 +122,8 @@ export const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: an
         },
     };
 
+    // Run guillotine query in order to resolve fragments and global
+    // values contained in the editorial page object.
     const { components, fragments } = runGuillotineComponentsQuery(
         officeEditorialQueryParams,
         officeEditorialPageContent
