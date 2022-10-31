@@ -46,7 +46,8 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
-    startOfficeBranchPeriodicUpdateSchedule();
+    // Todo: Activate this only when we're going live with the new office branch.
+    // startOfficeBranchPeriodicUpdateSchedule();
 }
 
 log.info('Finished running main');
