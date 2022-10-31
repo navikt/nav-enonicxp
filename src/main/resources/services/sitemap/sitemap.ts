@@ -1,10 +1,9 @@
 import { getAllSitemapEntries, requestSitemapUpdate } from '../../lib/sitemap/sitemap';
 import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
 export const get = (req: XP.Request) => {
-    const { secret } = req.headers;
-
-    if (secret !== app.config.serviceSecret) {
+    if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
             body: {

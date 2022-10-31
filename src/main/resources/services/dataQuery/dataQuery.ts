@@ -7,6 +7,7 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -157,9 +158,7 @@ let rejectUntilTime = 0;
 const timeoutPeriodMs = 1000 * 60 * 5;
 
 export const get = (req: XP.Request) => {
-    const { secret } = req.headers;
-
-    if (secret !== app.config.serviceSecret) {
+    if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
             body: {

@@ -2,9 +2,10 @@ import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { getUnixTimeFromDateTimeString, stringArrayToSet } from '../utils/nav-utils';
 import { Content } from '/lib/xp/content';
-import { contentLibGetStandard, timeTravelHooksEnabled } from './time-travel-hooks';
+import { timeTravelHooksEnabled } from './time-travel-hooks';
 import { graphQlContentQueries } from '../guillotine/queries/run-content-query';
 import { logger } from '../utils/logging';
+import { contentLibGetStandard } from './standard-functions';
 
 const contentTypesWithQuery = stringArrayToSet(Object.keys(graphQlContentQueries));
 

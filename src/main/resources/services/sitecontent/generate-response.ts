@@ -8,12 +8,10 @@ import {
     getInternalContentPathFromCustomPath,
     shouldRedirectToCustomPath,
 } from '../../lib/custom-paths/custom-paths';
-import { getParentPath, isMedia, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
-import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
-import { getPublishedVersionTimestamps } from '../../lib/utils/version-utils';
 import { logger } from '../../lib/utils/logging';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
@@ -208,27 +206,13 @@ const getContentOrRedirect = (
 export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
-    preview: boolean,
-    datetime?: string
+    preview: boolean
 ) => {
-    if (datetime) {
-        return getContentVersionFromDateTime(requestedPathOrId, branch, datetime);
-    }
-
     const content = getContentOrRedirect(requestedPathOrId, branch, preview);
 
     if (!content) {
         return null;
     }
 
-    if (isMedia(content)) {
-        return content;
-    }
-
-    const versionTimestamps = getPublishedVersionTimestamps(content._id, branch);
-
-    return {
-        ...content,
-        versionTimestamps,
-    };
+    return content;
 };
