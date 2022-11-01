@@ -3,5 +3,5 @@ export interface OfficeEditorialDetailPartConfig {
   /**
    * Velg detaljinformasjon
    */
-  detailType: "serviceInformation" | "socialHelpLink" | "socialHelpPostalInformation" | "socialHelpPayoutInformation";
+  detailType: "serviceInformation" | "socialHelpLinks" | "socialHelpPostalInformation" | "socialHelpPayoutInformation";
 }
