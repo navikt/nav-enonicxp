@@ -60,6 +60,10 @@ const deleteIfContentExists = (name: string) => {
     }
 };
 
+const getOfficeLanguage = (office: any) => {
+    return office.data?.brukerkontakt?.spraakdrakt?.toLowerCase() || 'no';
+};
+
 const updateOfficeBranch = (officeBranchUpdated: OfficeBranch[]) => {
     const existingOffices = contentLib
         .getChildren({
@@ -106,6 +110,7 @@ const updateOfficeBranch = (officeBranchUpdated: OfficeBranch[]) => {
                         key: existingOffice._id,
                         editor: (content) => ({
                             ...content,
+                            language: getOfficeLanguage(content),
                             displayName: enhet.navn,
                             data: { ...updatedOfficeBranch, checksum: updatedChecksum },
                         }),
@@ -154,6 +159,7 @@ const updateOfficeBranch = (officeBranchUpdated: OfficeBranch[]) => {
                     name: updatedName,
                     parentPath: parentPath,
                     displayName: enhet.navn,
+                    language: getOfficeLanguage(enhet),
                     contentType: officeBranchContentType,
                     data: {
                         ...updatedOfficeBranch,
