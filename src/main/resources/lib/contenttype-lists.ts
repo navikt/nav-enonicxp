@@ -28,7 +28,6 @@ export const productCardPartContentTypes: ContentTypeList = [
 export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:situation-page`,
     `${appDescriptor}:guide-page`,
-    `${appDescriptor}:office-editorial-page`,
     `${appDescriptor}:office-branch`,
     `${appDescriptor}:themed-article-page`,
     `${appDescriptor}:content-page-with-sidemenus`,
@@ -120,6 +119,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:contact-information`,
     `${appDescriptor}:product-details`,
     `${appDescriptor}:payout-dates`,
+    `${appDescriptor}:office-editorial-page`,
     'portal:page-template',
     'portal:fragment',
     'portal:site',

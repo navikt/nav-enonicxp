@@ -34,11 +34,16 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
                     },
                 },
 
-                count: 1,
+                count: 2,
             });
 
-            if (queryResult.count === 0) {
-                return;
+            if (queryResult.count !== 1) {
+                const errorMessage =
+                    queryResult.count === 0
+                        ? 'No editorial office page found'
+                        : `'Multiple editorial office pages found for language '${language}'.`;
+                logger.error(errorMessage);
+                return queryResult.count > 0 ? queryResult.hits[0] : undefined;
             }
 
             // Editorial content for office pages should only have one content per language,

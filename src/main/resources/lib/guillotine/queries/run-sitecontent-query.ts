@@ -112,7 +112,15 @@ export const runGuillotineComponentsQuery = (
 };
 
 export const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
-    const officeEditorialPageContent = contentQueryResult.editorial;
+    const officeEditorialPageContent = contentQueryResult?.editorial;
+    if (!officeEditorialPageContent) {
+        return {
+            ...contentQueryResult,
+            editorial: {
+                page: {},
+            },
+        };
+    }
 
     const officeEditorialQueryParams: BaseQueryParams = {
         branch: 'master',
