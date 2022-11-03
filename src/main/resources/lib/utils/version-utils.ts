@@ -1,7 +1,11 @@
 import contextLib from '/lib/xp/context';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import nodeLib, { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { getUnixTimeFromDateTimeString } from './nav-utils';
+import { contentLibGetStandard } from '../time-travel/standard-functions';
+import { logger } from './logging';
+
+const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
 export const getNodeKey = (contentRef: string) =>
     contentRef.replace(/^\/www.nav.no/, '/content/www.nav.no');
@@ -10,20 +14,57 @@ export const getNodeVersions = ({
     nodeKey,
     repo,
     branch,
+    modifiedOnly = false,
 }: {
     nodeKey: string;
     repo: RepoConnection;
     branch: RepoBranch;
+    modifiedOnly?: boolean;
 }) => {
-    const versions = repo.findVersions({
+    const result = repo.findVersions({
         key: nodeKey,
         start: 0,
-        count: 1000,
-    }).hits;
-    if (branch === 'master') {
-        return versions.filter((version) => !!version.commitId);
+        count: MAX_VERSIONS_COUNT_TO_RETRIEVE,
+    });
+
+    if (result.total > MAX_VERSIONS_COUNT_TO_RETRIEVE) {
+        logger.error(
+            `Content node ${nodeKey} has more than the maximum allowed versions count ${MAX_VERSIONS_COUNT_TO_RETRIEVE}`
+        );
     }
-    return versions;
+
+    const versions = result.hits;
+
+    if (branch !== 'master') {
+        return versions;
+    }
+
+    // Get only versions that have been committed to master
+    const commitedVersions = versions.filter((version) => !!version.commitId);
+
+    if (!modifiedOnly) {
+        return commitedVersions;
+    }
+
+    // Filter out versions with no changes, ie commits as a result of moving or
+    // unpublishing/republishing without modifications
+    // Reverse the versions array to process oldest versions first
+    // This ensures the initial committed version is kept, and subsequent (unmodified)
+    // commits are discarded
+    const modifiedVersions = commitedVersions.reverse().reduce((acc, version) => {
+        const content = contentLibGetStandard({
+            key: version.nodeId,
+            versionId: version.versionId,
+        });
+
+        if (!content || content.modifiedTime === acc[0]?.modifiedTime) {
+            return acc;
+        }
+
+        return [{ ...version, modifiedTime: content.modifiedTime }, ...acc];
+    }, [] as (NodeVersionMetadata & { modifiedTime?: string })[]);
+
+    return modifiedVersions;
 };
 
 export const getVersionFromTime = ({
@@ -58,31 +99,22 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
-export const getVersionTimestamps = (contentRef: string, branch: RepoBranch = 'master') => {
+// Used by the version history selector in the frontend
+export const getPublishedVersionTimestamps = (contentRef: string) => {
     const context = contextLib.get();
     const repo = nodeLib.connect({
         repoId: context.repository,
-        branch: branch,
+        branch: 'master',
     });
 
     const versions = getNodeVersions({
         nodeKey: getNodeKey(contentRef),
-        branch,
+        branch: 'master',
         repo,
+        modifiedOnly: true,
     });
 
     return versions.map((version) => version.timestamp);
-};
-
-// Used by the version history selector in the frontend
-export const getPublishedVersionTimestamps = (contentRef: string, branch: RepoBranch) => {
-    // In production, requests from master should not include version timestamps
-    // This check must be removed if/when we decide to make version history public
-    if (app.config.env === 'p' && branch === 'master') {
-        return {};
-    }
-
-    return getVersionTimestamps(contentRef, 'master');
 };
 
 // If the requested time is older than the oldest version of the content,

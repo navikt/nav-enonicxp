@@ -3,5 +3,5 @@ export interface Keywords {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }

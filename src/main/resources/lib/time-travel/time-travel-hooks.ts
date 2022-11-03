@@ -19,11 +19,9 @@ import { runInBranchContext } from '../utils/branch-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
+import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
 
 export let timeTravelHooksEnabled = false;
-
-export const contentLibGetStandard = contentLib.get;
-export const nodeLibConnectStandard = nodeLib.connect;
 
 // This function will hook content retrieval functions to retrieve data from
 // the version at the requested timestamp. Only calls from threads currently

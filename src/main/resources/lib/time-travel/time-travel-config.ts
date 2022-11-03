@@ -1,7 +1,7 @@
 import contextLib from '/lib/xp/context';
 import { getNodeKey, getTargetUnixTime } from '../utils/version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
-import { nodeLibConnectStandard } from './time-travel-hooks';
+import { nodeLibConnectStandard } from './standard-functions';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
 

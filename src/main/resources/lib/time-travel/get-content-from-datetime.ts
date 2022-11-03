@@ -32,11 +32,9 @@ export const getContentVersionFromDateTime = (
                 return null;
             }
 
-            const versionTimestamps = getPublishedVersionTimestamps(content._id, 'draft');
-
             return {
                 ...content,
-                versionTimestamps,
+                versionTimestamps: getPublishedVersionTimestamps(content._id),
                 livePath: contentCurrent._path,
             };
         });

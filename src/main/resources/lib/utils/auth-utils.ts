@@ -12,6 +12,8 @@ export const insufficientPermissionResponse = (requiredPermission: string) => ({
     },
 });
 
+export const userIsAuthenticated = () => authLib.hasRole('role:system.authenticated');
+
 export const userIsAdmin = () => authLib.hasRole('role:system.admin');
 
 export const validateCurrentUserPermissionForContent = (
@@ -53,3 +55,6 @@ export const validateCurrentUserPermissionForContent = (
 
     return currentUserHasAccess;
 };
+
+export const validateServiceSecretHeader = (req: XP.Request) =>
+    req.headers.secret === app.config.serviceSecret;

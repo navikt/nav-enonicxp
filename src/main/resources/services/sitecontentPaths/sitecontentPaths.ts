@@ -8,6 +8,7 @@ import { appDescriptor, navnoRootPath, redirectsRootPath } from '../../lib/const
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { contentTypesRenderedByPublicFrontend } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -105,9 +106,7 @@ const getFromCache = (isTest: boolean) => {
 // This returns a full list of content paths that should be pre-rendered
 // by the failover-instance of the frontend
 export const get = (req: XP.Request) => {
-    const { secret, test } = req.headers;
-
-    if (secret !== app.config.serviceSecret) {
+    if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
             body: {
@@ -119,7 +118,7 @@ export const get = (req: XP.Request) => {
 
     const startTime = Date.now();
 
-    const paths = getFromCache(!!test);
+    const paths = getFromCache(!!req.headers.test);
 
     if (!paths) {
         return {
