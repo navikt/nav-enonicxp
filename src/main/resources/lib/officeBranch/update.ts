@@ -41,7 +41,7 @@ const isPathOccupiedByAlienContent = (name: string) => {
     const updatedPath = `${basePath}/${name}`;
     const existingContentOnPath = contentLib.get({ key: updatedPath });
 
-    return existingContentOnPath && existingContentOnPath.type;
+    return existingContentOnPath && existingContentOnPath.type !== officeBranchContentType;
 };
 
 // Delete content from XP
@@ -117,6 +117,7 @@ const updateExistingOfficeBranch = (
     const { enhet } = newOffice;
     const newName = commonLib.sanitize(enhet.navn);
     const updatedChecksum = createObjectChecksum(newOffice);
+    let wasUpdated = false;
 
     if (
         existingOffice.data.checksum !== updatedChecksum ||
@@ -132,6 +133,7 @@ const updateExistingOfficeBranch = (
                     data: { ...newOffice, checksum: updatedChecksum },
                 }),
             });
+            wasUpdated = true;
         } catch (e) {
             logger.critical(
                 `Failed to modify office branch content ${existingOffice._path} - ${e}`
@@ -141,12 +143,17 @@ const updateExistingOfficeBranch = (
 
     if (newName !== existingOffice._name) {
         moveOfficeToNewName(existingOffice, newOffice);
+        wasUpdated = true;
     }
+
+    return wasUpdated;
 };
 
 const addNewOfficeBranch = (singleOffice: any) => {
     const { enhet } = singleOffice;
     const pathName = commonLib.sanitize(enhet.navn);
+
+    let wasAdded = false;
 
     try {
         contentLib.create({
@@ -160,13 +167,16 @@ const addNewOfficeBranch = (singleOffice: any) => {
                 checksum: createObjectChecksum(singleOffice),
             },
         });
+        wasAdded = true;
     } catch (e) {
         logger.critical(`Failed to create new office page for ${enhet.navn} - ${e}`);
     }
+
+    return wasAdded;
 };
 
-const isIgnorableOfficeBranch = (enhetType: string) => {
-    return enhetType === 'Nedlagt';
+const isIgnorableOfficeBranch = (status: string | undefined) => {
+    return status === 'Nedlagt';
 };
 
 const deleteStaleOfficesFromXP = (
@@ -200,7 +210,7 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
         const { enhet } = singleOffice;
         const pathName = commonLib.sanitize(enhet.navn);
 
-        if (isIgnorableOfficeBranch(enhet.type)) {
+        if (isIgnorableOfficeBranch(enhet.status)) {
             return;
         }
 
@@ -213,11 +223,11 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
         );
 
         if (existingOfficeInXP) {
-            updateExistingOfficeBranch(singleOffice, existingOfficeInXP);
-            summary.updated++;
+            const wasUpdated = updateExistingOfficeBranch(singleOffice, existingOfficeInXP);
+            summary.updated += wasUpdated ? 1 : 0;
         } else {
-            addNewOfficeBranch(singleOffice);
-            summary.new++;
+            const wasAdded = addNewOfficeBranch(singleOffice);
+            summary.new += wasAdded ? 1 : 0;
         }
 
         processedOfficeBranchIds.push(enhet.enhetId);
