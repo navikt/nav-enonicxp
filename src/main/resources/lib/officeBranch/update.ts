@@ -37,7 +37,7 @@ export const fetchAllOfficeBranchesFromNorg = () => {
 // Check if a path is taken by some alien content (non-office-branch content).
 // No content other than office branches should be in the 'kontor' folder, so that content
 // should be considered alien.
-const pathIsOccupiedByAlienContent = (name: string) => {
+const isPathOccupiedByAlienContent = (name: string) => {
     const updatedPath = `${basePath}/${name}`;
     const existingContentOnPath = contentLib.get({ key: updatedPath });
 
@@ -79,13 +79,44 @@ const getExistingOfficeBranchesInXP = () => {
         ) as Content<OfficeBranchDescriptor>[];
 };
 
+const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, newOffice: any) => {
+    const currentName = existingOffice._name;
+    const enhet = newOffice.enhet;
+    const newName = commonLib.sanitize(enhet.navn);
+
+    try {
+        logger.info(`Updating name/path: ${currentName} -> ${newName}`);
+
+        // Move the office branch page to a new path if the name changed
+        contentLib.move({
+            source: existingOffice._path,
+            target: newName,
+        });
+
+        // Create a redirect from the old path
+        contentLib.create<'no.nav.navno:internal-link'>({
+            name: currentName,
+            parentPath: basePath,
+            displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
+            contentType: `${app.name}:internal-link`,
+            data: {
+                target: existingOffice._id,
+                permanentRedirect: false,
+                redirectSubpaths: false,
+            },
+        });
+    } catch (e) {
+        logger.critical(`Failed to updated office branch name for ${existingOffice._path} - ${e}`);
+    }
+};
+
 const updateExistingOfficeBranch = (
-    singleOffice: any,
+    newOffice: any,
     existingOffice: Content<OfficeBranchDescriptor>
 ) => {
-    const { enhet } = singleOffice;
-    const fullPathName = commonLib.sanitize(enhet.navn);
-    const updatedChecksum = createObjectChecksum(singleOffice);
+    const { enhet } = newOffice;
+    const newName = commonLib.sanitize(enhet.navn);
+    const updatedChecksum = createObjectChecksum(newOffice);
 
     if (
         existingOffice.data.checksum !== updatedChecksum ||
@@ -98,7 +129,7 @@ const updateExistingOfficeBranch = (
                     ...content,
                     language: getOfficeBranchLanguage(content),
                     displayName: enhet.navn,
-                    data: { ...singleOffice, checksum: updatedChecksum },
+                    data: { ...newOffice, checksum: updatedChecksum },
                 }),
             });
         } catch (e) {
@@ -108,35 +139,8 @@ const updateExistingOfficeBranch = (
         }
     }
 
-    const currentName = existingOffice._name;
-
-    if (fullPathName !== currentName) {
-        try {
-            logger.info(`Updating name/path: ${currentName} -> ${fullPathName}`);
-
-            // Move the office branch page to a new path if the name changed
-            contentLib.move({
-                source: existingOffice._path,
-                target: fullPathName,
-            });
-
-            // Create a redirect from the old path
-            contentLib.create<'no.nav.navno:internal-link'>({
-                name: currentName,
-                parentPath: basePath,
-                displayName: `${existingOffice.displayName} (redirect til ${enhet.navn})`,
-                contentType: `${app.name}:internal-link`,
-                data: {
-                    target: existingOffice._id,
-                    permanentRedirect: false,
-                    redirectSubpaths: false,
-                },
-            });
-        } catch (e) {
-            logger.critical(
-                `Failed to updated office branch name for ${existingOffice._path} - ${e}`
-            );
-        }
+    if (newName !== existingOffice._name) {
+        moveOfficeToNewName(existingOffice, newOffice);
     }
 };
 
@@ -184,7 +188,7 @@ const deleteStaleOfficesFromXP = (
 
 export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
     const existingOfficesInXP = getExistingOfficeBranchesInXP();
-    const processedOfficeIds: number[] = [];
+    const processedOfficeBranchIds: number[] = [];
 
     const summary: { new: number; updated: number; deleted: number } = {
         new: 0,
@@ -200,7 +204,7 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
             return;
         }
 
-        if (pathIsOccupiedByAlienContent(pathName)) {
+        if (isPathOccupiedByAlienContent(pathName)) {
             deleteContent(pathName);
         }
 
@@ -208,7 +212,6 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
             (content) => content.data?.enhet?.enhetId === enhet.enhetId
         );
 
-        // If the office page already exists, update the existing content
         if (existingOfficeInXP) {
             updateExistingOfficeBranch(singleOffice, existingOfficeInXP);
             summary.updated++;
@@ -217,10 +220,10 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
             summary.new++;
         }
 
-        processedOfficeIds.push(enhet.enhetId);
+        processedOfficeBranchIds.push(enhet.enhetId);
     });
 
-    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeIds);
+    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
 
     // Publish all updates made inside basePath
     // This includes updates and new office branches
@@ -232,6 +235,6 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
     });
 
     logger.info(
-        `Import from NORG2 summary - Updated: ${summary.updated} New: ${summary.new} Deleted: ${summary.deleted}`
+        `Import summary from NORG2 - Updated: ${summary.updated} New: ${summary.new} Deleted: ${summary.deleted}`
     );
 };
