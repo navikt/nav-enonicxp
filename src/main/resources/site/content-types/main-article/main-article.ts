@@ -213,5 +213,5 @@ export interface MainArticle {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }

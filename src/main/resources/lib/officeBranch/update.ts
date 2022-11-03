@@ -45,7 +45,8 @@ const isPathOccupiedByAlienContent = (name: string) => {
 };
 
 // Delete content from XP
-const deleteContent = (fullPath: string) => {
+const deleteContent = (name: string) => {
+    const fullPath = `${basePath}/${name}`;
     const content = contentLib.get({ key: fullPath });
 
     if (!content) {
@@ -56,7 +57,7 @@ const deleteContent = (fullPath: string) => {
     // We want to free up the source path immediately
     contentLib.move({
         source: content._id,
-        target: `${content}-delete`,
+        target: `${fullPath}-delete`,
     });
 
     contentLib.delete({
@@ -175,8 +176,8 @@ const addNewOfficeBranch = (singleOffice: any) => {
     return wasAdded;
 };
 
-const isIgnorableOfficeBranch = (status: string | undefined) => {
-    return status === 'Nedlagt';
+const isIgnorableOfficeBranch = (officeBranch: OfficeBranch) => {
+    return officeBranch?.enhet?.status === 'Nedlagt' || officeBranch?.enhet?.type !== 'LOKAL';
 };
 
 const deleteStaleOfficesFromXP = (
@@ -208,14 +209,14 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
 
     newOfficeBranches.forEach((singleOffice) => {
         const { enhet } = singleOffice;
-        const pathName = commonLib.sanitize(enhet.navn);
+        const name = commonLib.sanitize(enhet.navn);
 
-        if (isIgnorableOfficeBranch(enhet.status)) {
+        if (isIgnorableOfficeBranch(singleOffice)) {
             return;
         }
 
-        if (isPathOccupiedByAlienContent(pathName)) {
-            deleteContent(pathName);
+        if (isPathOccupiedByAlienContent(name)) {
+            deleteContent(name);
         }
 
         const existingOfficeInXP = existingOfficesInXP.find(

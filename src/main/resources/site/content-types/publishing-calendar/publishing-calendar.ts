@@ -23,5 +23,5 @@ export interface PublishingCalendar {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }
