@@ -201,8 +201,8 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
     const existingOfficesInXP = getExistingOfficeBranchesInXP();
     const processedOfficeBranchIds: number[] = [];
 
-    const summary: { new: number; updated: number; deleted: number } = {
-        new: 0,
+    const summary: { created: number; updated: number; deleted: number } = {
+        created: 0,
         updated: 0,
         deleted: 0,
     };
@@ -228,7 +228,7 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
             summary.updated += wasUpdated ? 1 : 0;
         } else {
             const wasAdded = addNewOfficeBranch(singleOffice);
-            summary.new += wasAdded ? 1 : 0;
+            summary.created += wasAdded ? 1 : 0;
         }
 
         processedOfficeBranchIds.push(enhet.enhetId);
@@ -246,6 +246,6 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
     });
 
     logger.info(
-        `Import summary from NORG2 - Updated: ${summary.updated} New: ${summary.new} Deleted: ${summary.deleted}`
+        `Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
     );
 };
