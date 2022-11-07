@@ -21,6 +21,7 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
 
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],
+                query: '_path LIKE "*/www.nav.no/kontor/editorial-mappe/*"',
                 filters: {
                     boolean: {
                         must: [
@@ -33,26 +34,23 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
                         ],
                     },
                 },
-
                 count: 2,
             });
 
-            const acceptedEditorial = queryResult.hits.filter((content) =>
-                content._path.includes('/www.nav.no/person/kontorinnhold/')
-            );
-
-            if (acceptedEditorial.length !== 1) {
+            if (queryResult.count !== 1) {
                 const errorMessage =
-                    acceptedEditorial.length === 0
+                    queryResult.count === 0
                         ? 'No editorial office page found'
                         : `'Multiple editorial office pages found for language '${language}'.`;
                 logger.error(errorMessage);
-                return acceptedEditorial.length > 0 ? acceptedEditorial[0] : undefined;
+                return queryResult.count > 0 ? queryResult.hits[0] : undefined;
             }
 
             // Editorial content for office pages should only have one content per language,
             // so select the first hit.
-            return acceptedEditorial[0];
+            const editorialContent = queryResult.hits[0];
+
+            return editorialContent;
         },
     };
 };
