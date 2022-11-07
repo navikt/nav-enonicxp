@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { RepoBranch } from '../../../types/common';
+import { BaseQueryParams, RepoBranch } from '../../../types/common';
 import { contentTypesWithComponents as _contentTypesWithComponents } from '../../contenttype-lists';
 import { stringArrayToSet } from '../../utils/nav-utils';
 import { ComponentType } from '../../../types/components/component-config';
@@ -38,6 +38,11 @@ export const runSitecontentGuillotineQuery = (baseContent: Content, branch: Repo
     // with components
     if (!contentTypesWithComponents[baseContent.type]) {
         return contentQueryResult;
+    }
+
+    // Certain pages need extra queries for resolving.
+    if (baseContent.type === 'no.nav.navno:office-branch') {
+        return buildOfficeBranchPageWithEditorialContent(contentQueryResult);
     }
 
     const { components, fragments } = runGuillotineComponentsQuery(baseQueryParams, baseContent);
@@ -104,4 +109,43 @@ export const runGuillotineComponentsQuery = (
     });
 
     return { components: transformedComponents, fragments };
+};
+
+export const buildOfficeBranchPageWithEditorialContent = (contentQueryResult: any) => {
+    const officeEditorialPageContent = contentQueryResult?.editorial;
+    if (!officeEditorialPageContent) {
+        return {
+            ...contentQueryResult,
+            editorial: {
+                page: {},
+            },
+        };
+    }
+
+    const officeEditorialQueryParams: BaseQueryParams = {
+        branch: 'master',
+        throwOnErrors: true,
+        params: {
+            ref: officeEditorialPageContent._id,
+        },
+    };
+
+    // Run guillotine query in order to resolve fragments and global
+    // values contained in the editorial page object.
+    const { components, fragments } = runGuillotineComponentsQuery(
+        officeEditorialQueryParams,
+        officeEditorialPageContent
+    );
+
+    return {
+        ...contentQueryResult,
+        editorial: {
+            ...contentQueryResult.editorial,
+            page: buildPageComponentTree({
+                page: contentQueryResult.editorial.page,
+                components,
+                fragments,
+            }),
+        },
+    };
 };

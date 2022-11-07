@@ -68,5 +68,5 @@ export interface TransportPage {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }

@@ -118,5 +118,5 @@ export interface SectionPage {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }

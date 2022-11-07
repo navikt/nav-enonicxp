@@ -18,5 +18,5 @@ export interface ExternalLink {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }

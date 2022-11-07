@@ -23,7 +23,7 @@ export interface DynamicPageCommon {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 
   /**
    * Sidebeskrivelse for søk og sosiale medier
