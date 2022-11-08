@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Aktuelt</display-name>
-    <description>Mal for aktuelle artikler</description>
+    <description>Aktuelt-artikler skal kun brukes for nyhetssaker til personbrukere</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
