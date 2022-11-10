@@ -28,7 +28,7 @@ export interface FeaturedArticlePage {
   /**
    * Skriv inn ønsket kort-url
    */
-  customPath?: string;
+  customPath: string;
 
   /**
    * Velg eier
