@@ -6,7 +6,16 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="page-header"/>
+        <input type="TextLine" name="title">
+            <label>Sett side-tittel</label>
+            <occurrences minimum="0" maximum="1"/>
+        </input>
+        <!-- Next field is used for editorial guidance only. Not exposed in guillotine to frontend. -->
+        <input type="TextLine" name="norwegianTitle">
+            <label>Norsk tittel (hvis fremmedspråklig innhold)</label>
+            <occurrences minimum="0" maximum="1"/>
+            <help-text>Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no.</help-text>
+        </input>
         <mixin name="audience" />
         <mixin name="area" />
         <mixin name="external-product-url" />

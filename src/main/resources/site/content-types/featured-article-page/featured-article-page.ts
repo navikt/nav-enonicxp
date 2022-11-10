@@ -6,11 +6,6 @@ export interface FeaturedArticlePage {
   title?: string;
 
   /**
-   * Tittel for utlisting og sortering
-   */
-  sortTitle?: string;
-
-  /**
    * Norsk tittel (hvis fremmedspråklig innhold)
    */
   norwegianTitle?: string;
