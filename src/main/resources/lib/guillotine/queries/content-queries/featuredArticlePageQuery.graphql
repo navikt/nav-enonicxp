@@ -1,11 +1,11 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
-#import "../fragments/content-types/newsArticlePageFragment.graphql"
+#import "../fragments/content-types/FeaturedArticlePageFragment.graphql"
 
 query dynamicPageQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
-            ...contentNewsArticlePage
+            ...contentFeaturedArticlePage
         }
     }
 }

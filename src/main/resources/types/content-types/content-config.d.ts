@@ -34,7 +34,7 @@ import { PayoutDates } from '../../site/content-types/payout-dates/payout-dates'
 import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
-import { NewsArticlePage } from 'site/content-types/news-article-page/news-article-page';
+import { FeaturedArticlePage } from 'site/content-types/featured-article-page/featured-article-page';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -57,7 +57,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     melding: Melding;
     'office-information': OfficeInformation;
     'office-branch': OfficeBranch;
-    'news-article-page': NewsArticlePage;
+    'featured-article-page': FeaturedArticlePage;
     'page-list': PageList;
     'payout-dates': PayoutDates;
     'publishing-calendar': PublishingCalendar;

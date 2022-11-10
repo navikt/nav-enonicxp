@@ -1,7 +1,7 @@
 #import "../mixins/languagesFragment.graphql"
 #import "../contentCommonFragment.graphql"
 
-fragment contentNewsArticlePage on no_nav_navno_NewsArticlePage {
+fragment contentFeaturedArticlePage on no_nav_navno_FeaturedArticlePage {
     dataAsJson
     data {
         area
