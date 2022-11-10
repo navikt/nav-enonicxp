@@ -1,0 +1,12 @@
+<part xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Ingress</display-name>
+    <description>Ingress skal kun brukes øverst i aktuelt-malen</description>
+    <form>
+        <input type="TextArea" name="ingress">
+            <label>Ingress</label>
+        </input>
+    </form>
+    <config>
+        <allow-on-content-type>${app}:featured-article-page</allow-on-content-type>
+    </config>
+</part>
