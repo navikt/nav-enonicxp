@@ -1,5 +1,5 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
-#import "../fragments/content-types/FeaturedArticlePageFragment.graphql"
+#import "../fragments/content-types/featuredArticlePageFragment.graphql"
 
 query dynamicPageQuery($ref: ID!) {
     guillotine {
