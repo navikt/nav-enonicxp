@@ -16,6 +16,10 @@
             <occurrences minimum="0" maximum="1"/>
             <help-text>Dette er kun ment som hjelp til redaktørene. Vises ikke på nav.no.</help-text>
         </input>
+        <input type="Date" name="expiryDate">
+            <label>Utløpsdato</label>
+            <help-text>Aktuelt-siden vil være synlig TIL OG  MED denne datoen.</help-text>
+        </input>
         <mixin name="audience" />
         <mixin name="area" />
         <mixin name="external-product-url" />
