@@ -75,7 +75,12 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
         'target',
         'numLinks'
     ),
-    Part_no_nav_navno_frontpage_current_topics: contentListCallback('contentList', 'maxItems'),
+    Part_no_nav_navno_frontpage_current_topics: contentListCallback(
+        'contentList',
+        'maxItems',
+        undefined,
+        'data.expiryDate'
+    ),
     Part_no_nav_navno_frontpage_shortcuts: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
     Part_no_nav_navno_page_navigation_menu_OverstyrLenketekster: anchorLinksCallback,
