@@ -7,6 +7,7 @@
         </input>
     </form>
     <config>
-        <allow-on-content-type>${app}:featured-article-page</allow-on-content-type>
+        <allow-on-content-type>${app}:current-topic-page</allow-on-content-type>
+        <allow-on-content-type>portal:page-template</allow-on-content-type>
     </config>
 </part>

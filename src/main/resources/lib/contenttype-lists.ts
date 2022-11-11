@@ -23,7 +23,7 @@ export const productCardPartContentTypes: ContentTypeList = [
     `${appDescriptor}:tools-page`,
     `${appDescriptor}:overview`,
     `${appDescriptor}:generic-page`,
-    `${appDescriptor}:featured-article-page`,
+    `${appDescriptor}:current-topic-page`,
 ];
 
 export const dynamicPageContentTypes: ContentTypeList = [
@@ -36,7 +36,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
     `${appDescriptor}:front-page`,
-    `${appDescriptor}:featured-article-page`,
+    `${appDescriptor}:current-topic-page`,
     `${appDescriptor}:area-page`,
 ];
 
