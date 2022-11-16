@@ -6,8 +6,7 @@ export const contentListResolver =
     (
         contentListKey: string,
         maxItemsKey: string,
-        sortByKey?: string,
-        expiryKey?: string
+        sortByKey?: string
     ): GraphQLResolverCallback<any, any> =>
     (env) => {
         const contentListId = env.source[contentListKey];
@@ -15,5 +14,5 @@ export const contentListResolver =
             return null;
         }
 
-        return getContentList(contentListId, env.source[maxItemsKey], sortByKey, expiryKey);
+        return getContentList(contentListId, env.source[maxItemsKey], sortByKey);
     };

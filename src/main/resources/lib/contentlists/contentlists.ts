@@ -1,14 +1,9 @@
 import contentLib from '/lib/xp/content';
-import { forceArray, notEmpty, expiredFilter } from '../utils/nav-utils';
+import { forceArray, notEmpty } from '../utils/nav-utils';
 import { sortByDateTimeField } from '../utils/sort';
 
 // Sorts and slices content lists
-export const getContentList = (
-    contentListKey: string,
-    maxItemsKey: number,
-    sortByKey?: string,
-    expiryKey?: string
-) => {
+export const getContentList = (contentListKey: string, maxItemsKey: number, sortByKey?: string) => {
     const contentList = contentLib.get({ key: contentListKey });
     if (!contentList || contentList.type !== 'no.nav.navno:content-list') {
         return null;
@@ -18,7 +13,6 @@ export const getContentList = (
     const sectionContents = sectionContentsRefs
         .map((item: string) => contentLib.get({ key: item }))
         .filter(notEmpty)
-        .filter((content: contentLib.Content) => expiredFilter(content, expiryKey))
         .sort(sortFunc)
         .slice(0, maxItemsKey)
         .map((content) => content._id);

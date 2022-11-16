@@ -118,11 +118,3 @@ export const generateFulltextQuery = (
 
     return `fulltext("${fieldsToSearch.join(',')}", "${wordsWithWildcard}", "${logicOp}")`;
 };
-
-export const expiredFilter = (content: Content, key?: string) => {
-    const now = new Date().getTime();
-    const expireKey = key || 'data.expiryDate';
-    const expires = getNestedValue(content, expireKey);
-    const expiresAtMidnight = `${expires}T23:59:59.999Z`;
-    return !expires || now < getUnixTimeFromDateTimeString(expiresAtMidnight);
-};

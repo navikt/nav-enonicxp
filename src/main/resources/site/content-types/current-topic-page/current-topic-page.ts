@@ -11,11 +11,6 @@ export interface CurrentTopicPage {
   norwegianTitle?: string;
 
   /**
-   * Utløpsdato
-   */
-  expiryDate?: string;
-
-  /**
    * Målgruppe
    */
   audience: "person" | "employer" | "provider" | "self_employed";
