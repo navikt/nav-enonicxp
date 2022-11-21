@@ -70,6 +70,7 @@ export default {
             config: {
                 env: 'localhost',
                 norg2: '',
+                norg2v2: '',
                 norg2ApiKey: '',
                 norg2ConsumerId: '',
                 frontendOrigin: 'http://localhost:3000',

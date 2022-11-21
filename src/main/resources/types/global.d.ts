@@ -4,6 +4,7 @@ declare const app: {
     config: {
         env: string;
         norg2: string;
+        norg2v2: string;
         norg2ApiKey: string;
         norg2ConsumerId: string;
         frontendOrigin: string;

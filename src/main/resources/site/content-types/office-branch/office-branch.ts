@@ -6,262 +6,205 @@ export interface OfficeBranch {
   checksum?: string;
 
   /**
-   * Enhet
+   * Navn
    */
-  enhet: {
-    /**
-     * EnhetId
-     */
-    enhetId: number;
+  navn: string;
 
-    /**
-     * Navn
-     */
-    navn: string;
+  /**
+   * EnhetNr
+   */
+  enhetNr: string;
 
-    /**
-     * EnhetNr
-     */
-    enhetNr: string;
+  /**
+   * Status
+   */
+  status?: string;
 
-    /**
-     * Antall Ressurser
-     */
-    antallRessurser?: number;
+  /**
+   * Organisasjonsnummer
+   */
+  organisasjonsnummer?: string;
 
-    /**
-     * Status
-     */
-    status?: string;
+  /**
+   * Under Etablering Dato
+   */
+  underEtableringDato?: string;
 
-    /**
-     * Org Nivå
-     */
-    orgNivaa?: string;
+  /**
+   * Aktiveringsdato
+   */
+  aktiveringsdato?: string;
 
+  /**
+   * Under Avvikling Dato
+   */
+  underAvviklingDato?: string;
+
+  /**
+   * Nedleggelsesdato
+   */
+  nedleggelsesdato?: string;
+
+  /**
+   * Sosiale Tjenester
+   */
+  sosialeTjenester?: string;
+
+  /**
+   * Beliggenhet
+   */
+  beliggenhet?: {
     /**
      * Type
      */
-    type: string;
+    type?: string;
 
     /**
-     * Organisasjonsnummer
+     * Postnummer
      */
-    organisasjonsnummer?: string;
+    postnummer?: string;
 
     /**
-     * Under Etablering Dato
+     * Poststed
      */
-    underEtableringDato?: string;
+    poststed?: string;
 
     /**
-     * Aktiveringsdato
+     * Gatenavn
      */
-    aktiveringsdato?: string;
+    gatenavn?: string;
 
     /**
-     * Under Avvikling Dato
+     * Husnummer
      */
-    underAvviklingDato?: string;
+    husnummer?: string;
 
     /**
-     * Nedleggelsesdato
+     * Husbokstav
      */
-    nedleggelsesdato?: string;
+    husbokstav?: string;
 
     /**
-     * Oppgavebehandler
+     * Adresse tilleggsnavn
      */
-    oppgavebehandler?: string;
-
-    /**
-     * Versjon
-     */
-    versjon?: number;
-
-    /**
-     * Sosiale Tjenester
-     */
-    sosialeTjenester?: string;
-
-    /**
-     * Kanalstrategi
-     */
-    kanalstrategi?: string;
-
-    /**
-     * Org Nr Til Kommunalt Nav Kontor
-     */
-    orgNrTilKommunaltNavKontor?: string;
+    adresseTilleggsnavn?: string;
   };
 
   /**
-   * Overordnet Enhet
+   * Postadresse
    */
-  overordnetEnhet?: string;
+  postadresse?: {
+    /**
+     * Type
+     */
+    type?: string;
+
+    /**
+     * Postnummer
+     */
+    postnummer?: string;
+
+    /**
+     * Poststed
+     */
+    poststed?: string;
+
+    /**
+     * Gatenavn
+     */
+    gatenavn?: string;
+
+    /**
+     * Husnummer
+     */
+    husnummer?: string;
+
+    /**
+     * Husbokstav
+     */
+    husbokstav?: string;
+
+    /**
+     * Adresse tilleggsnavn
+     */
+    adresseTilleggsnavn?: string;
+
+    /**
+     * Postboksnummer
+     */
+    postboksnummer?: string;
+
+    /**
+     * Postboksanlegg
+     */
+    postboksanlegg?: string;
+  };
 
   /**
-   * Habilitetskontor
+   * Brukerkontakt
    */
-  habilitetskontor?: Array<string>;
-
-  /**
-   * Kontaktinformasjon
-   */
-  kontaktinformasjon?: {
+  brukerkontakt?: {
     /**
-     * Id
+     * Brukertjenestetilbud
      */
-    id?: number;
-
-    /**
-     * EnhetNr
-     */
-    enhetNr?: string;
-
-    /**
-     * Telefonnummer
-     */
-    telefonnummer?: string;
-
-    /**
-     * Telefonnummer Kommentar
-     */
-    telefonnummerKommentar?: string;
-
-    /**
-     * Faksnummer
-     */
-    faksnummer?: string;
-
-    /**
-     * E-post
-     */
-    epost?: {
+    brukertjenesteTilbud?: {
       /**
-       * Adresse
+       * Tjenester
        */
-      adresse?: string;
+      tjenester?: Array<{
+        /**
+         * Type
+         */
+        type?: string;
+      }>;
 
       /**
-       * Kommentar
+       * Ytterligere informasjon
        */
-      kommentar?: string;
-
-      /**
-       * kunIntern
-       */
-      kunIntern?: string;
+      ytterligereInformasjon?: string;
     };
 
     /**
-     * Postadresse
+     * Informasjon utbetalinger
      */
-    postadresse?: {
+    informasjonUtbetalinger?: string;
+
+
+    publikumskanaler?: Array<{
       /**
-       * Type
+       * Beskrivelse
        */
-      type?: string;
+      beskrivelse?: string;
 
       /**
-       * Postnummer
+       * E-post
        */
-      postnummer?: string;
+      epost?: string;
 
       /**
-       * Poststed
+       * Sortering
        */
-      poststed?: string;
+      sortOrder?: string;
 
       /**
-       * Gatenavn
+       * Telefon
        */
-      gatenavn?: string;
-
-      /**
-       * Husnummer
-       */
-      husnummer?: string;
-
-      /**
-       * Husbokstav
-       */
-      husbokstav?: string;
-
-      /**
-       * Adresse Tilleggsnavn
-       */
-      adresseTilleggsnavn?: string;
-
-      /**
-       * Postboksnummer
-       */
-      postboksnummer?: string;
-
-      /**
-       * Postboksanlegg
-       */
-      postboksanlegg?: string;
-    };
-
-    /**
-     * Besøksadresse
-     */
-    besoeksadresse?: {
-      /**
-       * Type
-       */
-      type?: string;
-
-      /**
-       * Postnummer
-       */
-      postnummer?: string;
-
-      /**
-       * Poststed
-       */
-      poststed?: string;
-
-      /**
-       * Gatenavn
-       */
-      gatenavn?: string;
-
-      /**
-       * Husnummer
-       */
-      husnummer?: string;
-
-      /**
-       * Husbokstav
-       */
-      husbokstav?: string;
-
-      /**
-       * Adresse Tilleggsnavn
-       */
-      adresseTilleggsnavn?: string;
-    };
-
-    /**
-     * Spesielle Opplysninger
-     */
-    spesielleOpplysninger?: string;
+      telefon?: string;
+    }>;
 
     /**
      * Publikumsmottak
      */
     publikumsmottak?: Array<{
       /**
-       * Id
-       */
-      id?: number;
-
-      /**
        * Stedsbeskrivelse
        */
       stedsbeskrivelse?: string;
+
+      /**
+       * Adkomstbeskrivelse
+       */
+      adkomstbeskrivelse?: string;
 
       /**
        * Besøksadresse
@@ -308,11 +251,6 @@ export interface OfficeBranch {
        */
       aapningstider?: Array<{
         /**
-         * Id
-         */
-        id?: number;
-
-        /**
          * Dag
          */
         dag?: string;
@@ -341,17 +279,37 @@ export interface OfficeBranch {
          * Stengt
          */
         stengt?: string;
+
+        /**
+         * Kun timeavtale
+         */
+        kunTimeavtale?: string;
       }>;
     }>;
+
+    /**
+     * Sosialhjelp
+     */
+    sosialhjelp?: {
+      /**
+       * Digitale søknader
+       */
+      digitaleSoeknader?: Array<{
+        /**
+         * Lenke
+         */
+        lenke?: string;
+
+        /**
+         * Lenketekst
+         */
+        lenketekst?: string;
+      }>;
+    };
+
+    /**
+     * Skriftspraak
+     */
+    skriftspraak?: string;
   };
-
-  /**
-   * Fant du det du lette etter?
-   */
-  feedbackToggle: boolean;
-
-  /**
-   * Chatbot Frida
-   */
-  chatbotToggle: boolean;
 }
