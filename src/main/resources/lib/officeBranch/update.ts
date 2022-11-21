@@ -13,9 +13,11 @@ const basePath = '/www.nav.no/kontor';
 
 export const fetchAllOfficeBranchesFromNorg = () => {
     log.info(`Fetching norg2 from url ${app.config.norg2v2}`);
+    const tempUrl =
+        'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV';
     try {
         const response = httpClient.request({
-            url: app.config.norg2v2,
+            url: tempUrl, // app.config.norg2v2,
             method: 'GET',
             headers: {
                 'x-nav-apiKey': app.config.norg2ApiKey,
