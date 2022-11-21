@@ -49,7 +49,9 @@ export const runOfficeBranchFetchTask = (retry?: boolean) => {
         return;
     }
 
-    logger.info('Fetched office branch from norg2, updating site data...');
+    logger.info(
+        `Fetched ${officeBranches.length} office branches from norg2, updating site data...`
+    );
 
     contextLib.run(
         {
@@ -70,7 +72,7 @@ export const createOfficeBranchFetchSchedule = () => {
         jobDescription: 'Fetches office branches from norg and updates into XP as hourly schedule',
         jobSchedule: {
             type: 'CRON',
-            value: '15 * * * *',
+            value: '45 * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeBranchFetchTaskName,

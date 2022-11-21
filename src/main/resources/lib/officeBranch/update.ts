@@ -216,6 +216,7 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
             const wasUpdated = updateExistingOfficeBranch(newSingleOffice, existingOfficeInXP);
             summary.updated += wasUpdated ? 1 : 0;
         } else {
+            logger.info('Add new office branch');
             const wasAdded = addNewOfficeBranch(newSingleOffice);
             summary.created += wasAdded ? 1 : 0;
         }
