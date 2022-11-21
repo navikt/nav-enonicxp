@@ -1,0 +1,12 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../contentCommonFragment.graphql"
+
+fragment contentCurrentTopicPage on no_nav_navno_CurrentTopicPage {
+    dataAsJson
+    data {
+        area
+        languages {
+            ...languagesMixin
+        }
+    }
+}
