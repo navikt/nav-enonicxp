@@ -34,6 +34,8 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:tools-page`,
     `${appDescriptor}:dynamic-page`,
     `${appDescriptor}:generic-page`,
+    `${appDescriptor}:office-editorial-page`,
+    `${appDescriptor}:office-branch`,
     `${appDescriptor}:overview`,
     `${appDescriptor}:front-page`,
     `${appDescriptor}:current-topic-page`,
