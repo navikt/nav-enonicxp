@@ -1,0 +1,324 @@
+<content-type xmlns="urn:enonic:xp:model:1.0">
+    <display-name>Produkt</display-name>
+    <description>Produkt eller tjeneste fra NAV</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set>
+            <label>Produktdata</label>
+            <items>
+                <mixin name="audience"/>
+                <mixin name="taxonomy"/>
+                <mixin name="area"/>
+            </items>
+        </field-set>
+        <mixin name="owner"/>
+        <mixin name="managed-by"/>
+        <field-set>
+            <label>Piktogram</label>
+            <items>
+                <mixin name="illustration"/>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Innhold</label>
+            <items>
+                <item-set name="no">
+                    <label>Norsk bokmål</label>
+                    <occurrences maximum="1" minimum="0"/>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Produktnavn (til oversikter osv)</label>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <field-set>
+                            <label>Produktside</label>
+                            <items>
+                                <input name="productPage" type="ContentSelector">
+                                    <label>Velg produktside</label>
+                                    <config>
+                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Produktdetaljer</label>
+                            <items>
+                                <input name="processing_times" type="CustomSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">processing_times</param>
+                                    </config>
+                                </input>
+                                <input name="payout_dates" type="CustomSelector">
+                                    <label>Utbetalingsdatoer</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">payout_dates</param>
+                                    </config>
+                                </input>
+                                <input name="rates" type="CustomSelector">
+                                    <label>Satser</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">rates</param>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Søknadsgreier goes here</label>
+                            <items>
+                                <input type="RadioButton" name="dummy">
+                                    <label>Items goes here</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
+                    </items>
+                </item-set>
+                <item-set name="nn">
+                    <label>Nynorsk</label>
+                    <occurrences maximum="1" minimum="0"/>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Produktnavn (til oversikter osv)</label>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <field-set>
+                            <label>Produktside</label>
+                            <items>
+                                <input name="productPage" type="ContentSelector">
+                                    <label>Velg produktside</label>
+                                    <config>
+                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Produktdetaljer</label>
+                            <items>
+                                <input name="processing_times" type="CustomSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">processing_times</param>
+                                    </config>
+                                </input>
+                                <input name="payout_dates" type="CustomSelector">
+                                    <label>Utbetalingsdatoer</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">payout_dates</param>
+                                    </config>
+                                </input>
+                                <input name="rates" type="CustomSelector">
+                                    <label>Satser</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">rates</param>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Søknadsgreier goes here</label>
+                            <items>
+                                <input type="RadioButton" name="dummy">
+                                    <label>Items goes here</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
+                    </items>
+                </item-set>
+                <item-set name="en">
+                    <label>Engelsk</label>
+                    <occurrences maximum="1" minimum="0"/>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Produktnavn (til oversikter osv)</label>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <field-set>
+                            <label>Produktside</label>
+                            <items>
+                                <input name="productPage" type="ContentSelector">
+                                    <label>Velg produktside</label>
+                                    <config>
+                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Produktdetaljer</label>
+                            <items>
+                                <input name="processing_times" type="CustomSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">processing_times</param>
+                                    </config>
+                                </input>
+                                <input name="payout_dates" type="CustomSelector">
+                                    <label>Utbetalingsdatoer</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">payout_dates</param>
+                                    </config>
+                                </input>
+                                <input name="rates" type="CustomSelector">
+                                    <label>Satser</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">rates</param>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Søknadsgreier goes here</label>
+                            <items>
+                                <input type="RadioButton" name="dummy">
+                                    <label>Items goes here</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
+                    </items>
+                </item-set>
+                <item-set name="se">
+                    <label>Samisk</label>
+                    <occurrences maximum="1" minimum="0"/>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Produktnavn (til oversikter osv)</label>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <field-set>
+                            <label>Produktside</label>
+                            <items>
+                                <input name="productPage" type="ContentSelector">
+                                    <label>Velg produktside</label>
+                                    <config>
+                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Produktdetaljer</label>
+                            <items>
+                                <input name="processing_times" type="CustomSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">processing_times</param>
+                                    </config>
+                                </input>
+                                <input name="payout_dates" type="CustomSelector">
+                                    <label>Utbetalingsdatoer</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">payout_dates</param>
+                                    </config>
+                                </input>
+                                <input name="rates" type="CustomSelector">
+                                    <label>Satser</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">rates</param>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Søknadsgreier goes here</label>
+                            <items>
+                                <input type="RadioButton" name="dummy">
+                                    <label>Items goes here</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
+                    </items>
+                </item-set>
+                <item-set name="other">
+                    <label>Andre språk</label>
+                    <occurrences maximum="0" minimum="0"/>
+                    <items>
+                        <input name="lang" type="TextLine">
+                            <label>To-bokstavers språkkode</label>
+                            <occurrences maximum="1" minimum="1"/>
+                            <config>
+                                <max-length>2</max-length>
+                                <regexp>^[a-zA-Z]{2}$</regexp>
+                            </config>
+                        </input>
+                        <input name="title" type="TextLine">
+                            <label>Produktnavn (til oversikter osv)</label>
+                            <occurrences maximum="1" minimum="1"/>
+                        </input>
+                        <field-set>
+                            <label>Produktside</label>
+                            <items>
+                                <input name="productPage" type="ContentSelector">
+                                    <label>Velg produktside</label>
+                                    <config>
+                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                                        <showStatus>true</showStatus>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Produktdetaljer</label>
+                            <items>
+                                <input name="processing_times" type="CustomSelector">
+                                    <label>Saksbehandlingstider</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">processing_times</param>
+                                    </config>
+                                </input>
+                                <input name="payout_dates" type="CustomSelector">
+                                    <label>Utbetalingsdatoer</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">payout_dates</param>
+                                    </config>
+                                </input>
+                                <input name="rates" type="CustomSelector">
+                                    <label>Satser</label>
+                                    <config>
+                                        <service>productDetailsSelector</service>
+                                        <param value="detailType">rates</param>
+                                    </config>
+                                </input>
+                            </items>
+                        </field-set>
+                        <field-set>
+                            <label>Søknadsgreier goes here</label>
+                            <items>
+                                <input type="RadioButton" name="dummy">
+                                    <label>Items goes here</label>
+                                    <occurrences minimum="0" maximum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</content-type>
