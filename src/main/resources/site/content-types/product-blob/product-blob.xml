@@ -52,7 +52,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="no"</param>
+                                        <param value="selectorQuery">language="no" AND data.product="{id}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -124,7 +124,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="nn"</param>
+                                        <param value="selectorQuery">language="nn" AND data.product="{id}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -196,7 +196,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="en"</param>
+                                        <param value="selectorQuery">language="en" AND data.product="{id}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -268,7 +268,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="se"</param>
+                                        <param value="selectorQuery">language="se" AND data.product="{id}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -348,7 +348,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se"</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.product="{id}"</param>
                                     </config>
                                 </input>
                             </items>

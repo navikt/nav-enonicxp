@@ -9,6 +9,7 @@ import { contentStudioEditPathPrefix } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import portalLib from '/lib/xp/portal';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
@@ -17,9 +18,12 @@ type ReqParams = {
     selectorQuery?: string;
 } & XP.CustomSelectorServiceRequestParams;
 
-const buildQuery = (userInput?: string, selectorQuery?: string) => {
+const buildQuery = (userInput?: string, selectorInput?: string) => {
     const userQuery = userInput
         ? generateFulltextQuery(userInput, ['displayName'], 'AND')
+        : undefined;
+    const selectorQuery = selectorInput
+        ? selectorInput.replace('{id}', portalLib.getContent()?._id)
         : undefined;
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
@@ -56,8 +60,6 @@ const getHitsFromIds = (ids: string[]) =>
     }, [] as SelectorHit[]);
 
 export const get = (req: XP.Request) => {
-    logger.info(`Params: ${JSON.stringify(req.params)}`);
-
     const { query: userQuery, ids, contentTypes, selectorQuery } = req.params as ReqParams;
 
     const query = buildQuery(userQuery, selectorQuery);
