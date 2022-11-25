@@ -1,5 +1,5 @@
 <content-type>
-    <display-name>Produktside</display-name>
+    <display-name>Deprecated produktside</display-name>
     <description>Produktside med navigasjonsmeny og dynamiske komponenter</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
