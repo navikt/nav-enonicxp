@@ -21,8 +21,13 @@ export const getResponseFromCache = (
 
     try {
         return cache.get(cacheKey, callback);
-    } catch (e) {
+    } catch (e: any) {
         // cache.get throws if callback returns null
-        return null;
+        if (e.message.startsWith('CacheLoader returned null for key')) {
+            return null;
+        }
+
+        // For any other error, throw to the next handler
+        throw e;
     }
 };

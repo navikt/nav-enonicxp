@@ -24,6 +24,7 @@ export const productCardPartContentTypes: ContentTypeList = [
     `${appDescriptor}:tools-page`,
     `${appDescriptor}:overview`,
     `${appDescriptor}:generic-page`,
+    `${appDescriptor}:current-topic-page`,
 ];
 
 export const dynamicPageContentTypes: ContentTypeList = [
@@ -36,6 +37,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${appDescriptor}:generic-page`,
     `${appDescriptor}:overview`,
     `${appDescriptor}:front-page`,
+    `${appDescriptor}:current-topic-page`,
     `${appDescriptor}:area-page`,
 ];
 
@@ -118,7 +120,9 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:contact-information`,
     `${appDescriptor}:product-details`,
+    `${appDescriptor}:office-branch`,
     `${appDescriptor}:payout-dates`,
+    `${appDescriptor}:office-editorial-page`,
     'portal:page-template',
     'portal:fragment',
     'portal:site',

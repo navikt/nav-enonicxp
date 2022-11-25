@@ -1,0 +1,11 @@
+<content-type>
+    <display-name>Kontorside for redaktørinnhold</display-name>
+    <description>Sidemal for redaktørdelen av kontorsidene. Denne skal kun benyttes én gang pr språk</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <mixin name="dynamic-page-common"/>
+    </form>
+</content-type>

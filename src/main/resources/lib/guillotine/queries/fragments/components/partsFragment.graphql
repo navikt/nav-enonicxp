@@ -22,6 +22,7 @@
 #import "./parts/partProductCardMicro.graphql"
 #import "./parts/partProductCardMini.graphql"
 #import "./parts/partProductDetails.graphql"
+#import "./parts/partOfficeEditorialDetail.graphql"
 
 fragment partComponents on PartComponentData {
     descriptor
@@ -100,6 +101,9 @@ fragment partComponents on PartComponentData {
                 }
                 product_details {
                     ...partProductDetails
+                }
+                office_editorial_detail {
+                    ...partComponentOfficeEditorialDetail
                 }
             }
         }

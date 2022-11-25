@@ -1,7 +1,10 @@
 import { macroHtmlFragmentCallback } from './schema-creation-callbacks/macro-html-fragment';
 import { attachmentCallback } from './schema-creation-callbacks/attachment';
 import { mediaCodeCallback, mediaImageCallback } from './schema-creation-callbacks/media';
-import { internalLinkCallback } from './schema-creation-callbacks/internal-link-callback';
+import {
+    internalLinkCallback,
+    internalLinkDataCallback,
+} from './schema-creation-callbacks/internal-link-callback';
 import {
     mainArticleCallback,
     mainArticleDataCallback,
@@ -29,12 +32,15 @@ import {
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
+import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
 import { areapageSituationCardPartCallback } from './schema-creation-callbacks/areapage-situation-card';
 import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
+import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
+import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -42,7 +48,9 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     FragmentComponentData: fragmentComponentDataCallback,
     media_Code: mediaCodeCallback,
     media_Image: mediaImageCallback,
-    no_nav_navno_InternalLink_Data: internalLinkCallback,
+    no_nav_navno_ExternalLink: externalLinkCallback,
+    no_nav_navno_InternalLink: internalLinkCallback,
+    no_nav_navno_InternalLink_Data: internalLinkDataCallback,
     no_nav_navno_MainArticle: mainArticleCallback,
     no_nav_navno_MainArticle_Data: mainArticleDataCallback,
     no_nav_navno_MainArticleChapter_Data: mainArticleChapterDataCallback,
@@ -50,6 +58,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_SectionPage_Data: sectionPageDataCallback,
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
+    no_nav_navno_OfficeBranch: officeBranchCallback,
     no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
@@ -72,6 +81,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Part_no_nav_navno_page_navigation_menu_OverstyrLenketekster: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
     Page_no_nav_navno_page_with_side_menus_OverstyrLenketekster: anchorLinksCallback,
+    Part_no_nav_navno_product_card_micro_ValgtSide: microCardTargetPageCallback,
     Part_no_nav_navno_filters_menu_Filter: filterCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,

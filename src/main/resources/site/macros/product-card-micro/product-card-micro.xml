@@ -1,0 +1,24 @@
+<macro>
+    <display-name>Produkt-kort (micro)</display-name>
+    <description>Lenker til en produkt- eller livssituasjons-side</description>
+    <!-- TODO: Use the relevant mixins here when the guillotine macros/mixin bug is fixed -->
+    <form>
+        <input name="header" type="TextLine">
+            <label>Overskrift</label>
+            <help-text>Overskrift er ikke påkrevet</help-text>
+        </input>
+        <input name="card-list" type="ContentSelector">
+            <label>Velg side</label>
+            <occurrences minimum="1" maximum="0"/>
+            <config>
+                <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
+                <allowContentType>${app}:situation-page</allowContentType>
+                <allowContentType>${app}:guide-page</allowContentType>
+                <allowContentType>${app}:tools-page</allowContentType>
+                <allowContentType>${app}:themed-article-page</allowContentType>
+                <allowContentType>${app}:overview</allowContentType>
+                <allowContentType>${app}:generic-page</allowContentType>
+            </config>
+        </input>
+    </form>
+</macro>

@@ -88,5 +88,5 @@ export interface PageList {
   /**
    * Nøkkelord (internt søk)
    */
-  keywords?: string;
+  keywords?: Array<string>;
 }

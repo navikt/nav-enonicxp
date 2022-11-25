@@ -5,3 +5,11 @@ export type RepoBranch = 'master' | 'draft';
 
 export type NavNoDescriptor<Name extends string | ComponentName | CustomContentName = string> =
     `no.nav.navno:${Name}`;
+
+export type BaseQueryParams = {
+    branch: RepoBranch;
+    params: {
+        ref: string;
+    };
+    throwOnErrors: boolean;
+};

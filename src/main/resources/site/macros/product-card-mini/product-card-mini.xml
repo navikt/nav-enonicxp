@@ -1,6 +1,6 @@
 <macro>
     <display-name>Produkt-kort (mini)</display-name>
-    <description>Sett inn et lenkepanel til en produkt- eller livssituasjons-side</description>
+    <description>Lenker til en produkt- eller livssituasjons-side</description>
     <!-- TODO: Use the product-card-mini mixin here when the guillotine macros/mixin bug is fixed -->
     <form>
         <input name="targetPage" type="ContentSelector">

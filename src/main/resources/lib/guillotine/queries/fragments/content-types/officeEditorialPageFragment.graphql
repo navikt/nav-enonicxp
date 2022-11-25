@@ -1,0 +1,10 @@
+#import "../mixins/languagesFragment.graphql"
+
+fragment contentOfficeEditorialPage on no_nav_navno_OfficeEditorialPage {
+    dataAsJson
+    data {
+        languages {
+            ...languagesMixin
+        }
+    }
+}

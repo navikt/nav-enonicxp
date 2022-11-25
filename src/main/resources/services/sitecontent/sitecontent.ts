@@ -2,13 +2,10 @@ import { isValidBranch } from '../../lib/utils/branch-context';
 import { getResponseFromCache } from './cache';
 import { getSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
+import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
 export const get = (req: XP.Request) => {
-    // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch = 'master', preview, time, cacheKey } = req.params;
-    const { secret } = req.headers;
-
-    if (secret !== app.config.serviceSecret) {
+    if (!validateServiceSecretHeader(req)) {
         return {
             status: 401,
             body: {
@@ -17,6 +14,9 @@ export const get = (req: XP.Request) => {
             contentType: 'application/json',
         };
     }
+
+    // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
+    const { id: idOrPath, branch = 'master', preview, cacheKey } = req.params;
 
     if (!idOrPath) {
         return {
@@ -41,7 +41,7 @@ export const get = (req: XP.Request) => {
     try {
         const content = getResponseFromCache(
             idOrPath,
-            () => getSitecontentResponse(idOrPath, branch, preview === 'true', time),
+            () => getSitecontentResponse(idOrPath, branch, preview === 'true'),
             cacheKey
         );
 

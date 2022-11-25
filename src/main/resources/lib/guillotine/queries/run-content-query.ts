@@ -42,6 +42,8 @@ import mainArticleQuery from './content-queries/mainArticleQuery.graphql';
 import mainArticleChapterQuery from './content-queries/mainArticleChapterQuery.graphql';
 import meldingQuery from './content-queries/meldingQuery.graphql';
 import officeInformationQuery from './content-queries/officeInformationQuery.graphql';
+import officeBranchQuery from './content-queries/officeBranchQuery.graphql';
+import officeEditorialPageQuery from './content-queries/officeEditorialPageQuery.graphql';
 import overviewPageQuery from './content-queries/overviewPageQuery.graphql';
 import pageListQuery from './content-queries/pageListQuery.graphql';
 import payoutDatesQuery from './content-queries/payoutDatesQuery.graphql';
@@ -53,6 +55,7 @@ import publishingCalendarQuery from './content-queries/publishingCalendarQuery.g
 import publishingCalendarEntryQuery from './content-queries/publishingCalendarEntryQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
+import currentTopicPageQuery from './content-queries/currentTopicPageQuery.graphql';
 import themedArticlePageQuery from './content-queries/themedArticlePageQuery.graphql';
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
@@ -89,12 +92,15 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:main-article-chapter': mainArticleChapterQuery,
     'no.nav.navno:melding': meldingQuery,
     'no.nav.navno:office-information': officeInformationQuery,
+    'no.nav.navno:office-branch': officeBranchQuery,
+    'no.nav.navno:office-editorial-page': officeEditorialPageQuery,
     'no.nav.navno:payout-dates': payoutDatesQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
     'no.nav.navno:publishing-calendar-entry': publishingCalendarEntryQuery,
     'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:situation-page': situationPageQuery,
+    'no.nav.navno:current-topic-page': currentTopicPageQuery,
     'no.nav.navno:overview': overviewPageQuery,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,

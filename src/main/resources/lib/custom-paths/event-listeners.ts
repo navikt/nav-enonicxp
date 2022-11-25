@@ -8,7 +8,10 @@ import { logger } from '../utils/logging';
 // When a content is duplicated, we don't want the custom path
 // to be duplicated as well, as it must be unique
 const removeOnDuplicate = (event: EnonicEvent) => {
-    if (!clusterLib.isMaster()) {
+    const isMaster = clusterLib.isMaster();
+    logger.info(`Removing custom path from duplicated content - ${isMaster}`);
+
+    if (!isMaster) {
         return;
     }
 

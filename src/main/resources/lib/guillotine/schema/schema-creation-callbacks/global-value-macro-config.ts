@@ -16,6 +16,7 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
             if (!gvKey || !contentId) {
                 logger.error(
                     `Invalid global value reference in macro: ${env.source.key} (code 1)`,
+                    true,
                     true
                 );
                 return null;
@@ -29,6 +30,7 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
             if (value === null) {
                 logger.error(
                     `Invalid global value reference in macro: ${env.source.key} (code 2)`,
+                    true,
                     true
                 );
             }
@@ -51,6 +53,7 @@ export const globalValueWithMathMacroConfigCallback: CreationCallback = (context
                         if (!gvKey || !contentId) {
                             logger.error(
                                 `Invalid global value reference in math macro: ${key} (code 1)`,
+                                true,
                                 true
                             );
                             return acc;
@@ -60,6 +63,7 @@ export const globalValueWithMathMacroConfigCallback: CreationCallback = (context
                         if (value === null) {
                             logger.error(
                                 `Invalid global value reference in math macro: ${key} (code 2)`,
+                                true,
                                 true
                             );
                             return acc;
