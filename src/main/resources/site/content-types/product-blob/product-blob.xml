@@ -29,10 +29,21 @@
                     <label>Norsk bokmål</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
-                        <input name="title" type="TextLine">
-                            <label>Produktnavn (til oversikter osv)</label>
-                            <occurrences maximum="1" minimum="1"/>
-                        </input>
+                        <field-set>
+                            <label>Produktnavn og ingress</label>
+                            <items>
+                                <input name="title" type="TextLine">
+                                    <label>Produktnavn</label>
+                                    <help-text>Vises på oversiktssider og i produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="ingress" type="TextArea">
+                                    <label>Ingress</label>
+                                    <help-text>Vises i produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
                         <field-set>
                             <label>Produktside</label>
                             <items>
@@ -90,10 +101,21 @@
                     <label>Nynorsk</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
-                        <input name="title" type="TextLine">
-                            <label>Produktnavn (til oversikter osv)</label>
-                            <occurrences maximum="1" minimum="1"/>
-                        </input>
+                        <field-set>
+                            <label>Produktnavn og ingress</label>
+                            <items>
+                                <input name="title" type="TextLine">
+                                    <label>Produktnavn</label>
+                                    <help-text>Vises på oversiktssider og produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="ingress" type="TextArea">
+                                    <label>Ingress</label>
+                                    <help-text>Vises i produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
                         <field-set>
                             <label>Produktside</label>
                             <items>
@@ -151,10 +173,21 @@
                     <label>Engelsk</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
-                        <input name="title" type="TextLine">
-                            <label>Produktnavn (til oversikter osv)</label>
-                            <occurrences maximum="1" minimum="1"/>
-                        </input>
+                        <field-set>
+                            <label>Produktnavn og ingress</label>
+                            <items>
+                                <input name="title" type="TextLine">
+                                    <label>Produktnavn</label>
+                                    <help-text>Vises på oversiktssider og produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="ingress" type="TextArea">
+                                    <label>Ingress</label>
+                                    <help-text>Vises i produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
                         <field-set>
                             <label>Produktside</label>
                             <items>
@@ -212,10 +245,21 @@
                     <label>Samisk</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
-                        <input name="title" type="TextLine">
-                            <label>Produktnavn (til oversikter osv)</label>
-                            <occurrences maximum="1" minimum="1"/>
-                        </input>
+                        <field-set>
+                            <label>Produktnavn og ingress</label>
+                            <items>
+                                <input name="title" type="TextLine">
+                                    <label>Produktnavn</label>
+                                    <help-text>Vises på oversiktssider og produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="ingress" type="TextArea">
+                                    <label>Ingress</label>
+                                    <help-text>Vises i produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
                         <field-set>
                             <label>Produktside</label>
                             <items>
@@ -281,10 +325,21 @@
                                 <regexp>^[a-zA-Z]{2}$</regexp>
                             </config>
                         </input>
-                        <input name="title" type="TextLine">
-                            <label>Produktnavn (til oversikter osv)</label>
-                            <occurrences maximum="1" minimum="1"/>
-                        </input>
+                        <field-set>
+                            <label>Produktnavn og ingress</label>
+                            <items>
+                                <input name="title" type="TextLine">
+                                    <label>Produktnavn</label>
+                                    <help-text>Vises på oversiktssider og produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                                <input name="ingress" type="TextArea">
+                                    <label>Ingress</label>
+                                    <help-text>Vises i produktkort</help-text>
+                                    <occurrences maximum="1" minimum="1"/>
+                                </input>
+                            </items>
+                        </field-set>
                         <field-set>
                             <label>Produktside</label>
                             <items>

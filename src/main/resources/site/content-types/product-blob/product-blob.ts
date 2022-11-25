@@ -35,9 +35,14 @@ export interface ProductBlob {
    */
   contentNo?: {
     /**
-     * Produktnavn (til oversikter osv)
+     * Produktnavn
      */
     title: string;
+
+    /**
+     * Ingress
+     */
+    ingress: string;
 
     /**
      * Velg produktside
@@ -70,9 +75,14 @@ export interface ProductBlob {
    */
   contentNn?: {
     /**
-     * Produktnavn (til oversikter osv)
+     * Produktnavn
      */
     title: string;
+
+    /**
+     * Ingress
+     */
+    ingress: string;
 
     /**
      * Velg produktside
@@ -105,9 +115,14 @@ export interface ProductBlob {
    */
   contentEn?: {
     /**
-     * Produktnavn (til oversikter osv)
+     * Produktnavn
      */
     title: string;
+
+    /**
+     * Ingress
+     */
+    ingress: string;
 
     /**
      * Velg produktside
@@ -140,9 +155,14 @@ export interface ProductBlob {
    */
   contentSe?: {
     /**
-     * Produktnavn (til oversikter osv)
+     * Produktnavn
      */
     title: string;
+
+    /**
+     * Ingress
+     */
+    ingress: string;
 
     /**
      * Velg produktside
@@ -180,9 +200,14 @@ export interface ProductBlob {
     lang: string;
 
     /**
-     * Produktnavn (til oversikter osv)
+     * Produktnavn
      */
     title: string;
+
+    /**
+     * Ingress
+     */
+    ingress: string;
 
     /**
      * Velg produktside
