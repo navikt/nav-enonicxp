@@ -16,6 +16,18 @@
             </items>
         </field-set>
         <field-set>
+            <label>Produkt</label>
+            <items>
+                <input name="product" type="ContentSelector">
+                    <label>Velg produkt som denne produktsiden tilhører</label>
+                    <occurrences maximum="1" minimum="1"/>
+                    <config>
+                        <allowContentType>${app}:product-blob</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
             <label>URL</label>
             <items>
                 <mixin name="custom-path-selector-required"/>
@@ -31,9 +43,9 @@
                     </help-text>
                 </input>
                 <mixin name="keywords"/>
-                <mixin name="seo"/>
             </items>
         </field-set>
+        <mixin name="seo"/>
         <mixin name="decorator-toggles"/>
     </form>
 </content-type>

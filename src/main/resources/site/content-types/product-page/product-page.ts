@@ -6,6 +6,11 @@ export interface ProductPage {
   title: string;
 
   /**
+   * Velg produkt som denne produktsiden tilhører
+   */
+  product: string;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath: string;

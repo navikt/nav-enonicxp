@@ -51,7 +51,7 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="no"</param>
                                     </config>
                                 </input>
@@ -123,7 +123,7 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="nn"</param>
                                     </config>
                                 </input>
@@ -195,7 +195,7 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="en"</param>
                                     </config>
                                 </input>
@@ -267,7 +267,7 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="se"</param>
                                     </config>
                                 </input>
@@ -347,7 +347,7 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se"</param>
                                     </config>
                                 </input>
