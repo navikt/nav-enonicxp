@@ -158,7 +158,7 @@ const addNewOfficeBranch = (singleOffice: any) => {
     let wasAdded = false;
 
     try {
-        contentLib.create({
+        const contentCreated = contentLib.create({
             name: pathName,
             parentPath: basePath,
             displayName: singleOffice.navn,
@@ -169,6 +169,7 @@ const addNewOfficeBranch = (singleOffice: any) => {
                 checksum: createObjectChecksum(singleOffice),
             },
         });
+        log.info(`CREATEDCONTENT ${JSON.stringify(contentCreated)}`);
         wasAdded = true;
     } catch (e) {
         logger.critical(`Failed to create new office page for ${singleOffice.navn} - ${e}`);
