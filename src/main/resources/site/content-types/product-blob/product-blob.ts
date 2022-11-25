@@ -33,7 +33,7 @@ export interface ProductBlob {
   /**
    * Norsk bokmål
    */
-  no?: {
+  contentNo?: {
     /**
      * Produktnavn (til oversikter osv)
      */
@@ -68,7 +68,7 @@ export interface ProductBlob {
   /**
    * Nynorsk
    */
-  nn?: {
+  contentNn?: {
     /**
      * Produktnavn (til oversikter osv)
      */
@@ -103,7 +103,7 @@ export interface ProductBlob {
   /**
    * Engelsk
    */
-  en?: {
+  contentEn?: {
     /**
      * Produktnavn (til oversikter osv)
      */
@@ -138,7 +138,7 @@ export interface ProductBlob {
   /**
    * Samisk
    */
-  se?: {
+  contentSe?: {
     /**
      * Produktnavn (til oversikter osv)
      */
@@ -173,7 +173,7 @@ export interface ProductBlob {
   /**
    * Andre språk
    */
-  other?: Array<{
+  contentOther?: Array<{
     /**
      * To-bokstavers språkkode
      */

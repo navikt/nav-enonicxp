@@ -25,7 +25,7 @@
         <field-set>
             <label>Innhold</label>
             <items>
-                <item-set name="no">
+                <item-set name="contentNo">
                     <label>Norsk bokmål</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
@@ -36,11 +36,12 @@
                         <field-set>
                             <label>Produktside</label>
                             <items>
-                                <input name="productPage" type="ContentSelector">
+                                <input name="productPage" type="CustomSelector">
                                     <label>Velg produktside</label>
                                     <config>
-                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                        <showStatus>true</showStatus>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="selectorQuery">language="no"</param>
                                     </config>
                                 </input>
                             </items>
@@ -51,22 +52,25 @@
                                 <input name="processing_times" type="CustomSelector">
                                     <label>Saksbehandlingstider</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">processing_times</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="no" AND data.detailType="processing_times"</param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
                                     <label>Utbetalingsdatoer</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">payout_dates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="no" AND data.detailType="payout_dates"</param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
                                     <label>Satser</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">rates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="no" AND data.detailType="rates"</param>
                                     </config>
                                 </input>
                             </items>
@@ -82,7 +86,7 @@
                         </field-set>
                     </items>
                 </item-set>
-                <item-set name="nn">
+                <item-set name="contentNn">
                     <label>Nynorsk</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
@@ -93,11 +97,12 @@
                         <field-set>
                             <label>Produktside</label>
                             <items>
-                                <input name="productPage" type="ContentSelector">
+                                <input name="productPage" type="CustomSelector">
                                     <label>Velg produktside</label>
                                     <config>
-                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                        <showStatus>true</showStatus>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="selectorQuery">language="nn"</param>
                                     </config>
                                 </input>
                             </items>
@@ -108,22 +113,25 @@
                                 <input name="processing_times" type="CustomSelector">
                                     <label>Saksbehandlingstider</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">processing_times</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="nn" AND data.detailType="processing_times"</param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
                                     <label>Utbetalingsdatoer</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">payout_dates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="nn" AND data.detailType="payout_dates"</param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
                                     <label>Satser</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">rates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="nn" AND data.detailType="rates"</param>
                                     </config>
                                 </input>
                             </items>
@@ -139,7 +147,7 @@
                         </field-set>
                     </items>
                 </item-set>
-                <item-set name="en">
+                <item-set name="contentEn">
                     <label>Engelsk</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
@@ -150,11 +158,12 @@
                         <field-set>
                             <label>Produktside</label>
                             <items>
-                                <input name="productPage" type="ContentSelector">
+                                <input name="productPage" type="CustomSelector">
                                     <label>Velg produktside</label>
                                     <config>
-                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                        <showStatus>true</showStatus>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="selectorQuery">language="en"</param>
                                     </config>
                                 </input>
                             </items>
@@ -165,22 +174,25 @@
                                 <input name="processing_times" type="CustomSelector">
                                     <label>Saksbehandlingstider</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">processing_times</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="en" AND data.detailType="processing_times"</param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
                                     <label>Utbetalingsdatoer</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">payout_dates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="en" AND data.detailType="payout_dates"</param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
                                     <label>Satser</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">rates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="en" AND data.detailType="rates"</param>
                                     </config>
                                 </input>
                             </items>
@@ -196,7 +208,7 @@
                         </field-set>
                     </items>
                 </item-set>
-                <item-set name="se">
+                <item-set name="contentSe">
                     <label>Samisk</label>
                     <occurrences maximum="1" minimum="0"/>
                     <items>
@@ -207,11 +219,12 @@
                         <field-set>
                             <label>Produktside</label>
                             <items>
-                                <input name="productPage" type="ContentSelector">
+                                <input name="productPage" type="CustomSelector">
                                     <label>Velg produktside</label>
                                     <config>
-                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                        <showStatus>true</showStatus>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="selectorQuery">language="se"</param>
                                     </config>
                                 </input>
                             </items>
@@ -222,22 +235,25 @@
                                 <input name="processing_times" type="CustomSelector">
                                     <label>Saksbehandlingstider</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">processing_times</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="se" AND data.detailType="processing_times"</param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
                                     <label>Utbetalingsdatoer</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">payout_dates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="se" AND data.detailType="payout_dates"</param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
                                     <label>Satser</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">rates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language="se" AND data.detailType="rates"</param>
                                     </config>
                                 </input>
                             </items>
@@ -253,7 +269,7 @@
                         </field-set>
                     </items>
                 </item-set>
-                <item-set name="other">
+                <item-set name="contentOther">
                     <label>Andre språk</label>
                     <occurrences maximum="0" minimum="0"/>
                     <items>
@@ -272,11 +288,12 @@
                         <field-set>
                             <label>Produktside</label>
                             <items>
-                                <input name="productPage" type="ContentSelector">
+                                <input name="productPage" type="CustomSelector">
                                     <label>Velg produktside</label>
                                     <config>
-                                        <allowContentType>${app}:content-page-with-sidemenus</allowContentType>
-                                        <showStatus>true</showStatus>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:content-page-with-sidemenus</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se"</param>
                                     </config>
                                 </input>
                             </items>
@@ -287,22 +304,25 @@
                                 <input name="processing_times" type="CustomSelector">
                                     <label>Saksbehandlingstider</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">processing_times</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.detailType="processing_times"</param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
                                     <label>Utbetalingsdatoer</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">payout_dates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.detailType="payout_dates"</param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
                                     <label>Satser</label>
                                     <config>
-                                        <service>productDetailsSelector</service>
-                                        <param value="detailType">rates</param>
+                                        <service>contentSelector</service>
+                                        <param value="contentTypes">no.nav.navno:product-details</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.detailType="rates"</param>
                                     </config>
                                 </input>
                             </items>
