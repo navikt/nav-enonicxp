@@ -38,19 +38,19 @@ export const runOfficeBranchFetchTask = (retry?: boolean) => {
     const officeBranches = fetchAllOfficeBranchesFromNorg();
     if (!officeBranches) {
         if (retry) {
-            logger.error('Failed to fetch from norg2, retrying in 5 minutes');
+            logger.error('OfficeImporting: Failed to fetch from norg2, retrying in 5 minutes');
             createOfficeBranchFetchSingleTask(
                 false,
                 new Date(Date.now() + fetchRetryDelay).toISOString()
             );
         } else {
-            logger.critical('Failed to fetch office branch from norg2');
+            logger.critical('OfficeImporting: Failed to fetch office branch from norg2');
         }
         return;
     }
 
     logger.info(
-        `Fetched ${officeBranches.length} office branches from norg2, updating site data...`
+        `OfficeImporting: Fetched ${officeBranches.length} office branches from norg2, updating site data...`
     );
 
     contextLib.run(

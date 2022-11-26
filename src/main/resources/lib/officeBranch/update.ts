@@ -13,7 +13,7 @@ const basePath = '/www.nav.no/kontor';
 
 export const fetchAllOfficeBranchesFromNorg = () => {
     log.info(
-        `Fetching norg2 from url https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV`
+        `OfficeImporting: Fetching norg2 from url https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV`
     );
     const tempUrl =
         'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV';
@@ -30,11 +30,13 @@ export const fetchAllOfficeBranchesFromNorg = () => {
         if (response.status === 200 && response.body) {
             return JSON.parse(response.body);
         } else {
-            logger.error(`Bad response from norg2: ${response.status} - ${response.message}`);
+            logger.error(
+                `OfficeImporting: Bad response from norg2: ${response.status} - ${response.message}`
+            );
             return null;
         }
     } catch (e) {
-        logger.error(`Exception from norg2 request: ${e}`);
+        logger.error(`OfficeImporting: Exception from norg2 request: ${e}`);
         return null;
     }
 };
@@ -90,7 +92,7 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
     const newName = commonLib.sanitize(newOffice.navn);
 
     try {
-        logger.info(`Updating name/path: ${currentName} -> ${newName}`);
+        logger.info(`OfficeImporting: Updating name/path: ${currentName} -> ${newName}`);
 
         // Move the office branch page to a new path if the name changed
         contentLib.move({
@@ -111,7 +113,9 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
             },
         });
     } catch (e) {
-        logger.critical(`Failed to update office branch name for ${existingOffice._path} - ${e}`);
+        logger.critical(
+            `OfficeImporting: Failed to update office branch name for ${existingOffice._path} - ${e}`
+        );
     }
 };
 
@@ -140,7 +144,7 @@ const updateExistingOfficeBranch = (
             wasUpdated = true;
         } catch (e) {
             logger.critical(
-                `Failed to modify office branch content ${existingOffice._path} - ${e}`
+                `OfficeImporting: Failed to modify office branch content ${existingOffice._path} - ${e}`
             );
         }
     }
@@ -174,7 +178,9 @@ const addNewOfficeBranch = (singleOffice: any) => {
         log.info(`CREATEDCONTENT ${JSON.stringify(contentCreated)}`);
         wasAdded = true;
     } catch (e) {
-        logger.critical(`Failed to create new office page for ${singleOffice.navn} - ${e}`);
+        logger.critical(
+            `OfficeImporting: Failed to create new office page for ${singleOffice.navn} - ${e}`
+        );
     }
 
     return wasAdded;
@@ -242,6 +248,6 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
     });
 
     logger.info(
-        `Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
+        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
     );
 };
