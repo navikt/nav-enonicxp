@@ -47,7 +47,7 @@ if (clusterLib.isMaster()) {
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
     // Todo: Activate this only when we're going live with the new office branch.
-    createOfficeBranchFetchSchedule();
+    // createOfficeBranchFetchSchedule(); // Temp disable fetch schedule
 }
 
 log.info('Finished running main');

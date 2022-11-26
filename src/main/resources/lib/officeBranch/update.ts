@@ -12,7 +12,9 @@ const officeBranchContentType: OfficeBranchDescriptor = `no.nav.navno:office-bra
 const basePath = '/www.nav.no/kontor';
 
 export const fetchAllOfficeBranchesFromNorg = () => {
-    log.info(`Fetching norg2 from url ${app.config.norg2v2}`);
+    log.info(
+        `Fetching norg2 from url https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV`
+    );
     const tempUrl =
         'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV';
     try {
