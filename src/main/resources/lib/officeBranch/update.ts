@@ -6,12 +6,22 @@ import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 
+import { officeCopies } from './officeCopies';
+
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 
 const officeBranchContentType: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
 const basePath = '/www.nav.no/kontor';
 
 export const fetchAllOfficeBranchesFromNorg = () => {
+    // Remove
+    const string = JSON.stringify(officeCopies);
+    return JSON.parse(string) as OfficeBranch[];
+
+    // Return officeCopies for import demo.
+
+    // Remove end
+    /**
     log.info(
         `OfficeImporting: Fetching norg2 from url https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV`
     );
@@ -39,6 +49,8 @@ export const fetchAllOfficeBranchesFromNorg = () => {
         logger.error(`OfficeImporting: Exception from norg2 request: ${e}`);
         return null;
     }
+
+     */
 };
 
 // Check if a path is taken by some alien content (non-office-branch content).
