@@ -176,7 +176,7 @@ const addNewOfficeBranch = (singleOffice: any) => {
     let wasAdded = false;
 
     try {
-        const contentCreated = contentLib.create({
+        contentLib.create({
             name: pathName,
             parentPath: basePath,
             displayName: singleOffice.navn,
@@ -187,7 +187,6 @@ const addNewOfficeBranch = (singleOffice: any) => {
                 checksum: createObjectChecksum(singleOffice),
             },
         });
-        log.info(`CREATEDCONTENT ${JSON.stringify(contentCreated)}`);
         wasAdded = true;
     } catch (e) {
         logger.critical(
@@ -240,7 +239,6 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
             const wasUpdated = updateExistingOfficeBranch(newSingleOffice, existingOfficeInXP);
             summary.updated += wasUpdated ? 1 : 0;
         } else {
-            logger.info('Add new office branch');
             const wasAdded = addNewOfficeBranch(newSingleOffice);
             summary.created += wasAdded ? 1 : 0;
         }
@@ -252,12 +250,14 @@ export const processAllOfficeBranches = (newOfficeBranches: OfficeBranch[]) => {
 
     // Publish all updates made inside basePath
     // This includes updates and new office branches
-    contentLib.publish({
+    const publishResponse = contentLib.publish({
         keys: [basePath],
         sourceBranch: 'draft',
         targetBranch: 'master',
         includeDependencies: true,
     });
+
+    logger.info(`PublishResponse: ${JSON.stringify(publishResponse)}`);
 
     logger.info(
         `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
