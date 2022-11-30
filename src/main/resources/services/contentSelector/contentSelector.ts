@@ -36,9 +36,7 @@ export const buildSelectorQuery = (selectorInput: string) => {
 
 const buildQuery = (userInput?: string, selectorInput?: string) => {
     const userQuery = userInput ? generateFulltextQuery(userInput, ['displayName'], 'AND') : null;
-    const selectorQuery = selectorInput
-        ? selectorInput.replace('{id}', portalLib.getContent()?._id)
-        : null;
+    const selectorQuery = selectorInput ? buildSelectorQuery(selectorInput) : null;
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
@@ -47,7 +45,9 @@ const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {
             id: content._id,
-            displayName: `[${content.language}] ${content.displayName}`,
+            displayName: `${content.language !== 'no' ? `[${content.language}]` : ''} ${
+                content.displayName
+            }`,
             description: stripPathPrefix(content._path),
         },
         `${contentStudioEditPathPrefix}/${content._id}`

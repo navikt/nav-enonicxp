@@ -11,15 +11,16 @@
             <items>
                 <mixin name="audience"/>
                 <mixin name="area"/>
+                <mixin name="illustration"/>
                 <option-set name="contentCategory">
-                    <label>Velg innholdstype for tilknyttede sider</label>
+                    <label>Innholdstype og kategorier</label>
                     <occurrences minimum="1" maximum="1"/>
                     <options minimum="1" maximum="1">
                         <option name="product-page">
                             <label>Produktside</label>
                             <items>
                                 <input name="taxonomy" type="ComboBox">
-                                    <label>Kategori</label>
+                                    <label>Kategorier</label>
                                     <occurrences minimum="0" maximum="0"/>
                                     <config>
                                         <option value="assistive_tools">Hjelpemiddel</option>
@@ -65,15 +66,17 @@
             </items>
         </field-set>
         <mixin name="owner"/>
-
         <field-set>
-            <label>Piktogram</label>
+            <label>Søknadsgreier goes here</label>
             <items>
-                <mixin name="illustration"/>
+                <input type="RadioButton" name="dummy">
+                    <label>Items goes here</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
             </items>
         </field-set>
         <field-set>
-            <label>Innhold</label>
+            <label>Innhold (lokalisert)</label>
             <items>
                 <item-set name="contentNo">
                     <label>Norsk bokmål</label>
@@ -102,7 +105,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="no" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
+                                        <param value="selectorQuery">language="no" AND data.product="{_id}" AND
+                                            type="no.nav.navno:{data.contentCategory._selected}"
+                                        </param>
                                     </config>
                                 </input>
                             </items>
@@ -115,7 +120,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="no" AND data.detailType="processing_times"</param>
+                                        <param value="selectorQuery">language="no" AND
+                                            data.detailType="processing_times"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
@@ -123,7 +130,8 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="no" AND data.detailType="payout_dates"</param>
+                                        <param value="selectorQuery">language="no" AND data.detailType="payout_dates"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
@@ -133,15 +141,6 @@
                                         <param value="contentTypes">no.nav.navno:product-details</param>
                                         <param value="selectorQuery">language="no" AND data.detailType="rates"</param>
                                     </config>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Søknadsgreier goes here</label>
-                            <items>
-                                <input type="RadioButton" name="dummy">
-                                    <label>Items goes here</label>
-                                    <occurrences minimum="0" maximum="1"/>
                                 </input>
                             </items>
                         </field-set>
@@ -174,7 +173,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="nn" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
+                                        <param value="selectorQuery">language="nn" AND data.product="{_id}" AND
+                                            type="no.nav.navno:{data.contentCategory._selected}"
+                                        </param>
                                     </config>
                                 </input>
                             </items>
@@ -187,7 +188,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="nn" AND data.detailType="processing_times"</param>
+                                        <param value="selectorQuery">language="nn" AND
+                                            data.detailType="processing_times"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
@@ -195,7 +198,8 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="nn" AND data.detailType="payout_dates"</param>
+                                        <param value="selectorQuery">language="nn" AND data.detailType="payout_dates"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
@@ -205,15 +209,6 @@
                                         <param value="contentTypes">no.nav.navno:product-details</param>
                                         <param value="selectorQuery">language="nn" AND data.detailType="rates"</param>
                                     </config>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Søknadsgreier goes here</label>
-                            <items>
-                                <input type="RadioButton" name="dummy">
-                                    <label>Items goes here</label>
-                                    <occurrences minimum="0" maximum="1"/>
                                 </input>
                             </items>
                         </field-set>
@@ -246,7 +241,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="en" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
+                                        <param value="selectorQuery">language="en" AND data.product="{_id}" AND
+                                            type="no.nav.navno:{data.contentCategory._selected}"
+                                        </param>
                                     </config>
                                 </input>
                             </items>
@@ -259,7 +256,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="en" AND data.detailType="processing_times"</param>
+                                        <param value="selectorQuery">language="en" AND
+                                            data.detailType="processing_times"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
@@ -267,7 +266,8 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="en" AND data.detailType="payout_dates"</param>
+                                        <param value="selectorQuery">language="en" AND data.detailType="payout_dates"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
@@ -277,15 +277,6 @@
                                         <param value="contentTypes">no.nav.navno:product-details</param>
                                         <param value="selectorQuery">language="en" AND data.detailType="rates"</param>
                                     </config>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Søknadsgreier goes here</label>
-                            <items>
-                                <input type="RadioButton" name="dummy">
-                                    <label>Items goes here</label>
-                                    <occurrences minimum="0" maximum="1"/>
                                 </input>
                             </items>
                         </field-set>
@@ -318,7 +309,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="se" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
+                                        <param value="selectorQuery">language="se" AND data.product="{_id}" AND
+                                            type="no.nav.navno:{data.contentCategory._selected}"
+                                        </param>
                                     </config>
                                 </input>
                             </items>
@@ -331,7 +324,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="se" AND data.detailType="processing_times"</param>
+                                        <param value="selectorQuery">language="se" AND
+                                            data.detailType="processing_times"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
@@ -339,7 +334,8 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language="se" AND data.detailType="payout_dates"</param>
+                                        <param value="selectorQuery">language="se" AND data.detailType="payout_dates"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
@@ -349,15 +345,6 @@
                                         <param value="contentTypes">no.nav.navno:product-details</param>
                                         <param value="selectorQuery">language="se" AND data.detailType="rates"</param>
                                     </config>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Søknadsgreier goes here</label>
-                            <items>
-                                <input type="RadioButton" name="dummy">
-                                    <label>Items goes here</label>
-                                    <occurrences minimum="0" maximum="1"/>
                                 </input>
                             </items>
                         </field-set>
@@ -398,7 +385,10 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND
+                                            language!="en" AND language!="se" AND data.product="{_id}" AND
+                                            type="no.nav.navno:{data.contentCategory._selected}"
+                                        </param>
                                     </config>
                                 </input>
                             </items>
@@ -411,7 +401,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.detailType="processing_times"</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND
+                                            language!="en" AND language!="se" AND data.detailType="processing_times"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="payout_dates" type="CustomSelector">
@@ -419,7 +411,9 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.detailType="payout_dates"</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND
+                                            language!="en" AND language!="se" AND data.detailType="payout_dates"
+                                        </param>
                                     </config>
                                 </input>
                                 <input name="rates" type="CustomSelector">
@@ -427,17 +421,10 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-details</param>
-                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.detailType="rates"</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND
+                                            language!="en" AND language!="se" AND data.detailType="rates"
+                                        </param>
                                     </config>
-                                </input>
-                            </items>
-                        </field-set>
-                        <field-set>
-                            <label>Søknadsgreier goes here</label>
-                            <items>
-                                <input type="RadioButton" name="dummy">
-                                    <label>Items goes here</label>
-                                    <occurrences minimum="0" maximum="1"/>
                                 </input>
                             </items>
                         </field-set>

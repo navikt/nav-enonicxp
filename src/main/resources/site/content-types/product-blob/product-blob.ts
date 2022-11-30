@@ -6,12 +6,17 @@ export interface ProductBlob {
   audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
-   * Områdekategori
+   * Områder
    */
   area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
 
   /**
-   * Velg innholdstype for tilknyttede sider
+   * Velg piktogram
+   */
+  illustration: string;
+
+  /**
+   * Innholdstype og kategorier
    */
   contentCategory:
     | {
@@ -25,7 +30,7 @@ export interface ProductBlob {
          */
         "product-page": {
           /**
-           * Kategori
+           * Kategorier
            */
           taxonomy?: Array<"assistive_tools" | "followup" | "benefits" | "measures" | "service" | "rights" | "for_employers" | "for_providers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
         };
@@ -69,9 +74,9 @@ export interface ProductBlob {
   "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
 
   /**
-   * Velg piktogram
+   * Items goes here
    */
-  illustration: string;
+  dummy?: undefined;
 
   /**
    * Norsk bokmål
@@ -106,11 +111,6 @@ export interface ProductBlob {
      * Satser
      */
     rates?: string;
-
-    /**
-     * Items goes here
-     */
-    dummy?: undefined;
   };
 
   /**
@@ -146,11 +146,6 @@ export interface ProductBlob {
      * Satser
      */
     rates?: string;
-
-    /**
-     * Items goes here
-     */
-    dummy?: undefined;
   };
 
   /**
@@ -186,11 +181,6 @@ export interface ProductBlob {
      * Satser
      */
     rates?: string;
-
-    /**
-     * Items goes here
-     */
-    dummy?: undefined;
   };
 
   /**
@@ -226,11 +216,6 @@ export interface ProductBlob {
      * Satser
      */
     rates?: string;
-
-    /**
-     * Items goes here
-     */
-    dummy?: undefined;
   };
 
   /**
@@ -271,10 +256,5 @@ export interface ProductBlob {
      * Satser
      */
     rates?: string;
-
-    /**
-     * Items goes here
-     */
-    dummy?: undefined;
   }>;
 }

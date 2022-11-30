@@ -18,11 +18,13 @@
         <field-set>
             <label>Produkt</label>
             <items>
-                <input name="product" type="ContentSelector">
+                <input name="product" type="CustomSelector">
                     <label>Velg produkt som denne produktsiden tilhører</label>
                     <occurrences maximum="1" minimum="1"/>
                     <config>
-                        <allowContentType>${app}:product-blob</allowContentType>
+                        <service>contentSelector</service>
+                        <param value="contentTypes">no.nav.navno:product-blob</param>
+                        <param value="selectorQuery">data.contentCategory._selected="no.nav.navno:product-page"</param>
                     </config>
                 </input>
             </items>
