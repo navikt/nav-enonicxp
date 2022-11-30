@@ -28,9 +28,10 @@ export const buildSelectorQuery = (selectorInput: string) => {
         return null;
     }
 
-    return selectorInput.replace(/{(\w|\.|-)+}/g, (match) =>
-        getNestedValue(content, match.replace(/[{}]/g, ''))
-    );
+    return selectorInput.replace(/{(\w|\.|-)+}/g, (match) => {
+        const fieldKey = match.replace(/[{}]/g, '');
+        return getNestedValue(content, fieldKey);
+    });
 };
 
 const buildQuery = (userInput?: string, selectorInput?: string) => {

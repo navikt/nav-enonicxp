@@ -26,6 +26,11 @@ export interface ProductBlob {
   "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
 
   /**
+   * Velg innholdstype for tilknyttede sider
+   */
+  contentType: "no.nav.navno:product-page" | "no.nav.navno:guide-page" | "no.nav.navno:themed-article-page";
+
+  /**
    * Velg piktogram
    */
   illustration: string;

@@ -6,7 +6,7 @@
                 <input name="owner" type="ComboBox">
                     <label>Velg eier</label>
                     <help-text>Data til intern bruk for å definere eierskap og se innholdsmengde</help-text>
-                    <occurrences minimum="1" maximum="99"/>
+                    <occurrences minimum="1" maximum="0"/>
                     <config>
                         <option value="ytelsesavdelingen">Ytelsesavdelingen</option>
                         <option value="arbeids_og_tjenesteavdelingen">Arbeids- og tjenesteavdelingen</option>
@@ -32,6 +32,19 @@
                         <option value="min_side">Min Side</option>
                         <option value="direktoratet">Direktoratet</option>
                         <option value="annet">Annet</option>
+                    </config>
+                </input>
+                <input name="managed-by" type="ComboBox">
+                    <label>Velg forvalter (hvis annet enn eier)</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <option value="po_aap">PO AAP</option>
+                        <option value="po_arbeid">PO Arbeid</option>
+                        <option value="po_familie">PO Familie</option>
+                        <option value="po_helse">PO Helse</option>
+                        <option value="po_pensjon">PO Pensjon</option>
+                        <option value="po_arbeidsgiver">PO Arbeidsgiver</option>
+                        <option value="digisos">Digisos</option>
                     </config>
                 </input>
             </items>

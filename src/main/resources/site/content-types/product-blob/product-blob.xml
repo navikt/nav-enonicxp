@@ -15,7 +15,21 @@
             </items>
         </field-set>
         <mixin name="owner"/>
-        <mixin name="managed-by"/>
+        <field-set>
+            <label>Innholdstype</label>
+            <items>
+                <input name="contentType" type="ComboBox">
+                    <label>Velg innholdstype for tilknyttede sider</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <option value="no.nav.navno:product-page">Produktside</option>
+                        <option value="no.nav.navno:guide-page">Guide ("Slik gjør du")</option>
+                        <option value="no.nav.navno:themed-article-page">Temaartikkel</option>
+                    </config>
+                    <default>one</default>
+                </input>
+            </items>
+        </field-set>
         <field-set>
             <label>Piktogram</label>
             <items>
@@ -52,7 +66,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="no" AND data.product="{id}"</param>
+                                        <param value="selectorQuery">language="no" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -124,7 +138,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="nn" AND data.product="{id}"</param>
+                                        <param value="selectorQuery">language="nn" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -196,7 +210,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="en" AND data.product="{id}"</param>
+                                        <param value="selectorQuery">language="en" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -268,7 +282,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language="se" AND data.product="{id}"</param>
+                                        <param value="selectorQuery">language="se" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
                                     </config>
                                 </input>
                             </items>
@@ -348,7 +362,7 @@
                                     <config>
                                         <service>contentSelector</service>
                                         <param value="contentTypes">no.nav.navno:product-page</param>
-                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.product="{id}"</param>
+                                        <param value="selectorQuery">language!="no" AND language!="nn" AND language!="en" AND language!="se" AND data.product="{_id}" AND data.type="{data.contentType}"</param>
                                     </config>
                                 </input>
                             </items>
