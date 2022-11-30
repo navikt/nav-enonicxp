@@ -1,6 +1,5 @@
 import { Content } from '/lib/xp/content';
 import { MediaDescriptor } from '../../types/content-types/content-config';
-import { ProductData } from '../../site/mixins/product-data/product-data';
 import {
     contentTypesWithProductDetails,
     contentTypesWithProductDetails as _contentTypesWithProductDetails,
@@ -25,10 +24,10 @@ export type OverviewPageProductData = {
     title: string;
     sortTitle: string;
     ingress: string;
-    audience: ProductData['audience'];
+    audience: string;
     language: string;
-    taxonomy: ProductData['taxonomy'];
-    area: ProductData['area'];
+    taxonomy: string[];
+    area: string[];
     illustration: {
         data: {
             icons: OverviewPageIllustrationIcon[];

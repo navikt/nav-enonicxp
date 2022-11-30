@@ -10,7 +10,6 @@ import {
     OverviewPageProductData,
     DetailedOverviewType,
 } from './types';
-import { ProductData } from '../../site/mixins/product-data/product-data';
 import { appDescriptor } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
@@ -18,8 +17,6 @@ import { contentTypesWithProductDetails } from '../contenttype-lists';
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience'];
 type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
-// Generated data type definitions are incorrect due to nested mixins
-type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ProductData;
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
 const contentTypesInAllProductsList = [
@@ -32,7 +29,7 @@ const getProductDetails = (
     overviewType: DetailedOverviewType,
     language: string
 ): ProductDetailsContent | null => {
-    const data = product.data as ContentWithProductDetailsData;
+    const data = product.data;
 
     const detailsContentId = data[overviewType];
     if (!detailsContentId) {
@@ -76,7 +73,7 @@ const getProductDetails = (
 };
 
 const buildCommonProductData = (product: ContentWithProductDetails) => {
-    const data = product.data as ContentWithProductDetailsData;
+    const data = product.data;
     const fullTitle = data.title || product.displayName;
     const icons = getProductIllustrationIcons(product);
 
@@ -89,7 +86,7 @@ const buildCommonProductData = (product: ContentWithProductDetails) => {
         ingress: data.ingress,
         audience: data.audience,
         language: product.language || 'no',
-        taxonomy: forceArray(data.taxonomy),
+        taxonomy: forceArray((data as any).taxonomy as string | string[]),
         area: forceArray(data.area),
         illustration: {
             data: {

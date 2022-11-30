@@ -10,26 +10,62 @@
             <label>Produktdata</label>
             <items>
                 <mixin name="audience"/>
-                <mixin name="taxonomy"/>
                 <mixin name="area"/>
+                <option-set name="contentCategory">
+                    <label>Velg innholdstype for tilknyttede sider</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <options minimum="1" maximum="1">
+                        <option name="product-page">
+                            <label>Produktside</label>
+                            <items>
+                                <input name="taxonomy" type="ComboBox">
+                                    <label>Kategori</label>
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <config>
+                                        <option value="assistive_tools">Hjelpemiddel</option>
+                                        <option value="followup">Oppfølging</option>
+                                        <option value="benefits">Pengestøtte</option>
+                                        <option value="measures">Tiltak</option>
+                                        <option value="service">Tjeneste</option>
+                                        <option value="rights">Veiledning</option>
+                                        <option value="for_employers">For arbeidsgivere</option>
+                                        <option value="for_providers">For samarbeidspartnere</option>
+                                        <option value="for_municipality">For kommunen</option>
+                                        <option value="for_event_organizers">For tiltaksarrangører</option>
+                                        <option value="for_health_service">For leger og andre behandlere</option>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="themed-article-page">
+                            <label>Temaartikkel</label>
+                            <items>
+                                <input name="taxonomy" type="ComboBox">
+                                    <label>Kategorier</label>
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <config>
+                                        <option value="tips_job">Jobbsøkertips</option>
+                                        <option value="help_work">Hjelp til å komme i jobb</option>
+                                        <option value="when_sick">Når du er syk</option>
+                                        <option value="payment">Utbetaling</option>
+                                        <option value="complaint_rights">Klagerettigheter</option>
+                                        <option value="user_support">Brukerstøtte</option>
+                                        <option value="about_nav">Om NAV</option>
+                                        <option value="membership_national_insurance">Medlemskap i folketrygden</option>
+                                        <option value="recruitment">Rekruttering (for arbeidsgivere)</option>
+                                    </config>
+                                </input>
+                            </items>
+                        </option>
+                        <option name="guide-page">
+                            <label>Guide ("Slik gjør du")</label>
+                        </option>
+                    </options>
+                </option-set>
             </items>
         </field-set>
         <mixin name="owner"/>
-        <field-set>
-            <label>Innholdstype</label>
-            <items>
-                <input name="contentType" type="ComboBox">
-                    <label>Velg innholdstype for tilknyttede sider</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <option value="no.nav.navno:product-page">Produktside</option>
-                        <option value="no.nav.navno:guide-page">Guide ("Slik gjør du")</option>
-                        <option value="no.nav.navno:themed-article-page">Temaartikkel</option>
-                    </config>
-                    <default>one</default>
-                </input>
-            </items>
-        </field-set>
+
         <field-set>
             <label>Piktogram</label>
             <items>

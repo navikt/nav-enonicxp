@@ -6,7 +6,50 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="product-data"/>
+        <field-set>
+            <label>Tittel og ingress</label>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>Produktdata</label>
+            <items>
+                <mixin name="audience" />
+                <mixin name="area" />
+                <input name="taxonomy" type="ComboBox">
+                    <label>Kategori</label>
+                    <occurrences minimum="0" maximum="8"/>
+                    <config>
+                        <option value="assistive_tools">Hjelpemiddel</option>
+                        <option value="followup">Oppfølging</option>
+                        <option value="benefits">Pengestøtte</option>
+                        <option value="measures">Tiltak</option>
+                        <option value="service">Tjeneste</option>
+                        <option value="rights">Veiledning</option>
+                        <option value="for_employers">For arbeidsgivere</option>
+                        <option value="for_providers">For samarbeidspartnere</option>
+                        <option value="for_municipality">For kommunen</option>
+                        <option value="for_event_organizers">For tiltaksarrangører</option>
+                        <option value="for_health_service">For leger og andre behandlere</option>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Piktogram</label>
+            <items>
+                <mixin name="illustration" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>URL</label>
+            <items>
+                <mixin name="external-product-url" />
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
         <mixin name="owner" />
         <mixin name="product-details-selector"/>
         <mixin name="dynamic-page-common"/>

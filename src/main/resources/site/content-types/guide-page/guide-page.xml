@@ -6,7 +6,17 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="guide-data"/>
+        <field-set>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+                <mixin name="audience" />
+                <mixin name="area" />
+                <mixin name="illustration" />
+                <mixin name="external-product-url" />
+                <mixin name="custom-path-selector-required"/>
+            </items>
+        </field-set>
         <mixin name="owner" />
         <mixin name="product-details-selector"/>
         <mixin name="dynamic-page-common"/>

@@ -19,7 +19,7 @@
                 <mixin name="audience" />
                   <input name="taxonomy" type="ComboBox">
                             <label>Kategorier</label>
-                            <occurrences minimum="0" maximum="99"/>
+                            <occurrences minimum="0" maximum="0"/>
                             <config>
                                 <option value="calculator">Kalkulator</option>
                                 <option value="navigator">Veiviser</option>

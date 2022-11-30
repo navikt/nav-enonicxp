@@ -6,14 +6,57 @@ export interface ProductBlob {
   audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
-   * Kategori
-   */
-  taxonomy?: Array<"assistive_tools" | "followup" | "benefits" | "measures" | "service" | "rights" | "for_employers" | "for_providers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
-
-  /**
    * Områdekategori
    */
   area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
+
+  /**
+   * Velg innholdstype for tilknyttede sider
+   */
+  contentCategory:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "product-page";
+
+        /**
+         * Produktside
+         */
+        "product-page": {
+          /**
+           * Kategori
+           */
+          taxonomy?: Array<"assistive_tools" | "followup" | "benefits" | "measures" | "service" | "rights" | "for_employers" | "for_providers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "themed-article-page";
+
+        /**
+         * Temaartikkel
+         */
+        "themed-article-page": {
+          /**
+           * Kategorier
+           */
+          taxonomy?: Array<"tips_job" | "help_work" | "when_sick" | "payment" | "complaint_rights" | "user_support" | "about_nav" | "membership_national_insurance" | "recruitment">;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "guide-page";
+
+        /**
+         * Guide ("Slik gjør du")
+         */
+        "guide-page": Record<string, unknown>;
+      };
 
   /**
    * Velg eier
@@ -21,14 +64,9 @@ export interface ProductBlob {
   owner: Array<"ytelsesavdelingen" | "arbeids_og_tjenesteavdelingen" | "arbeid_og_ytelser_styringsenhet" | "familie_og_pensjonsytelser_styringsenhet" | "hr_avdelingen" | "juridisk_avdeling" | "kunnskapsavdelingen" | "kommunikasjonsavdelingen" | "okonomi" | "statistikk" | "hjelpemidler_og_tilrettelegging" | "kontaktsenteret" | "team_personbruker" | "it_avdelingen" | "fylke" | "hjelpemiddelsentralen" | "arbeidslivssenter" | "min_side" | "direktoratet" | "annet">;
 
   /**
-   * Velg forvalter
+   * Velg forvalter (hvis annet enn eier)
    */
   "managed-by"?: Array<"po_aap" | "po_arbeid" | "po_familie" | "po_helse" | "po_pensjon" | "po_arbeidsgiver" | "digisos">;
-
-  /**
-   * Velg innholdstype for tilknyttede sider
-   */
-  contentType: "no.nav.navno:product-page" | "no.nav.navno:guide-page" | "no.nav.navno:themed-article-page";
 
   /**
    * Velg piktogram
