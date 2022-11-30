@@ -2,6 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import {
     forceArray,
     generateFulltextQuery,
+    getNestedValue,
     removeDuplicates,
     stripPathPrefix,
 } from '../../lib/utils/nav-utils';
@@ -18,13 +19,25 @@ type ReqParams = {
     selectorQuery?: string;
 } & XP.CustomSelectorServiceRequestParams;
 
+export const buildSelectorQuery = (selectorInput: string) => {
+    const content = portalLib.getContent();
+    if (!content) {
+        logger.error(
+            `Could not retrieve content from context, failed to build query for selector input ${selectorInput}`
+        );
+        return null;
+    }
+
+    return selectorInput.replace(/{(\w|\.|-)+}/g, (match) =>
+        getNestedValue(content, match.replace(/[{}]/g, ''))
+    );
+};
+
 const buildQuery = (userInput?: string, selectorInput?: string) => {
-    const userQuery = userInput
-        ? generateFulltextQuery(userInput, ['displayName'], 'AND')
-        : undefined;
+    const userQuery = userInput ? generateFulltextQuery(userInput, ['displayName'], 'AND') : null;
     const selectorQuery = selectorInput
         ? selectorInput.replace('{id}', portalLib.getContent()?._id)
-        : undefined;
+        : null;
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
