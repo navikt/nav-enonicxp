@@ -90,7 +90,7 @@ const getHitsFromIds = (ids: string[]) =>
 //     <config>
 //         <service>contentSelector</service>
 //         <param value="contentTypes">["no.nav.navno:my-content-type", "no.nav.navno:my-other-content-type"]</param>
-//         <param value="selectorQuery">language="en" AND data.someReference="{_id}" AND</param>
+//         <param value="selectorQuery">language="en" AND data.someReference="{_id}"</param>
 //     </config>
 // </input>
 //
