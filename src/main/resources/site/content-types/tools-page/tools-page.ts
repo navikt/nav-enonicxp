@@ -31,7 +31,7 @@ export interface ToolsPage {
   taxonomy?: Array<"calculator" | "navigator">;
 
   /**
-   * Områdekategori
+   * Områder
    */
   area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
 

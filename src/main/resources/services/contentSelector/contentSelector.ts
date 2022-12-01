@@ -1,4 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
+import portalLib from '/lib/xp/portal';
 import {
     forceArray,
     generateFulltextQuery,
@@ -10,7 +11,6 @@ import { contentStudioEditPathPrefix } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import portalLib from '/lib/xp/portal';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 

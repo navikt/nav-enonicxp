@@ -35,6 +35,8 @@ import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
+import { ProductBlob } from '../../site/content-types/product-blob/product-blob';
+import { ProductPage } from '../../site/content-types/product-page/product-page';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -62,7 +64,9 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'payout-dates': PayoutDates;
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
+    'product-blob': ProductBlob;
     'product-details': ProductDetails;
+    'product-page': ProductPage;
     'generic-page': GenericPage;
     'section-page': SectionPage;
     overview: Overview;

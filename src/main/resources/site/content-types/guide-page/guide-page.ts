@@ -26,7 +26,7 @@ export interface GuidePage {
   audience: "person" | "employer" | "provider" | "self_employed";
 
   /**
-   * Områdekategori
+   * Områder
    */
   area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
 
