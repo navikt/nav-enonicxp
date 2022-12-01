@@ -34,10 +34,10 @@ export const parseJsonArray = <Type = any>(json: string): Type[] | null => {
         if (Array.isArray(array)) {
             return array;
         }
-        logger.error(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
+        logger.info(`Expected JSON string to be array, got ${typeof array} - JSON: ${json}`);
         return null;
     } catch (e) {
-        logger.error(`Failed to parse JSON string ${json} - ${e}`);
+        logger.info(`Failed to parse JSON string ${json} - ${e}`);
         return null;
     }
 };

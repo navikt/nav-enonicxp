@@ -11,7 +11,7 @@ jest.mock('/lib/xp/portal', () => ({
     getContent: () => mockContent,
 }));
 
-describe('Custom content selector query', () => {
+describe('Custom content selector query builder', () => {
     test('Should return query with _id value', () => {
         const query = buildSelectorQuery('Query with id: {_id}');
         expect(query).toEqual(`Query with id: ${mockContent._id}`);

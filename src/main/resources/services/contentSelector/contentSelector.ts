@@ -4,6 +4,7 @@ import {
     forceArray,
     generateFulltextQuery,
     getNestedValue,
+    parseJsonArray,
     removeDuplicates,
     stripPathPrefix,
 } from '../../lib/utils/nav-utils';
@@ -15,9 +16,17 @@ import { ContentDescriptor } from '../../types/content-types/content-config';
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
 type ReqParams = {
-    contentTypes?: ContentDescriptor | ContentDescriptor[];
+    contentTypes?: string;
     selectorQuery?: string;
 } & XP.CustomSelectorServiceRequestParams;
+
+const parseContentTypes = (contentTypesJson?: string) => {
+    if (!contentTypesJson) {
+        return null;
+    }
+
+    return parseJsonArray(contentTypesJson) || [contentTypesJson];
+};
 
 export const buildSelectorQuery = (selectorInput: string) => {
     const content = portalLib.getContent();
@@ -40,7 +49,6 @@ const buildQuery = (userInput?: string, selectorInput?: string) => {
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
-
 const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {
@@ -73,20 +81,33 @@ const getHitsFromIds = (ids: string[]) =>
         return [...acc, transformHit(content)];
     }, [] as SelectorHit[]);
 
+// This service can be called from a CustomSelector input as a more advanced alternative to
+// the built-in ContentSelector input type. Supports selecting based on custom queries, which
+// may include values from the current content, enclosed in curly braces. Example:
+//
+// <input name="myInput" type="CustomSelector">
+//     <label>Choose content</label>
+//     <config>
+//         <service>contentSelector</service>
+//         <param value="contentTypes">["no.nav.navno:my-content-type", "no.nav.navno:my-other-content-type"]</param>
+//         <param value="selectorQuery">language="en" AND data.someReference="{_id}"</param>
+//     </config>
+// </input>
+//
 export const get = (req: XP.Request) => {
-    const { query: userQuery, ids, contentTypes, selectorQuery } = req.params as ReqParams;
+    const {
+        query: userQuery,
+        ids,
+        contentTypes: contentTypesJson,
+        selectorQuery,
+    } = req.params as ReqParams;
 
     const query = buildQuery(userQuery, selectorQuery);
+    const contentTypes = parseContentTypes(contentTypesJson);
 
-    logger.info(`Query: ${query}`);
-
-    const hits = removeDuplicates(
-        [
-            ...getHitsFromIds(forceArray(ids)),
-            ...getHitsFromQuery(query, contentTypes ? forceArray(contentTypes) : undefined),
-        ],
-        (a, b) => a.id === b.id
-    );
+    const hitsFromIds = getHitsFromIds(forceArray(ids));
+    const hitsFromQuery = getHitsFromQuery(query, contentTypes || undefined);
+    const hits = removeDuplicates([...hitsFromIds, ...hitsFromQuery], (a, b) => a.id === b.id);
 
     return {
         status: 200,
