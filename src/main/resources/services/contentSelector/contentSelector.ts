@@ -81,6 +81,19 @@ const getHitsFromIds = (ids: string[]) =>
         return [...acc, transformHit(content)];
     }, [] as SelectorHit[]);
 
+// This service can be called from a CustomSelector input as a more advanced alternative to
+// the built-in ContentSelector input type. Supports selecting based on custom queries, which
+// may include values from the current content, enclosed in curly braces. Example:
+//
+// <input name="myInput" type="CustomSelector">
+//     <label>Choose content</label>
+//     <config>
+//         <service>contentSelector</service>
+//         <param value="contentTypes">["no.nav.navno:my-content-type", "no.nav.navno:my-other-content-type"]</param>
+//         <param value="selectorQuery">language="en" AND data.someReference="{_id}" AND</param>
+//     </config>
+// </input>
+//
 export const get = (req: XP.Request) => {
     const {
         query: userQuery,
