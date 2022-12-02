@@ -49,6 +49,7 @@ const buildQuery = (userInput?: string, selectorInput?: string) => {
 
     return [userQuery, selectorQuery].filter(Boolean).join(' AND ');
 };
+
 const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {

@@ -1,6 +1,6 @@
 <content-type xmlns="urn:enonic:xp:model:1.0">
-    <display-name>Produkt</display-name>
-    <description>Produkt eller tjeneste fra NAV</description>
+    <display-name>Meta-data (produkt)</display-name>
+    <description>Meta-data for produkt eller tjeneste fra NAV</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -104,10 +104,20 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="no" AND data.product="{_id}" AND
                                             type="no.nav.navno:{data.contentCategory._selected}"
                                         </param>
+                                    </config>
+                                </input>
+                                <input name="altPage" type="ContentSelector">
+                                    <label>Lenke til annen side</label>
+                                    <help-text>Skal kun settes dersom produktside ikke er tilgjengelig på dette språket, eller produktsiden finnes utenfor Enonic</help-text>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                        <allowContentType>${app}:external-link</allowContentType>
+                                        <allowContentType>${app}:main-article</allowContentType>
+                                        <allowContentType>${app}:main-article-chapter</allowContentType>
+                                        <allowContentType>${app}:page-list</allowContentType>
                                     </config>
                                 </input>
                             </items>
@@ -172,10 +182,20 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="nn" AND data.product="{_id}" AND
                                             type="no.nav.navno:{data.contentCategory._selected}"
                                         </param>
+                                    </config>
+                                </input>
+                                <input name="altPage" type="ContentSelector">
+                                    <label>Lenke til annen side</label>
+                                    <help-text>Skal kun settes dersom produktside ikke er tilgjengelig på dette språket, eller produktsiden finnes utenfor Enonic</help-text>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                        <allowContentType>${app}:external-link</allowContentType>
+                                        <allowContentType>${app}:main-article</allowContentType>
+                                        <allowContentType>${app}:main-article-chapter</allowContentType>
+                                        <allowContentType>${app}:page-list</allowContentType>
                                     </config>
                                 </input>
                             </items>
@@ -240,10 +260,20 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="en" AND data.product="{_id}" AND
                                             type="no.nav.navno:{data.contentCategory._selected}"
                                         </param>
+                                    </config>
+                                </input>
+                                <input name="altPage" type="ContentSelector">
+                                    <label>Lenke til annen side</label>
+                                    <help-text>Skal kun settes dersom produktside ikke er tilgjengelig på dette språket, eller produktsiden finnes utenfor Enonic</help-text>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                        <allowContentType>${app}:external-link</allowContentType>
+                                        <allowContentType>${app}:main-article</allowContentType>
+                                        <allowContentType>${app}:main-article-chapter</allowContentType>
+                                        <allowContentType>${app}:page-list</allowContentType>
                                     </config>
                                 </input>
                             </items>
@@ -308,10 +338,20 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language="se" AND data.product="{_id}" AND
                                             type="no.nav.navno:{data.contentCategory._selected}"
                                         </param>
+                                    </config>
+                                </input>
+                                <input name="altPage" type="ContentSelector">
+                                    <label>Lenke til annen side</label>
+                                    <help-text>Skal kun settes dersom produktside ikke er tilgjengelig på dette språket, eller produktsiden finnes utenfor Enonic</help-text>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                        <allowContentType>${app}:external-link</allowContentType>
+                                        <allowContentType>${app}:main-article</allowContentType>
+                                        <allowContentType>${app}:main-article-chapter</allowContentType>
+                                        <allowContentType>${app}:page-list</allowContentType>
                                     </config>
                                 </input>
                             </items>
@@ -384,11 +424,21 @@
                                     <label>Velg produktside</label>
                                     <config>
                                         <service>contentSelector</service>
-                                        <param value="contentTypes">no.nav.navno:product-page</param>
                                         <param value="selectorQuery">language!="no" AND language!="nn" AND
                                             language!="en" AND language!="se" AND data.product="{_id}" AND
                                             type="no.nav.navno:{data.contentCategory._selected}"
                                         </param>
+                                    </config>
+                                </input>
+                                <input name="altPage" type="ContentSelector">
+                                    <label>Lenke til annen side</label>
+                                    <help-text>Skal kun settes dersom produktside ikke er tilgjengelig på dette språket, eller produktsiden finnes utenfor Enonic</help-text>
+                                    <config>
+                                        <showStatus>true</showStatus>
+                                        <allowContentType>${app}:external-link</allowContentType>
+                                        <allowContentType>${app}:main-article</allowContentType>
+                                        <allowContentType>${app}:main-article-chapter</allowContentType>
+                                        <allowContentType>${app}:page-list</allowContentType>
                                     </config>
                                 </input>
                             </items>

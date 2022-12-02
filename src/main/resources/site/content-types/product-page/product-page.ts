@@ -16,11 +16,6 @@ export interface ProductPage {
   customPath: string;
 
   /**
-   * Videresend alle besøk til annen url:
-   */
-  externalProductUrl?: string;
-
-  /**
    * Oppsummering
    */
   description?: string;

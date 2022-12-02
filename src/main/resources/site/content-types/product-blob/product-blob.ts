@@ -98,6 +98,11 @@ export interface ProductBlob {
     productPage?: string;
 
     /**
+     * Lenke til annen side
+     */
+    altPage?: string;
+
+    /**
      * Saksbehandlingstider
      */
     processing_times?: string;
@@ -131,6 +136,11 @@ export interface ProductBlob {
      * Velg produktside
      */
     productPage?: string;
+
+    /**
+     * Lenke til annen side
+     */
+    altPage?: string;
 
     /**
      * Saksbehandlingstider
@@ -168,6 +178,11 @@ export interface ProductBlob {
     productPage?: string;
 
     /**
+     * Lenke til annen side
+     */
+    altPage?: string;
+
+    /**
      * Saksbehandlingstider
      */
     processing_times?: string;
@@ -201,6 +216,11 @@ export interface ProductBlob {
      * Velg produktside
      */
     productPage?: string;
+
+    /**
+     * Lenke til annen side
+     */
+    altPage?: string;
 
     /**
      * Saksbehandlingstider
@@ -241,6 +261,11 @@ export interface ProductBlob {
      * Velg produktside
      */
     productPage?: string;
+
+    /**
+     * Lenke til annen side
+     */
+    altPage?: string;
 
     /**
      * Saksbehandlingstider

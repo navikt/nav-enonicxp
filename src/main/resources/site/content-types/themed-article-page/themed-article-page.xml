@@ -1,8 +1,8 @@
 <content-type>
-    <display-name>Temaartikkel</display-name>
+    <display-name>~Deprecated Temaartikkel</display-name>
     <description>En generisk side som kan brukes til generelle artikler, dybdeinfo, støtteinformasjon etc</description>
     <super-type>base:structured</super-type>
-    <is-abstract>false</is-abstract>
+    <is-abstract>true</is-abstract>
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>

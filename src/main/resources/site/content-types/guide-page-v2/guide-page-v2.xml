@@ -1,6 +1,6 @@
 <content-type>
-    <display-name>Produktside</display-name>
-    <description>Produktside med navigasjonsmeny og dynamiske komponenter</description>
+    <display-name>Guide ("Slik gjør du")</display-name>
+    <description>En guide som beskriver hvordan man sender inn melding, frister og med lenker til søknadsskjemaer etc.</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
@@ -16,15 +16,15 @@
             </items>
         </field-set>
         <field-set>
-            <label>Produkt</label>
+            <label>Metadata</label>
             <items>
                 <input name="product" type="CustomSelector">
-                    <label>Velg produkt som denne produktsiden tilhører</label>
+                    <label>Velg metadata-objekt som denne siden tilhører</label>
                     <occurrences maximum="1" minimum="1"/>
                     <config>
                         <service>contentSelector</service>
                         <param value="contentTypes">no.nav.navno:product-blob</param>
-                        <param value="selectorQuery">data.contentCategory._selected="product-page"</param>
+                        <param value="selectorQuery">data.contentCategory._selected="guide-page"</param>
                     </config>
                 </input>
             </items>
