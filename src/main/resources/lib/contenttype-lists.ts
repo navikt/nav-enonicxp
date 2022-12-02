@@ -12,7 +12,6 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${appDescriptor}:large-table`,
     `${appDescriptor}:office-information`,
     `${appDescriptor}:publishing-calendar`,
-    `${appDescriptor}:publishing-calendar-entry`,
     `${appDescriptor}:melding`,
 ];
 
@@ -123,6 +122,7 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     `${appDescriptor}:office-branch`,
     `${appDescriptor}:payout-dates`,
     `${appDescriptor}:office-editorial-page`,
+    `${appDescriptor}:publishing-calendar-entry`,
     'portal:page-template',
     'portal:fragment',
     'portal:site',

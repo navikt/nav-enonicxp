@@ -1,7 +1,7 @@
 #import "../fragments/contentCommonWithPageFragment.graphql"
 #import "../fragments/content-types/publishingCalendarEntryFragment.graphql"
 
-query publishingCalendarQuery($ref: ID!) {
+query publishingCalendarEntryQuery($ref: ID!) {
     guillotine {
         get(key: $ref) {
             ...contentCommonWithPage
