@@ -2,12 +2,26 @@
 <x-data>
     <display-name>Fasetter</display-name>
     <form>
+        <item-set name="facets">
+            <label>Fasetter</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input type="TextLine" name="facet">
+                    <label>Fasett</label>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input type="TextLine" name="underfacets">
+                    <label>Underfasetter</label>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+            </items>
+        </item-set>
         <input type="TextLine" name="fasett">
-            <label>Fasett</label>
+            <label>Fasett (deprecated)</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
         <input type="TextLine" name="underfasett">
-            <label>Underfasett</label>
+            <label>Underfasett (deprecated)</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
         <!--

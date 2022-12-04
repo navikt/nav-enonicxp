@@ -1,3 +1,5 @@
+import { activateFacetsEventListener2 } from './lib/search/facets';
+
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -18,11 +20,11 @@ import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
 
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
-import {
-    activateFacetsEventListener,
-    clearFacetUpdateState,
-    getFacetValidation,
-} from './lib/facets';
+// import {
+//     activateFacetsEventListener,
+//     clearFacetUpdateState,
+//     getFacetValidation,
+// } from './lib/facets';
 
 updateClusterInfo();
 
@@ -31,17 +33,18 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-activateFacetsEventListener();
+// activateFacetsEventListener();
+activateFacetsEventListener2();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
     // make sure the updateAll lock is released on startup, and clear the
     // list of recently validated nodes
-    const facetValidation = getFacetValidation();
-    if (facetValidation) {
-        clearFacetUpdateState();
-    }
+    // const facetValidation = getFacetValidation();
+    // if (facetValidation) {
+    //     clearFacetUpdateState();
+    // }
 
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
