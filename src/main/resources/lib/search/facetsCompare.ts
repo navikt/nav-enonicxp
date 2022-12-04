@@ -1,9 +1,5 @@
 import { forceArray } from '../utils/nav-utils';
-
-type Facet = {
-    facet: string;
-    underfacets?: string[];
-};
+import { Facet } from './facetsConfig';
 
 export const facetsAreEqual = (facets1: Facet | Facet[], facets2: Facet | Facet[]) => {
     const facetsArray1 = forceArray(facets1);

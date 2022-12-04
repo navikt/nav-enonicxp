@@ -1,20 +1,23 @@
-import contentLib, { Content } from '/lib/xp/content';
+import contentLib from '/lib/xp/content';
 import { logger } from '../utils/logging';
-import { SearchConfigDescriptor } from '../../types/content-types/content-config';
-import { SearchConfig } from '../../types/content-types/search-config';
+import { runInContext } from '../utils/branch-context';
 
-type FacetConfig = SearchConfig['fasetter'][number];
-type UnderFacetConfig = FacetConfig['underfasetter'] extends Array<any>
-    ? FacetConfig['underfasetter'][number]
-    : undefined;
+export type Facet = {
+    facet: string;
+    underfacets?: string[];
+};
 
-export const getFacetsConfig = (): Content<SearchConfigDescriptor> | null => {
-    const facetsConfigHits = contentLib.query({
-        start: 0,
-        count: 2,
-        sort: 'createdTime DESC',
-        contentTypes: ['navno.nav.no.search:search-config2'],
-    }).hits;
+export const getFacetsConfig = () => {
+    const facetsConfigHits = runInContext(
+        { branch: 'master' },
+        () =>
+            contentLib.query({
+                start: 0,
+                count: 2,
+                sort: 'createdTime ASC',
+                contentTypes: ['navno.nav.no.search:search-config2'],
+            }).hits
+    );
 
     if (facetsConfigHits.length === 0) {
         logger.critical(`No facets config found!`);
