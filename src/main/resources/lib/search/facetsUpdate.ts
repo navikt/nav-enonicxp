@@ -1,28 +1,22 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
-import { contentRepo, searchRepo } from '../constants';
+import { contentRepo } from '../constants';
 import nodeLib from '/lib/xp/node';
 import { Facet, getFacetsConfig } from './facetsConfig';
-import { fixDateFormat, forceArray } from '../utils/nav-utils';
-import {
-    searchRepoContentIdKey,
-    searchRepoContentBaseNode,
-    searchRepoContentPathKey,
-    searchRepoDeletionQueueBaseNode,
-    searchRepoFacetsKey,
-} from './searchRepo';
+import { forceArray } from '../utils/nav-utils';
+import { createSearchNode } from './searchUtils';
 
 const isQueryMatchingContent = (query: string, id: string) =>
-    !!contentLib.query({
+    contentLib.query({
         start: 0,
-        count: 1,
+        count: 0,
         query,
         filters: {
             ids: {
                 values: [id],
             },
         },
-    }).hits[0];
+    }).total > 0;
 
 export const updateFacetsForContent = (contentId: string) => {
     log.info(`Updating facets for id ${contentId}`);
@@ -47,7 +41,7 @@ export const updateFacetsForContent = (contentId: string) => {
         return;
     }
 
-    const newFacets = forceArray(facetsConfig.data.fasetter).reduce((acc, facet) => {
+    const matchedFacets = forceArray(facetsConfig.data.fasetter).reduce((acc, facet) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
 
         if (!isQueryMatchingContent(ruleQuery, contentId)) {
@@ -75,67 +69,5 @@ export const updateFacetsForContent = (contentId: string) => {
         return [...acc, { facet: facetKey, underfacets: underfacetsMatched }];
     }, [] as Facet[]);
 
-    const searchRepoConnection = nodeLib.connect({
-        repoId: searchRepo,
-        branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
-    });
-
-    const searchNodeId = searchRepoConnection.query({
-        start: 0,
-        count: 1,
-        filters: {
-            hasValue: {
-                field: searchRepoContentIdKey,
-                values: [contentId],
-            },
-        },
-    }).hits[0]?.id;
-
-    if (searchNodeId) {
-        log.info(`Search node for ${contentId} already exists, queueing for removal`);
-        searchRepoConnection.move({
-            source: searchNodeId,
-            target: `/${searchRepoDeletionQueueBaseNode}/`,
-        });
-    }
-
-    const newSearchNode = searchRepoConnection.create({
-        ...contentNode,
-        [searchRepoFacetsKey]: newFacets,
-        [searchRepoContentIdKey]: contentNode._id,
-        [searchRepoContentPathKey]: contentNode._path,
-        _name: contentNode._path.replace(/\//g, '_'),
-        _parentPath: `/${searchRepoContentBaseNode}`,
-        ...(contentNode.createdTime && {
-            createdTime: new Date(fixDateFormat(contentNode.createdTime)),
-        }),
-        ...(contentNode.modifiedTime && {
-            modifiedTime: new Date(fixDateFormat(contentNode.modifiedTime)),
-        }),
-        publish: {
-            ...(contentNode.publish?.first && {
-                first: new Date(fixDateFormat(contentNode.publish.first)),
-            }),
-            ...(contentNode.publish?.from && {
-                from: new Date(fixDateFormat(contentNode.publish.from)),
-            }),
-            ...(contentNode.publish?.to && {
-                to: new Date(fixDateFormat(contentNode.publish.to)),
-            }),
-        },
-    });
-
-    if (!newSearchNode) {
-        logger.critical(`Failed to create new search node for content ${contentId}`);
-    }
-
-    if (searchNodeId) {
-        searchRepoConnection.delete(searchNodeId);
-    }
-
-    logger.info(`Updated facets for ${contentId}: ${JSON.stringify(newFacets)}`);
+    createSearchNode(contentNode, matchedFacets);
 };

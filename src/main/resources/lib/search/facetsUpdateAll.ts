@@ -1,9 +1,11 @@
 import nodeLib from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { Facet, getFacetsConfig } from './facetsConfig';
 import { contentRepo } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
+import { createSearchNode } from './searchUtils';
 
 export const updateAllFacets = () => {
     logger.info(`Updating all facets!`);
@@ -80,24 +82,17 @@ export const updateAllFacets = () => {
         return acc;
     }, {} as { [id: string]: Facet[] });
 
-    log.info(`Updating ${Object.keys(toUpdate).length} contents with new facets!`);
+    log.info(`Updating ${Object.keys(toUpdate).length} contents with new facets`);
 
-    Object.entries(toUpdate).forEach(([contentId, facets], index) => {
-        if (index % 2000 !== 0) {
+    Object.entries(toUpdate).forEach(([contentId, facets]) => {
+        const contentNode = contentRepoConnection.get<Content>(contentId);
+        if (!contentNode) {
+            logger.error(`Content not found for id ${contentId}!`);
             return;
         }
 
-        const contentNode = contentRepoConnection.get(contentId);
-        log.info(
-            `Setting facets on ${contentNode.type} on path ${contentNode._path} id ${contentNode._id}`
-        );
-
-        contentRepoConnection.modify({
-            key: contentId,
-            editor: (node) => {
-                node.x['no-nav-navno'].fasetter.facets = facets;
-                return node;
-            },
-        });
+        createSearchNode(contentNode, facets);
     });
+
+    log.info(`Updated ${Object.keys(toUpdate).length} contents with new facets!`);
 };

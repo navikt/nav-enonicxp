@@ -27,10 +27,10 @@ export const activateFacetsUpdateHandler = () => {
                     return;
                 }
 
-                // if (nodeData.id === facetsConfigId) {
-                //     updateAllFacets();
-                //     return;
-                // }
+                if (nodeData.id === facetsConfigId) {
+                    updateAllFacets();
+                    return;
+                }
 
                 updateFacetsForContent(nodeData.id);
             });
