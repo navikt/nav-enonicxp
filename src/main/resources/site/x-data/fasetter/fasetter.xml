@@ -1,27 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--This schema is no longer in use and is only present for backwards compatibility-->
+
 <x-data>
     <display-name>Fasetter</display-name>
     <form>
-        <item-set name="facets">
-            <label>Fasetter</label>
-            <occurrences minimum="0" maximum="0"/>
-            <items>
-                <input type="TextLine" name="facet">
-                    <label>Fasett</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <input type="TextLine" name="underfacets">
-                    <label>Underfasetter</label>
-                    <occurrences minimum="0" maximum="0"/>
-                </input>
-            </items>
-        </item-set>
         <input type="TextLine" name="fasett">
-            <label>Fasett (deprecated)</label>
+            <label>Fasett</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
         <input type="TextLine" name="underfasett">
-            <label>Underfasett (deprecated)</label>
+            <label>Underfasett</label>
             <occurrences minimum="0" maximum="1"/>
         </input>
         <!--

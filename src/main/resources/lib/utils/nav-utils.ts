@@ -42,13 +42,17 @@ export const parseJsonArray = <Type = any>(json: string): Type[] | null => {
     }
 };
 
-// Date formats on content created in XP7 is not necessarily
-// supported in the Date wrapper in XP7 (but it does work in browsers)
+// Nashorn does not parse datetime-strings with higher precision than milliseconds
 export const fixDateFormat = (date: string) => {
-    if (date.indexOf('.') !== -1) {
-        return date.split('.')[0] + 'Z';
+    const [rest, fractionalSeconds] = date.split('.');
+
+    if (!fractionalSeconds) {
+        return rest;
     }
-    return date;
+
+    const ms = fractionalSeconds.replace('Z', '').slice(0, 3);
+
+    return `${rest}${ms ? `.${ms}Z` : ''}`;
 };
 
 export const forceArray = <Type>(arrayOrNot?: Type | Type[]) => {

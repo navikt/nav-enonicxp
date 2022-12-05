@@ -4,6 +4,12 @@ import { logger } from '../utils/logging';
 import { runInContext } from '../utils/branch-context';
 import { searchRepo } from '../constants';
 
+export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
+export const searchRepoContentBaseNode = 'content';
+export const searchRepoContentIdKey = 'contentId';
+export const searchRepoContentPathKey = 'contentPath';
+export const searchRepoFacetsKey = 'facets';
+
 const createSearchRepo = () => {
     const existingRepo = repoLib.get(searchRepo);
     if (existingRepo) {
@@ -25,8 +31,11 @@ const createSearchRepo = () => {
 };
 
 const createBaseNodes = (repo: RepoConnection) => {
-    if (!repo.exists(`/_deletionQueue`)) {
-        repo.create({ _name: '_deletionQueue' });
+    if (!repo.exists(`/${searchRepoDeletionQueueBaseNode}`)) {
+        repo.create({ _name: searchRepoDeletionQueueBaseNode });
+    }
+    if (!repo.exists(`/${searchRepoContentBaseNode}`)) {
+        repo.create({ _name: searchRepoContentBaseNode });
     }
 };
 
