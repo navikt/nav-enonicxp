@@ -2,10 +2,49 @@ import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { Facet, getFacetsConfig } from './facetsConfig';
-import { contentRepo } from '../constants';
+import { contentRepo, searchRepo } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import { createSearchNode } from './searchUtils';
+import { searchRepoContentBaseNode } from './searchRepo';
+
+const deleteStaleNodes = (matchedIds: string[]) => {
+    const searchRepoConnection = nodeLib.connect({
+        repoId: searchRepo,
+        branch: 'master',
+        user: {
+            login: 'su',
+        },
+        principals: ['role:system.admin'],
+    });
+
+    const staleSearchNodes = batchedNodeQuery({
+        queryParams: {
+            start: 0,
+            count: 50000,
+            query: `_parentPath LIKE "/${searchRepoContentBaseNode}*"`,
+            filters: {
+                boolean: {
+                    mustNot: {
+                        hasValue: {
+                            field: 'contentId',
+                            values: matchedIds,
+                        },
+                    },
+                },
+            },
+        },
+        repo: searchRepoConnection,
+    }).hits;
+
+    if (staleSearchNodes.length > 0) {
+        log.info(`Found ${staleSearchNodes.length} stale search nodes - deleting`);
+
+        staleSearchNodes.forEach((hit) => {
+            searchRepoConnection.delete(hit.id);
+        });
+    }
+};
 
 export const updateAllFacets = () => {
     logger.info(`Updating all facets!`);
@@ -24,8 +63,11 @@ export const updateAllFacets = () => {
         principals: ['role:system.admin'],
     });
 
-    const toUpdate = forceArray(facetsConfig.data.fasetter).reduce((acc, facet) => {
+    const facetsToUpdate = forceArray(facetsConfig.data.fasetter).reduce((acc, facet, index) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
+        if (index > 1) {
+            return acc;
+        }
 
         const matchedContentIds = batchedNodeQuery({
             queryParams: {
@@ -82,17 +124,26 @@ export const updateAllFacets = () => {
         return acc;
     }, {} as { [id: string]: Facet[] });
 
-    log.info(`Updating ${Object.keys(toUpdate).length} contents with new facets`);
+    const matchedIds = Object.keys(facetsToUpdate);
 
-    Object.entries(toUpdate).forEach(([contentId, facets]) => {
+    log.info(`Updating ${matchedIds.length} contents with new facets`);
+    const startTime = Date.now();
+
+    matchedIds.forEach((contentId) => {
         const contentNode = contentRepoConnection.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
             return;
         }
 
-        createSearchNode(contentNode, facets);
+        createSearchNode(contentNode, facetsToUpdate[contentId]);
     });
 
-    log.info(`Updated ${Object.keys(toUpdate).length} contents with new facets!`);
+    deleteStaleNodes(matchedIds);
+
+    log.info(
+        `Updated ${Object.keys(facetsToUpdate).length} contents with new facets - time spent: ${
+            Date.now() - startTime
+        }ms`
+    );
 };

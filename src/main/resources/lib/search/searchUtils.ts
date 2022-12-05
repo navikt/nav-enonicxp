@@ -11,6 +11,7 @@ import { fixDateFormat } from '../utils/nav-utils';
 import { Facet } from './facetsConfig';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
+import { facetsAreEqual } from './facetsCompare';
 
 const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: Facet[]) => {
     return {
@@ -64,6 +65,16 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Facet[]
     }).hits[0]?.id;
 
     if (searchNodeId) {
+        const searchNode = searchRepoConnection.get(searchNodeId);
+        if (
+            searchNode &&
+            facetsAreEqual(facets, searchNode.facets) &&
+            fixDateFormat(contentNode.modifiedTime) === searchNode.modifiedTime
+        ) {
+            logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
+            return;
+        }
+
         log.info(`Search node for ${contentId} already exists, queueing for removal`);
         searchRepoConnection.move({
             source: searchNodeId,
