@@ -52,6 +52,7 @@ import portalPageTemplateQuery from './content-queries/portalPageTemplateQuery.g
 import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
 import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
+import publishingCalendarEntryQuery from './content-queries/publishingCalendarEntryQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
 import currentTopicPageQuery from './content-queries/currentTopicPageQuery.graphql';
@@ -96,6 +97,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:payout-dates': payoutDatesQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
+    'no.nav.navno:publishing-calendar-entry': publishingCalendarEntryQuery,
     'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:situation-page': situationPageQuery,
     'no.nav.navno:current-topic-page': currentTopicPageQuery,

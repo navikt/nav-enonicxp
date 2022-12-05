@@ -1,0 +1,6 @@
+#import "../contentCommonFragment.graphql"
+
+fragment contentPublishingCalendarEntry on no_nav_navno_PublishingCalendarEntry {
+    ...contentCommon
+    dataAsJson
+}
