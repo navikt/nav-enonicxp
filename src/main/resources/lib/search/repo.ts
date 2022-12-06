@@ -22,7 +22,7 @@ const createSearchRepo = () => {
 
     if (!newRepo) {
         logger.critical(`Failed to create search repo with id ${searchRepo}!`);
-        return true;
+        return false;
     }
 
     logger.info(`Created new search repo with id ${searchRepo}`);

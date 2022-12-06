@@ -19,7 +19,7 @@ const isQueryMatchingContent = (query: string, id: string) =>
     }).total > 0;
 
 export const updateFacetsForContent = (contentId: string) => {
-    log.info(`Updating facets for id ${contentId}`);
+    logger.info(`Updating search node for id ${contentId}`);
 
     const searchConfig = getSearchConfig();
     if (!searchConfig) {

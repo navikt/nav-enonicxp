@@ -4,7 +4,7 @@ import { getSearchConfig, refreshSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 import { updateFacetsForContent } from './contentUpdateHandler';
-import { updateAllFacets } from './configUpdateHandler';
+import { refreshSearchNodes } from './configUpdateHandler';
 import { deleteSearchNodesForContent } from './utils';
 
 let isActive = false;
@@ -19,7 +19,7 @@ export const activateSearchIndexEventHandlers = () => {
 
     const facetsConfig = getSearchConfig();
     if (!facetsConfig) {
-        logger.critical(`No facets config found!`);
+        logger.critical(`No search config found!`);
         return;
     }
 
@@ -39,7 +39,7 @@ export const activateSearchIndexEventHandlers = () => {
 
                 if (nodeData.id === facetsConfigId) {
                     refreshSearchConfigCache();
-                    updateAllFacets();
+                    refreshSearchNodes();
                     return;
                 }
 
@@ -55,5 +55,5 @@ export const activateSearchIndexEventHandlers = () => {
 
     isActive = true;
 
-    logger.info('Started event listener for facets updates');
+    logger.info('Started event listener for search index updates');
 };

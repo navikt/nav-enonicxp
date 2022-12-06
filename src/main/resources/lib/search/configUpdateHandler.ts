@@ -39,7 +39,7 @@ const deleteStaleNodes = (matchedIds: string[]) => {
     }).hits;
 
     if (staleSearchNodes.length > 0) {
-        log.info(`Found ${staleSearchNodes.length} stale search nodes - deleting`);
+        logger.info(`Found ${staleSearchNodes.length} stale search nodes - deleting`);
 
         staleSearchNodes.forEach((hit) => {
             repo.delete(hit.id);
@@ -83,8 +83,8 @@ const configFacetsAreEqual = (facet1: ConfigFacet, facet2: ConfigFacet) => {
     );
 };
 
-export const updateAllFacets = () => {
-    logger.info(`Updating all facets!`);
+export const refreshSearchNodes = () => {
+    logger.info(`Updating all search nodes!`);
 
     const config = getSearchConfig();
     if (!config) {
@@ -182,7 +182,7 @@ export const updateAllFacets = () => {
     const idsToUpdate = Object.keys(toUpdate);
 
     const startTime = Date.now();
-    log.info(`Updating ${idsToUpdate.length} contents with new facets`);
+    logger.info(`Updating ${idsToUpdate.length} search nodes with new facets`);
 
     idsToUpdate.forEach((contentId) => {
         const contentNode = contentRepoConnection.get<Content>(contentId);
@@ -196,8 +196,8 @@ export const updateAllFacets = () => {
 
     deleteStaleNodes([...idsToUpdate, ...toSkip]);
 
-    log.info(
-        `Updated ${Object.keys(toUpdate).length} contents with new facets - time spent: ${
+    logger.info(
+        `Updated ${Object.keys(toUpdate).length} search nodes - time spent: ${
             Date.now() - startTime
         }ms`
     );

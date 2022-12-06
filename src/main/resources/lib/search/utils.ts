@@ -143,7 +143,7 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
             return;
         }
 
-        log.info(`Search node for ${contentId} already exists, removing node`);
+        logger.info(`Search node for ${contentId} already exists, removing node`);
         deleteSearchNode(searchNodeId, searchRepoConnection);
     } else if (existingSearchNodes.length > 1) {
         existingSearchNodes.forEach((node) => {
