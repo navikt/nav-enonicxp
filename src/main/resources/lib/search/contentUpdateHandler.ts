@@ -2,9 +2,9 @@ import contentLib, { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 import nodeLib from '/lib/xp/node';
-import { Facet, getFacetsConfig } from './facetsConfig';
+import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
-import { createSearchNode } from './searchUtils';
+import { createSearchNode, Facet } from './utils';
 
 const isQueryMatchingContent = (query: string, id: string) =>
     contentLib.query({
@@ -21,7 +21,7 @@ const isQueryMatchingContent = (query: string, id: string) =>
 export const updateFacetsForContent = (contentId: string) => {
     log.info(`Updating facets for id ${contentId}`);
 
-    const facetsConfig = getFacetsConfig();
+    const facetsConfig = getSearchConfig();
     if (!facetsConfig) {
         return;
     }

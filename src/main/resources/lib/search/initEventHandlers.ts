@@ -1,13 +1,13 @@
 import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
-import { getFacetsConfig } from './facetsConfig';
+import { getSearchConfig, refreshSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
-import { updateFacetsForContent } from './facetsUpdate';
-import { updateAllFacets } from './facetsUpdateAll';
+import { updateFacetsForContent } from './contentUpdateHandler';
+import { updateAllFacets } from './configUpdateHandler';
 
 export const activateFacetsUpdateHandler = () => {
-    const facetsConfig = getFacetsConfig();
+    const facetsConfig = getSearchConfig();
     if (!facetsConfig) {
         logger.critical(`No facets config found!`);
         return;
@@ -28,6 +28,7 @@ export const activateFacetsUpdateHandler = () => {
                 }
 
                 if (nodeData.id === facetsConfigId) {
+                    refreshSearchConfigCache();
                     updateAllFacets();
                     return;
                 }

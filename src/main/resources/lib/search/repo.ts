@@ -1,14 +1,13 @@
 import repoLib from '/lib/xp/repo';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../utils/branch-context';
 import { searchRepo } from '../constants';
-
-export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
-export const searchRepoContentBaseNode = 'content';
-export const searchRepoContentIdKey = 'contentId';
-export const searchRepoContentPathKey = 'contentPath';
-export const searchRepoFacetsKey = 'facets';
+import {
+    getSearchRepoConnection,
+    searchRepoContentBaseNode,
+    searchRepoDeletionQueueBaseNode,
+} from './utils';
 
 const createSearchRepo = () => {
     const existingRepo = repoLib.get(searchRepo);
@@ -46,10 +45,7 @@ export const initSearchRepo = () =>
             return;
         }
 
-        const repo = nodeLib.connect({
-            repoId: searchRepo,
-            branch: 'master',
-        });
+        const repo = getSearchRepoConnection();
 
         createBaseNodes(repo);
     });

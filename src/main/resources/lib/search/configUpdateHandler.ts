@@ -1,28 +1,30 @@
 import nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
-import { Facet, getFacetsConfig } from './facetsConfig';
-import { contentRepo, searchRepo } from '../constants';
+import { getSearchConfig } from './config';
+import { contentRepo } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
-import { createSearchNode } from './searchUtils';
-import { searchRepoContentBaseNode } from './searchRepo';
+import {
+    createSearchNode,
+    Facet,
+    getSearchRepoConnection,
+    searchRepoConfigNode,
+    searchRepoContentBaseNode,
+} from './utils';
+import { SearchConfigDescriptor } from '../../types/content-types/content-config';
+
+const configPath = `/${searchRepoConfigNode}`;
+const contentBasePath = `/${searchRepoContentBaseNode}`;
 
 const deleteStaleNodes = (matchedIds: string[]) => {
-    const searchRepoConnection = nodeLib.connect({
-        repoId: searchRepo,
-        branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
-    });
+    const repo = getSearchRepoConnection();
 
     const staleSearchNodes = batchedNodeQuery({
         queryParams: {
             start: 0,
             count: 50000,
-            query: `_parentPath LIKE "/${searchRepoContentBaseNode}*"`,
+            query: `_parentPath LIKE "${contentBasePath}*"`,
             filters: {
                 boolean: {
                     mustNot: {
@@ -34,22 +36,43 @@ const deleteStaleNodes = (matchedIds: string[]) => {
                 },
             },
         },
-        repo: searchRepoConnection,
+        repo,
     }).hits;
 
     if (staleSearchNodes.length > 0) {
         log.info(`Found ${staleSearchNodes.length} stale search nodes - deleting`);
 
         staleSearchNodes.forEach((hit) => {
-            searchRepoConnection.delete(hit.id);
+            repo.delete(hit.id);
         });
     }
+};
+
+const setCurrentConfig = (config: Content<SearchConfigDescriptor>) => {
+    const repo = getSearchRepoConnection();
+
+    const configNode = repo.get(configPath);
+    if (!configNode) {
+        repo.create({
+            ...config,
+            _name: searchRepoConfigNode,
+        });
+        return;
+    }
+
+    repo.modify({
+        key: configPath,
+        editor: (prevConfig) => ({
+            ...prevConfig,
+            ...config,
+        }),
+    });
 };
 
 export const updateAllFacets = () => {
     logger.info(`Updating all facets!`);
 
-    const facetsConfig = getFacetsConfig();
+    const facetsConfig = getSearchConfig();
     if (!facetsConfig) {
         return;
     }
@@ -140,6 +163,8 @@ export const updateAllFacets = () => {
     });
 
     deleteStaleNodes(matchedIds);
+
+    setCurrentConfig(facetsConfig);
 
     log.info(
         `Updated ${Object.keys(facetsToUpdate).length} contents with new facets - time spent: ${

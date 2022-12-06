@@ -1,17 +1,50 @@
 import nodeLib, { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import {
-    searchRepoContentBaseNode,
-    searchRepoContentIdKey,
-    searchRepoContentPathKey,
-    searchRepoDeletionQueueBaseNode,
-    searchRepoFacetsKey,
-} from './searchRepo';
-import { fixDateFormat } from '../utils/nav-utils';
-import { Facet } from './facetsConfig';
+import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
-import { facetsAreEqual } from './facetsCompare';
+
+export type Facet = {
+    facet: string;
+    underfacets?: string[];
+};
+
+export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
+export const searchRepoContentBaseNode = 'content';
+export const searchRepoContentIdKey = 'contentId';
+export const searchRepoContentPathKey = 'contentPath';
+export const searchRepoFacetsKey = 'facets';
+export const searchRepoConfigNode = 'config';
+
+export const getSearchRepoConnection = () =>
+    nodeLib.connect({
+        repoId: searchRepo,
+        branch: 'master',
+        user: {
+            login: 'su',
+        },
+        principals: ['role:system.admin'],
+    });
+
+export const facetsAreEqual = (facets1: Facet | Facet[], facets2: Facet | Facet[]) => {
+    const facetsArray1 = forceArray(facets1);
+    const facetsArray2 = forceArray(facets2);
+
+    return (
+        facetsArray1.length === facetsArray2.length &&
+        facetsArray1.every((f1) => {
+            const ufArray1 = forceArray(f1.underfacets);
+            return facetsArray2.some((f2) => {
+                const ufArray2 = forceArray(f2.underfacets);
+                return (
+                    f1.facet === f2.facet &&
+                    ufArray1.length === ufArray2.length &&
+                    ufArray1.every((uf1) => ufArray2.some((uf2) => uf1 === uf2))
+                );
+            });
+        })
+    );
+};
 
 const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: Facet[]) => {
     return {
@@ -44,14 +77,7 @@ const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: Facet[]) 
 export const createSearchNode = (contentNode: RepoNode<Content>, facets: Facet[]) => {
     const contentId = contentNode._id;
 
-    const searchRepoConnection = nodeLib.connect({
-        repoId: searchRepo,
-        branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
-    });
+    const searchRepoConnection = getSearchRepoConnection();
 
     const searchNodeId = searchRepoConnection.query({
         start: 0,

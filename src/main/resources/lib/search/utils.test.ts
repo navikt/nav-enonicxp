@@ -1,4 +1,4 @@
-import { facetsAreEqual } from './facetsCompare';
+import { facetsAreEqual } from './utils';
 
 const facetSingle1 = { facet: 'asdf', underfacets: ['qwer', 'zxcv'] };
 const facetSingle2 = { facet: 'asdf2', underfacets: ['qwer', 'zxcv'] };

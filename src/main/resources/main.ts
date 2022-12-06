@@ -15,10 +15,10 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
 import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
-import { activateFacetsUpdateHandler } from './lib/search/facetsEventHandler';
+import { activateFacetsUpdateHandler } from './lib/search/initEventHandlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
-import { initSearchRepo } from './lib/search/searchRepo';
+import { initSearchRepo } from './lib/search/repo';
 
 updateClusterInfo();
 
