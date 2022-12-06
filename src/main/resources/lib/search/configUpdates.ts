@@ -1,5 +1,5 @@
 import nodeLib, { RepoConnection } from '/lib/xp/node';
-import contentLib, { Content } from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { contentRepo } from '../constants';
@@ -10,10 +10,8 @@ import {
     ContentFacet,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
-    ConfigFacet,
     searchRepoContentIdKey,
 } from './utils';
-import { getNodeVersions } from '../utils/version-utils';
 
 const contentBasePath = `/${searchRepoContentBaseNode}`;
 
@@ -44,42 +42,6 @@ const deleteStaleNodes = (matchedIds: string[], repo: RepoConnection) => {
             repo.delete(hit.id);
         });
     }
-};
-
-const getPreviousConfig = (repo: RepoConnection, configId: string) => {
-    const prevVersion = getNodeVersions({
-        nodeKey: configId,
-        repo,
-        branch: 'master',
-    })[1];
-
-    if (!prevVersion) {
-        return null;
-    }
-
-    const prevContent = contentLib.get({
-        key: prevVersion.nodeId,
-        versionId: prevVersion.versionId,
-    });
-
-    if (!prevContent || prevContent.type !== 'navno.nav.no.search:search-config2') {
-        return null;
-    }
-
-    return prevContent;
-};
-
-const configFacetsAreEqual = (facet1: ConfigFacet, facet2: ConfigFacet) => {
-    const ufArray1 = forceArray(facet1.underfasetter);
-    const ufArray2 = forceArray(facet2.underfasetter);
-
-    return (
-        facet1.ruleQuery === facet2.ruleQuery &&
-        ufArray1.length === ufArray2.length &&
-        ufArray1.every((uf1) =>
-            ufArray2.some((uf2) => uf1.facetKey === uf2.facetKey && uf1.ruleQuery === uf2.ruleQuery)
-        )
-    );
 };
 
 const hasAllSearchNodes = (
@@ -126,9 +88,6 @@ export const refreshSearchNodes = () => {
 
     const newFacets = forceArray(config.data.fasetter);
 
-    // const prevConfig = getPreviousConfig(contentRepoConnection, config._id);
-    // const prevFacets = forceArray(prevConfig?.data.fasetter);
-
     const { toUpdate, toSkip } = newFacets.reduce(
         (acc, facet, index) => {
             if (index > 1) {
@@ -146,15 +105,16 @@ export const refreshSearchNodes = () => {
                 repo: contentRepoConnection,
             }).hits.map((content) => content.id);
 
-            // const prevFacet = prevFacets.find((prevFacet) => prevFacet.facetKey === facetKey);
+            if (matchedContentIds.length === 0) {
+                logger.info(`No content found matching facet [${facetKey}] ${name}`);
+                return acc;
+            }
 
             const ufArray = forceArray(underfasetter);
 
             if (ufArray.length === 0) {
                 if (hasAllSearchNodes(ruleQuery, matchedContentIds, searchRepoConnection)) {
-                    logger.info(
-                        `Facet "${name}" with key "${facetKey}" was not changed - skipping updates`
-                    );
+                    logger.info(`Facet [${facetKey}] ${name} did not trigger any updates`);
                     acc.toSkip.push(...matchedContentIds);
                 } else {
                     matchedContentIds.forEach((id) => {
@@ -168,7 +128,7 @@ export const refreshSearchNodes = () => {
                 return acc;
             }
 
-            const ufs = ufArray.reduce((acc, uf) => {
+            const ufs = ufArray.reduce((ufAcc, uf) => {
                 const matchedContentIdsForUf = batchedNodeQuery({
                     queryParams: {
                         start: 0,
@@ -183,21 +143,25 @@ export const refreshSearchNodes = () => {
                     repo: contentRepoConnection,
                 }).hits.map((node) => node.id);
 
+                if (matchedContentIdsForUf.length === 0) {
+                    return ufAcc;
+                }
+
                 if (hasAllSearchNodes(uf.ruleQuery, matchedContentIdsForUf, searchRepoConnection)) {
                     logger.info(
-                        `Underfacet "${name}" with key "${facetKey}" was not changed - skipping updates`
+                        `Underfacet [${facetKey}/${uf.facetKey}] ${name}/${uf.name} did not trigger any updates`
                     );
                     acc.toSkip.push(...matchedContentIdsForUf);
                 } else {
                     matchedContentIdsForUf.forEach((contentId) => {
-                        if (!acc[contentId]) {
-                            acc[contentId] = [];
+                        if (!ufAcc[contentId]) {
+                            ufAcc[contentId] = [];
                         }
-                        acc[contentId].push(uf.facetKey);
+                        ufAcc[contentId].push(uf.facetKey);
                     });
                 }
 
-                return acc;
+                return ufAcc;
             }, {} as Record<string, string[]>);
 
             Object.entries(ufs).forEach(([contentId, ufKeys]) => {
@@ -215,7 +179,7 @@ export const refreshSearchNodes = () => {
     const idsToUpdate = Object.keys(toUpdate);
 
     const startTime = Date.now();
-    logger.info(`Updating ${idsToUpdate.length} search nodes with new facets`);
+    logger.info(`Updating ${idsToUpdate.length} search nodes for new config`);
 
     idsToUpdate.forEach((contentId) => {
         const contentNode = contentRepoConnection.get<Content>(contentId);

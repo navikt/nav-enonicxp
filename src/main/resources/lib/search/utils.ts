@@ -3,15 +3,11 @@ import { Content } from '/lib/xp/content';
 import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
-import { SearchConfig } from '../../types/content-types/search-config';
-import { batchedNodeQuery } from '../utils/batched-query';
 
 export type ContentFacet = {
     facet: string;
     underfacets?: string[];
 };
-
-export type ConfigFacet = SearchConfig['fasetter'][number];
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
