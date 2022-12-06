@@ -1,0 +1,14 @@
+#import "../mixins/languagesFragment.graphql"
+#import "../richText/richTextFragment.graphql"
+
+fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
+    dataAsJson
+    data {
+        pressCall(processHtml: { type: server }) {
+            ...richText
+        }
+        languages {
+            ...languagesMixin
+        }
+    }
+}

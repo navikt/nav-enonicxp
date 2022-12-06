@@ -1,0 +1,29 @@
+<content-type>
+    <display-name>Landingsside for presse</display-name>
+    <description>Side-type for pressevaktinfo, pressemeldinger etc</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+         <field-set>
+            <label>Tittel og ingress</label>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="ingress-required" />
+            </items>
+        </field-set>
+        <field-set>
+            <label>Pressevakt</label>
+            <items>
+                <input type="HtmlArea" name="pressCall">
+                    <label>Informasjon om pressevakt</label>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="custom-path-selector-required"/>
+        <mixin name="owner"/>
+        <mixin name="managed-by"/>
+        <mixin name="languages-legacy"/>
+    </form>
+</content-type>

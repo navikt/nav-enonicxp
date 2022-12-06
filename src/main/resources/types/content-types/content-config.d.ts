@@ -35,6 +35,7 @@ import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
+import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -71,6 +72,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'office-editorial-page': OfficeEditorialPage;
     'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
+    'press-landing-page': PressLandingPage;
     'transport-page': TransportPage;
 };
 
