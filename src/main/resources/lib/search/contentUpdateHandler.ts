@@ -4,7 +4,7 @@ import { contentRepo } from '../constants';
 import nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
-import { createSearchNode, ContentFacet } from './utils';
+import { createSearchNode, ContentFacet, deleteSearchNodesForContent } from './utils';
 
 const isQueryMatchingContent = (query: string, id: string) =>
     contentLib.query({
@@ -21,8 +21,8 @@ const isQueryMatchingContent = (query: string, id: string) =>
 export const updateFacetsForContent = (contentId: string) => {
     log.info(`Updating facets for id ${contentId}`);
 
-    const facetsConfig = getSearchConfig();
-    if (!facetsConfig) {
+    const searchConfig = getSearchConfig();
+    if (!searchConfig) {
         return;
     }
 
@@ -38,10 +38,11 @@ export const updateFacetsForContent = (contentId: string) => {
     const contentNode = contentRepoConnection.get<Content>(contentId);
     if (!contentNode) {
         logger.info(`Content node not found for id ${contentId}`);
+        deleteSearchNodesForContent(contentId);
         return;
     }
 
-    const matchedFacets = forceArray(facetsConfig.data.fasetter).reduce((acc, facet) => {
+    const matchedFacets = forceArray(searchConfig.data.fasetter).reduce((acc, facet) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
 
         if (!isQueryMatchingContent(ruleQuery, contentId)) {

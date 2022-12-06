@@ -5,6 +5,7 @@ import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 import { updateFacetsForContent } from './contentUpdateHandler';
 import { updateAllFacets } from './configUpdateHandler';
+import { deleteSearchNodesForContent } from './utils';
 
 let isActive = false;
 
@@ -25,7 +26,7 @@ export const activateSearchIndexEventHandlers = () => {
     const facetsConfigId = facetsConfig._id;
 
     eventLib.listener({
-        type: 'node.pushed',
+        type: '(node.pushed|node.deleted)',
         callback: (event) => {
             if (!clusterLib.isMaster()) {
                 return;
@@ -42,7 +43,11 @@ export const activateSearchIndexEventHandlers = () => {
                     return;
                 }
 
-                updateFacetsForContent(nodeData.id);
+                if (event.type === 'node.deleted') {
+                    deleteSearchNodesForContent(nodeData.id);
+                } else {
+                    updateFacetsForContent(nodeData.id);
+                }
             });
         },
         localOnly: false,

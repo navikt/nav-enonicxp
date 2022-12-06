@@ -4,6 +4,7 @@ import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
 import { SearchConfig } from '../../types/content-types/search-config';
+import { RepoConnection } from '*/lib/xp/node';
 
 export type ContentFacet = {
     facet: string;
@@ -79,48 +80,80 @@ const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: ContentFa
     };
 };
 
+const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
+    try {
+        // Move before deleting, as deletion is not a syncronous operation and we may
+        // want the node path freed up immediately
+        repo.move({
+            source: nodeId,
+            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}`,
+        });
+
+        repo.delete(nodeId);
+    } catch (e) {
+        logger.critical(`Failed to delete search node ${nodeId} - ${e}`);
+    }
+};
+
+export const deleteSearchNodesForContent = (contentId: string) => {
+    const searchRepoConnection = getSearchRepoConnection();
+
+    searchRepoConnection
+        .query({
+            start: 0,
+            count: 1000,
+            filters: {
+                hasValue: {
+                    field: searchRepoContentIdKey,
+                    values: [contentId],
+                },
+            },
+        })
+        .hits.forEach((node) => {
+            deleteSearchNode(node.id, searchRepoConnection);
+        });
+};
+
 export const createSearchNode = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
     const contentId = contentNode._id;
 
     const searchRepoConnection = getSearchRepoConnection();
 
-    const searchNodeId = searchRepoConnection.query({
+    const existingSearchNodes = searchRepoConnection.query({
         start: 0,
-        count: 1,
+        count: 1000,
         filters: {
             hasValue: {
                 field: searchRepoContentIdKey,
                 values: [contentId],
             },
         },
-    }).hits[0]?.id;
+    }).hits;
 
-    if (searchNodeId) {
+    if (existingSearchNodes.length === 1) {
+        const searchNodeId = existingSearchNodes[0].id;
         const searchNode = searchRepoConnection.get(searchNodeId);
+
         if (
             searchNode &&
             facetsAreEqual(facets, searchNode.facets) &&
-            fixDateFormat(contentNode.modifiedTime) === searchNode.modifiedTime
+            fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime)
         ) {
-            // logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
+            logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
             return;
         }
 
-        // log.info(`Search node for ${contentId} already exists, queueing for removal`);
-        searchRepoConnection.move({
-            source: searchNodeId,
-            target: `/${searchRepoDeletionQueueBaseNode}/`,
+        log.info(`Search node for ${contentId} already exists, removing node`);
+        deleteSearchNode(searchNodeId, searchRepoConnection);
+    } else if (existingSearchNodes.length > 1) {
+        existingSearchNodes.forEach((node) => {
+            deleteSearchNode(node.id, searchRepoConnection);
         });
     }
 
     const newSearchNode = searchRepoConnection.create(searchNodeTransformer(contentNode, facets));
-
     if (!newSearchNode) {
         logger.critical(`Failed to create new search node for content ${contentId}`);
-    }
-
-    if (searchNodeId) {
-        searchRepoConnection.delete(searchNodeId);
     }
 
     logger.info(
