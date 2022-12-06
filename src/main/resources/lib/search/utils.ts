@@ -1,10 +1,10 @@
-import nodeLib, { RepoNode } from '/lib/xp/node';
+import nodeLib, { RepoNode, RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
 import { SearchConfig } from '../../types/content-types/search-config';
-import { RepoConnection } from '*/lib/xp/node';
+import { batchedNodeQuery } from '../utils/batched-query';
 
 export type ContentFacet = {
     facet: string;
@@ -139,7 +139,7 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
             facetsAreEqual(facets, searchNode.facets) &&
             fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime)
         ) {
-            logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
+            // logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
             return;
         }
 
@@ -156,7 +156,7 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
         logger.critical(`Failed to create new search node for content ${contentId}`);
     }
 
-    logger.info(
-        `Created search node for ${contentNode._path} with facets ${JSON.stringify(facets)}`
-    );
+    // logger.info(
+    //     `Created search node for ${contentNode._path} with facets ${JSON.stringify(facets)}`
+    // );
 };

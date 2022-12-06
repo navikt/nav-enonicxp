@@ -3,8 +3,8 @@ import clusterLib from '/lib/xp/cluster';
 import { getSearchConfig, refreshSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
-import { updateFacetsForContent } from './contentUpdateHandler';
-import { refreshSearchNodes } from './configUpdateHandler';
+import { updateFacetsForContent } from './contentUpdates';
+import { refreshSearchNodes } from './configUpdates';
 import { deleteSearchNodesForContent } from './utils';
 
 let isActive = false;

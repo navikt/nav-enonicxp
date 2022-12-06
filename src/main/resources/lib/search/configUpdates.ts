@@ -11,14 +11,13 @@ import {
     getSearchRepoConnection,
     searchRepoContentBaseNode,
     ConfigFacet,
+    searchRepoContentIdKey,
 } from './utils';
 import { getNodeVersions } from '../utils/version-utils';
 
 const contentBasePath = `/${searchRepoContentBaseNode}`;
 
-const deleteStaleNodes = (matchedIds: string[]) => {
-    const repo = getSearchRepoConnection();
-
+const deleteStaleNodes = (matchedIds: string[], repo: RepoConnection) => {
     const staleSearchNodes = batchedNodeQuery({
         queryParams: {
             start: 0,
@@ -83,6 +82,29 @@ const configFacetsAreEqual = (facet1: ConfigFacet, facet2: ConfigFacet) => {
     );
 };
 
+const hasAllSearchNodes = (
+    query: string,
+    contentIds: string[],
+    searchRepoConnection: RepoConnection
+) => {
+    const existingSearchNodes = batchedNodeQuery({
+        queryParams: {
+            start: 0,
+            count: 50000,
+            query: query,
+            filters: {
+                hasValue: {
+                    field: searchRepoContentIdKey,
+                    values: contentIds,
+                },
+            },
+        },
+        repo: searchRepoConnection,
+    }).hits;
+
+    return existingSearchNodes.length === contentIds.length;
+};
+
 export const refreshSearchNodes = () => {
     logger.info(`Updating all search nodes!`);
 
@@ -100,18 +122,20 @@ export const refreshSearchNodes = () => {
         principals: ['role:system.admin'],
     });
 
+    const searchRepoConnection = getSearchRepoConnection();
+
     const newFacets = forceArray(config.data.fasetter);
 
-    const prevConfig = getPreviousConfig(contentRepoConnection, config._id);
-    const prevFacets = forceArray(prevConfig?.data.fasetter);
+    // const prevConfig = getPreviousConfig(contentRepoConnection, config._id);
+    // const prevFacets = forceArray(prevConfig?.data.fasetter);
 
     const { toUpdate, toSkip } = newFacets.reduce(
         (acc, facet, index) => {
-            const { facetKey, name, ruleQuery, underfasetter } = facet;
-            // TODO: remove this
             if (index > 1) {
                 return acc;
             }
+
+            const { facetKey, name, ruleQuery, underfasetter } = facet;
 
             const matchedContentIds = batchedNodeQuery({
                 queryParams: {
@@ -122,28 +146,30 @@ export const refreshSearchNodes = () => {
                 repo: contentRepoConnection,
             }).hits.map((content) => content.id);
 
-            const prevFacet = prevFacets.find((prevFacet) => prevFacet.facetKey === facetKey);
-            if (prevFacet && configFacetsAreEqual(facet, prevFacet)) {
-                logger.info(
-                    `Facet "${name}" with key "${facetKey}" was not changed - skipping updates`
-                );
-                acc.toSkip.push(...matchedContentIds);
-                return acc;
-            }
+            // const prevFacet = prevFacets.find((prevFacet) => prevFacet.facetKey === facetKey);
 
             const ufArray = forceArray(underfasetter);
+
             if (ufArray.length === 0) {
-                matchedContentIds.forEach((id) => {
-                    if (!acc.toUpdate[id]) {
-                        acc.toUpdate[id] = [];
-                    }
-                    acc.toUpdate[id].push({ facet: facetKey });
-                });
+                if (hasAllSearchNodes(ruleQuery, matchedContentIds, searchRepoConnection)) {
+                    logger.info(
+                        `Facet "${name}" with key "${facetKey}" was not changed - skipping updates`
+                    );
+                    acc.toSkip.push(...matchedContentIds);
+                } else {
+                    matchedContentIds.forEach((id) => {
+                        if (!acc.toUpdate[id]) {
+                            acc.toUpdate[id] = [];
+                        }
+                        acc.toUpdate[id].push({ facet: facetKey });
+                    });
+                }
+
                 return acc;
             }
 
             const ufs = ufArray.reduce((acc, uf) => {
-                const contentUfMatched = batchedNodeQuery({
+                const matchedContentIdsForUf = batchedNodeQuery({
                     queryParams: {
                         start: 0,
                         count: 50000,
@@ -155,14 +181,21 @@ export const refreshSearchNodes = () => {
                         },
                     },
                     repo: contentRepoConnection,
-                }).hits;
+                }).hits.map((node) => node.id);
 
-                contentUfMatched.forEach(({ id }) => {
-                    if (!acc[id]) {
-                        acc[id] = [];
-                    }
-                    acc[id].push(uf.facetKey);
-                });
+                if (hasAllSearchNodes(uf.ruleQuery, matchedContentIdsForUf, searchRepoConnection)) {
+                    logger.info(
+                        `Underfacet "${name}" with key "${facetKey}" was not changed - skipping updates`
+                    );
+                    acc.toSkip.push(...matchedContentIdsForUf);
+                } else {
+                    matchedContentIdsForUf.forEach((contentId) => {
+                        if (!acc[contentId]) {
+                            acc[contentId] = [];
+                        }
+                        acc[contentId].push(uf.facetKey);
+                    });
+                }
 
                 return acc;
             }, {} as Record<string, string[]>);
@@ -191,10 +224,12 @@ export const refreshSearchNodes = () => {
             return;
         }
 
-        createSearchNode(contentNode, toUpdate[contentId]);
+        const facets = toUpdate[contentId];
+
+        createSearchNode(contentNode, facets);
     });
 
-    deleteStaleNodes([...idsToUpdate, ...toSkip]);
+    deleteStaleNodes([...idsToUpdate, ...toSkip], searchRepoConnection);
 
     logger.info(
         `Updated ${Object.keys(toUpdate).length} search nodes - time spent: ${
