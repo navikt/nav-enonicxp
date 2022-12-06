@@ -3,18 +3,20 @@ import { Content } from '/lib/xp/content';
 import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
+import { SearchConfig } from '../../types/content-types/search-config';
 
-export type Facet = {
+export type ContentFacet = {
     facet: string;
     underfacets?: string[];
 };
+
+export type ConfigFacet = SearchConfig['fasetter'][number];
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
 export const searchRepoContentIdKey = 'contentId';
 export const searchRepoContentPathKey = 'contentPath';
 export const searchRepoFacetsKey = 'facets';
-export const searchRepoConfigNode = 'config';
 
 export const getSearchRepoConnection = () =>
     nodeLib.connect({
@@ -26,7 +28,10 @@ export const getSearchRepoConnection = () =>
         principals: ['role:system.admin'],
     });
 
-export const facetsAreEqual = (facets1: Facet | Facet[], facets2: Facet | Facet[]) => {
+export const facetsAreEqual = (
+    facets1: ContentFacet | ContentFacet[],
+    facets2: ContentFacet | ContentFacet[]
+) => {
     const facetsArray1 = forceArray(facets1);
     const facetsArray2 = forceArray(facets2);
 
@@ -46,7 +51,7 @@ export const facetsAreEqual = (facets1: Facet | Facet[], facets2: Facet | Facet[
     );
 };
 
-const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: Facet[]) => {
+const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
     return {
         ...contentNode,
         [searchRepoFacetsKey]: facets,
@@ -74,7 +79,7 @@ const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: Facet[]) 
     };
 };
 
-export const createSearchNode = (contentNode: RepoNode<Content>, facets: Facet[]) => {
+export const createSearchNode = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
     const contentId = contentNode._id;
 
     const searchRepoConnection = getSearchRepoConnection();
@@ -97,11 +102,11 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Facet[]
             facetsAreEqual(facets, searchNode.facets) &&
             fixDateFormat(contentNode.modifiedTime) === searchNode.modifiedTime
         ) {
-            logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
+            // logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
             return;
         }
 
-        log.info(`Search node for ${contentId} already exists, queueing for removal`);
+        // log.info(`Search node for ${contentId} already exists, queueing for removal`);
         searchRepoConnection.move({
             source: searchNodeId,
             target: `/${searchRepoDeletionQueueBaseNode}/`,

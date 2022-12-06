@@ -6,7 +6,16 @@ import { contentRepo } from '../constants';
 import { updateFacetsForContent } from './contentUpdateHandler';
 import { updateAllFacets } from './configUpdateHandler';
 
-export const activateFacetsUpdateHandler = () => {
+let isActive = false;
+
+export const activateSearchIndexEventHandlers = () => {
+    if (isActive) {
+        logger.error(
+            `Attempted to activate search index event handlers, but handlers were already active!`
+        );
+        return;
+    }
+
     const facetsConfig = getSearchConfig();
     if (!facetsConfig) {
         logger.critical(`No facets config found!`);
@@ -38,6 +47,8 @@ export const activateFacetsUpdateHandler = () => {
         },
         localOnly: false,
     });
+
+    isActive = true;
 
     logger.info('Started event listener for facets updates');
 };

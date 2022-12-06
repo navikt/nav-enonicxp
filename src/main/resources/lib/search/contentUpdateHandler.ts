@@ -4,7 +4,7 @@ import { contentRepo } from '../constants';
 import nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
-import { createSearchNode, Facet } from './utils';
+import { createSearchNode, ContentFacet } from './utils';
 
 const isQueryMatchingContent = (query: string, id: string) =>
     contentLib.query({
@@ -67,7 +67,7 @@ export const updateFacetsForContent = (contentId: string) => {
         }
 
         return [...acc, { facet: facetKey, underfacets: underfacetsMatched }];
-    }, [] as Facet[]);
+    }, [] as ContentFacet[]);
 
     createSearchNode(contentNode, matchedFacets);
 };
