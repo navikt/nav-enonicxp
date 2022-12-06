@@ -116,11 +116,7 @@ export const refreshSearchNodes = () => {
     const newFacets = forceArray(config.data.fasetter);
 
     const { toUpdate, toSkip } = newFacets.reduce(
-        (acc, facet, index) => {
-            if (index > 1) {
-                return acc;
-            }
-
+        (acc, facet) => {
             const { facetKey, name, ruleQuery, underfasetter } = facet;
 
             const matchedContentIds = batchedNodeQuery({
