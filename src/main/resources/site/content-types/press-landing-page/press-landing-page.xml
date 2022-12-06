@@ -21,6 +21,25 @@
                 </input>
             </items>
         </field-set>
+        <field-set>
+            <label>Pressemeldinger og snarveier</label>
+            <items>
+                <input type="ContentSelector" name="pressNews">
+                    <label>Innholdsliste for pressemeldinger</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+                <input type="ContentSelector" name="shortcuts">
+                    <label>Innholdsliste for snarveier</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
         <mixin name="custom-path-selector-required"/>
         <mixin name="owner"/>
         <mixin name="managed-by"/>

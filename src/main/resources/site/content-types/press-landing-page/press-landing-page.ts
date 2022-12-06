@@ -26,6 +26,16 @@ export interface PressLandingPage {
   pressCall?: string;
 
   /**
+   * Innholdsliste for pressemeldinger
+   */
+  pressNews: string;
+
+  /**
+   * Innholdsliste for snarveier
+   */
+  shortcuts: string;
+
+  /**
    * Skriv inn ønsket kort-url
    */
   customPath: string;
