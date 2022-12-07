@@ -7,11 +7,11 @@ import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
     createSearchNode,
-    ContentFacet,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
     searchRepoContentIdKey,
 } from './utils';
+import { ContentFacet } from '../../types/search';
 
 const contentBasePath = `/${searchRepoContentBaseNode}`;
 

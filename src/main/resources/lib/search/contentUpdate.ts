@@ -4,7 +4,8 @@ import { contentRepo } from '../constants';
 import nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
-import { createSearchNode, ContentFacet, deleteSearchNodesForContent } from './utils';
+import { createSearchNode, deleteSearchNodesForContent } from './utils';
+import { ContentFacet } from '../../types/search';
 
 const isQueryMatchingContent = (query: string, id: string) =>
     contentLib.query({
@@ -18,8 +19,8 @@ const isQueryMatchingContent = (query: string, id: string) =>
         },
     }).total > 0;
 
-export const updateFacetsForContent = (contentId: string) => {
-    logger.info(`Updating search node for id ${contentId}`);
+export const updateSearchNode = (contentId: string) => {
+    logger.info(`Updating search node for content id ${contentId}`);
 
     const searchConfig = getSearchConfig();
     if (!searchConfig) {
@@ -37,7 +38,7 @@ export const updateFacetsForContent = (contentId: string) => {
 
     const contentNode = contentRepoConnection.get<Content>(contentId);
     if (!contentNode) {
-        logger.info(`Content node not found for id ${contentId}`);
+        logger.info(`Content node not found for id ${contentId} - removing search node`);
         deleteSearchNodesForContent(contentId);
         return;
     }
@@ -54,20 +55,14 @@ export const updateFacetsForContent = (contentId: string) => {
             return [...acc, { facet: facetKey, underfacets: [] }];
         }
 
-        const underfacetsMatched = ufArray.reduce((acc, uf) => {
-            if (!isQueryMatchingContent(uf.ruleQuery, contentId)) {
-                return acc;
-            }
-
-            return [...acc, uf.facetKey];
-        }, [] as string[]);
+        const ufsMatched = ufArray.filter((uf) => isQueryMatchingContent(uf.ruleQuery, contentId));
 
         // If the facet has underfacets, at least one underfacet must match along with the main facet
-        if (underfacetsMatched.length === 0) {
+        if (ufsMatched.length === 0) {
             return acc;
         }
 
-        return [...acc, { facet: facetKey, underfacets: underfacetsMatched }];
+        return [...acc, { facet: facetKey, underfacets: ufsMatched.map((uf) => uf.facetKey) }];
     }, [] as ContentFacet[]);
 
     createSearchNode(contentNode, matchedFacets);

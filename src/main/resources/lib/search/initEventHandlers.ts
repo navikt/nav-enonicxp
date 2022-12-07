@@ -3,7 +3,7 @@ import clusterLib from '/lib/xp/cluster';
 import { getSearchConfig, refreshSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
-import { updateFacetsForContent } from './contentUpdates';
+import { updateSearchNode } from './contentUpdate';
 import { refreshSearchNodes } from './configUpdates';
 import { deleteSearchNodesForContent } from './utils';
 
@@ -46,7 +46,7 @@ export const activateSearchIndexEventHandlers = () => {
                 if (event.type === 'node.deleted') {
                     deleteSearchNodesForContent(nodeData.id);
                 } else {
-                    updateFacetsForContent(nodeData.id);
+                    updateSearchNode(nodeData.id);
                 }
             });
         },

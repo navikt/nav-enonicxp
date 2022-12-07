@@ -3,11 +3,7 @@ import { Content } from '/lib/xp/content';
 import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
-
-export type ContentFacet = {
-    facet: string;
-    underfacets?: string[];
-};
+import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
@@ -48,29 +44,36 @@ export const facetsAreEqual = (
     );
 };
 
-const searchNodeTransformer = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
+// Note: datetimes must be provided as Date-objects with a format accepted by Nashorn
+// in order for the datetime to be indexed as the correct type
+const searchNodeTransformer = (
+    contentNode: RepoNode<Content>,
+    facets: ContentFacet[]
+): SearchNodeCreateParams => {
+    const { createdTime, modifiedTime, publish, ...rest } = contentNode;
+
     return {
-        ...contentNode,
+        ...rest,
         [searchRepoFacetsKey]: facets,
         [searchRepoContentIdKey]: contentNode._id,
         [searchRepoContentPathKey]: contentNode._path,
         _name: contentNode._path.replace(/\//g, '_'),
         _parentPath: `/${searchRepoContentBaseNode}`,
-        ...(contentNode.createdTime && {
+        ...(createdTime && {
             createdTime: new Date(fixDateFormat(contentNode.createdTime)),
         }),
-        ...(contentNode.modifiedTime && {
+        ...(modifiedTime && {
             modifiedTime: new Date(fixDateFormat(contentNode.modifiedTime)),
         }),
         publish: {
-            ...(contentNode.publish?.first && {
-                first: new Date(fixDateFormat(contentNode.publish.first)),
+            ...(publish?.first && {
+                first: new Date(fixDateFormat(publish.first)),
             }),
-            ...(contentNode.publish?.from && {
-                from: new Date(fixDateFormat(contentNode.publish.from)),
+            ...(publish?.from && {
+                from: new Date(fixDateFormat(publish.from)),
             }),
-            ...(contentNode.publish?.to && {
-                to: new Date(fixDateFormat(contentNode.publish.to)),
+            ...(publish?.to && {
+                to: new Date(fixDateFormat(publish.to)),
             }),
         },
     };
@@ -110,8 +113,14 @@ export const deleteSearchNodesForContent = (contentId: string) => {
         });
 };
 
+const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets: ContentFacet[]) =>
+    searchNode &&
+    facetsAreEqual(facets, searchNode.facets) &&
+    fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime);
+
 export const createSearchNode = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
     const contentId = contentNode._id;
+    const contentPath = contentNode._path;
 
     const searchRepoConnection = getSearchRepoConnection();
 
@@ -130,18 +139,18 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
         const searchNodeId = existingSearchNodes[0].id;
         const searchNode = searchRepoConnection.get(searchNodeId);
 
-        if (
-            searchNode &&
-            facetsAreEqual(facets, searchNode.facets) &&
-            fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime)
-        ) {
-            // logger.info(`Content node for ${contentNode._path} is unchanged, skipping`);
+        if (searchNodeIsFresh(searchNode, contentNode, facets)) {
+            // logger.info(`Content node for ${contentNode._path} is unchanged, skipping update`);
             return;
         }
 
-        logger.info(`Search node for ${contentId} already exists, removing node`);
+        // logger.info(`Search node for ${contentId} already exists, removing node`);
         deleteSearchNode(searchNodeId, searchRepoConnection);
     } else if (existingSearchNodes.length > 1) {
+        // If multiple search nodes exists for a content, something has gone wrong at some point
+        // in the past. Remove everything and notify the problem has occured.
+        logger.critical(`Multiple existing search nodes found for [${contentId}] ${contentPath}`);
+
         existingSearchNodes.forEach((node) => {
             deleteSearchNode(node.id, searchRepoConnection);
         });
@@ -149,10 +158,9 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
 
     const newSearchNode = searchRepoConnection.create(searchNodeTransformer(contentNode, facets));
     if (!newSearchNode) {
-        logger.critical(`Failed to create new search node for content ${contentId}`);
+        logger.critical(`Failed to create new search node for content from ${contentPath}`);
+        return;
     }
 
-    // logger.info(
-    //     `Created search node for ${contentNode._path} with facets ${JSON.stringify(facets)}`
-    // );
+    logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facets)}`);
 };
