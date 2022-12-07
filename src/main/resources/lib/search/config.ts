@@ -5,7 +5,7 @@ import { SearchConfigDescriptor } from '../../types/content-types/content-config
 
 let searchConfig: Content<SearchConfigDescriptor> | null = null;
 
-export const refreshSearchConfigCache = () => {
+export const revalidateSearchConfigCache = () => {
     const facetsConfigHits = runInContext(
         { branch: 'master' },
         () =>
@@ -31,7 +31,7 @@ export const refreshSearchConfigCache = () => {
 
 export const getSearchConfig = () => {
     if (!searchConfig) {
-        refreshSearchConfigCache();
+        revalidateSearchConfigCache();
     }
 
     return searchConfig;

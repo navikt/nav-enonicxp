@@ -40,8 +40,8 @@ const createBaseNodes = (repo: RepoConnection) => {
 
 export const initSearchRepo = () =>
     runInContext({ asAdmin: true }, () => {
-        const facetsRepoExists = createSearchRepo();
-        if (!facetsRepoExists) {
+        const searchRepoExists = createSearchRepo();
+        if (!searchRepoExists) {
             return;
         }
 

@@ -1,10 +1,10 @@
 import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
-import { getSearchConfig, refreshSearchConfigCache } from './config';
+import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
-import { updateSearchNode } from './contentUpdate';
-import { refreshSearchNodes } from './configUpdates';
+import { updateSearchNode } from './onContentUpdate';
+import { updateAllSearchNodes } from './onConfigUpdate';
 import { deleteSearchNodesForContent } from './utils';
 
 let isActive = false;
@@ -17,13 +17,15 @@ export const activateSearchIndexEventHandlers = () => {
         return;
     }
 
-    const facetsConfig = getSearchConfig();
-    if (!facetsConfig) {
-        logger.critical(`No search config found!`);
+    const searchConfig = getSearchConfig();
+    if (!searchConfig) {
+        logger.critical(`No search config found - could not activate event handlers!`);
         return;
     }
 
-    const facetsConfigId = facetsConfig._id;
+    isActive = true;
+
+    const searchConfigId = searchConfig._id;
 
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
@@ -37,9 +39,9 @@ export const activateSearchIndexEventHandlers = () => {
                     return;
                 }
 
-                if (nodeData.id === facetsConfigId) {
-                    refreshSearchConfigCache();
-                    refreshSearchNodes();
+                if (nodeData.id === searchConfigId) {
+                    revalidateSearchConfigCache();
+                    updateAllSearchNodes();
                     return;
                 }
 
@@ -52,8 +54,6 @@ export const activateSearchIndexEventHandlers = () => {
         },
         localOnly: false,
     });
-
-    isActive = true;
 
     logger.info('Started event listener for search index updates');
 };

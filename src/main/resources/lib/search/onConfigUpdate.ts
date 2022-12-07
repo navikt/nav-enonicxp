@@ -94,11 +94,13 @@ const hasAllSearchNodes = ({
 
     return nodesWithSpecifiedFacets.length === contentIds.length;
 };
-export const refreshSearchNodes = () => {
+
+export const updateAllSearchNodes = () => {
     logger.info(`Updating all search nodes!`);
 
     const config = getSearchConfig();
     if (!config) {
+        logger.critical(`No search config found, could not update search nodes!`);
         return;
     }
 
@@ -113,9 +115,9 @@ export const refreshSearchNodes = () => {
 
     const searchRepoConnection = getSearchRepoConnection();
 
-    const newFacets = forceArray(config.data.fasetter);
+    const facets = forceArray(config.data.fasetter);
 
-    const { toUpdate, toSkip } = newFacets.reduce(
+    const { toUpdate, toSkip } = facets.reduce(
         (acc, facet) => {
             const { facetKey, name, ruleQuery, underfasetter } = facet;
 
