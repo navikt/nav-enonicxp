@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { contentRepo } from '../constants';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
     createSearchNode,
@@ -132,7 +132,7 @@ const findNodesToUpdateAndKeep = ({
     searchRepoConnection: RepoConnection;
 }) => {
     const contentIdsWithFacetsToUpdate: Record<string, ContentFacet[]> = {};
-    const contentIdsWithFreshSearchNodes = new Set<string>();
+    const contentIdsWithFreshSearchNodes: string[] = [];
 
     const { fasetter, contentTypes } = searchConfig.data;
 
@@ -173,9 +173,7 @@ const findNodesToUpdateAndKeep = ({
                     searchRepoConnection,
                 });
 
-            withFreshSearchNodes.forEach((contentId) =>
-                contentIdsWithFreshSearchNodes.add(contentId)
-            );
+            contentIdsWithFreshSearchNodes.push(...withFreshSearchNodes);
 
             withStaleOrMissingSearchNodes.forEach((id) => {
                 if (!contentIdsWithFacetsToUpdate[id]) {
@@ -185,7 +183,7 @@ const findNodesToUpdateAndKeep = ({
             });
 
             logger.info(
-                `Facet [${facetKey}] ${name} triggered updates for ${withStaleOrMissingSearchNodes.length} search nodes - Also found ${contentIdsWithFreshSearchNodes.size} still valid nodes`
+                `Facet [${facetKey}] ${name} triggered updates for ${withStaleOrMissingSearchNodes.length} search nodes - Also found ${withFreshSearchNodes.length} still valid nodes`
             );
 
             return;
@@ -221,9 +219,7 @@ const findNodesToUpdateAndKeep = ({
                     searchRepoConnection,
                 });
 
-            withFreshSearchNodes.forEach((contentId) =>
-                contentIdsWithFreshSearchNodes.add(contentId)
-            );
+            contentIdsWithFreshSearchNodes.push(...contentIdsWithFreshSearchNodes);
 
             withStaleOrMissingSearchNodes.forEach((contentId) => {
                 if (!ufAcc[contentId]) {
@@ -252,7 +248,7 @@ const findNodesToUpdateAndKeep = ({
 
     return {
         contentIdsWithFacetsToUpdate,
-        contentIdsWithFreshSearchNodes: [...contentIdsWithFreshSearchNodes],
+        contentIdsWithFreshSearchNodes: removeDuplicates(contentIdsWithFreshSearchNodes),
     };
 };
 
