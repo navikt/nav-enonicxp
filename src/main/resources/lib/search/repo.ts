@@ -56,8 +56,17 @@ export const clearSearchNodeUpdateQueue = () => {
     setUpdateState({ isQueuedUpdateAll: false, queuedContentIdUpdates: null });
 };
 
+const getSearchRepo = () => {
+    try {
+        return repoLib.get(searchRepo);
+    } catch (e) {
+        logger.error(`Error while getting search repo - ${e}`);
+        return null;
+    }
+};
+
 const createSearchRepo = () => {
-    const existingRepo = repoLib.get(searchRepo);
+    const existingRepo = getSearchRepo();
     if (existingRepo) {
         logger.info(`Search repo ${searchRepo} already exists, no action needed`);
         return true;
