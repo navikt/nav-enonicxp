@@ -50,7 +50,11 @@ export const facetsAreEqual = (
 const transformFacetsToLegacyBehaviour = (
     facets: ContentFacet[],
     contentPath: string
-): ContentFacet => {
+): ContentFacet | null => {
+    if (facets.length === 0) {
+        return null;
+    }
+
     if (facets.length > 1) {
         logger.warning(
             `Content at "${contentPath}" matches multiple facets, setting only the last - Facets matched: "${JSON.stringify(
@@ -156,7 +160,15 @@ const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facet: 
     facetsAreEqual(facet, searchNode.facets) &&
     fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime);
 
-export const createSearchNode = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
+export const createSearchNodeIfFacetsMatched = (
+    contentNode: RepoNode<Content>,
+    facets: ContentFacet[]
+) => {
+    const facet = transformFacetsToLegacyBehaviour(facets, contentNode._path);
+    if (!facet) {
+        return;
+    }
+
     const contentId = contentNode._id;
     const contentPath = contentNode._path;
 
@@ -172,8 +184,6 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
             },
         },
     }).hits;
-
-    const facet = transformFacetsToLegacyBehaviour(facets, contentNode._path);
 
     if (existingSearchNodes.length === 1) {
         const searchNodeId = existingSearchNodes[0].id;

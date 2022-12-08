@@ -6,7 +6,7 @@ import { contentRepo } from '../constants';
 import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
-    createSearchNode,
+    createSearchNodeIfFacetsMatched,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
     searchRepoContentIdKey,
@@ -291,7 +291,7 @@ export const revalidateAllSearchNodes = () => {
 
         const facets = contentIdsWithFacetsToUpdate[contentId];
 
-        createSearchNode(contentNode, facets);
+        createSearchNodeIfFacetsMatched(contentNode, facets);
     });
 
     deleteInvalidNodes([...idsToUpdate, ...contentIdsWithFreshSearchNodes], searchRepoConnection);
