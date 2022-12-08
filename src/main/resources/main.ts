@@ -15,14 +15,10 @@ import { activateContentListItemUnpublishedListener } from './lib/contentlists/r
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
 import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
 import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
-
+import { activateSearchIndexEventHandlers } from './lib/search/initEventHandlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
-import {
-    activateFacetsEventListener,
-    clearFacetUpdateState,
-    getFacetValidation,
-} from './lib/facets';
+import { initSearchRepo } from './lib/search/repo';
 
 updateClusterInfo();
 
@@ -31,18 +27,12 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-activateFacetsEventListener();
+activateSearchIndexEventHandlers();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
-    // make sure the updateAll lock is released on startup, and clear the
-    // list of recently validated nodes
-    const facetValidation = getFacetValidation();
-    if (facetValidation) {
-        clearFacetUpdateState();
-    }
-
+    initSearchRepo();
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();

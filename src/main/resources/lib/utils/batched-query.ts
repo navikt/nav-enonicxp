@@ -43,8 +43,8 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
     const getBatchHits = (start: number): ReadonlyArray<NodeQueryHit> => {
         const count = getRemainingCount(start);
 
-        // @ts-ignore (TS can't infer that queryParams type will always match the queryFunc signature...)
-        const result = queryFunc({
+        // (TS can't infer that queryParams type will always match the queryFunc signature...)
+        const result = (queryFunc as any)({
             ...queryParams,
             start,
             count,
@@ -67,12 +67,12 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
 
     const countFirst = getRemainingCount(startParam);
 
-    // @ts-ignore (TS can't infer that queryParams type will always match the queryFunc signature...)
-    const firstBatch = queryFunc({ ...queryParams, start: startParam, count: countFirst });
+    // (TS can't infer that queryParams type will always match the queryFunc signature...)
+    const firstBatch = (queryFunc as any)({ ...queryParams, start: startParam, count: countFirst });
 
     // If there are more hits to retrieve, we run batched queries
     if (firstBatch.total > countFirst + startParam) {
-        const hits = [...firstBatch.hits, ...getBatchHits(startParam + BATCH_SIZE)];
+        const hits = [...firstBatch.hits, ...getBatchHits(startParam + countFirst)];
 
         return {
             total: firstBatch.total,
