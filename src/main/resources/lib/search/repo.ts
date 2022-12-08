@@ -7,7 +7,54 @@ import {
     getSearchRepoConnection,
     searchRepoContentBaseNode,
     searchRepoDeletionQueueBaseNode,
+    searchRepoUpdateStateNode,
 } from './utils';
+import { forceArray } from '../utils/nav-utils';
+
+const baseNodeKey = `/${searchRepoContentBaseNode}`;
+const deletionNodeKey = `/${searchRepoDeletionQueueBaseNode}`;
+const stateNodeKey = `/${searchRepoUpdateStateNode}`;
+
+type UpdateQueueState = {
+    isQueuedUpdateAll?: boolean;
+    queuedContentIdUpdates?: string[] | null;
+};
+
+export const getUpdateQueue = () => {
+    const repo = getSearchRepoConnection();
+    return repo.get<UpdateQueueState>(stateNodeKey);
+};
+
+const setUpdateState = (state: UpdateQueueState) => {
+    const repo = getSearchRepoConnection();
+    repo.modify({
+        key: stateNodeKey,
+        editor: (node) => ({
+            ...node,
+            ...state,
+        }),
+    });
+};
+
+export const queueUpdateAll = () => {
+    setUpdateState({ isQueuedUpdateAll: true, queuedContentIdUpdates: null });
+};
+
+export const queueUpdateForContent = (contentId: string) => {
+    const currentUpdateState = getUpdateQueue();
+    setUpdateState({
+        queuedContentIdUpdates: [
+            ...(currentUpdateState?.queuedContentIdUpdates
+                ? forceArray(currentUpdateState.queuedContentIdUpdates)
+                : []),
+            contentId,
+        ],
+    });
+};
+
+export const clearSearchNodeUpdateQueue = () => {
+    setUpdateState({ isQueuedUpdateAll: false, queuedContentIdUpdates: null });
+};
 
 const createSearchRepo = () => {
     const existingRepo = repoLib.get(searchRepo);
@@ -30,11 +77,14 @@ const createSearchRepo = () => {
 };
 
 const createBaseNodes = (repo: RepoConnection) => {
-    if (!repo.exists(`/${searchRepoDeletionQueueBaseNode}`)) {
+    if (!repo.exists(deletionNodeKey)) {
         repo.create({ _name: searchRepoDeletionQueueBaseNode });
     }
-    if (!repo.exists(`/${searchRepoContentBaseNode}`)) {
+    if (!repo.exists(baseNodeKey)) {
         repo.create({ _name: searchRepoContentBaseNode });
+    }
+    if (!repo.exists(stateNodeKey)) {
+        repo.create({ _name: searchRepoUpdateStateNode });
     }
 };
 

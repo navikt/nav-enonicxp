@@ -7,6 +7,8 @@ import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/se
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
+export const searchRepoUpdateStateNode = 'updateState';
+
 export const searchRepoContentIdKey = 'contentId';
 export const searchRepoContentPathKey = 'contentPath';
 export const searchRepoFacetsKey = 'facets';
@@ -52,9 +54,19 @@ const searchNodeTransformer = (
 ): SearchNodeCreateParams => {
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
+    if (facets.length > 1) {
+        logger.error(
+            `Content at ${
+                contentNode._path
+            } matches multiple facets, setting only the first - Facets matched: ${JSON.stringify(
+                facets
+            )}`
+        );
+    }
+
     return {
         ...rest,
-        [searchRepoFacetsKey]: facets,
+        [searchRepoFacetsKey]: facets[0],
         [searchRepoContentIdKey]: contentNode._id,
         [searchRepoContentPathKey]: contentNode._path,
         _name: contentNode._path.replace(/\//g, '_'),

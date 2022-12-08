@@ -12,7 +12,7 @@ export type ContentFacet = {
 };
 
 type SearchNodeDataFields = {
-    [searchRepoFacetsKey]: ContentFacet[];
+    [searchRepoFacetsKey]: ContentFacet;
     [searchRepoContentIdKey]: string;
     [searchRepoContentPathKey]: string;
 };
