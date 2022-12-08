@@ -31,6 +31,11 @@ export interface PressLandingPage {
   pressNews: string;
 
   /**
+   * Flere pressemeldinger og nyheter
+   */
+  morePressNews: string;
+
+  /**
    * Innholdsliste for snarveier
    */
   shortcuts: string;
