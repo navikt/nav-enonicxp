@@ -1,43 +1,21 @@
 // From the search-config2 type in the search app
 
-export interface SearchConfig {
-    /**
-     * Fasetter
-     */
-    fasetter: Array<{
-        /**
-         * Navn
-         */
+import { ArrayOrSingle } from '../util-types';
+import { ContentDescriptor } from './content-config';
+
+export type ConfigFacet = {
+    name: string;
+    facetKey: string;
+    ruleQuery: string;
+    underfasetter?: ArrayOrSingle<{
         name: string;
-
-        /**
-         * Fasettnøkkel (bør ikke endres!)
-         */
         facetKey: string;
-
-        /**
-         * Query
-         */
         ruleQuery: string;
-
-        /**
-         * Underfasetter
-         */
-        underfasetter?: Array<{
-            /**
-             * Navn
-             */
-            name: string;
-
-            /**
-             * Fasettnøkkel (bør ikke endres!)
-             */
-            facetKey: string;
-
-            /**
-             * Query
-             */
-            ruleQuery: string;
-        }>;
     }>;
+};
+
+export interface SearchConfigData {
+    contentTypes: ArrayOrSingle<ContentDescriptor>;
+    fields: ArrayOrSingle<string>;
+    fasetter: ArrayOrSingle<ConfigFacet>;
 }

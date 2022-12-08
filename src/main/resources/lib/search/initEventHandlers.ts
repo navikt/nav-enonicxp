@@ -4,7 +4,7 @@ import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 import { updateSearchNode } from './onContentUpdate';
-import { updateAllSearchNodes } from './onConfigUpdate';
+import { revalidateAllSearchNodes } from './onConfigUpdate';
 import { deleteSearchNodesForContent } from './utils';
 
 let isActive = false;
@@ -41,7 +41,7 @@ export const activateSearchIndexEventHandlers = () => {
 
                 if (nodeData.id === searchConfigId) {
                     revalidateSearchConfigCache();
-                    updateAllSearchNodes();
+                    revalidateAllSearchNodes();
                     return;
                 }
 

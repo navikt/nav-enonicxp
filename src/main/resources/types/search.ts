@@ -1,6 +1,5 @@
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { SearchConfig } from './content-types/search-config';
 import {
     searchRepoContentIdKey,
     searchRepoContentPathKey,
@@ -11,8 +10,6 @@ export type ContentFacet = {
     facet: string;
     underfacets?: string[];
 };
-
-export type ConfigFacet = SearchConfig['fasetter'][number];
 
 type SearchNodeDataFields = {
     [searchRepoFacetsKey]: ContentFacet[];

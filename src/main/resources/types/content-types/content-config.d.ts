@@ -35,7 +35,7 @@ import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
-import { SearchConfig } from './search-config';
+import { SearchConfigData } from './search-config';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -104,7 +104,7 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
           data: undefined;
       }
     : Type extends SearchConfigDescriptor
-    ? { type: Type; data: SearchConfig }
+    ? { type: Type; data: SearchConfigData }
     : never;
 
 export type BuiltinContentDescriptor =
