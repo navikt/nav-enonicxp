@@ -46,6 +46,42 @@ export const facetsAreEqual = (
     );
 };
 
+// TODO: support multiple facets? Just replicating the legacy behaviour for now...
+const transformFacetsToLegacyBehaviour = (
+    facets: ContentFacet[],
+    contentPath: string
+): ContentFacet => {
+    if (facets.length > 1) {
+        logger.warning(
+            `Content at "${contentPath}" matches multiple facets, setting only the last - Facets matched: "${JSON.stringify(
+                facets.map((facet) => facet.facet)
+            )}"`
+        );
+    }
+
+    const facet = facets.slice(-1)[0];
+    const { underfacets } = facet;
+
+    if (!underfacets || underfacets.length === 0) {
+        return facet;
+    }
+
+    if (underfacets.length > 1) {
+        logger.warning(
+            `Content at "${contentPath}" matches multiple underfacets of facet "${
+                facet.facet
+            }", setting only the last - Underfacets matched: "${JSON.stringify(
+                underfacets.map((uf) => uf)
+            )}"`
+        );
+    }
+
+    return {
+        ...facet,
+        underfacets: underfacets.slice(-1),
+    };
+};
+
 // Note: datetimes must be provided as Date-objects with a format accepted by Nashorn
 // in order for the datetime to be indexed as the correct type
 const searchNodeTransformer = (
@@ -54,19 +90,11 @@ const searchNodeTransformer = (
 ): SearchNodeCreateParams => {
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
-    if (facets.length > 1) {
-        logger.error(
-            `Content at ${
-                contentNode._path
-            } matches multiple facets, setting only the first - Facets matched: ${JSON.stringify(
-                facets
-            )}`
-        );
-    }
+    const facet = transformFacetsToLegacyBehaviour(facets, contentNode._path);
 
     return {
         ...rest,
-        [searchRepoFacetsKey]: facets[0],
+        [searchRepoFacetsKey]: facet,
         [searchRepoContentIdKey]: contentNode._id,
         [searchRepoContentPathKey]: contentNode._path,
         _name: contentNode._path.replace(/\//g, '_'),
