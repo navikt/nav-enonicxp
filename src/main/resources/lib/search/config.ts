@@ -6,7 +6,7 @@ import { SearchConfigDescriptor } from '../../types/content-types/content-config
 let searchConfig: Content<SearchConfigDescriptor> | null = null;
 
 export const revalidateSearchConfigCache = () => {
-    const facetsConfigHits = runInContext(
+    const searchConfigHits = runInContext(
         { branch: 'master' },
         () =>
             contentLib.query({
@@ -17,16 +17,18 @@ export const revalidateSearchConfigCache = () => {
             }).hits
     );
 
-    if (facetsConfigHits.length === 0) {
+    if (searchConfigHits.length === 0) {
         logger.critical(`No search config found!`);
         return;
     }
 
-    if (facetsConfigHits.length > 1) {
+    if (searchConfigHits.length > 1) {
         logger.critical(`Multiple search configs found! Using oldest.`);
     }
 
-    searchConfig = facetsConfigHits[0];
+    searchConfig = searchConfigHits[0];
+
+    logger.info('Updated search config cache!');
 };
 
 export const getSearchConfig = () => {

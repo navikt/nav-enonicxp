@@ -136,11 +136,7 @@ const findNodesToUpdateAndKeep = ({
 
     const { fasetter, contentTypes } = searchConfig.data;
 
-    forceArray(fasetter).forEach((facet, index) => {
-        if (index > 1) {
-            return;
-        }
-
+    forceArray(fasetter).forEach((facet) => {
         const { facetKey, name, ruleQuery, underfasetter } = facet;
 
         const matchedContentIds = batchedNodeQuery({
@@ -219,7 +215,7 @@ const findNodesToUpdateAndKeep = ({
                     searchRepoConnection,
                 });
 
-            contentIdsWithFreshSearchNodes.push(...contentIdsWithFreshSearchNodes);
+            contentIdsWithFreshSearchNodes.push(...withFreshSearchNodes);
 
             withStaleOrMissingSearchNodes.forEach((contentId) => {
                 if (!ufAcc[contentId]) {
