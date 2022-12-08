@@ -1,8 +1,6 @@
 #import "../mixins/languagesFragment.graphql"
-#import "../contentCommonFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 #import "./contentListFragment.graphql"
-#import "./mainArticleFragment.graphql"
 
 fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
     dataAsJson
@@ -13,13 +11,12 @@ fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
         pressNews {
             ...contentContentList
         }
-        morePressNews {
-            ...contentCommon
-            ...contentMainArticle
-        }
         shortcuts {
             ...contentContentList
         }
+        moreNewsUrl
+        maxNewsCount
+        maxShortcutsCount
         languages {
             ...languagesMixin
         }

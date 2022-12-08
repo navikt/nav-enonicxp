@@ -6,37 +6,32 @@ export interface PressLandingPage {
   title?: string;
 
   /**
-   * Tittel for utlisting og sortering
-   */
-  sortTitle?: string;
-
-  /**
-   * Norsk tittel (hvis fremmedspråklig innhold)
-   */
-  norwegianTitle?: string;
-
-  /**
-   * Ingress
-   */
-  ingress: string;
-
-  /**
    * Informasjon om pressevakt
    */
   pressCall?: string;
 
   /**
-   * Innholdsliste for pressemeldinger
+   * Hvor mange nyheter i listen er tillatt
+   */
+  maxNewsCount?: string;
+
+  /**
+   * Velg innhold
    */
   pressNews: string;
 
   /**
-   * Flere pressemeldinger og nyheter
+   * Url til flere nyheter
    */
-  morePressNews: string;
+  moreNewsUrl?: string;
 
   /**
-   * Innholdsliste for snarveier
+   * Hvor mange snarveier i listen er tillatt
+   */
+  maxShortcutsCount?: string;
+
+  /**
+   * Velg innhold
    */
   shortcuts: string;
 

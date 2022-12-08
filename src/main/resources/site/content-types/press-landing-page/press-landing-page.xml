@@ -7,10 +7,12 @@
     <allow-child-content>true</allow-child-content>
     <form>
          <field-set>
-            <label>Tittel og ingress</label>
+            <label>Tittel</label>
             <items>
-                <mixin name="page-header"/>
-                <mixin name="ingress-required" />
+                <input type="TextLine" name="title">
+                <label>Sett side-tittel</label>
+                <occurrences minimum="0" maximum="1"/>
+            </input>
             </items>
         </field-set>
         <field-set>
@@ -22,25 +24,31 @@
             </items>
         </field-set>
         <field-set>
-            <label>Pressemeldinger og snarveier</label>
+            <label>Nyheter</label>
             <items>
+                <input type="TextLine" name="maxNewsCount">
+                    <label>Hvor mange nyheter i listen er tillatt</label>
+                </input>
                 <input type="ContentSelector" name="pressNews">
-                    <label>Innholdsliste for pressemeldinger</label>
+                    <label>Velg innhold</label>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <allowContentType>${app}:content-list</allowContentType>
                     </config>
                 </input>
-                <input type="ContentSelector" name="morePressNews">
-                    <label>Flere pressemeldinger og nyheter</label>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <allowContentType>${app}:main-article</allowContentType>
-                    </config>
+                <input type="TextLine" name="moreNewsUrl">
+                    <label>Url til flere nyheter</label>
                 </input>
-                
+            </items>
+        </field-set>
+        <field-set>
+            <label>Snarveier</label>
+            <items>
+                <input type="TextLine" name="maxShortcutsCount">
+                    <label>Hvor mange snarveier i listen er tillatt</label>
+                </input>
                 <input type="ContentSelector" name="shortcuts">
-                    <label>Innholdsliste for snarveier</label>
+                    <label>Velg innhold</label>
                     <occurrences minimum="1" maximum="1"/>
                     <config>
                         <allowContentType>${app}:content-list</allowContentType>
