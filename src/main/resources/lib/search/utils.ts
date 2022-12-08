@@ -86,11 +86,9 @@ const transformFacetsToLegacyBehaviour = (
 // in order for the datetime to be indexed as the correct type
 const searchNodeTransformer = (
     contentNode: RepoNode<Content>,
-    facets: ContentFacet[]
+    facet: ContentFacet
 ): SearchNodeCreateParams => {
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
-
-    const facet = transformFacetsToLegacyBehaviour(facets, contentNode._path);
 
     return {
         ...rest,
@@ -153,9 +151,9 @@ export const deleteSearchNodesForContent = (contentId: string) => {
         });
 };
 
-const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets: ContentFacet[]) =>
+const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facet: ContentFacet) =>
     searchNode &&
-    facetsAreEqual(facets, searchNode.facets) &&
+    facetsAreEqual(facet, searchNode.facets) &&
     fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime);
 
 export const createSearchNode = (contentNode: RepoNode<Content>, facets: ContentFacet[]) => {
@@ -175,11 +173,13 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
         },
     }).hits;
 
+    const facet = transformFacetsToLegacyBehaviour(facets, contentNode._path);
+
     if (existingSearchNodes.length === 1) {
         const searchNodeId = existingSearchNodes[0].id;
         const searchNode = searchRepoConnection.get(searchNodeId);
 
-        if (searchNodeIsFresh(searchNode, contentNode, facets)) {
+        if (searchNodeIsFresh(searchNode, contentNode, facet)) {
             // logger.info(`Content node for ${contentNode._path} is unchanged, skipping update`);
             return;
         }
@@ -196,11 +196,11 @@ export const createSearchNode = (contentNode: RepoNode<Content>, facets: Content
         });
     }
 
-    const newSearchNode = searchRepoConnection.create(searchNodeTransformer(contentNode, facets));
+    const newSearchNode = searchRepoConnection.create(searchNodeTransformer(contentNode, facet));
     if (!newSearchNode) {
         logger.critical(`Failed to create new search node for content from ${contentPath}`);
         return;
     }
 
-    logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facets)}`);
+    logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facet)}`);
 };
