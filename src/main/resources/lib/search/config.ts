@@ -19,6 +19,7 @@ export const revalidateSearchConfigCache = () => {
 
     if (searchConfigHits.length === 0) {
         logger.critical(`No search config found!`);
+        searchConfig = null;
         return;
     }
 

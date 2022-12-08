@@ -17,15 +17,7 @@ export const activateSearchIndexEventHandlers = () => {
         return;
     }
 
-    const searchConfig = getSearchConfig();
-    if (!searchConfig) {
-        logger.critical(`No search config found - could not activate event handlers!`);
-        return;
-    }
-
     isActive = true;
-
-    const searchConfigId = searchConfig._id;
 
     eventLib.listener({
         type: '(node.pushed|node.deleted)',
@@ -34,12 +26,18 @@ export const activateSearchIndexEventHandlers = () => {
                 return;
             }
 
+            const searchConfig = getSearchConfig();
+            if (!searchConfig) {
+                logger.critical(`No search config found - could not run event handler!`);
+                return;
+            }
+
             event.data.nodes.forEach((nodeData) => {
                 if (nodeData.repo !== contentRepo || nodeData.branch !== 'master') {
                     return;
                 }
 
-                if (nodeData.id === searchConfigId) {
+                if (nodeData.id === searchConfig._id) {
                     revalidateSearchConfigCache();
                     revalidateAllSearchNodes();
                     return;
