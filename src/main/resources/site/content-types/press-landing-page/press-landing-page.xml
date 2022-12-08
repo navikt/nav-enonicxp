@@ -28,6 +28,7 @@
             <items>
                 <input type="TextLine" name="maxNewsCount">
                     <label>Hvor mange nyheter i listen er tillatt</label>
+                    <default>5</default>
                 </input>
                 <input type="ContentSelector" name="pressNews">
                     <label>Velg innhold</label>
@@ -46,6 +47,7 @@
             <items>
                 <input type="TextLine" name="maxShortcutsCount">
                     <label>Hvor mange snarveier i listen er tillatt</label>
+                    <default>3</default>
                 </input>
                 <input type="ContentSelector" name="shortcuts">
                     <label>Velg innhold</label>
