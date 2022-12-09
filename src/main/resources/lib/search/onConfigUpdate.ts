@@ -6,7 +6,7 @@ import { contentRepo } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
-    createSearchNodeIfFacetsNotEmpty,
+    createOrUpdateSearchNode,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
 } from './utils';
@@ -186,13 +186,9 @@ export const revalidateAllSearchNodes = () => {
         }
 
         const facets = contentIdToFacetsMap[contentId];
-        const didCreate = createSearchNodeIfFacetsNotEmpty(
-            contentNode,
-            facets,
-            getSearchRepoConnection()
-        );
+        const didSucceed = createOrUpdateSearchNode(contentNode, facets, getSearchRepoConnection());
 
-        if (didCreate) {
+        if (didSucceed) {
             counter++;
         }
     });

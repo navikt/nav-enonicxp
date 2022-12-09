@@ -140,7 +140,7 @@ const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facet: 
     new Date(fixDateFormat(contentNode.modifiedTime)).getTime() ===
         new Date(fixDateFormat(searchNode.modifiedTime)).getTime();
 
-export const createSearchNodeIfFacetsNotEmpty = (
+export const createOrUpdateSearchNode = (
     contentNode: RepoNode<Content>,
     facets: ContentFacet[],
     searchRepoConnection: RepoConnection

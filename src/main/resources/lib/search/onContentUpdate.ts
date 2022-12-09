@@ -5,7 +5,7 @@ import nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
 import {
-    createSearchNodeIfFacetsNotEmpty,
+    createOrUpdateSearchNode,
     deleteSearchNodesForContent,
     getSearchRepoConnection,
 } from './utils';
@@ -69,5 +69,5 @@ export const updateSearchNode = (contentId: string) => {
         return [...acc, { facet: facetKey, underfacets: ufsMatched.map((uf) => uf.facetKey) }];
     }, [] as ContentFacet[]);
 
-    createSearchNodeIfFacetsNotEmpty(contentNode, matchedFacets, getSearchRepoConnection());
+    createOrUpdateSearchNode(contentNode, matchedFacets, getSearchRepoConnection());
 };
