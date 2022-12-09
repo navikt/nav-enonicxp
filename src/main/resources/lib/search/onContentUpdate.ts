@@ -4,7 +4,11 @@ import { contentRepo } from '../constants';
 import nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
-import { createSearchNodeIfFacetsNotEmpty, deleteSearchNodesForContent } from './utils';
+import {
+    createOrUpdateSearchNode,
+    deleteSearchNodesForContent,
+    getSearchRepoConnection,
+} from './utils';
 import { ContentFacet } from '../../types/search';
 
 const isQueryMatchingContent = (query: string, id: string) =>
@@ -65,5 +69,5 @@ export const updateSearchNode = (contentId: string) => {
         return [...acc, { facet: facetKey, underfacets: ufsMatched.map((uf) => uf.facetKey) }];
     }, [] as ContentFacet[]);
 
-    createSearchNodeIfFacetsNotEmpty(contentNode, matchedFacets);
+    createOrUpdateSearchNode(contentNode, matchedFacets, getSearchRepoConnection());
 };
