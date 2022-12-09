@@ -186,7 +186,11 @@ export const revalidateAllSearchNodes = () => {
         }
 
         const facets = contentIdToFacetsMap[contentId];
-        const didCreate = createSearchNodeIfFacetsNotEmpty(contentNode, facets);
+        const didCreate = createSearchNodeIfFacetsNotEmpty(
+            contentNode,
+            facets,
+            getSearchRepoConnection()
+        );
 
         if (didCreate) {
             counter++;
