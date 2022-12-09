@@ -36,6 +36,7 @@ import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
 import { SearchConfigData } from './search-config';
+import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -73,6 +74,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
     'transport-page': TransportPage;
+    'press-landing-page': PressLandingPage;
 };
 
 // Add the app-specific descriptor prefix to all content types
