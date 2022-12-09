@@ -35,7 +35,7 @@ import { FrontPage } from '../../site/content-types/front-page/front-page';
 import { AreaPage } from '../../site/content-types/area-page/area-page';
 import { OfficeBranch } from 'site/content-types/office-branch/office-branch';
 import { CurrentTopicPage } from 'site/content-types/current-topic-page/current-topic-page';
-import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
+import { SearchConfigData } from './search-config';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -72,7 +72,6 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'office-editorial-page': OfficeEditorialPage;
     'themed-article-page': ThemedArticlePage;
     'tools-page': ToolsPage;
-    'press-landing-page': PressLandingPage;
     'transport-page': TransportPage;
 };
 
@@ -104,6 +103,8 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
           type: Type;
           data: undefined;
       }
+    : Type extends SearchConfigDescriptor
+    ? { type: Type; data: SearchConfigData }
     : never;
 
 export type BuiltinContentDescriptor =
@@ -120,10 +121,13 @@ export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
 
 export type CustomContentDescriptor = keyof CustomContentDataConfigs;
 
+export type SearchConfigDescriptor = 'navno.nav.no.search:search-config2';
+
 export type ContentDescriptor =
     | MediaDescriptor
     | CustomContentDescriptor
-    | BuiltinContentDescriptor;
+    | BuiltinContentDescriptor
+    | SearchConfigDescriptor;
 
 // TODO: add x-data
 // TODO: add media/portal/base types
