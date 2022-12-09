@@ -160,13 +160,13 @@ const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facet: 
     facetsAreEqual(facet, searchNode.facets) &&
     fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime);
 
-export const createSearchNodeIfFacetsMatched = (
+export const createSearchNodeIfFacetsNotEmpty = (
     contentNode: RepoNode<Content>,
     facets: ContentFacet[]
 ) => {
     const facet = transformFacetsToLegacyBehaviour(facets, contentNode._path);
     if (!facet) {
-        return;
+        return false;
     }
 
     const contentId = contentNode._id;
@@ -191,7 +191,7 @@ export const createSearchNodeIfFacetsMatched = (
 
         if (searchNodeIsFresh(searchNode, contentNode, facet)) {
             // logger.info(`Content node for ${contentNode._path} is unchanged, skipping update`);
-            return;
+            return false;
         }
 
         // logger.info(`Search node for ${contentId} already exists, removing node`);
@@ -209,8 +209,9 @@ export const createSearchNodeIfFacetsMatched = (
     const newSearchNode = searchRepoConnection.create(searchNodeTransformer(contentNode, facet));
     if (!newSearchNode) {
         logger.critical(`Failed to create new search node for content from ${contentPath}`);
-        return;
+        return false;
     }
 
     logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facet)}`);
+    return true;
 };
