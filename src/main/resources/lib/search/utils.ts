@@ -158,7 +158,8 @@ export const deleteSearchNodesForContent = (contentId: string) => {
 const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facet: ContentFacet) =>
     searchNode &&
     facetsAreEqual(facet, searchNode.facets) &&
-    fixDateFormat(contentNode.modifiedTime) === fixDateFormat(searchNode.modifiedTime);
+    new Date(fixDateFormat(contentNode.modifiedTime)).getTime() ===
+        new Date(fixDateFormat(searchNode.modifiedTime)).getTime();
 
 export const createSearchNodeIfFacetsNotEmpty = (
     contentNode: RepoNode<Content>,

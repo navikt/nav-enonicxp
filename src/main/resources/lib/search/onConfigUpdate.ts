@@ -150,6 +150,7 @@ const findContentWithMatchingFacets = ({
 };
 
 export const revalidateAllSearchNodes = () => {
+    const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
 
     const config = getSearchConfig();
@@ -175,8 +176,7 @@ export const revalidateAllSearchNodes = () => {
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
 
     let counter = 0;
-    const startTime = Date.now();
-    logger.info(`Updating ${matchedContentIds.length} search nodes for new config`);
+    logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
 
     matchedContentIds.forEach((contentId) => {
         const contentNode = contentRepoConnection.get<Content>(contentId);
@@ -198,6 +198,6 @@ export const revalidateAllSearchNodes = () => {
     logger.info(
         `Updated ${counter} search nodes from ${
             matchedContentIds.length
-        } matched content nodes - time spent: ${Date.now() - startTime}ms`
+        } matched contents - time spent: ${Date.now() - startTime}ms`
     );
 };
