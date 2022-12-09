@@ -65,14 +65,15 @@ export const revalidateSearchConfigCache = () => {
         logger.critical(`Multiple search configs found! Using oldest.`);
     }
 
-    searchConfig = searchConfigHits[0];
+    const newSearchConfig = searchConfigHits[0];
 
-    if (!validateQueries(searchConfig)) {
-        logger.critical(`Failed to validate search facet queries!`);
+    if (validateQueries(newSearchConfig)) {
+        logger.info('Updated search config cache!');
+        searchConfig = newSearchConfig;
         return;
     }
 
-    logger.info('Updated search config cache!');
+    logger.critical(`Failed to validate search facet queries!`);
 };
 
 export const getSearchConfig = () => {
