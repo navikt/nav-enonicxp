@@ -8,6 +8,7 @@ import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/se
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
 export const searchRepoUpdateStateNode = 'updateState';
+export const searchRepoConfigNode = 'config';
 
 export const searchRepoContentIdKey = 'contentId';
 export const searchRepoContentPathKey = 'contentPath';

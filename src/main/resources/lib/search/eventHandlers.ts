@@ -57,8 +57,10 @@ const runUpdateAllTask = () => {
             logger.info('Started search config update...');
 
             try {
-                revalidateSearchConfigCache();
-                revalidateAllSearchNodes();
+                const updateIsValid = revalidateSearchConfigCache();
+                if (updateIsValid) {
+                    revalidateAllSearchNodes();
+                }
             } catch (e) {
                 logger.critical(`Error while running search config updates - ${e}`);
             } finally {

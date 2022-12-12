@@ -5,6 +5,7 @@ import { runInContext } from '../utils/branch-context';
 import { searchRepo } from '../constants';
 import {
     getSearchRepoConnection,
+    searchRepoConfigNode,
     searchRepoContentBaseNode,
     searchRepoDeletionQueueBaseNode,
     searchRepoUpdateStateNode,
@@ -14,6 +15,7 @@ import { forceArray } from '../utils/nav-utils';
 const baseNodeKey = `/${searchRepoContentBaseNode}`;
 const deletionNodeKey = `/${searchRepoDeletionQueueBaseNode}`;
 const stateNodeKey = `/${searchRepoUpdateStateNode}`;
+const configNodeKey = `/${searchRepoConfigNode}`;
 
 type UpdateQueueState = {
     isQueuedUpdateAll?: boolean;
@@ -94,6 +96,9 @@ const createBaseNodes = (repo: RepoConnection) => {
     }
     if (!repo.exists(stateNodeKey)) {
         repo.create({ _name: searchRepoUpdateStateNode });
+    }
+    if (!repo.exists(configNodeKey)) {
+        repo.create({ _name: searchRepoConfigNode });
     }
 };
 

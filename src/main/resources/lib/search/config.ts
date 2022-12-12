@@ -4,10 +4,12 @@ import { logger } from '../utils/logging';
 import { runInContext } from '../utils/branch-context';
 import { SearchConfigDescriptor } from '../../types/content-types/content-config';
 import { forceArray } from '../utils/nav-utils';
-import { getSearchRepoConnection } from './utils';
+import { getSearchRepoConnection, searchRepoConfigNode } from './utils';
 import { SearchConfigData } from '../../types/content-types/search-config';
 
 type SearchConfig = Content<SearchConfigDescriptor>;
+
+const searchConfigKey = `/${searchRepoConfigNode}`;
 
 let searchConfig: SearchConfig | null = null;
 
@@ -92,22 +94,39 @@ const validateKeys = (facets: SearchConfigData['fasetter']) => {
     return isValid;
 };
 
-const validateConfig = (config: SearchConfig) => {
-    const repo = getSearchRepoConnection();
+const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
+    let isValid = true;
 
-    if (
-        !validateFields(config.data.fields, repo) ||
-        !validateQueries(config.data.fasetter, repo) ||
-        !validateKeys(config.data.fasetter)
-    ) {
-        logger.critical('Search config failed to validate!');
-        return false;
+    if (!validateFields(config.data.fields, repo)) {
+        isValid = false;
     }
 
-    return true;
+    if (!validateQueries(config.data.fasetter, repo)) {
+        isValid = false;
+    }
+
+    if (!validateKeys(config.data.fasetter)) {
+        isValid = false;
+    }
+
+    return isValid;
 };
 
+const persistValidConfig = (config: SearchConfig, repo: RepoConnection) =>
+    repo.modify({
+        key: searchConfigKey,
+        editor: (node) => ({
+            ...node,
+            ...config,
+        }),
+    });
+
+const getLastValidConfig = (repo: RepoConnection) => repo.get(searchConfigKey);
+
+// Returns true if the latest config is valid
 export const revalidateSearchConfigCache = () => {
+    const searchRepoConnection = getSearchRepoConnection();
+
     const searchConfigHits = runInContext(
         { branch: 'master' },
         () =>
@@ -120,23 +139,28 @@ export const revalidateSearchConfigCache = () => {
     );
 
     if (searchConfigHits.length === 0) {
-        logger.critical(`No search config found!`);
-        return;
+        logger.critical('No search config found! Falling back to last known valid config.');
+        searchConfig = getLastValidConfig(searchRepoConnection);
+        return false;
     }
 
     if (searchConfigHits.length > 1) {
-        logger.critical(`Multiple search configs found! Using oldest.`);
+        logger.critical(`Multiple search configs found! Trying oldest...`);
     }
 
     const newSearchConfig = searchConfigHits[0];
 
-    if (!validateConfig(newSearchConfig)) {
-        logger.critical(`Failed to validate search facet queries!`);
-        return;
+    if (!validateConfig(newSearchConfig, searchRepoConnection)) {
+        logger.critical('Search config failed to validate!');
+        searchConfig = getLastValidConfig(searchRepoConnection);
+        return false;
     }
 
-    logger.info('Updated search config cache');
+    logger.info('Updated search config');
     searchConfig = newSearchConfig;
+    persistValidConfig(searchConfig, searchRepoConnection);
+
+    return true;
 };
 
 export const getSearchConfig = () => {
