@@ -50,20 +50,17 @@ const validateQueries = (facets: SearchConfigData['fasetter'], repo: RepoConnect
 };
 
 const validateFields = (fields: SearchConfigData['fields'], repo: RepoConnection) => {
-    let isValid = true;
-
     try {
         repo.query({
             start: 0,
             count: 0,
             query: `fulltext("test", "${fields}", "OR")`,
         });
+        return true;
     } catch (e) {
         logger.error(`Invalid fields specified in search config: ${fields} - Error: ${e}`);
-        isValid = false;
+        return false;
     }
-
-    return isValid;
 };
 
 const validateKeys = (facets: SearchConfigData['fasetter']) => {
