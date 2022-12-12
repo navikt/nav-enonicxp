@@ -31,7 +31,7 @@ activateSearchIndexEventHandlers();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
-log.info(`Am I master? ${clusterLib.isMaster()}`);
+log.info(`New log message! Am I master? ${clusterLib.isMaster()}`);
 
 if (clusterLib.isMaster()) {
     log.info('Running master only init scripts');
