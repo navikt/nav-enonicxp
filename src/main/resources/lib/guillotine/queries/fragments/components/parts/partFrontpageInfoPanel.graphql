@@ -1,0 +1,18 @@
+#import "../../mixins/contentListShortFragment.graphql"
+#import "../../richText/richTextFragment.graphql"
+#import "../../mixins/imageInlineFragment.graphql"
+
+fragment partFrontpageInfoPanel on Part_no_nav_navno_frontpage_info_panel {
+    header
+    description(processHtml: { type: server }) {
+        ...richText
+    }
+    icon {
+        icon {
+            ...imageInlineMixin
+        }
+        size
+        color
+    }
+    renderOnAuthState
+}
