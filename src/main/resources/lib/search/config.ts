@@ -111,14 +111,19 @@ const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
     return isValid;
 };
 
-const persistValidConfig = (config: SearchConfig, repo: RepoConnection) =>
-    repo.modify<PersistedSearchConfig>({
-        key: searchConfigKey,
-        editor: (node) => ({
-            ...node,
-            config,
-        }),
-    });
+const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
+    try {
+        repo.modify<PersistedSearchConfig>({
+            key: searchConfigKey,
+            editor: (node) => ({
+                ...node,
+                config,
+            }),
+        });
+    } catch (e) {
+        logger.error(`Error while persisting search config - ${e}`);
+    }
+};
 
 const getLastValidConfig = (repo: RepoConnection) => {
     const configNode = repo.get<PersistedSearchConfig>(searchConfigKey);

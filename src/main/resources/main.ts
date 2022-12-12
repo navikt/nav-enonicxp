@@ -27,7 +27,6 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-activateSearchIndexEventHandlers();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
@@ -40,6 +39,8 @@ if (clusterLib.isMaster()) {
     // Todo: Activate this only when we're going live with the new office branch.
     createOfficeBranchFetchSchedule();
 }
+
+activateSearchIndexEventHandlers();
 
 log.info('Finished running main');
 
