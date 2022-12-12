@@ -121,7 +121,15 @@ const persistValidConfig = (config: SearchConfig, repo: RepoConnection) =>
         }),
     });
 
-const getLastValidConfig = (repo: RepoConnection) => repo.get(searchConfigKey);
+const getLastValidConfig = (repo: RepoConnection) => {
+    const config = repo.get<SearchConfig>(searchConfigKey);
+    if (!config?.data?.fasetter) {
+        logger.critical(`No valid search config found in repo!`);
+        return null;
+    }
+
+    return config;
+};
 
 // Returns true if the latest config is valid
 export const revalidateSearchConfigCache = () => {
@@ -151,7 +159,9 @@ export const revalidateSearchConfigCache = () => {
     const newSearchConfig = searchConfigHits[0];
 
     if (!validateConfig(newSearchConfig, searchRepoConnection)) {
-        logger.critical('Search config failed to validate!');
+        logger.critical(
+            'Search config failed to validate! Falling back to last known valid config.'
+        );
         searchConfig = getLastValidConfig(searchRepoConnection);
         return false;
     }
