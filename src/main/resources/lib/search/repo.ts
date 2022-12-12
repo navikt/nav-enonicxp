@@ -90,15 +90,19 @@ const createSearchRepo = () => {
 const createBaseNodes = (repo: RepoConnection) => {
     if (!repo.exists(deletionNodeKey)) {
         repo.create({ _name: searchRepoDeletionQueueBaseNode });
+        logger.info(`Created node in search repo: ${searchRepoDeletionQueueBaseNode}`);
     }
     if (!repo.exists(baseNodeKey)) {
         repo.create({ _name: searchRepoContentBaseNode });
+        logger.info(`Created node in search repo: ${searchRepoContentBaseNode}`);
     }
     if (!repo.exists(stateNodeKey)) {
         repo.create({ _name: searchRepoUpdateStateNode });
+        logger.info(`Created node in search repo: ${searchRepoUpdateStateNode}`);
     }
     if (!repo.exists(configNodeKey)) {
         repo.create({ _name: searchRepoConfigNode });
+        logger.info(`Created node in search repo: ${searchRepoConfigNode}`);
     }
 };
 

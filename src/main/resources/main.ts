@@ -32,6 +32,7 @@ activateSearchIndexEventHandlers();
 hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
+    log.info('Running master only init scripts');
     initSearchRepo();
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
