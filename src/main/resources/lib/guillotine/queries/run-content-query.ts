@@ -60,6 +60,7 @@ import themedArticlePageQuery from './content-queries/themedArticlePageQuery.gra
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
+import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -104,6 +105,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:overview': overviewPageQuery,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,
+    'no.nav.navno:press-landing-page': pressLandingPageQuery,
     'no.nav.navno:transport-page': transportPageQuery,
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,

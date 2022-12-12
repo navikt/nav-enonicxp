@@ -26,6 +26,7 @@ fragment legacyShortFragmentsMixin on Content {
     ... on no_nav_navno_MainArticle {
         data {
             ingress
+            contentType
         }
     }
     ... on no_nav_navno_DynamicPage {
