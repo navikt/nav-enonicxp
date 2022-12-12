@@ -1,3 +1,4 @@
+import './lib/polyfills';
 import { initApp } from './lib/initApp';
 
 log.info('Started running main');

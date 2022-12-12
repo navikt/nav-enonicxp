@@ -1,5 +1,3 @@
-import './polyfills';
-
 import clusterLib from '/lib/xp/cluster';
 import { updateClusterInfo } from './utils/cluster-utils';
 import { startReliableEventAckListener } from './events/reliable-custom-events';
