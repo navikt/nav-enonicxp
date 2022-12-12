@@ -3,22 +3,23 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { contentRepo } from '../constants';
-import { forceArray, removeDuplicates } from '../utils/nav-utils';
+import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
-    createSearchNodeIfFacetsMatched,
+    createOrUpdateSearchNode,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
-    searchRepoContentIdKey,
 } from './utils';
-import { ContentFacet, SearchNode } from '../../types/search';
+import { ContentFacet } from '../../types/search';
 import { SearchConfigDescriptor } from '../../types/content-types/content-config';
 
 const contentBasePath = `/${searchRepoContentBaseNode}`;
 
 // Remove any existing search nodes which no longer points to content
 // that should be indexed by the search
-const deleteInvalidNodes = (searchableContentIds: string[], repo: RepoConnection) => {
+const deleteInvalidNodes = (searchableContentIds: string[]) => {
+    const searchRepoConnection = getSearchRepoConnection();
+
     const invalidSearchNodes = batchedNodeQuery({
         queryParams: {
             start: 0,
@@ -35,104 +36,26 @@ const deleteInvalidNodes = (searchableContentIds: string[], repo: RepoConnection
                 },
             },
         },
-        repo,
+        repo: searchRepoConnection,
     }).hits;
 
     if (invalidSearchNodes.length > 0) {
         logger.info(`Found ${invalidSearchNodes.length} invalid search nodes - deleting`);
 
         invalidSearchNodes.forEach((hit) => {
-            repo.delete(hit.id);
+            searchRepoConnection.delete(hit.id);
         });
     }
 };
 
-const splitMatchedContentIdsBySearchNodeFreshness = ({
-    facet,
-    underfacet,
-    matchedContentIds,
-    searchRepoConnection,
-}: {
-    facet: string;
-    underfacet?: string;
-    matchedContentIds: string[];
-    searchRepoConnection: RepoConnection;
-}): {
-    withFreshSearchNodes: string[];
-    withStaleOrMissingSearchNodes: string[];
-} => {
-    const existingSearchNodeIds = batchedNodeQuery({
-        queryParams: {
-            start: 0,
-            count: 50000,
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: searchRepoContentIdKey,
-                                values: matchedContentIds,
-                            },
-                        },
-                    ],
-                },
-            },
-        },
-        repo: searchRepoConnection,
-    }).hits.map((hit) => hit.id);
-
-    if (existingSearchNodeIds.length === 0) {
-        return {
-            withFreshSearchNodes: [],
-            withStaleOrMissingSearchNodes: matchedContentIds,
-        };
-    }
-
-    const existingSearchNodes = forceArray(
-        searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
-    );
-
-    const withFreshSearchNodes: string[] = [];
-    const withStaleSearchNodes: string[] = [];
-
-    existingSearchNodes.forEach((node) => {
-        const searchNodeIsFresh = forceArray(node.facets).some((nodeFacet) => {
-            const ufArray = forceArray(nodeFacet.underfacets);
-            return (
-                nodeFacet.facet === facet &&
-                ((!underfacet && ufArray.length === 0) ||
-                    (underfacet && ufArray.includes(underfacet)))
-            );
-        });
-
-        if (searchNodeIsFresh) {
-            withFreshSearchNodes.push(node.contentId);
-        } else {
-            withStaleSearchNodes.push(node.contentId);
-        }
-    });
-
-    const withMissingSearchNodes = matchedContentIds.filter(
-        (contentId) => !existingSearchNodes.some((node) => node.contentId === contentId)
-    );
-
-    return {
-        withFreshSearchNodes,
-        withStaleOrMissingSearchNodes: [...withStaleSearchNodes, ...withMissingSearchNodes],
-    };
-};
-
-const findNodesToUpdateAndKeep = ({
+const findContentWithMatchingFacets = ({
     searchConfig,
     contentRepoConnection,
-    searchRepoConnection,
 }: {
     searchConfig: Content<SearchConfigDescriptor>;
     contentRepoConnection: RepoConnection;
-    searchRepoConnection: RepoConnection;
 }) => {
     const contentIdsWithFacetsToUpdate: Record<string, ContentFacet[]> = {};
-    const contentIdsWithFreshSearchNodes: string[] = [];
 
     const { fasetter, contentTypes } = searchConfig.data;
 
@@ -162,16 +85,7 @@ const findNodesToUpdateAndKeep = ({
         const ufArray = forceArray(underfasetter);
 
         if (ufArray.length === 0) {
-            const { withFreshSearchNodes, withStaleOrMissingSearchNodes } =
-                splitMatchedContentIdsBySearchNodeFreshness({
-                    facet: facetKey,
-                    matchedContentIds: matchedContentIds,
-                    searchRepoConnection,
-                });
-
-            contentIdsWithFreshSearchNodes.push(...withFreshSearchNodes);
-
-            withStaleOrMissingSearchNodes.forEach((id) => {
+            matchedContentIds.forEach((id) => {
                 if (!contentIdsWithFacetsToUpdate[id]) {
                     contentIdsWithFacetsToUpdate[id] = [];
                 }
@@ -179,7 +93,7 @@ const findNodesToUpdateAndKeep = ({
             });
 
             logger.info(
-                `Facet [${facetKey}] ${name} triggered updates for ${withStaleOrMissingSearchNodes.length} search nodes - Also found ${withFreshSearchNodes.length} still valid nodes`
+                `Facet [${facetKey}] ${name} matched ${matchedContentIds.length} content nodes`
             );
 
             return;
@@ -207,17 +121,7 @@ const findNodesToUpdateAndKeep = ({
                 return ufAcc;
             }
 
-            const { withFreshSearchNodes, withStaleOrMissingSearchNodes } =
-                splitMatchedContentIdsBySearchNodeFreshness({
-                    facet: facetKey,
-                    underfacet: uf.facetKey,
-                    matchedContentIds: matchedContentIdsForUf,
-                    searchRepoConnection,
-                });
-
-            contentIdsWithFreshSearchNodes.push(...withFreshSearchNodes);
-
-            withStaleOrMissingSearchNodes.forEach((contentId) => {
+            matchedContentIdsForUf.forEach((contentId) => {
                 if (!ufAcc[contentId]) {
                     ufAcc[contentId] = [];
                 }
@@ -225,7 +129,7 @@ const findNodesToUpdateAndKeep = ({
             });
 
             logger.info(
-                `Underfacet [${facetKey}/${uf.facetKey}] ${name}/${uf.name} triggered updates for ${withStaleOrMissingSearchNodes.length} items - Also found ${withFreshSearchNodes.length} still valid items`
+                `Underfacet [${facetKey}/${uf.facetKey}] ${name}/${uf.name} matched ${matchedContentIdsForUf.length} content nodes`
             );
 
             return ufAcc;
@@ -242,13 +146,11 @@ const findNodesToUpdateAndKeep = ({
         });
     });
 
-    return {
-        contentIdsWithFacetsToUpdate,
-        contentIdsWithFreshSearchNodes: removeDuplicates(contentIdsWithFreshSearchNodes),
-    };
+    return contentIdsWithFacetsToUpdate;
 };
 
 export const revalidateAllSearchNodes = () => {
+    const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
 
     const config = getSearchConfig();
@@ -266,39 +168,36 @@ export const revalidateAllSearchNodes = () => {
         principals: ['role:system.admin'],
     });
 
-    const searchRepoConnection = getSearchRepoConnection();
+    const contentIdToFacetsMap = findContentWithMatchingFacets({
+        searchConfig: config,
+        contentRepoConnection,
+    });
 
-    const { contentIdsWithFacetsToUpdate, contentIdsWithFreshSearchNodes } =
-        findNodesToUpdateAndKeep({
-            searchConfig: config,
-            contentRepoConnection,
-            searchRepoConnection,
-        });
+    const matchedContentIds = Object.keys(contentIdToFacetsMap);
 
-    const idsToUpdate = Object.keys(contentIdsWithFacetsToUpdate);
+    let counter = 0;
+    logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
 
-    const startTime = Date.now();
-    logger.info(
-        `Updating ${idsToUpdate.length} search nodes for new config - ${contentIdsWithFreshSearchNodes.length} existing nodes are still valid`
-    );
-
-    idsToUpdate.forEach((contentId) => {
+    matchedContentIds.forEach((contentId) => {
         const contentNode = contentRepoConnection.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
             return;
         }
 
-        const facets = contentIdsWithFacetsToUpdate[contentId];
+        const facets = contentIdToFacetsMap[contentId];
+        const didSucceed = createOrUpdateSearchNode(contentNode, facets, getSearchRepoConnection());
 
-        createSearchNodeIfFacetsMatched(contentNode, facets);
+        if (didSucceed) {
+            counter++;
+        }
     });
 
-    deleteInvalidNodes([...idsToUpdate, ...contentIdsWithFreshSearchNodes], searchRepoConnection);
+    deleteInvalidNodes(matchedContentIds);
 
     logger.info(
-        `Updated ${Object.keys(contentIdsWithFacetsToUpdate).length} search nodes - time spent: ${
-            Date.now() - startTime
-        }ms`
+        `Updated ${counter} search nodes from ${
+            matchedContentIds.length
+        } matched contents - time spent: ${Date.now() - startTime}ms`
     );
 };
