@@ -8,6 +8,7 @@ import { getSearchRepoConnection, searchRepoConfigNode } from './utils';
 import { SearchConfigData } from '../../types/content-types/search-config';
 
 type SearchConfig = Content<SearchConfigDescriptor>;
+type PersistedSearchConfig = { config?: SearchConfig };
 
 const searchConfigKey = `/${searchRepoConfigNode}`;
 
@@ -110,22 +111,22 @@ const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
 };
 
 const persistValidConfig = (config: SearchConfig, repo: RepoConnection) =>
-    repo.modify({
+    repo.modify<PersistedSearchConfig>({
         key: searchConfigKey,
         editor: (node) => ({
             ...node,
-            ...config,
+            config,
         }),
     });
 
 const getLastValidConfig = (repo: RepoConnection) => {
-    const config = repo.get<SearchConfig>(searchConfigKey);
-    if (!config?.data?.fasetter) {
+    const configNode = repo.get<PersistedSearchConfig>(searchConfigKey);
+    if (!configNode?.config?.data?.fasetter) {
         logger.critical(`No valid search config found in repo!`);
         return null;
     }
 
-    return config;
+    return configNode.config;
 };
 
 // Returns true if the latest config is valid
