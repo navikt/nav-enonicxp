@@ -111,7 +111,11 @@ const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
     return isValid;
 };
 
-const persistValidConfig = (config: SearchConfig, repo: RepoConnection) =>
+const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
+    log.info('Attempting to persist config!');
+    log.info(`Is master? ${clusterLib.isMaster()}`);
+    log.info(`Node exists? ${repo.exists(searchConfigKey)}`);
+
     repo.modify<PersistedSearchConfig>({
         key: searchConfigKey,
         editor: (node) => ({
@@ -119,6 +123,7 @@ const persistValidConfig = (config: SearchConfig, repo: RepoConnection) =>
             config,
         }),
     });
+};
 
 const getLastValidConfig = (repo: RepoConnection) => {
     const configNode = repo.get<PersistedSearchConfig>(searchConfigKey);
