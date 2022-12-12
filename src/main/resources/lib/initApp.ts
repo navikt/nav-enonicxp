@@ -17,13 +17,12 @@ import { initSearchRepo } from './search/repo';
 import { startFailsafeSchedule } from './scheduling/scheduler-failsafe';
 import { startOfficeInfoPeriodicUpdateSchedule } from './officeInformation';
 import { createOfficeBranchFetchSchedule } from './officeBranch';
-import { logger } from './utils/logging';
 
 let didInit = false;
 
 export const initApp = () => {
     if (didInit) {
-        logger.critical('initApp should only run once!');
+        log.error('initApp should only run once!');
         return;
     }
 
@@ -39,6 +38,8 @@ export const initApp = () => {
     activateSearchIndexEventHandlers();
 
     hookLibsWithTimeTravel(timeTravelConfig);
+
+    log.info(`Is master? ${clusterLib.isMaster()}`);
 
     if (clusterLib.isMaster()) {
         log.info('Running master only init scripts');
