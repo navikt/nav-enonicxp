@@ -1,4 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
+import clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../utils/branch-context';
@@ -166,7 +167,10 @@ export const revalidateSearchConfigCache = () => {
 
     logger.info('Updated search config');
     searchConfig = newSearchConfig;
-    persistValidConfig(searchConfig, searchRepoConnection);
+
+    if (clusterLib.isMaster()) {
+        persistValidConfig(searchConfig, searchRepoConnection);
+    }
 
     return true;
 };
