@@ -71,6 +71,8 @@ export const updateClusterInfo = () => {
         return;
     }
 
+    log.info(`Cluster info: ${JSON.stringify(clusterInfoResponse)}`);
+
     clusterInfo.localServerName = getLocalServerName(clusterInfoResponse);
     clusterInfo.nodeCount = clusterInfoResponse.members.length;
 
