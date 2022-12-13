@@ -25,6 +25,11 @@ export interface ContactInformation {
           url?: string;
 
           /**
+           * Avvikstekst
+           */
+          alertText?: string;
+
+          /**
            * Ingress
            */
           ingress?: string;
