@@ -180,6 +180,12 @@ export const revalidateAllSearchNodes = () => {
     logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
 
     matchedContentIds.forEach((contentId, index) => {
+        if (index && index % 1000 === 0) {
+            logger.info(
+                `Processed facets for ${index}/${numMatchesFound} contents (${counter} search nodes updated so far)`
+            );
+        }
+
         const contentNode = contentRepoConnection.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
@@ -191,14 +197,6 @@ export const revalidateAllSearchNodes = () => {
 
         if (didUpdate) {
             counter++;
-        }
-
-        if (index % 1000 === 0) {
-            logger.info(
-                `Processed facets for ${
-                    index + 1
-                }/${numMatchesFound} contents (${counter} search nodes updated so far)`
-            );
         }
     });
 
