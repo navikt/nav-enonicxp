@@ -8,8 +8,10 @@ import {
     createOrUpdateSearchNode,
     deleteSearchNodesForContent,
     getSearchRepoConnection,
+    searchRepoContentIdKey,
 } from './utils';
-import { ContentFacet } from '../../types/search';
+import { ContentFacet, SearchNode } from '../../types/search';
+import { batchedNodeQuery } from '../utils/batched-query';
 
 const isQueryMatchingContent = (query: string, id: string) =>
     contentLib.query({
@@ -69,5 +71,25 @@ export const updateSearchNode = (contentId: string) => {
         return [...acc, { facet: facetKey, underfacets: ufsMatched.map((uf) => uf.facetKey) }];
     }, [] as ContentFacet[]);
 
-    createOrUpdateSearchNode(contentNode, matchedFacets, getSearchRepoConnection());
+    const searchRepoConnection = getSearchRepoConnection();
+
+    const existingSearchNodeIds = batchedNodeQuery({
+        queryParams: {
+            start: 0,
+            count: 50000,
+            filters: {
+                hasValue: {
+                    field: searchRepoContentIdKey,
+                    values: [contentId],
+                },
+            },
+        },
+        repo: searchRepoConnection,
+    }).hits.map((hit) => hit.id);
+
+    const existingSearchNodes = forceArray(
+        searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
+    );
+
+    createOrUpdateSearchNode(contentNode, matchedFacets, searchRepoConnection, existingSearchNodes);
 };

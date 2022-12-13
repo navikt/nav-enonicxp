@@ -9,8 +9,9 @@ import {
     createOrUpdateSearchNode,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
+    searchRepoContentIdKey,
 } from './utils';
-import { ContentFacet } from '../../types/search';
+import { ContentFacet, SearchNode } from '../../types/search';
 import { SearchConfigDescriptor } from '../../types/content-types/content-config';
 
 const contentBasePath = `/${searchRepoContentBaseNode}`;
@@ -176,8 +177,35 @@ export const revalidateAllSearchNodes = () => {
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
     const numMatchesFound = matchedContentIds.length;
 
-    let counter = 0;
+    const searchRepoConnection = getSearchRepoConnection();
+
     logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
+
+    const existingSearchNodeIds = batchedNodeQuery({
+        queryParams: {
+            start: 0,
+            count: 50000,
+            filters: {
+                hasValue: {
+                    field: searchRepoContentIdKey,
+                    values: matchedContentIds,
+                },
+            },
+        },
+        repo: searchRepoConnection,
+    }).hits.map((hit) => hit.id);
+
+    const contentIdsToSearchNodeMap = forceArray(
+        searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
+    ).reduce((acc, hit) => {
+        if (!acc[hit.contentId]) {
+            acc[hit.contentId] = [];
+        }
+        acc[hit.contentId].push(hit);
+        return acc;
+    }, {} as { [contentId: string]: SearchNode[] });
+
+    let counter = 0;
 
     matchedContentIds.forEach((contentId, index) => {
         if (index && index % 1000 === 0) {
@@ -193,7 +221,12 @@ export const revalidateAllSearchNodes = () => {
         }
 
         const facets = contentIdToFacetsMap[contentId];
-        const didUpdate = createOrUpdateSearchNode(contentNode, facets, getSearchRepoConnection());
+        const didUpdate = createOrUpdateSearchNode(
+            contentNode,
+            facets,
+            getSearchRepoConnection(),
+            contentIdsToSearchNodeMap[contentId]
+        );
 
         if (didUpdate) {
             counter++;

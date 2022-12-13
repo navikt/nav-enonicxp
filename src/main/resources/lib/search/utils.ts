@@ -125,25 +125,15 @@ const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets:
 export const createOrUpdateSearchNode = (
     contentNode: RepoNode<Content>,
     facets: ContentFacet[],
-    searchRepoConnection: RepoConnection
+    searchRepoConnection: RepoConnection,
+    existingSearchNodes: SearchNode[]
 ) => {
     const contentId = contentNode._id;
     const contentPath = contentNode._path;
 
-    const existingSearchNodes = searchRepoConnection.query({
-        start: 0,
-        count: 1000,
-        filters: {
-            hasValue: {
-                field: searchRepoContentIdKey,
-                values: [contentId],
-            },
-        },
-    }).hits;
-
     if (facets.length === 0) {
         existingSearchNodes.forEach((node) => {
-            deleteSearchNode(node.id, searchRepoConnection);
+            deleteSearchNode(node._id, searchRepoConnection);
         });
         return true;
     }
@@ -151,15 +141,14 @@ export const createOrUpdateSearchNode = (
     const searchNodeParams = searchNodeTransformer(contentNode, facets);
 
     if (existingSearchNodes.length === 1) {
-        const searchNodeId = existingSearchNodes[0].id;
-        const searchNode = searchRepoConnection.get(searchNodeId);
+        const searchNode = existingSearchNodes[0];
 
         if (searchNodeIsFresh(searchNode, contentNode, facets)) {
             return false;
         }
 
         searchRepoConnection.modify({
-            key: searchNodeId,
+            key: searchNode._id,
             editor: () => searchNodeParams,
         });
         return true;
@@ -169,7 +158,7 @@ export const createOrUpdateSearchNode = (
         logger.critical(`Multiple existing search nodes found for [${contentId}] ${contentPath}`);
 
         existingSearchNodes.forEach((node) => {
-            deleteSearchNode(node.id, searchRepoConnection);
+            deleteSearchNode(node._id, searchRepoConnection);
         });
     }
 
