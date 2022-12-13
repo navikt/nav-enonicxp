@@ -127,7 +127,7 @@ export const createOrUpdateSearchNode = (
     contentNode: RepoNode<Content>,
     facets: ContentFacet[],
     searchRepoConnection: RepoConnection,
-    existingSearchNodes: SearchNode[]
+    existingSearchNodes: SearchNode[] = []
 ) => {
     const contentId = contentNode._id;
     const contentPath = contentNode._path;
@@ -136,7 +136,7 @@ export const createOrUpdateSearchNode = (
         existingSearchNodes.forEach((node) => {
             deleteSearchNode(node._id, searchRepoConnection);
         });
-        return true;
+        return false;
     }
 
     const searchNodeParams = searchNodeTransformer(contentNode, facets);

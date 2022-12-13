@@ -198,12 +198,13 @@ export const revalidateAllSearchNodes = () => {
     const contentIdsToSearchNodeMap = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
     ).reduce((acc, hit) => {
-        if (!acc[hit.contentId]) {
-            acc[hit.contentId] = [];
+        const { contentId } = hit;
+        if (!acc[contentId]) {
+            acc[contentId] = [];
         }
-        acc[hit.contentId].push(hit);
+        acc[contentId].push(hit);
         return acc;
-    }, {} as { [contentId: string]: SearchNode[] });
+    }, {} as Record<string, SearchNode[]>);
 
     let counter = 0;
 
