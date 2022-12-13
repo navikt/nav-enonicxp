@@ -85,12 +85,12 @@ const searchNodeTransformer = (
 
 const deleteSearchNode = (nodeKey: string, repo: RepoConnection) => {
     try {
-        // Move before deleting, as deletion is not a syncronous operation and we may
-        // want the node path freed up immediately
-        repo.move({
-            source: nodeKey,
-            target: `/${searchRepoDeletionQueueBaseNode}/${nodeKey.replace('/', '_')}`,
-        });
+        // // Move before deleting, as deletion is not a syncronous operation and we may
+        // // want the node path freed up immediately
+        // repo.move({
+        //     source: nodeKey,
+        //     target: `/${searchRepoDeletionQueueBaseNode}/${nodeKey.replace('/', '_')}`,
+        // });
 
         repo.delete(nodeKey);
     } catch (e) {
