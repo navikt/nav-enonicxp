@@ -186,9 +186,9 @@ export const revalidateAllSearchNodes = () => {
         }
 
         const facets = contentIdToFacetsMap[contentId];
-        const didSucceed = createOrUpdateSearchNode(contentNode, facets, getSearchRepoConnection());
+        const didUpdate = createOrUpdateSearchNode(contentNode, facets, getSearchRepoConnection());
 
-        if (didSucceed) {
+        if (didUpdate) {
             counter++;
         }
     });
