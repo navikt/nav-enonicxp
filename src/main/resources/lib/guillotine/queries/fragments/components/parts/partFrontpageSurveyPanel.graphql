@@ -2,7 +2,7 @@
 #import "../../richText/richTextFragment.graphql"
 #import "../../mixins/imageInlineFragment.graphql"
 
-fragment partFrontpageInfoPanel on Part_no_nav_navno_frontpage_info_panel {
+fragment partFrontpageSurveyPanel on Part_no_nav_navno_frontpage_survey_panel {
     header
     description(processHtml: { type: server }) {
         ...richText
@@ -12,7 +12,6 @@ fragment partFrontpageInfoPanel on Part_no_nav_navno_frontpage_info_panel {
             ...imageInlineMixin
         }
         size
-        color
     }
     renderOnAuthState
 }
