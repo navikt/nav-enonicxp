@@ -83,18 +83,18 @@ const searchNodeTransformer = (
     };
 };
 
-const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
+const deleteSearchNode = (nodeKey: string, repo: RepoConnection) => {
     try {
         // Move before deleting, as deletion is not a syncronous operation and we may
         // want the node path freed up immediately
         repo.move({
-            source: nodeId,
-            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}`,
+            source: nodeKey,
+            target: `/${searchRepoDeletionQueueBaseNode}/${nodeKey.replace('/', '_')}`,
         });
 
-        repo.delete(nodeId);
+        repo.delete(nodeKey);
     } catch (e) {
-        logger.critical(`Failed to delete search node ${nodeId} - ${e}`);
+        logger.critical(`Failed to delete search node ${nodeKey} - ${e}`);
     }
 };
 
