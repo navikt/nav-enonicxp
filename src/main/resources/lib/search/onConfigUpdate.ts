@@ -184,7 +184,7 @@ export const revalidateAllSearchNodes = () => {
     const existingSearchNodeIds = batchedNodeQuery({
         queryParams: {
             start: 0,
-            count: 50000,
+            count: 100000,
             filters: {
                 hasValue: {
                     field: searchRepoContentIdKey,
@@ -211,7 +211,7 @@ export const revalidateAllSearchNodes = () => {
     matchedContentIds.forEach((contentId, index) => {
         if (index && index % 1000 === 0) {
             logger.info(
-                `Processed facets for ${index}/${numMatchesFound} contents (${counter} search nodes updated so far)`
+                `Processed search nodes for ${index}/${numMatchesFound} contents (${counter} search nodes updated so far)`
             );
         }
 
