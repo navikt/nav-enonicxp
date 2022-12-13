@@ -174,11 +174,12 @@ export const revalidateAllSearchNodes = () => {
     });
 
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
+    const numMatchesFound = matchedContentIds.length;
 
     let counter = 0;
-    logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
+    logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
 
-    matchedContentIds.forEach((contentId) => {
+    matchedContentIds.forEach((contentId, index) => {
         const contentNode = contentRepoConnection.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
@@ -190,6 +191,14 @@ export const revalidateAllSearchNodes = () => {
 
         if (didUpdate) {
             counter++;
+        }
+
+        if (index % 1000 === 0) {
+            logger.info(
+                `Processed facets for ${
+                    index + 1
+                }/${numMatchesFound} contents (${counter} search nodes updated so far)`
+            );
         }
     });
 
