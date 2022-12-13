@@ -36,6 +36,13 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                     ...richText
                 }
             }
+            chat {
+                title
+                alertText
+                ingress(processHtml: { type: server }) {
+                    ...richText
+                }
+            }
         }
     }
 }
