@@ -4,6 +4,7 @@ import { fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
 import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
+import { ArrayOrSingle } from '../../types/util-types';
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
@@ -25,8 +26,8 @@ export const getSearchRepoConnection = () =>
     });
 
 export const facetsAreEqual = (
-    facets1: ContentFacet | ContentFacet[],
-    facets2: ContentFacet | ContentFacet[]
+    facets1: ArrayOrSingle<ContentFacet>,
+    facets2: ArrayOrSingle<ContentFacet>
 ) => {
     const facetsArray1 = forceArray(facets1);
     const facetsArray2 = forceArray(facets2);
