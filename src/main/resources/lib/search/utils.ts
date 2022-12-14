@@ -125,12 +125,17 @@ const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets:
     facetsAreEqual(facets, searchNode.facets) &&
     dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime);
 
-export const createOrUpdateSearchNode = (
-    contentNode: RepoNode<Content>,
-    facets: ContentFacet[],
-    searchRepoConnection: RepoConnection,
-    existingSearchNodes: SearchNode[] = []
-) => {
+export const createOrUpdateSearchNode = ({
+    contentNode,
+    facets = [],
+    existingSearchNodes = [],
+    searchRepoConnection,
+}: {
+    contentNode: RepoNode<Content>;
+    facets: ContentFacet[];
+    existingSearchNodes: SearchNode[];
+    searchRepoConnection: RepoConnection;
+}) => {
     const contentId = contentNode._id;
     const contentPath = contentNode._path;
 

@@ -91,5 +91,10 @@ export const updateSearchNode = (contentId: string) => {
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
     );
 
-    createOrUpdateSearchNode(contentNode, matchedFacets, searchRepoConnection, existingSearchNodes);
+    createOrUpdateSearchNode({
+        contentNode,
+        facets: matchedFacets,
+        existingSearchNodes: existingSearchNodes,
+        searchRepoConnection: searchRepoConnection,
+    });
 };

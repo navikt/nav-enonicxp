@@ -49,13 +49,10 @@ const deleteInvalidNodes = (searchableContentIds: string[]) => {
     }
 };
 
-const findContentWithMatchingFacets = ({
-    searchConfig,
-    contentRepoConnection,
-}: {
-    searchConfig: Content<SearchConfigDescriptor>;
-    contentRepoConnection: RepoConnection;
-}) => {
+const findContentWithMatchingFacets = (
+    searchConfig: Content<SearchConfigDescriptor>,
+    contentRepoConnection: RepoConnection
+) => {
     const contentIdsWithFacetsToUpdate: Record<string, ContentFacet[]> = {};
 
     const { fasetter, contentTypes } = searchConfig.data;
@@ -217,25 +214,22 @@ export const revalidateAllSearchNodes = () => {
         principals: ['role:system.admin'],
     });
 
-    const contentIdToFacetsMap = findContentWithMatchingFacets({
-        searchConfig: config,
-        contentRepoConnection,
-    });
+    const searchRepoConnection = getSearchRepoConnection();
 
+    const contentIdToFacetsMap = findContentWithMatchingFacets(config, contentRepoConnection);
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
     logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
 
     const contentIdToSearchNodesMap = getExistingSearchNodesMap(
         matchedContentIds,
-        getSearchRepoConnection()
+        searchRepoConnection
     );
     const contentIds = Object.keys(contentIdToSearchNodesMap);
-
     logger.info(`Found ${contentIds.length} existing search nodes`);
 
     const noDupes = removeDuplicates(contentIds);
     if (noDupes.length !== contentIds.length) {
-        logger.warning(`Query resulted in ${contentIds.length - noDupes.length} dupes!`);
+        logger.critical(`Query resulted in ${contentIds.length - noDupes.length} dupes!`);
     }
 
     let counter = 0;
@@ -259,12 +253,12 @@ export const revalidateAllSearchNodes = () => {
             return true;
         }
 
-        const didUpdate = createOrUpdateSearchNode(
+        const didUpdate = createOrUpdateSearchNode({
             contentNode,
-            contentIdToFacetsMap[contentId],
-            getSearchRepoConnection(),
-            contentIdToSearchNodesMap[contentId]
-        );
+            facets: contentIdToFacetsMap[contentId],
+            existingSearchNodes: contentIdToSearchNodesMap[contentId],
+            searchRepoConnection,
+        });
 
         if (didUpdate) {
             counter++;
