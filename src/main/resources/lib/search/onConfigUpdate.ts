@@ -63,7 +63,7 @@ const findContentWithMatchingFacets = ({
     forceArray(fasetter).forEach((facet, index) => {
         const { facetKey, name, ruleQuery, underfasetter } = facet;
 
-        if (index > 1) {
+        if (index > 2) {
             return;
         }
 
