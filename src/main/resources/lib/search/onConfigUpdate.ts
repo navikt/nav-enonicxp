@@ -191,7 +191,7 @@ export const revalidateAllSearchNodes = () => {
     const existingSearchNodeIds = batchedNodeQuery({
         queryParams: {
             start: 0,
-            sort: 'data.contentPath ASC',
+            sort: '_id ASC',
             filters: {
                 hasValue: {
                     field: searchRepoContentIdKey,
