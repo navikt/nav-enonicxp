@@ -150,6 +150,49 @@ const findContentWithMatchingFacets = ({
     return contentIdsWithFacetsToUpdate;
 };
 
+const batchSize = 1000;
+
+const getExistingSearchNodesMap = (
+    remainingContentIds: string[],
+    repo: RepoConnection,
+    batchStart = 0,
+    searchNodesMap: Record<string, SearchNode[]> = {}
+): Record<string, SearchNode[]> => {
+    const contentIdsBatch = remainingContentIds.slice(0, batchSize);
+
+    const searchNodeIds = repo
+        .query({
+            start: 0,
+            count: batchSize,
+            filters: {
+                hasValue: {
+                    field: searchRepoContentIdKey,
+                    values: contentIdsBatch,
+                },
+            },
+        })
+        .hits.map((node) => node.id);
+
+    const newSearchNodesMap = forceArray(repo.get<SearchNode>(searchNodeIds) || []).reduce(
+        (acc, node) => {
+            const { contentId } = node;
+            if (!acc[contentId]) {
+                acc[contentId] = [];
+            }
+            acc[contentId].push(node);
+            return acc;
+        },
+        searchNodesMap
+    );
+
+    if (remainingContentIds.length <= batchSize) {
+        return newSearchNodesMap;
+    }
+
+    const remainingIds = remainingContentIds.slice(batchSize);
+    return getExistingSearchNodesMap(remainingIds, repo, batchStart + batchSize, newSearchNodesMap);
+};
+
 let abortFlag = false;
 
 export const revalidateAllSearchNodesAbort = () => {
@@ -184,42 +227,20 @@ export const revalidateAllSearchNodes = () => {
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
     const numMatchesFound = matchedContentIds.length;
 
-    const searchRepoConnection = getSearchRepoConnection();
-
     logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
 
-    const existingSearchNodeIds = batchedNodeQuery({
-        queryParams: {
-            start: 0,
-            sort: '_id ASC',
-            filters: {
-                hasValue: {
-                    field: searchRepoContentIdKey,
-                    values: matchedContentIds,
-                },
-            },
-        },
-        repo: searchRepoConnection,
-    }).hits.map((node) => node.id);
+    const contentIdToSearchNodesMap = getExistingSearchNodesMap(
+        matchedContentIds,
+        getSearchRepoConnection()
+    );
+    const contentIds = Object.keys(contentIdToSearchNodesMap);
 
-    const noDupes = removeDuplicates(existingSearchNodeIds);
-    if (noDupes.length !== existingSearchNodeIds.length) {
-        logger.warning(`Query resulted in ${existingSearchNodeIds.length - noDupes.length} dupes!`);
+    logger.info(`Found ${contentIds.length} existing search nodes`);
+
+    const noDupes = removeDuplicates(contentIds);
+    if (noDupes.length !== contentIds.length) {
+        logger.warning(`Query resulted in ${contentIds.length - noDupes.length} dupes!`);
     }
-
-    logger.info(`Found ${existingSearchNodeIds.length} existing search nodes`);
-
-    const contentIdToSearchNodesMap = forceArray(
-        searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
-    ).reduce((acc, node) => {
-        const { contentId } = node;
-        if (!acc[contentId]) {
-            acc[contentId] = [];
-        }
-        acc[contentId].push(node);
-        return acc;
-    }, {} as Record<string, SearchNode[]>);
-
     let counter = 0;
 
     const success = matchedContentIds.every((contentId, index) => {
