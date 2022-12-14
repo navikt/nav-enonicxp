@@ -156,18 +156,26 @@ const getExistingSearchNodesMap = (
 ): Record<string, SearchNode[]> => {
     const contentIdsBatch = remainingContentIds.slice(0, batchSize);
 
-    const searchNodeIds = repo
-        .query({
-            start: 0,
-            count: batchSize,
-            filters: {
-                hasValue: {
-                    field: searchRepoContentIdKey,
-                    values: contentIdsBatch,
-                },
+    const result = repo.query({
+        start: 0,
+        count: batchSize * 3, // Account for duplicates (should not happen, but...)
+        filters: {
+            hasValue: {
+                field: searchRepoContentIdKey,
+                values: contentIdsBatch,
             },
-        })
-        .hits.map((node) => node.id);
+        },
+    });
+
+    if (result.total > result.count) {
+        logger.critical(
+            `Found ${
+                result.total - result.count
+            } search nodes not accounted for! This may indicate a large number of duplicates.`
+        );
+    }
+
+    const searchNodeIds = result.hits.map((node) => node.id);
 
     const newSearchNodesMap = forceArray(repo.get<SearchNode>(searchNodeIds) || []).reduce(
         (acc, node) => {
