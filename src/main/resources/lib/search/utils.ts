@@ -158,7 +158,11 @@ export const createOrUpdateSearchNode = (
     } else if (existingSearchNodes.length > 1) {
         // If multiple search nodes exists for a content, something has gone wrong at some point
         // in the past. Remove everything and notify the problem has occured.
-        logger.critical(`Multiple existing search nodes found for [${contentId}] ${contentPath}`);
+        logger.critical(
+            `Multiple existing search nodes found for [${contentId}] ${contentPath} - ${JSON.stringify(
+                existingSearchNodes
+            )}`
+        );
 
         existingSearchNodes.forEach((node) => {
             deleteSearchNode(node._id, searchRepoConnection);
