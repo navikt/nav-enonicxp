@@ -1,6 +1,6 @@
 import nodeLib, { RepoNode, RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { fixDateFormat, forceArray } from '../utils/nav-utils';
+import { dateTimesAreEqual, fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
 import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
@@ -83,18 +83,18 @@ const searchNodeTransformer = (
     };
 };
 
-const deleteSearchNode = (nodeKey: string, repo: RepoConnection) => {
+const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
     try {
-        // // Move before deleting, as deletion is not a syncronous operation and we may
-        // // want the node path freed up immediately
-        // repo.move({
-        //     source: nodeKey,
-        //     target: `/${searchRepoDeletionQueueBaseNode}/${nodeKey.replace('/', '_')}`,
-        // });
+        // Move before deleting, as deletion is not a synchronous operation and we may
+        // want the node path freed up immediately
+        repo.move({
+            source: nodeId,
+            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}`,
+        });
 
-        repo.delete(nodeKey);
+        repo.delete(nodeId);
     } catch (e) {
-        logger.critical(`Failed to delete search node ${nodeKey} - ${e}`);
+        logger.critical(`Failed to delete search node ${nodeId} - ${e}`);
     }
 };
 
@@ -118,10 +118,8 @@ export const deleteSearchNodesForContent = (contentId: string) => {
 };
 
 const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets: ContentFacet[]) =>
-    searchNode &&
     facetsAreEqual(facets, searchNode.facets) &&
-    new Date(fixDateFormat(contentNode.modifiedTime)).getTime() ===
-        new Date(fixDateFormat(searchNode.modifiedTime)).getTime();
+    dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime);
 
 export const createOrUpdateSearchNode = (
     contentNode: RepoNode<Content>,
@@ -166,7 +164,8 @@ export const createOrUpdateSearchNode = (
     try {
         const fullPath = `${searchNodeParams._parentPath}/${searchNodeParams._name}`;
         if (searchRepoConnection.exists(fullPath)) {
-            deleteSearchNode(fullPath, searchRepoConnection);
+            const searchNode = searchRepoConnection.get(fullPath);
+            deleteSearchNode(searchNode.id, searchRepoConnection);
         }
 
         const newSearchNode = searchRepoConnection.create(searchNodeParams);

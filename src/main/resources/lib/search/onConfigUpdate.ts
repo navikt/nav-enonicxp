@@ -76,7 +76,7 @@ const findContentWithMatchingFacets = ({
                 },
             },
             repo: contentRepoConnection,
-        }).hits.map((content) => content.id);
+        }).hits.map((node) => node.id);
 
         if (matchedContentIds.length === 0) {
             logger.info(`Facet [${facetKey}] ${name} has no matching content`);
@@ -193,16 +193,16 @@ export const revalidateAllSearchNodes = () => {
             },
         },
         repo: searchRepoConnection,
-    }).hits.map((hit) => hit.id);
+    }).hits.map((node) => node.id);
 
     const contentIdToSearchNodesMap = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
-    ).reduce((acc, hit) => {
-        const { contentId } = hit;
+    ).reduce((acc, node) => {
+        const { contentId } = node;
         if (!acc[contentId]) {
             acc[contentId] = [];
         }
-        acc[contentId].push(hit);
+        acc[contentId].push(node);
         return acc;
     }, {} as Record<string, SearchNode[]>);
 
