@@ -73,7 +73,15 @@ const findContentWithMatchingFacets = (
                 },
             },
             repo: contentRepoConnection,
-        }).hits.map((node) => node.id);
+        }).hits.map((node) => {
+            if (node.id === '7fa26c83-5309-4696-bf14-8b9b08c8780d') {
+                logger.info('Fant barnetrygd!');
+            }
+            if (node.id === '429d0d53-aaff-4bab-9cdf-6b633c84530c') {
+                logger.info('Fant utvidet barnetrygd!');
+            }
+            return node.id;
+        });
 
         if (matchedContentIds.length === 0) {
             logger.info(`Facet [${facetKey}] ${name} has no matching content`);
