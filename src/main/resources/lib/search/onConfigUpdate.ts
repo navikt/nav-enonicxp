@@ -202,8 +202,6 @@ export const revalidateAllSearchNodes = () => {
         repo: searchRepoConnection,
     }).hits.map((node) => node.id);
 
-
-
     const contentIdToSearchNodesMap = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
     ).reduce((acc, node) => {
@@ -215,7 +213,7 @@ export const revalidateAllSearchNodes = () => {
         return acc;
     }, {} as Record<string, SearchNode[]>);
 
-    let counter = 0;
+    const counter = 0;
 
     const success = matchedContentIds.every((contentId, index) => {
         if (index && index % 1000 === 0) {
@@ -236,17 +234,30 @@ export const revalidateAllSearchNodes = () => {
             return true;
         }
 
-        const facets = contentIdToFacetsMap[contentId];
-        const didUpdate = createOrUpdateSearchNode(
-            contentNode,
-            facets,
-            getSearchRepoConnection(),
-            contentIdToSearchNodesMap[contentId]
-        );
-
-        if (didUpdate) {
-            counter++;
+        const searchNodes = contentIdToSearchNodesMap[contentId];
+        if (searchNodes && searchNodes.length > 1) {
+            logger.warning(
+                `Content ${contentId} has multiple search nodes: ${searchNodes
+                    .map((node) => node._id)
+                    .join(', ')}`
+            );
         }
+
+        const facets = contentIdToFacetsMap[contentId];
+        if (!facets || facets.length === 0) {
+            logger.warning(`Content ${contentId} has no facets!`);
+        }
+
+        // const didUpdate = createOrUpdateSearchNode(
+        //     contentNode,
+        //     facets,
+        //     getSearchRepoConnection(),
+        //     contentIdToSearchNodesMap[contentId]
+        // );
+        //
+        // if (didUpdate) {
+        //     counter++;
+        // }
 
         return true;
     });
