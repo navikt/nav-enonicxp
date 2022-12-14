@@ -1,5 +1,6 @@
 import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
+import eventLib from '/lib/xp/event';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInBranchContext } from '../lib/utils/branch-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
@@ -8,7 +9,7 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import { revalidateAllSearchNodesAbort } from '../lib/search/onConfigUpdate';
+import { searchNodesUpdateAbortEvent } from '../lib/search/eventHandlers';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -38,7 +39,12 @@ const validActions: ActionsMap = {
     },
     abortSearchNodesUpdate: {
         description: 'Avbryt pågående batch-jobb for søke-config oppdateringer',
-        callback: revalidateAllSearchNodesAbort,
+        callback: () => {
+            eventLib.send({
+                type: searchNodesUpdateAbortEvent,
+                distributed: true,
+            });
+        },
     },
 };
 

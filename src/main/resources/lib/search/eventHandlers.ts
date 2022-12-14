@@ -5,7 +5,7 @@ import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 import { updateSearchNode } from './onContentUpdate';
-import { revalidateAllSearchNodes } from './onConfigUpdate';
+import { revalidateAllSearchNodes, revalidateAllSearchNodesAbort } from './onConfigUpdate';
 import {
     clearSearchNodeUpdateQueue,
     getUpdateQueue,
@@ -16,6 +16,8 @@ import { forceArray } from '../utils/nav-utils';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
+
+export const searchNodesUpdateAbortEvent = 'abortSearchNodeUpdates';
 
 const runQueuedUpdates = () => {
     const updateState = getUpdateQueue();
@@ -133,6 +135,14 @@ export const activateSearchIndexEventHandlers = () => {
 
                 runUpdateSingleContentTask(nodeData.id);
             });
+        },
+        localOnly: false,
+    });
+
+    eventLib.listener({
+        type: `custom.${searchNodesUpdateAbortEvent}`,
+        callback: () => {
+            revalidateAllSearchNodesAbort();
         },
         localOnly: false,
     });

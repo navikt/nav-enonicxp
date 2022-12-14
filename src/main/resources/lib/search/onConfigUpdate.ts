@@ -60,12 +60,8 @@ const findContentWithMatchingFacets = ({
 
     const { fasetter, contentTypes } = searchConfig.data;
 
-    forceArray(fasetter).forEach((facet, index) => {
+    forceArray(fasetter).forEach((facet) => {
         const { facetKey, name, ruleQuery, underfasetter } = facet;
-
-        if (index > 2) {
-            return;
-        }
 
         const matchedContentIds = batchedNodeQuery({
             queryParams: {
