@@ -5,6 +5,7 @@ import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
 import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
 import { ArrayOrSingle } from '../../types/util-types';
+import { generateUUID } from '../utils/uuid';
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
@@ -56,12 +57,15 @@ const searchNodeTransformer = (
 ): SearchNodeCreateParams => {
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
+    // Add a uuid to prevent name collisions
+    const name = `${contentNode._path.replace(/\//g, '_')}-${generateUUID()}`;
+
     return {
         ...rest,
         [searchRepoFacetsKey]: facets,
         [searchRepoContentIdKey]: contentNode._id,
         [searchRepoContentPathKey]: contentNode._path,
-        _name: contentNode._path.replace(/\//g, '_'),
+        _name: name,
         _parentPath: `/${searchRepoContentBaseNode}`,
         ...(createdTime && {
             createdTime: new Date(fixDateFormat(contentNode.createdTime)),
@@ -162,12 +166,6 @@ export const createOrUpdateSearchNode = (
     }
 
     try {
-        const fullPath = `${searchNodeParams._parentPath}/${searchNodeParams._name}`;
-        if (searchRepoConnection.exists(fullPath)) {
-            const searchNode = searchRepoConnection.get(fullPath);
-            deleteSearchNode(searchNode._id, searchRepoConnection);
-        }
-
         const newSearchNode = searchRepoConnection.create(searchNodeParams);
         if (!newSearchNode) {
             logger.critical(`Failed to create search node for content from ${contentPath}`);
