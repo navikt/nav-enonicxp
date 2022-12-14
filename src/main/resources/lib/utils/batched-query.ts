@@ -8,7 +8,7 @@ import nodeLib, {
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 3000;
 
 type ContentQueryFunc = ContentLibrary['query'];
 type NodeQueryFunc = RepoConnection['query'];
