@@ -134,20 +134,7 @@ export const createOrUpdateSearchNode = (
     const contentId = contentNode._id;
     const contentPath = contentNode._path;
 
-    const searchNodesShort = existingSearchNodes.map((node) => ({
-        id: node._id,
-        path: node._path,
-        contentId: node.contentId,
-        contentPath: node.contentPath,
-        facets: node.facets,
-    }));
-
     if (facets.length === 0) {
-        logger.warning(
-            `Node ${contentPath} has no facets! - deleting search nodes ${JSON.stringify(
-                searchNodesShort
-            )}`
-        );
         existingSearchNodes.forEach((node) => {
             deleteSearchNode(node._id, searchRepoConnection);
         });
@@ -172,9 +159,9 @@ export const createOrUpdateSearchNode = (
         // If multiple search nodes exists for a content, something has gone wrong at some point
         // in the past. Remove everything and notify the problem has occured.
         logger.critical(
-            `Multiple existing search nodes found for [${contentId}] ${contentPath} - ${JSON.stringify(
-                searchNodesShort
-            )}`
+            `Multiple existing search nodes found for [${contentId}] ${contentPath} - ${existingSearchNodes
+                .map((node) => node._id)
+                .join(', ')}`
         );
 
         existingSearchNodes.forEach((node) => {

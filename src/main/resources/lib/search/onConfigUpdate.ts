@@ -151,7 +151,6 @@ const findContentWithMatchingFacets = ({
 };
 
 const batchSize = 1000;
-
 const getExistingSearchNodesMap = (
     remainingContentIds: string[],
     repo: RepoConnection,
@@ -194,7 +193,6 @@ const getExistingSearchNodesMap = (
 };
 
 let abortFlag = false;
-
 export const revalidateAllSearchNodesAbort = () => {
     abortFlag = true;
 };
@@ -225,9 +223,7 @@ export const revalidateAllSearchNodes = () => {
     });
 
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
-    const numMatchesFound = matchedContentIds.length;
-
-    logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
+    logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
 
     const contentIdToSearchNodesMap = getExistingSearchNodesMap(
         matchedContentIds,
@@ -241,12 +237,13 @@ export const revalidateAllSearchNodes = () => {
     if (noDupes.length !== contentIds.length) {
         logger.warning(`Query resulted in ${contentIds.length - noDupes.length} dupes!`);
     }
+
     let counter = 0;
 
     const success = matchedContentIds.every((contentId, index) => {
         if (index && index % 1000 === 0) {
             logger.info(
-                `Processed search nodes for ${index}/${numMatchesFound} contents (${counter} search nodes updated so far)`
+                `Processed search nodes for ${index}/${matchedContentIds.length} contents (${counter} search nodes updated so far)`
             );
         }
 
@@ -262,23 +259,9 @@ export const revalidateAllSearchNodes = () => {
             return true;
         }
 
-        const searchNodes = contentIdToSearchNodesMap[contentId];
-        if (searchNodes && searchNodes.length > 1) {
-            logger.warning(
-                `Content ${contentId} has multiple search nodes: ${searchNodes
-                    .map((node) => node._id)
-                    .join(', ')}`
-            );
-        }
-
-        const facets = contentIdToFacetsMap[contentId];
-        if (!facets || facets.length === 0) {
-            logger.warning(`Content ${contentId} has no facets!`);
-        }
-
         const didUpdate = createOrUpdateSearchNode(
             contentNode,
-            facets,
+            contentIdToFacetsMap[contentId],
             getSearchRepoConnection(),
             contentIdToSearchNodesMap[contentId]
         );
