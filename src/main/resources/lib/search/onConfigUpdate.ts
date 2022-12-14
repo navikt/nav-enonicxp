@@ -154,7 +154,14 @@ const findContentWithMatchingFacets = ({
     return contentIdsWithFacetsToUpdate;
 };
 
+let abortFlag = false;
+
+export const revalidateAllSearchNodesAbort = () => {
+    abortFlag = true;
+};
+
 export const revalidateAllSearchNodes = () => {
+    abortFlag = false;
     const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
 
@@ -212,17 +219,23 @@ export const revalidateAllSearchNodes = () => {
 
     let counter = 0;
 
-    matchedContentIds.forEach((contentId, index) => {
+    const success = matchedContentIds.every((contentId, index) => {
         if (index && index % 1000 === 0) {
             logger.info(
                 `Processed search nodes for ${index}/${numMatchesFound} contents (${counter} search nodes updated so far)`
             );
         }
 
+        if (abortFlag) {
+            logger.warning(`Abort flag was set, aborting search nodes update!`);
+            abortFlag = false;
+            return false;
+        }
+
         const contentNode = contentRepoConnection.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
-            return;
+            return true;
         }
 
         const facets = contentIdToFacetsMap[contentId];
@@ -236,7 +249,18 @@ export const revalidateAllSearchNodes = () => {
         if (didUpdate) {
             counter++;
         }
+
+        return true;
     });
+
+    if (!success) {
+        logger.warning(
+            `Search nodes update was aborted after ${
+                Date.now() - startTime
+            }ms - ${counter} nodes were updated`
+        );
+        return;
+    }
 
     deleteInvalidNodes(matchedContentIds);
 

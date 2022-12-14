@@ -8,6 +8,7 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
+import { revalidateAllSearchNodesAbort } from '../lib/search/onConfigUpdate';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -34,6 +35,10 @@ const validActions: ActionsMap = {
     removeUnpublishedFromContentLists: {
         description: 'Fjern avpublisert innhold fra alle innholdslister',
         callback: removeUnpublishedFromAllContentLists,
+    },
+    abortSearchNodesUpdate: {
+        description: 'Avbryt pågående batch-jobb for søke-config oppdateringer',
+        callback: revalidateAllSearchNodesAbort,
     },
 };
 
