@@ -202,6 +202,8 @@ export const revalidateAllSearchNodes = () => {
         repo: searchRepoConnection,
     }).hits.map((node) => node.id);
 
+
+
     const contentIdToSearchNodesMap = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
     ).reduce((acc, node) => {
