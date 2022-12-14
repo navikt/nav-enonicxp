@@ -188,8 +188,8 @@ export const revalidateAllSearchNodes = () => {
 
     logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
 
-    const existingSearchNodeIds = batchedNodeQuery({
-        queryParams: {
+    const existingSearchNodeIds = searchRepoConnection
+        .query({
             start: 0,
             count: 100000,
             filters: {
@@ -198,9 +198,10 @@ export const revalidateAllSearchNodes = () => {
                     values: matchedContentIds,
                 },
             },
-        },
-        repo: searchRepoConnection,
-    }).hits.map((node) => node.id);
+        })
+        .hits.map((node) => node.id);
+
+    logger.info(`Found ${existingSearchNodeIds.length} existing search nodes`);
 
     const contentIdToSearchNodesMap = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
