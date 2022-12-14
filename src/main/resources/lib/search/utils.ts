@@ -93,7 +93,7 @@ const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
         // want the node path freed up immediately
         repo.move({
             source: nodeId,
-            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}`,
+            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}-${generateUUID()}`,
         });
 
         repo.delete(nodeId);
