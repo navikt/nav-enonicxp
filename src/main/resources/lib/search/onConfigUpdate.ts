@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { contentRepo } from '../constants';
-import { forceArray, removeDuplicates } from '../utils/nav-utils';
+import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
     createOrUpdateSearchNode,
@@ -232,13 +232,6 @@ export const revalidateAllSearchNodes = () => {
         matchedContentIds,
         searchRepoConnection
     );
-    const contentIds = Object.keys(contentIdToSearchNodesMap);
-    logger.info(`Found ${contentIds.length} existing search nodes`);
-
-    const noDupes = removeDuplicates(contentIds);
-    if (noDupes.length !== contentIds.length) {
-        logger.critical(`Query resulted in ${contentIds.length - noDupes.length} dupes!`);
-    }
 
     let counter = 0;
 

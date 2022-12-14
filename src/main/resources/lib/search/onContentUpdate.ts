@@ -11,7 +11,6 @@ import {
     searchRepoContentIdKey,
 } from './utils';
 import { ContentFacet, SearchNode } from '../../types/search';
-import { batchedNodeQuery } from '../utils/batched-query';
 
 const isQueryMatchingContent = (query: string, id: string) =>
     contentLib.query({
@@ -73,19 +72,18 @@ export const updateSearchNode = (contentId: string) => {
 
     const searchRepoConnection = getSearchRepoConnection();
 
-    const existingSearchNodeIds = batchedNodeQuery({
-        queryParams: {
+    const existingSearchNodeIds = searchRepoConnection
+        .query({
             start: 0,
-            count: 50000,
+            count: 100,
             filters: {
                 hasValue: {
                     field: searchRepoContentIdKey,
                     values: [contentId],
                 },
             },
-        },
-        repo: searchRepoConnection,
-    }).hits.map((hit) => hit.id);
+        })
+        .hits.map((hit) => hit.id);
 
     const existingSearchNodes = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
