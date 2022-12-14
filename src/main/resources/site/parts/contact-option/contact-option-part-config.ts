@@ -15,7 +15,7 @@ export interface ContactOptionPartConfig {
          */
         chat: {
           /**
-           * Velg skriv til oss
+           * Velg chat med oss
            */
           sharedContactInformation?: string;
 
