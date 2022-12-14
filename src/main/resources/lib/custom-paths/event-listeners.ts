@@ -8,29 +8,26 @@ import { logger } from '../utils/logging';
 // When a content is duplicated, we don't want the custom path
 // to be duplicated as well, as it must be unique
 const removeOnDuplicate = (event: EnonicEvent) => {
-    const isMaster = clusterLib.isMaster();
-    logger.info(`Removing custom path from duplicated content - ${isMaster}`);
-
-    if (!isMaster) {
+    if (!clusterLib.isMaster()) {
         return;
     }
 
     event.data.nodes.forEach((node) => {
-        runInBranchContext(
-            () =>
-                contentLib.modify({
-                    key: node.id,
-                    requireValid: false,
-                    editor: (content) => {
-                        if (hasValidCustomPath(content)) {
-                            (content.data.customPath as string | undefined) = undefined;
-                        }
+        runInBranchContext(() => {
+            logger.info(`Removing custom path from duplicated content ${node.id}`);
 
-                        return content;
-                    },
-                }),
-            'draft'
-        );
+            contentLib.modify({
+                key: node.id,
+                requireValid: false,
+                editor: (content) => {
+                    if (hasValidCustomPath(content)) {
+                        (content.data.customPath as string | undefined) = undefined;
+                    }
+
+                    return content;
+                },
+            });
+        }, 'draft');
     });
 };
 
@@ -48,6 +45,8 @@ const removeInvalidOnPublish = (event: EnonicEvent) => {
             const content = contentLib.get({ key: node.id });
 
             if (content && hasInvalidCustomPath(content)) {
+                logger.info(`Removing invalid custom path on published content ${node.id}`);
+
                 contentLib.modify({
                     key: node.id,
                     requireValid: false,

@@ -1,9 +1,11 @@
 import nodeLib, { RepoNode, RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { fixDateFormat, forceArray } from '../utils/nav-utils';
+import { dateTimesAreEqual, fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';
 import { logger } from '../utils/logging';
 import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
+import { ArrayOrSingle } from '../../types/util-types';
+import { generateUUID } from '../utils/uuid';
 
 export const searchRepoDeletionQueueBaseNode = 'deletionQueue';
 export const searchRepoContentBaseNode = 'content';
@@ -25,8 +27,8 @@ export const getSearchRepoConnection = () =>
     });
 
 export const facetsAreEqual = (
-    facets1: ContentFacet | ContentFacet[],
-    facets2: ContentFacet | ContentFacet[]
+    facets1: ArrayOrSingle<ContentFacet>,
+    facets2: ArrayOrSingle<ContentFacet>
 ) => {
     const facetsArray1 = forceArray(facets1);
     const facetsArray2 = forceArray(facets2);
@@ -47,39 +49,23 @@ export const facetsAreEqual = (
     );
 };
 
-// TODO: support multiple facets? Just replicating the legacy behaviour for now...
-const transformFacetsToLegacyBehaviour = (facets: ContentFacet[]): ContentFacet | null => {
-    if (facets.length === 0) {
-        return null;
-    }
-
-    const facet = facets.slice(-1)[0];
-    const { underfacets } = facet;
-
-    if (!underfacets || underfacets.length === 0) {
-        return facet;
-    }
-
-    return {
-        ...facet,
-        underfacets: underfacets.slice(-1),
-    };
-};
-
 // Note: datetimes must be provided as Date-objects with a format accepted by Nashorn
 // in order for the datetime to be indexed as the correct type
 const searchNodeTransformer = (
     contentNode: RepoNode<Content>,
-    facet: ContentFacet
+    facets: ContentFacet[]
 ): SearchNodeCreateParams => {
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
+    // Add a uuid to prevent name collisions
+    const name = `${contentNode._path.replace(/\//g, '_')}-${generateUUID()}`;
+
     return {
         ...rest,
-        [searchRepoFacetsKey]: facet,
+        [searchRepoFacetsKey]: facets,
         [searchRepoContentIdKey]: contentNode._id,
         [searchRepoContentPathKey]: contentNode._path,
-        _name: contentNode._path.replace(/\//g, '_'),
+        _name: name,
         _parentPath: `/${searchRepoContentBaseNode}`,
         ...(createdTime && {
             createdTime: new Date(fixDateFormat(contentNode.createdTime)),
@@ -103,11 +89,11 @@ const searchNodeTransformer = (
 
 const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
     try {
-        // Move before deleting, as deletion is not a syncronous operation and we may
+        // Move before deleting, as deletion is not a synchronous operation and we may
         // want the node path freed up immediately
         repo.move({
             source: nodeId,
-            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}`,
+            target: `/${searchRepoDeletionQueueBaseNode}/${nodeId}-${generateUUID()}`,
         });
 
         repo.delete(nodeId);
@@ -135,74 +121,67 @@ export const deleteSearchNodesForContent = (contentId: string) => {
         });
 };
 
-const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facet: ContentFacet) =>
-    searchNode &&
-    facetsAreEqual(facet, searchNode.facets) &&
-    new Date(fixDateFormat(contentNode.modifiedTime)).getTime() ===
-        new Date(fixDateFormat(searchNode.modifiedTime)).getTime();
+const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets: ContentFacet[]) =>
+    facetsAreEqual(facets, searchNode.facets) &&
+    dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime);
 
-export const createOrUpdateSearchNode = (
-    contentNode: RepoNode<Content>,
-    facets: ContentFacet[],
-    searchRepoConnection: RepoConnection
-) => {
-    const facet = transformFacetsToLegacyBehaviour(facets);
-    if (!facet) {
-        return false;
-    }
-
+export const createOrUpdateSearchNode = ({
+    contentNode,
+    facets = [],
+    existingSearchNodes = [],
+    searchRepoConnection,
+}: {
+    contentNode: RepoNode<Content>;
+    facets: ContentFacet[];
+    existingSearchNodes: SearchNode[];
+    searchRepoConnection: RepoConnection;
+}) => {
     const contentId = contentNode._id;
     const contentPath = contentNode._path;
 
-    const existingSearchNodes = searchRepoConnection.query({
-        start: 0,
-        count: 1000,
-        filters: {
-            hasValue: {
-                field: searchRepoContentIdKey,
-                values: [contentId],
-            },
-        },
-    }).hits;
+    if (facets.length === 0) {
+        existingSearchNodes.forEach((node) => {
+            deleteSearchNode(node._id, searchRepoConnection);
+        });
+        return false;
+    }
 
-    const searchNodeParams = searchNodeTransformer(contentNode, facet);
+    const searchNodeParams = searchNodeTransformer(contentNode, facets);
 
     if (existingSearchNodes.length === 1) {
-        const searchNodeId = existingSearchNodes[0].id;
-        const searchNode = searchRepoConnection.get(searchNodeId);
+        const searchNode = existingSearchNodes[0];
 
-        if (searchNodeIsFresh(searchNode, contentNode, facet)) {
+        if (searchNodeIsFresh(searchNode, contentNode, facets)) {
             return false;
         }
 
         searchRepoConnection.modify({
-            key: searchNodeId,
+            key: searchNode._id,
             editor: () => searchNodeParams,
         });
         return true;
     } else if (existingSearchNodes.length > 1) {
         // If multiple search nodes exists for a content, something has gone wrong at some point
         // in the past. Remove everything and notify the problem has occured.
-        logger.critical(`Multiple existing search nodes found for [${contentId}] ${contentPath}`);
+        logger.critical(
+            `Multiple existing search nodes found for [${contentId}] ${contentPath} - ${existingSearchNodes
+                .map((node) => node._id)
+                .join(', ')}`
+        );
 
         existingSearchNodes.forEach((node) => {
-            deleteSearchNode(node.id, searchRepoConnection);
+            deleteSearchNode(node._id, searchRepoConnection);
         });
     }
 
     try {
-        const fullPath = `${searchNodeParams._parentPath}/${searchNodeParams._name}`;
-        if (searchRepoConnection.exists(fullPath)) {
-            deleteSearchNode(fullPath, searchRepoConnection);
-        }
-
         const newSearchNode = searchRepoConnection.create(searchNodeParams);
         if (!newSearchNode) {
             logger.critical(`Failed to create search node for content from ${contentPath}`);
             return false;
         }
 
-        logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facet)}`);
+        logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facets)}`);
         return true;
     } catch (e) {
         logger.critical(`Error while creating search node for content from ${contentPath} - ${e}`);
