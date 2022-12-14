@@ -195,7 +195,7 @@ export const revalidateAllSearchNodes = () => {
         repo: searchRepoConnection,
     }).hits.map((hit) => hit.id);
 
-    const contentIdsToSearchNodeMap = forceArray(
+    const contentIdToSearchNodesMap = forceArray(
         searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
     ).reduce((acc, hit) => {
         const { contentId } = hit;
@@ -226,7 +226,7 @@ export const revalidateAllSearchNodes = () => {
             contentNode,
             facets,
             getSearchRepoConnection(),
-            contentIdsToSearchNodeMap[contentId]
+            contentIdToSearchNodesMap[contentId]
         );
 
         if (didUpdate) {
