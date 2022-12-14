@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { contentRepo } from '../constants';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
     createOrUpdateSearchNode,
@@ -188,18 +188,24 @@ export const revalidateAllSearchNodes = () => {
 
     logger.info(`Found ${numMatchesFound} matching contents for facets, running updates`);
 
-    const existingSearchNodeIds = searchRepoConnection
-        .query({
+    const existingSearchNodeIds = batchedNodeQuery({
+        queryParams: {
             start: 0,
-            count: 100000,
+            sort: 'data.contentPath ASC',
             filters: {
                 hasValue: {
                     field: searchRepoContentIdKey,
                     values: matchedContentIds,
                 },
             },
-        })
-        .hits.map((node) => node.id);
+        },
+        repo: searchRepoConnection,
+    }).hits.map((node) => node.id);
+
+    const noDupes = removeDuplicates(existingSearchNodeIds);
+    if (noDupes.length !== existingSearchNodeIds.length) {
+        logger.warning(`Query resulted in ${existingSearchNodeIds.length - noDupes.length} dupes!`);
+    }
 
     logger.info(`Found ${existingSearchNodeIds.length} existing search nodes`);
 
