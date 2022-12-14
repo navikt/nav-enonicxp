@@ -214,7 +214,7 @@ export const revalidateAllSearchNodes = () => {
         return acc;
     }, {} as Record<string, SearchNode[]>);
 
-    const counter = 0;
+    let counter = 0;
 
     const success = matchedContentIds.every((contentId, index) => {
         if (index && index % 1000 === 0) {
@@ -249,16 +249,16 @@ export const revalidateAllSearchNodes = () => {
             logger.warning(`Content ${contentId} has no facets!`);
         }
 
-        // const didUpdate = createOrUpdateSearchNode(
-        //     contentNode,
-        //     facets,
-        //     getSearchRepoConnection(),
-        //     contentIdToSearchNodesMap[contentId]
-        // );
-        //
-        // if (didUpdate) {
-        //     counter++;
-        // }
+        const didUpdate = createOrUpdateSearchNode(
+            contentNode,
+            facets,
+            getSearchRepoConnection(),
+            contentIdToSearchNodesMap[contentId]
+        );
+
+        if (didUpdate) {
+            counter++;
+        }
 
         return true;
     });
