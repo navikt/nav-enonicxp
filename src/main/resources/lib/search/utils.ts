@@ -165,7 +165,7 @@ export const createOrUpdateSearchNode = (
         const fullPath = `${searchNodeParams._parentPath}/${searchNodeParams._name}`;
         if (searchRepoConnection.exists(fullPath)) {
             const searchNode = searchRepoConnection.get(fullPath);
-            deleteSearchNode(searchNode.id, searchRepoConnection);
+            deleteSearchNode(searchNode._id, searchRepoConnection);
         }
 
         const newSearchNode = searchRepoConnection.create(searchNodeParams);
