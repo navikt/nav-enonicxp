@@ -107,9 +107,6 @@ const Thread = Java.type('java.lang.Thread');
 
 export const getCurrentThreadId = () => Number(Thread.currentThread().getId());
 
-export const serializableObjectsAreEqual = (obj1: object, obj2: object) =>
-    JSON.stringify(obj1) === JSON.stringify(obj2);
-
 export const generateFulltextQuery = (
     query: string,
     fieldsToSearch: string[],
@@ -122,3 +119,6 @@ export const generateFulltextQuery = (
 
     return `fulltext("${fieldsToSearch.join(',')}", "${wordsWithWildcard}", "${logicOp}")`;
 };
+
+export const dateTimesAreEqual = (dateTime1: string, dateTime2: string) =>
+    new Date(fixDateFormat(dateTime1)).getTime() === new Date(fixDateFormat(dateTime2)).getTime();

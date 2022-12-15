@@ -8,8 +8,6 @@ import nodeLib, {
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
-const BATCH_SIZE = 1000;
-
 type ContentQueryFunc = ContentLibrary['query'];
 type NodeQueryFunc = RepoConnection['query'];
 
@@ -23,6 +21,10 @@ type NodeQueryProps = {
     queryFunc: NodeQueryFunc;
 };
 
+const BATCH_SIZE = 3000;
+
+// NOTE: if a filter value array with a length greater than the batch size is passed to a query
+// the batches may not be consistent when the queries are performed in a clustered setup!
 const batchedQuery = <ContentType extends ContentDescriptor>({
     queryFunc,
     queryParams,

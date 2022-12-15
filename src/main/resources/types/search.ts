@@ -5,6 +5,7 @@ import {
     searchRepoContentPathKey,
     searchRepoFacetsKey,
 } from '../lib/search/utils';
+import { ArrayOrSingle } from './util-types';
 
 export type ContentFacet = {
     facet: string;
@@ -12,7 +13,7 @@ export type ContentFacet = {
 };
 
 type SearchNodeDataFields = {
-    [searchRepoFacetsKey]: ContentFacet;
+    [searchRepoFacetsKey]: ArrayOrSingle<ContentFacet>;
     [searchRepoContentIdKey]: string;
     [searchRepoContentPathKey]: string;
 };

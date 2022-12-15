@@ -9,8 +9,9 @@ import {
     createOrUpdateSearchNode,
     getSearchRepoConnection,
     searchRepoContentBaseNode,
+    searchRepoContentIdKey,
 } from './utils';
-import { ContentFacet } from '../../types/search';
+import { ContentFacet, SearchNode } from '../../types/search';
 import { SearchConfigDescriptor } from '../../types/content-types/content-config';
 
 const contentBasePath = `/${searchRepoContentBaseNode}`;
@@ -48,13 +49,10 @@ const deleteInvalidNodes = (searchableContentIds: string[]) => {
     }
 };
 
-const findContentWithMatchingFacets = ({
-    searchConfig,
-    contentRepoConnection,
-}: {
-    searchConfig: Content<SearchConfigDescriptor>;
-    contentRepoConnection: RepoConnection;
-}) => {
+const findContentWithMatchingFacets = (
+    searchConfig: Content<SearchConfigDescriptor>,
+    contentRepoConnection: RepoConnection
+) => {
     const contentIdsWithFacetsToUpdate: Record<string, ContentFacet[]> = {};
 
     const { fasetter, contentTypes } = searchConfig.data;
@@ -75,7 +73,7 @@ const findContentWithMatchingFacets = ({
                 },
             },
             repo: contentRepoConnection,
-        }).hits.map((content) => content.id);
+        }).hits.map((node) => node.id);
 
         if (matchedContentIds.length === 0) {
             logger.info(`Facet [${facetKey}] ${name} has no matching content`);
@@ -149,7 +147,63 @@ const findContentWithMatchingFacets = ({
     return contentIdsWithFacetsToUpdate;
 };
 
+const batchSize = 1000;
+const getExistingSearchNodesMap = (
+    remainingContentIds: string[],
+    repo: RepoConnection,
+    batchStart = 0,
+    searchNodesMap: Record<string, SearchNode[]> = {}
+): Record<string, SearchNode[]> => {
+    const contentIdsBatch = remainingContentIds.slice(0, batchSize);
+
+    const result = repo.query({
+        start: 0,
+        count: batchSize * 3, // Account for duplicates (should not happen, but...)
+        filters: {
+            hasValue: {
+                field: searchRepoContentIdKey,
+                values: contentIdsBatch,
+            },
+        },
+    });
+
+    if (result.total > result.count) {
+        logger.critical(
+            `Found ${
+                result.total - result.count
+            } search nodes not accounted for! This may indicate a large number of duplicates.`
+        );
+    }
+
+    const searchNodeIds = result.hits.map((node) => node.id);
+
+    const newSearchNodesMap = forceArray(repo.get<SearchNode>(searchNodeIds) || []).reduce(
+        (acc, node) => {
+            const { contentId } = node;
+            if (!acc[contentId]) {
+                acc[contentId] = [];
+            }
+            acc[contentId].push(node);
+            return acc;
+        },
+        searchNodesMap
+    );
+
+    if (remainingContentIds.length <= batchSize) {
+        return newSearchNodesMap;
+    }
+
+    const remainingIds = remainingContentIds.slice(batchSize);
+    return getExistingSearchNodesMap(remainingIds, repo, batchStart + batchSize, newSearchNodesMap);
+};
+
+let abortFlag = false;
+export const revalidateAllSearchNodesAbort = () => {
+    abortFlag = true;
+};
+
 export const revalidateAllSearchNodes = () => {
+    abortFlag = false;
     const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
 
@@ -168,30 +222,60 @@ export const revalidateAllSearchNodes = () => {
         principals: ['role:system.admin'],
     });
 
-    const contentIdToFacetsMap = findContentWithMatchingFacets({
-        searchConfig: config,
-        contentRepoConnection,
-    });
+    const searchRepoConnection = getSearchRepoConnection();
 
+    const contentIdToFacetsMap = findContentWithMatchingFacets(config, contentRepoConnection);
     const matchedContentIds = Object.keys(contentIdToFacetsMap);
-
-    let counter = 0;
     logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
 
-    matchedContentIds.forEach((contentId) => {
+    const contentIdToSearchNodesMap = getExistingSearchNodesMap(
+        matchedContentIds,
+        searchRepoConnection
+    );
+
+    let counter = 0;
+
+    const success = matchedContentIds.every((contentId, index) => {
+        if (index && index % 1000 === 0) {
+            logger.info(
+                `Processed search nodes for ${index}/${matchedContentIds.length} contents (${counter} search nodes updated so far)`
+            );
+        }
+
+        if (abortFlag) {
+            logger.warning(`Abort flag was set, aborting search nodes update!`);
+            abortFlag = false;
+            return false;
+        }
+
         const contentNode = contentRepoConnection.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
-            return;
+            return true;
         }
 
-        const facets = contentIdToFacetsMap[contentId];
-        const didSucceed = createOrUpdateSearchNode(contentNode, facets, getSearchRepoConnection());
+        const didUpdate = createOrUpdateSearchNode({
+            contentNode,
+            facets: contentIdToFacetsMap[contentId],
+            existingSearchNodes: contentIdToSearchNodesMap[contentId],
+            searchRepoConnection,
+        });
 
-        if (didSucceed) {
+        if (didUpdate) {
             counter++;
         }
+
+        return true;
     });
+
+    if (!success) {
+        logger.warning(
+            `Search nodes update was aborted after ${
+                Date.now() - startTime
+            }ms - ${counter} nodes were updated`
+        );
+        return;
+    }
 
     deleteInvalidNodes(matchedContentIds);
 
