@@ -3,6 +3,7 @@
     <description>Seksjonsside (bokser). Eksempel Person/Bedrift/NAV og Samfunn/DITT NAV</description>
     <super-type>base:unstructured</super-type>
     <form>
+        <mixin name="audience"/>
         <mixin name="ingress"/>
         <mixin name="main-panels"/>
         <mixin name="link-panels"/>
