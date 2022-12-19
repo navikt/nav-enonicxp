@@ -15,7 +15,8 @@ import {
 } from './schema-creation-callbacks/main-article-chapter';
 import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
 import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
-import { contactInformationCallback } from './schema-creation-callbacks/contact-information';
+import { contactInformationTelephoneCallback } from './schema-creation-callbacks/contact-information-telephone';
+import { contactInformationChatCallback } from './schema-creation-callbacks/contact-information-chat';
 import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
 import { globalValueSetCallback } from './schema-creation-callbacks/global-values';
 import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
@@ -59,7 +60,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
-    no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
+    no_nav_navno_ContactInformation_Telefonnummer: contactInformationTelephoneCallback,
     no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
@@ -75,6 +76,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
         'target',
         'numLinks'
     ),
+    Part_no_nav_navno_contact_option_Chat: contactInformationChatCallback,
     Part_no_nav_navno_frontpage_current_topics: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_frontpage_shortcuts: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,

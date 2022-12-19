@@ -9,7 +9,7 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
             ingress(processHtml: { type: server }) {
                 ...richText
             }
-            sharedContactInformation {
+            sharedContactInformation(contentId: $ref) {
                 ...contentContactInformation
             }
         }
