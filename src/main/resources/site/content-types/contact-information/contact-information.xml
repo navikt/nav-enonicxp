@@ -7,6 +7,21 @@
             <label>Kontakttype</label>
             <occurrences minimum="1" maximum="1"/>
             <options minimum="1" maximum="1">
+                <option name="chat">
+                    <label>Chat med oss</label>
+                    <items>
+                        <input name="title" type="TextLine">
+                            <label>Tittel</label>
+                        </input>
+                        <input name="alertText" type="TextArea" >
+                            <label>Avvikstekst</label>
+                            <help-text>Brukes kun dersom det finnes avvik på telefonnr, feks ved midlertidige tekniske problemer.</help-text>
+                        </input>
+                        <input name="ingress" type="HtmlArea">
+                            <label>Ingress</label>
+                        </input>
+                    </items>
+                </option>
                 <option name="write">
                     <label>Skriv til oss</label>
                     <items>
@@ -16,6 +31,10 @@
                         <input name="url" type="TextLine">
                             <label>URL</label>
                             <default>https://www.nav.no/kontaktoss#skriv-til-oss</default>
+                        </input>
+                        <input name="alertText" type="TextArea" >
+                            <label>Avvikstekst</label>
+                            <help-text>Brukes kun dersom det finnes avvik på telefonnr, feks ved midlertidige tekniske problemer.</help-text>
                         </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>

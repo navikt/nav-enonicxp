@@ -37,7 +37,7 @@ const getSpecialOpeningHoursObject = (specialOpeningHours: SpecialOpeningHours) 
     return specialOpeningHours;
 };
 
-export const contactInformationCallback: CreationCallback = (context, params) => {
+export const contactInformationTelephoneCallback: CreationCallback = (context, params) => {
     const RegularOpeningHour = graphQlCreateObjectType(context, {
         name: 'regularOpeningHour',
         fields: {

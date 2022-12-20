@@ -5,8 +5,12 @@ fragment partComponentContactOption on Part_no_nav_navno_contact_option {
     contactOptions {
         _selected
         chat {
+            title
             ingress(processHtml: { type: server }) {
                 ...richText
+            }
+            sharedContactInformation(contentId: $ref) {
+                ...contentContactInformation
             }
         }
         write {

@@ -8,6 +8,32 @@ export interface ContactInformation {
         /**
          * Selected
          */
+        _selected: "chat";
+
+        /**
+         * Chat med oss
+         */
+        chat: {
+          /**
+           * Tittel
+           */
+          title?: string;
+
+          /**
+           * Avvikstekst
+           */
+          alertText?: string;
+
+          /**
+           * Ingress
+           */
+          ingress?: string;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
         _selected: "write";
 
         /**
@@ -23,6 +49,11 @@ export interface ContactInformation {
            * URL
            */
           url?: string;
+
+          /**
+           * Avvikstekst
+           */
+          alertText?: string;
 
           /**
            * Ingress

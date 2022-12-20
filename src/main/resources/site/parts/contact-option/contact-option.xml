@@ -10,8 +10,19 @@
                 <option name="chat">
                     <label>Chat</label>
                     <items>
+                        <input name="sharedContactInformation" type="ContentSelector">
+                            <label>Velg chat med oss</label>
+                            <config>
+                                <allowContentType>${app}:contact-information</allowContentType>
+                            </config>
+                        </input>
                         <input name="ingress" type="HtmlArea">
                             <label>Overstyr ingress</label>
+                        </input>
+                        <!-- Dummy value for backwards compatibility (prevents graphql schema error) -->
+                        <input name="title" type="RadioButton">
+                            <label>-</label>
+                            <occurrences minimum="0" maximum="1"/>
                         </input>
                     </items>
                 </option>

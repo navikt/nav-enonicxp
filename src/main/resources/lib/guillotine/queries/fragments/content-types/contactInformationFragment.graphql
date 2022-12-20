@@ -31,6 +31,14 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
             write {
                 title
                 url
+                alertText
+                ingress(processHtml: { type: server }) {
+                    ...richText
+                }
+            }
+            chat {
+                title
+                alertText
                 ingress(processHtml: { type: server }) {
                     ...richText
                 }
