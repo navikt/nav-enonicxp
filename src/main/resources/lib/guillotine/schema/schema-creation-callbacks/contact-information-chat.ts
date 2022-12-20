@@ -4,22 +4,18 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
 const getChatContactInformation = (
-    contactContentId: string,
+    contactContentId?: string,
     lang?: string
 ): Content<'no.nav.navno:contact-information'> | null => {
     const queryString = contactContentId
         ? `_id = '${contactContentId}'`
-        : `data.contactType._selected = 'chat' AND language = '${lang || 'nb'}'`;
-
-    log.info(queryString);
+        : `data.contactType._selected = 'chat' AND language = '${lang || 'no'}'`;
 
     const queryResults = contentLib.query({
         query: queryString,
         start: 0,
         count: 1,
     }).hits;
-
-    log.info(`query results: ${queryResults.length}`);
 
     if (queryResults.length === 0) {
         return null;
@@ -33,17 +29,15 @@ export const contactInformationChatCallback: CreationCallback = (context, params
     params.fields.sharedContactInformation.resolve = (env) => {
         const { contentId } = env.args;
 
-        const pageContent = contentLib.get({ key: contentId });
-        if (!pageContent) {
+        const currentPage = contentLib.get({ key: contentId });
+        if (!currentPage) {
             return null;
         }
 
-        const { language } = pageContent;
-
+        const { language } = currentPage;
         const { sharedContactInformation } = env.source;
+        const sharedChatContent = getChatContactInformation(sharedContactInformation, language);
 
-        const sharedContent = getChatContactInformation(sharedContactInformation, language);
-
-        return sharedContent;
+        return sharedChatContent;
     };
 };
