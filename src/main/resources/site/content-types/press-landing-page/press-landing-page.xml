@@ -59,6 +59,7 @@
             </items>
         </field-set>
         <mixin name="custom-path-selector-required"/>
+        <mixin name="audience"/>
         <mixin name="owner"/>
         <mixin name="managed-by"/>
         <mixin name="languages-legacy"/>
