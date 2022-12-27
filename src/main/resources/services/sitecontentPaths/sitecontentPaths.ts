@@ -1,4 +1,3 @@
-import contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
@@ -6,7 +5,10 @@ import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { appDescriptor, navnoRootPath, redirectsRootPath } from '../../lib/constants';
 import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
-import { contentTypesRenderedByPublicFrontend } from '../../lib/contenttype-lists';
+import {
+    contentTypesRenderedByPublicFrontend,
+    linkContentTypes,
+} from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
@@ -22,15 +24,15 @@ const testContentTypes: ContentDescriptor[] = [
 
 const oneYearMs = 1000 * 3600 * 24 * 365;
 
-const includedPaths = `_path LIKE '/content${navnoRootPath}/*' AND _path NOT LIKE '/content${redirectsRootPath}/*'`;
-
+const redirectsPath = `/content${redirectsRootPath}/`;
 const statistikkRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/statistikk/`;
 const kunnskapRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/kunnskap/`;
 
-const statistikkContent = `type LIKE '${appDescriptor}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${appDescriptor}:main-article*')`;
-const newsAndPressReleases = `type LIKE '${appDescriptor}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
+const contentPathsQuerySegment = `_path LIKE '/content${navnoRootPath}/*' AND _path NOT LIKE '${redirectsPath}*'`;
+const statistikkContentQuerySegment = `type LIKE '${appDescriptor}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${appDescriptor}:main-article*')`;
+const newsAndPressReleasesQuerySegment = `type LIKE '${appDescriptor}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
 
-const excludedOldContent = `(${statistikkContent}) OR (${newsAndPressReleases})`;
+const excludedOldContent = `(${statistikkContentQuerySegment}) OR (${newsAndPressReleasesQuerySegment})`;
 
 // Prevent concurrent queries
 let isRunning = false;
@@ -53,7 +55,7 @@ const getPathsToRender = (isTest?: boolean) => {
             start: 0,
             count: 20000,
             contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
-            query: `(${includedPaths}) AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
+            query: `(${contentPathsQuerySegment}) AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
             filters: {
                 boolean: {
                     mustNot: {
@@ -78,9 +80,12 @@ const getPathsToRender = (isTest?: boolean) => {
             return contentPaths;
         }
 
-        const redirectPaths = contentLib
-            .getChildren({ key: redirectsRootPath, count: 1000 })
-            .hits.map((content) => content._path.replace(redirectsRootPath, ''));
+        const redirectPaths = batchedContentQuery({
+            start: 0,
+            count: 20000,
+            contentTypes: linkContentTypes,
+            query: `_path LIKE ${redirectsPath}*`,
+        }).hits.map((content) => content._path.replace(redirectsRootPath, ''));
 
         return removeDuplicates([...contentPaths, ...redirectPaths]);
     } catch (e) {
