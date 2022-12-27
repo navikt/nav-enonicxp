@@ -84,7 +84,7 @@ const getPathsToRender = (isTest?: boolean) => {
             start: 0,
             count: 20000,
             contentTypes: linkContentTypes,
-            query: `_path LIKE ${redirectsPath}*`,
+            query: `_path LIKE '${redirectsPath}*'`,
         }).hits.map((content) => content._path.replace(redirectsRootPath, ''));
 
         return removeDuplicates([...contentPaths, ...redirectPaths]);
