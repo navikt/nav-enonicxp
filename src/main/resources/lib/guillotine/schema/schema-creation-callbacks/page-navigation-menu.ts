@@ -184,7 +184,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
                     `Duplicate anchor id ${anchorId} found under content id ${contentId}`,
                     false,
                     true
-            );
+                );
             }
 
             return [

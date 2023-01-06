@@ -46,9 +46,7 @@ export const run = (params: UnpublishExpiredContentConfig) => {
             if (contentNow) {
                 logger.critical(`Could not unpublish ${id} - unknown error`);
             } else {
-                logger.warning(
-                    `Could not unpublish ${id} as it was already unpublished`
-                );
+                logger.warning(`Could not unpublish ${id} as it was already unpublished`);
             }
         }
     } catch (e) {

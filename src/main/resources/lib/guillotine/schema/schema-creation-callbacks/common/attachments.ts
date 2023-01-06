@@ -15,7 +15,11 @@ export const getAttachmentText = (attachment: GuillotineAttachment, maxSize = ma
     const { __nodeId: id, name, mimeType, size } = attachment;
 
     if (!id || !name) {
-        logger.warning(`Id or name for attachment not found - got id ${id} and name ${name}`, false, true);
+        logger.warning(
+            `Id or name for attachment not found - got id ${id} and name ${name}`,
+            false,
+            true
+        );
         return null;
     }
 
