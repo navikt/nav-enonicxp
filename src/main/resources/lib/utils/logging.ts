@@ -1,8 +1,9 @@
 import contextLib from '/lib/xp/context';
 
-// Note: the file/line arguments are injected at build-time from the nashorn
-// __FILE__/__LINE__ globals via babel plugin and should not be set manually
-// (see babel-logger-transformer.js)
+// Note: the file/line arguments are injected at build-time via babel plugin and should not be set manually
+// Remember to update the plugin if you make any changes to affected functions
+//
+// See also babel-logger-transformer.js
 
 // Includes custom loglevel 'critical' which uses log.error()
 type LogLevel = 'info' | 'warning' | 'error' | 'critical';
