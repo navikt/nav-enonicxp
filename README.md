@@ -212,7 +212,7 @@ or @steinar.vollebaek can be contacted to make new or modify the rules.
                 },
                 {
                   "query_string": {
-                    "query": """+("(/lib/utils/logging.js) [critical]")"""
+                    "query": """+("[critical]")"""
                   }
                 },
                 {
