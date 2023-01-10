@@ -1,12 +1,12 @@
 import nodeLib from '/lib/xp/node';
-import { contentRepo } from '../constants';
+import { contentRepoDefault } from '../constants';
 import { getNodeVersions } from '../utils/version-utils';
 import { getFrontendPathname } from './utils';
 import { getCustomPathFromContent } from '../custom-paths/custom-paths';
 
 export const findChangedPaths = ({ id, path }: { id: string; path: string }) => {
     const repo = nodeLib.connect({
-        repoId: contentRepo,
+        repoId: contentRepoDefault,
         branch: 'master',
     });
 

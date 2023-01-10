@@ -30,7 +30,9 @@ export const urls = {
 
 export const componentAppKey = 'no-nav-navno';
 export const appDescriptor = 'no.nav.navno';
-export const contentRepo = 'com.enonic.cms.default';
+export const contentRepoPrefix = 'com.enonic.cms';
+export const contentRootProjectId = 'default';
+export const contentRepoDefault = `${contentRepoPrefix}.${contentRootProjectId}`;
 export const searchRepo = 'nav.no.search';
 export const navnoRootPath = '/www.nav.no';
 export const redirectsRootPath = `${navnoRootPath}/redirects`;
