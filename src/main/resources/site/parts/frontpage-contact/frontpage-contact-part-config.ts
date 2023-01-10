@@ -11,6 +11,11 @@ export interface FrontpageContactPartConfig {
   chatTitle: string;
 
   /**
+   * Avvikstekst
+   */
+  chatAlertText: string;
+
+  /**
    * Ingress
    */
   chatIngress: string;
