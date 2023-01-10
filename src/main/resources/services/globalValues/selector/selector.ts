@@ -7,7 +7,7 @@ import {
 } from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
 import { forceArray, generateFulltextQuery } from '../../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { runInBranchContext } from '../../../lib/context/branches';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 import { customSelectorHitWithLink } from '../../service-utils';

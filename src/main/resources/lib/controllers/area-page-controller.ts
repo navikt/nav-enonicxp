@@ -4,7 +4,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { contentRepo } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 

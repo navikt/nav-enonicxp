@@ -13,12 +13,12 @@ export interface CurrentTopicPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
 
   /**
    * Videresend alle besøk til annen url:

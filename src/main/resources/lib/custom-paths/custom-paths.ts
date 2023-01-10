@@ -1,6 +1,6 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 

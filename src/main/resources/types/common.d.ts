@@ -3,6 +3,8 @@ import { CustomContentName } from './content-types/content-config';
 
 export type RepoBranch = 'master' | 'draft';
 
+export type Locale = 'nb' | 'nn' | 'en' | 'se';
+
 export type NavNoDescriptor<Name extends string | ComponentName | CustomContentName = string> =
     `no.nav.navno:${Name}`;
 

@@ -23,7 +23,7 @@ export interface Overview {
   /**
    * Målgruppe
    */
-  audience: Array<"person" | "employer" | "provider" | "self_employed">;
+  audience: Array<"person" | "employer" | "provider">;
 
   /**
    * Type oversiktsside

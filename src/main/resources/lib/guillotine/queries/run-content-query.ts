@@ -6,7 +6,7 @@ import {
 import { isMedia } from '../../utils/nav-utils';
 import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
-import { runInBranchContext } from '../../utils/branch-context';
+import { runInBranchContext } from '../../context/branches';
 import { getBreadcrumbs } from '../utils/breadcrumbs';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';

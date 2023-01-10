@@ -1,5 +1,5 @@
 import { isUUID } from '../../lib/utils/uuid';
-import { isValidBranch } from '../../lib/utils/branch-context';
+import { isValidBranch } from '../../lib/context/branches';
 import { logger } from '../../lib/utils/logging';
 import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content-from-datetime';
 import { getSubPath } from '../service-utils';

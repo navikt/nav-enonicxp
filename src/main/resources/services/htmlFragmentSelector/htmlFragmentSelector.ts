@@ -7,7 +7,7 @@ import {
 import { forceArray } from '../../lib/utils/nav-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInBranchContext } from '../../lib/context/branches';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
 
 type Hit = XP.CustomSelectorServiceResponseHit;

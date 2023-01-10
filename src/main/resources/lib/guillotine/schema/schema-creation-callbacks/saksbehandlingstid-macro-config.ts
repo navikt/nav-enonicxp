@@ -4,7 +4,7 @@ import {
     getGlobalCaseTime,
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../global-values/global-value-utils';
-import { runInBranchContext } from '../../../utils/branch-context';
+import { runInBranchContext } from '../../../context/branches';
 import { logger } from '../../../utils/logging';
 
 export const saksbehandlingstidMacroCallback: CreationCallback = (context, params) => {

@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInBranchContext } from '../../lib/context/branches';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';

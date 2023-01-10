@@ -1,3 +1,5 @@
+import { populateLayersMap } from './lib/context/layers';
+
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -21,6 +23,7 @@ import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/repo';
 
 updateClusterInfo();
+populateLayersMap();
 
 startReliableEventAckListener();
 activateCacheEventListeners();

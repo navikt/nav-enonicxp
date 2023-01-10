@@ -8,7 +8,7 @@ import {
     localCacheInvalidationEventName,
 } from './local-cache';
 import { NodeEventData } from './utils';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { cacheInvalidateEventName, invalidateCacheForNode } from './cache-invalidate';
 import { logger } from '../utils/logging';
 
