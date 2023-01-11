@@ -1,6 +1,6 @@
 import contextLib, { ContextAttributes } from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
-import { contentRepoDefault } from '../constants';
+import { contentRootRepoId } from '../constants';
 
 const branches: { [key in RepoBranch]: boolean } = {
     master: true,
@@ -16,7 +16,7 @@ export const runInBranchContext = <ReturnType>(
 ): ReturnType => {
     return contextLib.run<ReturnType, ContextAttributes>(
         {
-            repository: contentRepoDefault,
+            repository: contentRootRepoId,
             branch: branch,
             user: {
                 login: 'su',

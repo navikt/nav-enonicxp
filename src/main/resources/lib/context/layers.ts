@@ -3,9 +3,10 @@ import eventLib, { EnonicEvent } from '/lib/xp/event';
 import { Locale } from '../../types/common';
 import { runInContext } from './run-in-context';
 import { logger } from '../utils/logging';
-import { contentRepoDefault, contentRepoPrefix, contentRootProjectId } from '../constants';
+import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
 
 type LocaleToLayerRepoIdMap = { [key in Locale]?: string };
+
 let localeToLayerRepoIdMap: LocaleToLayerRepoIdMap = {};
 
 const validLocales: { [key in Locale]: true } = {
@@ -52,7 +53,7 @@ const refreshLayersMap = () => {
         return;
     }
 
-    newMap[rootProject.language] = contentRepoDefault;
+    newMap[rootProject.language] = contentRootRepoId;
 
     populateWithChildLayers(projects, newMap, contentRootProjectId);
 
@@ -99,5 +100,5 @@ export const runInLocaleContext = <ReturnType>(
         );
     }
 
-    return runInContext({ repository: repoId || contentRepoDefault }, func);
+    return runInContext({ repository: repoId || contentRootRepoId }, func);
 };

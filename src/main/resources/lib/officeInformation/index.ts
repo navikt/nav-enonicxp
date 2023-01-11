@@ -9,7 +9,7 @@ import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
-import { contentRepoDefault } from '../constants';
+import { contentRootRepoId } from '../constants';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -239,7 +239,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
     contextLib.run(
         {
-            repository: contentRepoDefault,
+            repository: contentRootRepoId,
             user: {
                 login: 'su',
                 idProvider: 'system',

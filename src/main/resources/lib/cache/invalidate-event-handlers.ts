@@ -1,5 +1,5 @@
 import eventLib, { EnonicEvent } from '/lib/xp/event';
-import { contentRepoDefault } from '../constants';
+import { contentRootRepoId } from '../constants';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { addReliableEventListener } from '../events/reliable-custom-events';
 import {
@@ -16,7 +16,7 @@ let hasSetupListeners = false;
 
 const nodeListenerCallback = (event: EnonicEvent) => {
     event.data.nodes.forEach((node) => {
-        if (node.branch === 'master' && node.repo === contentRepoDefault) {
+        if (node.branch === 'master' && node.repo === contentRootRepoId) {
             const isPrepublished = handleScheduledPublish(node, event.type);
 
             if (!isPrepublished) {

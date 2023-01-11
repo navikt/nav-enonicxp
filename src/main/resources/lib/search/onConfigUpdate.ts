@@ -2,7 +2,7 @@ import nodeLib, { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
-import { contentRepoDefault } from '../constants';
+import { contentRootRepoId } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
@@ -214,7 +214,7 @@ export const revalidateAllSearchNodes = () => {
     }
 
     const contentRepoConnection = nodeLib.connect({
-        repoId: contentRepoDefault,
+        repoId: contentRootRepoId,
         branch: 'master',
         user: {
             login: 'su',
