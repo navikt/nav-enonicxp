@@ -13,6 +13,8 @@ const validLocales: { [key in Locale]: true } = {
     nn: true,
     en: true,
     se: true,
+    ru: true,
+    uk: true,
 };
 
 const isValidLocale = (locale?: string): locale is Locale =>
