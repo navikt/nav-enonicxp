@@ -10,6 +10,7 @@ import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
 import { searchNodesUpdateAbortEvent } from '../lib/search/eventHandlers';
+import { pushLayerContentToMaster } from '../lib/context/layers';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -44,6 +45,12 @@ const validActions: ActionsMap = {
                 type: searchNodesUpdateAbortEvent,
                 distributed: true,
             });
+        },
+    },
+    pushLayerContentToMaster: {
+        description: 'Push layer content to master',
+        callback: () => {
+            pushLayerContentToMaster();
         },
     },
 };

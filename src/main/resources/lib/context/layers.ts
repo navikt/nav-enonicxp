@@ -1,9 +1,11 @@
 import projectLib, { Project } from '/lib/xp/project';
 import eventLib, { EnonicEvent } from '/lib/xp/event';
+import nodeLib from '/lib/xp/node';
 import { Locale } from '../../types/common';
 import { runInContext } from './run-in-context';
 import { logger } from '../utils/logging';
 import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
+import { batchedNodeQuery } from '../utils/batched-query';
 
 type LocaleToLayerRepoIdMap = { [key in Locale]?: string };
 
@@ -16,6 +18,54 @@ const validLocales: { [key in Locale]: true } = {
     se: true,
     ru: true,
     uk: true,
+};
+
+export const pushLayerContentToMaster = () => {
+    const nodeIdsInMaster = batchedNodeQuery({
+        repoParams: { repoId: contentRootRepoId, branch: 'master' },
+        queryParams: {},
+    }).hits.map((hit) => hit.id);
+
+    logger.info(`Found ${nodeIdsInMaster.length} nodes in master`);
+
+    Object.values(localeToLayerRepoIdMap).forEach((repoId) => {
+        if (repoId === contentRootRepoId) {
+            return;
+        }
+
+        const existingNodes = batchedNodeQuery({
+            repoParams: { repoId: repoId, branch: 'master' },
+            queryParams: {},
+        }).hits.reduce((acc, hit) => {
+            acc[hit.id] = true;
+            return acc;
+        }, {} as Record<string, true>);
+
+        const missingNodes = nodeIdsInMaster.filter((id) => !existingNodes[id]);
+
+        logger.info(`Pushing ${missingNodes.length} to master in repo ${repoId}`);
+
+        const repoConnection = nodeLib.connect({
+            repoId: repoId,
+            branch: 'draft',
+            user: {
+                login: 'su',
+            },
+            principals: ['role:system.admin'],
+        });
+
+        const result = repoConnection.push({
+            keys: missingNodes,
+            target: 'master',
+            resolve: false,
+        });
+
+        logger.info(
+            `Result for ${repoId} // Success: ${result.success.length} - Failed: ${JSON.stringify(
+                result.failed
+            )} - Deleted: ${JSON.stringify(result.deleted)}`
+        );
+    });
 };
 
 const isValidLocale = (locale?: string): locale is Locale =>
@@ -44,6 +94,8 @@ const populateWithChildLayers = (
 
 const refreshLayersMap = () => {
     const projects = runInContext({ asAdmin: true }, () => projectLib.list());
+
+    logger.info(`Projects: ${JSON.stringify(projects)}`);
 
     const newMap: LocaleToLayerRepoIdMap = {};
 

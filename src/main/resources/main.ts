@@ -25,7 +25,7 @@ updateClusterInfo();
 initializeLayersMap();
 
 startReliableEventAckListener();
-activateCacheEventListeners();
+// activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
