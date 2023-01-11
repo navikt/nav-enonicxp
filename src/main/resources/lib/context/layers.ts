@@ -26,7 +26,7 @@ export const pushLayerContentToMaster = () => {
         queryParams: {},
     }).hits.map((hit) => hit.id);
 
-    logger.info(`Found ${nodeIdsInMaster.length} nodes in master`);
+    logger.info(`Found ${nodeIdsInMaster.length} nodes in root repo`);
 
     Object.values(localeToLayerRepoIdMap).forEach((repoId) => {
         if (repoId === contentRootRepoId) {
@@ -61,9 +61,9 @@ export const pushLayerContentToMaster = () => {
         });
 
         logger.info(
-            `Result for ${repoId} // Success: ${result.success.length} - Failed: ${JSON.stringify(
-                result.failed
-            )} - Deleted: ${JSON.stringify(result.deleted)}`
+            `Result for ${repoId} // Success: ${result.success.length} - Failed: (${
+                result.failed.length
+            }) ${JSON.stringify(result.failed)}`
         );
     });
 };
