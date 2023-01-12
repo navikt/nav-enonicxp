@@ -2,7 +2,7 @@ import eventLib, { EnonicEvent } from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { appDescriptor, contentRootRepoId } from '../constants';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
-import { addReliableEventListener } from '../events/reliable-custom-events';
+import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import {
     clearLocalCaches,
     LocalCacheInvalidationData,
@@ -16,6 +16,9 @@ import { frontendInvalidateAllAsync } from './frontend-cache';
 import { generateUUID } from '../utils/uuid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
+
+// TODO: When Enonic implements custom widgets for the admin front page,
+// show a warning when cache invalidation is deferred
 
 type DeferCacheInvalidationEventData = CacheInvalidationDeferConfig;
 
@@ -92,9 +95,8 @@ const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEven
 };
 
 export const toggleCacheInvalidationOnNodeEvents = (eventData: DeferCacheInvalidationEventData) => {
-    eventLib.send({
+    sendReliableEvent({
         type: deferInvalidationEventName,
-        distributed: true,
         data: eventData,
     });
 };
@@ -129,11 +131,11 @@ export const activateCacheEventListeners = () => {
         callback: manualInvalidationCallback,
     });
 
-    // Pause cache invalidation on node events. Useful if we do certain large batch job which generates
-    // a lot of events, for which we may not want to trigger cache invalidation.
-    eventLib.listener<DeferCacheInvalidationEventData>({
-        type: `custom.${deferInvalidationEventName}`,
-        localOnly: false,
+    // Pause cache invalidation on node events for a period of time, then do a full wipe. Useful if
+    // we do certain large batch jobs which generates a lot of events, for which we may not want to
+    // trigger cache invalidation.
+    addReliableEventListener<DeferCacheInvalidationEventData>({
+        type: deferInvalidationEventName,
         callback: deferInvalidationCallback,
     });
 
