@@ -30,6 +30,8 @@ const validLocales: { [key in Locale]: true } = {
 // a very large number of nodes in one action, and to avoid confusing editor staff
 // with an apparent large number of publish dependencies when localizing content
 export const pushLayerContentToMaster = () => {
+    logger.info('Starting job to publish layer content to master');
+
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
         repoParams: { repoId: contentRootRepoId, branch: 'master' },
         queryParams: {},
@@ -51,6 +53,10 @@ export const pushLayerContentToMaster = () => {
         }, {} as Record<string, true>);
 
         const missingNodes = nodeIdsInRootRepoMaster.filter((id) => !existingNodesSet[id]);
+        if (missingNodes.length === 0) {
+            logger.info(`No missing nodes found for ${repoId}`);
+            return;
+        }
 
         logger.info(`Pushing ${missingNodes.length} to master in layer repo ${repoId}`);
 
@@ -79,6 +85,8 @@ export const pushLayerContentToMaster = () => {
             }) ${JSON.stringify(result.failed)}`
         );
     });
+
+    logger.info('Finished job to publish layer content to master!');
 };
 
 const isValidLocale = (locale?: string): locale is Locale =>
