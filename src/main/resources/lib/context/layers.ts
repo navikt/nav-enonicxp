@@ -6,10 +6,13 @@ import { runInContext } from './run-in-context';
 import { logger } from '../utils/logging';
 import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
+import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-handlers';
 
 type LocaleToRepoIdMap = { [key in Locale]?: string };
 
 let localeToRepoIdMap: LocaleToRepoIdMap = {};
+
+const fifteenMinutesMs = 1000 * 60 * 15;
 
 const validLocales: { [key in Locale]: true } = {
     no: true,
@@ -23,8 +26,9 @@ const validLocales: { [key in Locale]: true } = {
 // Pushes any nodes which exists on master in the root project to master on
 // the child layers as well.
 //
-// We do this programatically as content studio tends to crash when publishing
-// a very large number of nodes in one action
+// We do this programatically, as content studio tends to crash when publishing
+// a very large number of nodes in one action, and to avoid confusing editor staff
+// with an apparent large number of publish dependencies when localizing content
 export const pushLayerContentToMaster = () => {
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
         repoParams: { repoId: contentRootRepoId, branch: 'master' },
@@ -59,11 +63,15 @@ export const pushLayerContentToMaster = () => {
             principals: ['role:system.admin'],
         });
 
+        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: fifteenMinutesMs });
+
         const result = repoConnection.push({
             keys: missingNodes,
             target: 'master',
             resolve: false,
         });
+
+        toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
         logger.info(
             `Result for ${repoId} // Success: (${result.success.length}) - Failed: (${
