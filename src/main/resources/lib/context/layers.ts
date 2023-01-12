@@ -7,9 +7,9 @@ import { logger } from '../utils/logging';
 import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
 
-type LocaleToLayerRepoIdMap = { [key in Locale]?: string };
+type LocaleToRepoIdMap = { [key in Locale]?: string };
 
-let localeToLayerRepoIdMap: LocaleToLayerRepoIdMap = {};
+let localeToRepoIdMap: LocaleToRepoIdMap = {};
 
 const validLocales: { [key in Locale]: true } = {
     no: true,
@@ -20,20 +20,25 @@ const validLocales: { [key in Locale]: true } = {
     uk: true,
 };
 
+// Pushes any nodes which exists on master in the root project to master on
+// the child layers as well.
+//
+// We do this programatically as content studio tends to crash when publishing
+// a very large number of nodes in one action
 export const pushLayerContentToMaster = () => {
-    const nodeIdsInMaster = batchedNodeQuery({
+    const nodeIdsInRootRepoMaster = batchedNodeQuery({
         repoParams: { repoId: contentRootRepoId, branch: 'master' },
         queryParams: {},
     }).hits.map((hit) => hit.id);
 
-    logger.info(`Found ${nodeIdsInMaster.length} nodes in root repo`);
+    logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
 
-    Object.values(localeToLayerRepoIdMap).forEach((repoId) => {
+    Object.values(localeToRepoIdMap).forEach((repoId) => {
         if (repoId === contentRootRepoId) {
             return;
         }
 
-        const existingNodes = batchedNodeQuery({
+        const existingNodesSet = batchedNodeQuery({
             repoParams: { repoId: repoId, branch: 'master' },
             queryParams: {},
         }).hits.reduce((acc, hit) => {
@@ -41,9 +46,9 @@ export const pushLayerContentToMaster = () => {
             return acc;
         }, {} as Record<string, true>);
 
-        const missingNodes = nodeIdsInMaster.filter((id) => !existingNodes[id]);
+        const missingNodes = nodeIdsInRootRepoMaster.filter((id) => !existingNodesSet[id]);
 
-        logger.info(`Pushing ${missingNodes.length} to master in repo ${repoId}`);
+        logger.info(`Pushing ${missingNodes.length} to master in layer repo ${repoId}`);
 
         const repoConnection = nodeLib.connect({
             repoId: repoId,
@@ -61,7 +66,7 @@ export const pushLayerContentToMaster = () => {
         });
 
         logger.info(
-            `Result for ${repoId} // Success: ${result.success.length} - Failed: (${
+            `Result for ${repoId} // Success: (${result.success.length}) - Failed: (${
                 result.failed.length
             }) ${JSON.stringify(result.failed)}`
         );
@@ -73,7 +78,7 @@ const isValidLocale = (locale?: string): locale is Locale =>
 
 const populateWithChildLayers = (
     projects: readonly Project[],
-    newMap: LocaleToLayerRepoIdMap,
+    newMap: LocaleToRepoIdMap,
     parentId: string
 ) => {
     projects.forEach((project) => {
@@ -92,12 +97,10 @@ const populateWithChildLayers = (
     });
 };
 
-const refreshLayersMap = () => {
+const refreshLocaleLayersRepoMap = () => {
     const projects = runInContext({ asAdmin: true }, () => projectLib.list());
 
-    logger.info(`Projects: ${JSON.stringify(projects)}`);
-
-    const newMap: LocaleToLayerRepoIdMap = {};
+    const newMap: LocaleToRepoIdMap = {};
 
     const rootProject = projects.find((project) => project.id === contentRootProjectId);
     if (!rootProject || !isValidLocale(rootProject.language)) {
@@ -109,13 +112,13 @@ const refreshLayersMap = () => {
 
     populateWithChildLayers(projects, newMap, contentRootProjectId);
 
-    localeToLayerRepoIdMap = newMap;
+    localeToRepoIdMap = newMap;
 };
 
 let hasSetupListeners = false;
 
-export const initializeLayersMap = () => {
-    refreshLayersMap();
+export const initLayersMap = () => {
+    refreshLocaleLayersRepoMap();
 
     if (hasSetupListeners) {
         return;
@@ -136,7 +139,7 @@ export const initializeLayersMap = () => {
                     event
                 )}`
             );
-            refreshLayersMap();
+            refreshLocaleLayersRepoMap();
         },
     });
 };
@@ -145,7 +148,7 @@ export const runInLocaleContext = <ReturnType>(
     func: () => ReturnType,
     locale: Locale
 ): ReturnType => {
-    const repoId = localeToLayerRepoIdMap[locale];
+    const repoId = localeToRepoIdMap[locale];
     if (!repoId) {
         logger.error(
             `Attempted to set locale context for ${locale} but no layer was found for this locale!`

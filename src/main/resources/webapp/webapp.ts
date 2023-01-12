@@ -49,9 +49,7 @@ const validActions: ActionsMap = {
     },
     pushLayerContentToMaster: {
         description: 'Push layer content to master',
-        callback: () => {
-            pushLayerContentToMaster();
-        },
+        callback: pushLayerContentToMaster,
     },
 };
 
