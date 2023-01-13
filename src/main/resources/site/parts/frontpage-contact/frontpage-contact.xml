@@ -16,7 +16,7 @@
                 </input>
                 <input type="TextArea" name="chatAlertText">
                     <label>Avvikstekst</label>
-                    <occurrences minimum="1" maximum="1" />
+                    <occurrences minimum="0" maximum="1" />
                 </input>
                 <input type="TextArea" name="chatIngress">
                     <label>Ingress</label>
