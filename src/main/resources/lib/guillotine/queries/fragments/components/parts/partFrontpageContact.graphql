@@ -1,5 +1,6 @@
 fragment partComponentFrontpageContact on Part_no_nav_navno_frontpage_contact {
     chatTitle
+    chatAlertText
     chatIngress
     contactUsTitle
     contactUsIngress
