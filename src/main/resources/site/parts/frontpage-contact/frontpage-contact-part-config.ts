@@ -13,7 +13,7 @@ export interface FrontpageContactPartConfig {
   /**
    * Avvikstekst
    */
-  chatAlertText: string;
+  chatAlertText?: string;
 
   /**
    * Ingress
@@ -24,6 +24,11 @@ export interface FrontpageContactPartConfig {
    * Header
    */
   contactUsTitle: string;
+
+  /**
+   * Avvikstekst
+   */
+  contactUsAlertText?: string;
 
   /**
    * Ingress
