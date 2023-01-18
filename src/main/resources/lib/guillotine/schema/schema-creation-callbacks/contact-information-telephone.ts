@@ -20,18 +20,50 @@ const getSpecialOpeningHoursObject = (specialOpeningHours: SpecialOpeningHours) 
     }
 
     if (specialOpeningHours._selected === 'shared') {
-        const id = specialOpeningHours.shared.sharedSpecialOpeningHours;
-        if (!id) {
-            return null;
+        const specialOpeningHoursIds = forceArray(
+            specialOpeningHours.shared.sharedSpecialOpeningHours
+        );
+
+        const matchingDocuments = contentLib.query({
+            query: `_id = "${specialOpeningHoursIds.join('" OR _id = "')}"`,
+            contentTypes: ['no.nav.navno:contact-information'],
+            count: 5555,
+        });
+
+        const activeIds: string[] = [];
+
+        const relevantWithinDate = matchingDocuments.hits.reduce((collection: any[], doc: any) => {
+            if (doc.data.contactType._selected !== 'telephone') {
+                return collection;
+            }
+            const { specialOpeningHours } = doc.data.contactType.telephone;
+            const { validFrom, validTo } = doc.custom;
+            const validFromMS = Date.parse(validFrom);
+            const validToMS = Date.parse(validTo);
+            const startDateWithOffset = validFromMS - 1000 * 60 * 60 * 24;
+            const endDateWithOffset = validToMS + 1000 * 60 * 60 * 24;
+            const today = Date.now();
+
+            const isActive = today > startDateWithOffset && today < endDateWithOffset;
+
+            if (isActive) {
+                activeIds.push(specialOpeningHours._id);
+            }
+
+            return [...collection, specialOpeningHours];
+        }, []);
+
+        if (relevantWithinDate.length > 1) {
+            log.error(
+                `More than one active special opening hour found for contact information: ${activeIds.join(
+                    ','
+                )}`
+            );
         }
 
-        const openingHoursDocument = contentLib.get<'no.nav.navno:contact-information'>({
-            key: id,
-        }) as any;
-        if (!openingHoursDocument?.data?.contactType) {
-            return null;
-        }
-        return openingHoursDocument.data.contactType.telephone.specialOpeningHours;
+        // Should only be one special opening hour object. If there are more, return the first one.
+        // This practice has been OK'ed by editors.
+        return relevantWithinDate[0];
     }
 
     return specialOpeningHours;
