@@ -7,7 +7,7 @@
             <label>Tabell</label>
             <occurrences maximum="1" minimum="1"/>
             <config>
-                <include>Undo | Redo</include>
+                <include>Undo Redo RemoveFormat</include>
             </config>
         </input>
     </form>

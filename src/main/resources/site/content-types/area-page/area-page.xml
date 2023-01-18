@@ -41,7 +41,7 @@
                             <label>Innhold</label>
                             <occurrences minimum="0" maximum="1"/>
                             <config>
-                                <include>Undo Redo Bold</include>
+                                <include>Undo Redo Bold RemoveFormat</include>
                                 <exclude>JustifyBlock JustifyLeft JustifyCenter JustifyRight BulletedList NumberedList
                                     Outdent Indent Anchor Link Unlink Table Underline
                                 </exclude>
