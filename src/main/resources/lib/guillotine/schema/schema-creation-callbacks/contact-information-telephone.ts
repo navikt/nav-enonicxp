@@ -1,72 +1,98 @@
 import contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
-import { ContactInformation } from '../../../../site/content-types/contact-information/contact-information';
 import { forceArray } from '../../../utils/nav-utils';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { ContactInformation } from 'site/content-types/contact-information/contact-information';
 
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,
  * just return the original  specialOpeningHoursobject.
  */
 
-type SpecialOpeningHours = Extract<
+type RawSpecialOpeningHours = Extract<
     ContactInformation['contactType'],
     { _selected: 'telephone' }
 >['telephone']['specialOpeningHours'];
 
-const getSpecialOpeningHoursObject = (specialOpeningHours: SpecialOpeningHours) => {
+type CustomSpecialOpeningHours = Extract<RawSpecialOpeningHours, { _selected: 'custom' }>;
+
+const getSpecialOpeningHoursObject = (
+    specialOpeningHours: RawSpecialOpeningHours
+): CustomSpecialOpeningHours | null => {
     if (!specialOpeningHours) {
         return null;
     }
 
-    if (specialOpeningHours._selected === 'shared') {
-        const specialOpeningHoursIds = forceArray(
-            specialOpeningHours.shared.sharedSpecialOpeningHours
-        );
+    // The specialOpeningHours is a custom object,
+    // containing actual opening hours (ie. not a reference to a shared object),
+    // so just return it without further lookup.
+    if (specialOpeningHours._selected === 'custom') {
+        return specialOpeningHours;
+    }
 
-        const matchingDocuments = contentLib.query({
-            query: `_id = "${specialOpeningHoursIds.join('" OR _id = "')}"`,
-            contentTypes: ['no.nav.navno:contact-information'],
-            count: 5555,
-        });
+    const sharedSpecialOpeningIds = forceArray(
+        specialOpeningHours.shared.sharedSpecialOpeningHours
+    );
 
-        const activeIds: string[] = [];
+    const referencedDocuments = contentLib.query({
+        query: `_id = "${sharedSpecialOpeningIds.join('" OR _id = "')}"`,
+        contentTypes: ['no.nav.navno:contact-information'],
+        count: 5555,
+    });
 
-        const relevantWithinDate = matchingDocuments.hits.reduce((collection: any[], doc: any) => {
+    const relevantDocumentIds: string[] = [];
+
+    const relevantWithinDate = referencedDocuments.hits.reduce(
+        (
+            collection: CustomSpecialOpeningHours[],
+            doc: contentLib.Content<'no.nav.navno:contact-information'>
+        ) => {
             if (doc.data.contactType._selected !== 'telephone') {
                 return collection;
             }
-            const { specialOpeningHours } = doc.data.contactType.telephone;
-            const { validFrom, validTo } = doc.custom;
+            const specialOpeningHours = doc.data.contactType?.telephone
+                .specialOpeningHours as CustomSpecialOpeningHours;
+
+            if (!specialOpeningHours) {
+                return collection;
+            }
+            const { validFrom, validTo } = specialOpeningHours.custom;
+
+            if (!validFrom || !validTo) {
+                return collection;
+            }
+
             const validFromMS = Date.parse(validFrom);
             const validToMS = Date.parse(validTo);
             const startDateWithOffset = validFromMS - 1000 * 60 * 60 * 24;
             const endDateWithOffset = validToMS + 1000 * 60 * 60 * 24;
             const today = Date.now();
 
-            const isActive = today > startDateWithOffset && today < endDateWithOffset;
+            const isRelevant = today > startDateWithOffset && today < endDateWithOffset;
 
-            if (isActive) {
-                activeIds.push(specialOpeningHours._id);
+            if (isRelevant) {
+                relevantDocumentIds.push(doc._id);
+                return [...collection, specialOpeningHours];
             }
 
-            return [...collection, specialOpeningHours];
-        }, []);
+            return [...collection];
+        },
+        []
+    );
 
-        if (relevantWithinDate.length > 1) {
-            log.error(
-                `More than one active special opening hour found for contact information: ${activeIds.join(
-                    ','
-                )}`
-            );
-        }
-
-        // Should only be one special opening hour object. If there are more, return the first one.
-        // This practice has been OK'ed by editors.
-        return relevantWithinDate[0];
+    if (relevantWithinDate.length > 1) {
+        log.error(
+            `More than one active special opening hour found for contact information: ${relevantDocumentIds.join(
+                ','
+            )}`
+        );
     }
 
-    return specialOpeningHours;
+    log.info(JSON.stringify(relevantWithinDate));
+
+    // Should only be one special opening hour object. If there are more, return the first one.
+    // This practice has been OK'ed by editors.
+    return relevantWithinDate[0];
 };
 
 export const contactInformationTelephoneCallback: CreationCallback = (context, params) => {
@@ -133,9 +159,8 @@ export const contactInformationTelephoneCallback: CreationCallback = (context, p
             },
         }),
         resolve: (env) => {
-            const specialOpeningHours = getSpecialOpeningHoursObject(
-                env.source.specialOpeningHours
-            );
+            const rawSpecialOpeningHours: RawSpecialOpeningHours = env.source.specialOpeningHours;
+            const specialOpeningHours = getSpecialOpeningHoursObject(rawSpecialOpeningHours);
 
             // No specialOpeningHours are actually set by the editors.
             if (specialOpeningHours?._selected !== 'custom') {

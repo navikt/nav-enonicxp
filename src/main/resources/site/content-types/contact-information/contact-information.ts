@@ -218,7 +218,7 @@ export interface ContactInformation {
                   /**
                    * Referer til felles spesielle åpningstider
                    */
-                  sharedSpecialOpeningHours: Array<string>;
+                  sharedSpecialOpeningHours?: Array<string>;
                 };
               }
             | {
