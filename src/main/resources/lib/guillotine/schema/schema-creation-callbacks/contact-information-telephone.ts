@@ -88,8 +88,6 @@ const getSpecialOpeningHoursObject = (
         );
     }
 
-    log.info(JSON.stringify(relevantWithinDate));
-
     // Should only be one special opening hour object. If there are more, return the first one.
     // This practice has been OK'ed by editors.
     return relevantWithinDate[0];
