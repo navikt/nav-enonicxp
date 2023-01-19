@@ -26,6 +26,11 @@ export interface FrontpageContactPartConfig {
   contactUsTitle: string;
 
   /**
+   * Avvikstekst
+   */
+  contactUsAlertText?: string;
+
+  /**
    * Ingress
    */
   contactUsIngress: string;
