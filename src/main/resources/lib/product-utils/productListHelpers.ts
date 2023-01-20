@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { forceArray } from '../utils/nav-utils';
 import { ContentTypeWithProductDetails, OverviewPageIllustrationIcon } from './types';

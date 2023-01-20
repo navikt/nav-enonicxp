@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { getParentPath } from '../../../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../../../lib/utils/branch-context';

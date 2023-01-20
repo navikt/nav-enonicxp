@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import clusterLib from '/lib/xp/cluster';
+import * as clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../utils/branch-context';

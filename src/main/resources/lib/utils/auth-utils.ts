@@ -1,6 +1,6 @@
 import authLib, { PrincipalKey } from '/lib/xp/auth';
 import contentLib, { Permission, PermissionsParams } from '/lib/xp/content';
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import { logger } from './logging';
 
 export const insufficientPermissionResponse = (requiredPermission: string) => ({

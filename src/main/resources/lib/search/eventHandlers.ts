@@ -1,6 +1,6 @@
-import eventLib from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
-import taskLib from '/lib/xp/task';
+import * as eventLib from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
+import * as taskLib from '/lib/xp/task';
 import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';

@@ -1,4 +1,4 @@
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { appDescriptor } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';

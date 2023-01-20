@@ -1,7 +1,7 @@
 import portalLib, { Component } from '/lib/xp/portal';
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import contentLib, { Content } from '/lib/xp/content';
-import commonLib from '/lib/xp/common';
+import * as commonLib from '/lib/xp/common';
 import { NodeComponent } from '../../types/components/component-node';
 import { forceArray } from './nav-utils';
 import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';

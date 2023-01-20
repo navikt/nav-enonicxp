@@ -1,4 +1,4 @@
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import cacheLib from '/lib/cache';
 import contentLib, { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';

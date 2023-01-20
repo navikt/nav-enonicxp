@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray } from '../utils/nav-utils';
 import {

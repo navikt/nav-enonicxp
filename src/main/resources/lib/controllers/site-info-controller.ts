@@ -1,5 +1,5 @@
 import contentLib, { Content } from '/lib/xp/content';
-import schedulerLib from '/lib/xp/scheduler';
+import * as schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
 import cacheLib from '/lib/cache';
 import { urls } from '../constants';

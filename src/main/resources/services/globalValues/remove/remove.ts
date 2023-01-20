@@ -1,4 +1,4 @@
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import {
     insufficientPermissionResponse,
     userIsAdmin,

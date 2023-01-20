@@ -1,4 +1,4 @@
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';

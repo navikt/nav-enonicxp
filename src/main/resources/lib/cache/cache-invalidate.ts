@@ -1,6 +1,6 @@
-import contentLib from '/lib/xp/content';
-import clusterLib from '/lib/xp/cluster';
-import taskLib from '/lib/xp/task';
+import * as contentLib from '/lib/xp/content';
+import * as clusterLib from '/lib/xp/cluster';
+import * as taskLib from '/lib/xp/task';
 import { frontendInvalidatePaths } from './frontend-cache';
 import { runInBranchContext } from '../utils/branch-context';
 import { findReferences } from './find-references';

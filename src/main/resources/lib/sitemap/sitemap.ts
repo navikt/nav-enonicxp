@@ -1,7 +1,7 @@
 import contentLib, { Content } from '/lib/xp/content';
-import taskLib from '/lib/xp/task';
-import eventLib from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
+import * as taskLib from '/lib/xp/task';
+import * as eventLib from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
 import { runInBranchContext } from '../utils/branch-context';

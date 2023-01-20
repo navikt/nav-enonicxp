@@ -1,6 +1,6 @@
-import contentLib from '/lib/xp/content';
-import clusterLib from '/lib/xp/cluster';
-import schedulerLib from '/lib/xp/scheduler';
+import * as contentLib from '/lib/xp/content';
+import * as clusterLib from '/lib/xp/cluster';
+import * as schedulerLib from '/lib/xp/scheduler';
 import { runInBranchContext } from '../utils/branch-context';
 import {
     getPrepublishJobName,

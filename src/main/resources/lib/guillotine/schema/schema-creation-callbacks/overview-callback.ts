@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getProductDataForOverviewPage } from '../../../product-utils/productList';

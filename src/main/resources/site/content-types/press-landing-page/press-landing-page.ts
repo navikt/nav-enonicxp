@@ -43,7 +43,7 @@ export interface PressLandingPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 
   /**
    * Velg eier

@@ -1,5 +1,5 @@
 import schedulerLib, { ScheduledJob } from '/lib/xp/scheduler';
-import taskLib from '/lib/xp/task';
+import * as taskLib from '/lib/xp/task';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { logger } from '../../lib/utils/logging';

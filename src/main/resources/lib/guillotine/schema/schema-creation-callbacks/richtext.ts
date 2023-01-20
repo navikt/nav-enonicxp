@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { hasValidCustomPath } from '../../../custom-paths/custom-paths';

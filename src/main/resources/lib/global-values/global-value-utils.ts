@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../utils/component-utils';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { forceArray } from '../utils/nav-utils';

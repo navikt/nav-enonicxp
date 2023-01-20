@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import nodeLib, { NodeContent } from '/lib/xp/node';
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 import { generateUUID, isUUID } from '../../../lib/utils/uuid';

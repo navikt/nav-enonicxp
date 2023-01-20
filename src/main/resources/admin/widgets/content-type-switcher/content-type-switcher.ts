@@ -1,5 +1,5 @@
-import contentLib from '/lib/xp/content';
-import portalLib from '/lib/xp/portal';
+import * as contentLib from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
 import { contentTypesInContentSwitcher } from '../../../lib/contenttype-lists';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';

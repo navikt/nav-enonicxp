@@ -1,4 +1,4 @@
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 
 // Note: the file/line arguments are injected at build-time via babel plugin and should not be set manually
 // Remember to update the plugin if you make any changes to affected functions

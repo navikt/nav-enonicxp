@@ -1,4 +1,4 @@
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import nodeLib, { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { getUnixTimeFromDateTimeString } from './nav-utils';

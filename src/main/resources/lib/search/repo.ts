@@ -1,4 +1,4 @@
-import repoLib from '/lib/xp/repo';
+import * as repoLib from '/lib/xp/repo';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../utils/branch-context';

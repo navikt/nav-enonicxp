@@ -23,7 +23,7 @@ export interface ToolsPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 
   /**
    * Kategorier
@@ -33,7 +33,7 @@ export interface ToolsPage {
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
 
   /**
    * Velg piktogram

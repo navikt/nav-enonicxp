@@ -3,7 +3,7 @@ import schedulerLib, {
     ScheduleTypeOneTime,
     PrincipalKeyUser,
 } from '/lib/xp/scheduler';
-import clusterLib from '/lib/xp/cluster';
+import * as clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { logger } from '../utils/logging';

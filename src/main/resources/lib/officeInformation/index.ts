@@ -1,8 +1,8 @@
 import contentLib, { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import commonLib from '/lib/xp/common';
-import taskLib from '/lib/xp/task';
-import contextLib from '/lib/xp/context';
+import * as commonLib from '/lib/xp/common';
+import * as taskLib from '/lib/xp/task';
+import * as contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';

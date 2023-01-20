@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage } from '../global-values/global-value-utils';
 import {

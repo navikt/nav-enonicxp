@@ -1,4 +1,4 @@
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';

@@ -1,7 +1,7 @@
-import contentLib from '/lib/xp/content';
-import nodeLib from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
 import graphQlLib from '/lib/graphql';
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';
 import { contentRepo } from '../../../../constants';
 import { logger } from '../../../../utils/logging';
