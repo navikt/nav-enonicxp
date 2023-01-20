@@ -1,6 +1,8 @@
 import * as portalLib from '/lib/xp/portal';
-import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
-import contentLib, { Content } from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
+import { NodeContent, RepoNode } from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';

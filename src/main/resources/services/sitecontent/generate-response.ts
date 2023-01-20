@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../../lib/utils/branch-context';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';

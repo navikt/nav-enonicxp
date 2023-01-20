@@ -1,3 +1,1 @@
-export default {
-    connect: () => ({}),
-};
+export const connect = () => ({});

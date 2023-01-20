@@ -13,7 +13,8 @@
  * */
 
 import * as contentLib from '/lib/xp/content';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
+import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInBranchContext } from '../utils/branch-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
@@ -86,7 +87,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
         );
     };
 
-    nodeLib.connect = function (connectArgs) {
+    (nodeLib.connect as typeof nodeLibConnectStandard) = function (connectArgs) {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
 
@@ -166,5 +167,5 @@ export const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
 
     (contentLib.get as typeof contentLibGetStandard) = contentLibGetStandard;
-    nodeLib.connect = nodeLibConnectStandard;
+    (nodeLib.connect as typeof nodeLibConnectStandard) = nodeLibConnectStandard;
 };

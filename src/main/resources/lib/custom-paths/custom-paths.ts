@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';
 import { stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';

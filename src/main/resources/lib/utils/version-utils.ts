@@ -1,5 +1,6 @@
 import * as contextLib from '/lib/xp/context';
-import nodeLib, { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
+import { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { getUnixTimeFromDateTimeString } from './nav-utils';
 import { contentLibGetStandard } from '../time-travel/standard-functions';

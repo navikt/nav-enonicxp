@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { contentRepo } from '../constants';
 import * as nodeLib from '/lib/xp/node';

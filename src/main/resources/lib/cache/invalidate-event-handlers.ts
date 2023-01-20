@@ -1,4 +1,5 @@
-import eventLib, { EnonicEvent } from '/lib/xp/event';
+import * as eventLib from '/lib/xp/event';
+import { EnonicEvent } from '/lib/xp/event';
 import { contentRepo } from '../constants';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { addReliableEventListener } from '../events/reliable-custom-events';

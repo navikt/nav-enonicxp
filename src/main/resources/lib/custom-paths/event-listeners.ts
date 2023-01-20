@@ -1,4 +1,5 @@
-import eventLib, { EnonicEvent } from '/lib/xp/event';
+import * as eventLib from '/lib/xp/event';
+import { EnonicEvent } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import * as contentLib from '/lib/xp/content';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';

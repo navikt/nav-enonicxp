@@ -1,5 +1,7 @@
-import authLib, { PrincipalKey } from '/lib/xp/auth';
-import contentLib, { Permission, PermissionsParams } from '/lib/xp/content';
+import * as authLib from '/lib/xp/auth';
+import { PrincipalKey } from '/lib/xp/auth';
+import * as contentLib from '/lib/xp/content';
+import { Permission, PermissionsParams } from '/lib/xp/content';
 import * as contextLib from '/lib/xp/context';
 import { logger } from './logging';
 

@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
 import cacheLib from '/lib/cache';

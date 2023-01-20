@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import * as taskLib from '/lib/xp/task';

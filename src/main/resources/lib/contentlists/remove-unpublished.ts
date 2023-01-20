@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import { runInBranchContext } from '../utils/branch-context';

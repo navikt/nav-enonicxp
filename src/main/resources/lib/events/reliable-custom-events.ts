@@ -1,4 +1,5 @@
-import eventLib, { EnonicEvent } from '/lib/xp/event';
+import * as eventLib from '/lib/xp/event';
+import { EnonicEvent } from '/lib/xp/event';
 import * as taskLib from '/lib/xp/task';
 import { generateUUID } from '../utils/uuid';
 import { clusterInfo } from '../utils/cluster-utils';

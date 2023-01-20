@@ -1,4 +1,5 @@
-import nodeLib, { RepoNode, RepoConnection } from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
+import { RepoNode, RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { dateTimesAreEqual, fixDateFormat, forceArray } from '../utils/nav-utils';
 import { searchRepo } from '../constants';

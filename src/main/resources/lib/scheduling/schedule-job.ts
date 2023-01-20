@@ -1,8 +1,5 @@
-import schedulerLib, {
-    ScheduleTypeCron,
-    ScheduleTypeOneTime,
-    PrincipalKeyUser,
-} from '/lib/xp/scheduler';
+import * as schedulerLib from '/lib/xp/scheduler';
+import { ScheduleTypeCron, ScheduleTypeOneTime, PrincipalKeyUser } from '/lib/xp/scheduler';
 import * as clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
 import { runInBranchContext } from '../utils/branch-context';

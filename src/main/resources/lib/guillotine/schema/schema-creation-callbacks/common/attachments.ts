@@ -1,4 +1,5 @@
-import contentLib, { Attachment } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Attachment } from '/lib/xp/content';
 import * as ioLib from '/lib/xp/io';
 import { logger } from '../../../../utils/logging';
 

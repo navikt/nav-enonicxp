@@ -1,5 +1,7 @@
-import contentLib, { Content } from '/lib/xp/content';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
+import { RepoConnection } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
 import { forceArray } from '../../../utils/nav-utils';
