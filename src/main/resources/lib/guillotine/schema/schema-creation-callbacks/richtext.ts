@@ -33,8 +33,11 @@ const insertCustomPaths = (processedHtml: string, links?: Links[]) => {
         const { customPath } = content.data;
 
         return html.replace(
-            new RegExp(`<a href="[^"]*" data-link-ref="${linkRef}"`, 'g'),
-            `<a href="${customPath}"`
+            new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),
+            (_, hrefCapture) => {
+                const anchorId = hrefCapture.split('#')[1];
+                return `<a href="${customPath}${anchorId ? `#${anchorId}` : ''}"`;
+            }
         );
     }, processedHtml);
 };
