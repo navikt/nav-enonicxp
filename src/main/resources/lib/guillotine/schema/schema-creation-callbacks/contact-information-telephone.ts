@@ -34,8 +34,12 @@ const getSpecialOpeningHoursObject = (
     );
 
     const referencedDocuments = contentLib.query({
-        query: `_id = "${sharedSpecialOpeningIds.join('" OR _id = "')}"`,
         contentTypes: ['no.nav.navno:contact-information'],
+        filters: {
+            ids: {
+                values: sharedSpecialOpeningIds,
+            },
+        },
         count: 999,
     });
 
