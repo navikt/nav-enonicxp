@@ -4,6 +4,8 @@ import { ContactInformation } from '../../../../site/content-types/contact-infor
 import { forceArray } from '../../../utils/nav-utils';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 
+const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
+
 /* When a shared referance is made, only the id will come in as part of the object.
  * If this is the case, retrieve the content manually. Otherwise,
  * just return the original  specialOpeningHoursobject.
@@ -67,8 +69,8 @@ const getSpecialOpeningHoursObject = (
             }
 
             // Increase the range by 1 day to take 24h cache into account.
-            const rangeFrom = Date.parse(validFrom) - 1000 * 60 * 60 * 24;
-            const rangeTo = Date.parse(validTo) + 1000 * 60 * 60 * 24;
+            const rangeFrom = Date.parse(validFrom) - MILLISECONDS_IN_A_DAY;
+            const rangeTo = Date.parse(validTo) + MILLISECONDS_IN_A_DAY;
             const today = Date.now();
 
             const isWithinRange = today > rangeFrom && today < rangeTo;
@@ -78,7 +80,7 @@ const getSpecialOpeningHoursObject = (
                 return [...collection, specialOpeningHours];
             }
 
-            return [...collection];
+            return collection;
         },
         []
     );
