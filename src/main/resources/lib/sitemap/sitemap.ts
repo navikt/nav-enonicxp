@@ -4,7 +4,7 @@ import eventLib from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
-import { runInBranchContext } from '../context/branches';
+import { runInContext } from '../context/run-in-context';
 import { contentRootRepoId, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
@@ -124,11 +124,11 @@ const getContent = (path: string) => {
         return null;
     }
 
-    return runInBranchContext(() => contentLib.get({ key: path }), 'master');
+    return runInContext({ branch: 'master' }, () => contentLib.get({ key: path }));
 };
 
 const updateSitemapEntry = (path: string) =>
-    runInBranchContext(() => {
+    runInContext({ branch: 'master' }, () => {
         const content = getContent(path);
         if (!content) {
             return;
@@ -141,7 +141,7 @@ const updateSitemapEntry = (path: string) =>
         } else if (sitemapData.get(key)) {
             sitemapData.remove(key);
         }
-    }, 'master');
+    });
 
 const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): SitemapEntry[] => {
     const entriesBatch = contentLib
@@ -178,42 +178,45 @@ export const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateAndBroadcastSitemapData = () =>
-    runInBranchContext(() => {
-        if (clusterLib.isMaster() && !isGenerating) {
-            isGenerating = true;
+const generateAndBroadcastSitemapData = () => {
+    if (!clusterLib.isMaster() || isGenerating) {
+        return;
+    }
 
-            taskLib.executeFunction({
-                description: 'sitemap-generator-task',
-                func: () => {
-                    try {
-                        logger.info('Started generating sitemap data');
-                        const startTime = Date.now();
-                        const sitemapEntries = getSitemapEntries();
+    isGenerating = true;
 
-                        sendReliableEvent({
-                            type: eventTypeSitemapGenerated,
-                            data: { entries: sitemapEntries },
-                        });
+    runInContext({ branch: 'master' }, () => {
+        taskLib.executeFunction({
+            description: 'sitemap-generator-task',
+            func: () => {
+                try {
+                    logger.info('Started generating sitemap data');
+                    const startTime = Date.now();
+                    const sitemapEntries = getSitemapEntries();
 
-                        logger.info(
-                            `Finished generating sitemap data with ${
-                                sitemapEntries.length
-                            } entries after ${Date.now() - startTime}ms`
-                        );
+                    sendReliableEvent({
+                        type: eventTypeSitemapGenerated,
+                        data: { entries: sitemapEntries },
+                    });
 
-                        if (sitemapEntries.length > maxCount) {
-                            logger.error(`Sitemap entries count exceeds recommended maximum`);
-                        }
-                    } catch (e) {
-                        logger.critical(`Error while generating sitemap - ${e}`);
-                    } finally {
-                        isGenerating = false;
+                    logger.info(
+                        `Finished generating sitemap data with ${
+                            sitemapEntries.length
+                        } entries after ${Date.now() - startTime}ms`
+                    );
+
+                    if (sitemapEntries.length > maxCount) {
+                        logger.error(`Sitemap entries count exceeds recommended maximum`);
                     }
-                },
-            });
-        }
-    }, 'master');
+                } catch (e) {
+                    logger.critical(`Error while generating sitemap - ${e}`);
+                } finally {
+                    isGenerating = false;
+                }
+            },
+        });
+    });
+};
 
 export const generateSitemapDataAndActivateSchedule = () => {
     generateAndBroadcastSitemapData();

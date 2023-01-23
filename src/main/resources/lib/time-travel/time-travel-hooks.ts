@@ -15,7 +15,7 @@
 import contentLib from '/lib/xp/content';
 import nodeLib, { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
-import { runInBranchContext } from '../context/branches';
+import { runInContext } from '../context/run-in-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
@@ -76,13 +76,11 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
 
         // If a content node version from the requested time was found, retrieve this
         // content with standard functionality
-        return runInBranchContext(
-            () =>
-                contentLibGetStandard({
-                    key: requestedVersion.nodeId,
-                    versionId: requestedVersion.versionId,
-                }),
-            'draft'
+        return runInContext({ branch: 'draft' }, () =>
+            contentLibGetStandard({
+                key: requestedVersion.nodeId,
+                versionId: requestedVersion.versionId,
+            })
         );
     };
 

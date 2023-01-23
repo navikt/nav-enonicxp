@@ -7,7 +7,7 @@ import {
     removeDuplicates as _removeDuplicates,
     stringArrayToSet,
 } from '../utils/nav-utils';
-import { runInBranchContext } from '../context/branches';
+import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
     contentTypesWithProductDetails,
@@ -186,7 +186,7 @@ const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-art
 };
 
 const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]) => {
-    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+    const content = runInContext({ branch }, () => contentLib.get({ key: id }));
 
     if (!content) {
         return getExplicitReferences(id);
@@ -254,7 +254,7 @@ const _findReferences = ({
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
-    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+    const content = runInContext({ branch }, () => contentLib.get({ key: id }));
     const initialRefs = content ? [content] : [];
 
     return _findReferences({ id, branch, prevReferences: initialRefs });

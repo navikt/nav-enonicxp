@@ -1,9 +1,9 @@
 import graphQlLib from '/lib/graphql';
 import { schema } from '../schema/schema';
-import { runInBranchContext } from '../../context/branches';
 import { RepoBranch } from '../../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './merge-json';
 import { logger } from '../../utils/logging';
+import { runInContext } from '../../context/run-in-context';
 
 // We don't have any good Typescript integration with Guillotine/GraphQL atm
 // so just return as any for now...
@@ -34,9 +34,8 @@ export const runGuillotineQuery = ({
     params = {},
     throwOnErrors = false,
 }: GuillotineQueryParams) => {
-    const result = runInBranchContext(
-        () => graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params),
-        branch
+    const result = runInContext({ branch, asAdmin: true }, () =>
+        graphQlLib.execute<undefined, GraphQLResponse>(schema, query, params)
     );
 
     const { data, errors } = result;

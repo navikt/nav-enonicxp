@@ -4,7 +4,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
-import { runInBranchContext } from '../context/branches';
+import { runInContext } from '../context/run-in-context';
 import { contentRootRepoId } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 
@@ -38,7 +38,7 @@ const getSituationsLayout = (
 };
 
 const getRelevantSituationPages = (content: AreaPageNodeContent) =>
-    runInBranchContext(() => {
+    runInContext({ branch: 'master' }, () => {
         const { language: requestedLanguage, data } = content;
         const { area, audience } = data;
 
@@ -107,7 +107,7 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
         });
 
         return requestedLanguageSituationPages;
-    }, 'master');
+    });
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
     type: 'part',

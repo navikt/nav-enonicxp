@@ -89,7 +89,7 @@ export const pushLayerContentToMaster = () => {
     logger.info('Finished job to publish layer content to master!');
 };
 
-const isValidLocale = (locale?: string): locale is Locale =>
+export const isValidLocale = (locale?: string): locale is Locale =>
     !!(locale && validLocales[locale as Locale]);
 
 const populateWithChildLayers = (
