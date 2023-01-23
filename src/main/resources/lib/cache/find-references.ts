@@ -17,7 +17,7 @@ import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
 
-const MAX_DEPTH = 3;
+const MAX_DEPTH = 5;
 
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
