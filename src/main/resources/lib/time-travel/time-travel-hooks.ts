@@ -16,7 +16,7 @@ import * as contentLib from '/lib/xp/content';
 import * as nodeLib from '/lib/xp/node';
 import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { getCurrentThreadId } from '../utils/nav-utils';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';

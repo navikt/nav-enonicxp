@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { runWithTimeTravel } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { getPublishedVersionTimestamps } from '../utils/version-utils';

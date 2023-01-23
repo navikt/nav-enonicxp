@@ -3,7 +3,7 @@ import {
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { runInBranchContext } from '../../../lib/context/branches';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';

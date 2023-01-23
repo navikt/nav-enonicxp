@@ -10,7 +10,7 @@ import {
     removeDuplicates,
 } from './nav-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
-import { runInBranchContext } from './branch-context';
+import { runInBranchContext } from '../context/branches';
 import { logger } from './logging';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';

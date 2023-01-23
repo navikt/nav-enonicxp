@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import { frontendInvalidatePaths } from './frontend-cache';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';

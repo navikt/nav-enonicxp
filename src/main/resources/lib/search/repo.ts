@@ -1,7 +1,7 @@
 import * as repoLib from '/lib/xp/repo';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
-import { runInContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import { searchRepo } from '../constants';
 import {
     getSearchRepoConnection,

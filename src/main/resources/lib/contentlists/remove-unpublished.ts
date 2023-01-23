@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from '../utils/logging';

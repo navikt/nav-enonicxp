@@ -5,8 +5,8 @@ import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
-import { runInBranchContext } from '../utils/branch-context';
-import { contentRepo, urls } from '../constants';
+import { runInBranchContext } from '../context/branches';
+import { contentRootRepoId, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
@@ -274,7 +274,7 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === contentRepo) {
+                if (node.branch === 'master' && node.repo === contentRootRepoId) {
                     const xpPath = node.path.replace(/^\/content/, '');
                     updateSitemapEntry(xpPath);
                 }

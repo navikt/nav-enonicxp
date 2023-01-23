@@ -8,7 +8,7 @@ import {
     removeDuplicates as _removeDuplicates,
     stringArrayToSet,
 } from '../utils/nav-utils';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
     contentTypesWithProductDetails,

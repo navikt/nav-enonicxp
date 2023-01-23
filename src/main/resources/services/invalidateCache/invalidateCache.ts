@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
 import { cacheInvalidateEventName } from '../../lib/cache/cache-invalidate';
 import { NodeEventData } from '../../lib/cache/utils';
-import { contentRepo } from '../../lib/constants';
+import { contentRootRepoId } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
 
 export const get = (req: XP.Request) => {
@@ -30,7 +30,7 @@ export const get = (req: XP.Request) => {
 
     sendReliableEvent<NodeEventData>({
         type: cacheInvalidateEventName,
-        data: { id: content._id, path: content._path, branch: 'master', repo: contentRepo },
+        data: { id: content._id, path: content._path, branch: 'master', repo: contentRootRepoId },
     });
 
     logger.info(`Manually triggered cache invalidation for ${content._path}`);

@@ -3,7 +3,7 @@ import * as contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { UpdateOfficeBranchConfig } from '../../tasks/update-office-branch/update-office-branch-config';
 import { logger } from '../utils/logging';
-import { contentRepo } from '../constants';
+import { contentRootRepoId } from '../constants';
 import { processAllOfficeBranches, fetchAllOfficeBranchesFromNorg } from './update';
 
 const officeBranchFetchTaskName = 'no.nav.navno:update-office-branch';
@@ -53,7 +53,7 @@ export const runOfficeBranchFetchTask = (retry?: boolean) => {
 
     contextLib.run(
         {
-            repository: contentRepo,
+            repository: contentRootRepoId,
             user: {
                 login: 'su',
                 idProvider: 'system',

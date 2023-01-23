@@ -3,7 +3,7 @@ import * as nodeLib from '/lib/xp/node';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInBranchContext } from '../../lib/context/branches';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
