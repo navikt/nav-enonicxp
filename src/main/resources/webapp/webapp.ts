@@ -2,7 +2,7 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import eventLib from '/lib/xp/event';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
-import { runInBranchContext } from '../lib/utils/branch-context';
+import { runInBranchContext } from '../lib/context/branches';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
@@ -10,6 +10,7 @@ import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
 import { searchNodesUpdateAbortEvent } from '../lib/search/eventHandlers';
+import { pushLayerContentToMaster } from '../lib/context/layers';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -45,6 +46,10 @@ const validActions: ActionsMap = {
                 distributed: true,
             });
         },
+    },
+    pushLayerContentToMaster: {
+        description: 'Push layer content to master',
+        callback: pushLayerContentToMaster,
     },
 };
 

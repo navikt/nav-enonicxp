@@ -3,5 +3,5 @@ export interface Audience {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 }

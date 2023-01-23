@@ -2,7 +2,7 @@ import contentLib, { Content } from '/lib/xp/content';
 import clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
-import { runInContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import { SearchConfigDescriptor } from '../../types/content-types/content-config';
 import { forceArray } from '../utils/nav-utils';
 import { getSearchRepoConnection, searchRepoConfigNode } from './utils';

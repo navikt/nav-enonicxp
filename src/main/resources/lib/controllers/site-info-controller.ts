@@ -5,7 +5,7 @@ import cacheLib from '/lib/cache';
 import { urls } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../utils/cluster-utils';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
 

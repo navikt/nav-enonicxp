@@ -23,7 +23,7 @@ export interface GenericPageData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 
   /**
    * Velg piktogram

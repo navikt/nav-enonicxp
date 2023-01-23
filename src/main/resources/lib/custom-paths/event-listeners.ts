@@ -2,7 +2,7 @@ import eventLib, { EnonicEvent } from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import contentLib from '/lib/xp/content';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInBranchContext } from '../context/branches';
 import { logger } from '../utils/logging';
 
 // When a content is duplicated, we don't want the custom path

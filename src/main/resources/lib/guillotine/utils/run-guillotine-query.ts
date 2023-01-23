@@ -1,6 +1,6 @@
 import graphQlLib from '/lib/graphql';
 import { schema } from '../schema/schema';
-import { runInBranchContext } from '../../utils/branch-context';
+import { runInBranchContext } from '../../context/branches';
 import { RepoBranch } from '../../../types/common';
 import { mergeGuillotineArray, mergeGuillotineObject } from './merge-json';
 import { logger } from '../../utils/logging';

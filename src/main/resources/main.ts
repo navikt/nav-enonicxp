@@ -19,8 +19,10 @@ import { activateSearchIndexEventHandlers } from './lib/search/eventHandlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/repo';
+import { initLayersMap } from './lib/context/layers';
 
 updateClusterInfo();
+initLayersMap();
 
 startReliableEventAckListener();
 activateCacheEventListeners();

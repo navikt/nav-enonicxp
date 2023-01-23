@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { getParentPath } from '../../../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../../../lib/utils/branch-context';
+import { runInBranchContext } from '../../../../lib/context/branches';
 import { logger } from '../../../../lib/utils/logging';
 
 const view = resolve('./archive-restore-response.html');

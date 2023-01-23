@@ -1,7 +1,7 @@
 import contentLib from '/lib/xp/content';
 import portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { runInBranchContext } from '../../../lib/context/branches';
 
 const view = resolve('./invalidate-cache.html');
 

@@ -4,7 +4,7 @@ import portalLib from '/lib/xp/portal';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInBranchContext } from '../../lib/context/branches';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 

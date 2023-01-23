@@ -1,4 +1,4 @@
-import { isValidBranch } from '../../lib/utils/branch-context';
+import { isValidBranch } from '../../lib/context/branches';
 import { getResponseFromCache } from './cache';
 import { getSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';

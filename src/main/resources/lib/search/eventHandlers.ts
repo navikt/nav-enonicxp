@@ -3,7 +3,7 @@ import clusterLib from '/lib/xp/cluster';
 import taskLib from '/lib/xp/task';
 import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
-import { contentRepo } from '../constants';
+import { contentRootRepoId } from '../constants';
 import { updateSearchNode } from './onContentUpdate';
 import { revalidateAllSearchNodes, revalidateAllSearchNodesAbort } from './onConfigUpdate';
 import {
@@ -124,7 +124,7 @@ export const activateSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.repo !== contentRepo || nodeData.branch !== 'master') {
+                if (nodeData.repo !== contentRootRepoId || nodeData.branch !== 'master') {
                     return;
                 }
 
