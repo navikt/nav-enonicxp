@@ -1,8 +1,8 @@
-#import "../../mixins/contentListShortFragment.graphql"
+#import "../../mixins/contentListProductTargetFragment.graphql"
 
 fragment partFrontpageShortcuts on Part_no_nav_navno_frontpage_shortcuts {
     title
     contentList {
-        ...contentListShortMixin
+        ...contentListProductTargetMixin
     }
 }
