@@ -3,7 +3,7 @@ import { getResponseFromCache } from './cache';
 import { getSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { getLocaleFromRepoId, isValidLocale } from '../../lib/context/layers';
+import { isValidLocale } from '../../lib/context/layers';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -17,14 +17,7 @@ export const get = (req: XP.Request) => {
     }
 
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const {
-        id: idOrPath,
-        branch = 'master',
-        preview,
-        cacheKey,
-        locale = 'no',
-        repoId,
-    } = req.params;
+    const { id: idOrPath, branch = 'master', preview, cacheKey, locale = 'no' } = req.params;
 
     if (!idOrPath) {
         return {
@@ -57,11 +50,9 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const localeActual = repoId ? getLocaleFromRepoId(repoId) : locale;
-
         const content = getResponseFromCache(
             idOrPath,
-            () => getSitecontentResponse(idOrPath, branch, localeActual, preview === 'true'),
+            () => getSitecontentResponse(idOrPath, branch, locale, preview === 'true'),
             cacheKey
         );
 

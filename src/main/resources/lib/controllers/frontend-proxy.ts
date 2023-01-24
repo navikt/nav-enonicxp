@@ -4,6 +4,7 @@ import { urls } from '../constants';
 import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { contentTypesRenderedByEditorFrontend } from '../contenttype-lists';
+import { getLocaleFromRepoId } from '../context/layers';
 
 const loopbackCheckParam = 'fromXp';
 
@@ -89,7 +90,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
                 ...req.params,
                 [loopbackCheckParam]: 'true',
                 mode: req.mode,
-                repoId: req.repositoryId,
+                locale: getLocaleFromRepoId(req.repositoryId),
             },
         });
 
