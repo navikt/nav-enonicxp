@@ -64,3 +64,5 @@ node_modules/
 .enonic
 /guillotine-schema.graphql
 /coverage/
+
+/bin
