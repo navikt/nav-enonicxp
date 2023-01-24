@@ -48,9 +48,17 @@ const validActions: ActionsMap = {
         },
     },
     pushLayerContentToMaster: {
-        description: 'Push layer content to master',
-        callback: pushLayerContentToMaster,
+        description:
+            'Push manglende layer content til master (bør gjøres etter opprettelse av nytt layer)',
+        callback: () => pushLayerContentToMaster(true),
     },
+    ...(app.config.env !== 'p' && {
+        pushLayerContentToMasterFull: {
+            description:
+                'Push ALT layer content til master (OBS: denne kan føre til at avpublisert innhold i layeret blir republisert! Ikke la denne være aktiv i prod med mindre det er et spesielt behov :))',
+            callback: () => pushLayerContentToMaster(false),
+        },
+    }),
 };
 
 type Params = {

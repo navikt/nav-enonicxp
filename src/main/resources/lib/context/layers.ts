@@ -9,8 +9,10 @@ import { batchedNodeQuery } from '../utils/batched-query';
 import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-handlers';
 
 type LocaleToRepoIdMap = { [key in Locale]?: string };
+type RepoIdToLocaleMap = { [key: string]: Locale };
 
 let localeToRepoIdMap: LocaleToRepoIdMap = {};
+let repoIdToLocaleMap: RepoIdToLocaleMap = {};
 
 const fifteenMinutesMs = 1000 * 60 * 15;
 
@@ -23,13 +25,18 @@ const validLocales: { [key in Locale]: true } = {
     uk: true,
 };
 
+export const isValidLocale = (locale?: string): locale is Locale =>
+    !!(locale && validLocales[locale as Locale]);
+
+export const getLocaleFromRepoId = (repoId: string) => repoIdToLocaleMap[repoId];
+
 // Pushes any nodes which exists on master in the root project to master on
 // the child layers as well.
 //
 // We do this programatically, as content studio tends to crash when publishing
 // a very large number of nodes in one action, and to avoid confusing editor staff
 // with an apparent large number of publish dependencies when localizing content
-export const pushLayerContentToMaster = () => {
+export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     logger.info('Starting job to publish layer content to master');
 
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
@@ -52,13 +59,15 @@ export const pushLayerContentToMaster = () => {
             return acc;
         }, {} as Record<string, true>);
 
-        const missingNodes = nodeIdsInRootRepoMaster.filter((id) => !existingNodesSet[id]);
-        if (missingNodes.length === 0) {
+        const nodesToPush = pushMissingOnly
+            ? nodeIdsInRootRepoMaster.filter((id) => !existingNodesSet[id])
+            : nodeIdsInRootRepoMaster;
+        if (nodesToPush.length === 0) {
             logger.info(`No missing nodes found for ${repoId}`);
             return;
         }
 
-        logger.info(`Pushing ${missingNodes.length} to master in layer repo ${repoId}`);
+        logger.info(`Pushing ${nodesToPush.length} to master in layer repo ${repoId}`);
 
         const repoConnection = nodeLib.connect({
             repoId: repoId,
@@ -72,7 +81,7 @@ export const pushLayerContentToMaster = () => {
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: fifteenMinutesMs });
 
         const result = repoConnection.push({
-            keys: missingNodes,
+            keys: nodesToPush,
             target: 'master',
             resolve: false,
         });
@@ -88,9 +97,6 @@ export const pushLayerContentToMaster = () => {
 
     logger.info('Finished job to publish layer content to master!');
 };
-
-export const isValidLocale = (locale?: string): locale is Locale =>
-    !!(locale && validLocales[locale as Locale]);
 
 const populateWithChildLayers = (
     projects: readonly Project[],
@@ -129,6 +135,11 @@ const refreshLocaleLayersRepoMap = () => {
     populateWithChildLayers(projects, newMap, contentRootProjectId);
 
     localeToRepoIdMap = newMap;
+    repoIdToLocaleMap = Object.entries(newMap).reduce((acc, [locale, repoId]) => {
+        return { ...acc, [repoId]: locale as Locale };
+    }, {} as RepoIdToLocaleMap);
+
+    logger.info(`Content layers: ${JSON.stringify(localeToRepoIdMap)}`);
 };
 
 let hasSetupListeners = false;
