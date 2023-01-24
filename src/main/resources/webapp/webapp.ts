@@ -2,7 +2,7 @@ import taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import eventLib from '/lib/xp/event';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
-import { runInBranchContext } from '../lib/context/branches';
+import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
@@ -73,7 +73,7 @@ export const get = (req: XP.Request) => {
         taskLib.executeFunction({
             description: actionToRun.description,
             func: () => {
-                runInBranchContext(actionToRun.callback, 'master');
+                runInContext({ branch: 'master', asAdmin: true }, actionToRun.callback);
             },
         });
     }

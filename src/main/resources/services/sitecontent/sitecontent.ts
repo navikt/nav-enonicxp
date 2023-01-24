@@ -3,6 +3,7 @@ import { getResponseFromCache } from './cache';
 import { getSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { isValidLocale } from '../../lib/context/layers';
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -16,7 +17,7 @@ export const get = (req: XP.Request) => {
     }
 
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch = 'master', preview, cacheKey } = req.params;
+    const { id: idOrPath, branch = 'master', preview, cacheKey, locale = 'no' } = req.params;
 
     if (!idOrPath) {
         return {
@@ -38,10 +39,20 @@ export const get = (req: XP.Request) => {
         };
     }
 
+    if (!isValidLocale(locale)) {
+        return {
+            status: 400,
+            body: {
+                message: 'Invalid locale specified',
+            },
+            contentType: 'application/json',
+        };
+    }
+
     try {
         const content = getResponseFromCache(
             idOrPath,
-            () => getSitecontentResponse(idOrPath, branch, preview === 'true'),
+            () => getSitecontentResponse(idOrPath, branch, locale, preview === 'true'),
             cacheKey
         );
 

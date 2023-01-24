@@ -2,7 +2,7 @@ import eventLib, { EnonicEvent } from '/lib/xp/event';
 import clusterLib from '/lib/xp/cluster';
 import contentLib from '/lib/xp/content';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';
-import { runInBranchContext } from '../context/branches';
+import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 
 // When a content is duplicated, we don't want the custom path
@@ -13,7 +13,7 @@ const removeOnDuplicate = (event: EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
-        runInBranchContext(() => {
+        runInContext({ branch: 'draft', asAdmin: true }, () => {
             logger.info(`Removing custom path from duplicated content ${node.id}`);
 
             contentLib.modify({
@@ -27,7 +27,7 @@ const removeOnDuplicate = (event: EnonicEvent) => {
                     return content;
                 },
             });
-        }, 'draft');
+        });
     });
 };
 
@@ -41,7 +41,7 @@ const removeInvalidOnPublish = (event: EnonicEvent) => {
             return;
         }
 
-        runInBranchContext(() => {
+        runInContext({ branch: 'master' }, () => {
             const content = contentLib.get({ key: node.id });
 
             if (content && hasInvalidCustomPath(content)) {
@@ -58,7 +58,7 @@ const removeInvalidOnPublish = (event: EnonicEvent) => {
                     },
                 });
             }
-        }, 'master');
+        });
     });
 };
 
