@@ -89,6 +89,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
                 ...req.params,
                 [loopbackCheckParam]: 'true',
                 mode: req.mode,
+                repoId: req.repositoryId,
             },
         });
 
