@@ -10,7 +10,7 @@ const restoreFromArchive = (
     selectedContentId: string,
     targetId: string
 ): { success: boolean; message: string } =>
-    runInContext({ branch: 'draft' }, () => {
+    runInContext({ branch: 'draft', asAdmin: true }, () => {
         const targetPath = contentLib.get({ key: targetId })?._path;
         if (!targetPath) {
             return { success: false, message: 'Feil: kunne ikke gjenopprette til denne mappen' };

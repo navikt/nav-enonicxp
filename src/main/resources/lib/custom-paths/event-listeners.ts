@@ -41,7 +41,7 @@ const removeInvalidOnPublish = (event: EnonicEvent) => {
             return;
         }
 
-        runInContext({ branch: 'master' }, () => {
+        runInContext({ branch: 'master', asAdmin: true }, () => {
             const content = contentLib.get({ key: node.id });
 
             if (content && hasInvalidCustomPath(content)) {
