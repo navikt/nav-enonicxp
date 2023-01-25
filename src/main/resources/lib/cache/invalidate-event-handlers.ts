@@ -10,13 +10,13 @@ import {
     localCacheInvalidationEventName,
 } from './local-cache';
 import { NodeEventData } from './utils';
-import { runInBranchContext } from '../context/branches';
 import { cacheInvalidateEventName, invalidateCacheForNode } from './cache-invalidate';
 import { logger } from '../utils/logging';
 import { frontendInvalidateAllAsync } from './frontend-cache';
 import { generateUUID } from '../utils/uuid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
+import { runInContext } from '../context/run-in-context';
 
 // TODO: When Enonic implements custom widgets for the admin front page,
 // show a warning when cache invalidation is deferred
@@ -54,7 +54,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
 const manualInvalidationCallback = (event: EnonicEvent<NodeEventData>) => {
     const { id, path } = event.data;
     logger.info(`Received cache-invalidation event for ${path} - ${id}`);
-    runInBranchContext(() =>
+    runInContext({ asAdmin: true }, () =>
         invalidateCacheForNode({
             node: event.data,
             timestamp: event.timestamp,

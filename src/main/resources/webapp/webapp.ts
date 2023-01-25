@@ -2,7 +2,7 @@ import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
 import * as eventLib from '/lib/xp/event';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
-import { runInBranchContext } from '../lib/context/branches';
+import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
@@ -48,9 +48,17 @@ const validActions: ActionsMap = {
         },
     },
     pushLayerContentToMaster: {
-        description: 'Push layer content to master',
-        callback: pushLayerContentToMaster,
+        description:
+            'Push manglende layer content til master (bør gjøres etter opprettelse av nytt layer)',
+        callback: () => pushLayerContentToMaster(true),
     },
+    ...(app.config.env !== 'p' && {
+        pushLayerContentToMasterFull: {
+            description:
+                'Push ALT layer content til master (OBS: denne kan føre til at avpublisert innhold i layeret blir republisert! Ikke la denne være aktiv i prod med mindre det er et spesielt behov :))',
+            callback: () => pushLayerContentToMaster(false),
+        },
+    }),
 };
 
 type Params = {
@@ -73,7 +81,7 @@ export const get = (req: XP.Request) => {
         taskLib.executeFunction({
             description: actionToRun.description,
             func: () => {
-                runInBranchContext(actionToRun.callback, 'master');
+                runInContext({ branch: 'master', asAdmin: true }, actionToRun.callback);
             },
         });
     }

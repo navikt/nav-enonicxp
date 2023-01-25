@@ -6,7 +6,7 @@ import {
 import { isMedia } from '../../utils/nav-utils';
 import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
-import { runInBranchContext } from '../../context/branches';
+import { runInContext } from '../../context/run-in-context';
 import { getBreadcrumbs } from '../utils/breadcrumbs';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
@@ -167,7 +167,7 @@ export const runGuillotineContentQuery = (
         };
     }
 
-    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(_id), baseQueryParams.branch);
+    const breadcrumbs = runInContext({ branch: baseQueryParams.branch }, () => getBreadcrumbs(_id));
 
     return {
         ...contentQueryResult,

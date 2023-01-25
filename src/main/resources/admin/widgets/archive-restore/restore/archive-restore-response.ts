@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import thymeleafLib from '/lib/thymeleaf';
 import { getParentPath } from '../../../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../../../lib/context/branches';
+import { runInContext } from '../../../../lib/context/run-in-context';
 import { logger } from '../../../../lib/utils/logging';
 
 const view = resolve('./archive-restore-response.html');
@@ -10,7 +10,7 @@ const restoreFromArchive = (
     selectedContentId: string,
     targetId: string
 ): { success: boolean; message: string } =>
-    runInBranchContext(() => {
+    runInContext({ branch: 'draft', asAdmin: true }, () => {
         const targetPath = contentLib.get({ key: targetId })?._path;
         if (!targetPath) {
             return { success: false, message: 'Feil: kunne ikke gjenopprette til denne mappen' };
@@ -56,7 +56,7 @@ const restoreFromArchive = (
                 message: 'Feil: det valgte innholdet ble ikke funnet i arkivet',
             };
         }
-    }, 'draft');
+    });
 
 export const archiveRestoreResponse = (req: XP.Request) => {
     const { contentId, selectedContent } = req.params;

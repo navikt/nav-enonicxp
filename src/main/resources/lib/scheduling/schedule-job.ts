@@ -2,8 +2,8 @@ import * as schedulerLib from '/lib/xp/scheduler';
 import { ScheduleTypeCron, ScheduleTypeOneTime, PrincipalKeyUser } from '/lib/xp/scheduler';
 import * as clusterLib from '/lib/xp/cluster';
 import { NavNoDescriptor } from '../../types/common';
-import { runInBranchContext } from '../context/branches';
 import { logger } from '../utils/logging';
+import { runInContext } from '../context/run-in-context';
 
 type Props<TaskConfig> = {
     jobName: string;
@@ -42,7 +42,7 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
         enabled: enabled,
     };
 
-    return runInBranchContext(() => {
+    return runInContext({ branch: 'master', asAdmin: true }, () => {
         const existingJob = schedulerLib.get({ name: jobName });
 
         if (existingJob) {
@@ -65,5 +65,5 @@ export const createOrUpdateSchedule = <TaskConfig = Record<string, any>>({
 
         logger.info(`Scheduler job created: ${jobName}`);
         return schedulerLib.create<typeof taskConfig>(jobParams);
-    }, 'master');
+    });
 };

@@ -2,7 +2,7 @@ import * as schedulerLib from '/lib/xp/scheduler';
 import { ScheduledJob } from '/lib/xp/scheduler';
 import * as taskLib from '/lib/xp/task';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../lib/context/branches';
+import { runInContext } from '../../lib/context/run-in-context';
 import { logger } from '../../lib/utils/logging';
 
 const fifteenSeconds = 15000;
@@ -49,12 +49,10 @@ export const run = () => {
             logger.info(
                 `Running task for failed one-time job ${job.name} - ${JSON.stringify(job)}`
             );
-            runInBranchContext(
-                () =>
-                    schedulerLib.delete({
-                        name: job.name,
-                    }),
-                'master'
+            runInContext({ branch: 'master', asAdmin: true }, () =>
+                schedulerLib.delete({
+                    name: job.name,
+                })
             );
             taskLib.submitTask({
                 descriptor: job.descriptor,

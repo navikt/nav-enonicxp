@@ -8,7 +8,7 @@ import {
 import { forceArray } from '../../lib/utils/nav-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
-import { runInBranchContext } from '../../lib/context/branches';
+import { runInContext } from '../../lib/context/run-in-context';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
@@ -103,7 +103,7 @@ const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {
 export const get = (req: XP.CustomSelectorServiceRequest) => {
     const subPath = getSubPath(req);
 
-    return runInBranchContext(() => {
+    return runInContext({ branch: 'master' }, () => {
         if (subPath === 'fragmentUsage') {
             return getFragmentUsage(req);
         }
@@ -118,5 +118,5 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
                 hits: hits,
             },
         };
-    }, 'master');
+    });
 };

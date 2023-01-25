@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import * as schedulerLib from '/lib/xp/scheduler';
-import { runInBranchContext } from '../context/branches';
+import { runInContext } from '../context/run-in-context';
 import {
     getPrepublishJobName,
     getUnpublishJobName,
@@ -11,13 +11,11 @@ import {
 import { logger } from '../utils/logging';
 
 const schedulePrepublishTasks = () => {
-    const result = runInBranchContext(
-        () =>
-            contentLib.query({
-                count: 10000,
-                query: `publish.from > instant("${new Date().toISOString()}")`,
-            }),
-        'draft'
+    const result = runInContext({ branch: 'draft' }, () =>
+        contentLib.query({
+            count: 10000,
+            query: `publish.from > instant("${new Date().toISOString()}")`,
+        })
     ).hits;
 
     logger.info(`Updating scheduled prepublish jobs for ${result.length} items`);
@@ -38,13 +36,11 @@ const schedulePrepublishTasks = () => {
 };
 
 const scheduleUnpublishTasks = () => {
-    const result = runInBranchContext(
-        () =>
-            contentLib.query({
-                count: 10000,
-                query: 'publish.to LIKE "*"',
-            }),
-        'master'
+    const result = runInContext({ branch: 'master' }, () =>
+        contentLib.query({
+            count: 10000,
+            query: 'publish.to LIKE "*"',
+        })
     ).hits;
 
     logger.info(`Updating scheduled unpublish jobs for ${result.length} items`);

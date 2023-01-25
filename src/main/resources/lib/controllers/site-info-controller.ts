@@ -6,9 +6,9 @@ import cacheLib from '/lib/cache';
 import { urls } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../utils/cluster-utils';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
-import { runInBranchContext } from '../context/branches';
 import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { runInContext } from '../context/run-in-context';
 
 const frontendApiUrl = `${urls.frontendOrigin}/editor/site-info`;
 
@@ -84,16 +84,14 @@ const transformContent = (content: Content): ContentSummary => {
 };
 
 const contentQuery = (query: string, branch: RepoBranch, sort?: string) =>
-    runInBranchContext(
-        () =>
-            contentLib
-                .query({
-                    count: 10000,
-                    query,
-                    sort,
-                })
-                .hits.map(transformContent),
-        branch
+    runInContext({ branch }, () =>
+        contentLib
+            .query({
+                count: 10000,
+                query,
+                sort,
+            })
+            .hits.map(transformContent)
     );
 
 const getContentLists = () =>
