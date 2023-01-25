@@ -1,7 +1,7 @@
 import graphqlPlaygroundLib from '/lib/graphql-playground';
 import graphQlLib from '/lib/graphql';
 import graphQlRxLib from '/lib/graphql-rx';
-import webSocketLib from '/lib/xp/websocket';
+import * as webSocketLib from '/lib/xp/websocket';
 import { schema } from '../../lib/guillotine/schema/schema';
 import { urls } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';

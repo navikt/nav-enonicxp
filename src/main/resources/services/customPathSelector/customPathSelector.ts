@@ -1,6 +1,6 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';

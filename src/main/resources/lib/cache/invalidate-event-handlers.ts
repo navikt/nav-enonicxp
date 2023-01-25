@@ -1,5 +1,6 @@
-import eventLib, { EnonicEvent } from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
+import * as eventLib from '/lib/xp/event';
+import { EnonicEvent } from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
 import { appDescriptor, contentRootRepoId } from '../constants';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';

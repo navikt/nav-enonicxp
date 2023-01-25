@@ -1,4 +1,4 @@
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import { contentRootRepoId } from '../constants';
 import { getNodeVersions } from '../utils/version-utils';
 import { getFrontendPathname } from './utils';

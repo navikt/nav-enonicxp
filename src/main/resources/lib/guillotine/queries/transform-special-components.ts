@@ -1,5 +1,6 @@
 import { GuillotineComponent } from '../utils/process-components';
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../../types/common';
 import { logger } from '../../utils/logging';
 import { ProductDetails } from '../../../site/content-types/product-details/product-details';

@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
 import { cacheInvalidateEventName } from '../../lib/cache/cache-invalidate';
 import { NodeEventData } from '../../lib/cache/utils';

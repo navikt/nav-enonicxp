@@ -1,6 +1,7 @@
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import cacheLib from '/lib/cache';
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';
 import { forceArray } from '../../lib/utils/nav-utils';
 

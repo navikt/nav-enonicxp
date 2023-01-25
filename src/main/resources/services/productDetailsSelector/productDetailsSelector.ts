@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';

@@ -1,5 +1,6 @@
 import cacheLib from '/lib/cache';
-import nodeLib, { RepoNode } from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';

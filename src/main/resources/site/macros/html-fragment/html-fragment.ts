@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../../../lib/utils/component-utils';
 import { contentStudioEditPathPrefix } from '../../../lib/constants';
 

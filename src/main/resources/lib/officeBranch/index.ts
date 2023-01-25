@@ -1,5 +1,5 @@
-import taskLib from '/lib/xp/task';
-import contextLib from '/lib/xp/context';
+import * as taskLib from '/lib/xp/task';
+import * as contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { UpdateOfficeBranchConfig } from '../../tasks/update-office-branch/update-office-branch-config';
 import { logger } from '../utils/logging';

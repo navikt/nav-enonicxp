@@ -1,5 +1,5 @@
 import cacheLib from '/lib/cache';
-import taskLib from '/lib/xp/task';
+import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';

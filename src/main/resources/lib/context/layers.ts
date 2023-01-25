@@ -1,6 +1,8 @@
-import projectLib, { Project } from '/lib/xp/project';
-import eventLib, { EnonicEvent } from '/lib/xp/event';
-import nodeLib from '/lib/xp/node';
+import * as projectLib from '/lib/xp/project';
+import { Project } from '/lib/xp/project';
+import * as eventLib from '/lib/xp/event';
+import { EnonicEvent } from '/lib/xp/event';
+import * as nodeLib from '/lib/xp/node';
 import { Locale } from '../../types/common';
 import { runInContext } from './run-in-context';
 import { logger } from '../utils/logging';

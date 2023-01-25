@@ -1,5 +1,6 @@
-import schedulerLib, { ScheduledJob } from '/lib/xp/scheduler';
-import taskLib from '/lib/xp/task';
+import * as schedulerLib from '/lib/xp/scheduler';
+import { ScheduledJob } from '/lib/xp/scheduler';
+import * as taskLib from '/lib/xp/task';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { logger } from '../../lib/utils/logging';

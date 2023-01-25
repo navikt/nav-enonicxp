@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import macroLib from '/lib/guillotine/macro';
 import { CreationCallback } from '../../utils/creation-callback-utils';

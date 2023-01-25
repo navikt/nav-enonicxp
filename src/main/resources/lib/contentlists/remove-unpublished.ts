@@ -1,6 +1,7 @@
-import contentLib, { Content } from '/lib/xp/content';
-import eventLib from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import * as eventLib from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
 import { runInContext } from '../context/run-in-context';
 import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../scheduling/scheduled-publish';

@@ -1,4 +1,4 @@
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { urls } from '../constants';
 import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';

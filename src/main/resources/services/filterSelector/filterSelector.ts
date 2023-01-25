@@ -1,5 +1,5 @@
-import portalLib from '/lib/xp/portal';
-import nodeLib from '/lib/xp/node';
+import * as portalLib from '/lib/xp/portal';
+import * as nodeLib from '/lib/xp/node';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';

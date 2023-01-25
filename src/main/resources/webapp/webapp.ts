@@ -1,6 +1,6 @@
-import taskLib from '/lib/xp/task';
+import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
-import eventLib from '/lib/xp/event';
+import * as eventLib from '/lib/xp/event';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
 import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';

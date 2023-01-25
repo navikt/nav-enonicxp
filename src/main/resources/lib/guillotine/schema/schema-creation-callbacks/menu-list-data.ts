@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolverCallback } from '/lib/graphql';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';

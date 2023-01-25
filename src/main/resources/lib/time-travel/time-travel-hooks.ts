@@ -12,8 +12,9 @@
  *
  * */
 
-import contentLib from '/lib/xp/content';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
+import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInContext } from '../context/run-in-context';
 import { getCurrentThreadId } from '../utils/nav-utils';
@@ -34,7 +35,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
 
     timeTravelHooksEnabled = true;
 
-    contentLib.get = function (args) {
+    (contentLib.get as typeof contentLibGetStandard) = function (args) {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
 
@@ -84,7 +85,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
         );
     };
 
-    nodeLib.connect = function (connectArgs) {
+    (nodeLib.connect as typeof nodeLibConnectStandard) = function (connectArgs) {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
 
@@ -162,6 +163,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
 // Restore standard functionality
 export const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
-    contentLib.get = contentLibGetStandard;
-    nodeLib.connect = nodeLibConnectStandard;
+
+    (contentLib.get as typeof contentLibGetStandard) = contentLibGetStandard;
+    (nodeLib.connect as typeof nodeLibConnectStandard) = nodeLibConnectStandard;
 };

@@ -1,6 +1,7 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import commonLib from '/lib/xp/common';
+import * as commonLib from '/lib/xp/common';
 import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';

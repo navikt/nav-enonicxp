@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { batchedContentQuery } from './batched-query';
 
 export const htmlAreaComponentPaths = [

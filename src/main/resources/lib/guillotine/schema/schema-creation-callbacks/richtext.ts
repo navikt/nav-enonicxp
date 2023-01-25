@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { hasValidCustomPath } from '../../../custom-paths/custom-paths';
@@ -33,8 +33,11 @@ const insertCustomPaths = (processedHtml: string, links?: Links[]) => {
         const { customPath } = content.data;
 
         return html.replace(
-            new RegExp(`<a href="[^"]*" data-link-ref="${linkRef}"`, 'g'),
-            `<a href="${customPath}"`
+            new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),
+            (_, hrefCapture) => {
+                const anchorId = hrefCapture.split('#')[1];
+                return `<a href="${customPath}${anchorId ? `#${anchorId}` : ''}"`;
+            }
         );
     }, processedHtml);
 };

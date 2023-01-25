@@ -1,6 +1,6 @@
-import contextLib from '/lib/xp/context';
-import nodeLib from '/lib/xp/node';
-import contentLib from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
+import * as nodeLib from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getNodeKey } from './version-utils';
 import {

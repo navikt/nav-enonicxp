@@ -1,4 +1,5 @@
-import contextLib, { ContextAttributes, RunContext } from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
+import { ContextAttributes, RunContext } from '/lib/xp/context';
 import { RepoBranch } from '../../types/common';
 
 type ContextOptions = {
