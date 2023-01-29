@@ -1,6 +1,7 @@
-import contentLib, { Content } from '/lib/xp/content';
-import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import { Locale, RepoBranch } from '../../types/common';
+import { runInContext } from '../../lib/context/run-in-context';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { componentAppKey, redirectsRootPath } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
@@ -13,6 +14,7 @@ import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { logger } from '../../lib/utils/logging';
+import { runInLocaleContext } from '../../lib/context/layers';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -93,9 +95,8 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
         return null;
     }
 
-    const redirectFromLegacyPath = runInBranchContext(
-        () => getRedirectFromLegacyPath(idOrPath),
-        branch
+    const redirectFromLegacyPath = runInContext({ branch }, () =>
+        getRedirectFromLegacyPath(idOrPath)
     );
 
     if (redirectFromLegacyPath) {
@@ -108,25 +109,22 @@ const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | nul
     }
 
     // Gets content from the /redirects folder
-    const redirectContent = runInBranchContext(
-        () => contentLib.get({ key: `${redirectsRootPath}${redirectPath}` }),
-        branch
+    const redirectContent = runInContext({ branch }, () =>
+        contentLib.get({ key: `${redirectsRootPath}${redirectPath}` })
     );
     if (redirectContent) {
         return runSitecontentGuillotineQuery(redirectContent, branch);
     }
 
-    const parentRedirectContent = runInBranchContext(
-        () => getParentRedirectContent(idOrPath),
-        branch
+    const parentRedirectContent = runInContext({ branch }, () =>
+        getParentRedirectContent(idOrPath)
     );
     if (parentRedirectContent) {
         return runSitecontentGuillotineQuery(parentRedirectContent, branch);
     }
 
-    const parentRedirectContentFromRedirectsFolder = runInBranchContext(
-        () => getParentRedirectContent(`${redirectsRootPath}${redirectPath}`),
-        branch
+    const parentRedirectContentFromRedirectsFolder = runInContext({ branch }, () =>
+        getParentRedirectContent(`${redirectsRootPath}${redirectPath}`)
     );
     if (parentRedirectContentFromRedirectsFolder) {
         return runSitecontentGuillotineQuery(parentRedirectContentFromRedirectsFolder, branch);
@@ -150,7 +148,7 @@ const getContentOrRedirect = (
     retries = 2
 ): Content | null => {
     const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
-    const baseContent = runInBranchContext(() => contentLib.get({ key: contentRef }), branch);
+    const baseContent = runInContext({ branch }, () => contentLib.get({ key: contentRef }));
 
     // If the content was not found, check if there are any applicable redirects
     // for the requested path/id
@@ -206,9 +204,13 @@ const getContentOrRedirect = (
 export const getSitecontentResponse = (
     requestedPathOrId: string,
     branch: RepoBranch,
+    locale: Locale,
     preview: boolean
 ) => {
-    const content = getContentOrRedirect(requestedPathOrId, branch, preview);
+    const content = runInLocaleContext(
+        () => getContentOrRedirect(requestedPathOrId, branch, preview),
+        locale
+    );
 
     if (!content) {
         return null;

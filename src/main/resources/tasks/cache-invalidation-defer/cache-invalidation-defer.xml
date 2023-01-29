@@ -1,0 +1,11 @@
+<task>
+    <description>Toggle deferred cache invalidation on node events</description>
+    <form>
+        <input type="Checkbox" name="shouldDefer">
+            <label>Should defer</label>
+        </input>
+        <input type="Long" name="maxDeferTime">
+            <label>Max defer time</label>
+        </input>
+    </form>
+</task>

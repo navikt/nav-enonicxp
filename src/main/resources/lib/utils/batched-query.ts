@@ -1,5 +1,7 @@
-import contentLib, { QueryParams, QueryResponse, ContentLibrary } from '/lib/xp/content';
-import nodeLib, {
+import * as contentLib from '/lib/xp/content';
+import { QueryParams, QueryResponse, ContentLibrary } from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
+import {
     NodeQueryParams,
     NodeQueryResponse,
     Source,

@@ -1,10 +1,10 @@
-import nodeLib from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
 import { generateUUID } from '../../../lib/utils/uuid';
 import {
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
 } from '../utils';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { runInContext } from '../../../lib/context/run-in-context';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';
@@ -19,7 +19,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
 
     const { contentId, itemName, type } = req.params;
 
-    const content = runInBranchContext(() => getGlobalValueSet(contentId), 'draft');
+    const content = runInContext({ branch: 'draft' }, () => getGlobalValueSet(contentId));
     if (!content || !contentId) {
         return gvServiceInvalidRequestResponse(`Global value set with id ${contentId} not found`);
     }

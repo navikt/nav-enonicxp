@@ -1,4 +1,5 @@
-import nodeLib, { RepoNode } from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
 import { forceArray, getParentPath } from '../../../../lib/utils/nav-utils';

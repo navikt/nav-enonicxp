@@ -1,4 +1,4 @@
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import { frontendProxy } from '../../lib/controllers/frontend-proxy';
 
 // This is a post-processing step which runs after the request has gone through the regular request pipeline. We do some

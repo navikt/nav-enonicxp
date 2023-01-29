@@ -1,8 +1,9 @@
 import cacheLib from '/lib/cache';
-import nodeLib, { RepoNode } from '/lib/xp/node';
+import * as nodeLib from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInContext } from '../../lib/context/run-in-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
@@ -221,16 +222,14 @@ export const get = (req: XP.Request) => {
     try {
         logger.info(`Data query: running query for request id ${requestId}, batch ${batch}`);
 
-        const result = runInBranchContext(
-            () =>
-                runQuery({
-                    requestId,
-                    query,
-                    branch,
-                    batch: Number(batch),
-                    types: typesParsed,
-                }),
-            branch === 'published' ? 'master' : 'draft'
+        const result = runInContext({ branch: branch === 'published' ? 'master' : 'draft' }, () =>
+            runQuery({
+                requestId,
+                query,
+                branch,
+                batch: Number(batch),
+                types: typesParsed,
+            })
         );
 
         logger.info(

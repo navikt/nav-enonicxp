@@ -1,4 +1,4 @@
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import { getNodeKey, getTargetUnixTime } from '../utils/version-utils';
 import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { nodeLibConnectStandard } from './standard-functions';

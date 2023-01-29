@@ -1,3 +1,1 @@
-export default {
-    get: () => ({}),
-};
+export const get = () => ({});

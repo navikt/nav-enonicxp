@@ -1,7 +1,7 @@
-import contentLib from '/lib/xp/content';
-import portalLib from '/lib/xp/portal';
+import * as contentLib from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { runInContext } from '../../../lib/context/run-in-context';
 
 const view = resolve('./invalidate-cache.html');
 
@@ -15,7 +15,7 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    const content = runInBranchContext(() => contentLib.get({ key: contentId }), 'master');
+    const content = runInContext({ branch: 'master' }, () => contentLib.get({ key: contentId }));
 
     if (!content) {
         return {

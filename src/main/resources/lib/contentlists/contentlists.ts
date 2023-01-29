@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { forceArray, notEmpty } from '../utils/nav-utils';
 import { sortByDateTimeField } from '../utils/sort';
 

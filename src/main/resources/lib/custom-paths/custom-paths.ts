@@ -1,6 +1,7 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import { stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 
@@ -49,7 +50,8 @@ export const getContentFromCustomPath = (path: string) => {
         return [];
     }
 
-    return runInBranchContext(
+    return runInContext(
+        { branch: 'master' },
         () =>
             contentLib.query({
                 start: 0,
@@ -64,8 +66,7 @@ export const getContentFromCustomPath = (path: string) => {
                         },
                     },
                 },
-            }).hits,
-        'master'
+            }).hits
     );
 };
 

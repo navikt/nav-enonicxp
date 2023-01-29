@@ -1,5 +1,5 @@
 import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import { getUnixTimeFromDateTimeString, stringArrayToSet } from '../utils/nav-utils';
 import { Content } from '/lib/xp/content';
 import { timeTravelHooksEnabled } from './time-travel-hooks';
@@ -25,7 +25,7 @@ export const validateTimestampConsistency = (
         return true;
     }
 
-    const contentRaw = runInBranchContext(() => contentLibGetStandard({ key: contentRef }), branch);
+    const contentRaw = runInContext({ branch }, () => contentLibGetStandard({ key: contentRef }));
 
     // If neither content exists we're good
     if (!contentRaw && !contentFromHookedLibs) {

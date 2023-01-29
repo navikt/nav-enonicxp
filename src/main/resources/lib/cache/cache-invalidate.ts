@@ -1,8 +1,8 @@
-import contentLib from '/lib/xp/content';
-import clusterLib from '/lib/xp/cluster';
-import taskLib from '/lib/xp/task';
+import * as contentLib from '/lib/xp/content';
+import * as clusterLib from '/lib/xp/cluster';
+import * as taskLib from '/lib/xp/task';
 import { frontendInvalidatePaths } from './frontend-cache';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
@@ -17,7 +17,7 @@ const getContentToInvalidate = (id: string, eventType: string) => {
 
     const referencesToInvalidate = findReferences(id, branch);
 
-    const baseContent = runInBranchContext(() => contentLib.get({ key: id }), branch);
+    const baseContent = runInContext({ branch }, () => contentLib.get({ key: id }));
 
     if (baseContent) {
         return [baseContent, ...referencesToInvalidate];
@@ -51,7 +51,7 @@ const _invalidateCacheForNode = ({
         ? clearLocalCaches
         : sendLocalCacheInvalidationEvent;
 
-    runInBranchContext(() => {
+    runInContext({ branch: 'master' }, () => {
         const contentToInvalidate = getContentToInvalidate(node.id, eventType);
 
         clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
@@ -83,7 +83,7 @@ const _invalidateCacheForNode = ({
                 eventId,
             });
         }
-    }, 'master');
+    });
 };
 
 export const invalidateCacheForNode = (params: InvalidateCacheParams) => {

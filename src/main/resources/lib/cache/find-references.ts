@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage } from '../global-values/global-value-utils';
 import {
@@ -7,7 +8,7 @@ import {
     removeDuplicates as _removeDuplicates,
     stringArrayToSet,
 } from '../utils/nav-utils';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
     contentTypesWithProductDetails,
@@ -186,7 +187,7 @@ const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-art
 };
 
 const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]) => {
-    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+    const content = runInContext({ branch }, () => contentLib.get({ key: id }));
 
     if (!content) {
         return getExplicitReferences(id);
@@ -254,7 +255,7 @@ const _findReferences = ({
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
-    const content = runInBranchContext(() => contentLib.get({ key: id }), branch);
+    const content = runInContext({ branch }, () => contentLib.get({ key: id }));
     const initialRefs = content ? [content] : [];
 
     return _findReferences({ id, branch, prevReferences: initialRefs });

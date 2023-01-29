@@ -1,15 +1,16 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import commonLib from '/lib/xp/common';
-import taskLib from '/lib/xp/task';
-import contextLib from '/lib/xp/context';
+import * as commonLib from '/lib/xp/common';
+import * as taskLib from '/lib/xp/task';
+import * as contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
-import { contentRepo } from '../constants';
+import { contentRootRepoId } from '../constants';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 
@@ -239,7 +240,7 @@ export const fetchAndUpdateOfficeInfo = (retry?: boolean) => {
 
     contextLib.run(
         {
-            repository: contentRepo,
+            repository: contentRootRepoId,
             user: {
                 login: 'su',
                 idProvider: 'system',

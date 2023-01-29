@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import { appDescriptor } from '../../lib/constants';
 import { stripPathPrefix } from '../../lib/utils/nav-utils';

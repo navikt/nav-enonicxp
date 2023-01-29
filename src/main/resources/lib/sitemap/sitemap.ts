@@ -1,11 +1,12 @@
-import contentLib, { Content } from '/lib/xp/content';
-import taskLib from '/lib/xp/task';
-import eventLib from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import * as taskLib from '/lib/xp/task';
+import * as eventLib from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
-import { runInBranchContext } from '../utils/branch-context';
-import { contentRepo, urls } from '../constants';
+import { runInContext } from '../context/run-in-context';
+import { contentRootRepoId, urls } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
@@ -124,11 +125,11 @@ const getContent = (path: string) => {
         return null;
     }
 
-    return runInBranchContext(() => contentLib.get({ key: path }), 'master');
+    return runInContext({ branch: 'master' }, () => contentLib.get({ key: path }));
 };
 
 const updateSitemapEntry = (path: string) =>
-    runInBranchContext(() => {
+    runInContext({ branch: 'master' }, () => {
         const content = getContent(path);
         if (!content) {
             return;
@@ -141,7 +142,7 @@ const updateSitemapEntry = (path: string) =>
         } else if (sitemapData.get(key)) {
             sitemapData.remove(key);
         }
-    }, 'master');
+    });
 
 const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): SitemapEntry[] => {
     const entriesBatch = contentLib
@@ -178,42 +179,45 @@ export const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateAndBroadcastSitemapData = () =>
-    runInBranchContext(() => {
-        if (clusterLib.isMaster() && !isGenerating) {
-            isGenerating = true;
+const generateAndBroadcastSitemapData = () => {
+    if (!clusterLib.isMaster() || isGenerating) {
+        return;
+    }
 
-            taskLib.executeFunction({
-                description: 'sitemap-generator-task',
-                func: () => {
-                    try {
-                        logger.info('Started generating sitemap data');
-                        const startTime = Date.now();
-                        const sitemapEntries = getSitemapEntries();
+    isGenerating = true;
 
-                        sendReliableEvent({
-                            type: eventTypeSitemapGenerated,
-                            data: { entries: sitemapEntries },
-                        });
+    runInContext({ branch: 'master' }, () => {
+        taskLib.executeFunction({
+            description: 'sitemap-generator-task',
+            func: () => {
+                try {
+                    logger.info('Started generating sitemap data');
+                    const startTime = Date.now();
+                    const sitemapEntries = getSitemapEntries();
 
-                        logger.info(
-                            `Finished generating sitemap data with ${
-                                sitemapEntries.length
-                            } entries after ${Date.now() - startTime}ms`
-                        );
+                    sendReliableEvent({
+                        type: eventTypeSitemapGenerated,
+                        data: { entries: sitemapEntries },
+                    });
 
-                        if (sitemapEntries.length > maxCount) {
-                            logger.error(`Sitemap entries count exceeds recommended maximum`);
-                        }
-                    } catch (e) {
-                        logger.critical(`Error while generating sitemap - ${e}`);
-                    } finally {
-                        isGenerating = false;
+                    logger.info(
+                        `Finished generating sitemap data with ${
+                            sitemapEntries.length
+                        } entries after ${Date.now() - startTime}ms`
+                    );
+
+                    if (sitemapEntries.length > maxCount) {
+                        logger.error(`Sitemap entries count exceeds recommended maximum`);
                     }
-                },
-            });
-        }
-    }, 'master');
+                } catch (e) {
+                    logger.critical(`Error while generating sitemap - ${e}`);
+                } finally {
+                    isGenerating = false;
+                }
+            },
+        });
+    });
+};
 
 export const generateSitemapDataAndActivateSchedule = () => {
     generateAndBroadcastSitemapData();
@@ -273,7 +277,7 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === contentRepo) {
+                if (node.branch === 'master' && node.repo === contentRootRepoId) {
                     const xpPath = node.path.replace(/^\/content/, '');
                     updateSitemapEntry(xpPath);
                 }

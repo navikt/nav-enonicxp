@@ -1,5 +1,6 @@
-import contentLib, { Attachment } from '/lib/xp/content';
-import ioLib from '/lib/xp/io';
+import * as contentLib from '/lib/xp/content';
+import { Attachment } from '/lib/xp/content';
+import * as ioLib from '/lib/xp/io';
 import { logger } from '../../../../utils/logging';
 
 type GuillotineAttachment = Attachment & { __nodeId: string };

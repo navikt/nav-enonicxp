@@ -2,7 +2,7 @@ log.info('Started running main');
 
 import './lib/polyfills';
 
-import clusterLib from '/lib/xp/cluster';
+import * as clusterLib from '/lib/xp/cluster';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateCacheEventListeners } from './lib/cache/invalidate-event-handlers';
 import {
@@ -19,8 +19,10 @@ import { activateSearchIndexEventHandlers } from './lib/search/eventHandlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/repo';
+import { initLayersMap } from './lib/context/layers';
 
 updateClusterInfo();
+initLayersMap();
 
 startReliableEventAckListener();
 activateCacheEventListeners();

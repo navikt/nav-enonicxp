@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { getContentList } from '../../lib/contentlists/contentlists';
 import { forceArray, notEmpty, stripPathPrefix } from '../../lib/utils/nav-utils';
 

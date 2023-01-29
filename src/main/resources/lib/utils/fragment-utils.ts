@@ -1,6 +1,6 @@
-import contextLib from '/lib/xp/context';
-import nodeLib from '/lib/xp/node';
-import contentLib from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
+import * as nodeLib from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getNodeKey } from './version-utils';
 import {
@@ -10,7 +10,7 @@ import {
     removeDuplicates,
 } from './nav-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
-import { runInBranchContext } from './branch-context';
+import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
@@ -95,7 +95,7 @@ const getFragmentIdsFromContent = (contentRef: string, branch: RepoBranch) => {
 // Returns the most recent modifiedTime value, taking into account both the content
 // itself and any fragments used in the content
 export const getModifiedTimeIncludingFragments = (contentRef: string, branch: RepoBranch) =>
-    runInBranchContext(() => {
+    runInContext({ branch }, () => {
         const content = contentLib.get({ key: contentRef });
 
         if (!content) {
@@ -124,4 +124,4 @@ export const getModifiedTimeIncludingFragments = (contentRef: string, branch: Re
                 ? modifiedTime
                 : latestModifiedTime;
         }, contentModifiedTime);
-    }, branch);
+    });

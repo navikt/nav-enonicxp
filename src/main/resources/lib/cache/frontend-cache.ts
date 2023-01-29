@@ -1,6 +1,6 @@
 import httpClient, { HttpResponse } from '/lib/http-client';
-import taskLib from '/lib/xp/task';
-import schedulerLib from '/lib/xp/scheduler';
+import * as taskLib from '/lib/xp/task';
+import * as schedulerLib from '/lib/xp/scheduler';
 import { Content } from '/lib/xp/content';
 import { appDescriptor, urls } from '../constants';
 import { getFrontendPathname, isRenderedType } from './utils';

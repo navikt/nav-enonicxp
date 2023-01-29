@@ -1,10 +1,11 @@
-import portalLib from '/lib/xp/portal';
-import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
+import * as portalLib from '/lib/xp/portal';
+import * as nodeLib from '/lib/xp/node';
+import { NodeContent, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
-import { contentRepo } from '../constants';
+import { contentRootRepoId } from '../constants';
 import { FiltersMenuPartConfig } from 'site/parts/filters-menu/filters-menu-part-config';
 import { PartComponentName, PartConfigs } from 'types/components/component-config';
 import { forceArray } from '../utils/nav-utils';
@@ -111,7 +112,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: contentRepo, branch: 'draft' });
+    const repo = nodeLib.connect({ repoId: contentRootRepoId, branch: 'draft' });
 
     const nodeContent = repo.get<ContentPageWithSideMenusNodeContent>({ key: content._id });
 

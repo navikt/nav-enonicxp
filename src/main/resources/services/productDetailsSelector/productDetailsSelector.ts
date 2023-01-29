@@ -1,7 +1,8 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInContext } from '../../lib/context/run-in-context';
 import { contentStudioEditPathPrefix } from '../../lib/constants';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
@@ -45,15 +46,13 @@ const makeErrorHit = (id: string, displayName: string, description: string): Sel
     );
 
 const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
-    const publishedContent = runInBranchContext(
-        () => contentLib.get({ key: selectedId }),
-        'master'
+    const publishedContent = runInContext({ branch: 'master' }, () =>
+        contentLib.get({ key: selectedId })
     );
 
     if (!publishedContent) {
-        const unpublishedContent = runInBranchContext(
-            () => contentLib.get({ key: selectedId }),
-            'draft'
+        const unpublishedContent = runInContext({ branch: 'draft' }, () =>
+            contentLib.get({ key: selectedId })
         );
 
         if (!unpublishedContent) {
@@ -87,24 +86,22 @@ const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {
 };
 
 const getHitsFromQuery = (detailType: ProductDetailsType, query?: string): SelectorHit[] => {
-    const { hits } = runInBranchContext(
-        () =>
-            contentLib.query({
-                count: 1000,
-                contentTypes: ['no.nav.navno:product-details'],
-                query: query && generateFulltextQuery(query, ['displayName'], 'AND'),
-                filters: {
-                    boolean: {
-                        must: {
-                            hasValue: {
-                                field: 'data.detailType',
-                                values: [detailType],
-                            },
+    const { hits } = runInContext({ branch: 'master' }, () =>
+        contentLib.query({
+            count: 1000,
+            contentTypes: ['no.nav.navno:product-details'],
+            query: query && generateFulltextQuery(query, ['displayName'], 'AND'),
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'data.detailType',
+                            values: [detailType],
                         },
                     },
                 },
-            }),
-        'master'
+            },
+        })
     );
 
     return hits.map(transformHit);

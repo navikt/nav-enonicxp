@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import {
     getGlobalValueItem,
     getGlobalValueSet,
@@ -7,7 +8,7 @@ import {
 } from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
 import { forceArray, generateFulltextQuery } from '../../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { runInContext } from '../../../lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 import { customSelectorHitWithLink } from '../../service-utils';
@@ -105,12 +106,10 @@ export const globalValueSelectorService = (req: XP.Request) => {
 
     const withDescription = req.params.withDescription === 'true';
 
-    const hits = runInBranchContext(
-        () =>
-            ids
-                ? getHitsFromSelectedIds(ids, withDescription)
-                : getHitsFromQuery(contentType, query, withDescription),
-        'master'
+    const hits = runInContext({ branch: 'master' }, () =>
+        ids
+            ? getHitsFromSelectedIds(ids, withDescription)
+            : getHitsFromQuery(contentType, query, withDescription)
     );
 
     return {

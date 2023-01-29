@@ -1,12 +1,12 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import portalLib from '/lib/xp/portal';
+import * as portalLib from '/lib/xp/portal';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
-import { runInBranchContext } from '../../lib/utils/branch-context';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
+import { runInContext } from '../../lib/context/run-in-context';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({
@@ -66,9 +66,8 @@ const getResult = ({
         }
     }
 
-    const contentWithInternalPath = runInBranchContext(
-        () => contentLib.get({ key: `${navnoRootPath}${suggestedPath}` }),
-        'master'
+    const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
+        contentLib.get({ key: `${navnoRootPath}${suggestedPath}` })
     );
     if (contentWithInternalPath && contentWithInternalPath.type !== 'portal:site') {
         return [
@@ -89,9 +88,8 @@ const getResult = ({
         ];
     }
 
-    const redirectContent = runInBranchContext(
-        () => contentLib.get({ key: `${redirectsRootPath}${suggestedPath}` }),
-        'master'
+    const redirectContent = runInContext({ branch: 'master' }, () =>
+        contentLib.get({ key: `${redirectsRootPath}${suggestedPath}` })
     );
     if (redirectContent && redirectContent.type !== 'base:folder') {
         return [

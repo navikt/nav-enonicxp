@@ -1,6 +1,7 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../utils/branch-context';
+import { runInContext } from '../context/run-in-context';
 import { runWithTimeTravel } from './run-with-time-travel';
 import { runSitecontentGuillotineQuery } from '../guillotine/queries/run-sitecontent-query';
 import { getPublishedVersionTimestamps } from '../utils/version-utils';
@@ -12,16 +13,17 @@ export const getContentVersionFromDateTime = (
     branch: RepoBranch,
     dateTime: string
 ): Content | null => {
-    const contentCurrent = runInBranchContext(() => contentLib.get({ key: contentRef }), 'draft');
+    const contentCurrent = runInContext({ branch: 'draft' }, () =>
+        contentLib.get({ key: contentRef })
+    );
     if (!contentCurrent) {
         return null;
     }
 
     try {
         return runWithTimeTravel(dateTime, branch, contentRef, () => {
-            const contentFromDateTime = runInBranchContext(
-                () => contentLib.get({ key: contentRef }),
-                'draft'
+            const contentFromDateTime = runInContext({ branch: 'draft' }, () =>
+                contentLib.get({ key: contentRef })
             );
             if (!contentFromDateTime) {
                 return null;

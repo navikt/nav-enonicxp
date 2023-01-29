@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { ContactInformation } from '../../../../site/content-types/contact-information/contact-information';
 import { forceArray } from '../../../utils/nav-utils';
