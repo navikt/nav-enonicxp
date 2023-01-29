@@ -117,6 +117,7 @@
                                     <label>Referer til annen åpningstid</label>
                                     <items>
                                         <input name="sharedSpecialOpeningHours" type="ContentSelector">
+                                            <occurrences minimum="0" maximum="0"/>
                                             <label>Referer til felles spesielle åpningstider</label>
                                             <help-text>Dette vil overstyre eventuelle spesielle åpningstider som du har lagt til nedenfor.</help-text>
                                             <config>
