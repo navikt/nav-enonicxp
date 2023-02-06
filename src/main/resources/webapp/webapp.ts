@@ -10,7 +10,7 @@ import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
 import { searchNodesUpdateAbortEvent } from '../lib/search/eventHandlers';
-import { pushLayerContentToMaster } from '../lib/context/layers';
+import { pushLayerContentToMaster } from '../lib/layers/layers-data';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 

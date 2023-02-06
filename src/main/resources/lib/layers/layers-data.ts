@@ -3,8 +3,9 @@ import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import * as nodeLib from '/lib/xp/node';
+import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { Locale } from '../../types/common';
-import { runInContext } from './run-in-context';
+import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
@@ -13,8 +14,25 @@ import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-h
 type LocaleToRepoIdMap = { [key in Locale]?: string };
 type RepoIdToLocaleMap = { [key: string]: Locale };
 
-let localeToRepoIdMap: LocaleToRepoIdMap = {};
-let repoIdToLocaleMap: RepoIdToLocaleMap = {};
+type LayersRepoData = {
+    defaultLocale: Locale;
+    localeToRepoIdMap: LocaleToRepoIdMap;
+    repoIdToLocaleMap: RepoIdToLocaleMap;
+    sources: {
+        master: SourceWithPrincipals[];
+        draft: SourceWithPrincipals[];
+    };
+};
+
+const data: LayersRepoData = {
+    defaultLocale: 'no',
+    localeToRepoIdMap: {},
+    repoIdToLocaleMap: {},
+    sources: {
+        master: [],
+        draft: [],
+    },
+};
 
 const fifteenMinutesMs = 1000 * 60 * 15;
 
@@ -30,7 +48,9 @@ const validLocales: { [key in Locale]: true } = {
 export const isValidLocale = (locale?: string): locale is Locale =>
     !!(locale && validLocales[locale as Locale]);
 
-export const getLocaleFromRepoId = (repoId: string) => repoIdToLocaleMap[repoId];
+export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[repoId];
+
+export const getLayersData = () => data;
 
 // Pushes any nodes which exists on master in the root project to master on
 // the child layers as well.
@@ -48,7 +68,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
 
-    Object.values(localeToRepoIdMap).forEach((repoId) => {
+    Object.values(data.localeToRepoIdMap).forEach((repoId) => {
         if (repoId === contentRootRepoId) {
             return;
         }
@@ -121,7 +141,7 @@ const populateWithChildLayers = (
     });
 };
 
-const refreshLocaleLayersRepoMap = () => {
+const refreshLayersData = () => {
     const projects = runInContext({ asAdmin: true }, () => projectLib.list());
 
     const newMap: LocaleToRepoIdMap = {};
@@ -136,18 +156,25 @@ const refreshLocaleLayersRepoMap = () => {
 
     populateWithChildLayers(projects, newMap, contentRootProjectId);
 
-    localeToRepoIdMap = newMap;
-    repoIdToLocaleMap = Object.entries(newMap).reduce((acc, [locale, repoId]) => {
+    data.defaultLocale = rootProject.language;
+    data.localeToRepoIdMap = newMap;
+    data.repoIdToLocaleMap = Object.entries(newMap).reduce((acc, [locale, repoId]) => {
         return { ...acc, [repoId]: locale as Locale };
     }, {} as RepoIdToLocaleMap);
+    data.sources.master = Object.values(newMap).map((repoId) => {
+        return { repoId, branch: 'master', principals: ['role:system.admin'] as PrincipalKey[] };
+    });
+    data.sources.draft = Object.values(newMap).map((repoId) => {
+        return { repoId, branch: 'draft', principals: ['role:system.admin'] as PrincipalKey[] };
+    });
 
-    logger.info(`Content layers: ${JSON.stringify(localeToRepoIdMap)}`);
+    logger.info(`Content layers: ${JSON.stringify(data.localeToRepoIdMap)}`);
 };
 
 let hasSetupListeners = false;
 
-export const initLayersMap = () => {
-    refreshLocaleLayersRepoMap();
+export const initLayersData = () => {
+    refreshLayersData();
 
     if (hasSetupListeners) {
         return;
@@ -168,21 +195,7 @@ export const initLayersMap = () => {
                     event
                 )}`
             );
-            refreshLocaleLayersRepoMap();
+            refreshLayersData();
         },
     });
-};
-
-export const runInLocaleContext = <ReturnType>(
-    func: () => ReturnType,
-    locale: Locale
-): ReturnType => {
-    const repoId = localeToRepoIdMap[locale];
-    if (!repoId) {
-        logger.error(
-            `Attempted to set locale context for ${locale} but no layer was found for this locale!`
-        );
-    }
-
-    return runInContext({ repository: repoId || contentRootRepoId }, func);
 };
