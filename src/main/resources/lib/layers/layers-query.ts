@@ -86,6 +86,5 @@ export const getLocaleFromPath = ({
         return defaultLocale;
     }
 
-    logger.info(`Content ${idOrPath} found in layer for ${locale}`);
     return locale;
 };

@@ -38,14 +38,6 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    if (locale === 'all') {
-        return {
-            status: 200,
-            body: 'foundNodes',
-            contentType: 'application/json',
-        };
-    }
-
     try {
         const content = getResponseFromCache(
             idOrPath,
