@@ -156,15 +156,17 @@ const refreshLayersData = () => {
 
     populateWithChildLayers(projects, newMap, contentRootProjectId);
 
+    const newMapEntries = Object.entries(newMap);
+
     data.defaultLocale = rootProject.language;
     data.localeToRepoIdMap = newMap;
-    data.repoIdToLocaleMap = Object.entries(newMap).reduce((acc, [locale, repoId]) => {
+    data.repoIdToLocaleMap = newMapEntries.reduce((acc, [locale, repoId]) => {
         return { ...acc, [repoId]: locale as Locale };
     }, {} as RepoIdToLocaleMap);
-    data.sources.master = Object.values(newMap).map((repoId) => {
+    data.sources.master = newMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'master', principals: ['role:system.admin'] as PrincipalKey[] };
     });
-    data.sources.draft = Object.values(newMap).map((repoId) => {
+    data.sources.draft = newMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'draft', principals: ['role:system.admin'] as PrincipalKey[] };
     });
 
