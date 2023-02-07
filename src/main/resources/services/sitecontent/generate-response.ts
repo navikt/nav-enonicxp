@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { Locale, RepoBranch } from '../../types/common';
+import { RepoBranch } from '../../types/common';
 import { runInContext } from '../../lib/context/run-in-context';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { componentAppKey, redirectsRootPath } from '../../lib/constants';
@@ -14,7 +14,9 @@ import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { logger } from '../../lib/utils/logging';
-import { runInLocaleContext } from '../../lib/context/layers';
+import { isValidLocale } from '../../lib/layers/layers-data';
+import { runInLocaleContext } from '../../lib/layers/context';
+import { getLocaleFromPath } from '../../lib/layers/layers-query';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -164,7 +166,6 @@ const getContentOrRedirect = (
         // If the content has a custom path, we generally want to redirect requests from the internal path
         return {
             ...baseContent,
-            // @ts-ignore (__typename is not a content field but is presently used by the frontend)
             __typename: 'no_nav_navno_InternalLink',
             type: 'no.nav.navno:internal-link',
             data: { target: { _path: baseContent.data.customPath } },
@@ -201,15 +202,22 @@ const getContentOrRedirect = (
     };
 };
 
-export const getSitecontentResponse = (
-    requestedPathOrId: string,
-    branch: RepoBranch,
-    locale: Locale,
-    preview: boolean
-) => {
+export const getSitecontentResponse = ({
+    idOrPath,
+    branch,
+    locale,
+    preview,
+}: {
+    idOrPath: string;
+    branch: RepoBranch;
+    locale?: string;
+    preview: boolean;
+}) => {
+    const localeActual = isValidLocale(locale) ? locale : getLocaleFromPath({ idOrPath, branch });
+
     const content = runInLocaleContext(
-        () => getContentOrRedirect(requestedPathOrId, branch, preview),
-        locale
+        () => getContentOrRedirect(idOrPath, branch, preview),
+        localeActual
     );
 
     if (!content) {
