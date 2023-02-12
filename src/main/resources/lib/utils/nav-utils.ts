@@ -9,7 +9,7 @@ import { generateUUID } from './uuid';
 export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
 export const removeDuplicates = <Type>(
-    array: Type[],
+    array: Type[] | ReadonlyArray<Type>,
     isEqualPredicate?: (a: Type, b: Type) => boolean
 ) =>
     isEqualPredicate
