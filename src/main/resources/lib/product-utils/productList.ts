@@ -179,6 +179,12 @@ const getProductPagesForOverview = (
                             values: [true],
                         },
                     },
+                    {
+                        hasValue: {
+                            field: 'data.hideFromProductlist',
+                            values: [true],
+                        },
+                    },
                 ],
             },
         },
