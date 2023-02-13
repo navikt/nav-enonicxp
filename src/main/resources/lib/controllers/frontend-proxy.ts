@@ -4,7 +4,7 @@ import { urls } from '../constants';
 import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { contentTypesRenderedByEditorFrontend } from '../contenttype-lists';
-import { getLocaleFromRepoId } from '../context/layers';
+import { getLocaleFromRepoId } from '../layers/layers-data';
 
 const loopbackCheckParam = 'fromXp';
 
