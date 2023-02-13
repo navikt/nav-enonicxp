@@ -14,9 +14,9 @@ import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { logger } from '../../lib/utils/logging';
-import { isValidLocale } from '../../lib/layers/layers-data';
-import { runInLocaleContext } from '../../lib/layers/context';
-import { getLocaleFromPath } from '../../lib/layers/layers-query';
+import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
+import { runInLocaleContext } from '../../lib/localization/context';
+import { resolvePathToContentIdAndLocaleTarget } from '../../lib/localization/layers-query';
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
 // This contentKey was saved as an x-data field after the migration to XP
@@ -202,27 +202,43 @@ const getContentOrRedirect = (
     };
 };
 
+const resolveContentIdRequest = (contentId: string, branch: RepoBranch, locale?: string) => {
+    const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
+
+    return (
+        runInLocaleContext({ locale: localeActual }, () =>
+            getContentOrRedirect(contentId, branch, false)
+        ) || null
+    );
+};
+
 export const getSitecontentResponse = ({
-    idOrPath,
+    idOrPathRequested,
     branch,
-    locale,
+    localeRequested,
     preview,
 }: {
-    idOrPath: string;
+    idOrPathRequested: string;
     branch: RepoBranch;
-    locale?: string;
+    localeRequested?: string;
     preview: boolean;
 }) => {
-    const localeActual = isValidLocale(locale) ? locale : getLocaleFromPath({ idOrPath, branch });
+    if (isUUID(idOrPathRequested)) {
+        resolveContentIdRequest(idOrPathRequested, branch, localeRequested);
+    }
 
-    const content = runInLocaleContext(
-        () => getContentOrRedirect(idOrPath, branch, preview),
-        localeActual
-    );
-
-    if (!content) {
+    const target = resolvePathToContentIdAndLocaleTarget({
+        path: idOrPathRequested,
+        branch,
+    });
+    if (!target) {
         return null;
     }
 
-    return content;
+    const { contentId, locale } = target;
+
+    return (
+        runInLocaleContext({ locale }, () => getContentOrRedirect(contentId, branch, preview)) ||
+        null
+    );
 };

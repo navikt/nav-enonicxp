@@ -16,6 +16,7 @@ type RepoIdToLocaleMap = { [key: string]: Locale };
 
 type LayersRepoData = {
     defaultLocale: Locale;
+    defaultRepoId: string;
     localeToRepoIdMap: LocaleToRepoIdMap;
     repoIdToLocaleMap: RepoIdToLocaleMap;
     sources: {
@@ -26,6 +27,7 @@ type LayersRepoData = {
 
 const data: LayersRepoData = {
     defaultLocale: 'no',
+    defaultRepoId: '',
     localeToRepoIdMap: {},
     repoIdToLocaleMap: {},
     sources: {

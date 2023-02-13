@@ -1,12 +1,14 @@
 import { Locale } from '../../types/common';
 import { logger } from '../utils/logging';
-import { runInContext } from '../context/run-in-context';
+import { runInContext, RunInContextOptions } from '../context/run-in-context';
 import { contentRootRepoId } from '../constants';
 import { getLayersData } from './layers-data';
 
+type RunInLocaleContextOptions = Omit<RunInContextOptions, 'repository'> & { locale: Locale };
+
 export const runInLocaleContext = <ReturnType>(
-    func: () => ReturnType,
-    locale: Locale
+    { locale, branch, asAdmin }: RunInLocaleContextOptions,
+    func: () => ReturnType
 ): ReturnType => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
     if (!repoId) {
@@ -15,5 +17,5 @@ export const runInLocaleContext = <ReturnType>(
         );
     }
 
-    return runInContext({ repository: repoId || contentRootRepoId }, func);
+    return runInContext({ repository: repoId || contentRootRepoId, branch, asAdmin }, func);
 };

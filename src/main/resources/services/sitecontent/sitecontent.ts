@@ -41,7 +41,13 @@ export const get = (req: XP.Request) => {
     try {
         const content = getResponseFromCache(
             idOrPath,
-            () => getSitecontentResponse({ idOrPath, branch, locale, preview: preview === 'true' }),
+            () =>
+                getSitecontentResponse({
+                    idOrPathRequested: idOrPath,
+                    branch,
+                    localeRequested: locale,
+                    preview: preview === 'true',
+                }),
             cacheKey
         );
 

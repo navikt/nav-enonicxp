@@ -1,4 +1,4 @@
-import { activateLocalizationEventListeners } from './lib/layers/localization-events';
+import { activateLocalizationEventListeners } from './lib/localization/localization-events';
 
 log.info('Started running main');
 
@@ -21,7 +21,7 @@ import { activateSearchIndexEventHandlers } from './lib/search/eventHandlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/repo';
-import { initLayersData } from './lib/layers/layers-data';
+import { initLayersData } from './lib/localization/layers-data';
 
 updateClusterInfo();
 initLayersData();
@@ -31,7 +31,7 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-activateLocalizationEventListeners();
+// activateLocalizationEventListeners();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
