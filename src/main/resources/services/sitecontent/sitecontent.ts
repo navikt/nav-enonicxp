@@ -1,6 +1,6 @@
 import { isValidBranch } from '../../lib/context/branches';
 import { getResponseFromCache } from './cache';
-import { getSitecontentResponse } from './generate-response';
+import { generateSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
@@ -42,7 +42,7 @@ export const get = (req: XP.Request) => {
         const content = getResponseFromCache(
             idOrPath,
             () =>
-                getSitecontentResponse({
+                generateSitecontentResponse({
                     idOrPathRequested: idOrPath,
                     branch,
                     localeRequested: locale,

@@ -1,139 +1,17 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { runInContext } from '../../lib/context/run-in-context';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { componentAppKey, redirectsRootPath } from '../../lib/constants';
+import { componentAppKey } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
-import {
-    getInternalContentPathFromCustomPath,
-    shouldRedirectToCustomPath,
-} from '../../lib/custom-paths/custom-paths';
-import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/context';
-import { resolvePathToContentIdAndLocaleTarget } from '../../lib/localization/layers-query';
-
-// The old Enonic CMS had urls suffixed with <contentKey>.cms
-// This contentKey was saved as an x-data field after the migration to XP
-// Check if a path matches this pattern and return the content with the contentKey
-// if it exists
-const getRedirectFromLegacyPath = (path: string): Content | null => {
-    const legacyCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
-    if (!legacyCmsKeyMatch) {
-        return null;
-    }
-
-    const legacyCmsKey = legacyCmsKeyMatch[0];
-
-    const legacyHits = contentLib.query({
-        count: 100,
-        sort: 'createdTime ASC',
-        filters: {
-            boolean: {
-                must: {
-                    hasValue: {
-                        field: 'x.no-nav-navno.cmsContent.contentKey',
-                        values: [legacyCmsKey],
-                    },
-                },
-            },
-        },
-    }).hits;
-
-    if (legacyHits.length === 0) {
-        return null;
-    }
-
-    // Sometimes multiple contents have the same legacy key, usually due to duplication
-    // for localization purposes. Return the oldest content.
-    const targetContent = legacyHits[0];
-
-    return {
-        ...targetContent,
-        // @ts-ignore (__typename is not a content field but is presently used by the frontend)
-        __typename: 'no_nav_navno_InternalLink',
-        type: 'no.nav.navno:internal-link',
-        data: {
-            target: { _path: targetContent._path },
-            permanentRedirect: true,
-        },
-    } as Content<'no.nav.navno:internal-link'>;
-};
-
-// Find the nearest parent for a not-found content. If it is an internal link with the
-// redirectSubpaths flag, use this as a redirect
-const getParentRedirectContent = (path: string): null | Content => {
-    if (!path) {
-        return null;
-    }
-
-    const parentPath = getParentPath(path);
-    if (!parentPath) {
-        return null;
-    }
-
-    const parentContent = contentLib.get({ key: parentPath });
-    if (!parentContent) {
-        return getParentRedirectContent(parentPath);
-    }
-
-    if (
-        parentContent.type === 'no.nav.navno:internal-link' &&
-        parentContent.data.redirectSubpaths
-    ) {
-        return parentContent;
-    }
-
-    return null;
-};
-
-const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | null => {
-    if (isUUID(idOrPath)) {
-        return null;
-    }
-
-    const redirectFromLegacyPath = runInContext({ branch }, () =>
-        getRedirectFromLegacyPath(idOrPath)
-    );
-
-    if (redirectFromLegacyPath) {
-        return redirectFromLegacyPath;
-    }
-
-    const redirectPath = stripPathPrefix(idOrPath);
-    if (!redirectPath) {
-        return null;
-    }
-
-    // Gets content from the /redirects folder
-    const redirectContent = runInContext({ branch }, () =>
-        contentLib.get({ key: `${redirectsRootPath}${redirectPath}` })
-    );
-    if (redirectContent) {
-        return runSitecontentGuillotineQuery(redirectContent, branch);
-    }
-
-    const parentRedirectContent = runInContext({ branch }, () =>
-        getParentRedirectContent(idOrPath)
-    );
-    if (parentRedirectContent) {
-        return runSitecontentGuillotineQuery(parentRedirectContent, branch);
-    }
-
-    const parentRedirectContentFromRedirectsFolder = runInContext({ branch }, () =>
-        getParentRedirectContent(`${redirectsRootPath}${redirectPath}`)
-    );
-    if (parentRedirectContentFromRedirectsFolder) {
-        return runSitecontentGuillotineQuery(parentRedirectContentFromRedirectsFolder, branch);
-    }
-
-    return null;
-};
+import { resolvePathToTarget } from '../../lib/localization/layers-query';
+import { getCustomPathRedirectIfApplicable, getRedirectContent } from './redirects';
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
@@ -143,76 +21,51 @@ const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boo
     return branch === 'master' && previewOnlyFlag && !isPreview;
 };
 
-const getContentOrRedirect = (
-    requestedPathOrId: string,
+const getContent = (
+    baseContent: Content,
+    contentRef: string,
     branch: RepoBranch,
-    preview: boolean,
     retries = 2
 ): Content | null => {
-    const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
-    const baseContent = runInContext({ branch }, () => contentLib.get({ key: contentRef }));
-
-    // If the content was not found, check if there are any applicable redirects
-    // for the requested path/id
-    if (!baseContent) {
-        return getRedirectContent(contentRef, branch);
-    }
-
-    if (shouldBlockPreview(baseContent, branch, preview)) {
-        return null;
-    }
-
-    if (shouldRedirectToCustomPath(baseContent, requestedPathOrId, branch)) {
-        // If the content has a custom path, we generally want to redirect requests from the internal path
-        return {
-            ...baseContent,
-            __typename: 'no_nav_navno_InternalLink',
-            type: 'no.nav.navno:internal-link',
-            data: { target: { _path: baseContent.data.customPath } },
-            page: undefined,
-        } as unknown as Content<'no.nav.navno:internal-link'>;
-    }
+    // const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
 
     const content = runSitecontentGuillotineQuery(baseContent, branch);
 
     // Consistency check to ensure our version-history hack isn't affecting normal requests
     if (!validateTimestampConsistency(contentRef, content, branch)) {
         if (retries > 0) {
-            logger.error(
-                `Timestamp consistency check failed - Retrying ${retries} more time${
-                    retries > 1 ? 's' : ''
-                }`
-            );
-            return getContentOrRedirect(contentRef, branch, preview, retries - 1);
+            logger.error(`Timestamp consistency check failed - Retrying ${retries} more times`);
+        } else {
+            logger.critical(`Time travel permanently disabled on this node`);
+            unhookTimeTravel();
         }
 
-        logger.critical(`Time travel permanently disabled on this node`);
-        unhookTimeTravel();
-        return getContentOrRedirect(contentRef, branch, preview);
+        return getContent(baseContent, contentRef, branch, retries - 1);
     }
 
+    return content
+        ? {
+              ...content,
+              // modifiedTime should also take any fragments on the page into account
+              modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch),
+          }
+        : null;
+};
+
+const resolveIdRequest = (contentId: string, branch: RepoBranch, locale?: string) => {
+    const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
+
+    const content = contentLib.get({ key: contentId });
     if (!content) {
         return null;
     }
 
-    return {
-        ...content,
-        // modifiedTime should also take any fragments on the page into account
-        modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch),
-    };
-};
-
-const resolveContentIdRequest = (contentId: string, branch: RepoBranch, locale?: string) => {
-    const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
-
-    return (
-        runInLocaleContext({ locale: localeActual }, () =>
-            getContentOrRedirect(contentId, branch, false)
-        ) || null
+    return runInLocaleContext({ locale: localeActual }, () =>
+        getContent(content, contentId, branch)
     );
 };
 
-export const getSitecontentResponse = ({
+export const generateSitecontentResponse = ({
     idOrPathRequested,
     branch,
     localeRequested,
@@ -224,21 +77,36 @@ export const getSitecontentResponse = ({
     preview: boolean;
 }) => {
     if (isUUID(idOrPathRequested)) {
-        resolveContentIdRequest(idOrPathRequested, branch, localeRequested);
+        return resolveIdRequest(idOrPathRequested, branch, localeRequested);
     }
 
-    const target = resolvePathToContentIdAndLocaleTarget({
+    const target = resolvePathToTarget({
         path: idOrPathRequested,
         branch,
     });
+
+    // If the content was not found, check if there are any applicable redirects
+    // for the requested path/id
     if (!target) {
+        return getRedirectContent(idOrPathRequested, branch);
+    }
+
+    const { content, locale } = target;
+
+    if (shouldBlockPreview(content, branch, preview)) {
         return null;
     }
 
-    const { contentId, locale } = target;
+    const customPathRedirect = getCustomPathRedirectIfApplicable({
+        content,
+        locale,
+        branch,
+        requestedPath: idOrPathRequested,
+    });
 
-    return (
-        runInLocaleContext({ locale }, () => getContentOrRedirect(contentId, branch, preview)) ||
-        null
-    );
+    if (customPathRedirect) {
+        return customPathRedirect;
+    }
+
+    return runInLocaleContext({ locale }, () => getContent(content, content._id, branch)) || null;
 };

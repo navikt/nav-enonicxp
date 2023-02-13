@@ -5,7 +5,7 @@ import { getLayersData, isValidLocale } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './context';
 import * as contentLib from '/lib/xp/content';
-import { contentRootProjectId, contentRootRepoId } from '../constants';
+import { contentRootRepoId } from '../constants';
 import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 
@@ -53,19 +53,34 @@ const getLayeredNodesFromPath = ({ path, branch }: { path: string; branch: RepoB
     return foundNodes.hits;
 };
 
-const resolveExactPath = (foundNodes: ReadonlyArray<MultiRepoNodeQueryHit>, path: string) => {
+type ContentPathTarget = {
+    content: Content;
+    locale: Locale;
+};
+
+const resolveExactPath = (
+    foundNodes: ReadonlyArray<MultiRepoNodeQueryHit>,
+    path: string
+): ContentPathTarget | null => {
     const { defaultLocale, repoIdToLocaleMap } = getLayersData();
 
     if (foundNodes.length > 1) {
         const defaultNode = foundNodes.find((node) => node.repoId === contentRootRepoId);
         if (defaultNode) {
             logger.info(`Content ${path} found in multiple layers, returning default`);
-            return { contentId: defaultNode.id, locale: defaultLocale };
+            const content = contentLib.get({ key: defaultNode.id });
+            if (!content) {
+                return null;
+            }
+
+            return { content, locale: defaultLocale };
         }
 
         logger.info(
             `Content ${path} found in multiple layers, but not in default! returning oldest`
         );
+
+        return null;
     }
 
     const { id, repoId } = foundNodes[0];
@@ -80,10 +95,10 @@ const resolveExactPath = (foundNodes: ReadonlyArray<MultiRepoNodeQueryHit>, path
 
     const content = runInLocaleContext({ locale }, () => contentLib.get({ key: id }));
 
-    return { content, locale };
+    return content ? { content, locale } : null;
 };
 
-const resolveLocaleSuffixedPath = (path: string, branch: RepoBranch) => {
+const resolveLocaleSuffixedPath = (path: string, branch: RepoBranch): ContentPathTarget | null => {
     const { defaultLocale } = getLayersData();
 
     const pathSegments = path.split('/');
@@ -110,16 +125,16 @@ const resolveLocaleSuffixedPath = (path: string, branch: RepoBranch) => {
     }
 
     logger.info(`Content ${possiblePath} found with locale ${possibleLocale}`);
-    return { contentId: localeContent[0]._id, locale: possibleLocale };
+    return { content: localeContent[0], locale: possibleLocale };
 };
 
-export const resolvePathToContentIdAndLocaleTarget = ({
+export const resolvePathToTarget = ({
     path,
     branch,
 }: {
     path: string;
     branch: RepoBranch;
-}): { content: Content; locale: Locale } | null => {
+}): ContentPathTarget | null => {
     const foundNodes = getLayeredNodesFromPath({ path, branch });
 
     return foundNodes.length > 0
