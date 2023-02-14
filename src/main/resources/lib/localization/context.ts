@@ -17,5 +17,8 @@ export const runInLocaleContext = <ReturnType>(
         );
     }
 
-    return runInContext({ repository: repoId || contentRootRepoId, branch, asAdmin }, func);
+    return runInContext(
+        { repository: repoId || contentRootRepoId, branch, asAdmin, attributes: { locale } },
+        func
+    );
 };

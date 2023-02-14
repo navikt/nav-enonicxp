@@ -4,9 +4,8 @@ import { RepoBranch } from '../../types/common';
 
 export type RunInContextOptions = {
     branch?: RepoBranch;
-    repository?: string;
     asAdmin?: boolean;
-};
+} & Omit<RunContext<ContextAttributes>, 'branch' | 'user' | 'principals'>;
 
 const adminContextOptions: Pick<RunContext<ContextAttributes>, 'user' | 'principals'> = {
     user: {
@@ -17,7 +16,7 @@ const adminContextOptions: Pick<RunContext<ContextAttributes>, 'user' | 'princip
 };
 
 export const runInContext = <ReturnType>(
-    { branch, repository, asAdmin }: RunInContextOptions,
+    { branch, repository, asAdmin, attributes }: RunInContextOptions,
     func: () => ReturnType
 ): ReturnType => {
     const currentContext = contextLib.get();
@@ -25,6 +24,7 @@ export const runInContext = <ReturnType>(
     return contextLib.run<ReturnType, ContextAttributes>(
         {
             ...currentContext,
+            ...(attributes && { attributes: { ...currentContext.attributes, ...attributes } }),
             ...(asAdmin && adminContextOptions),
             repository: repository || currentContext.repository,
             branch: branch || currentContext.branch,

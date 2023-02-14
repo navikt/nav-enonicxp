@@ -7,6 +7,7 @@ import { isUUID } from '../../lib/utils/uuid';
 import { runInContext } from '../../lib/context/run-in-context';
 import { redirectsRootPath } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
+import { getLayersData } from '../../lib/localization/layers-data';
 
 // If the content has a custom path and it is not the requested path
 // we should redirect to the custom path
@@ -21,16 +22,20 @@ export const getCustomPathRedirectIfApplicable = ({
     branch: RepoBranch;
     locale: Locale;
 }) => {
-    if (
-        hasValidCustomPath(content) &&
-        stripPathPrefix(requestedPath) !== content.data.customPath &&
-        branch === 'master'
-    ) {
+    if (hasValidCustomPath(content) && requestedPath === content._path && branch === 'master') {
+        const { defaultLocale } = getLayersData();
+
         return {
             ...content,
             __typename: 'no_nav_navno_InternalLink',
             type: 'no.nav.navno:internal-link',
-            data: { target: { _path: content.data.customPath } },
+            data: {
+                target: {
+                    _path: `${content.data.customPath}${
+                        locale && locale !== defaultLocale ? `/${locale}` : ''
+                    }`,
+                },
+            },
             page: undefined,
         } as unknown as Content<'no.nav.navno:internal-link'>;
     }

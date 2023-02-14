@@ -21,18 +21,12 @@ const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boo
     return branch === 'master' && previewOnlyFlag && !isPreview;
 };
 
-const getContent = (
-    baseContent: Content,
-    contentRef: string,
-    branch: RepoBranch,
-    retries = 2
-): Content | null => {
-    // const contentRef = getInternalContentPathFromCustomPath(requestedPathOrId) || requestedPathOrId;
-
+const getContent = (baseContent: Content, branch: RepoBranch, retries = 2): Content | null => {
+    const contentId = baseContent._id;
     const content = runSitecontentGuillotineQuery(baseContent, branch);
 
     // Consistency check to ensure our version-history hack isn't affecting normal requests
-    if (!validateTimestampConsistency(contentRef, content, branch)) {
+    if (!validateTimestampConsistency(contentId, content, branch)) {
         if (retries > 0) {
             logger.error(`Timestamp consistency check failed - Retrying ${retries} more times`);
         } else {
@@ -40,14 +34,14 @@ const getContent = (
             unhookTimeTravel();
         }
 
-        return getContent(baseContent, contentRef, branch, retries - 1);
+        return getContent(baseContent, branch, retries - 1);
     }
 
     return content
         ? {
               ...content,
               // modifiedTime should also take any fragments on the page into account
-              modifiedTime: getModifiedTimeIncludingFragments(contentRef, branch),
+              modifiedTime: getModifiedTimeIncludingFragments(contentId, branch),
           }
         : null;
 };
@@ -60,9 +54,7 @@ const resolveIdRequest = (contentId: string, branch: RepoBranch, locale?: string
         return null;
     }
 
-    return runInLocaleContext({ locale: localeActual }, () =>
-        getContent(content, contentId, branch)
-    );
+    return runInLocaleContext({ locale: localeActual }, () => getContent(content, branch));
 };
 
 export const generateSitecontentResponse = ({
@@ -86,7 +78,7 @@ export const generateSitecontentResponse = ({
     });
 
     // If the content was not found, check if there are any applicable redirects
-    // for the requested path/id
+    // for the requested path
     if (!target) {
         return getRedirectContent(idOrPathRequested, branch);
     }
@@ -105,8 +97,10 @@ export const generateSitecontentResponse = ({
     });
 
     if (customPathRedirect) {
+        logger.info(`Found custom path redirect: ${JSON.stringify(customPathRedirect)}`);
+
         return customPathRedirect;
     }
 
-    return runInLocaleContext({ locale }, () => getContent(content, content._id, branch)) || null;
+    return runInLocaleContext({ locale }, () => getContent(content, branch));
 };
