@@ -1,19 +1,13 @@
 import { Locale, RepoBranch } from '../../types/common';
-import * as nodeLib from '/lib/xp/node';
 import { stripPathPrefix } from '../utils/nav-utils';
 import { getLayersData, isValidLocale } from './layers-data';
 import { logger } from '../utils/logging';
-import { runInLocaleContext } from './context';
+import { runInLocaleContext } from './locale-context';
 import * as contentLib from '/lib/xp/content';
 import { contentRootRepoId } from '../constants';
 import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-
-export const getLayersMultiConnection = (branch: RepoBranch) => {
-    return nodeLib.multiRepoConnect({
-        sources: getLayersData().sources[branch],
-    });
-};
+import { getLayersMultiConnection } from './locale-utils';
 
 const getPathQueryParams = (path: string) => ({
     start: 0,

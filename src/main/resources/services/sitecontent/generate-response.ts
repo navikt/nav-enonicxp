@@ -9,8 +9,8 @@ import { validateTimestampConsistency } from '../../lib/time-travel/consistency-
 import { unhookTimeTravel } from '../../lib/time-travel/time-travel-hooks';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
-import { runInLocaleContext } from '../../lib/localization/context';
-import { resolvePathToTarget } from '../../lib/localization/layers-query';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import { getCustomPathRedirectIfApplicable, getRedirectContent } from './redirects';
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible

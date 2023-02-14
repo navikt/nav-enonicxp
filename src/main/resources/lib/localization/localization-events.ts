@@ -6,6 +6,7 @@ import { logger } from '../utils/logging';
 import { getLayersData } from './layers-data';
 import { removeDuplicates } from '../utils/nav-utils';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { buildLocalePath } from './locale-utils';
 
 let hasSetupListeners = false;
 
@@ -73,14 +74,14 @@ const processContentOnLocalization = (event: EnonicEvent) => {
 
                 logger.info(`Content ${id} has a customPath set, modifying...`);
                 const { customPath } = content.data;
-                const newPathSuffix = `/${locale}`;
+                const newPath = buildLocalePath(customPath, locale);
 
-                if (customPath.endsWith(newPathSuffix)) {
+                if (newPath === customPath) {
                     logger.info(`Localized custom path was already set`);
                     return content;
                 }
 
-                content.data.customPath = customPath.replace(/(\/)?$/, newPathSuffix);
+                content.data.customPath = newPath;
 
                 return content;
             },
@@ -90,6 +91,7 @@ const processContentOnLocalization = (event: EnonicEvent) => {
     });
 };
 
+// This is not in use... yet.
 export const activateLocalizationEventListeners = () => {
     if (hasSetupListeners) {
         logger.error('Localization event listeners were already setup');
