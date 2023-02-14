@@ -1,5 +1,3 @@
-import { activateLocalizationEventListeners } from './lib/localization/localization-events';
-
 log.info('Started running main');
 
 import './lib/polyfills';
@@ -31,7 +29,6 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-// activateLocalizationEventListeners();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
