@@ -6,10 +6,9 @@ import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { redirectsRootPath } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { getLayersData } from '../../lib/localization/layers-data';
+import { buildLocalePath } from '../../lib/localization/locale-utils';
 
-// If the content has a custom path and it is not the requested path
-// we should redirect to the custom path
+// If the content has a custom path, we should redirect requests from the internal _path
 export const getCustomPathRedirectIfApplicable = ({
     content,
     requestedPath,
@@ -21,25 +20,22 @@ export const getCustomPathRedirectIfApplicable = ({
     branch: RepoBranch;
     locale: Locale;
 }) => {
-    if (hasValidCustomPath(content) && requestedPath === content._path && branch === 'master') {
-        const { defaultLocale } = getLayersData();
+    const shouldRedirect =
+        hasValidCustomPath(content) && requestedPath === content._path && branch === 'master';
 
-        return {
-            ...content,
-            __typename: 'no_nav_navno_InternalLink',
-            type: 'no.nav.navno:internal-link',
-            data: {
-                target: {
-                    _path: `${content.data.customPath}${
-                        locale && locale !== defaultLocale ? `/${locale}` : ''
-                    }`,
-                },
-            },
-            page: undefined,
-        } as unknown as Content<'no.nav.navno:internal-link'>;
-    }
-
-    return null;
+    return shouldRedirect
+        ? ({
+              ...content,
+              __typename: 'no_nav_navno_InternalLink',
+              type: 'no.nav.navno:internal-link',
+              data: {
+                  target: {
+                      _path: buildLocalePath(content.data.customPath, locale),
+                  },
+              },
+              page: undefined,
+          } as unknown as Content<'no.nav.navno:internal-link'>)
+        : null;
 };
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
@@ -79,14 +75,13 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
 
     return {
         ...targetContent,
-        // @ts-ignore (__typename is not a content field but is presently used by the frontend)
         __typename: 'no_nav_navno_InternalLink',
         type: 'no.nav.navno:internal-link',
         data: {
             target: { _path: targetContent._path },
             permanentRedirect: true,
         },
-    } as Content<'no.nav.navno:internal-link'>;
+    } as unknown as Content<'no.nav.navno:internal-link'>;
 };
 
 // Find the nearest parent for a not-found content. If it is an internal link with the
@@ -116,47 +111,33 @@ const getParentRedirectContent = (path: string): null | Content => {
     return null;
 };
 
+const getContentFromRedirectsFolder = (path: string) =>
+    contentLib.get({ key: `${redirectsRootPath}${path}` });
+
 export const getRedirectContent = ({
     pathRequested,
     branch,
 }: {
     pathRequested: string;
     branch: RepoBranch;
-}): Content | null => {
-    const redirectFromLegacyPath = runInContext({ branch }, () =>
-        getRedirectFromLegacyPath(pathRequested)
-    );
+}) =>
+    runInContext({ branch }, () => {
+        const redirectFromLegacyPath = getRedirectFromLegacyPath(pathRequested);
+        if (redirectFromLegacyPath) {
+            return redirectFromLegacyPath;
+        }
 
-    if (redirectFromLegacyPath) {
-        return redirectFromLegacyPath;
-    }
+        const strippedPath = stripPathPrefix(pathRequested);
 
-    const redirectPath = stripPathPrefix(pathRequested);
-    if (!redirectPath) {
-        return null;
-    }
+        // This order of lookups should be preserved. In the event of overlapping matches, we want the order
+        // of precedence to be:
+        // 1. A direct match in the redirects folder
+        // 2. A parent match in the regular content structure
+        // 3. A parent match in the redirects folder
+        const redirectContent =
+            getContentFromRedirectsFolder(strippedPath) ||
+            getParentRedirectContent(pathRequested) ||
+            getParentRedirectContent(`${redirectsRootPath}${strippedPath}`);
 
-    // Gets content from the /redirects folder
-    const redirectContent = runInContext({ branch }, () =>
-        contentLib.get({ key: `${redirectsRootPath}${redirectPath}` })
-    );
-    if (redirectContent) {
-        return runSitecontentGuillotineQuery(redirectContent, branch);
-    }
-
-    const parentRedirectContent = runInContext({ branch }, () =>
-        getParentRedirectContent(pathRequested)
-    );
-    if (parentRedirectContent) {
-        return runSitecontentGuillotineQuery(parentRedirectContent, branch);
-    }
-
-    const parentRedirectContentFromRedirectsFolder = runInContext({ branch }, () =>
-        getParentRedirectContent(`${redirectsRootPath}${redirectPath}`)
-    );
-    if (parentRedirectContentFromRedirectsFolder) {
-        return runSitecontentGuillotineQuery(parentRedirectContentFromRedirectsFolder, branch);
-    }
-
-    return null;
-};
+        return redirectContent ? runSitecontentGuillotineQuery(redirectContent, branch) : null;
+    });
