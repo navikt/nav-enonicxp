@@ -15,7 +15,7 @@ const getPathQueryParams = (path: string) => ({
     sort: 'createdTime ASC',
     filters: {
         boolean: {
-            // Must match either the internal XP path, or a custom path
+            // Must match either the internal content path, or a custom path
             should: [
                 {
                     hasValue: {
