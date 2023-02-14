@@ -44,8 +44,8 @@ export const get = (req: XP.Request) => {
             () =>
                 generateSitecontentResponse({
                     idOrPathRequested: idOrPath,
-                    branch,
                     localeRequested: locale,
+                    branch,
                     preview: preview === 'true',
                 }),
             cacheKey

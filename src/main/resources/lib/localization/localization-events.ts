@@ -91,7 +91,10 @@ const processContentOnLocalization = (event: EnonicEvent) => {
     });
 };
 
-// This is not in use... yet.
+// This is not in use... and may never be
+// Depending on how we decide to handle localized urls, this may be removed. The current
+// implementation does not explicitly set localized urls in locale layers, but instead resolved
+// urls with locale suffixes to content from the matching layer
 export const activateLocalizationEventListeners = () => {
     if (hasSetupListeners) {
         logger.error('Localization event listeners were already setup');

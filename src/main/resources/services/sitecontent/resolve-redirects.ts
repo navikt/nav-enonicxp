@@ -3,7 +3,6 @@ import { Content } from '/lib/xp/content';
 import { Locale, RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
-import { isUUID } from '../../lib/utils/uuid';
 import { runInContext } from '../../lib/context/run-in-context';
 import { redirectsRootPath } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
@@ -117,20 +116,22 @@ const getParentRedirectContent = (path: string): null | Content => {
     return null;
 };
 
-export const getRedirectContent = (idOrPath: string, branch: RepoBranch): Content | null => {
-    if (isUUID(idOrPath)) {
-        return null;
-    }
-
+export const getRedirectContent = ({
+    pathRequested,
+    branch,
+}: {
+    pathRequested: string;
+    branch: RepoBranch;
+}): Content | null => {
     const redirectFromLegacyPath = runInContext({ branch }, () =>
-        getRedirectFromLegacyPath(idOrPath)
+        getRedirectFromLegacyPath(pathRequested)
     );
 
     if (redirectFromLegacyPath) {
         return redirectFromLegacyPath;
     }
 
-    const redirectPath = stripPathPrefix(idOrPath);
+    const redirectPath = stripPathPrefix(pathRequested);
     if (!redirectPath) {
         return null;
     }
@@ -144,7 +145,7 @@ export const getRedirectContent = (idOrPath: string, branch: RepoBranch): Conten
     }
 
     const parentRedirectContent = runInContext({ branch }, () =>
-        getParentRedirectContent(idOrPath)
+        getParentRedirectContent(pathRequested)
     );
     if (parentRedirectContent) {
         return runSitecontentGuillotineQuery(parentRedirectContent, branch);

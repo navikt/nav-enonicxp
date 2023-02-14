@@ -10,6 +10,9 @@
  * after every "time travel"-requesting thread. Keep in mind thread-ids are reused and the http-server is
  * multithreaded. Make sure you understand what you're doing if you make any changes. :)
  *
+ * TODO: See if this can be rewriten to a safer approach using the XP context library for request
+ * state, rather than the current thread-id based approach
+ *
  * */
 
 import * as contentLib from '/lib/xp/content';
