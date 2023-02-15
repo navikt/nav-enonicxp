@@ -100,8 +100,6 @@ export const generateSitecontentResponse = ({
 
     const { content, locale } = target;
 
-    logger.info(`${branch} - ${preview} - ${shouldBlockPreview(content, branch, preview)}`);
-
     if (shouldBlockPreview(content, branch, preview)) {
         return null;
     }
