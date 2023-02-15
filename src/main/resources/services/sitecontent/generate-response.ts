@@ -53,18 +53,20 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
 };
 
 const resolveContentIdRequest = (contentId: string, branch: RepoBranch, locale?: string) => {
-    const content = contentLib.get({ key: contentId });
-    if (!content) {
-        return null;
-    }
-
     if (!locale) {
-        logger.warning(`No locale was specified for content id request ${contentId}`);
+        logger.critical(`No locale was specified for content id request ${contentId}`);
     }
 
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
 
-    return runInLocaleContext({ locale: localeActual }, () => resolveContent(content, branch));
+    return runInLocaleContext({ locale: localeActual }, () => {
+        const content = contentLib.get({ key: contentId });
+        if (!content) {
+            return null;
+        }
+
+        return resolveContent(content, branch);
+    });
 };
 
 export const generateSitecontentResponse = ({
