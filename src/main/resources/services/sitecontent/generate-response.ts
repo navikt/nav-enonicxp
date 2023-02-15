@@ -81,9 +81,9 @@ export const generateSitecontentResponse = ({
     preview: boolean;
 }) => {
     // Requests for a UUID should be explicitly resolved to the matching content id and requires
-    // fewer steps to resolve
+    // fewer steps to resolve. The same goes for requests for the draft branch.
     // These requests normally only comes from the Content Studio editor, with a specified locale
-    if (isUUID(idOrPathRequested)) {
+    if (isUUID(idOrPathRequested) || branch === 'draft') {
         return resolveContentIdRequest(idOrPathRequested, branch, localeRequested);
     }
 
