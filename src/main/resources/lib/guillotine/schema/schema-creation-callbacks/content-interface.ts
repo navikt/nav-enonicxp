@@ -28,9 +28,8 @@ export const contentInterfaceCallback: CreationCallback = (context, params) => {
 
         const locale = contextLib.get()?.attributes?.locale as string | undefined;
 
-        // If this happens there is a bug somewhere. A valid locale context should always be set at this point
         if (!isValidLocale(locale)) {
-            logger.critical(`Locale was not set in context for request to ${_path}`);
+            logger.info(`Locale was not set in context for request to ${_path}`);
             return basePath;
         }
 

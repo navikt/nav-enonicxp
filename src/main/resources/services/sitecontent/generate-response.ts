@@ -54,12 +54,12 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
 
 const resolveContentIdRequest = (contentId: string, branch: RepoBranch, locale?: string) => {
     if (!locale) {
-        logger.critical(`No locale was specified for content id request ${contentId}`);
+        logger.error(`No locale was specified for content id request ${contentId}`);
     }
 
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
 
-    return runInLocaleContext({ locale: localeActual }, () => {
+    return runInLocaleContext({ locale: localeActual, branch }, () => {
         const content = contentLib.get({ key: contentId });
         if (!content) {
             return null;
@@ -80,8 +80,8 @@ export const generateSitecontentResponse = ({
     localeRequested?: string;
     preview: boolean;
 }) => {
-    // Requests for a UUID should be explicitly resolved to the matching content id and requires
-    // fewer steps to resolve. The same goes for requests for the draft branch.
+    // Requests for a UUID should be explicitly resolved to the requested content id and requires
+    // fewer steps to resolve. The same goes for requests to the draft branch.
     // These requests normally only comes from the Content Studio editor, with a specified locale
     if (isUUID(idOrPathRequested) || branch === 'draft') {
         return resolveContentIdRequest(idOrPathRequested, branch, localeRequested);
