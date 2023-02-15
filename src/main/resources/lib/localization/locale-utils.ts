@@ -1,5 +1,5 @@
 import * as nodeLib from '/lib/xp/node';
-import { Locale, RepoBranch } from '../../types/common';
+import { RepoBranch } from '../../types/common';
 import { getLayersData } from './layers-data';
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
@@ -8,7 +8,7 @@ export const getLayersMultiConnection = (branch: RepoBranch) => {
     });
 };
 
-export const buildLocalePath = (basePath: string, locale: Locale) => {
+export const buildLocalePath = (basePath: string, locale: string) => {
     const { defaultLocale } = getLayersData();
 
     const localeSuffix = `/${locale}`;
