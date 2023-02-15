@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { Locale, RepoBranch } from '../../types/common';
+import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
@@ -18,7 +18,7 @@ export const getCustomPathRedirectIfApplicable = ({
     content: Content;
     requestedPath: string;
     branch: RepoBranch;
-    locale: Locale;
+    locale: string;
 }) => {
     const shouldRedirect =
         hasValidCustomPath(content) && requestedPath === content._path && branch === 'master';

@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { Locale, RepoBranch } from '../../types/common';
+import { RepoBranch } from '../../types/common';
 import { stripPathPrefix } from '../utils/nav-utils';
 import { getLayersData, isValidLocale } from './layers-data';
 import { logger } from '../utils/logging';
@@ -49,7 +49,7 @@ const getNodesFromAllLayers = ({ path, branch }: { path: string; branch: RepoBra
 
 type ContentPathTarget = {
     content: Content;
-    locale: Locale;
+    locale: string;
 };
 
 // Search all layers for an exact path. If a match is found in multiple layers, we prefer the node

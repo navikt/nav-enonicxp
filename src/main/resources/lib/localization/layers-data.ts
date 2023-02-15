@@ -4,18 +4,17 @@ import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import * as nodeLib from '/lib/xp/node';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
-import { Locale } from '../../types/common';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
 import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-handlers';
 
-type LocaleToRepoIdMap = { [key in Locale]?: string };
-type RepoIdToLocaleMap = { [key: string]: Locale };
+type LocaleToRepoIdMap = Record<string, string>;
+type RepoIdToLocaleMap = Record<string, string>;
 
 type LayersRepoData = {
-    defaultLocale: Locale;
+    defaultLocale: string;
     localeToRepoIdMap: LocaleToRepoIdMap;
     repoIdToLocaleMap: RepoIdToLocaleMap;
     sources: {
@@ -36,17 +35,8 @@ const data: LayersRepoData = {
 
 const fifteenMinutesMs = 1000 * 60 * 15;
 
-const validLocales: { [key in Locale]: true } = {
-    no: true,
-    nn: true,
-    en: true,
-    se: true,
-    ru: true,
-    uk: true,
-};
-
-export const isValidLocale = (locale?: string): locale is Locale =>
-    !!(locale && validLocales[locale as Locale]);
+export const isValidLocale = (locale?: string): locale is string =>
+    !!(locale && data.localeToRepoIdMap[locale]);
 
 export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[repoId];
 
@@ -161,7 +151,7 @@ const refreshLayersData = () => {
     data.defaultLocale = rootProject.language;
     data.localeToRepoIdMap = newMap;
     data.repoIdToLocaleMap = newMapEntries.reduce((acc, [locale, repoId]) => {
-        return { ...acc, [repoId]: locale as Locale };
+        return { ...acc, [repoId]: locale };
     }, {} as RepoIdToLocaleMap);
     data.sources.master = newMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'master', principals: ['role:system.admin'] as PrincipalKey[] };

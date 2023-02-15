@@ -1,10 +1,9 @@
-import { Locale } from '../../types/common';
 import { logger } from '../utils/logging';
 import { runInContext, RunInContextOptions } from '../context/run-in-context';
 import { contentRootRepoId } from '../constants';
 import { getLayersData } from './layers-data';
 
-type RunInLocaleContextOptions = Omit<RunInContextOptions, 'repository'> & { locale: Locale };
+type RunInLocaleContextOptions = Omit<RunInContextOptions, 'repository'> & { locale: string };
 
 export const runInLocaleContext = <ReturnType>(
     { locale, branch, asAdmin }: RunInLocaleContextOptions,
