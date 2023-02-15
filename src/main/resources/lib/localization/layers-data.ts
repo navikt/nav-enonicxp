@@ -117,7 +117,7 @@ const populateWithChildLayers = (
 ) => {
     projects.forEach((project) => {
         const { parent, id, language } = project;
-        if (parent !== parentId || !isValidLocale(language)) {
+        if (parent !== parentId || !language) {
             return;
         }
 
@@ -137,7 +137,7 @@ const refreshLayersData = () => {
     const newMap: LocaleToRepoIdMap = {};
 
     const rootProject = projects.find((project) => project.id === contentRootProjectId);
-    if (!rootProject || !isValidLocale(rootProject.language)) {
+    if (!rootProject?.language) {
         logger.critical(`No valid root project found!`);
         return;
     }

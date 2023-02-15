@@ -11,8 +11,9 @@ export const runInLocaleContext = <ReturnType>(
 ): ReturnType => {
     const repoId = getLayersData().localeToRepoIdMap[locale];
     if (!repoId) {
+        logger.error(JSON.stringify(getLayersData().localeToRepoIdMap));
         logger.error(
-            `Attempted to set locale context for ${locale} but no layer was found for this locale!`
+            `Attempted to set locale context for "${locale}" but no layer was found for this locale!`
         );
     }
 
