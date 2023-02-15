@@ -32,12 +32,13 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
 };
 
 const getLayersLanguages = (content: Content, branch: RepoBranch) => {
-    const { _id, language } = content;
+    const { _id, language: parentLanguage } = content;
 
     const localizedContent = getLocalizedContentVersions(_id, branch);
 
     return localizedContent.reduce((acc, localizedContent) => {
-        if (localizedContent.language === language) {
+        const { language } = localizedContent;
+        if (language === parentLanguage) {
             return acc;
         }
 
@@ -50,9 +51,10 @@ const getLegacyLanguages = (content: Content) => {
         return [];
     }
 
+    const { _id: parentContentId } = content;
+
     return forceArray(content.data.languages).reduce((acc, contentId) => {
-        // Content should not include itself in the alternative languages array
-        if (contentId === content._id) {
+        if (contentId === parentContentId) {
             return acc;
         }
 
