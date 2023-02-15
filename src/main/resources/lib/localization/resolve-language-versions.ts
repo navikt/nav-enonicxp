@@ -31,6 +31,20 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
     return !!(content as ContentWithLegacyLanguages).data?.languages;
 };
 
+const getLayersLanguages = (content: Content, branch: RepoBranch) => {
+    const { _id, language } = content;
+
+    const localizedContent = getLocalizedContentVersions(_id, branch);
+
+    return localizedContent.reduce((acc, localizedContent) => {
+        if (localizedContent.language === language) {
+            return acc;
+        }
+
+        return [...acc, transformContent(localizedContent, language)];
+    }, [] as LanguageSelectorData[]);
+};
+
 const getLegacyLanguages = (content: Content) => {
     if (!contentHasLegacyLanguages(content)) {
         return [];
@@ -48,20 +62,6 @@ const getLegacyLanguages = (content: Content) => {
         }
 
         return [...acc, transformContent(languageContent)];
-    }, [] as LanguageSelectorData[]);
-};
-
-const getLayersLanguages = (content: Content, branch: RepoBranch) => {
-    const { _id, language } = content;
-
-    const localizedContent = getLocalizedContentVersions(_id, branch);
-
-    return localizedContent.reduce((acc, localizedContent) => {
-        if (localizedContent.language === language) {
-            return acc;
-        }
-
-        return [...acc, transformContent(localizedContent)];
     }, [] as LanguageSelectorData[]);
 };
 
