@@ -112,8 +112,6 @@ export const generateSitecontentResponse = ({
     });
 
     if (customPathRedirect) {
-        logger.info(`Found custom path redirect: ${JSON.stringify(customPathRedirect)}`);
-
         return customPathRedirect;
     }
 

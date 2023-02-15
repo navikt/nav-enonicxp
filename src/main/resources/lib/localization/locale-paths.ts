@@ -63,7 +63,6 @@ const resolveExactPath = (
     if (foundNodes.length > 1) {
         const defaultNode = foundNodes.find((node) => node.repoId === contentRootRepoId);
         if (defaultNode) {
-            logger.info(`Content ${path} found in multiple layers, returning default`);
             const content = contentLib.get({ key: defaultNode.id });
             if (!content) {
                 return null;
@@ -72,7 +71,12 @@ const resolveExactPath = (
             return { content, locale: defaultLocale };
         }
 
-        logger.critical(`Content ${path} found in multiple layers, but not in the default!`);
+        // Duplicate path-names of localized content is something we almost certainly don't want.
+        logger.critical(
+            `Content ${path} found in multiple layers, but not in the default!`,
+            true,
+            true
+        );
     }
 
     const { id, repoId } = foundNodes[0];
@@ -112,7 +116,6 @@ const resolveLocalePath = (path: string, branch: RepoBranch): ContentPathTarget 
     // The default locale should not be an allowed suffix. For this locale we only want to resolve
     // requests for the actual path, with no locale-suffix.
     if (possibleLocale === defaultLocale || !isValidLocale(possibleLocale)) {
-        logger.info(`Not a valid locale suffix: ${possibleLocale}`);
         return null;
     }
 
@@ -123,7 +126,6 @@ const resolveLocalePath = (path: string, branch: RepoBranch): ContentPathTarget 
     ).hits;
 
     if (localeContent.length === 0) {
-        logger.info(`Content ${possiblePath} not found in any layer`);
         return null;
     }
 
@@ -136,7 +138,6 @@ const resolveLocalePath = (path: string, branch: RepoBranch): ContentPathTarget 
     // If we somehow find multiple contents with the same path, we return the oldest.
     const content = localeContent[0];
 
-    logger.info(`Content ${possiblePath} found with locale ${possibleLocale}`);
     return { content, locale: possibleLocale };
 };
 
