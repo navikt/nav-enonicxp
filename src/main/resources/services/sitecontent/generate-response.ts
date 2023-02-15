@@ -18,7 +18,7 @@ import { getLanguageVersions } from '../../lib/localization/resolve-language-ver
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
 // query param
 const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boolean) => {
-    if (branch !== 'master' || !isPreview) {
+    if (branch !== 'master' || isPreview) {
         return false;
     }
 
