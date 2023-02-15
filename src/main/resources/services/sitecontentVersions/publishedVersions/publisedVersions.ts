@@ -5,7 +5,7 @@ import { logger } from '../../../lib/utils/logging';
 export const publishedVersionsReqHandler = (req: XP.Request) => {
     const { id } = req.params;
 
-    if (!isUUID(id)) {
+    if (!id || !isUUID(id)) {
         return {
             status: 400,
             body: {

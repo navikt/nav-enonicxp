@@ -18,7 +18,7 @@ const isValidTime = (time?: string): time is string => {
 const sitecontentVersionsReqHandler = (req: XP.Request) => {
     const { id, branch = 'master', time } = req.params;
 
-    if (!isUUID(id)) {
+    if (!id || !isUUID(id)) {
         return {
             status: 400,
             body: {

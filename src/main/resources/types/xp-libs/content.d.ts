@@ -52,7 +52,7 @@ declare module '*/lib/xp/content' {
                 owner: string;
                 displayName: string;
                 readonly hasChildren: boolean;
-                language?: string;
+                language: string;
                 readonly valid: boolean;
                 childOrder: string;
                 x: Record<string, any>;
