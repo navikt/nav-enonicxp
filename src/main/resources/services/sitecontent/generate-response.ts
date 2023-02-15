@@ -12,6 +12,7 @@ import { getLayersData, isValidLocale } from '../../lib/localization/layers-data
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import { getCustomPathRedirectIfApplicable, getRedirectContent } from './resolve-redirects';
+import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
@@ -45,9 +46,8 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
         ? {
               ...queryResult,
               // modifiedTime should also take any fragments on the page into account
-              modifiedTime: getModifiedTimeIncludingFragments(contentId, branch),
-              // TODO: Add a field for language versions here, which includes localized content from layers
-              // This should replace our existing data.languages field
+              modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
+              languages: getLanguageVersions(baseContent, branch),
           }
         : null;
 };
