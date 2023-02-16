@@ -93,11 +93,9 @@ const resolveExactPath = (
 
     const content = runInLocaleContext({ locale }, () => contentLib.get({ key: id }));
 
-    // This should also not be possible!
+    // This will happen for prepublished content
     if (!content) {
-        logger.critical(
-            `Content for path ${path} with locale ${locale} was found with repo query but not with contentLib!`
-        );
+        logger.info(`Live content not found for path ${path} with locale ${locale}`);
         return null;
     }
 
