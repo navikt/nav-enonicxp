@@ -25,20 +25,6 @@ export const hasInvalidCustomPath = (content: Content): content is ContentWithCu
     return !!(customPath && !isValidCustomPath(customPath));
 };
 
-// If the content has a custom path and it is not the requested path
-// we should redirect to the custom path
-export const shouldRedirectToCustomPath = (
-    content: Content,
-    requestedPathOrId: string,
-    branch: RepoBranch
-): content is ContentWithCustomPath => {
-    return (
-        hasValidCustomPath(content) &&
-        stripPathPrefix(requestedPathOrId) !== content.data.customPath &&
-        branch === 'master'
-    );
-};
-
 export const getCustomPathFromContent = (contentId: string, versionId?: string) => {
     const content = contentLib.get({ key: contentId, versionId });
     return content && hasValidCustomPath(content) ? content.data.customPath : null;

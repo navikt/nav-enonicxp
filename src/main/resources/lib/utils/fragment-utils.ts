@@ -1,6 +1,7 @@
 import * as contextLib from '/lib/xp/context';
 import * as nodeLib from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getNodeKey } from './version-utils';
 import {
@@ -94,24 +95,19 @@ const getFragmentIdsFromContent = (contentRef: string, branch: RepoBranch) => {
 
 // Returns the most recent modifiedTime value, taking into account both the content
 // itself and any fragments used in the content
-export const getModifiedTimeIncludingFragments = (contentRef: string, branch: RepoBranch) =>
+export const getModifiedTimeIncludingFragments = (content: Content, branch: RepoBranch) =>
     runInContext({ branch }, () => {
-        const content = contentLib.get({ key: contentRef });
-
-        if (!content) {
-            return null;
-        }
-
         const contentModifiedTime = content.modifiedTime || content.createdTime;
+        const contentId = content._id;
 
-        const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
+        const fragmentIds = getFragmentIdsFromContent(contentId, branch);
 
         return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
             const fragment = contentLib.get({ key: fragmentId });
             if (!fragment) {
                 if (branch === 'master') {
                     logger.error(
-                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
+                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentId} on branch ${branch} but no fragment was found`
                     );
                 }
                 return latestModifiedTime;

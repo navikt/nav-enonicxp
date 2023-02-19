@@ -4,7 +4,7 @@ import { logger } from '../utils/logging';
 import { contentRootRepoId } from '../constants';
 import * as nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, stringArrayToSet } from '../utils/nav-utils';
 import {
     createOrUpdateSearchNode,
     deleteSearchNodesForContent,
@@ -33,6 +33,10 @@ export const updateSearchNode = (contentId: string) => {
         return;
     }
 
+    const contentTypesAllowedSet = stringArrayToSet(
+        forceArray(getSearchConfig()?.data.contentTypes)
+    );
+
     const contentRepoConnection = nodeLib.connect({
         repoId: contentRootRepoId,
         branch: 'master',
@@ -43,8 +47,8 @@ export const updateSearchNode = (contentId: string) => {
     });
 
     const contentNode = contentRepoConnection.get<Content>(contentId);
-    if (!contentNode) {
-        logger.info(`Content node not found for id ${contentId} - removing search node`);
+    if (!contentNode || !contentTypesAllowedSet[contentNode.type]) {
+        logger.info(`No valid content node found for id ${contentId} - removing search node`);
         deleteSearchNodesForContent(contentId);
         return;
     }
