@@ -3,6 +3,10 @@
         <field-set>
             <items>
                 <mixin name="page-header"/>
+                <input type="CheckBox" name="hideFromProductlist">
+                    <label>Ikke vis denne siden i selve produktutlistingen</label>
+                    <default>unchecked</default>
+                </input>
                 <mixin name="ingress-required" />
                 <mixin name="audience" />
                 <mixin name="area" />
