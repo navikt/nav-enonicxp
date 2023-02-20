@@ -41,7 +41,7 @@ const getValidFilterIds = (components: Component[]): string[] => {
     const availableFilterIds = filterMenus
         .map((filterMenu: FilterMenuComponent): string[] => {
             const filterCategories = forceArray(
-                filterMenu.part.config?.['no-nav-navno']['filters-menu'].categories
+                filterMenu.part.config?.['no-nav-navno']?.['filters-menu']?.categories
             );
 
             const filterIds = filterCategories
@@ -69,7 +69,7 @@ const cleanComponentForInvalidFilterId = (
         return { component, wasCleaned: false };
     }
 
-    const config = (component.part.config?.['no-nav-navno'] as PartConfigs)[partName] as any;
+    const config = (component.part.config?.['no-nav-navno'] as PartConfigs)?.[partName] as any;
     const filters = config?.filters as string[];
 
     if (!filters) {
