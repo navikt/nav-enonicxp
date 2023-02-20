@@ -16,6 +16,11 @@ export interface GuideData {
   norwegianTitle?: string;
 
   /**
+   * Ikke vis denne siden i selve produktutlistingen
+   */
+  hideFromProductlist: boolean;
+
+  /**
    * Ingress
    */
   ingress: string;
