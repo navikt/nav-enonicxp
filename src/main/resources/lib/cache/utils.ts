@@ -19,7 +19,7 @@ const pathnameFilter = new RegExp(`^(/content)?(${navnoRootPath})/`);
 export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 
 export const generateCacheEventId = (nodeData: NodeEventData, timestamp: number) =>
-    `${nodeData.id}-${timestamp}`;
+    `${nodeData.id}-${nodeData.repo}-${timestamp}`;
 
 const ignoredBaseContentTypes: BuiltinContentDescriptor[] = [
     'base:folder',

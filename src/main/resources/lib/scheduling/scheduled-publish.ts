@@ -17,12 +17,12 @@ const getPublish = (node: NodeEventData) => {
     const content = repo.get<Content>({ key: node.id });
 
     if (!content) {
-        logger.error(`Content for ${node.id} not found!`);
+        logger.error(`Content for ${node.id} not found in repo ${node.repo}!`);
         return null;
     }
 
     if (!content.publish) {
-        logger.error(`No publish object found for content ${node.id}!`);
+        logger.error(`No publish object found for content ${node.id} in repo ${node.repo}!`);
         return null;
     }
 

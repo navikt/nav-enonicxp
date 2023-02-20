@@ -12,6 +12,8 @@ import {
     sendLocalCacheInvalidationEvent,
 } from './local-cache';
 import { logger } from '../utils/logging';
+import { runInLocaleContext } from '../localization/locale-context';
+import { getLayersData } from '../localization/layers-data';
 
 export const cacheInvalidateEventName = 'invalidate-cache';
 
@@ -55,7 +57,9 @@ const _invalidateCacheForNode = ({
         ? invalidateLocalCaches
         : sendLocalCacheInvalidationEvent;
 
-    runInContext({ branch: 'master' }, () => {
+    const locale = getLayersData().repoIdToLocaleMap[node.repo];
+
+    runInLocaleContext({ branch: 'master', locale }, () => {
         const contentToInvalidate = getContentToInvalidate(node.id, eventType);
 
         clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
@@ -71,7 +75,7 @@ const _invalidateCacheForNode = ({
         );
 
         if (shouldSendFrontendRequests) {
-            const changedPaths = findChangedPaths({ id: node.id, path: node.path });
+            const changedPaths = findChangedPaths(node);
 
             if (changedPaths.length > 0) {
                 logger.info(
