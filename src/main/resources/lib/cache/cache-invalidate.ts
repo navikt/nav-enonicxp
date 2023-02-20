@@ -6,7 +6,11 @@ import { runInContext } from '../context/run-in-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
-import { clearLocalCaches, getCachesToClear, sendLocalCacheInvalidationEvent } from './local-cache';
+import {
+    invalidateLocalCaches,
+    getCachesToClear,
+    sendLocalCacheInvalidationEvent,
+} from './local-cache';
 import { logger } from '../utils/logging';
 
 export const cacheInvalidateEventName = 'invalidate-cache';
@@ -48,7 +52,7 @@ const _invalidateCacheForNode = ({
     // If this invalidation is running on every node, we can just clear local caches immediately.
     // Otherwise we must send a cluster-wide event so every node gets cleared
     const clearLocalCachesFunc = isRunningClusterWide
-        ? clearLocalCaches
+        ? invalidateLocalCaches
         : sendLocalCacheInvalidationEvent;
 
     runInContext({ branch: 'master' }, () => {

@@ -12,7 +12,7 @@ export type LocalCacheInvalidationData = {
 
 export const localCacheInvalidationEventName = 'local-cache-invalidation';
 
-export const clearLocalCaches = ({
+export const invalidateLocalCaches = ({
     all,
     decoratorMenu,
     driftsmeldinger,

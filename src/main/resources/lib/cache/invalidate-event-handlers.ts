@@ -5,7 +5,7 @@ import { appDescriptor, contentRootRepoId } from '../constants';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import {
-    clearLocalCaches,
+    invalidateLocalCaches,
     LocalCacheInvalidationData,
     localCacheInvalidationEventName,
 } from './local-cache';
@@ -35,6 +35,7 @@ const nodeListenerCallback = (event: EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
+        logger.info(JSON.stringify(node));
         if (node.branch !== 'master' || node.repo !== contentRootRepoId) {
             return;
         }
@@ -70,7 +71,7 @@ const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEven
     if (isDeferring && !shouldDefer) {
         // When deferred invalidation state is toggled off, invalidate everything
         // to ensure caches will be consistent again
-        clearLocalCaches({ all: true });
+        invalidateLocalCaches({ all: true });
         if (clusterLib.isMaster()) {
             frontendInvalidateAllAsync(`deferred-${generateUUID()}`, true);
         }
@@ -122,7 +123,7 @@ export const activateCacheEventListeners = () => {
     addReliableEventListener<LocalCacheInvalidationData>({
         type: localCacheInvalidationEventName,
         callback: (event) => {
-            clearLocalCaches(event.data);
+            invalidateLocalCaches(event.data);
         },
     });
 
