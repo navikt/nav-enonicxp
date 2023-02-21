@@ -18,6 +18,7 @@ import { Melding } from '../../site/content-types/melding/melding';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
 import { PageList } from '../../site/content-types/page-list/page-list';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
+import { FormDetails } from '../../site/content-types/form-details/form-details';
 import { PublishingCalendar } from '../../site/content-types/publishing-calendar/publishing-calendar';
 import { SectionPage } from '../../site/content-types/section-page/section-page';
 import { Overview } from '../../site/content-types/overview/overview';
@@ -65,6 +66,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'publishing-calendar': PublishingCalendar;
     'publishing-calendar-entry': PublishingCalendarEntry;
     'product-details': ProductDetails;
+    'form-details': FormDetails;
     'generic-page': GenericPage;
     'section-page': SectionPage;
     overview: Overview;

@@ -1,0 +1,102 @@
+<content-type>
+    <display-name>Skjemadetaljer</display-name>
+    <description>Søknad, skjema, klage og anke.</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="formDetails">
+            <label>Skjemadetaljer</label>
+            <items>
+                <input name="formNumbers" type="TextLine">
+                    <label>Skjemanummer</label>
+                    <occurrences minimum="0" maximum="20"/>
+                </input>
+                <input type="ComboBox" name="formType">
+                    <label>Skjematype</label>
+                    <occurrences minimum="1" maximum="1"/> 
+                    <config>  
+                        <option value="form"> 
+                            Søknad eller skjema
+                        </option>
+                        <option value="complaint"> 
+                            Klage og anke
+                        </option>
+                    </config>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                </input>
+            </items>
+        </field-set>
+        <item-set name="applicationVariations">
+            <label>Søknads- og skjemavariasjoner</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input type="ComboBox" name="type">
+                    <label>Søknads- eller skjematype</label>
+                    <occurrences minimum="1" maximum="1"/> 
+                    <config>  
+                        <option value="digital"> 
+                            Digital
+                        </option>
+                        <option value="paper"> 
+                            Papir
+                        </option>
+                        <option value="addendum_digital"> 
+                            Ettersendelse digitalt
+                        </option>
+                        <option value="addendum_paper"> 
+                            Ettersendelse papir
+                        </option>
+                    </config>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL til skjema</label>
+                </input>
+                <input name="label" type="TextLine">
+                    <label>Knappetekst</label>
+                    <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                </input>
+            </items>
+        </item-set>
+        <item-set name="complaintVariations">
+            <label>Klage- og ankevariasjoner</label>
+            <occurrences minimum="0" maximum="0"/>
+            <items>
+                <input type="ComboBox" name="type">
+                    <label>Klage- eller anketype</label>
+                    <occurrences minimum="1" maximum="1"/> 
+                    <config>  
+                        <option value="complaint"> 
+                            Klage
+                        </option>
+                        <option value="appeal"> 
+                            Anke
+                        </option>
+                        <option value="addendum"> 
+                            Ettersendelse klage eller anke
+                        </option>
+                    </config>
+                </input>
+                <input name="url" type="TextLine">
+                    <label>URL til skjema</label>
+                </input>
+                <input name="label" type="TextLine">
+                    <label>Knappetekst</label>
+                    <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                </input>
+            </items>
+        </item-set>
+    </form>
+</content-type>

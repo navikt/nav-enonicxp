@@ -73,6 +73,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${appDescriptor}:global-value-set`,
     `${appDescriptor}:global-case-time-set`,
     `${appDescriptor}:product-details`,
+    `${appDescriptor}:form-details`,
     `${appDescriptor}:payout-dates`,
 ];
 
