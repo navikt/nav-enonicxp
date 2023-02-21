@@ -53,7 +53,15 @@ type ContentPathTarget = {
     locale: string;
 };
 
-const handleExactPathFound = ({ id, path, locale }: { id: string; path: string; locale: string }) => {
+const handleExactPathFound = ({
+    id,
+    path,
+    locale,
+}: {
+    id: string;
+    path: string;
+    locale: string;
+}) => {
     // This should not be possible!
     if (!locale) {
         logger.critical(`No locale found for content with id "${id}" an path "${path}"!`);
