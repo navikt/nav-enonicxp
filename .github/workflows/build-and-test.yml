@@ -21,7 +21,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Build application
+      - name: Build application and run tests
         id: build
         run: |
           version=${{ steps.vars.outputs.VERSION }}
