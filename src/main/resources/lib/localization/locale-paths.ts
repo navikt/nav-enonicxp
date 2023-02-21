@@ -5,10 +5,11 @@ import { getLayersData, isValidLocale } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
 import { contentRootRepoId } from '../constants';
-import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { getLayersMultiConnection } from './locale-utils';
 
+// Will return all matches for internal _path names as well as customPaths, for root content and
+// localized content only. Sorted by created time
 const getPathQueryParams = (path: string) => ({
     start: 0,
     count: 100,
@@ -52,42 +53,10 @@ type ContentPathTarget = {
     locale: string;
 };
 
-// Search all layers for an exact path. If a match is found in multiple layers, we prefer the node
-// from the default/root project layer, otherwise the oldest node is returned
-const resolveExactPath = (
-    foundNodes: ReadonlyArray<MultiRepoNodeQueryHit>,
-    path: string
-): ContentPathTarget | null => {
-    const { defaultLocale, repoIdToLocaleMap } = getLayersData();
-
-    if (foundNodes.length > 1) {
-        const defaultNode = foundNodes.find((node) => node.repoId === contentRootRepoId);
-        if (defaultNode) {
-            const content = contentLib.get({ key: defaultNode.id });
-            if (!content) {
-                return null;
-            }
-
-            return { content, locale: defaultLocale };
-        }
-
-        // Duplicate path-names of localized content is something we almost certainly don't want.
-        logger.critical(
-            `Content ${path} found in multiple layers, but not in the default!`,
-            true,
-            true
-        );
-    }
-
-    const { id, repoId } = foundNodes[0];
-
-    const locale = repoIdToLocaleMap[repoId];
-
+const handleExactPathFound = ({ id, path, locale }: { id: string; path: string; locale: string }) => {
     // This should not be possible!
     if (!locale) {
-        logger.critical(
-            `Content for path ${path} found in repo ${repoId} for but no locale was found for this repo!`
-        );
+        logger.critical(`No locale found for content with id "${id}" an path "${path}"!`);
         return null;
     }
 
@@ -100,6 +69,49 @@ const resolveExactPath = (
     }
 
     return content ? { content, locale } : null;
+};
+
+// Search all layers for an exact path match
+const resolveExactPath = (path: string, branch: RepoBranch): ContentPathTarget | null => {
+    const foundNodes = getNodesFromAllLayers({ path, branch });
+    if (foundNodes.length === 0) {
+        return null;
+    }
+
+    const { defaultLocale, repoIdToLocaleMap } = getLayersData();
+
+    if (foundNodes.length === 1) {
+        const { id, repoId } = foundNodes[0];
+        return handleExactPathFound({ id, path, locale: repoIdToLocaleMap[repoId] });
+    }
+
+    // If we found multiple nodes with this path, prefer to get the content from default layer
+    const defaultLayerNodes = foundNodes.filter((node) => node.repoId === contentRootRepoId);
+
+    // If the multiple nodes were found in localized layers only, return the oldest and log an error
+    // We don't want paths to be ambiguous across localizations
+    if (defaultLayerNodes.length === 0) {
+        logger.critical(
+            `Content ${path} found in multiple layers, but not in the default!`,
+            true,
+            true
+        );
+
+        const { id, repoId } = foundNodes[0];
+        return handleExactPathFound({ id, path, locale: repoIdToLocaleMap[repoId] });
+    }
+
+    // If multiple content with the same path was found in the default layer, it most likely means
+    // a duplicate customPath. Log error and return oldest
+    if (defaultLayerNodes.length > 1) {
+        logger.critical(
+            `Multiple contents with path "${path}" found in default layer!`,
+            true,
+            true
+        );
+    }
+
+    return handleExactPathFound({ id: defaultLayerNodes[0].id, path, locale: defaultLocale });
 };
 
 // Resolve a suffixed path for a specific locale, which does not match any actual _path/customPath
@@ -148,9 +160,5 @@ export const resolvePathToTarget = ({
     path: string;
     branch: RepoBranch;
 }): ContentPathTarget | null => {
-    const foundNodes = getNodesFromAllLayers({ path, branch });
-
-    return foundNodes.length > 0
-        ? resolveExactPath(foundNodes, path)
-        : resolveLocalePath(path, branch);
+    return resolveExactPath(path, branch) || resolveLocalePath(path, branch);
 };
