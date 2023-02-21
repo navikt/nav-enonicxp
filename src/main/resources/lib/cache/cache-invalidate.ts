@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import { frontendInvalidatePaths } from './frontend-cache';
@@ -16,6 +17,7 @@ import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
 import { buildLocalePath } from '../localization/locale-utils';
+import { forceArray } from '../utils/nav-utils';
 
 export const cacheInvalidateEventName = 'invalidate-cache';
 
@@ -32,6 +34,37 @@ const getContentToInvalidate = (id: string, eventType: string) => {
     }
 
     return referencesToInvalidate;
+};
+
+const getPathsToInvalidate = (contentToInvalidate: Content[], locale: string) =>
+    contentToInvalidate.reduce<string[]>((acc, content) => {
+        if (!isPublicRenderedType(content)) {
+            return acc;
+        }
+
+        const basePath = hasValidCustomPath(content) ? content.data.customPath : content._path;
+
+        return [...acc, buildLocalePath(basePath, locale)];
+    }, []);
+
+const getLocalizedPathsToInvalidate = (id: string, eventType: string) => {
+    const { localeToRepoIdMap, defaultLocale } = getLayersData();
+
+    const locales = Object.keys(localeToRepoIdMap);
+
+    return locales.reduce<string[]>((acc, locale) => {
+        if (locale === defaultLocale) {
+            return acc;
+        }
+
+        const references = runInLocaleContext({ locale }, () =>
+            getContentToInvalidate(id, eventType)
+        ).filter((content) => !forceArray((content as any).inherit).includes('CONTENT'));
+
+        const paths = getPathsToInvalidate(references, locale);
+
+        return [...acc, ...paths];
+    }, []);
 };
 
 type InvalidateCacheParams = {
@@ -59,7 +92,9 @@ const _invalidateCacheForNode = ({
         ? invalidateLocalCaches
         : sendLocalCacheInvalidationEvent;
 
-    const locale = getLayersData().repoIdToLocaleMap[node.repo];
+    const { repoIdToLocaleMap } = getLayersData();
+
+    const locale = repoIdToLocaleMap[node.repo];
 
     runInLocaleContext({ branch: 'master', locale }, () => {
         const contentToInvalidate = getContentToInvalidate(node.id, eventType);
@@ -87,16 +122,14 @@ const _invalidateCacheForNode = ({
                 );
             }
 
-            const currentPaths = contentToInvalidate.filter(isPublicRenderedType).map((content) => {
-                const basePath = hasValidCustomPath(content)
-                    ? content.data.customPath
-                    : content._path;
+            const currentPaths = getPathsToInvalidate(contentToInvalidate, locale);
 
-                return buildLocalePath(basePath, locale);
-            });
+            const localizedPathsToInvalidate = getLocalizedPathsToInvalidate(node.id, eventType);
+
+            logger.info(`Localized: ${JSON.stringify(localizedPathsToInvalidate)}`);
 
             frontendInvalidatePaths({
-                paths: [...changedPaths, ...currentPaths],
+                paths: [...changedPaths, ...currentPaths, ...localizedPathsToInvalidate],
                 eventId,
             });
         }
