@@ -44,5 +44,5 @@ const ignoredContentTypeSet = stringArrayToSet([
 ]);
 
 // Returns false for content types which are not rendered by the public-facing frontend
-export const isRenderedType = (content: Content | null) =>
+export const isPublicRenderedType = (content: Content | null) =>
     content && !isMedia(content) && !ignoredContentTypeSet[content.type];

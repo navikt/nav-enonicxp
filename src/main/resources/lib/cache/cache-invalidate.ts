@@ -4,7 +4,11 @@ import * as taskLib from '/lib/xp/task';
 import { frontendInvalidatePaths } from './frontend-cache';
 import { runInContext } from '../context/run-in-context';
 import { findReferences } from './find-references';
-import { generateCacheEventId, NodeEventData } from './utils';
+import {
+    generateCacheEventId,
+    isPublicRenderedType,
+    NodeEventData,
+} from './utils';
 import { findChangedPaths } from './find-changed-paths';
 import {
     invalidateLocalCaches,
@@ -14,6 +18,8 @@ import {
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
+import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { buildLocalePath } from '../localization/locale-utils';
 
 export const cacheInvalidateEventName = 'invalidate-cache';
 
@@ -85,9 +91,16 @@ const _invalidateCacheForNode = ({
                 );
             }
 
+            const currentPaths = contentToInvalidate.filter(isPublicRenderedType).map((content) => {
+                const basePath = hasValidCustomPath(content)
+                    ? content.data.customPath
+                    : content._path;
+
+                return buildLocalePath(basePath, locale);
+            });
+
             frontendInvalidatePaths({
-                contents: contentToInvalidate,
-                paths: changedPaths,
+                paths: [...changedPaths, ...currentPaths],
                 eventId,
             });
         }

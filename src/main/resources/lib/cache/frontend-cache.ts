@@ -1,10 +1,8 @@
 import httpClient, { HttpResponse } from '/lib/http-client';
 import * as taskLib from '/lib/xp/task';
 import * as schedulerLib from '/lib/xp/scheduler';
-import { Content } from '/lib/xp/content';
 import { appDescriptor, urls } from '../constants';
-import { getFrontendPathname, isRenderedType } from './utils';
-import { getCustomPathFromContent } from '../custom-paths/custom-paths';
+import { getFrontendPathname } from './utils';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
@@ -93,36 +91,23 @@ const frontendInvalidatePathsRequest = (
 };
 
 export const frontendInvalidatePaths = ({
-    contents = [],
-    paths = [],
+    paths,
     eventId,
 }: {
-    contents?: Content[];
-    paths?: string[];
+    paths: string[];
     eventId: string;
 }) => {
+    if (paths.length === 0) {
+        logger.info(`Nothing to invalidate for event ${eventId} - aborting frontend request`);
+        return;
+    }
+
     taskLib.executeFunction({
         description: `Send invalidate with event id ${eventId}`,
         func: () => {
             // Ensure the paths we send to the frontend for invalidation are of the same format as used
-            // by the frontend. Also filter out any content types that aren't rendered/cached by the frontend.
-            const frontendPaths = [
-                ...contents
-                    .filter((content) => isRenderedType(content))
-                    .map(
-                        (content) =>
-                            getCustomPathFromContent(content._path) ||
-                            getFrontendPathname(content._path)
-                    ),
-                ...paths.map(getFrontendPathname),
-            ];
-
-            if (frontendPaths.length === 0) {
-                logger.info(
-                    `Nothing to invalidate for event ${eventId} - aborting frontend request`
-                );
-                return;
-            }
+            // by the frontend
+            const frontendPaths = paths.map(getFrontendPathname);
 
             frontendInvalidatePathsRequest(frontendPaths, eventId);
         },
