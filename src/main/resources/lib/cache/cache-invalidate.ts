@@ -4,11 +4,7 @@ import * as taskLib from '/lib/xp/task';
 import { frontendInvalidatePaths } from './frontend-cache';
 import { runInContext } from '../context/run-in-context';
 import { findReferences } from './find-references';
-import {
-    generateCacheEventId,
-    isPublicRenderedType,
-    NodeEventData,
-} from './utils';
+import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
 import {
     invalidateLocalCaches,
