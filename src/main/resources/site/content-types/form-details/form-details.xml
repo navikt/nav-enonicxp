@@ -21,7 +21,7 @@
                             Søknad eller skjema
                         </option>
                         <option value="complaint"> 
-                            Klage og anke
+                            Klage eller anke
                         </option>
                     </config>
                 </input>

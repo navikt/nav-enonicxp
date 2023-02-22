@@ -32,6 +32,7 @@ import {
 } from './schema-creation-callbacks/global-value-macro-config';
 import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-box';
 import { richTextCallback } from './schema-creation-callbacks/richtext';
+import { formDetailsCallback } from './schema-creation-callbacks/form-details';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
@@ -66,6 +67,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
     no_nav_navno_Calculator_GlobalValue: globalValueCalculatorConfigCallback,
+    no_nav_navno_FormDetails_Data: formDetailsCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
     Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',

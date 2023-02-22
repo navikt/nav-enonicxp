@@ -1,0 +1,9 @@
+#import "../../mixins/formDetailsTargetFragment.graphql"
+
+fragment partComponentFormDetails on Part_no_nav_navno_form_details {
+    showApplicationForms
+    showComplaintForms
+    targetFormDetails {
+        ...formDetailsMixin
+    }
+}
