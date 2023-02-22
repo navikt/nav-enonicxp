@@ -22,7 +22,7 @@ const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEven
     if (isDeferring && !shouldDefer) {
         // When deferred invalidation state is toggled off, invalidate everything
         // to ensure caches will be consistent again
-        invalidateLocalCaches({ all: true });
+        invalidateLocalCaches();
         if (clusterLib.isMaster()) {
             frontendInvalidateAllAsync(`deferred-${generateUUID()}`, true);
         }

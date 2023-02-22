@@ -51,28 +51,28 @@ const resolvePathsToInvalidate = (id: string, eventType: string, locale: string)
 
     const locales = Object.keys(localeToRepoIdMap);
 
-    const localizedPathsToInvalidate = locales.reduce<string[]>((acc, locale) => {
+    for (const locale of locales) {
         if (locale === defaultLocale) {
-            return acc;
+            continue;
         }
 
         const references = runInLocaleContext({ locale }, () =>
             findReferences(id, branch, deadline)
         );
         if (!references) {
-            return acc;
+            return null;
         }
 
-        const localizedOnly = references.filter(
-            (content) => !forceArray((content as any).inherit).includes('CONTENT')
+        const localizedContentOnly = references.filter(
+            (content) => !forceArray(content.inherit).includes('CONTENT')
         );
 
-        const localizedPaths = getPathsToInvalidate(localizedOnly, locale);
+        const localizedPaths = getPathsToInvalidate(localizedContentOnly, locale);
 
-        return [...acc, ...localizedPaths];
-    }, []);
+        pathsToInvalidate.push(...localizedPaths);
+    }
 
-    return removeDuplicates([...localizedPathsToInvalidate, ...pathsToInvalidate]);
+    return removeDuplicates(pathsToInvalidate);
 };
 
 type InvalidateCacheParams = {
@@ -98,7 +98,7 @@ const _invalidateCacheForNode = ({
 
     // If this invalidation is running on every node, we only want the master node to send
     // invalidation calls to the frontend
-    if (!isRunningClusterWide || clusterLib.isMaster()) {
+    if (isRunningClusterWide && !clusterLib.isMaster()) {
         return;
     }
 
