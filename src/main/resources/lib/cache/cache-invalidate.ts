@@ -1,9 +1,7 @@
-import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
 import { frontendInvalidateAllDeferred, frontendInvalidatePaths } from './frontend-cache';
-import { runInContext } from '../context/run-in-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
@@ -13,29 +11,11 @@ import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
 import { buildLocalePath } from '../localization/locale-utils';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, removeDuplicates } from '../utils/nav-utils';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 5000;
-
-const resolveContentForInvalidation = (id: string, eventType: string) => {
-    // If the content was deleted, we must check in the draft branch for references
-    const branch = eventType === 'node.deleted' ? 'draft' : 'master';
-
-    const referencesToInvalidate = findReferences(id, branch, REFERENCE_SEARCH_TIMEOUT_MS);
-    if (!referencesToInvalidate) {
-        return null;
-    }
-
-    const baseContent = runInContext({ branch }, () => contentLib.get({ key: id }));
-
-    if (baseContent) {
-        return [baseContent, ...referencesToInvalidate];
-    }
-
-    return referencesToInvalidate;
-};
 
 const getPathsToInvalidate = (contentToInvalidate: Content[], locale: string) =>
     contentToInvalidate.reduce<string[]>((acc, content) => {
@@ -48,27 +28,52 @@ const getPathsToInvalidate = (contentToInvalidate: Content[], locale: string) =>
         return [...acc, buildLocalePath(basePath, locale)];
     }, []);
 
-// const getLocalizedPathsToInvalidate = (id: string, eventType: string) => {
-//     const { localeToRepoIdMap, defaultLocale } = getLayersData();
-//
-//     const locales = Object.keys(localeToRepoIdMap);
-//
-//     return locales.reduce<string[]>((acc, locale) => {
-//         if (locale === defaultLocale) {
-//             return acc;
-//         }
-//
-//         const references = runInLocaleContext({ locale }, () =>
-//             getContentToInvalidate(id, eventType)
-//         );
-//
-//         //.filter((content) => !forceArray((content as any).inherit).includes('CONTENT'));
-//
-//         const paths = getPathsToInvalidate(references, locale);
-//
-//         return [...acc, ...paths];
-//     }, []);
-// };
+const resolvePathsToInvalidate = (id: string, eventType: string, locale: string) => {
+    // If the content was deleted, we must check in the draft branch for references
+    const branch = eventType === 'node.deleted' ? 'draft' : 'master';
+
+    const { localeToRepoIdMap, defaultLocale } = getLayersData();
+
+    const deadline = Date.now() + REFERENCE_SEARCH_TIMEOUT_MS;
+
+    const contentToInvalidate = findReferences(id, branch, deadline);
+    if (!contentToInvalidate) {
+        return null;
+    }
+
+    const pathsToInvalidate = getPathsToInvalidate(contentToInvalidate, locale);
+
+    // If the locale is not the default, we're done. Otherwise, we need to check if any of the
+    // references found are also referenced in the child layers
+    if (locale !== defaultLocale) {
+        return pathsToInvalidate;
+    }
+
+    const locales = Object.keys(localeToRepoIdMap);
+
+    const localizedPathsToInvalidate = locales.reduce<string[]>((acc, locale) => {
+        if (locale === defaultLocale) {
+            return acc;
+        }
+
+        const references = runInLocaleContext({ locale }, () =>
+            findReferences(id, branch, deadline)
+        );
+        if (!references) {
+            return acc;
+        }
+
+        const localizedOnly = references.filter(
+            (content) => !forceArray((content as any).inherit).includes('CONTENT')
+        );
+
+        const localizedPaths = getPathsToInvalidate(localizedOnly, locale);
+
+        return [...acc, ...localizedPaths];
+    }, []);
+
+    return removeDuplicates([...localizedPathsToInvalidate, ...pathsToInvalidate]);
+};
 
 type InvalidateCacheParams = {
     node: NodeEventData;
@@ -91,8 +96,8 @@ const _invalidateCacheForNode = ({
         sendLocalCacheInvalidationEvent();
     }
 
-    // If this invalidation is running on every node in the cluster, we only want the master node
-    // to send invalidation calls to the frontend
+    // If this invalidation is running on every node, we only want the master node to send
+    // invalidation calls to the frontend
     if (!isRunningClusterWide || clusterLib.isMaster()) {
         return;
     }
@@ -102,26 +107,21 @@ const _invalidateCacheForNode = ({
 
     runInLocaleContext({ branch: 'master', locale }, () => {
         const eventId = generateCacheEventId(node, timestamp);
-        const contentToInvalidate = resolveContentForInvalidation(node.id, eventType);
+        const pathsToInvalidate = resolvePathsToInvalidate(node.id, eventType, locale);
 
-        if (!contentToInvalidate) {
-            logger.warning(`Resolving content to invalidate timed out for eventId ${eventId}`);
+        if (!pathsToInvalidate) {
+            logger.warning(`Resolving content for invalidation timed out for eventId ${eventId}`);
             frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS * 2, true);
             return;
         }
 
         logger.info(
             `Invalidate event ${eventId} - Invalidating ${
-                contentToInvalidate.length
-            } paths for root node ${node.id}: ${JSON.stringify(
-                contentToInvalidate.map((content) => content._path),
-                null,
-                4
-            )}`
+                pathsToInvalidate.length
+            } paths for root node ${node.id}: ${JSON.stringify(pathsToInvalidate, null, 4)}`
         );
 
         const changedPaths = findChangedPaths(node);
-
         if (changedPaths.length > 0) {
             logger.info(
                 `Invalidating changed paths for node ${
@@ -130,12 +130,8 @@ const _invalidateCacheForNode = ({
             );
         }
 
-        const currentPaths = getPathsToInvalidate(contentToInvalidate, locale);
-
-        const localizedPathsToInvalidate = [] as string[]; // getLocalizedPathsToInvalidate(node.id, eventType);
-
         frontendInvalidatePaths({
-            paths: [...changedPaths, ...currentPaths, ...localizedPathsToInvalidate],
+            paths: [...changedPaths, ...pathsToInvalidate],
             eventId,
         });
     });

@@ -219,16 +219,16 @@ const _findReferences = ({
     references = {},
     referencesChecked = {},
     depth = 0,
-    abortTime,
+    deadline,
 }: {
     id: string;
     branch: RepoBranch;
     references?: ReferencesMap;
     referencesChecked?: Record<string, true>;
     depth?: number;
-    abortTime: number;
+    deadline: number;
 }): Content[] | null => {
-    if (Date.now() > abortTime) {
+    if (Date.now() > deadline) {
         return null;
     }
 
@@ -269,11 +269,11 @@ const _findReferences = ({
             depth: depth + 1,
             references,
             referencesChecked,
-            abortTime,
+            deadline: deadline,
         });
     });
 
-    if (Date.now() > abortTime) {
+    if (Date.now() > deadline) {
         return null;
     }
 
@@ -281,13 +281,13 @@ const _findReferences = ({
 };
 
 // Returns null if the search takes too long
-export const findReferences = (id: string, branch: RepoBranch, timeout: number) => {
+export const findReferences = (id: string, branch: RepoBranch, deadline: number) => {
     const start = Date.now();
 
     const references = _findReferences({
         id,
         branch,
-        abortTime: Date.now() + timeout,
+        deadline,
     });
 
     if (!references) {
