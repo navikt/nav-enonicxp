@@ -5,8 +5,7 @@
         "test": "jest",
         "build": "npm-run-all test lint babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig-build.json --noemit",
-        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/_test\" --no-copy-ignored --extensions \".ts\"",
-        "prepare": "husky install"
+        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/_test\" --no-copy-ignored --extensions \".ts\""
     },
     "repository": {
         "type": "git",
@@ -36,7 +35,6 @@
         "eslint-plugin-prettier": "4.2.1",
         "graphql": "16.6.0",
         "html-entities": "2.3.3",
-        "husky": "8.0.3",
         "jest": "29.4.2",
         "npm-run-all": "4.1.5",
         "onchange": "7.1.0",
