@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   "plugins": [
     "@anders-nom/babel-plugin-import-graphql-string",
     "./babel-logger-transformer",

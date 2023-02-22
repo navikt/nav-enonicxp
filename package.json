@@ -5,7 +5,7 @@
         "test": "jest",
         "build": "npm-run-all test lint babel",
         "lint": "eslint ./src/main/resources --ext=ts --quiet && tsc -p tsconfig-build.json --noemit",
-        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/_test\" --no-copy-ignored --extensions \".ts\"",
+        "babel": "babel src/main/resources --out-dir=build/resources/main --ignore \"src/**/*.test.ts\",\"src/main/resources/__test\" --no-copy-ignored --extensions \".ts\"",
         "prepare": "husky install"
     },
     "repository": {
@@ -16,6 +16,7 @@
     "bugs": {
         "url": "https://github.com/navikt/nav-enonicxp/issues"
     },
+    "type": "module",
     "homepage": "https://github.com/navikt/nav-enonicxp#readme",
     "devDependencies": {
         "@anders-nom/babel-plugin-import-graphql-string": "2.8.1-12",
@@ -25,6 +26,7 @@
         "@babel/preset-typescript": "7.18.6",
         "@types/jest": "29.4.0",
         "@types/node": "18.13.0",
+        "@types/rewire": "2.5.28",
         "@typescript-eslint/eslint-plugin": "5.51.0",
         "@typescript-eslint/parser": "5.51.0",
         "core-js": "3.27.2",
@@ -41,7 +43,9 @@
         "npm-run-all": "4.1.5",
         "onchange": "7.1.0",
         "prettier": "2.8.4",
+        "rewire": "6.0.0",
         "striptags": "3.2.0",
+        "ts-jest": "29.0.5",
         "ts-node": "10.9.1",
         "typescript": "4.9.5"
     }

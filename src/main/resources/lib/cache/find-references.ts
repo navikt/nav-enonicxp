@@ -2,12 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage } from '../global-values/global-value-utils';
-import {
-    forceArray,
-    getParentPath,
-    removeDuplicates as _removeDuplicates,
-    stringArrayToSet,
-} from '../utils/nav-utils';
+import { forceArray, getParentPath, removeDuplicates, stringArrayToSet } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -22,11 +17,6 @@ const MAX_DEPTH = 5;
 
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
-
-const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
-    _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(
-        (ref) => !prevRefs.some((prevRef) => prevRef._id === ref._id)
-    );
 
 const getHtmlAreaReferences = (content: Content) => {
     const { _id } = content;
@@ -147,7 +137,7 @@ const getExplicitReferences = (id: string) => {
     return references;
 };
 
-// Handles types which generates content from their children without explicit references
+// Handle types which generates content from their children without explicit references
 const getReferencesFromParent = (content: Content | null) => {
     if (!content) {
         return [];
@@ -186,25 +176,22 @@ const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-art
     }).hits;
 };
 
-const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]) => {
+export const getReferences = (id: string, branch: RepoBranch) => {
     const content = runInContext({ branch }, () => contentLib.get({ key: id }));
-
     if (!content) {
         return getExplicitReferences(id);
     }
 
-    const refs = removeDuplicates(
-        [
-            ...getExplicitReferences(id),
-            ...getCustomReferences(content),
-            ...getReferencesFromParent(content),
-        ],
-        prevReferences
-    );
+    const refs = [
+        ...getExplicitReferences(id),
+        ...getCustomReferences(content),
+        ...getReferencesFromParent(content),
+        content,
+    ];
 
     // Handle main-article-chapter references. There is a unique system of relations between
     // articles/chapters which is most effectively handled as a separate step.
-    const chapterRefs = [...refs, content].reduce((acc, ref) => {
+    const chapterRefs = refs.reduce((acc, ref) => {
         if (ref.type !== 'no.nav.navno:main-article') {
             return acc;
         }
@@ -212,51 +199,58 @@ const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]
         return [...acc, ...getMainArticleChapterReferences(ref)];
     }, [] as Content[]);
 
-    return removeDuplicates([...refs, ...chapterRefs], prevReferences);
+    return [...refs, ...chapterRefs];
 };
 
 const _findReferences = ({
     id,
     branch,
-    prevReferences,
+    referencedContent = [],
+    referencesChecked = {},
     depth = 0,
 }: {
     id: string;
     branch: RepoBranch;
-    prevReferences: Content[];
+    referencedContent?: Content[];
+    referencesChecked?: Record<string, true>;
     depth?: number;
 }): Content[] => {
+    if (referencesChecked[id]) {
+        return [];
+    }
+
+    referencesChecked[id] = true;
+
     if (depth > MAX_DEPTH) {
         logger.critical(`Reached max depth for references search on id ${id}`);
         return [];
     }
 
-    const references = getReferences(id, branch, prevReferences);
+    const newRefs = getReferences(id, branch);
 
-    const _prevReferences = [...references, ...prevReferences];
+    referencedContent.push(...newRefs);
 
-    const deepReferences = references.reduce((acc, ref) => {
-        if (!typesWithDeepReferences[ref.type]) {
-            return acc;
+    logger.info(
+        `Total references found so far: ${referencedContent.length} - New references for ${id}: ${newRefs.length}`
+    );
+
+    newRefs.forEach((refContent) => {
+        if (!typesWithDeepReferences[refContent.type]) {
+            return;
         }
 
-        return [
-            ...acc,
-            ..._findReferences({
-                id: ref._id,
-                branch: 'master',
-                depth: depth + 1,
-                prevReferences: _prevReferences,
-            }),
-        ];
-    }, [] as Content[]);
+        _findReferences({
+            id: refContent._id,
+            branch: 'master',
+            depth: depth + 1,
+            referencedContent,
+            referencesChecked,
+        });
+    });
 
-    return removeDuplicates([...references, ...deepReferences], prevReferences);
+    return removeDuplicates(referencedContent, (a, b) => a._id === b._id);
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
-    const content = runInContext({ branch }, () => contentLib.get({ key: id }));
-    const initialRefs = content ? [content] : [];
-
-    return _findReferences({ id, branch, prevReferences: initialRefs });
+    return _findReferences({ id, branch });
 };

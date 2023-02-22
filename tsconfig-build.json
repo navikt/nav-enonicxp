@@ -6,6 +6,6 @@
         "node_modules/enonic-types/portal.d.ts",
         "node_modules/enonic-types/node.d.ts",
         "./src/**/*.test.ts",
-        "./src/main/resources/_test"
+        "./src/main/resources/__test"
     ]
 }

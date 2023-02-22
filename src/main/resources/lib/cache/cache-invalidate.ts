@@ -124,9 +124,7 @@ const _invalidateCacheForNode = ({
 
             const currentPaths = getPathsToInvalidate(contentToInvalidate, locale);
 
-            const localizedPathsToInvalidate = getLocalizedPathsToInvalidate(node.id, eventType);
-
-            logger.info(`Localized: ${JSON.stringify(localizedPathsToInvalidate)}`);
+            const localizedPathsToInvalidate = [] as string[]; // getLocalizedPathsToInvalidate(node.id, eventType);
 
             frontendInvalidatePaths({
                 paths: [...changedPaths, ...currentPaths, ...localizedPathsToInvalidate],
