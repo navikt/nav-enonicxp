@@ -1,11 +1,10 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
-import { getGlobalValueUsage } from '../global-values/global-value-utils';
+import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
 import {
     forceArray,
     getParentPath,
-    removeDuplicates as _removeDuplicates,
     stringArrayToSet,
 } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
@@ -25,24 +24,30 @@ const MAX_DEPTH = 5;
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
+// Search html-area fields for a content id. Handles references via macros, which does not generate
+// explicit references
 const getHtmlAreaReferences = (content: Content) => {
-    const { _id } = content;
+    const { _id, type } = content;
 
-    const references = findContentsWithHtmlAreaText(_id);
+    // Fragments containing other fragments is a very rare edge-case, which we will ignore
+    // for performance reasons until the bug with querying fragment component fields is resolved :D
+    const references = findContentsWithHtmlAreaText(_id, type !== 'portal:fragment');
 
     logger.info(`Found ${references.length} pages with htmlarea-references to content id ${_id}`);
 
     return references;
 };
 
-const getGlobalValueReferences = (content: Content) => {
+// Global values used in calculators are selected with a custom selector, and does not generate
+// explicit references
+const getGlobalValueCalculatorReferences = (content: Content) => {
     if (!isGlobalValueSetType(content)) {
         return [];
     }
 
     const references = forceArray(content.data?.valueItems)
         .map((item) => {
-            return getGlobalValueUsage(item.key, content._id);
+            return getGlobalValueCalcUsage(item.key);
         })
         .flat();
 
@@ -53,6 +58,8 @@ const getGlobalValueReferences = (content: Content) => {
     return references;
 };
 
+// Overview pages are generated from meta-data of certain content types, and does not generate
+// references to the listed content
 const getOverviewReferences = (content: Content) => {
     if (!typesWithOverviewPages[content.type]) {
         return [];
@@ -67,6 +74,7 @@ const getOverviewReferences = (content: Content) => {
     return overviewPages;
 };
 
+// Product details are selected with a custom selector, and does not generate explicit references
 const getProductDetailsReferences = (content: Content) => {
     if (content.type !== 'no.nav.navno:product-details') {
         return [];
@@ -116,7 +124,7 @@ const getCustomReferences = (content: Content | null) => {
 
     return [
         ...getHtmlAreaReferences(content),
-        ...getGlobalValueReferences(content),
+        ...getGlobalValueCalculatorReferences(content),
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
@@ -209,14 +217,6 @@ export const getReferences = (id: string, branch: RepoBranch) => {
     return [...refs, ...chapterRefs];
 };
 
-const insertNewReferences = (references: ReferencesMap, newRefs: Content[]) =>
-    newRefs.forEach((refContent) => {
-        const { _id } = refContent;
-        if (!references[_id]) {
-            references[_id] = refContent;
-        }
-    });
-
 const _findReferences = ({
     id,
     branch,
@@ -274,5 +274,15 @@ const _findReferences = ({
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
-    return _findReferences({ id, branch });
+    const start = Date.now();
+
+    const references = _findReferences({ id, branch });
+
+    logger.info(
+        `Found ${references.length} for ${id} - time spent: ${
+            Math.floor(Date.now() - start) / 1000
+        }`
+    );
+
+    return references;
 };
