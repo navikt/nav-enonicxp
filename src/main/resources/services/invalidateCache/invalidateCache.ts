@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { sendReliableEvent } from '../../lib/events/reliable-custom-events';
-import { cacheInvalidateEventName } from '../../lib/cache/cache-invalidate';
+import { CACHE_INVALIDATE_EVENT_NAME } from '../../lib/cache/cache-invalidate';
 import { NodeEventData } from '../../lib/cache/utils';
 import { contentRootRepoId } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
@@ -29,7 +29,7 @@ export const get = (req: XP.Request) => {
     }
 
     sendReliableEvent<NodeEventData>({
-        type: cacheInvalidateEventName,
+        type: CACHE_INVALIDATE_EVENT_NAME,
         data: { id: content._id, path: content._path, branch: 'master', repo: contentRootRepoId },
     });
 

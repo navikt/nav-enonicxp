@@ -2,13 +2,9 @@ import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-import {
-    invalidateLocalCaches,
-    LocalCacheInvalidationData,
-    localCacheInvalidationEventName,
-} from './local-cache';
+import { invalidateLocalCaches, LOCAL_CACHE_INVALIDATION_EVENT_NAME } from './local-cache';
 import { NodeEventData } from './utils';
-import { cacheInvalidateEventName, invalidateCacheForNode } from './cache-invalidate';
+import { CACHE_INVALIDATE_EVENT_NAME, invalidateCacheForNode } from './cache-invalidate';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
 import { getLayersData } from '../localization/layers-data';
@@ -16,9 +12,6 @@ import {
     activateDeferCacheInvalidationEventListener,
     isDeferringCacheInvalidation,
 } from './invalidate-event-defer';
-
-// TODO: When Enonic implements custom widgets for the admin front page,
-// show a warning when cache invalidation is deferred
 
 let hasSetupListeners = false;
 
@@ -80,16 +73,14 @@ export const activateCacheEventListeners = () => {
 
     // This event triggers invalidation of local caches and is sent when invalidateCacheForNode
     // is not executed cluster-wide
-    addReliableEventListener<LocalCacheInvalidationData>({
-        type: localCacheInvalidationEventName,
-        callback: (event) => {
-            invalidateLocalCaches(event.data);
-        },
+    addReliableEventListener({
+        type: LOCAL_CACHE_INVALIDATION_EVENT_NAME,
+        callback: invalidateLocalCaches,
     });
 
     // This event is sent via the Content Studio widget for manual invalidation of a single page
     addReliableEventListener<NodeEventData>({
-        type: cacheInvalidateEventName,
+        type: CACHE_INVALIDATE_EVENT_NAME,
         callback: manualInvalidationCallback,
     });
 

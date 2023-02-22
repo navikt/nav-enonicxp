@@ -7,22 +7,26 @@ import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
 
-const numRetries = 3;
-const timeoutMs = 10000;
+const NUM_RETRIES = 3;
+const TIMEOUT_MS = 10000;
 
-const revalidatorProxyUrl = `${urls.revalidatorProxyOrigin}/revalidator-proxy`;
-const revalidatorProxyUrlWipeAll = `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`;
+const REVALIDATOR_PROXY_URL = `${urls.revalidatorProxyOrigin}/revalidator-proxy`;
+const REVALIDATOR_PROXY_URL_WIPE_ALL = `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`;
 
-const deferredJobName = 'invalidate-all-job';
-const deferredTimeMs = 60000;
+const DEFERRED_JOB_NAME = 'invalidate-all-job';
+const DEFERRED_TIME_MS_DEFAULT = 60000;
 
-export const frontendInvalidateAllDeferred = (eventId: string) => {
-    const existingJob = schedulerLib.get({ name: deferredJobName });
+export const frontendInvalidateAllDeferred = (
+    eventId: string,
+    deferredTime = DEFERRED_TIME_MS_DEFAULT,
+    rescheduleIfExists = false
+) => {
+    const existingJob = schedulerLib.get({ name: DEFERRED_JOB_NAME });
 
     const now = new Date();
-    const targetScheduleTime = new Date(now.getTime() + deferredTimeMs);
+    const targetScheduleTime = new Date(now.getTime() + deferredTime);
 
-    if (existingJob) {
+    if (existingJob && !rescheduleIfExists) {
         const currentScheduleTime = new Date(existingJob.schedule.value);
         if (currentScheduleTime > now && currentScheduleTime < targetScheduleTime) {
             logger.info('Invalidation job is already scheduled within the target timeframe');
@@ -31,7 +35,7 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
     }
 
     createOrUpdateSchedule<CacheInvalidateAllConfig>({
-        jobName: deferredJobName,
+        jobName: DEFERRED_JOB_NAME,
         jobSchedule: {
             type: 'ONE_TIME',
             value: targetScheduleTime.toISOString(),
@@ -50,13 +54,13 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
 const frontendInvalidatePathsRequest = (
     paths: string[],
     eventId: string,
-    retriesLeft = numRetries
+    retriesLeft = NUM_RETRIES
 ): HttpResponse | null => {
     try {
         const response = httpClient.request({
-            url: revalidatorProxyUrl,
+            url: REVALIDATOR_PROXY_URL,
             method: 'POST',
-            connectionTimeout: timeoutMs,
+            connectionTimeout: TIMEOUT_MS,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
@@ -117,13 +121,13 @@ export const frontendInvalidatePaths = ({
 export const frontendInvalidateAllSync = (
     eventId: string,
     rescheduleOnFailure = false,
-    retriesLeft = numRetries
+    retriesLeft = NUM_RETRIES
 ): HttpResponse | null => {
     try {
         const response = httpClient.request({
-            url: revalidatorProxyUrlWipeAll,
+            url: REVALIDATOR_PROXY_URL_WIPE_ALL,
             method: 'GET',
-            connectionTimeout: timeoutMs,
+            connectionTimeout: TIMEOUT_MS,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,

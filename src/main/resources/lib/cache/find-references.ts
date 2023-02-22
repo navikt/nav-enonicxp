@@ -2,11 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
-import {
-    forceArray,
-    getParentPath,
-    stringArrayToSet,
-} from '../utils/nav-utils';
+import { forceArray, getParentPath, stringArrayToSet } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -223,13 +219,19 @@ const _findReferences = ({
     references = {},
     referencesChecked = {},
     depth = 0,
+    abortTime,
 }: {
     id: string;
     branch: RepoBranch;
     references?: ReferencesMap;
     referencesChecked?: Record<string, true>;
     depth?: number;
-}): Content[] => {
+    abortTime: number;
+}): Content[] | null => {
+    if (Date.now() > abortTime) {
+        return null;
+    }
+
     if (referencesChecked[id]) {
         return [];
     }
@@ -267,16 +269,31 @@ const _findReferences = ({
             depth: depth + 1,
             references,
             referencesChecked,
+            abortTime,
         });
     });
+
+    if (Date.now() > abortTime) {
+        return null;
+    }
 
     return Object.values(references);
 };
 
-export const findReferences = (id: string, branch: RepoBranch) => {
+// Returns null if the search takes too long
+export const findReferences = (id: string, branch: RepoBranch, timeout: number) => {
     const start = Date.now();
 
-    const references = _findReferences({ id, branch });
+    const references = _findReferences({
+        id,
+        branch,
+        abortTime: Date.now() + timeout,
+    });
+
+    if (!references) {
+        logger.warning(`Reference search for ${id} timed out`);
+        return null;
+    }
 
     logger.info(
         `Found ${references.length} for ${id} - time spent: ${

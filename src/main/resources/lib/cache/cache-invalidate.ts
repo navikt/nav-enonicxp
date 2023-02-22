@@ -2,16 +2,12 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
-import { frontendInvalidatePaths } from './frontend-cache';
+import { frontendInvalidateAllDeferred, frontendInvalidatePaths } from './frontend-cache';
 import { runInContext } from '../context/run-in-context';
 import { findReferences } from './find-references';
 import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
-import {
-    invalidateLocalCaches,
-    getCachesToClear,
-    sendLocalCacheInvalidationEvent,
-} from './local-cache';
+import { invalidateLocalCaches, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
@@ -19,13 +15,18 @@ import { hasValidCustomPath } from '../custom-paths/custom-paths';
 import { buildLocalePath } from '../localization/locale-utils';
 import { forceArray } from '../utils/nav-utils';
 
-export const cacheInvalidateEventName = 'invalidate-cache';
+export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
-const getContentToInvalidate = (id: string, eventType: string) => {
+const REFERENCE_SEARCH_TIMEOUT_MS = 5000;
+
+const resolveContentForInvalidation = (id: string, eventType: string) => {
     // If the content was deleted, we must check in the draft branch for references
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
-    const referencesToInvalidate = findReferences(id, branch);
+    const referencesToInvalidate = findReferences(id, branch, REFERENCE_SEARCH_TIMEOUT_MS);
+    if (!referencesToInvalidate) {
+        return null;
+    }
 
     const baseContent = runInContext({ branch }, () => contentLib.get({ key: id }));
 
@@ -47,25 +48,27 @@ const getPathsToInvalidate = (contentToInvalidate: Content[], locale: string) =>
         return [...acc, buildLocalePath(basePath, locale)];
     }, []);
 
-const getLocalizedPathsToInvalidate = (id: string, eventType: string) => {
-    const { localeToRepoIdMap, defaultLocale } = getLayersData();
-
-    const locales = Object.keys(localeToRepoIdMap);
-
-    return locales.reduce<string[]>((acc, locale) => {
-        if (locale === defaultLocale) {
-            return acc;
-        }
-
-        const references = runInLocaleContext({ locale }, () =>
-            getContentToInvalidate(id, eventType)
-        ).filter((content) => !forceArray((content as any).inherit).includes('CONTENT'));
-
-        const paths = getPathsToInvalidate(references, locale);
-
-        return [...acc, ...paths];
-    }, []);
-};
+// const getLocalizedPathsToInvalidate = (id: string, eventType: string) => {
+//     const { localeToRepoIdMap, defaultLocale } = getLayersData();
+//
+//     const locales = Object.keys(localeToRepoIdMap);
+//
+//     return locales.reduce<string[]>((acc, locale) => {
+//         if (locale === defaultLocale) {
+//             return acc;
+//         }
+//
+//         const references = runInLocaleContext({ locale }, () =>
+//             getContentToInvalidate(id, eventType)
+//         );
+//
+//         //.filter((content) => !forceArray((content as any).inherit).includes('CONTENT'));
+//
+//         const paths = getPathsToInvalidate(references, locale);
+//
+//         return [...acc, ...paths];
+//     }, []);
+// };
 
 type InvalidateCacheParams = {
     node: NodeEventData;
@@ -80,26 +83,32 @@ const _invalidateCacheForNode = ({
     timestamp,
     isRunningClusterWide,
 }: InvalidateCacheParams) => {
-    const eventId = generateCacheEventId(node, timestamp);
+    // If this invalidation is running on every node, we can just clear local caches immediately
+    // Otherwise, we must send a cluster-wide event so every node gets cleared
+    if (isRunningClusterWide) {
+        invalidateLocalCaches();
+    } else {
+        sendLocalCacheInvalidationEvent();
+    }
 
     // If this invalidation is running on every node in the cluster, we only want the master node
-    // to send calls to the frontend
-    const shouldSendFrontendRequests = !isRunningClusterWide || clusterLib.isMaster();
-
-    // If this invalidation is running on every node, we can just clear local caches immediately.
-    // Otherwise we must send a cluster-wide event so every node gets cleared
-    const clearLocalCachesFunc = isRunningClusterWide
-        ? invalidateLocalCaches
-        : sendLocalCacheInvalidationEvent;
+    // to send invalidation calls to the frontend
+    if (!isRunningClusterWide || clusterLib.isMaster()) {
+        return;
+    }
 
     const { repoIdToLocaleMap } = getLayersData();
-
     const locale = repoIdToLocaleMap[node.repo];
 
     runInLocaleContext({ branch: 'master', locale }, () => {
-        const contentToInvalidate = getContentToInvalidate(node.id, eventType);
+        const eventId = generateCacheEventId(node, timestamp);
+        const contentToInvalidate = resolveContentForInvalidation(node.id, eventType);
 
-        clearLocalCachesFunc(getCachesToClear(contentToInvalidate));
+        if (!contentToInvalidate) {
+            logger.warning(`Resolving content to invalidate timed out for eventId ${eventId}`);
+            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS * 2, true);
+            return;
+        }
 
         logger.info(
             `Invalidate event ${eventId} - Invalidating ${
@@ -111,26 +120,24 @@ const _invalidateCacheForNode = ({
             )}`
         );
 
-        if (shouldSendFrontendRequests) {
-            const changedPaths = findChangedPaths(node);
+        const changedPaths = findChangedPaths(node);
 
-            if (changedPaths.length > 0) {
-                logger.info(
-                    `Invalidating changed paths for node ${
-                        node.id
-                    } (event id ${eventId}): ${changedPaths.join(', ')}`
-                );
-            }
-
-            const currentPaths = getPathsToInvalidate(contentToInvalidate, locale);
-
-            const localizedPathsToInvalidate = [] as string[]; // getLocalizedPathsToInvalidate(node.id, eventType);
-
-            frontendInvalidatePaths({
-                paths: [...changedPaths, ...currentPaths, ...localizedPathsToInvalidate],
-                eventId,
-            });
+        if (changedPaths.length > 0) {
+            logger.info(
+                `Invalidating changed paths for node ${
+                    node.id
+                } (event id ${eventId}): ${changedPaths.join(', ')}`
+            );
         }
+
+        const currentPaths = getPathsToInvalidate(contentToInvalidate, locale);
+
+        const localizedPathsToInvalidate = [] as string[]; // getLocalizedPathsToInvalidate(node.id, eventType);
+
+        frontendInvalidatePaths({
+            paths: [...changedPaths, ...currentPaths, ...localizedPathsToInvalidate],
+            eventId,
+        });
     });
 };
 
