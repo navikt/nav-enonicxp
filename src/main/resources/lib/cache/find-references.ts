@@ -2,7 +2,12 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueUsage } from '../global-values/global-value-utils';
-import { forceArray, getParentPath, removeDuplicates, stringArrayToSet } from '../utils/nav-utils';
+import {
+    forceArray,
+    getParentPath,
+    removeDuplicates as _removeDuplicates,
+    stringArrayToSet,
+} from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -12,6 +17,8 @@ import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
+
+type ReferencesMap = Record<string, Content>;
 
 const MAX_DEPTH = 5;
 
@@ -202,16 +209,24 @@ export const getReferences = (id: string, branch: RepoBranch) => {
     return [...refs, ...chapterRefs];
 };
 
+const insertNewReferences = (references: ReferencesMap, newRefs: Content[]) =>
+    newRefs.forEach((refContent) => {
+        const { _id } = refContent;
+        if (!references[_id]) {
+            references[_id] = refContent;
+        }
+    });
+
 const _findReferences = ({
     id,
     branch,
-    referencedContent = [],
+    references = {},
     referencesChecked = {},
     depth = 0,
 }: {
     id: string;
     branch: RepoBranch;
-    referencedContent?: Content[];
+    references?: ReferencesMap;
     referencesChecked?: Record<string, true>;
     depth?: number;
 }): Content[] => {
@@ -228,10 +243,17 @@ const _findReferences = ({
 
     const newRefs = getReferences(id, branch);
 
-    referencedContent.push(...newRefs);
+    newRefs.forEach((refContent) => {
+        const { _id } = refContent;
+        if (!references[_id]) {
+            references[_id] = refContent;
+        }
+    });
 
     logger.info(
-        `Total references found so far: ${referencedContent.length} - New references for ${id}: ${newRefs.length}`
+        `References for ${id}: ${newRefs.length} - Total references so far: ${
+            Object.values(references).length
+        }`
     );
 
     newRefs.forEach((refContent) => {
@@ -243,12 +265,12 @@ const _findReferences = ({
             id: refContent._id,
             branch: 'master',
             depth: depth + 1,
-            referencedContent,
+            references,
             referencesChecked,
         });
     });
 
-    return removeDuplicates(referencedContent, (a, b) => a._id === b._id);
+    return Object.values(references);
 };
 
 export const findReferences = (id: string, branch: RepoBranch) => {
