@@ -5,7 +5,7 @@ jest.mock('/lib/xp/content', () => ({
     query: () => ({ hits: [] }),
 }));
 
-describe('Global values references', () => {
+describe('Find references', () => {
     test('test', () => {
         expect(true);
     });

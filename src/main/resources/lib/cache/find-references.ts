@@ -269,7 +269,7 @@ const _findReferences = ({
             depth: depth + 1,
             references,
             referencesChecked,
-            deadline: deadline,
+            deadline,
         });
     });
 
