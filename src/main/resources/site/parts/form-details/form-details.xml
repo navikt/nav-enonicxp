@@ -3,19 +3,11 @@
     <description>Viser valgte skjemadetaljer</description>
     <form>
         <input name="targetFormDetails" type="ContentSelector">
-            <label>Velg side</label>
-            <occurrences minimum="0" maximum="1"/>
+            <label>Velg skjemadetalj</label>
+            <occurrences minimum="1" maximum="1"/>
             <config>
                 <allowContentType>${app}:form-details</allowContentType>
             </config>
-        </input>
-        <input name="showApplicationForms" type="CheckBox">
-            <help-text>Vises kun dersom det faktisk er lagt inn en variasjon for dette i skjemaet.</help-text>
-            <label>Vis søknader og skjemaer</label>
-        </input>
-        <input name="showComplaintForms" type="CheckBox">
-            <help-text>Vises kun dersom det faktisk er lagt inn en variasjon for dette i skjemaet.</help-text>
-            <label>Vis klage og anke</label>
         </input>
     </form>
     <config>

@@ -1,17 +1,22 @@
 fragment contentFormDetails on no_nav_navno_FormDetails {
     dataAsJson
     data {
-        applicationVariations {
-            type
-            url
-            label
-            ingress
-        }
-        complaintVariations {
-            type
-            url
-            label
-            ingress
+        formType {
+            _selected
+            application {
+                variations {
+                    label
+                    url
+                    type
+                }
+            }
+            complaint {
+                variations {
+                    label
+                    url
+                    type
+                }
+            }
         }
     }
 }

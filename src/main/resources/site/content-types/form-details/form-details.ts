@@ -6,11 +6,6 @@ export interface FormDetails {
   formNumbers?: Array<string>;
 
   /**
-   * Skjematype
-   */
-  formType: "application" | "complaint";
-
-  /**
    * Tittel
    */
   title?: string;
@@ -21,52 +16,67 @@ export interface FormDetails {
   ingress?: string;
 
   /**
-   * Søknads- og skjemavariasjoner
+   * Variasjoner
    */
-  applicationVariations?: Array<{
-    /**
-     * Søknads- eller skjematype
-     */
-    type: "digital" | "paper" | "addendum_digital" | "addendum_paper";
+  formType:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "application";
 
-    /**
-     * URL til skjema
-     */
-    url?: string;
+        /**
+         * Søknad / skjema
+         */
+        application: {
 
-    /**
-     * Knappetekst
-     */
-    label?: string;
+          variations?: Array<{
+            /**
+             * Knappetekst
+             */
+            label: string;
 
-    /**
-     * Ingress
-     */
-    ingress?: string;
-  }>;
+            /**
+             * URL til skjema
+             */
+            url: string;
 
-  /**
-   * Klage- og ankevariasjoner
-   */
-  complaintVariations?: Array<{
-    /**
-     * Klage- eller anketype
-     */
-    type: "complaint" | "appeal" | "addendum";
+            /**
+             * Søknads- eller skjematype
+             */
+            type: "digital" | "paper" | "addendum_digital" | "addendum_paper";
+          }>;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "complaint";
 
-    /**
-     * URL til skjema
-     */
-    url?: string;
+        /**
+         * Klage- og ankevariasjoner
+         */
+        complaint: {
+          /**
+           * Klage- og ankevariasjoner
+           */
+          variations?: Array<{
+            /**
+             * URL til skjema
+             */
+            url: string;
 
-    /**
-     * Knappetekst
-     */
-    label?: string;
+            /**
+             * Knappetekst
+             */
+            label: string;
 
-    /**
-     * Ingress
-     */
-    ingress?: string;
-  }>;
+            /**
+             * Klage- eller anketype
+             */
+            type: "complaint" | "appeal" | "addendum";
+          }>;
+        };
+      };
 }

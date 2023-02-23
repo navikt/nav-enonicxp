@@ -4,14 +4,4 @@ export interface FormDetailsPartConfig {
    * Velg side
    */
   targetFormDetails?: string;
-
-  /**
-   * Vis søknader og skjemaer
-   */
-  showApplicationForms: boolean;
-
-  /**
-   * Vis klage og anke
-   */
-  showComplaintForms: boolean;
 }
