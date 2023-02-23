@@ -280,7 +280,7 @@ const _findReferences = ({
     return Object.values(references);
 };
 
-// Returns null if the search takes too long
+// Returns null if the search goes past the deadline timestamp
 export const findReferences = (id: string, branch: RepoBranch, deadline: number) => {
     const start = Date.now();
 
