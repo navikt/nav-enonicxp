@@ -1,0 +1,17 @@
+<mixin>
+    <form>
+    <field-set>
+            <label>Søknad, klage og anke</label>
+            <items>
+                <input name="formDetailsTargets" type="ContentSelector">
+                <label>Velg alle detaljer som skal brukes</label>
+                    <occurrences minimum="0" maximum="0"/>
+                    <config>
+                        <allowContentType>${app}:form-details</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        
+    </form>
+</mixin>

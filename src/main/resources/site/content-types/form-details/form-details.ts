@@ -8,7 +8,7 @@ export interface FormDetails {
   /**
    * Skjematype
    */
-  formType: "form" | "complaint";
+  formType: "application" | "complaint";
 
   /**
    * Tittel

@@ -16,8 +16,8 @@
                 <input type="ComboBox" name="formType">
                     <label>Skjematype</label>
                     <occurrences minimum="1" maximum="1"/> 
-                    <config>  
-                        <option value="form"> 
+                    <config>
+                        <option value="application"> 
                             Søknad eller skjema
                         </option>
                         <option value="complaint"> 

@@ -26,6 +26,11 @@ export interface ContentPageWithSidemenus {
   rates?: string;
 
   /**
+   * Velg søknads- eller klage-detaljer
+   */
+  formDetailsTargets?: Array<string>;
+
+  /**
    * Legg til andre språkversjoner
    */
   languages?: Array<string>;
