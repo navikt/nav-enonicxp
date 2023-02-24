@@ -15,7 +15,7 @@ import { forceArray, removeDuplicates } from '../utils/nav-utils';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
-const REFERENCE_SEARCH_TIMEOUT_MS = 5000;
+const REFERENCE_SEARCH_TIMEOUT_MS = 8000;
 
 const getPaths = (contents: Content[], locale: string) =>
     contents.reduce<string[]>((acc, content) => {
