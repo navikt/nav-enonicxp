@@ -48,7 +48,7 @@ export const updateSearchNode = (contentId: string) => {
 
     const contentNode = contentRepoConnection.get<Content>(contentId);
     if (!contentNode || !contentTypesAllowedSet[contentNode.type]) {
-        logger.info(`No valid content node found for id ${contentId} - removing search node`);
+        logger.info(`No valid content found for id ${contentId}`);
         deleteSearchNodesForContent(contentId);
         return;
     }
