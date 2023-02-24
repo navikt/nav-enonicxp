@@ -9,38 +9,40 @@ export const findChangedPaths = ({ id, path, repo }: NodeEventData) => {
         branch: 'master',
     });
 
-    const changedPaths = [];
-
     const previousVersion = getNodeVersions({
         nodeKey: id,
         repo: repoConnection,
         branch: 'master',
     })?.[1];
 
-    if (previousVersion) {
-        const previousPath = getFrontendPathname(previousVersion.nodePath);
-        const currentPath = getFrontendPathname(path);
+    if (!previousVersion) {
+        return [];
+    }
 
-        // If the "normal" path changed, include the previous path
-        if (previousPath !== currentPath) {
-            changedPaths.push(previousPath);
-        }
+    const changedPaths = [];
 
-        const currentCustomPath = getCustomPathFromContent(id);
-        const previousCustomPath = getCustomPathFromContent(
-            previousVersion.nodeId,
-            previousVersion.versionId
-        );
+    const previousPath = getFrontendPathname(previousVersion.nodePath);
+    const currentPath = getFrontendPathname(path);
 
-        if (previousCustomPath !== currentCustomPath) {
-            // If the custom path changed, include the current normal path, as this should now
-            // redirect to the new custom path
-            changedPaths.push(currentPath);
+    // If the "normal" path changed, include the previous path
+    if (previousPath !== currentPath) {
+        changedPaths.push(previousPath);
+    }
 
-            // If there was a previous custom path, this will no longer be valid for this content
-            if (previousCustomPath) {
-                changedPaths.push(previousCustomPath);
-            }
+    const currentCustomPath = getCustomPathFromContent(id);
+    const previousCustomPath = getCustomPathFromContent(
+        previousVersion.nodeId,
+        previousVersion.versionId
+    );
+
+    if (previousCustomPath !== currentCustomPath) {
+        // If the custom path changed, include the current normal path, as this should now
+        // redirect to the new custom path
+        changedPaths.push(currentPath);
+
+        // If there was a previous custom path, this will no longer be valid for this content
+        if (previousCustomPath) {
+            changedPaths.push(previousCustomPath);
         }
     }
 

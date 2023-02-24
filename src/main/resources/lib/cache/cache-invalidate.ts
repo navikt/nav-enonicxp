@@ -17,8 +17,8 @@ export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
 const REFERENCE_SEARCH_TIMEOUT_MS = 5000;
 
-const getPathsToInvalidate = (contentToInvalidate: Content[], locale: string) =>
-    contentToInvalidate.reduce<string[]>((acc, content) => {
+const getPaths = (contents: Content[], locale: string) =>
+    contents.reduce<string[]>((acc, content) => {
         if (!isPublicRenderedType(content)) {
             return acc;
         }
@@ -28,7 +28,7 @@ const getPathsToInvalidate = (contentToInvalidate: Content[], locale: string) =>
         return [...acc, buildLocalePath(basePath, locale)];
     }, []);
 
-const resolvePathsToInvalidate = (id: string, eventType: string, locale: string) => {
+const resolveReferencePaths = (id: string, eventType: string, locale: string) => {
     // If the content was deleted, we must check in the draft branch for references
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
@@ -41,7 +41,7 @@ const resolvePathsToInvalidate = (id: string, eventType: string, locale: string)
         return null;
     }
 
-    const pathsToInvalidate = getPathsToInvalidate(contentToInvalidate, locale);
+    const pathsToInvalidate = getPaths(contentToInvalidate, locale);
 
     // If the locale is not the default, we're done. Otherwise, we need to check if any of the
     // references found are also referenced in the child layers
@@ -51,28 +51,29 @@ const resolvePathsToInvalidate = (id: string, eventType: string, locale: string)
 
     const locales = Object.keys(localeToRepoIdMap);
 
-    for (const locale of locales) {
+    const success = locales.every((locale) => {
         if (locale === defaultLocale) {
-            continue;
+            return true;
         }
 
         const references = runInLocaleContext({ locale }, () =>
             findReferences(id, branch, deadline)
         );
         if (!references) {
-            return null;
+            return false;
         }
 
         const localizedContentOnly = references.filter(
             (content) => !forceArray(content.inherit).includes('CONTENT')
         );
 
-        const localizedPaths = getPathsToInvalidate(localizedContentOnly, locale);
+        const localizedPaths = getPaths(localizedContentOnly, locale);
 
         pathsToInvalidate.push(...localizedPaths);
-    }
+        return true;
+    });
 
-    return removeDuplicates(pathsToInvalidate);
+    return success ? removeDuplicates(pathsToInvalidate) : null;
 };
 
 type InvalidateCacheParams = {
@@ -107,11 +108,13 @@ const _invalidateCacheForNode = ({
 
     runInLocaleContext({ branch: 'master', locale }, () => {
         const eventId = generateCacheEventId(node, timestamp);
-        const pathsToInvalidate = resolvePathsToInvalidate(node.id, eventType, locale);
+        const pathsToInvalidate = resolveReferencePaths(node.id, eventType, locale);
 
         if (!pathsToInvalidate) {
-            logger.warning(`Resolving content for invalidation timed out for eventId ${eventId}`);
-            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS * 2, true);
+            logger.warning(`Resolving paths for references failed for eventId ${eventId}`);
+            // If resolving reference paths fails, schedule a full invalidation of the frontend cache
+            // We defer this call a bit in case there are other events in the queue
+            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS + 1000, true);
             return;
         }
 

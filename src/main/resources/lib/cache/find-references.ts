@@ -187,7 +187,7 @@ const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-art
     }).hits;
 };
 
-export const getReferences = (id: string, branch: RepoBranch) => {
+const getReferences = (id: string, branch: RepoBranch) => {
     const content = runInContext({ branch }, () => contentLib.get({ key: id }));
     if (!content) {
         return getExplicitReferences(id);
@@ -210,7 +210,7 @@ export const getReferences = (id: string, branch: RepoBranch) => {
         return [...acc, ...getMainArticleChapterReferences(ref)];
     }, [] as Content[]);
 
-    return [...refs, ...chapterRefs];
+    return chapterRefs.length === 0 ? refs : [...refs, ...chapterRefs];
 };
 
 const _findReferences = ({
@@ -252,12 +252,6 @@ const _findReferences = ({
         }
     });
 
-    logger.info(
-        `References for ${id}: ${newRefs.length} - Total references so far: ${
-            Object.values(references).length
-        }`
-    );
-
     newRefs.forEach((refContent) => {
         if (!typesWithDeepReferences[refContent.type]) {
             return;
@@ -296,7 +290,7 @@ export const findReferences = (id: string, branch: RepoBranch, deadline: number)
     }
 
     logger.info(
-        `Found ${references.length} for ${id} - time spent: ${
+        `Found ${references.length} references for ${id} - time spent: ${
             Math.floor(Date.now() - start) / 1000
         }`
     );
