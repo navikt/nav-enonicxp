@@ -36,14 +36,14 @@ const getLayersLanguages = (content: Content, branch: RepoBranch) => {
 
     const localizedContent = getLocalizedContentVersions(_id, branch);
 
-    return localizedContent.reduce((acc, localizedContent) => {
+    return localizedContent.reduce<Content[]>((acc, localizedContent) => {
         const { language } = localizedContent;
         if (language === parentLanguage) {
             return acc;
         }
 
-        return [...acc, transformContent(localizedContent, language)];
-    }, [] as LanguageSelectorData[]);
+        return [...acc, localizedContent];
+    }, []);
 };
 
 const getLegacyLanguages = (content: Content) => {
@@ -53,7 +53,7 @@ const getLegacyLanguages = (content: Content) => {
 
     const { _id: parentContentId } = content;
 
-    return forceArray(content.data.languages).reduce((acc, contentId) => {
+    return forceArray(content.data.languages).reduce<Content[]>((acc, contentId) => {
         if (contentId === parentContentId) {
             return acc;
         }
@@ -63,15 +63,14 @@ const getLegacyLanguages = (content: Content) => {
             return acc;
         }
 
-        return [...acc, transformContent(languageContent)];
-    }, [] as LanguageSelectorData[]);
+        return [...acc, languageContent];
+    }, []);
 };
 
-// Language versions retrieved from layers should take precedence over legacy if there is a
-// duplicate language version
-const mergeLayersWithLegacy = (
-    fromLayers: LanguageSelectorData[],
-    fromLegacy: LanguageSelectorData[]
+// Language versions retrieved from layers should take precedence over the legacy data.languages field
+const mergeLayersWithLegacy = <Type extends LanguageSelectorData>(
+    fromLayers: Type[],
+    fromLegacy: Type[]
 ) => {
     return fromLegacy.reduce((acc, legacyData) => {
         if (acc.some((languageData) => languageData.language === legacyData.language)) {
@@ -82,9 +81,24 @@ const mergeLayersWithLegacy = (
     }, fromLayers);
 };
 
-export const getLanguageVersions = (content: Content, branch: RepoBranch) => {
-    const contentFromLayers = getLayersLanguages(content, branch);
-    const contentFromLegacyLanguages = runInContext({ branch }, () => getLegacyLanguages(content));
+const getLanguageVersions = (content: Content, branch: RepoBranch) => {
+    return {
+        contentFromLayers: getLayersLanguages(content, branch),
+        contentFromLegacyLanguages: runInContext({ branch }, () => getLegacyLanguages(content)),
+    };
+};
+
+export const getLanguageVersionsForSelector = (content: Content, branch: RepoBranch) => {
+    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(content, branch);
+
+    return mergeLayersWithLegacy(
+        contentFromLayers.map((content) => transformContent(content, content.language)),
+        contentFromLegacyLanguages.map((content) => transformContent(content))
+    );
+};
+
+export const getLanguageVersionsFull = (content: Content, branch: RepoBranch) => {
+    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(content, branch);
 
     return mergeLayersWithLegacy(contentFromLayers, contentFromLegacyLanguages);
 };

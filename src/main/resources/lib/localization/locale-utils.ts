@@ -5,6 +5,7 @@ import { RepoBranch } from '../../types/common';
 import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
+import { forceArray } from '../utils/nav-utils';
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({
@@ -68,3 +69,6 @@ export const buildLocalePath = (basePath: string, locale: string) => {
     // Removes trailing slash from base path
     return basePath.replace(/(\/)?$/, localeSuffix);
 };
+
+export const isContentLocalized = (content: Content) =>
+    !forceArray(content.inherit).includes('CONTENT');

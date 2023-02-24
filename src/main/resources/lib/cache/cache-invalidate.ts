@@ -10,8 +10,8 @@ import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
-import { buildLocalePath } from '../localization/locale-utils';
-import { forceArray, removeDuplicates } from '../utils/nav-utils';
+import { buildLocalePath, isContentLocalized } from '../localization/locale-utils';
+import { removeDuplicates } from '../utils/nav-utils';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
@@ -63,9 +63,7 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
             return false;
         }
 
-        const localizedContentOnly = references.filter(
-            (content) => !forceArray(content.inherit).includes('CONTENT')
-        );
+        const localizedContentOnly = references.filter(isContentLocalized);
 
         const localizedPaths = getPaths(localizedContentOnly, locale);
 
