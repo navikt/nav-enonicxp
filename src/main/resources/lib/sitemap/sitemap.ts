@@ -6,12 +6,15 @@ import * as clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
-import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
+import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
 import { logger } from '../utils/logging';
 import { getLanguageVersionsFull } from '../localization/resolve-language-versions';
+import { getLayersData } from '../localization/layers-data';
+import { runInLocaleContext } from '../localization/locale-context';
+import { isContentLocalized } from '../localization/locale-utils';
 
 const BATCH_COUNT = 1000;
 const MAX_COUNT = 50000;
@@ -67,7 +70,8 @@ const shouldIncludeContent = (content: Content<any>) =>
     content &&
     contentTypesInSitemapSet[content.type] &&
     !content.data?.externalProductUrl &&
-    !content.data?.noindex;
+    !content.data?.noindex &&
+    isContentLocalized(content);
 
 const getUrl = (content: Content<any>) => {
     if (content.data?.canonicalUrl) {
@@ -102,18 +106,19 @@ const getSitemapEntry = (content: Content): SitemapEntry => {
 const getContent = (path: string) => {
     const contentFromCustomPath = getContentFromCustomPath(path);
     if (contentFromCustomPath.length > 0) {
-        if (contentFromCustomPath.length === 1) {
-            return contentFromCustomPath[0];
-        }
         logger.critical(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
         return null;
+    }
+
+    if (contentFromCustomPath.length === 1) {
+        return contentFromCustomPath[0];
     }
 
     return runInContext({ branch: 'master' }, () => contentLib.get({ key: path }));
 };
 
-const updateSitemapEntry = (path: string) =>
-    runInContext({ branch: 'master' }, () => {
+const updateSitemapEntry = (path: string, locale: string) =>
+    runInLocaleContext({ branch: 'master', locale }, () => {
         const content = getContent(path);
         if (!content) {
             return;
@@ -261,10 +266,17 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === CONTENT_ROOT_REPO_ID) {
-                    const xpPath = node.path.replace(/^\/content/, '');
-                    updateSitemapEntry(xpPath);
+                if (node.branch !== 'master') {
+                    return;
                 }
+
+                const locale = getLayersData().repoIdToLocaleMap[node.repo];
+                if (!locale) {
+                    return;
+                }
+
+                const xpPath = node.path.replace(/^\/content/, '');
+                updateSitemapEntry(xpPath, locale);
             });
         },
     });
