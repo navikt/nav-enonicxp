@@ -17,10 +17,9 @@ export const publishedVersionsReqHandler = (req: XP.Request) => {
         };
     }
 
-    const { defaultLocale } = getLayersData();
-
-    const publisedTimestamps = runInLocaleContext({ locale: locale || defaultLocale }, () =>
-        getPublishedVersionTimestamps(id)
+    const publisedTimestamps = runInLocaleContext(
+        { locale: locale || getLayersData().defaultLocale },
+        () => getPublishedVersionTimestamps(id)
     );
 
     try {
