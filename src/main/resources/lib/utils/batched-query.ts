@@ -7,6 +7,7 @@ import {
     Source,
     NodeQueryHit,
     RepoConnection,
+    MultiRepoConnection,
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
@@ -102,6 +103,10 @@ type BatchedNodeQueryParams =
             }
           | {
                 repo: RepoConnection;
+                repoParams?: never;
+            }
+          | {
+                repo: MultiRepoConnection;
                 repoParams?: never;
             }
       );
