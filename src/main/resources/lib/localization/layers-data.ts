@@ -8,7 +8,7 @@ import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
 import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
-import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-handlers';
+import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-defer';
 
 type LocaleToRepoIdMap = Record<string, string>;
 type RepoIdToLocaleMap = Record<string, string>;

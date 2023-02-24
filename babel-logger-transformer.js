@@ -46,4 +46,4 @@ const transformLogger = ({ types: t }) => {
     return new BabelTransformLogger();
 };
 
-module.exports = transformLogger;
+export default transformLogger;

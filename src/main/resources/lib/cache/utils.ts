@@ -4,7 +4,7 @@ import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
 } from '../../types/content-types/content-config';
-import { isMedia } from '../utils/nav-utils';
+import { isMedia, stringArrayToSet } from '../utils/nav-utils';
 
 export type NodeEventData = {
     id: string;
@@ -13,13 +13,13 @@ export type NodeEventData = {
     repo: string;
 };
 
-// Matches [/content]/www.nav.no/*
+// Matches the _path on nodes from both contentLib and nodeLib.repoConnection get/query functions
 const pathnameFilter = new RegExp(`^(/content)?(${navnoRootPath})/`);
 
 export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 
 export const generateCacheEventId = (nodeData: NodeEventData, timestamp: number) =>
-    `${nodeData.id}-${timestamp}`;
+    `${nodeData.id}-${nodeData.repo}-${timestamp}`;
 
 const ignoredBaseContentTypes: BuiltinContentDescriptor[] = [
     'base:folder',
@@ -38,11 +38,11 @@ const ignoredCustomContentTypes: CustomContentDescriptor[] = [
     `${appDescriptor}:publishing-calendar-entry`,
 ];
 
-const ignoredContentTypeMap = [...ignoredBaseContentTypes, ...ignoredCustomContentTypes].reduce(
-    (acc, type) => ({ ...acc, [type]: true }),
-    {} as { [type: string]: boolean }
-);
+const ignoredContentTypeSet = stringArrayToSet([
+    ...ignoredBaseContentTypes,
+    ...ignoredCustomContentTypes,
+]);
 
-// Returns false for content types which are not rendered by the user-facing frontend
-export const isRenderedType = (content: Content | null) =>
-    content && !isMedia(content) && !ignoredContentTypeMap[content.type];
+// Returns false for content types which are not rendered by the public-facing frontend
+export const isPublicRenderedType = (content: Content | null) =>
+    content && !isMedia(content) && !ignoredContentTypeSet[content.type];

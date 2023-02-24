@@ -40,6 +40,8 @@ declare module '*/lib/xp/content' {
             createMedia<Type = any>(params: CreateMediaParams): any;
         }
 
+        type LayerInherit = 'PARENT' | 'SORT' | 'CONTENT' | 'NAME';
+
         type Content<Type extends ContentDescriptor = ContentDescriptor> =
             ContentDataMapper<Type> & {
                 readonly _id: string;
@@ -63,6 +65,7 @@ declare module '*/lib/xp/content' {
                     checks: Record<string, WORKFLOW_STATES>;
                 };
                 page: Record<string, any>;
+                inherit?: LayerInherit | LayerInherit[];
             };
 
         type QueryParams<

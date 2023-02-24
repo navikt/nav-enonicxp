@@ -1,13 +1,8 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
-import { getGlobalValueUsage } from '../global-values/global-value-utils';
-import {
-    forceArray,
-    getParentPath,
-    removeDuplicates as _removeDuplicates,
-    stringArrayToSet,
-} from '../utils/nav-utils';
+import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
+import { forceArray, getParentPath, stringArrayToSet } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -18,34 +13,37 @@ import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
 
+type ReferencesMap = Record<string, Content>;
+
 const MAX_DEPTH = 5;
 
 const typesWithDeepReferences = stringArrayToSet(_typesWithDeepReferences);
 const typesWithOverviewPages = stringArrayToSet(contentTypesWithProductDetails);
 
-const removeDuplicates = (contentArray: Content[], prevRefs: Content[]) =>
-    _removeDuplicates(contentArray, (a, b) => a._id === b._id).filter(
-        (ref) => !prevRefs.some((prevRef) => prevRef._id === ref._id)
-    );
-
+// Search html-area fields for a content id. Handles references via macros, which does not generate
+// explicit references
 const getHtmlAreaReferences = (content: Content) => {
-    const { _id } = content;
+    const { _id, type } = content;
 
-    const references = findContentsWithHtmlAreaText(_id);
+    // Fragments containing other fragments is a very rare edge-case, which we will ignore
+    // for performance reasons until the bug with querying fragment component fields is resolved :D
+    const references = findContentsWithHtmlAreaText(_id, type !== 'portal:fragment');
 
     logger.info(`Found ${references.length} pages with htmlarea-references to content id ${_id}`);
 
     return references;
 };
 
-const getGlobalValueReferences = (content: Content) => {
+// Global values used in calculators are selected with a custom selector, and does not generate
+// explicit references
+const getGlobalValueCalculatorReferences = (content: Content) => {
     if (!isGlobalValueSetType(content)) {
         return [];
     }
 
     const references = forceArray(content.data?.valueItems)
         .map((item) => {
-            return getGlobalValueUsage(item.key, content._id);
+            return getGlobalValueCalcUsage(item.key);
         })
         .flat();
 
@@ -56,6 +54,8 @@ const getGlobalValueReferences = (content: Content) => {
     return references;
 };
 
+// Overview pages are generated from meta-data of certain content types, and does not generate
+// references to the listed content
 const getOverviewReferences = (content: Content) => {
     if (!typesWithOverviewPages[content.type]) {
         return [];
@@ -70,6 +70,7 @@ const getOverviewReferences = (content: Content) => {
     return overviewPages;
 };
 
+// Product details are selected with a custom selector, and does not generate explicit references
 const getProductDetailsReferences = (content: Content) => {
     if (content.type !== 'no.nav.navno:product-details') {
         return [];
@@ -119,7 +120,7 @@ const getCustomReferences = (content: Content | null) => {
 
     return [
         ...getHtmlAreaReferences(content),
-        ...getGlobalValueReferences(content),
+        ...getGlobalValueCalculatorReferences(content),
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
@@ -147,7 +148,7 @@ const getExplicitReferences = (id: string) => {
     return references;
 };
 
-// Handles types which generates content from their children without explicit references
+// Handle types which generates content from their children without explicit references
 const getReferencesFromParent = (content: Content | null) => {
     if (!content) {
         return [];
@@ -186,25 +187,22 @@ const getMainArticleChapterReferences = (content: Content<'no.nav.navno:main-art
     }).hits;
 };
 
-const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]) => {
+const getReferences = (id: string, branch: RepoBranch) => {
     const content = runInContext({ branch }, () => contentLib.get({ key: id }));
-
     if (!content) {
         return getExplicitReferences(id);
     }
 
-    const refs = removeDuplicates(
-        [
-            ...getExplicitReferences(id),
-            ...getCustomReferences(content),
-            ...getReferencesFromParent(content),
-        ],
-        prevReferences
-    );
+    const refs = [
+        ...getExplicitReferences(id),
+        ...getCustomReferences(content),
+        ...getReferencesFromParent(content),
+        content,
+    ];
 
     // Handle main-article-chapter references. There is a unique system of relations between
     // articles/chapters which is most effectively handled as a separate step.
-    const chapterRefs = [...refs, content].reduce((acc, ref) => {
+    const chapterRefs = refs.reduce((acc, ref) => {
         if (ref.type !== 'no.nav.navno:main-article') {
             return acc;
         }
@@ -212,51 +210,90 @@ const getReferences = (id: string, branch: RepoBranch, prevReferences: Content[]
         return [...acc, ...getMainArticleChapterReferences(ref)];
     }, [] as Content[]);
 
-    return removeDuplicates([...refs, ...chapterRefs], prevReferences);
+    return chapterRefs.length === 0 ? refs : [...refs, ...chapterRefs];
 };
 
 const _findReferences = ({
     id,
     branch,
-    prevReferences,
+    references = {},
+    referencesChecked = {},
     depth = 0,
+    deadline,
 }: {
     id: string;
     branch: RepoBranch;
-    prevReferences: Content[];
+    references?: ReferencesMap;
+    referencesChecked?: Record<string, true>;
     depth?: number;
-}): Content[] => {
+    deadline: number;
+}): Content[] | null => {
+    if (Date.now() > deadline) {
+        return null;
+    }
+
+    if (referencesChecked[id]) {
+        return [];
+    }
+
+    referencesChecked[id] = true;
+
     if (depth > MAX_DEPTH) {
         logger.critical(`Reached max depth for references search on id ${id}`);
         return [];
     }
 
-    const references = getReferences(id, branch, prevReferences);
+    const newRefs = getReferences(id, branch);
 
-    const _prevReferences = [...references, ...prevReferences];
+    newRefs.forEach((refContent) => {
+        const { _id } = refContent;
+        if (!references[_id]) {
+            references[_id] = refContent;
+        }
+    });
 
-    const deepReferences = references.reduce((acc, ref) => {
-        if (!typesWithDeepReferences[ref.type]) {
-            return acc;
+    newRefs.forEach((refContent) => {
+        if (!typesWithDeepReferences[refContent.type]) {
+            return;
         }
 
-        return [
-            ...acc,
-            ..._findReferences({
-                id: ref._id,
-                branch: 'master',
-                depth: depth + 1,
-                prevReferences: _prevReferences,
-            }),
-        ];
-    }, [] as Content[]);
+        _findReferences({
+            id: refContent._id,
+            branch: 'master',
+            depth: depth + 1,
+            references,
+            referencesChecked,
+            deadline,
+        });
+    });
 
-    return removeDuplicates([...references, ...deepReferences], prevReferences);
+    if (Date.now() > deadline) {
+        return null;
+    }
+
+    return Object.values(references);
 };
 
-export const findReferences = (id: string, branch: RepoBranch) => {
-    const content = runInContext({ branch }, () => contentLib.get({ key: id }));
-    const initialRefs = content ? [content] : [];
+// Returns null if the search goes past the deadline timestamp
+export const findReferences = (id: string, branch: RepoBranch, deadline: number) => {
+    const start = Date.now();
 
-    return _findReferences({ id, branch, prevReferences: initialRefs });
+    const references = _findReferences({
+        id,
+        branch,
+        deadline,
+    });
+
+    if (!references) {
+        logger.warning(`Reference search for ${id} timed out`);
+        return null;
+    }
+
+    logger.info(
+        `Found ${references.length} references for ${id} - time spent: ${
+            Math.floor(Date.now() - start) / 1000
+        }`
+    );
+
+    return references;
 };

@@ -9,11 +9,13 @@ export const runInLocaleContext = <ReturnType>(
     { locale, branch, asAdmin }: RunInLocaleContextOptions,
     func: () => ReturnType
 ): ReturnType => {
-    const repoId = getLayersData().localeToRepoIdMap[locale];
+    const { localeToRepoIdMap } = getLayersData();
+    const repoId = localeToRepoIdMap[locale];
     if (!repoId) {
-        logger.error(JSON.stringify(getLayersData().localeToRepoIdMap));
         logger.error(
-            `Attempted to set locale context for "${locale}" but no layer was found for this locale!`
+            `Attempted to set locale context for "${locale}" but no layer was found for this locale - Current layer repos: ${JSON.stringify(
+                localeToRepoIdMap
+            )}`
         );
     }
 
