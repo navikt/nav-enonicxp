@@ -1,6 +1,6 @@
 import { ComponentConfigs, ComponentName, ComponentType } from './component-config';
 import { NavNoDescriptor } from '../common';
-import { componentAppKey } from '../../lib/constants';
+import { COMPONENT_APP_KEY } from '../../lib/constants';
 
 type NodeComponentMapper<Type, Name> = Type extends 'fragment'
     ? {
@@ -16,7 +16,7 @@ type NodeComponentMapper<Type, Name> = Type extends 'fragment'
               [type in Type]: {
                   descriptor: NavNoDescriptor<Name>;
                   config?: {
-                      [componentAppKey]: {
+                      [COMPONENT_APP_KEY]: {
                           [name in Name]: ComponentConfigs[Type][Name];
                       };
                   };

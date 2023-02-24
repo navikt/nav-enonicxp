@@ -6,7 +6,7 @@ import * as nodeLib from '/lib/xp/node';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
-import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
+import { CONTENT_ROOT_REPO_ID, CONTENT_REPO_PREFIX, CONTENT_ROOT_PROJECT_ID } from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
 import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-defer';
 
@@ -52,14 +52,14 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     logger.info('Starting job to publish layer content to master');
 
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
-        repoParams: { repoId: contentRootRepoId, branch: 'master' },
+        repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'master' },
         queryParams: {},
     }).hits.map((hit) => hit.id);
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
 
     Object.values(data.localeToRepoIdMap).forEach((repoId) => {
-        if (repoId === contentRootRepoId) {
+        if (repoId === CONTENT_ROOT_REPO_ID) {
             return;
         }
 
@@ -124,7 +124,7 @@ const populateWithChildLayers = (
         if (newMap[language]) {
             logger.error(`Layer was already specified for locale ${language}`);
         } else {
-            newMap[language] = `${contentRepoPrefix}.${id}`;
+            newMap[language] = `${CONTENT_REPO_PREFIX}.${id}`;
         }
 
         populateWithChildLayers(projects, newMap, id);
@@ -136,15 +136,15 @@ const refreshLayersData = () => {
 
     const newMap: LocaleToRepoIdMap = {};
 
-    const rootProject = projects.find((project) => project.id === contentRootProjectId);
+    const rootProject = projects.find((project) => project.id === CONTENT_ROOT_PROJECT_ID);
     if (!rootProject?.language) {
         logger.critical(`No valid root project found!`);
         return;
     }
 
-    newMap[rootProject.language] = contentRootRepoId;
+    newMap[rootProject.language] = CONTENT_ROOT_REPO_ID;
 
-    populateWithChildLayers(projects, newMap, contentRootProjectId);
+    populateWithChildLayers(projects, newMap, CONTENT_ROOT_PROJECT_ID);
 
     const newMapEntries = Object.entries(newMap);
 
@@ -179,7 +179,7 @@ export const initLayersData = () => {
         type: '(repository.updated|repository.deleted)',
         localOnly: false,
         callback: (event: EnonicEvent<{ id?: string }>) => {
-            if (!event.data?.id?.startsWith(contentRepoPrefix)) {
+            if (!event.data?.id?.startsWith(CONTENT_REPO_PREFIX)) {
                 return;
             }
             logger.info(

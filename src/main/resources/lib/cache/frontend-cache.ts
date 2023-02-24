@@ -1,7 +1,7 @@
 import httpClient, { HttpResponse } from '/lib/http-client';
 import * as taskLib from '/lib/xp/task';
 import * as schedulerLib from '/lib/xp/scheduler';
-import { appDescriptor, urls } from '../constants';
+import { APP_DESCRIPTOR, URLS } from '../constants';
 import { getFrontendPathname } from './utils';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
@@ -10,8 +10,8 @@ import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache
 const NUM_RETRIES = 3;
 const TIMEOUT_MS = 10000;
 
-const REVALIDATOR_PROXY_URL = `${urls.revalidatorProxyOrigin}/revalidator-proxy`;
-const REVALIDATOR_PROXY_URL_WIPE_ALL = `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`;
+const REVALIDATOR_PROXY_URL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalidator-proxy`;
+const REVALIDATOR_PROXY_URL_WIPE_ALL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalidator-proxy/wipe-all`;
 
 const DEFERRED_JOB_NAME = 'invalidate-all-job';
 const DEFERRED_TIME_MS_DEFAULT = 60000;
@@ -40,7 +40,7 @@ export const frontendInvalidateAllDeferred = (
             type: 'ONE_TIME',
             value: targetScheduleTime.toISOString(),
         },
-        taskDescriptor: `${appDescriptor}:cache-invalidate-all`,
+        taskDescriptor: `${APP_DESCRIPTOR}:cache-invalidate-all`,
         taskConfig: {
             retryIfFail: true,
             eventId,

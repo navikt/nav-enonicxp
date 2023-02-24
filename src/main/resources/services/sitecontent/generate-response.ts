@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { componentAppKey } from '../../lib/constants';
+import { COMPONENT_APP_KEY } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
@@ -22,7 +22,7 @@ const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boo
         return false;
     }
 
-    return !!content.x?.[componentAppKey]?.previewOnly?.previewOnly;
+    return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
 };
 
 // Resolve the base content to a fully resolved content via a guillotine query

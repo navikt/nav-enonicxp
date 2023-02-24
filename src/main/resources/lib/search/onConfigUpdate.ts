@@ -3,7 +3,7 @@ import { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
-import { contentRootRepoId } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
@@ -215,7 +215,7 @@ export const revalidateAllSearchNodes = () => {
     }
 
     const contentRepoConnection = nodeLib.connect({
-        repoId: contentRootRepoId,
+        repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
         user: {
             login: 'su',

@@ -12,7 +12,7 @@ import {
     DetailedOverviewType,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { appDescriptor } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 
@@ -24,8 +24,8 @@ type ContentWithProductDetailsData = ContentWithProductDetails['data'] & Product
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
 const contentTypesInAllProductsList = [
-    `${appDescriptor}:content-page-with-sidemenus`,
-    `${appDescriptor}:guide-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page`,
 ] as const;
 
 const getProductDetails = (

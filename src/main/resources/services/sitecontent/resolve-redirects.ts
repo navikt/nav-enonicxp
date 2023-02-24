@@ -4,7 +4,7 @@ import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { redirectsRootPath } from '../../lib/constants';
+import { REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { buildLocalePath } from '../../lib/localization/locale-utils';
 
@@ -112,7 +112,7 @@ const getParentRedirectContent = (path: string): null | Content => {
 };
 
 const getContentFromRedirectsFolder = (path: string) =>
-    contentLib.get({ key: `${redirectsRootPath}${path}` });
+    contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${path}` });
 
 export const getRedirectContent = ({
     pathRequested,
@@ -137,7 +137,7 @@ export const getRedirectContent = ({
         const redirectContent =
             getContentFromRedirectsFolder(strippedPath) ||
             getParentRedirectContent(pathRequested) ||
-            getParentRedirectContent(`${redirectsRootPath}${strippedPath}`);
+            getParentRedirectContent(`${REDIRECTS_ROOT_PATH}${strippedPath}`);
 
         return redirectContent ? runSitecontentGuillotineQuery(redirectContent, branch) : null;
     });

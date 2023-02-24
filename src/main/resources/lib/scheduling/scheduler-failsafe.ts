@@ -1,5 +1,5 @@
 import { createOrUpdateSchedule } from './schedule-job';
-import { appDescriptor } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 
 // Failsafe to ensure the one-time scheduler is doing its job :)
 export const startFailsafeSchedule = () => {
@@ -10,7 +10,7 @@ export const startFailsafeSchedule = () => {
             value: '* * * * *',
             timeZone: 'GMT+2:00',
         },
-        taskDescriptor: `${appDescriptor}:scheduler-onetime-failsafe`,
+        taskDescriptor: `${APP_DESCRIPTOR}:scheduler-onetime-failsafe`,
         taskConfig: {},
     });
 };

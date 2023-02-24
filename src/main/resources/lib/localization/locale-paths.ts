@@ -4,7 +4,7 @@ import { stripPathPrefix } from '../utils/nav-utils';
 import { getLayersData, isValidLocale } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
-import { contentRootRepoId } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { Content } from '/lib/xp/content';
 import { getLayersMultiConnection } from './locale-utils';
 
@@ -94,7 +94,7 @@ const resolveExactPath = (path: string, branch: RepoBranch): ContentPathTarget |
     }
 
     // If we found multiple nodes with this path, prefer to get the content from default layer
-    const defaultLayerNodes = foundNodes.filter((node) => node.repoId === contentRootRepoId);
+    const defaultLayerNodes = foundNodes.filter((node) => node.repoId === CONTENT_ROOT_REPO_ID);
 
     // If the multiple nodes were found in localized layers only, return the oldest and log an error
     // We don't want paths to be ambiguous across localizations

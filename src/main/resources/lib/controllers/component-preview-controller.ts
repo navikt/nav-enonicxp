@@ -1,6 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
-import { urls } from '../constants';
+import { URLS } from '../constants';
 import {
     destructureComponent,
     insertComponentsIntoRegions,
@@ -64,7 +64,7 @@ export const componentPreviewController = (_: XP.Request) => {
 
     try {
         const componentHtml = httpClient.request({
-            url: `${urls.frontendOrigin}/api/component-preview`,
+            url: `${URLS.FRONTEND_ORIGIN}/api/component-preview`,
             method: 'POST',
             body: JSON.stringify({ props: componentProps }),
             contentType: 'application/json',
