@@ -84,14 +84,14 @@ const getUrl = (content: Content<any>) => {
     return `${URLS.FRONTEND_ORIGIN}${pathname}`;
 };
 
-const getAlternativeLanguageVersions = (content: Content): LanguageVersion => ({
+const transformLanguageVersions = (content: Content): LanguageVersion => ({
     language: content.language,
     url: getUrl(content),
 });
 
 const getSitemapEntry = (content: Content): SitemapEntry => {
     const languageVersions = getLanguageVersionsFull(content, 'master').map(
-        getAlternativeLanguageVersions
+        transformLanguageVersions
     );
 
     return {
