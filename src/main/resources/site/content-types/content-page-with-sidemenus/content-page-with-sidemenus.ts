@@ -26,7 +26,7 @@ export interface ContentPageWithSidemenus {
   rates?: string;
 
   /**
-   * Velg søknads- eller klage-detaljer
+   * Velg alle detaljer som skal brukes
    */
   formDetailsTargets?: Array<string>;
 
