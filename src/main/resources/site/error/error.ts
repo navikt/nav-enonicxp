@@ -1,6 +1,6 @@
 import thymeleafLib from '/lib/thymeleaf';
 import { frontendProxy } from '../../lib/controllers/frontend-proxy';
-import { navnoRootPath } from '../../lib/constants';
+import { NAVNO_ROOT_PATH } from '../../lib/constants';
 
 const basicErrorView = resolve('error.html');
 
@@ -25,7 +25,7 @@ export const handleError = (req: XP.ErrorRequest) => {
     // If the requested path is a customPath, or some other custom mapping that the frontend + sitecontent
     // pipeline can resolve, this should ensure it gets resolved (otherwise, this will also ultimately
     // return 404)
-    const possiblePaths = req.request.rawPath.split(navnoRootPath);
+    const possiblePaths = req.request.rawPath.split(NAVNO_ROOT_PATH);
 
     return frontendProxy(req.request, possiblePaths[1] || possiblePaths[0]);
 };

@@ -9,7 +9,7 @@ import {
     removeDuplicates,
     stripPathPrefix,
 } from '../../lib/utils/nav-utils';
-import { contentStudioEditPathPrefix } from '../../lib/constants';
+import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
@@ -59,7 +59,7 @@ const transformHit = (content: Content): SelectorHit =>
             }`,
             description: stripPathPrefix(content._path),
         },
-        `${contentStudioEditPathPrefix}/${content._id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
     );
 
 const getHitsFromQuery = (query: string, contentTypes?: ContentDescriptor[]): SelectorHit[] => {

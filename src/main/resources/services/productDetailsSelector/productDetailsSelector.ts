@@ -3,7 +3,7 @@ import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
 import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
-import { contentStudioEditPathPrefix } from '../../lib/constants';
+import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
@@ -31,7 +31,7 @@ const transformHit = (content: ProductDetailsContentType): SelectorHit =>
             displayName: content.displayName,
             description: makeDescription(content),
         },
-        `${contentStudioEditPathPrefix}/${content._id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
     );
 
 const makeErrorHit = (id: string, displayName: string, description: string): SelectorHit =>
@@ -42,7 +42,7 @@ const makeErrorHit = (id: string, displayName: string, description: string): Sel
             description,
             icon: customSelectorErrorIcon,
         },
-        `${contentStudioEditPathPrefix}/${id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${id}`
     );
 
 const getSelectedHit = (selectedId: string, detailType: ProductDetailsType) => {

@@ -1,5 +1,5 @@
 import httpClient from '/lib/http-client';
-import { urls } from '../../lib/constants';
+import { URLS } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
 
 /*
@@ -10,7 +10,7 @@ import { logger } from '../../lib/utils/logging';
  *
  * */
 
-const selectorQueryContentStudioUrl = `${urls.portalAdminOrigin}/selectorQuery`;
+const selectorQueryContentStudioUrl = `${URLS.PORTAL_ADMIN_ORIGIN}/selectorQuery`;
 
 const selectorQueryRequest = (req: XP.Request) =>
     httpClient.request({

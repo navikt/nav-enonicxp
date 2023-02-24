@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
-import { contentRootRepoId } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import * as nodeLib from '/lib/xp/node';
 import { getSearchConfig } from './config';
 import { forceArray, stringArrayToSet } from '../utils/nav-utils';
@@ -38,7 +38,7 @@ export const updateSearchNode = (contentId: string) => {
     );
 
     const contentRepoConnection = nodeLib.connect({
-        repoId: contentRootRepoId,
+        repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
         user: {
             login: 'su',

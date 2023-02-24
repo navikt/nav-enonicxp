@@ -6,7 +6,7 @@ import * as clusterLib from '/lib/xp/cluster';
 import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
-import { contentRootRepoId, urls } from '../constants';
+import { CONTENT_ROOT_REPO_ID, URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
@@ -77,7 +77,7 @@ const getUrl = (content: Content<any>) => {
     const customPath = content.data?.customPath;
 
     const pathname = isValidCustomPath(customPath) ? customPath : stripPathPrefix(content._path);
-    return `${urls.frontendOrigin}${pathname}`;
+    return `${URLS.FRONTEND_ORIGIN}${pathname}`;
 };
 
 const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[] | undefined =>
@@ -277,7 +277,7 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === contentRootRepoId) {
+                if (node.branch === 'master' && node.repo === CONTENT_ROOT_REPO_ID) {
                     const xpPath = node.path.replace(/^\/content/, '');
                     updateSitemapEntry(xpPath);
                 }

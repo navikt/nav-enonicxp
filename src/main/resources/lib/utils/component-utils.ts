@@ -8,7 +8,7 @@ import { NodeComponent } from '../../types/components/component-node';
 import { forceArray } from './nav-utils';
 import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
-import { componentAppKey } from '../constants';
+import { COMPONENT_APP_KEY } from '../constants';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -42,7 +42,7 @@ export const getComponentConfig = (component?: NodeComponent) => {
 
     const componentKey = descriptor.split(':')[1];
 
-    return config?.[componentAppKey]?.[componentKey];
+    return config?.[COMPONENT_APP_KEY]?.[componentKey];
 };
 
 export const getComponentConfigByPath = (

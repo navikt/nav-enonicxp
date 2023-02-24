@@ -12,7 +12,7 @@ import { runInContext } from '../../../lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 import { customSelectorHitWithLink } from '../../service-utils';
-import { contentStudioEditPathPrefix } from '../../../lib/constants';
+import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../../lib/constants';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -34,7 +34,7 @@ const hitFromValueItem = (
             displayName: `${displayName} - ${valueItem.key}`,
             description: buildGlobalValuePreviewString(valueItem),
         },
-        `${contentStudioEditPathPrefix}/${content._id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
     );
 };
 

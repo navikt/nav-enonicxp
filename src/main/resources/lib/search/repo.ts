@@ -2,7 +2,7 @@ import * as repoLib from '/lib/xp/repo';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
-import { searchRepo } from '../constants';
+import { SEARCH_REPO_ID } from '../constants';
 import {
     getSearchRepoConnection,
     searchRepoConfigNode,
@@ -60,7 +60,7 @@ export const clearSearchNodeUpdateQueue = () => {
 
 const getSearchRepo = () => {
     try {
-        return repoLib.get(searchRepo);
+        return repoLib.get(SEARCH_REPO_ID);
     } catch (e) {
         logger.error(`Error while getting search repo - ${e}`);
         return null;
@@ -70,20 +70,20 @@ const getSearchRepo = () => {
 const createSearchRepo = () => {
     const existingRepo = getSearchRepo();
     if (existingRepo) {
-        logger.info(`Search repo ${searchRepo} already exists, no action needed`);
+        logger.info(`Search repo ${SEARCH_REPO_ID} already exists, no action needed`);
         return true;
     }
 
     const newRepo = repoLib.create({
-        id: searchRepo,
+        id: SEARCH_REPO_ID,
     });
 
     if (!newRepo) {
-        logger.critical(`Failed to create search repo with id ${searchRepo}!`);
+        logger.critical(`Failed to create search repo with id ${SEARCH_REPO_ID}!`);
         return false;
     }
 
-    logger.info(`Created new search repo with id ${searchRepo}`);
+    logger.info(`Created new search repo with id ${SEARCH_REPO_ID}`);
     return true;
 };
 

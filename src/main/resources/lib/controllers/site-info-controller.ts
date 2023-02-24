@@ -3,14 +3,14 @@ import { Content } from '/lib/xp/content';
 import * as schedulerLib from '/lib/xp/scheduler';
 import httpClient from '/lib/http-client';
 import cacheLib from '/lib/cache';
-import { urls } from '../constants';
+import { URLS } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../utils/cluster-utils';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { RepoBranch } from '../../types/common';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
 import { runInContext } from '../context/run-in-context';
 
-const frontendApiUrl = `${urls.frontendOrigin}/editor/site-info`;
+const frontendApiUrl = `${URLS.FRONTEND_ORIGIN}/editor/site-info`;
 
 type PublishInfo = Content['publish'] & {
     scheduledFrom?: string;

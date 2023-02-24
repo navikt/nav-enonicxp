@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { appDescriptor, navnoRootPath } from '../constants';
+import { APP_DESCRIPTOR, NAVNO_ROOT_PATH } from '../constants';
 import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
@@ -14,7 +14,7 @@ export type NodeEventData = {
 };
 
 // Matches the _path on nodes from both contentLib and nodeLib.repoConnection get/query functions
-const pathnameFilter = new RegExp(`^(/content)?(${navnoRootPath})/`);
+const pathnameFilter = new RegExp(`^(/content)?(${NAVNO_ROOT_PATH})/`);
 
 export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 
@@ -29,13 +29,13 @@ const ignoredBaseContentTypes: BuiltinContentDescriptor[] = [
 ];
 
 const ignoredCustomContentTypes: CustomContentDescriptor[] = [
-    `${appDescriptor}:animated-icons`,
-    `${appDescriptor}:calculator`,
-    `${appDescriptor}:contact-information`,
-    `${appDescriptor}:content-list`,
-    `${appDescriptor}:global-value-set`,
-    `${appDescriptor}:megamenu-item`,
-    `${appDescriptor}:publishing-calendar-entry`,
+    `${APP_DESCRIPTOR}:animated-icons`,
+    `${APP_DESCRIPTOR}:calculator`,
+    `${APP_DESCRIPTOR}:contact-information`,
+    `${APP_DESCRIPTOR}:content-list`,
+    `${APP_DESCRIPTOR}:global-value-set`,
+    `${APP_DESCRIPTOR}:megamenu-item`,
+    `${APP_DESCRIPTOR}:publishing-calendar-entry`,
 ];
 
 const ignoredContentTypeSet = stringArrayToSet([

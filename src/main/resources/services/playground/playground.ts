@@ -3,7 +3,7 @@ import graphQlLib from '/lib/graphql';
 import graphQlRxLib from '/lib/graphql-rx';
 import * as webSocketLib from '/lib/xp/websocket';
 import { schema } from '../../lib/guillotine/schema/schema';
-import { urls } from '../../lib/constants';
+import { URLS } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
 
 const isProd = app.config.env === 'p';
@@ -69,7 +69,7 @@ export const get = (req: XP.Request) => {
 
     const html = graphqlPlaygroundLib
         .render()
-        .replace(/^".*\/_\/asset/g, `${urls.xpOrigin}/_/asset`);
+        .replace(/^".*\/_\/asset/g, `${URLS.XP_ORIGIN}/_/asset`);
 
     return {
         contentType: 'text/html; charset=utf-8',

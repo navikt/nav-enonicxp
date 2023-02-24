@@ -7,7 +7,7 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
-import { contentRootRepoId } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
@@ -215,7 +215,7 @@ const populateSituationsLayout = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: contentRootRepoId, branch: 'draft' });
+    const repo = nodeLib.connect({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
     if (!nodeContent?.components) {

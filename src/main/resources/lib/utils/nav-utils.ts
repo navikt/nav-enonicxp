@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { navnoRootPath } from '../constants';
+import { NAVNO_ROOT_PATH } from '../constants';
 import { MediaDescriptor } from '../../types/content-types/content-config';
 import { logger } from './logging';
 import { generateUUID } from './uuid';
@@ -92,7 +92,7 @@ export const createObjectChecksum = (obj: Record<string, any>) => {
     return generateUUID(JSON.stringify(obj));
 };
 
-const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
+const navnoRootPathFilter = new RegExp(`^${NAVNO_ROOT_PATH}`);
 
 export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
 

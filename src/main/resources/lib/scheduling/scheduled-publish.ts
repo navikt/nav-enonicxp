@@ -1,6 +1,6 @@
 import * as nodeLib from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { appDescriptor } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
@@ -52,7 +52,7 @@ export const scheduleCacheInvalidation = ({
             type: 'ONE_TIME',
             value: publishFrom,
         },
-        taskDescriptor: `${appDescriptor}:prepublish-cache-wipe`,
+        taskDescriptor: `${APP_DESCRIPTOR}:prepublish-cache-wipe`,
         taskConfig: {
             path,
             id,
@@ -75,7 +75,7 @@ export const scheduleUnpublish = ({
             type: 'ONE_TIME',
             value: publishTo,
         },
-        taskDescriptor: `${appDescriptor}:unpublish-expired-content`,
+        taskDescriptor: `${APP_DESCRIPTOR}:unpublish-expired-content`,
         taskConfig: {
             path,
             id,

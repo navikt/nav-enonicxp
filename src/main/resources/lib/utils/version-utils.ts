@@ -29,7 +29,7 @@ export const getNodeVersions = ({
     });
 
     if (result.total > MAX_VERSIONS_COUNT_TO_RETRIEVE) {
-        logger.error(
+        logger.warning(
             `Content node ${nodeKey} has more than the maximum allowed versions count ${MAX_VERSIONS_COUNT_TO_RETRIEVE}`
         );
     }

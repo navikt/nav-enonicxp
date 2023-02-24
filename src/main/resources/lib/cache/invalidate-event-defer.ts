@@ -5,7 +5,7 @@ import { frontendInvalidateAllAsync } from './frontend-cache';
 import { generateUUID } from '../utils/uuid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
-import { appDescriptor } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 
 type DeferCacheInvalidationEventData = CacheInvalidationDeferConfig;
@@ -37,7 +37,7 @@ const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEven
                 type: 'ONE_TIME',
                 value: new Date(Date.now() + maxDeferTime).toISOString(),
             },
-            taskDescriptor: `${appDescriptor}:cache-invalidation-defer`,
+            taskDescriptor: `${APP_DESCRIPTOR}:cache-invalidation-defer`,
             taskConfig: {
                 shouldDefer: false,
             },
