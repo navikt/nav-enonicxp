@@ -4,6 +4,8 @@ import { UnpublishExpiredContentConfig } from './unpublish-expired-content-confi
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { logger } from '../../lib/utils/logging';
+import { getLayersData } from '../../lib/localization/layers-data';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
     const { id, path, repoId } = params;
@@ -34,7 +36,10 @@ export const run = (params: UnpublishExpiredContentConfig) => {
     }
 
     try {
-        const unpublished = contentLib.unpublish({ keys: [id] });
+        const locale = getLayersData().repoIdToLocaleMap[repoId];
+        const unpublished = runInLocaleContext({ locale }, () =>
+            contentLib.unpublish({ keys: [id] })
+        );
         if (unpublished && unpublished.length > 0) {
             logger.info(`Unpublished content: ${unpublished.join(', ')}`);
             if (unpublished.length > 1) {
