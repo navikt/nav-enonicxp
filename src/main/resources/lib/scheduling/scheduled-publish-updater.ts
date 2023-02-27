@@ -46,8 +46,10 @@ const schedulePrepublishTasks = () => {
         contentHits.forEach((content) => {
             if (content.publish?.from) {
                 const existingJob = schedulerLib.get({ name: getPrepublishJobName(content._id) });
-
                 if (!existingJob) {
+                    logger.warning(
+                        `Scheduled job for prepublish was missing for content ${content._path} in repo ${repoId}`
+                    );
                     scheduleCacheInvalidation({
                         id: content._id,
                         path: content._path,
@@ -91,8 +93,10 @@ const scheduleUnpublishTasks = () => {
         contentHits.forEach((content) => {
             if (content.publish?.to) {
                 const existingJob = schedulerLib.get({ name: getUnpublishJobName(content._id) });
-
                 if (!existingJob) {
+                    logger.warning(
+                        `Scheduled job for unpublish was missing for content ${content._path} in repo ${repoId}`
+                    );
                     scheduleUnpublish({
                         id: content._id,
                         path: content._path,
