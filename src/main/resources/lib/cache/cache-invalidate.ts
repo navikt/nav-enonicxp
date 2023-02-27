@@ -25,7 +25,7 @@ const getPaths = (contents: Content[], locale: string) =>
 
         const basePath = hasValidCustomPath(content) ? content.data.customPath : content._path;
 
-        return [...acc, buildLocalePath(basePath, locale)];
+        return [...acc, buildLocalePath(basePath, locale), basePath];
     }, []);
 
 const resolveReferencePaths = (id: string, eventType: string, locale: string) => {
@@ -46,7 +46,7 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
     // If the locale is not the default, we're done. Otherwise, we need to check if any of the
     // references found are also referenced in the child layers
     if (locale !== defaultLocale) {
-        return pathsToInvalidate;
+        return removeDuplicates(pathsToInvalidate);
     }
 
     const locales = Object.keys(localeToRepoIdMap);
