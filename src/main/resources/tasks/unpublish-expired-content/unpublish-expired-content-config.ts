@@ -9,4 +9,9 @@ export interface UnpublishExpiredContentConfig {
    * Node id
    */
   id: string;
+
+  /**
+   * Repo id
+   */
+  repoId: string;
 }

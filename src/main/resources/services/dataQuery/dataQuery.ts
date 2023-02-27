@@ -1,6 +1,6 @@
 import cacheLib from '/lib/cache';
 import * as nodeLib from '/lib/xp/node';
-import { RepoNode, MultiRepoNodeQueryHit } from '/lib/xp/node';
+import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
@@ -9,7 +9,12 @@ import { batchedContentQuery, batchedMultiRepoNodeQuery } from '../../lib/utils/
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
-import { buildLocalePath, getLayersMultiConnection } from '../../lib/localization/locale-utils';
+import {
+    buildLocalePath,
+    getLayersMultiConnection,
+    NodeHitsLocaleBuckets,
+    sortMultiRepoNodeHitIdsToLocaleBuckets,
+} from '../../lib/localization/locale-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
@@ -23,8 +28,6 @@ type RunQueryParams = {
     batch: number;
     types?: ContentDescriptor[];
 };
-
-type NodeHitsLocaleBuckets = Record<string, string[]>;
 
 type ContentWithLocaleData = Content & { layerLocale: string; layerLocalePath: string };
 
@@ -113,20 +116,6 @@ const transformRepoNode = (node: RepoNode<Content>): Content => {
     return content;
 };
 
-const sortMultiRepoNodeHitsToLocaleBuckets = (contentNodes: MultiRepoNodeQueryHit[]) => {
-    return contentNodes.reduce<NodeHitsLocaleBuckets>((acc, node) => {
-        const { repoId, id } = node;
-
-        if (!acc[repoId]) {
-            acc[repoId] = [];
-        }
-
-        acc[repoId].push(id);
-
-        return acc;
-    }, {});
-};
-
 const runArchiveQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
     const { repoIdToLocaleMap } = getLayersData();
 
@@ -211,7 +200,7 @@ const runQuery = (params: RunQueryParams) => {
     const end = start + RESPONSE_BATCH_SIZE;
 
     const nodeHitsBatch = nodeHits.slice(start, end);
-    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitsToLocaleBuckets(nodeHitsBatch);
+    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitIdsToLocaleBuckets(nodeHitsBatch);
 
     const contentHits =
         branch === 'archived'

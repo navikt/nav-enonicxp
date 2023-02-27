@@ -1,4 +1,5 @@
 import * as nodeLib from '/lib/xp/node';
+import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
@@ -6,6 +7,8 @@ import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
 import { forceArray } from '../utils/nav-utils';
+
+export type NodeHitsLocaleBuckets = Record<string, string[]>;
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({
@@ -72,3 +75,17 @@ export const buildLocalePath = (basePath: string, locale: string) => {
 
 export const isContentLocalized = (content: Content) =>
     !forceArray(content.inherit).includes('CONTENT');
+
+export const sortMultiRepoNodeHitIdsToLocaleBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
+    return hits.reduce<NodeHitsLocaleBuckets>((acc, node) => {
+        const { repoId, id } = node;
+
+        if (!acc[repoId]) {
+            acc[repoId] = [];
+        }
+
+        acc[repoId].push(id);
+
+        return acc;
+    }, {});
+};
