@@ -8,6 +8,7 @@ import {
     NodeQueryHit,
     RepoConnection,
     MultiRepoConnection,
+    MultiRepoNodeQueryResponse,
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 
@@ -105,10 +106,6 @@ type BatchedNodeQueryParams =
                 repo: RepoConnection;
                 repoParams?: never;
             }
-          | {
-                repo: MultiRepoConnection;
-                repoParams?: never;
-            }
       );
 
 export const batchedNodeQuery = ({
@@ -119,6 +116,16 @@ export const batchedNodeQuery = ({
     const _repo = repo || nodeLib.connect(repoParams as Source);
 
     return batchedQuery({ queryFunc: _repo.query.bind(_repo), queryParams });
+};
+
+export const batchedMultiRepoNodeQuery = ({
+    repo,
+    queryParams,
+}: {
+    repo: MultiRepoConnection;
+    queryParams: NodeQueryParams;
+}): MultiRepoNodeQueryResponse => {
+    return batchedQuery({ queryFunc: repo.query.bind(repo), queryParams });
 };
 
 export const batchedContentQuery = <ContentType extends ContentDescriptor>(
