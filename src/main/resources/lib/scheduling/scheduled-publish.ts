@@ -40,10 +40,12 @@ export const getUnpublishJobName = (contentId: string) => `unpublish-${contentId
 export const scheduleCacheInvalidation = ({
     id,
     path,
+    repoId,
     publishFrom,
 }: {
     id: string;
     path: string;
+    repoId: string;
     publishFrom: string;
 }) => {
     createOrUpdateSchedule<PrepublishCacheWipeConfig>({
@@ -56,6 +58,7 @@ export const scheduleCacheInvalidation = ({
         taskConfig: {
             path,
             id,
+            repoId,
         },
     });
 };
@@ -63,10 +66,12 @@ export const scheduleCacheInvalidation = ({
 export const scheduleUnpublish = ({
     id,
     path,
+    repoId,
     publishTo,
 }: {
     id: string;
     path: string;
+    repoId: string;
     publishTo: string;
 }) => {
     createOrUpdateSchedule<UnpublishExpiredContentConfig>({
@@ -79,6 +84,7 @@ export const scheduleUnpublish = ({
         taskConfig: {
             path,
             id,
+            repoId,
         },
     });
 };
@@ -95,16 +101,17 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
         return false;
     }
 
-    const { id, path } = nodeData;
+    const { id, path, repo } = nodeData;
 
     if (publish.to) {
-        scheduleUnpublish({ id, path, publishTo: publish.to });
+        scheduleUnpublish({ id, path, repoId: repo, publishTo: publish.to });
     }
 
     if (isPrepublished(publish.from)) {
         scheduleCacheInvalidation({
             id,
             path,
+            repoId: repo,
             publishFrom: publish.from,
         });
         return true;
