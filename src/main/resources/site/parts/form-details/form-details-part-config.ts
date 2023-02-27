@@ -4,9 +4,4 @@ export interface FormDetailsPartConfig {
    * Velg skjemadetalj
    */
   targetFormDetails: string;
-
-  /**
-   * Velg skjemadetalj
-   */
-  targetFormDetailsTest: string;
 }

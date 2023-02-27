@@ -34,6 +34,7 @@ import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-b
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
+import { formDetailsCallback } from './schema-creation-callbacks/form-details';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
@@ -82,6 +83,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
     Part_no_nav_navno_product_card_micro_CardList: microCardTargetPageCallback,
     Part_no_nav_navno_filters_menu_Filters: filterCallback,
+    Part_no_nav_navno_form_details: formDetailsCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,

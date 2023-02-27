@@ -69,6 +69,10 @@ const cleanComponentForInvalidFilterId = (
         return { component, wasCleaned: false };
     }
 
+    if (!component.part.config?.['no-nav-navno']) {
+        return { component, wasCleaned: false };
+    }
+
     const config = (component.part.config?.['no-nav-navno'] as PartConfigs)[partName] as any;
     const filters = config?.filters as string[];
 

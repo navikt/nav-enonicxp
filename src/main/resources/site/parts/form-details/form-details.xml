@@ -2,14 +2,7 @@
     <display-name>Skjemadetaljer</display-name>
     <description>Viser valgte skjemadetaljer</description>
     <form>
-        <input name="targetFormDetails" type="ContentSelector">
-            <label>Velg skjemadetalj</label>
-            <occurrences minimum="1" maximum="1"/>
-            <config>
-                <allowContentType>${app}:form-details</allowContentType>
-            </config>
-        </input>
-        <input name="targetFormDetailsTest" type="CustomSelector">
+        <input name="targetFormDetails" type="CustomSelector">
             <label>Velg skjemadetalj</label>
             <occurrences minimum="1" maximum="1"/>
             <config>
