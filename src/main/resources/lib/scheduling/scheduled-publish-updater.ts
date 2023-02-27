@@ -19,7 +19,7 @@ const schedulePrepublishTasks = () => {
     const multiRepoConnection = getLayersMultiConnection('draft');
 
     const nodeHits = multiRepoConnection.query({
-        count: 1000,
+        count: 2000,
         query: `publish.from > instant("${new Date().toISOString()}")`,
     }).hits;
 
@@ -64,7 +64,7 @@ const scheduleUnpublishTasks = () => {
     const multiRepoConnection = getLayersMultiConnection('master');
 
     const nodeHits = multiRepoConnection.query({
-        count: 1000,
+        count: 2000,
         query: 'publish.to LIKE "*"',
     }).hits;
 
