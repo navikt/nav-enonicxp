@@ -15,6 +15,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         description: 'xpImage',
         fields: {
             __typename: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
         },
     });

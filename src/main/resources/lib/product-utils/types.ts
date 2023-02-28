@@ -38,7 +38,7 @@ export type OverviewPageProductData = {
 
 export type DetailedOverviewType = Exclude<Overview['overviewType'], 'all_products'>;
 
-export type ContentTypeWithProductDetails = typeof contentTypesWithProductDetails[number];
+export type ContentTypeWithProductDetails = (typeof contentTypesWithProductDetails)[number];
 
 export const isContentWithProductDetails = (
     content: Content

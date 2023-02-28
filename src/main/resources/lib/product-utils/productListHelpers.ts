@@ -39,6 +39,7 @@ export const getProductIllustrationIcons = (product: Content<ContentTypeWithProd
             {
                 icon: {
                     __typename: sanitizeText(resource.type),
+                    type: resource.type,
                     mediaUrl,
                 },
             },
