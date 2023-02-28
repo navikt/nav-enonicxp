@@ -4,6 +4,7 @@
     <form>
         <input name="targetFormDetails" type="CustomSelector">
             <label>Velg skjemadetalj</label>
+            <help-text>Husk å markere hvilke skjemadetaljer som skal være tilgjengelige på denne siden. Det gjør du i produktside-fanen til venstre."</help-text>
             <occurrences minimum="1" maximum="1"/>
             <config>
                 <service>selectedFormDetails</service>
