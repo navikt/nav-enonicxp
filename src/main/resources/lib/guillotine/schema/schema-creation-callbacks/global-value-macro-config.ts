@@ -12,6 +12,7 @@ export const globalValueMacroConfigCallback: CreationCallback = (context, params
     params.fields.value = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
+            log.info('i am global value resolve');
             const { gvKey, contentId } = getGvKeyAndContentIdFromUniqueKey(env.source.key);
             if (!gvKey || !contentId) {
                 logger.error(
