@@ -17,11 +17,6 @@
                     <label>
                         Canonical url - NB! Skal bare legges inn av hovedredaktør/administrator
                     </label>
-                    <help-text>
-                        Legg url på formen https://*.nav.no/* til nytt innhold som skal erstatte siden.
-                        Det skal også opprettes en redirect til det nye innholdet.
-                        Siden bør avpubliseres etter 1-2 uker.
-                    </help-text>
                     <occurrences minimum="0" maximum="1"/>
                     <config>
                         <regexp>^https:\/\/([a-z0-9_\-.]*\.)?nav\.no($|\/).*</regexp>
