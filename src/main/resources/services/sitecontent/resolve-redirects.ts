@@ -24,9 +24,8 @@ export const getCustomPathRedirectIfApplicable = ({
         hasValidCustomPath(content) && requestedPath === content._path && branch === 'master';
 
     return shouldRedirect
-        ? ({
+        ? {
               ...content,
-              __typename: 'no_nav_navno_InternalLink',
               type: 'no.nav.navno:internal-link',
               data: {
                   target: {
@@ -34,7 +33,7 @@ export const getCustomPathRedirectIfApplicable = ({
                   },
               },
               page: undefined,
-          } as unknown as Content<'no.nav.navno:internal-link'>)
+          }
         : null;
 };
 
@@ -42,7 +41,7 @@ export const getCustomPathRedirectIfApplicable = ({
 // This contentKey was saved as an x-data field after the migration to XP
 // Check if a path matches this pattern and return the content with the contentKey
 // if it exists
-const getRedirectFromLegacyPath = (path: string): Content | null => {
+const getRedirectFromLegacyPath = (path: string) => {
     const legacyCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
     if (!legacyCmsKeyMatch) {
         return null;
@@ -75,13 +74,12 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
 
     return {
         ...targetContent,
-        __typename: 'no_nav_navno_InternalLink',
         type: 'no.nav.navno:internal-link',
         data: {
             target: { _path: targetContent._path },
             permanentRedirect: true,
         },
-    } as unknown as Content<'no.nav.navno:internal-link'>;
+    };
 };
 
 // Find the nearest parent for a not-found content. If it is an internal link with the
