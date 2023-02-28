@@ -1,7 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
-import { sanitizeText } from '/lib/guillotine/util/naming';
 import { forceArray, isMedia } from '../utils/nav-utils';
 import { ContentTypeWithProductDetails, OverviewPageIllustrationIcon } from './types';
 import { logger } from '../utils/logging';
@@ -46,7 +45,6 @@ export const getProductIllustrationIcons = (product: Content<ContentTypeWithProd
             ...acc,
             {
                 icon: {
-                    __typename: sanitizeText(resource.type),
                     type: resource.type,
                     mediaUrl,
                 },
