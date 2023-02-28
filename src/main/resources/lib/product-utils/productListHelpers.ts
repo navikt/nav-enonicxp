@@ -2,8 +2,9 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
 import { sanitizeText } from '/lib/guillotine/util/naming';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray, isMedia } from '../utils/nav-utils';
 import { ContentTypeWithProductDetails, OverviewPageIllustrationIcon } from './types';
+import { logger } from '../utils/logging';
 
 export const getProductIllustrationIcons = (product: Content<ContentTypeWithProductDetails>) => {
     // Generated type definitions are incorrect due to nested mixins
@@ -19,13 +20,20 @@ export const getProductIllustrationIcons = (product: Content<ContentTypeWithProd
 
     const icons = forceArray(illustrationDocument.data.icons);
 
-    return icons.reduce((acc, icon) => {
+    return icons.reduce<OverviewPageIllustrationIcon[]>((acc, icon) => {
         if (!icon.icon) {
             return acc;
         }
 
         const resource = contentLib.get({ key: icon.icon });
         if (!resource) {
+            return acc;
+        }
+
+        if (!isMedia(resource)) {
+            logger.error(
+                `Overview page icon reference ${icon.icon} is an invalid type ${resource.type}`
+            );
             return acc;
         }
 
@@ -39,9 +47,10 @@ export const getProductIllustrationIcons = (product: Content<ContentTypeWithProd
             {
                 icon: {
                     __typename: sanitizeText(resource.type),
+                    type: resource.type,
                     mediaUrl,
                 },
             },
         ];
-    }, [] as OverviewPageIllustrationIcon[]);
+    }, []);
 };
