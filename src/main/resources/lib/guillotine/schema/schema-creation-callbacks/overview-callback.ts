@@ -40,6 +40,8 @@ export const overviewCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('Illustration'),
         description: 'Illustration',
         fields: {
+            __typename: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
             data: { type: icons },
         },
     });

@@ -76,7 +76,7 @@ const getProductDetails = (
     return productDetailsWithLanguage;
 };
 
-const buildCommonProductData = (product: ContentWithProductDetails) => {
+const buildCommonProductData = (product: ContentWithProductDetails): OverviewPageProductData => {
     const data = product.data as ContentWithProductDetailsData;
     const fullTitle = data.title || product.displayName;
     const icons = getProductIllustrationIcons(product);
@@ -93,6 +93,7 @@ const buildCommonProductData = (product: ContentWithProductDetails) => {
         taxonomy: forceArray(data.taxonomy),
         area: forceArray(data.area),
         illustration: {
+            type: 'no.nav.navno:animated-icons',
             data: {
                 icons,
             },

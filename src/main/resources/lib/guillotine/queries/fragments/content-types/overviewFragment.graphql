@@ -24,6 +24,8 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             audience
             area
             illustration {
+                type
+                __typename
                 data {
                     icons {
                         icon {

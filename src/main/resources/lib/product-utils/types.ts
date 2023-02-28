@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { MediaDescriptor } from '../../types/content-types/content-config';
+import { ContentDescriptor, MediaDescriptor } from '../../types/content-types/content-config';
 import { ProductData } from '../../site/mixins/product-data/product-data';
 import {
     contentTypesWithProductDetails,
@@ -20,6 +20,7 @@ export type OverviewPageIllustrationIcon = {
 
 export type OverviewPageProductData = {
     _id: string;
+    type: ContentDescriptor;
     anchorId?: string;
     productDetailsPath?: string;
     path: string;
@@ -31,6 +32,7 @@ export type OverviewPageProductData = {
     taxonomy: ProductData['taxonomy'];
     area: ProductData['area'];
     illustration: {
+        type: 'no.nav.navno:animated-icons';
         data: {
             icons: OverviewPageIllustrationIcon[];
         };
