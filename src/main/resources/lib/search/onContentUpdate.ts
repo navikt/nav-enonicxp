@@ -1,8 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
 import * as nodeLib from '/lib/xp/node';
+import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { forceArray, stringArrayToSet } from '../utils/nav-utils';
 import {
@@ -12,21 +11,28 @@ import {
     searchRepoContentIdKey,
 } from './utils';
 import { ContentFacet, SearchNode } from '../../types/search';
+import { isContentLocalized } from '../localization/locale-utils';
+import { runInLocaleContext } from '../localization/locale-context';
+import { getLayersData } from '../localization/layers-data';
 
-const isQueryMatchingContent = (query: string, id: string) =>
-    contentLib.query({
-        start: 0,
-        count: 0,
-        query,
-        filters: {
-            ids: {
-                values: [id],
-            },
-        },
-    }).total > 0;
+const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
+    runInLocaleContext(
+        { locale },
+        () =>
+            contentLib.query({
+                start: 0,
+                count: 0,
+                query,
+                filters: {
+                    ids: {
+                        values: [contentId],
+                    },
+                },
+            }).total > 0
+    );
 
-export const updateSearchNode = (contentId: string) => {
-    logger.info(`Updating search node for content id ${contentId}`);
+export const updateSearchNode = (contentId: string, repoId: string) => {
+    logger.info(`Updating search node for content id ${contentId} in repo ${repoId}`);
 
     const searchConfig = getSearchConfig();
     if (!searchConfig) {
@@ -38,7 +44,7 @@ export const updateSearchNode = (contentId: string) => {
     );
 
     const contentRepoConnection = nodeLib.connect({
-        repoId: CONTENT_ROOT_REPO_ID,
+        repoId,
         branch: 'master',
         user: {
             login: 'su',
@@ -47,16 +53,24 @@ export const updateSearchNode = (contentId: string) => {
     });
 
     const contentNode = contentRepoConnection.get<Content>(contentId);
-    if (!contentNode || !contentTypesAllowedSet[contentNode.type]) {
+    if (
+        !contentNode ||
+        !contentTypesAllowedSet[contentNode.type] ||
+        !isContentLocalized(contentNode)
+    ) {
         logger.info(`No valid content found for id ${contentId}`);
         deleteSearchNodesForContent(contentId);
         return;
     }
 
+    const { repoIdToLocaleMap } = getLayersData();
+
+    const locale = repoIdToLocaleMap[repoId];
+
     const matchedFacets = forceArray(searchConfig.data.fasetter).reduce((acc, facet) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
 
-        if (!isQueryMatchingContent(ruleQuery, contentId)) {
+        if (!isQueryMatchingContent(ruleQuery, contentId, locale)) {
             return acc;
         }
 
@@ -65,7 +79,9 @@ export const updateSearchNode = (contentId: string) => {
             return [...acc, { facet: facetKey, underfacets: [] }];
         }
 
-        const ufsMatched = ufArray.filter((uf) => isQueryMatchingContent(uf.ruleQuery, contentId));
+        const ufsMatched = ufArray.filter((uf) =>
+            isQueryMatchingContent(uf.ruleQuery, contentId, locale)
+        );
 
         // If the facet has underfacets, at least one underfacet must match along with the main facet
         if (ufsMatched.length === 0) {

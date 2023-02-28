@@ -13,6 +13,7 @@ import {
     queueUpdateForContent,
 } from './repo';
 import { forceArray } from '../utils/nav-utils';
+import { getLayersData } from '../localization/layers-data';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
@@ -31,14 +32,16 @@ const runQueuedUpdates = () => {
     if (updateState.isQueuedUpdateAll) {
         logger.info('Running update all search-nodes task from queue');
         runUpdateAllTask();
-    } else if (updateState.queuedContentIdUpdates) {
-        const contentIdsToUpdate = forceArray(updateState.queuedContentIdUpdates);
+    } else if (updateState.queuedContentUpdates) {
+        const updateQueueEntries = forceArray(updateState.queuedContentUpdates);
         logger.info(
             `Running update search-nodes task from queue for content: ${JSON.stringify(
-                contentIdsToUpdate
+                updateQueueEntries
             )}`
         );
-        contentIdsToUpdate.forEach((contentId) => runUpdateSingleContentTask(contentId));
+        updateQueueEntries.forEach(({ contentId, repoId }) =>
+            runUpdateSingleContentTask(contentId, repoId)
+        );
     }
 };
 
@@ -73,12 +76,12 @@ const runUpdateAllTask = () => {
     });
 };
 
-const runUpdateSingleContentTask = (contentId: string) => {
+const runUpdateSingleContentTask = (contentId: string, repoId: string) => {
     if (isRunningConfigUpdate) {
         logger.info(
             `Attempted to update content while running update-all job - Queuing ${contentId} for later update`
         );
-        queueUpdateForContent(contentId);
+        queueUpdateForContent(contentId, repoId);
         return;
     }
 
@@ -86,7 +89,7 @@ const runUpdateSingleContentTask = (contentId: string) => {
         description: `Update search node for ${contentId}`,
         func: () => {
             try {
-                updateSearchNode(contentId);
+                updateSearchNode(contentId, repoId);
             } catch (e) {
                 logger.critical(`Error while running search node update for ${contentId} - ${e}`);
             }
@@ -124,16 +127,23 @@ export const activateSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.repo !== CONTENT_ROOT_REPO_ID || nodeData.branch !== 'master') {
+                if (nodeData.branch !== 'master') {
                     return;
                 }
 
-                if (nodeData.id === searchConfig._id) {
+                if (nodeData.repo === CONTENT_ROOT_REPO_ID && nodeData.id === searchConfig._id) {
                     runUpdateAllTask();
                     return;
                 }
 
-                runUpdateSingleContentTask(nodeData.id);
+                const { repoIdToLocaleMap } = getLayersData();
+
+                // Only nodes from a content repo should be indexed
+                if (!repoIdToLocaleMap[nodeData.repo]) {
+                    return;
+                }
+
+                runUpdateSingleContentTask(nodeData.id, nodeData.repo);
             });
         },
         localOnly: false,

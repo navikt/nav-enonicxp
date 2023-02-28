@@ -17,9 +17,14 @@ const deletionNodeKey = `/${searchRepoDeletionQueueBaseNode}`;
 const stateNodeKey = `/${searchRepoUpdateStateNode}`;
 const configNodeKey = `/${searchRepoConfigNode}`;
 
+type UpdateQueueEntry = {
+    contentId: string;
+    repoId: string;
+};
+
 type UpdateQueueState = {
     isQueuedUpdateAll?: boolean;
-    queuedContentIdUpdates?: string[] | null;
+    queuedContentUpdates?: UpdateQueueEntry[];
 };
 
 export const getUpdateQueue = () => {
@@ -39,23 +44,25 @@ const setUpdateState = (state: UpdateQueueState) => {
 };
 
 export const queueUpdateAll = () => {
-    setUpdateState({ isQueuedUpdateAll: true, queuedContentIdUpdates: null });
+    setUpdateState({ isQueuedUpdateAll: true, queuedContentUpdates: [] });
 };
 
-export const queueUpdateForContent = (contentId: string) => {
+export const queueUpdateForContent = (contentId: string, repoId: string) => {
     const currentUpdateState = getUpdateQueue();
+    const newEntry = { contentId, repoId };
+
     setUpdateState({
-        queuedContentIdUpdates: [
-            ...(currentUpdateState?.queuedContentIdUpdates
-                ? forceArray(currentUpdateState.queuedContentIdUpdates)
+        queuedContentUpdates: [
+            ...(currentUpdateState?.queuedContentUpdates
+                ? forceArray(currentUpdateState.queuedContentUpdates)
                 : []),
-            contentId,
+            newEntry,
         ],
     });
 };
 
 export const clearSearchNodeUpdateQueue = () => {
-    setUpdateState({ isQueuedUpdateAll: false, queuedContentIdUpdates: null });
+    setUpdateState({ isQueuedUpdateAll: false, queuedContentUpdates: [] });
 };
 
 const getSearchRepo = () => {
