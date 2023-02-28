@@ -137,8 +137,13 @@ const refreshLayersData = () => {
     const newMap: LocaleToRepoIdMap = {};
 
     const rootProject = projects.find((project) => project.id === CONTENT_ROOT_PROJECT_ID);
-    if (!rootProject?.language) {
-        logger.critical(`No valid root project found!`);
+    if (!rootProject) {
+        logger.critical(`No root project found!`);
+        return;
+    }
+
+    if (!rootProject.language) {
+        logger.critical(`Root project must have a language set!`);
         return;
     }
 
