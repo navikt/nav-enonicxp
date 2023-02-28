@@ -100,7 +100,7 @@ export const stringArrayToSet = (list: string[] | readonly string[]): Record<str
     // @ts-ignore (TS bug? string[] | readonly string[] behaves strangely)
     list.reduce((acc, contentType) => ({ ...acc, [contentType]: true }), {});
 
-export const isMedia = (content: Content): content is Content & { type: MediaDescriptor } =>
+export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
 
 const Thread = Java.type('java.lang.Thread');
