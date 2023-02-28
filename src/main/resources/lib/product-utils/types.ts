@@ -12,7 +12,6 @@ const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductD
 
 export type OverviewPageIllustrationIcon = {
     icon: {
-        __typename: string;
         type: MediaDescriptor;
         mediaUrl: string;
     };
