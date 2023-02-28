@@ -6,9 +6,10 @@ import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
-    const { id, path, repoId } = params;
+    const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
     logger.info(`Running task for unpublishing expired content - ${id} - ${path}`);
 
