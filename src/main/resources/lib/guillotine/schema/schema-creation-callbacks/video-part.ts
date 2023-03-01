@@ -1,15 +1,33 @@
-import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
-import graphQlLib from '/lib/graphql';
+import httpClient from '/lib/http-client';
+
 import { CreationCallback } from '../../utils/creation-callback-utils';
-import { forceArray } from '../../../utils/nav-utils';
+import { queryParamsToObject } from '../../../utils/nav-utils';
 
 export const videoCallback: CreationCallback = (context, params) => {
     log.info('videoCallback');
-    params.fields.video.args = { baseContentId: graphQlLib.GraphQLID };
     params.fields.video.resolve = (env) => {
-        log.info(env.args.baseContentId);
-        log.info('videoCallback resolve');
-        return env.source;
+        const { video } = env.source;
+        if (!video) {
+            return null;
+        }
+
+        const { accountId, mediaId } = queryParamsToObject(video);
+
+        const qbrickImageUrl = `https://video.qbrick.com/api/v1/image/accounts/${accountId}/medias/${mediaId}/snapshot.jpg`;
+
+        log.info(qbrickImageUrl);
+        const response = httpClient.request({
+            url: qbrickImageUrl,
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache',
+            },
+            connectionTimeout: 20000,
+            readTimeout: 10000,
+            contentType: 'image/jpeg',
+        });
+
+        log.info(JSON.stringify(response.bodyStream));
+        return env.source.video;
     };
 };

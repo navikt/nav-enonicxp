@@ -88,6 +88,6 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
-    Macro_no_nav_navno_video: videoCallback,
+    Macro_no_nav_navno_video_DataConfig: videoCallback,
     RichText: richTextCallback,
 };

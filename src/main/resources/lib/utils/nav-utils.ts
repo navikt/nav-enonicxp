@@ -122,3 +122,22 @@ export const generateFulltextQuery = (
 
 export const dateTimesAreEqual = (dateTime1: string, dateTime2: string) =>
     new Date(fixDateFormat(dateTime1)).getTime() === new Date(fixDateFormat(dateTime2)).getTime();
+
+export const queryParamsToObject = (url: string) => {
+    const queryParams: { [key: string]: string | string[] } = {};
+    const queryStartIndex = url.indexOf('?');
+
+    if (queryStartIndex !== -1) {
+        const queryString = url.substring(queryStartIndex + 1);
+        const queryArr = queryString.split('&');
+
+        queryArr.forEach((query) => {
+            const keyValuePair = query.split('=');
+            const key = decodeURIComponent(keyValuePair[0]);
+            const value = decodeURIComponent(keyValuePair[1]) || '';
+
+            queryParams[key] = value;
+        });
+    }
+    return queryParams;
+};
