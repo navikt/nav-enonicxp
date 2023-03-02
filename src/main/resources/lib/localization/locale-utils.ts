@@ -16,7 +16,19 @@ export const getLayersMultiConnection = (branch: RepoBranch) => {
     });
 };
 
-export const getLocalizedContentVersions = (contentId: string, branch: RepoBranch) => {
+type ContentAndLayerData = {
+    content: Content;
+    locale: string;
+    repoId: string;
+};
+
+export const getContentFromAllLayers = (
+    contentId: string,
+    branch: RepoBranch,
+    type: 'localized' | 'nonlocalized' | 'all'
+): ContentAndLayerData[] => {
+    const booleanFilterKey = type === 'localized' ? 'mustNot' : 'must';
+
     const localizedNodes = getLayersMultiConnection(branch).query({
         start: 0,
         count: 100,
@@ -25,7 +37,7 @@ export const getLocalizedContentVersions = (contentId: string, branch: RepoBranc
                 values: [contentId],
             },
             boolean: {
-                mustNot: [
+                [booleanFilterKey]: [
                     {
                         hasValue: {
                             field: 'inherit',
@@ -39,25 +51,23 @@ export const getLocalizedContentVersions = (contentId: string, branch: RepoBranc
 
     const { repoIdToLocaleMap } = getLayersData();
 
-    return localizedNodes.reduce((acc, node) => {
-        const locale = repoIdToLocaleMap[node.repoId];
+    return localizedNodes.reduce<ContentAndLayerData[]>((acc, node) => {
+        const { repoId, id } = node;
+
+        const locale = repoIdToLocaleMap[repoId];
         if (!locale) {
-            logger.critical(`No locale found for repoId ${node.repoId}`);
+            logger.critical(`No locale found for repoId ${repoId}`);
             return acc;
         }
 
-        const content = runInLocaleContext({ branch, locale }, () =>
-            contentLib.get({ key: node.id })
-        );
+        const content = runInLocaleContext({ branch, locale }, () => contentLib.get({ key: id }));
         if (!content) {
-            logger.critical(
-                `Content not found: ${node.id} in repo ${node.repoId} in branch ${node.branch}`
-            );
+            logger.critical(`Content not found: ${id} in repo ${repoId} in branch ${branch}`);
             return acc;
         }
 
-        return [...acc, content];
-    }, [] as Content[]);
+        return [...acc, { content, locale, repoId }];
+    }, []);
 };
 
 export const buildLocalePath = (basePath: string, locale: string) => {

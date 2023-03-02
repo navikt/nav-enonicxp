@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { buildLocalePath, getLocalizedContentVersions } from './locale-utils';
+import { buildLocalePath, getContentFromAllLayers } from './locale-utils';
 import { RepoBranch } from '../../types/common';
 import { forceArray, stripPathPrefix } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
@@ -34,15 +34,15 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
 const getLayersLanguages = (content: Content, branch: RepoBranch) => {
     const { _id, language: parentLanguage } = content;
 
-    const localizedContent = getLocalizedContentVersions(_id, branch);
+    const localizedContent = getContentFromAllLayers(_id, branch, 'localized');
 
     return localizedContent.reduce<Content[]>((acc, localizedContent) => {
-        const { language } = localizedContent;
-        if (language === parentLanguage) {
+        const { content, locale } = localizedContent;
+        if (locale === parentLanguage) {
             return acc;
         }
 
-        return [...acc, localizedContent];
+        return [...acc, content];
     }, []);
 };
 

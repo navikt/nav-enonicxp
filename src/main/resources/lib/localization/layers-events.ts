@@ -6,13 +6,18 @@ import { logger } from '../utils/logging';
 import { getLayersData } from './layers-data';
 import { removeDuplicates } from '../utils/nav-utils';
 import { hasValidCustomPath } from '../custom-paths/custom-paths';
-import { buildLocalePath } from './locale-utils';
+import { buildLocalePath, getContentFromAllLayers } from './locale-utils';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 
 let hasSetupListeners = false;
 
 const isLocalized = (content: any) => content.data.isProcessedForLocalization;
 const setIsLocalized = (content: any) => (content.data.isProcessedForLocalization = true);
 
+// This is not in use... and may never be
+// Depending on how we decide to handle localized urls, this may be removed. The current
+// implementation does not explicitly set localized urls in locale layers, but instead resolved
+// urls with locale suffixes to content from the matching layer
 const processContentOnLocalization = (event: EnonicEvent) => {
     if (!clusterLib.isMaster()) {
         return;
@@ -91,20 +96,66 @@ const processContentOnLocalization = (event: EnonicEvent) => {
     });
 };
 
-// This is not in use... and may never be
-// Depending on how we decide to handle localized urls, this may be removed. The current
-// implementation does not explicitly set localized urls in locale layers, but instead resolved
-// urls with locale suffixes to content from the matching layer
-export const activateLocalizationEventListeners = () => {
+// Publish/unpublish actions in the root layer should be propagated to non-localized content in child
+// layers, as XP does not do this automatically
+const propagatePublishEventsToLayers = (event: EnonicEvent) => {
+    if (!clusterLib.isMaster()) {
+        return;
+    }
+
+    removeDuplicates(event.data.nodes, (a, b) => a.id === b.id).forEach((node) => {
+        const { id, branch, repo } = node;
+
+        if (branch !== 'master' || repo !== CONTENT_ROOT_REPO_ID) {
+            return;
+        }
+
+        const nonLocalizedContent = getContentFromAllLayers(id, branch, 'nonlocalized');
+
+        nonLocalizedContent.forEach(({ repoId, locale }) => {
+            if (repoId === CONTENT_ROOT_REPO_ID) {
+                return;
+            }
+
+            if (event.type === 'node.pushed') {
+                logger.info(`Pushing ${id} to master in layer ${locale}`);
+                const repoConnection = nodeLib.connect({
+                    repoId,
+                    branch: 'draft',
+                    user: {
+                        login: 'su',
+                    },
+                    principals: ['role:system.admin'],
+                });
+
+                repoConnection.push({ key: id, target: 'master', resolve: false });
+            } else if (event.type === 'node.deleted') {
+                logger.info(`Deleting ${id} from master in layer ${locale}`);
+                const repoConnection = nodeLib.connect({
+                    repoId,
+                    branch: 'master',
+                    user: {
+                        login: 'su',
+                    },
+                    principals: ['role:system.admin'],
+                });
+
+                repoConnection.delete(id);
+            }
+        });
+    });
+};
+
+export const activateLayersEventListeners = () => {
     if (hasSetupListeners) {
         logger.error('Localization event listeners were already setup');
         return;
     }
 
     eventLib.listener({
-        type: 'node.updated',
+        type: '(node.pushed|node.deleted)',
         localOnly: false,
-        callback: processContentOnLocalization,
+        callback: propagatePublishEventsToLayers,
     });
 
     hasSetupListeners = true;
