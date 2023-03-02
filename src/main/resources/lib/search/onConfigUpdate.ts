@@ -7,15 +7,15 @@ import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
-    createOrUpdateSearchNode,
     getSearchRepoConnection,
-    searchRepoContentBaseNode,
-    searchRepoContentIdKey,
+    SEARCH_REPO_CONTENT_BASE_NODE,
+    SEARCH_REPO_CONTENT_ID_KEY,
 } from './utils';
 import { ContentFacet, SearchNode } from '../../types/search';
-import { SearchConfigDescriptor } from '../../types/content-types/content-config';
+import { SearchConfigDescriptor } from '../../types/content-types/search-config';
+import { createOrUpdateSearchNode } from './createSearchNode';
 
-const contentBasePath = `/${searchRepoContentBaseNode}`;
+const contentBasePath = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 
 // Remove any existing search nodes which no longer points to content
 // that should be indexed by the search
@@ -162,7 +162,7 @@ const getExistingSearchNodesMap = (
         count: batchSize * 3, // Account for duplicates (should not happen, but...)
         filters: {
             hasValue: {
-                field: searchRepoContentIdKey,
+                field: SEARCH_REPO_CONTENT_ID_KEY,
                 values: contentIdsBatch,
             },
         },
@@ -260,6 +260,7 @@ export const revalidateAllSearchNodes = () => {
             facets: contentIdToFacetsMap[contentId],
             existingSearchNodes: contentIdToSearchNodesMap[contentId],
             searchRepoConnection,
+            locale: '',
         });
 
         if (didUpdate) {

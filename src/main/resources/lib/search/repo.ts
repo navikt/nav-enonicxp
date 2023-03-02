@@ -5,17 +5,17 @@ import { runInContext } from '../context/run-in-context';
 import { SEARCH_REPO_ID } from '../constants';
 import {
     getSearchRepoConnection,
-    searchRepoConfigNode,
-    searchRepoContentBaseNode,
-    searchRepoDeletionQueueBaseNode,
-    searchRepoUpdateStateNode,
+    SEARCH_REPO_CONFIG_NODE,
+    SEARCH_REPO_CONTENT_BASE_NODE,
+    SEARCH_REPO_DELETION_QUEUE_BASE_NODE,
+    SEARCH_REPO_UPDATE_STATE_NODE,
 } from './utils';
 import { forceArray } from '../utils/nav-utils';
 
-const baseNodeKey = `/${searchRepoContentBaseNode}`;
-const deletionNodeKey = `/${searchRepoDeletionQueueBaseNode}`;
-const stateNodeKey = `/${searchRepoUpdateStateNode}`;
-const configNodeKey = `/${searchRepoConfigNode}`;
+const baseNodeKey = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
+const deletionNodeKey = `/${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`;
+const stateNodeKey = `/${SEARCH_REPO_UPDATE_STATE_NODE}`;
+const configNodeKey = `/${SEARCH_REPO_CONFIG_NODE}`;
 
 type UpdateQueueEntry = {
     contentId: string;
@@ -96,20 +96,20 @@ const createSearchRepo = () => {
 
 const createBaseNodes = (repo: RepoConnection) => {
     if (!repo.exists(deletionNodeKey)) {
-        repo.create({ _name: searchRepoDeletionQueueBaseNode });
-        logger.info(`Created node in search repo: ${searchRepoDeletionQueueBaseNode}`);
+        repo.create({ _name: SEARCH_REPO_DELETION_QUEUE_BASE_NODE });
+        logger.info(`Created node in search repo: ${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`);
     }
     if (!repo.exists(baseNodeKey)) {
-        repo.create({ _name: searchRepoContentBaseNode });
-        logger.info(`Created node in search repo: ${searchRepoContentBaseNode}`);
+        repo.create({ _name: SEARCH_REPO_CONTENT_BASE_NODE });
+        logger.info(`Created node in search repo: ${SEARCH_REPO_CONTENT_BASE_NODE}`);
     }
     if (!repo.exists(stateNodeKey)) {
-        repo.create({ _name: searchRepoUpdateStateNode });
-        logger.info(`Created node in search repo: ${searchRepoUpdateStateNode}`);
+        repo.create({ _name: SEARCH_REPO_UPDATE_STATE_NODE });
+        logger.info(`Created node in search repo: ${SEARCH_REPO_UPDATE_STATE_NODE}`);
     }
     if (!repo.exists(configNodeKey)) {
-        repo.create({ _name: searchRepoConfigNode });
-        logger.info(`Created node in search repo: ${searchRepoConfigNode}`);
+        repo.create({ _name: SEARCH_REPO_CONFIG_NODE });
+        logger.info(`Created node in search repo: ${SEARCH_REPO_CONFIG_NODE}`);
     }
 };
 

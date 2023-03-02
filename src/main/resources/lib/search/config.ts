@@ -4,15 +4,14 @@ import * as clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
-import { SearchConfigDescriptor } from '../../types/content-types/content-config';
 import { forceArray } from '../utils/nav-utils';
-import { getSearchRepoConnection, searchRepoConfigNode } from './utils';
-import { SearchConfigData } from '../../types/content-types/search-config';
+import { getSearchRepoConnection, SEARCH_REPO_CONFIG_NODE } from './utils';
+import { SearchConfigData, SearchConfigDescriptor } from '../../types/content-types/search-config';
 
 type SearchConfig = Content<SearchConfigDescriptor>;
 type PersistedSearchConfig = { config?: SearchConfig };
 
-const searchConfigKey = `/${searchRepoConfigNode}`;
+const searchConfigKey = `/${SEARCH_REPO_CONFIG_NODE}`;
 
 let searchConfig: SearchConfig | null = null;
 

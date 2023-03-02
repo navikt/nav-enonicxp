@@ -1,9 +1,9 @@
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import {
-    searchRepoContentIdKey,
-    searchRepoContentPathKey,
-    searchRepoFacetsKey,
+    SEARCH_REPO_CONTENT_ID_KEY,
+    SEARCH_REPO_CONTENT_PATH_KEY,
+    SEARCH_REPO_FACETS_KEY,
 } from '../lib/search/utils';
 import { ArrayOrSingle } from './util-types';
 
@@ -13,9 +13,9 @@ export type ContentFacet = {
 };
 
 type SearchNodeDataFields = {
-    [searchRepoFacetsKey]: ArrayOrSingle<ContentFacet>;
-    [searchRepoContentIdKey]: string;
-    [searchRepoContentPathKey]: string;
+    [SEARCH_REPO_FACETS_KEY]: ArrayOrSingle<ContentFacet>;
+    [SEARCH_REPO_CONTENT_ID_KEY]: string;
+    [SEARCH_REPO_CONTENT_PATH_KEY]: string;
 };
 
 type SearchNodeCreateParamsFields = {

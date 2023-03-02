@@ -5,15 +5,15 @@ import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { forceArray, stringArrayToSet } from '../utils/nav-utils';
 import {
-    createOrUpdateSearchNode,
     deleteSearchNodesForContent,
     getSearchRepoConnection,
-    searchRepoContentIdKey,
+    SEARCH_REPO_CONTENT_ID_KEY,
 } from './utils';
 import { ContentFacet, SearchNode } from '../../types/search';
 import { isContentLocalized } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
+import { createOrUpdateSearchNode } from './createSearchNode';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
     runInLocaleContext(
@@ -63,9 +63,7 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         return;
     }
 
-    const { repoIdToLocaleMap } = getLayersData();
-
-    const locale = repoIdToLocaleMap[repoId];
+    const locale = getLayersData().repoIdToLocaleMap[repoId];
 
     const matchedFacets = forceArray(searchConfig.data.fasetter).reduce((acc, facet) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
@@ -99,7 +97,7 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
             count: 100,
             filters: {
                 hasValue: {
-                    field: searchRepoContentIdKey,
+                    field: SEARCH_REPO_CONTENT_ID_KEY,
                     values: [contentId],
                 },
             },
@@ -115,5 +113,6 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         facets: matchedFacets,
         existingSearchNodes: existingSearchNodes,
         searchRepoConnection: searchRepoConnection,
+        locale,
     });
 };
