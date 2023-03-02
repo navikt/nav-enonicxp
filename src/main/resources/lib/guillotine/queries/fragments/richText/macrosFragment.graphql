@@ -107,7 +107,11 @@ fragment macros on Macro {
         }
         video {
             title
-            video
+            video {
+                imageUrl
+                videoUrl
+                duration
+            }
         }
     }
 }
