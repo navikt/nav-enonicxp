@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
@@ -214,13 +214,10 @@ export const revalidateAllSearchNodes = () => {
         return;
     }
 
-    const contentRepoConnection = nodeLib.connect({
+    const contentRepoConnection = getRepoConnection({
         repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
+        asAdmin: true,
     });
 
     const searchRepoConnection = getSearchRepoConnection();

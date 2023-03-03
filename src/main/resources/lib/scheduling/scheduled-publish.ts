@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { Content } from '/lib/xp/content';
 import { APP_DESCRIPTOR } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';
@@ -9,7 +9,7 @@ import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 
 const getPublish = (node: NodeEventData) => {
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: node.repo,
         branch: 'master',
     });

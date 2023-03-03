@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { stringArrayToSet } from '../../lib/utils/nav-utils';
@@ -14,7 +14,7 @@ const setContentType = (
     wipeComponents: boolean
 ) => {
     try {
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: repoId,
             branch: 'draft',
         });

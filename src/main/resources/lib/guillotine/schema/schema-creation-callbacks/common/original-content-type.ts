@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../../utils/repo-connection';
 import graphQlLib from '/lib/graphql';
 import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';
@@ -32,7 +32,7 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
 
             const versions = getNodeVersions({
                 nodeKey: _id,
-                repo: nodeLib.connect({
+                repo: getRepoConnection({
                     repoId: CONTENT_ROOT_REPO_ID,
                     branch: 'draft',
                 }),

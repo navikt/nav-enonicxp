@@ -1,6 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import { Component } from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from './repo-connection';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
@@ -95,7 +95,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
     const contentId = portalLib.getContent()._id;
     const component = portalLib.getComponent();
 
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: req.repositoryId,
         branch: req.branch,
     });

@@ -1,14 +1,12 @@
 import * as nodeLib from '/lib/xp/node';
 import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
-import { Content } from '/lib/xp/content';
+import { Content, BooleanFilter } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
 import { forceArray } from '../utils/nav-utils';
-
-export type NodeHitsLocaleBuckets = Record<string, string[]>;
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({
@@ -16,7 +14,38 @@ export const getLayersMultiConnection = (branch: RepoBranch) => {
     });
 };
 
-export const getLocalizedContentVersions = (contentId: string, branch: RepoBranch) => {
+const nonLocalizedFilter = [
+    {
+        hasValue: {
+            field: 'inherit',
+            values: ['CONTENT'],
+        },
+    },
+];
+
+type LocalizationState = 'localized' | 'nonlocalized' | 'all';
+
+const localizationStateFilter: Record<LocalizationState, BooleanFilter['boolean']> = {
+    localized: { mustNot: nonLocalizedFilter },
+    nonlocalized: { must: nonLocalizedFilter },
+    all: {},
+};
+
+type ContentAndLayerData = {
+    content: Content;
+    locale: string;
+    repoId: string;
+};
+
+export const getContentFromAllLayers = ({
+    contentId,
+    branch,
+    state,
+}: {
+    contentId: string;
+    branch: RepoBranch;
+    state: LocalizationState;
+}): ContentAndLayerData[] => {
     const localizedNodes = getLayersMultiConnection(branch).query({
         start: 0,
         count: 100,
@@ -24,40 +53,29 @@ export const getLocalizedContentVersions = (contentId: string, branch: RepoBranc
             ids: {
                 values: [contentId],
             },
-            boolean: {
-                mustNot: [
-                    {
-                        hasValue: {
-                            field: 'inherit',
-                            values: ['CONTENT'],
-                        },
-                    },
-                ],
-            },
+            boolean: localizationStateFilter[state],
         },
     }).hits;
 
     const { repoIdToLocaleMap } = getLayersData();
 
-    return localizedNodes.reduce((acc, node) => {
-        const locale = repoIdToLocaleMap[node.repoId];
+    return localizedNodes.reduce<ContentAndLayerData[]>((acc, node) => {
+        const { repoId, id } = node;
+
+        const locale = repoIdToLocaleMap[repoId];
         if (!locale) {
-            logger.critical(`No locale found for repoId ${node.repoId}`);
+            logger.critical(`No locale found for repoId ${repoId}`);
             return acc;
         }
 
-        const content = runInLocaleContext({ branch, locale }, () =>
-            contentLib.get({ key: node.id })
-        );
+        const content = runInLocaleContext({ branch, locale }, () => contentLib.get({ key: id }));
         if (!content) {
-            logger.critical(
-                `Content not found: ${node.id} in repo ${node.repoId} in branch ${node.branch}`
-            );
+            logger.critical(`Content not found: ${id} in repo ${repoId} in branch ${branch}`);
             return acc;
         }
 
-        return [...acc, content];
-    }, [] as Content[]);
+        return [...acc, { content, locale, repoId }];
+    }, []);
 };
 
 export const buildLocalePath = (basePath: string, locale: string) => {
@@ -75,6 +93,8 @@ export const buildLocalePath = (basePath: string, locale: string) => {
 
 export const isContentLocalized = (content: Content) =>
     !forceArray(content.inherit).includes('CONTENT');
+
+export type NodeHitsLocaleBuckets = Record<string, string[]>;
 
 export const sortMultiRepoNodeHitIdsToLocaleBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
     return hits.reduce<NodeHitsLocaleBuckets>((acc, node) => {

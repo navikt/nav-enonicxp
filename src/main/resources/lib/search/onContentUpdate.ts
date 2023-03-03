@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { getSearchConfig } from './config';
 import { forceArray, stringArrayToSet } from '../utils/nav-utils';
 import {
@@ -37,13 +37,10 @@ export const updateSearchNode = (contentId: string) => {
         forceArray(getSearchConfig()?.data.contentTypes)
     );
 
-    const contentRepoConnection = nodeLib.connect({
+    const contentRepoConnection = getRepoConnection({
         repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
+        asAdmin: true,
     });
 
     const contentNode = contentRepoConnection.get<Content>(contentId);

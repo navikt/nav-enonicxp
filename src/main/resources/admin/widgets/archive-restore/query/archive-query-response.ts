@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../../lib/utils/repo-connection';
 import { RepoNode } from '/lib/xp/node';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
@@ -29,7 +29,7 @@ const buildQueryString = (query?: string) => {
 };
 
 const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): ArchiveEntry[] => {
-    const repo = nodeLib.connect({ repoId, branch: 'draft' });
+    const repo = getRepoConnection({ repoId, branch: 'draft' });
 
     const archivedContentIds = batchedNodeQuery({
         repo,
