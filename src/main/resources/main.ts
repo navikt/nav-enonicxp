@@ -20,7 +20,7 @@ import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/repo';
 import { initLayersData } from './lib/localization/layers-data';
-import { activateLayersEventListeners } from './lib/localization/layers-events';
+import { activateLayersEventListeners } from './lib/localization/publish-events';
 
 updateClusterInfo();
 initLayersData();
