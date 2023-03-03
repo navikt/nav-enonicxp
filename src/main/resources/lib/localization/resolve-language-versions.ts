@@ -34,7 +34,7 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
 const getLayersLanguages = (content: Content, branch: RepoBranch) => {
     const { _id, language: parentLanguage } = content;
 
-    const localizedContent = getContentFromAllLayers(_id, branch, 'localized');
+    const localizedContent = getContentFromAllLayers({ contentId: _id, branch, state: 'localized' });
 
     return localizedContent.reduce<Content[]>((acc, localizedContent) => {
         const { content, locale } = localizedContent;

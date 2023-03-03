@@ -22,7 +22,13 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
             return;
         }
 
-        getContentFromAllLayers(id, branch, 'nonlocalized').forEach(({ repoId, locale }) => {
+        const nonlocalized = getContentFromAllLayers({
+            contentId: id,
+            branch: 'draft',
+            state: 'nonlocalized',
+        });
+
+        nonlocalized.forEach(({ repoId, locale }) => {
             if (repoId === CONTENT_ROOT_REPO_ID) {
                 return;
             }

@@ -24,6 +24,7 @@ const nonLocalizedFilter = [
 ];
 
 type LocalizationState = 'localized' | 'nonlocalized' | 'all';
+
 const localizationStateFilter: Record<LocalizationState, BooleanFilter['boolean']> = {
     localized: { mustNot: nonLocalizedFilter },
     nonlocalized: { must: nonLocalizedFilter },
@@ -35,11 +36,16 @@ type ContentAndLayerData = {
     locale: string;
     repoId: string;
 };
-export const getContentFromAllLayers = (
-    contentId: string,
-    branch: RepoBranch,
-    type: LocalizationState
-): ContentAndLayerData[] => {
+
+export const getContentFromAllLayers = ({
+    contentId,
+    branch,
+    state,
+}: {
+    contentId: string;
+    branch: RepoBranch;
+    state: LocalizationState;
+}): ContentAndLayerData[] => {
     const localizedNodes = getLayersMultiConnection(branch).query({
         start: 0,
         count: 100,
@@ -47,7 +53,7 @@ export const getContentFromAllLayers = (
             ids: {
                 values: [contentId],
             },
-            boolean: localizationStateFilter[type],
+            boolean: localizationStateFilter[state],
         },
     }).hits;
 
@@ -89,6 +95,7 @@ export const isContentLocalized = (content: Content) =>
     !forceArray(content.inherit).includes('CONTENT');
 
 export type NodeHitsLocaleBuckets = Record<string, string[]>;
+
 export const sortMultiRepoNodeHitIdsToLocaleBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
     return hits.reduce<NodeHitsLocaleBuckets>((acc, node) => {
         const { repoId, id } = node;
