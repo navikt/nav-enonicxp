@@ -14,7 +14,7 @@ export const getLayersMultiConnection = (branch: RepoBranch) => {
     });
 };
 
-const isNonLocalizedFilter = [
+const nonLocalizedFilter = [
     {
         hasValue: {
             field: 'inherit',
@@ -25,8 +25,8 @@ const isNonLocalizedFilter = [
 
 type LocalizationState = 'localized' | 'nonlocalized' | 'all';
 const localizationStateFilter: Record<LocalizationState, BooleanFilter['boolean']> = {
-    localized: { mustNot: isNonLocalizedFilter },
-    nonlocalized: { must: isNonLocalizedFilter },
+    localized: { mustNot: nonLocalizedFilter },
+    nonlocalized: { must: nonLocalizedFilter },
     all: {},
 };
 
