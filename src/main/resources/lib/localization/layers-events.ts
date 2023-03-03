@@ -1,7 +1,7 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { logger } from '../utils/logging';
 import { getContentFromAllLayers } from './locale-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
@@ -29,28 +29,14 @@ const propagatePublishEventsToLayers = (event: EnonicEvent) => {
 
             if (event.type === 'node.pushed') {
                 logger.info(`Pushing ${id} to master in layer ${locale}`);
-                const repoConnection = nodeLib.connect({
-                    repoId,
-                    branch: 'draft',
-                    user: {
-                        login: 'su',
-                    },
-                    principals: ['role:system.admin'],
+                getRepoConnection({ branch: 'draft', repoId, asAdmin: true }).push({
+                    key: id,
+                    target: 'master',
+                    resolve: false,
                 });
-
-                repoConnection.push({ key: id, target: 'master', resolve: false });
             } else if (event.type === 'node.deleted') {
                 logger.info(`Deleting ${id} from master in layer ${locale}`);
-                const repoConnection = nodeLib.connect({
-                    repoId,
-                    branch: 'master',
-                    user: {
-                        login: 'su',
-                    },
-                    principals: ['role:system.admin'],
-                });
-
-                repoConnection.delete(id);
+                getRepoConnection({ branch: 'master', repoId, asAdmin: true }).delete(id);
             }
         });
     });

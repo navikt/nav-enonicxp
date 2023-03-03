@@ -1,5 +1,5 @@
 import * as contextLib from '/lib/xp/context';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from './repo-connection';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
@@ -20,7 +20,7 @@ const htmlFragmentMacroPattern = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]
 
 const getContentNode = (contentRef: string, branch: RepoBranch) => {
     const context = contextLib.get();
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: context.repository,
         branch: branch || context.branch,
     });

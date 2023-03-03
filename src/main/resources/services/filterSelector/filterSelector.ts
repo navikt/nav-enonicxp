@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { forceArray } from '../../lib/utils/nav-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
@@ -23,7 +23,7 @@ const getFilterMenus = (req: XP.Request) => {
         throw new Error('Ugyldig context, forsøk å laste inn editoren på nytt (F5)');
     }
 
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: req.repositoryId,
         branch: req.branch,
     });
