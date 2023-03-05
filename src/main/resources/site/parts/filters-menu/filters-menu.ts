@@ -1,6 +1,6 @@
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../lib/utils/repo-connection';
 import { NodeContent } from '/lib/xp/node';
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 import { generateUUID, isUUID } from '../../../lib/utils/uuid';
@@ -37,7 +37,7 @@ export const get = (req: XP.Request) => {
         const contentId = portalLib.getContent()._id;
         const component = portalLib.getComponent();
 
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: req.repositoryId,
             branch: req.branch,
         });

@@ -1,5 +1,5 @@
 import cacheLib from '/lib/cache';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { parseJsonArray } from '../../lib/utils/nav-utils';
@@ -123,7 +123,7 @@ const runArchiveQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
         (acc, [repoId, nodeIds]) => {
             const locale = repoIdToLocaleMap[repoId];
 
-            const repo = nodeLib.connect({
+            const repo = getRepoConnection({
                 repoId,
                 branch: 'draft',
             });

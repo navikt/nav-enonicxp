@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../lib/utils/repo-connection';
 import {
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,
@@ -41,7 +41,7 @@ export const modifyGlobalValueItemService = (req: XP.Request) => {
     }
 
     try {
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: 'com.enonic.cms.default',
             branch: 'draft',
         });

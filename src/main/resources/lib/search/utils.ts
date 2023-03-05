@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { RepoConnection } from '/lib/xp/node';
 import { forceArray } from '../utils/nav-utils';
 import { SEARCH_REPO_ID } from '../constants';
@@ -17,13 +17,10 @@ export const SEARCH_REPO_CONTENT_PATH_KEY = 'contentPath';
 export const SEARCH_REPO_FACETS_KEY = 'facets';
 
 export const getSearchRepoConnection = () =>
-    nodeLib.connect({
+    getRepoConnection({
         repoId: SEARCH_REPO_ID,
         branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
+        asAdmin: true,
     });
 
 export const facetsAreEqual = (

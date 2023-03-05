@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { NodeContent, RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
@@ -215,7 +215,7 @@ const populateSituationsLayout = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
     if (!nodeContent?.components) {

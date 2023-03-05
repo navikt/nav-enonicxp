@@ -2,7 +2,7 @@ import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
@@ -81,13 +81,10 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
         logger.info(`Pushing ${nodesToPush.length} to master in layer repo ${repoId}`);
 
-        const repoConnection = nodeLib.connect({
+        const repoConnection = getRepoConnection({
             repoId: repoId,
             branch: 'draft',
-            user: {
-                login: 'su',
-            },
-            principals: ['role:system.admin'],
+            asAdmin: true,
         });
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: fifteenMinutesMs });
