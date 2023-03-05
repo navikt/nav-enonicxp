@@ -2,8 +2,8 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import { logger } from '../../lib/utils/logging';
-import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
-import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
 
 const cacheKey = 'decorator-menu-cache';
 const menuPath = '/www.nav.no/dekorator-meny/';
@@ -42,7 +42,7 @@ const getTargetPath = (menuItem: MenuItemContent) => {
     if (target.type === 'no.nav.navno:external-link') {
         return target.data.url;
     } else {
-        return hasValidCustomPath(target) ? target.data.customPath : stripPathPrefix(target._path);
+        return getPublicPath(target, CONTENT_LOCALE_DEFAULT);
     }
 };
 

@@ -12,7 +12,7 @@ import {
     DetailedOverviewType,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { APP_DESCRIPTOR } from '../constants';
+import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
 
@@ -89,7 +89,7 @@ const buildCommonProductData = (product: ContentWithProductDetails): OverviewPag
         sortTitle: data.sortTitle || fullTitle,
         ingress: data.ingress,
         audience: data.audience,
-        language: product.language || 'no',
+        language: product.language || CONTENT_LOCALE_DEFAULT,
         taxonomy: forceArray(data.taxonomy),
         area: forceArray(data.area),
         illustration: {
@@ -279,12 +279,16 @@ export const getProductDataForOverviewPage = (
     overviewType: OverviewType,
     audience: ProductAudience[]
 ) => {
-    const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
+    const defaultLocaleProductPages = getProductPagesForOverview(
+        CONTENT_LOCALE_DEFAULT,
+        overviewType,
+        audience
+    );
 
     const productDataList =
-        language === 'no'
-            ? getProductDataFromProductPages(norwegianProductPages, overviewType, language)
-            : getLocalizedProductData(norwegianProductPages, language, overviewType);
+        language === CONTENT_LOCALE_DEFAULT
+            ? getProductDataFromProductPages(defaultLocaleProductPages, overviewType, language)
+            : getLocalizedProductData(defaultLocaleProductPages, language, overviewType);
 
     return productDataList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };
