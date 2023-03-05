@@ -1,5 +1,6 @@
 #import "../mixins/productTargetFragment.graphql"
 #import "../mixins/productTargetMicroFragment.graphql"
+#import "../mixins/videoTargetFragment.graphql"
 #import "../content-types/payoutDatesFragment.graphql"
 
 fragment macros on Macro {
@@ -107,10 +108,9 @@ fragment macros on Macro {
         }
         video {
             title
-            video {
-                imageUrl
-                videoUrl
-                duration
+            video
+            targetContent {
+                ...videoTargetMixin
             }
         }
     }

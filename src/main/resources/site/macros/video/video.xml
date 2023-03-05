@@ -2,18 +2,28 @@
     <display-name>Video</display-name>
     <description>Legg inn URL og beskrivende tittel</description>
     <form>
-        <input name="video" type="TextLine">
-            <label>URL til video</label>
-            <help-text>Kun video fra Qbrick kan embeddes på nav.no</help-text>
+        <input name="targetContent" type="ContentSelector">
+            <label>Video-innhold</label>
             <occurrences minimum="1" maximum="1"/>
-            <default>https://video.qbrick.com/</default>
             <config>
-                <regexp>^https:\/\/video\.qbrick\.com\/.+</regexp>
+                <allowContentType>${app}:video</allowContentType>
             </config>
         </input>
-        <input name="title" type="TextLine">
-            <label>Beskrivende tittel</label>
-            <occurrences minimum="1" maximum="1"/>
-        </input>
+        <field-set>
+            <label>Brukes ikke lenger</label>
+            <help-text>Kun for gamle videoer.</help-text>
+            <items>
+                <input name="title" type="TextLine">
+                    <label>Beskrivende tittel</label>
+                </input>
+                <input name="video" type="TextLine">
+                    <label>Brukes ikke: URL til video</label>
+                    <help-text>Kun gamle videoer - skal ikke brukes.</help-text>
+                    <config>
+                        <regexp>^https:\/\/video\.qbrick\.com\/.+</regexp>
+                    </config>
+                </input>
+            </items>
+        </field-set>
     </form>
 </macro>

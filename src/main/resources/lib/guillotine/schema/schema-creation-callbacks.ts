@@ -42,7 +42,6 @@ import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
-import { videoCallback } from './schema-creation-callbacks/video-part';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -88,6 +87,5 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,
     Macro_no_nav_navno_html_fragment_DataConfig: macroHtmlFragmentCallback,
     Macro_no_nav_navno_alert_box_DataConfig: macroAlertboxCallback,
-    Macro_no_nav_navno_video_DataConfig: videoCallback,
     RichText: richTextCallback,
 };
