@@ -1,7 +1,7 @@
 import { getRepoConnection } from '../utils/repo-connection';
 import { getNodeVersions } from '../utils/version-utils';
 import { getFrontendPathname, NodeEventData } from './utils';
-import { getCustomPathFromContent } from '../custom-paths/custom-paths';
+import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-utils';
 
 export const findChangedPaths = ({ id, path, repo }: NodeEventData) => {
     const repoConnection = getRepoConnection({

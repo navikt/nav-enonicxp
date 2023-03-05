@@ -7,7 +7,7 @@ import { URLS } from '../constants';
 import { clusterInfo, ClusterState, requestClusterInfo } from '../utils/cluster-utils';
 import { getPrepublishJobName, getUnpublishJobName } from '../scheduling/scheduled-publish';
 import { RepoBranch } from '../../types/common';
-import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
 import { runInContext } from '../context/run-in-context';
 
 const frontendApiUrl = `${URLS.FRONTEND_ORIGIN}/editor/site-info`;

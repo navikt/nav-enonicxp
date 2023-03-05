@@ -3,8 +3,11 @@ import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
-import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
+import {
+    getContentFromCustomPath,
+    isValidCustomPath,
+} from '../paths/custom-paths/custom-path-utils';
+import { stringArrayToSet } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
@@ -15,6 +18,7 @@ import { getLanguageVersionsFull } from '../localization/resolve-language-versio
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
 import { isContentLocalized } from '../localization/locale-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 
 const BATCH_COUNT = 1000;
 const MAX_COUNT = 50000;

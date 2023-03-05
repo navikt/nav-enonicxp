@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { stripPathPrefix } from '../utils/nav-utils';
 import { getLayersData, isValidLocale } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { Content } from '/lib/xp/content';
 import { getLayersMultiConnection } from './locale-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 
 // Will return all matches for internal _path names as well as customPaths, for root content and
 // localized content only. Sorted by created time

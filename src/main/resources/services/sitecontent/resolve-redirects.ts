@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
-import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
 import { buildLocalePath } from '../../lib/localization/locale-utils';
+import { getParentPath, stripPathPrefix } from '../../lib/paths/path-utils';
 
 // If the content has a custom path, we should redirect requests from the internal _path
 export const getCustomPathRedirectIfApplicable = ({

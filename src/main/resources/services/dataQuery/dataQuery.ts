@@ -17,7 +17,7 @@ import {
 } from '../../lib/localization/locale-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 

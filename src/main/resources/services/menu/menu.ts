@@ -2,8 +2,8 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import { logger } from '../../lib/utils/logging';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
-import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 const cacheKey = 'decorator-menu-cache';
 const menuPath = '/www.nav.no/dekorator-meny/';

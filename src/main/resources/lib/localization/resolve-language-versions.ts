@@ -2,10 +2,11 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { buildLocalePath, getContentFromAllLayers } from './locale-utils';
 import { RepoBranch } from '../../types/common';
-import { forceArray, stripPathPrefix } from '../utils/nav-utils';
+import { forceArray } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
-import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
@@ -34,7 +35,11 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
 const getLayersLanguages = (content: Content, branch: RepoBranch) => {
     const { _id, language: parentLanguage } = content;
 
-    const localizedContent = getContentFromAllLayers({ contentId: _id, branch, state: 'localized' });
+    const localizedContent = getContentFromAllLayers({
+        contentId: _id,
+        branch,
+        state: 'localized',
+    });
 
     return localizedContent.reduce<Content[]>((acc, localizedContent) => {
         const { content, locale } = localizedContent;

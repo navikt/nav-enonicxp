@@ -7,12 +7,12 @@ import {
     getNestedValue,
     parseJsonArray,
     removeDuplicates,
-    stripPathPrefix,
 } from '../../lib/utils/nav-utils';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 

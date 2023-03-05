@@ -1,12 +1,9 @@
 import { Content } from '/lib/xp/content';
-import { NAVNO_ROOT_PATH } from '../constants';
 import { MediaDescriptor } from '../../types/content-types/content-config';
 import { logger } from './logging';
 import { generateUUID } from './uuid';
 
 // TODO: rydd i denne fila
-
-export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
 export const removeDuplicates = <Type>(
     array: Type[] | ReadonlyArray<Type>,
@@ -91,10 +88,6 @@ export const getNestedValue = (obj: Record<string, any>, keysString: string) => 
 export const createObjectChecksum = (obj: Record<string, any>) => {
     return generateUUID(JSON.stringify(obj));
 };
-
-const navnoRootPathFilter = new RegExp(`^${NAVNO_ROOT_PATH}`);
-
-export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
 
 export const stringArrayToSet = (list: string[] | readonly string[]): Record<string, boolean> =>
     // @ts-ignore (TS bug? string[] | readonly string[] behaves strangely)

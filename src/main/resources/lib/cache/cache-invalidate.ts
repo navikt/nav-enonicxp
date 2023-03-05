@@ -9,7 +9,7 @@ import { invalidateLocalCaches, sendLocalCacheInvalidationEvent } from './local-
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
-import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
 import { buildLocalePath, isContentLocalized } from '../localization/locale-utils';
 import { removeDuplicates } from '../utils/nav-utils';
 

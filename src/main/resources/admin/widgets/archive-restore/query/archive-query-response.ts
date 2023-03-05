@@ -2,10 +2,11 @@ import { getRepoConnection } from '../../../../lib/utils/repo-connection';
 import { RepoNode } from '/lib/xp/node';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
-import { forceArray, getParentPath } from '../../../../lib/utils/nav-utils';
+import { forceArray } from '../../../../lib/utils/nav-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
 import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
 import { isUUID } from '../../../../lib/utils/uuid';
+import { getParentPath } from '../../../../lib/paths/path-utils';
 
 type ArchiveEntry = {
     name: string;
