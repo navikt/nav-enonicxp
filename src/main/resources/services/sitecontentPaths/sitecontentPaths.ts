@@ -1,9 +1,13 @@
 import cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
-import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { APP_DESCRIPTOR, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH } from '../../lib/constants';
+import {
+    APP_DESCRIPTOR,
+    CONTENT_LOCALE_DEFAULT,
+    NAVNO_ROOT_PATH,
+    REDIRECTS_ROOT_PATH,
+} from '../../lib/constants';
 import { removeDuplicates } from '../../lib/utils/nav-utils';
 import {
     contentTypesRenderedByPublicFrontend,
@@ -12,6 +16,7 @@ import {
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -69,10 +74,8 @@ const getPathsToRender = (isTest?: boolean) => {
             },
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
-
-            if (hasValidCustomPath(content)) {
-                acc.push(content.data.customPath);
-            }
+            // TODO: rewrite this to include content from all layers
+            acc.push(getPublicPath(content, CONTENT_LOCALE_DEFAULT));
 
             return acc;
         }, [] as string[]);

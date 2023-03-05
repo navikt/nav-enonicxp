@@ -1,12 +1,12 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { buildLocalePath, getContentFromAllLayers } from './locale-utils';
+import { getContentFromAllLayers } from './locale-utils';
 import { RepoBranch } from '../../types/common';
 import { forceArray } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
-import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
-import { stripPathPrefix } from '../paths/path-utils';
+import { getPublicPath } from '../paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
@@ -17,14 +17,10 @@ type LanguageSelectorData = {
     _path: string;
 };
 
-const transformContent = (content: Content, layerLocale?: string): LanguageSelectorData => {
-    const basePath = hasValidCustomPath(content)
-        ? content.data.customPath
-        : stripPathPrefix(content._path);
-
+const transformContent = (content: Content, layerLocale: string): LanguageSelectorData => {
     return {
         language: content.language,
-        _path: layerLocale ? buildLocalePath(basePath, layerLocale) : basePath,
+        _path: getPublicPath(content, layerLocale),
     };
 };
 
@@ -98,7 +94,9 @@ export const getLanguageVersionsForSelector = (content: Content, branch: RepoBra
 
     return mergeLayersWithLegacy(
         contentFromLayers.map((content) => transformContent(content, content.language)),
-        contentFromLegacyLanguages.map((content) => transformContent(content))
+        contentFromLegacyLanguages.map((content) =>
+            transformContent(content, CONTENT_LOCALE_DEFAULT)
+        )
     );
 };
 
