@@ -13,7 +13,7 @@ import { startReliableEventAckListener } from './lib/events/reliable-custom-even
 import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
-import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
+import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
 import { activateSearchIndexEventHandlers } from './lib/search/eventHandlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';

@@ -6,7 +6,12 @@ import { getRepoConnection } from '../utils/repo-connection';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
-import { CONTENT_ROOT_REPO_ID, CONTENT_REPO_PREFIX, CONTENT_ROOT_PROJECT_ID } from '../constants';
+import {
+    CONTENT_ROOT_REPO_ID,
+    CONTENT_REPO_PREFIX,
+    CONTENT_ROOT_PROJECT_ID,
+    CONTENT_LOCALE_DEFAULT,
+} from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
 import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-defer';
 
@@ -24,7 +29,7 @@ type LayersRepoData = {
 };
 
 const data: LayersRepoData = {
-    defaultLocale: 'no',
+    defaultLocale: CONTENT_LOCALE_DEFAULT,
     localeToRepoIdMap: {},
     repoIdToLocaleMap: {},
     sources: {
@@ -134,18 +139,26 @@ const refreshLayersData = () => {
     const newMap: LocaleToRepoIdMap = {};
 
     const rootProject = projects.find((project) => project.id === CONTENT_ROOT_PROJECT_ID);
-    if (!rootProject?.language) {
-        logger.critical(`No valid root project found!`);
+    if (!rootProject) {
+        logger.critical('No root project found!');
         return;
     }
 
-    newMap[rootProject.language] = CONTENT_ROOT_REPO_ID;
+    if (!rootProject.language) {
+        logger.critical(
+            `Root project has no language set - Using default language ${CONTENT_LOCALE_DEFAULT}`
+        );
+    }
+
+    const { language: rootLanguage = CONTENT_LOCALE_DEFAULT } = rootProject;
+
+    newMap[rootLanguage] = CONTENT_ROOT_REPO_ID;
 
     populateWithChildLayers(projects, newMap, CONTENT_ROOT_PROJECT_ID);
 
     const newMapEntries = Object.entries(newMap);
 
-    data.defaultLocale = rootProject.language;
+    data.defaultLocale = rootLanguage;
     data.localeToRepoIdMap = newMap;
     data.repoIdToLocaleMap = newMapEntries.reduce((acc, [locale, repoId]) => {
         return { ...acc, [repoId]: locale };

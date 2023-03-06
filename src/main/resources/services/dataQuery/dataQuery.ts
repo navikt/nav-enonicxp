@@ -10,14 +10,13 @@ import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import {
-    buildLocalePath,
     getLayersMultiConnection,
     NodeHitsLocaleBuckets,
     sortMultiRepoNodeHitIdsToLocaleBuckets,
 } from '../../lib/localization/locale-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
+import { getPublicPath } from '../../lib/paths/public-path';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -29,7 +28,7 @@ type RunQueryParams = {
     types?: ContentDescriptor[];
 };
 
-type ContentWithLocaleData = Content & { layerLocale: string; layerLocalePath: string };
+type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };
 
 const RESPONSE_BATCH_SIZE = 1000;
 
@@ -138,14 +137,10 @@ const runArchiveQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
                 : [transformRepoNode(result)];
 
             const hitsWithRepoIds = hits.map((content) => {
-                const basePath = hasValidCustomPath(content)
-                    ? content.data.customPath
-                    : content._path;
-
                 return {
                     ...content,
                     layerLocale: locale,
-                    layerLocalePath: buildLocalePath(basePath, locale),
+                    publicPath: getPublicPath(content, locale),
                 };
             });
 
@@ -174,14 +169,10 @@ const runContentQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
             );
 
             const hitsWithRepoIds = result.hits.map((content) => {
-                const basePath = hasValidCustomPath(content)
-                    ? content.data.customPath
-                    : content._path;
-
                 return {
                     ...content,
                     layerLocale: locale,
-                    layerLocalePath: buildLocalePath(basePath, locale),
+                    publicPath: getPublicPath(content, locale),
                 };
             });
 

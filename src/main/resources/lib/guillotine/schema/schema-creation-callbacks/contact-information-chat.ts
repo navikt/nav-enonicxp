@@ -1,8 +1,8 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
-
 import { CreationCallback } from '../../utils/creation-callback-utils';
+import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
 
 const getChatContactInformation = (
     contactContentId?: string,
@@ -10,7 +10,7 @@ const getChatContactInformation = (
 ): Content<'no.nav.navno:contact-information'> | null => {
     const queryString = contactContentId
         ? `_id = '${contactContentId}'`
-        : `data.contactType._selected = 'chat' AND language = '${lang || 'no'}'`;
+        : `data.contactType._selected = 'chat' AND language = '${lang || CONTENT_LOCALE_DEFAULT}'`;
 
     const queryResults = contentLib.query({
         query: queryString,

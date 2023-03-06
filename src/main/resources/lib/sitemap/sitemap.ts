@@ -3,10 +3,13 @@ import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
-import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
+import {
+    getContentFromCustomPath,
+    isValidCustomPath,
+} from '../paths/custom-paths/custom-path-utils';
+import { stringArrayToSet } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
-import { URLS } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
@@ -15,6 +18,7 @@ import { getLanguageVersionsFull } from '../localization/resolve-language-versio
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
 import { isContentLocalized } from '../localization/locale-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 
 const BATCH_COUNT = 1000;
 const MAX_COUNT = 50000;
@@ -90,9 +94,11 @@ const transformToLanguageVersion = (content: Content): LanguageVersion => ({
 });
 
 const getSitemapEntry = (content: Content): SitemapEntry => {
-    const languageVersions = getLanguageVersionsFull(content, 'master').map(
-        transformToLanguageVersion
-    );
+    const languageVersions = getLanguageVersionsFull({
+        baseContent: content,
+        branch: 'master',
+        baseContentLocale: CONTENT_LOCALE_DEFAULT,
+    }).map(transformToLanguageVersion);
 
     return {
         id: content._id,

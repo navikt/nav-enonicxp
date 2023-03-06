@@ -6,6 +6,7 @@ import { OfficeBranch } from '../../site/content-types/office-branch/office-bran
 import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 
@@ -67,7 +68,7 @@ const deleteContent = (name: string) => {
 };
 
 const getOfficeBranchLanguage = (office: any) => {
-    return office.data?.brukerkontakt?.skriftspraak?.toLowerCase() || 'no';
+    return office.data?.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
 };
 
 const getExistingOfficeBranchesInXP = () => {
