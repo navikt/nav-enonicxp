@@ -5,7 +5,7 @@ import { frontendInvalidateAllDeferred, frontendInvalidatePaths } from './fronte
 import { findReferences } from './find-references';
 import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
-import { invalidateLocalCaches, sendLocalCacheInvalidationEvent } from './local-cache';
+import { invalidateLocalCache, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
@@ -96,7 +96,7 @@ const _invalidateCacheForNode = ({
     // If this invalidation is running on every node, we can just clear local caches immediately
     // Otherwise, we must send a cluster-wide event so every node gets cleared
     if (isRunningClusterWide) {
-        invalidateLocalCaches();
+        invalidateLocalCache();
     } else {
         sendLocalCacheInvalidationEvent();
     }
