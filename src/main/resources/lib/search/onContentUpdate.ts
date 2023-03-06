@@ -8,12 +8,12 @@ import {
     deleteSearchNodesForContent,
     getSearchRepoConnection,
     SEARCH_REPO_CONTENT_ID_KEY,
-} from './utils';
+} from './search-utils';
 import { ContentFacet, SearchNode } from '../../types/search';
 import { isContentLocalized } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
-import { createOrUpdateSearchNode } from './createSearchNode';
+import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
     runInLocaleContext(

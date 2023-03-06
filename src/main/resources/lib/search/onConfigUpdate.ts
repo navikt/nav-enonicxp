@@ -10,10 +10,10 @@ import {
     getSearchRepoConnection,
     SEARCH_REPO_CONTENT_BASE_NODE,
     SEARCH_REPO_CONTENT_ID_KEY,
-} from './utils';
+} from './search-utils';
 import { ContentFacet, SearchNode } from '../../types/search';
 import { SearchConfigDescriptor } from '../../types/content-types/search-config';
-import { createOrUpdateSearchNode } from './createSearchNode';
+import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
 
 const contentBasePath = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 

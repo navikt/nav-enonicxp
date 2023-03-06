@@ -9,7 +9,7 @@ import {
     SEARCH_REPO_CONTENT_BASE_NODE,
     SEARCH_REPO_DELETION_QUEUE_BASE_NODE,
     SEARCH_REPO_UPDATE_STATE_NODE,
-} from './utils';
+} from './search-utils';
 import { forceArray } from '../utils/nav-utils';
 
 const baseNodeKey = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;

@@ -10,14 +10,16 @@ import {
     SEARCH_REPO_CONTENT_ID_KEY,
     SEARCH_REPO_CONTENT_PATH_KEY,
     SEARCH_REPO_FACETS_KEY,
-} from './utils';
+    SEARCH_REPO_LOCALE_KEY,
+} from './search-utils';
 import { generateUUID } from '../utils/uuid';
 
 // Note: datetimes must be provided as Date-objects with a format accepted by Nashorn
 // in order for the datetime to be indexed as the correct type
 const searchNodeTransformer = (
     contentNode: RepoNode<Content>,
-    facets: ContentFacet[]
+    facets: ContentFacet[],
+    locale: string
 ): SearchNodeCreateParams => {
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
@@ -29,6 +31,7 @@ const searchNodeTransformer = (
         [SEARCH_REPO_FACETS_KEY]: facets,
         [SEARCH_REPO_CONTENT_ID_KEY]: contentNode._id,
         [SEARCH_REPO_CONTENT_PATH_KEY]: contentNode._path,
+        [SEARCH_REPO_LOCALE_KEY]: locale,
         _name: name,
         _parentPath: `/${SEARCH_REPO_CONTENT_BASE_NODE}`,
         ...(createdTime && {
@@ -75,7 +78,7 @@ export const createOrUpdateSearchNode = ({
         return false;
     }
 
-    const searchNodeParams = searchNodeTransformer(contentNode, facets);
+    const searchNodeParams = searchNodeTransformer(contentNode, facets, locale);
 
     const { contentPath, contentId } = searchNodeParams;
 

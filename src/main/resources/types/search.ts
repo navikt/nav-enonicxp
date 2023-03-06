@@ -4,7 +4,8 @@ import {
     SEARCH_REPO_CONTENT_ID_KEY,
     SEARCH_REPO_CONTENT_PATH_KEY,
     SEARCH_REPO_FACETS_KEY,
-} from '../lib/search/utils';
+    SEARCH_REPO_LOCALE_KEY,
+} from '../lib/search/search-utils';
 import { ArrayOrSingle } from './util-types';
 
 export type ContentFacet = {
@@ -16,6 +17,7 @@ type SearchNodeDataFields = {
     [SEARCH_REPO_FACETS_KEY]: ArrayOrSingle<ContentFacet>;
     [SEARCH_REPO_CONTENT_ID_KEY]: string;
     [SEARCH_REPO_CONTENT_PATH_KEY]: string;
+    [SEARCH_REPO_LOCALE_KEY]: string;
 };
 
 type SearchNodeCreateParamsFields = {

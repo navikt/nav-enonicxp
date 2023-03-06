@@ -1,6 +1,6 @@
 import { attachmentUrl, pageUrl } from '/lib/xp/portal';
 import { Content } from '/lib/xp/content';
-import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { hasValidCustomPath } from '../paths/custom-paths/custom-path-utils';
 
 export const getPaths = (content: Content) => {
     const paths = {
