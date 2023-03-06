@@ -3,13 +3,8 @@ import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-connection';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
-import {
-    deleteSearchNodesForContent,
-    getSearchRepoConnection,
-    SEARCH_REPO_CONTENT_ID_KEY,
-    SEARCH_REPO_LOCALE_KEY,
-} from './search-utils';
-import { ContentFacet, SearchNode } from '../../types/search';
+import { deleteSearchNodesForContent } from './search-utils';
+import { ContentFacet } from '../../types/search';
 import { isContentLocalized } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
@@ -87,42 +82,9 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         return [...acc, { facet: facetKey, underfacets: ufsMatched.map((uf) => uf.facetKey) }];
     }, [] as ContentFacet[]);
 
-    const searchRepoConnection = getSearchRepoConnection();
-
-    const existingSearchNodeIds = searchRepoConnection
-        .query({
-            start: 0,
-            count: 100,
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: SEARCH_REPO_CONTENT_ID_KEY,
-                                values: [contentId],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: SEARCH_REPO_LOCALE_KEY,
-                                values: [locale],
-                            },
-                        },
-                    ],
-                },
-            },
-        })
-        .hits.map((hit) => hit.id);
-
-    const existingSearchNodes = forceArray(
-        searchRepoConnection.get<SearchNode>(existingSearchNodeIds) || []
-    );
-
     createOrUpdateSearchNode({
         contentNode,
         facets: matchedFacets,
-        existingSearchNodes: existingSearchNodes,
-        searchRepoConnection: searchRepoConnection,
         locale,
     });
 };

@@ -5,6 +5,7 @@ import { logger } from '../utils/logging';
 import {
     deleteSearchNode,
     facetsAreEqual,
+    getSearchRepoConnection,
     SEARCH_REPO_CONTENT_BASE_NODE,
     SEARCH_REPO_CONTENT_ID_KEY,
     SEARCH_REPO_CONTENT_PATH_KEY,
@@ -16,6 +17,7 @@ import { generateUUID } from '../utils/uuid';
 import { getPublicPath } from '../paths/public-path';
 import { URLS } from '../constants';
 import { dateTimesAreEqual, fixDateFormat } from '../utils/datetime-utils';
+import { forceArray } from '../utils/array-utils';
 
 const getHref = (content: Content, locale: string) => {
     if (
@@ -73,19 +75,58 @@ const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets:
     facetsAreEqual(facets, searchNode.facets) &&
     dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime);
 
+const getExistingSearchNodes = (
+    contentId: string,
+    locale: string,
+    searchRepoConnection: RepoConnection
+) => {
+    const existingSearchNodeIds = searchRepoConnection
+        .query({
+            start: 0,
+            count: 100,
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: SEARCH_REPO_CONTENT_ID_KEY,
+                                values: [contentId],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: SEARCH_REPO_LOCALE_KEY,
+                                values: [locale],
+                            },
+                        },
+                    ],
+                },
+            },
+        })
+        .hits.map((hit) => hit.id);
+
+    const existingSearchNodes = searchRepoConnection.get<SearchNode>(existingSearchNodeIds);
+
+    return existingSearchNodes ? forceArray(existingSearchNodes) : [];
+};
+
 export const createOrUpdateSearchNode = ({
     contentNode,
     facets = [],
-    existingSearchNodes = [],
-    searchRepoConnection,
     locale,
+    searchRepoConnection = getSearchRepoConnection(),
 }: {
     contentNode: RepoNode<Content>;
     facets: ContentFacet[];
-    existingSearchNodes: SearchNode[];
-    searchRepoConnection: RepoConnection;
     locale: string;
+    searchRepoConnection?: RepoConnection;
 }) => {
+    const existingSearchNodes = getExistingSearchNodes(
+        contentNode._id,
+        locale,
+        searchRepoConnection
+    );
+
     if (facets.length === 0) {
         existingSearchNodes.forEach((node) => {
             deleteSearchNode(node._id, searchRepoConnection);
