@@ -7,6 +7,7 @@ import {
     deleteSearchNodesForContent,
     getSearchRepoConnection,
     SEARCH_REPO_CONTENT_ID_KEY,
+    SEARCH_REPO_LOCALE_KEY,
 } from './search-utils';
 import { ContentFacet, SearchNode } from '../../types/search';
 import { isContentLocalized } from '../localization/locale-utils';
@@ -93,9 +94,21 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
             start: 0,
             count: 100,
             filters: {
-                hasValue: {
-                    field: SEARCH_REPO_CONTENT_ID_KEY,
-                    values: [contentId],
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: SEARCH_REPO_CONTENT_ID_KEY,
+                                values: [contentId],
+                            },
+                        },
+                        {
+                            hasValue: {
+                                field: SEARCH_REPO_LOCALE_KEY,
+                                values: [locale],
+                            },
+                        },
+                    ],
                 },
             },
         })
