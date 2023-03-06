@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
 import { APP_DESCRIPTOR } from '../../lib/constants';
-import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 const tenMinutes = 600;
 

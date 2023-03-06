@@ -2,10 +2,10 @@ import httpClient, { HttpResponse } from '/lib/http-client';
 import * as taskLib from '/lib/xp/task';
 import * as schedulerLib from '/lib/xp/scheduler';
 import { APP_DESCRIPTOR, URLS } from '../constants';
-import { getFrontendPathname } from './utils';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
+import { getFrontendPathname } from '../paths/path-utils';
 
 const NUM_RETRIES = 3;
 const TIMEOUT_MS = 10000;

@@ -1,7 +1,11 @@
-import { getCustomPathFromContent, hasInvalidCustomPath, hasValidCustomPath } from './custom-paths';
+import {
+    getCustomPathFromContent,
+    hasInvalidCustomPath,
+    hasValidCustomPath,
+} from './custom-path-utils';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { mockReturnValue } from '../../__test/utils/mock-utils';
+import { mockReturnValue } from '../../../__test/utils/mock-utils';
 
 jest.mock('/lib/xp/content');
 

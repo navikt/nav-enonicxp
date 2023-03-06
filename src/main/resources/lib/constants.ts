@@ -35,6 +35,8 @@ export const CONTENT_REPO_PREFIX = 'com.enonic.cms';
 export const CONTENT_ROOT_PROJECT_ID = 'default';
 export const CONTENT_ROOT_REPO_ID = `${CONTENT_REPO_PREFIX}.${CONTENT_ROOT_PROJECT_ID}`;
 
+export const CONTENT_LOCALE_DEFAULT = 'no';
+
 export const SEARCH_REPO_ID = 'nav.no.search';
 export const NAVNO_ROOT_PATH = '/www.nav.no';
 export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}/redirects`;

@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { getContentList } from '../../lib/contentlists/contentlists';
-import { forceArray, notEmpty, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { forceArray, notEmpty } from '../../lib/utils/nav-utils';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 // Urls to content lists to include in the RSS-feed
 const contentLists = [
