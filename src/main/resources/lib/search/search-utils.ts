@@ -14,6 +14,7 @@ export const SEARCH_REPO_CONFIG_NODE = 'config';
 
 export const SEARCH_REPO_CONTENT_ID_KEY = 'contentId';
 export const SEARCH_REPO_CONTENT_PATH_KEY = 'contentPath';
+export const SEARCH_REPO_HREF_KEY = 'href';
 export const SEARCH_REPO_FACETS_KEY = 'facets';
 export const SEARCH_REPO_LOCALE_KEY = 'layerLocale';
 

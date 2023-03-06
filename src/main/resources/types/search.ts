@@ -4,6 +4,7 @@ import {
     SEARCH_REPO_CONTENT_ID_KEY,
     SEARCH_REPO_CONTENT_PATH_KEY,
     SEARCH_REPO_FACETS_KEY,
+    SEARCH_REPO_HREF_KEY,
     SEARCH_REPO_LOCALE_KEY,
 } from '../lib/search/search-utils';
 import { ArrayOrSingle } from './util-types';
@@ -17,6 +18,7 @@ type SearchNodeDataFields = {
     [SEARCH_REPO_FACETS_KEY]: ArrayOrSingle<ContentFacet>;
     [SEARCH_REPO_CONTENT_ID_KEY]: string;
     [SEARCH_REPO_CONTENT_PATH_KEY]: string;
+    [SEARCH_REPO_HREF_KEY]: string;
     [SEARCH_REPO_LOCALE_KEY]: string;
 };
 
