@@ -17,6 +17,12 @@ type LanguageSelectorData = {
     _path: string;
 };
 
+type GetLanguageVersionsParams = {
+    baseContent: Content;
+    branch: RepoBranch;
+    baseContentLocale: string;
+};
+
 const transformContent = (content: Content, layerLocale: string): LanguageSelectorData => {
     return {
         language: content.language,
@@ -28,18 +34,20 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
     return !!(content as ContentWithLegacyLanguages).data?.languages;
 };
 
-const getLayersLanguages = (content: Content, branch: RepoBranch) => {
-    const { _id, language: parentLanguage } = content;
-
+const getLayersLanguages = (
+    baseContent: Content,
+    branch: RepoBranch,
+    baseContentLocale: string
+) => {
     const localizedContent = getContentFromAllLayers({
-        contentId: _id,
+        contentId: baseContent._id,
         branch,
         state: 'localized',
     });
 
     return localizedContent.reduce<Content[]>((acc, localizedContent) => {
         const { content, locale } = localizedContent;
-        if (locale === parentLanguage) {
+        if (locale === baseContentLocale || content.language === baseContent.language) {
             return acc;
         }
 
@@ -47,20 +55,20 @@ const getLayersLanguages = (content: Content, branch: RepoBranch) => {
     }, []);
 };
 
-const getLegacyLanguages = (content: Content) => {
-    if (!contentHasLegacyLanguages(content)) {
+const getLegacyLanguages = (baseContent: Content) => {
+    if (!contentHasLegacyLanguages(baseContent)) {
         return [];
     }
 
-    const { _id: parentContentId } = content;
+    const { _id: parentContentId } = baseContent;
 
-    return forceArray(content.data.languages).reduce<Content[]>((acc, contentId) => {
+    return forceArray(baseContent.data.languages).reduce<Content[]>((acc, contentId) => {
         if (contentId === parentContentId) {
             return acc;
         }
 
         const languageContent = contentLib.get({ key: contentId });
-        if (!languageContent) {
+        if (!languageContent || languageContent.language === baseContent.language) {
             return acc;
         }
 
@@ -82,15 +90,19 @@ const mergeLayersWithLegacy = <Type extends LanguageSelectorData>(
     }, fromLayers);
 };
 
-const getLanguageVersions = (content: Content, branch: RepoBranch) => {
+const getLanguageVersions = ({
+    baseContent,
+    branch,
+    baseContentLocale,
+}: GetLanguageVersionsParams) => {
     return {
-        contentFromLayers: getLayersLanguages(content, branch),
-        contentFromLegacyLanguages: runInContext({ branch }, () => getLegacyLanguages(content)),
+        contentFromLayers: getLayersLanguages(baseContent, branch, baseContentLocale),
+        contentFromLegacyLanguages: runInContext({ branch }, () => getLegacyLanguages(baseContent)),
     };
 };
 
-export const getLanguageVersionsForSelector = (content: Content, branch: RepoBranch) => {
-    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(content, branch);
+export const getLanguageVersionsForSelector = (params: GetLanguageVersionsParams) => {
+    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(params);
 
     return mergeLayersWithLegacy(
         contentFromLayers.map((content) => transformContent(content, content.language)),
@@ -100,8 +112,8 @@ export const getLanguageVersionsForSelector = (content: Content, branch: RepoBra
     );
 };
 
-export const getLanguageVersionsFull = (content: Content, branch: RepoBranch) => {
-    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(content, branch);
+export const getLanguageVersionsFull = (params: GetLanguageVersionsParams) => {
+    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(params);
 
     return mergeLayersWithLegacy(contentFromLayers, contentFromLegacyLanguages);
 };

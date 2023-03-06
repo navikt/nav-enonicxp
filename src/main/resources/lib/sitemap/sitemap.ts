@@ -9,7 +9,7 @@ import {
 } from '../paths/custom-paths/custom-path-utils';
 import { stringArrayToSet } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
-import { URLS } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
@@ -94,9 +94,11 @@ const transformToLanguageVersion = (content: Content): LanguageVersion => ({
 });
 
 const getSitemapEntry = (content: Content): SitemapEntry => {
-    const languageVersions = getLanguageVersionsFull(content, 'master').map(
-        transformToLanguageVersion
-    );
+    const languageVersions = getLanguageVersionsFull({
+        baseContent: content,
+        branch: 'master',
+        baseContentLocale: CONTENT_LOCALE_DEFAULT,
+    }).map(transformToLanguageVersion);
 
     return {
         id: content._id,
