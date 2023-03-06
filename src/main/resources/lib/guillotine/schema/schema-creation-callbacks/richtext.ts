@@ -16,7 +16,7 @@ const linebreakFilter = new RegExp(/(\r\n|\n|\r|\s)/g);
 
 const macroTagFilter = new RegExp(`<${macroTagName}[^>]*>(.*?)</${macroTagName}>`, 'g');
 
-const insertPublicPathInLinks = (processedHtml: string, links?: Links[]) => {
+const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
     if (!links || links.length === 0) {
         return processedHtml;
     }
@@ -29,7 +29,7 @@ const insertPublicPathInLinks = (processedHtml: string, links?: Links[]) => {
 
         const content = contentLib.get({ key: contentId });
         if (!content) {
-            logger.error(`Dead link in html-area i content id ${contentId}`, true);
+            logger.error(`Invalid reference to contentId ${contentId} in html-area`, true);
             return html;
         }
 
@@ -51,7 +51,7 @@ export const richTextCallback: CreationCallback = (context, params) => {
         const { processedHtml, links } = env.source;
 
         return processedHtml
-            ? insertPublicPathInLinks(processedHtml, links)
+            ? resolvePublicPathsInLinks(processedHtml, links)
                   // Strip linebreaks, as it may cause errors in the frontend parser
                   .replace(linebreakFilter, ' ')
                   // Strip html tags from the body of macro-tags. Fixes invalid html-nesting caused by the CS editor

@@ -26,7 +26,7 @@ const getPaths = (contents: Content[], locale: string) =>
 
         acc.push(getPublicPath(content, locale));
 
-        // Always include the path for the default locale as well
+        // Always include the path for the default locale as well, to be on the safe side :)
         if (locale !== CONTENT_LOCALE_DEFAULT) {
             acc.push(getPublicPath(content, CONTENT_LOCALE_DEFAULT));
         }

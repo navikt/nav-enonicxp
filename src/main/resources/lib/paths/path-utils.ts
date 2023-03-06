@@ -1,6 +1,6 @@
 import { NAVNO_ROOT_PATH } from '../constants';
 
-const navnoRootPathFilter = new RegExp(`^${NAVNO_ROOT_PATH}`);
+const navnoRootPathFilter = new RegExp(`^(/content)?${NAVNO_ROOT_PATH}`);
 
 export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
 
