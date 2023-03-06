@@ -3,7 +3,6 @@ import { Content } from '/lib/xp/content';
 import { getRepoConnection } from '../utils/repo-connection';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
-import { forceArray, stringArrayToSet } from '../utils/nav-utils';
 import {
     deleteSearchNodesForContent,
     getSearchRepoConnection,
@@ -14,6 +13,7 @@ import { isContentLocalized } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
+import { forceArray, stringArrayToSet } from '../utils/array-utils';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
     runInLocaleContext(

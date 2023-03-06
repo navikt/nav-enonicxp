@@ -4,7 +4,6 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
     getSearchRepoConnection,
@@ -14,6 +13,7 @@ import {
 import { ContentFacet, SearchNode } from '../../types/search';
 import { SearchConfigDescriptor } from '../../types/content-types/search-config';
 import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
+import { forceArray } from '../utils/array-utils';
 
 const contentBasePath = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 

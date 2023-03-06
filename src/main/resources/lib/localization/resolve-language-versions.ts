@@ -2,12 +2,12 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { getContentFromAllLayers } from './locale-utils';
 import { RepoBranch } from '../../types/common';
-import { forceArray } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
 import { getPublicPath } from '../paths/public-path';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
 import { logger } from '../utils/logging';
+import { forceArray } from '../utils/array-utils';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;

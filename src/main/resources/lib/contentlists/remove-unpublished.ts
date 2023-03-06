@@ -3,9 +3,9 @@ import { Content } from '/lib/xp/content';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import { runInContext } from '../context/run-in-context';
-import { forceArray } from '../utils/nav-utils';
 import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from '../utils/logging';
+import { forceArray } from '../utils/array-utils';
 
 const isPublishedOrPrepublished = (contentId: string) => {
     try {

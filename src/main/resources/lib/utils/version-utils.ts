@@ -2,9 +2,9 @@ import * as contextLib from '/lib/xp/context';
 import { getRepoConnection } from './repo-connection';
 import { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
-import { getUnixTimeFromDateTimeString } from './nav-utils';
 import { contentLibGetStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
+import { getUnixTimeFromDateTimeString } from './datetime-utils';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 

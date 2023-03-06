@@ -4,15 +4,12 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getNodeKey } from './version-utils';
-import {
-    forceArray,
-    getNestedValue,
-    getUnixTimeFromDateTimeString,
-    removeDuplicates,
-} from './nav-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
+import { getUnixTimeFromDateTimeString } from './datetime-utils';
+import { forceArray, removeDuplicates } from './array-utils';
+import { getNestedValue } from './object-utils';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 

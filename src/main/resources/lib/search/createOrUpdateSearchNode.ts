@@ -2,7 +2,6 @@ import { RepoConnection, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { ContentFacet, SearchNode, SearchNodeCreateParams } from '../../types/search';
 import { logger } from '../utils/logging';
-import { dateTimesAreEqual, fixDateFormat } from '../utils/nav-utils';
 import {
     deleteSearchNode,
     facetsAreEqual,
@@ -16,6 +15,7 @@ import {
 import { generateUUID } from '../utils/uuid';
 import { getPublicPath } from '../paths/public-path';
 import { URLS } from '../constants';
+import { dateTimesAreEqual, fixDateFormat } from '../utils/datetime-utils';
 
 const getHref = (content: Content, locale: string) => {
     if (

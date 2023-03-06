@@ -5,8 +5,8 @@ import {
     contentTypesWithProductDetails,
     contentTypesWithProductDetails as _contentTypesWithProductDetails,
 } from '../contenttype-lists';
-import { stringArrayToSet } from '../utils/nav-utils';
 import { Overview } from 'site/content-types/overview/overview';
+import { stringArrayToSet } from '../utils/array-utils';
 
 const contentTypeWithProductDetails = stringArrayToSet(_contentTypesWithProductDetails);
 

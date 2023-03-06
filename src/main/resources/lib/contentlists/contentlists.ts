@@ -1,6 +1,7 @@
 import * as contentLib from '/lib/xp/content';
-import { forceArray, notEmpty } from '../utils/nav-utils';
-import { sortByDateTimeField } from '../utils/sort';
+import { notEmpty } from '../utils/mixed-bag-of-utils';
+import { sortByDateTimeField } from '../utils/sort-utils';
+import { forceArray } from '../utils/array-utils';
 
 // Sorts and slices content lists
 export const getContentList = (contentListKey: string, maxItemsKey: number, sortByKey?: string) => {

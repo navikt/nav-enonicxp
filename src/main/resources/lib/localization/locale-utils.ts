@@ -6,7 +6,7 @@ import { RepoBranch } from '../../types/common';
 import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray } from '../utils/array-utils';
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({

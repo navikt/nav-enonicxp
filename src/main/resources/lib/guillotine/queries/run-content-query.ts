@@ -3,7 +3,7 @@ import {
     ContentDescriptor,
     CustomContentDescriptor,
 } from '../../../types/content-types/content-config';
-import { isMedia } from '../../utils/nav-utils';
+import { isMedia } from '../../utils/mixed-bag-of-utils';
 import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
 import { runInContext } from '../../context/run-in-context';

@@ -20,7 +20,7 @@ import * as nodeLib from '/lib/xp/node';
 import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInContext } from '../context/run-in-context';
-import { getCurrentThreadId } from '../utils/nav-utils';
+import { getCurrentThreadId } from '../utils/mixed-bag-of-utils';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';

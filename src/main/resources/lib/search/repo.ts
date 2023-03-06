@@ -10,7 +10,7 @@ import {
     SEARCH_REPO_DELETION_QUEUE_BASE_NODE,
     SEARCH_REPO_UPDATE_STATE_NODE,
 } from './search-utils';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray } from '../utils/array-utils';
 
 const baseNodeKey = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
 const deletionNodeKey = `/${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`;

@@ -12,8 +12,8 @@ import {
     queueUpdateAll,
     queueUpdateForContent,
 } from './repo';
-import { forceArray } from '../utils/nav-utils';
 import { getLayersData } from '../localization/layers-data';
+import { forceArray } from '../utils/array-utils';
 
 let isActive = false;
 let isRunningConfigUpdate = false;

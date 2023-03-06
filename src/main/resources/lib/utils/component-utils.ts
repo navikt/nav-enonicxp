@@ -5,10 +5,10 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
 import { NodeComponent } from '../../types/components/component-node';
-import { forceArray } from './nav-utils';
 import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
 import { COMPONENT_APP_KEY } from '../constants';
+import { forceArray } from './array-utils';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';

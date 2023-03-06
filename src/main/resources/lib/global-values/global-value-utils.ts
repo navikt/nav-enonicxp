@@ -1,11 +1,11 @@
 import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../utils/component-utils';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
-import { forceArray } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
 import { CaseTimeItem } from '../../types/content-types/global-case-time-set';
 import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
+import { forceArray } from '../utils/array-utils';
 
 const uniqueKeySeparator = '::';
 

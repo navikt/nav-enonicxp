@@ -1,11 +1,11 @@
 import { getRepoConnection } from '../utils/repo-connection';
 import { RepoConnection } from '/lib/xp/node';
-import { forceArray } from '../utils/nav-utils';
 import { SEARCH_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
 import { ContentFacet } from '../../types/search';
 import { ArrayOrSingle } from '../../types/util-types';
 import { generateUUID } from '../utils/uuid';
+import { forceArray } from '../utils/array-utils';
 
 export const SEARCH_REPO_DELETION_QUEUE_BASE_NODE = 'deletionQueue';
 export const SEARCH_REPO_CONTENT_BASE_NODE = 'content';

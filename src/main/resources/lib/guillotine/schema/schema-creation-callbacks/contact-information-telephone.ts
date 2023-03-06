@@ -1,8 +1,8 @@
 import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { ContactInformation } from '../../../../site/content-types/contact-information/contact-information';
-import { forceArray } from '../../../utils/nav-utils';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
+import { forceArray } from '../../../utils/array-utils';
 
 const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
 

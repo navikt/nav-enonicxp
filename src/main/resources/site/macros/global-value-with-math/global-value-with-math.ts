@@ -1,5 +1,5 @@
-import { forceArray } from '../../../lib/utils/nav-utils';
 import { createGlobalValueMacroPreview } from '../../../lib/global-values/macro-preview';
+import { forceArray } from '../../../lib/utils/array-utils';
 
 export const macro = (context: XP.MacroContext) => {
     const { keys } = context.params;

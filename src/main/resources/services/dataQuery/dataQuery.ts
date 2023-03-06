@@ -2,7 +2,6 @@ import cacheLib from '/lib/cache';
 import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { parseJsonArray } from '../../lib/utils/nav-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { batchedContentQuery, batchedMultiRepoNodeQuery } from '../../lib/utils/batched-query';
@@ -17,6 +16,7 @@ import {
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { getPublicPath } from '../../lib/paths/public-path';
+import { parseJsonArray } from '../../lib/utils/array-utils';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
