@@ -7,6 +7,7 @@ import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
 import { getPublicPath } from '../paths/public-path';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
+import { logger } from '../utils/logging';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
@@ -68,7 +69,17 @@ const getLegacyLanguages = (baseContent: Content) => {
         }
 
         const languageContent = contentLib.get({ key: contentId });
-        if (!languageContent || languageContent.language === baseContent.language) {
+        if (!languageContent) {
+            logger.error(
+                `Content ${baseContent._path} has an invalid language version set: ${contentId}`
+            );
+            return acc;
+        }
+
+        if (languageContent.language === baseContent.language) {
+            logger.error(
+                `Content ${baseContent._path} has a language version set to the same language as itself: ${languageContent._path}`
+            );
             return acc;
         }
 
