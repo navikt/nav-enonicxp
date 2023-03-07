@@ -2,13 +2,18 @@ import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
-import { contentRootRepoId, contentRepoPrefix, contentRootProjectId } from '../constants';
+import {
+    CONTENT_ROOT_REPO_ID,
+    CONTENT_REPO_PREFIX,
+    CONTENT_ROOT_PROJECT_ID,
+    CONTENT_LOCALE_DEFAULT,
+} from '../constants';
 import { batchedNodeQuery } from '../utils/batched-query';
-import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-handlers';
+import { toggleCacheInvalidationOnNodeEvents } from '../cache/invalidate-event-defer';
 
 type LocaleToRepoIdMap = Record<string, string>;
 type RepoIdToLocaleMap = Record<string, string>;
@@ -24,7 +29,7 @@ type LayersRepoData = {
 };
 
 const data: LayersRepoData = {
-    defaultLocale: 'no',
+    defaultLocale: CONTENT_LOCALE_DEFAULT,
     localeToRepoIdMap: {},
     repoIdToLocaleMap: {},
     sources: {
@@ -52,14 +57,14 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     logger.info('Starting job to publish layer content to master');
 
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
-        repoParams: { repoId: contentRootRepoId, branch: 'master' },
+        repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'master' },
         queryParams: {},
     }).hits.map((hit) => hit.id);
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
 
     Object.values(data.localeToRepoIdMap).forEach((repoId) => {
-        if (repoId === contentRootRepoId) {
+        if (repoId === CONTENT_ROOT_REPO_ID) {
             return;
         }
 
@@ -81,13 +86,10 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
         logger.info(`Pushing ${nodesToPush.length} to master in layer repo ${repoId}`);
 
-        const repoConnection = nodeLib.connect({
+        const repoConnection = getRepoConnection({
             repoId: repoId,
             branch: 'draft',
-            user: {
-                login: 'su',
-            },
-            principals: ['role:system.admin'],
+            asAdmin: true,
         });
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: fifteenMinutesMs });
@@ -124,7 +126,7 @@ const populateWithChildLayers = (
         if (newMap[language]) {
             logger.error(`Layer was already specified for locale ${language}`);
         } else {
-            newMap[language] = `${contentRepoPrefix}.${id}`;
+            newMap[language] = `${CONTENT_REPO_PREFIX}.${id}`;
         }
 
         populateWithChildLayers(projects, newMap, id);
@@ -136,19 +138,27 @@ const refreshLayersData = () => {
 
     const newMap: LocaleToRepoIdMap = {};
 
-    const rootProject = projects.find((project) => project.id === contentRootProjectId);
-    if (!rootProject?.language) {
-        logger.critical(`No valid root project found!`);
+    const rootProject = projects.find((project) => project.id === CONTENT_ROOT_PROJECT_ID);
+    if (!rootProject) {
+        logger.critical('No root project found!');
         return;
     }
 
-    newMap[rootProject.language] = contentRootRepoId;
+    if (!rootProject.language) {
+        logger.critical(
+            `Root project has no language set - Using default language ${CONTENT_LOCALE_DEFAULT}`
+        );
+    }
 
-    populateWithChildLayers(projects, newMap, contentRootProjectId);
+    const { language: rootLanguage = CONTENT_LOCALE_DEFAULT } = rootProject;
+
+    newMap[rootLanguage] = CONTENT_ROOT_REPO_ID;
+
+    populateWithChildLayers(projects, newMap, CONTENT_ROOT_PROJECT_ID);
 
     const newMapEntries = Object.entries(newMap);
 
-    data.defaultLocale = rootProject.language;
+    data.defaultLocale = rootLanguage;
     data.localeToRepoIdMap = newMap;
     data.repoIdToLocaleMap = newMapEntries.reduce((acc, [locale, repoId]) => {
         return { ...acc, [repoId]: locale };
@@ -179,7 +189,7 @@ export const initLayersData = () => {
         type: '(repository.updated|repository.deleted)',
         localOnly: false,
         callback: (event: EnonicEvent<{ id?: string }>) => {
-            if (!event.data?.id?.startsWith(contentRepoPrefix)) {
+            if (!event.data?.id?.startsWith(CONTENT_REPO_PREFIX)) {
                 return;
             }
             logger.info(

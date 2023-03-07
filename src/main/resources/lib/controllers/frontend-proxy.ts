@@ -1,10 +1,11 @@
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
-import { urls } from '../constants';
-import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
+import { URLS } from '../constants';
+import { stringArrayToSet } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { contentTypesRenderedByEditorFrontend } from '../contenttype-lists';
 import { getLocaleFromRepoId } from '../localization/layers-data';
+import { stripPathPrefix } from '../paths/path-utils';
 
 const loopbackCheckParam = 'fromXp';
 
@@ -73,7 +74,7 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;
     const contentPath = path || stripPathPrefix(req.rawPath.slice(pathStartIndex));
-    const frontendUrl = `${urls.frontendOrigin}${
+    const frontendUrl = `${URLS.FRONTEND_ORIGIN}${
         req.branch === 'draft' ? '/draft' : ''
     }${contentPath}`;
 

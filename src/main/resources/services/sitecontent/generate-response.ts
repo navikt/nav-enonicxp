@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { componentAppKey } from '../../lib/constants';
+import { COMPONENT_APP_KEY } from '../../lib/constants';
 import { getModifiedTimeIncludingFragments } from '../../lib/utils/fragment-utils';
 import { isUUID } from '../../lib/utils/uuid';
 import { validateTimestampConsistency } from '../../lib/time-travel/consistency-check';
@@ -12,7 +12,7 @@ import { getLayersData, isValidLocale } from '../../lib/localization/layers-data
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import { getCustomPathRedirectIfApplicable, getRedirectContent } from './resolve-redirects';
-import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
+import { getLanguageVersionsForSelector } from '../../lib/localization/resolve-language-versions';
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
@@ -22,11 +22,16 @@ const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boo
         return false;
     }
 
-    return !!content.x?.[componentAppKey]?.previewOnly?.previewOnly;
+    return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
 };
 
 // Resolve the base content to a fully resolved content via a guillotine query
-const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): Content | null => {
+const resolveContent = (
+    baseContent: Content,
+    branch: RepoBranch,
+    locale: string,
+    retries = 2
+): Content | null => {
     const contentId = baseContent._id;
     const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
 
@@ -39,7 +44,7 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
             unhookTimeTravel();
         }
 
-        return resolveContent(baseContent, branch, retries - 1);
+        return resolveContent(baseContent, branch, locale, retries - 1);
     }
 
     return queryResult
@@ -47,25 +52,33 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
               ...queryResult,
               // modifiedTime should also take any fragments on the page into account
               modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
-              languages: getLanguageVersions(baseContent, branch),
+              languages: getLanguageVersionsForSelector({
+                  baseContent,
+                  branch,
+                  baseContentLocale: locale,
+              }),
           }
         : null;
 };
 
-const resolveContentIdRequest = (contentId: string, branch: RepoBranch, locale?: string) => {
+const resolveContentStudioRequest = (
+    idOrPathRequested: string,
+    branch: RepoBranch,
+    locale?: string
+) => {
     if (!locale) {
-        logger.error(`No locale was specified for content id request ${contentId}`);
+        logger.error(`No locale was specified for requested content ref "${idOrPathRequested}"`);
     }
 
     const localeActual = isValidLocale(locale) ? locale : getLayersData().defaultLocale;
 
     return runInLocaleContext({ locale: localeActual, branch }, () => {
-        const content = contentLib.get({ key: contentId });
+        const content = contentLib.get({ key: idOrPathRequested });
         if (!content) {
             return null;
         }
 
-        return resolveContent(content, branch);
+        return resolveContent(content, branch, localeActual);
     });
 };
 
@@ -84,7 +97,7 @@ export const generateSitecontentResponse = ({
     // fewer steps to resolve. The same goes for requests to the draft branch.
     // These requests normally only comes from the Content Studio editor, with a specified locale
     if (isUUID(idOrPathRequested) || branch === 'draft') {
-        return resolveContentIdRequest(idOrPathRequested, branch, localeRequested);
+        return resolveContentStudioRequest(idOrPathRequested, branch, localeRequested);
     }
 
     const target = resolvePathToTarget({
@@ -115,5 +128,5 @@ export const generateSitecontentResponse = ({
         return customPathRedirect;
     }
 
-    return runInLocaleContext({ locale }, () => resolveContent(content, branch));
+    return runInLocaleContext({ locale }, () => resolveContent(content, branch, locale));
 };

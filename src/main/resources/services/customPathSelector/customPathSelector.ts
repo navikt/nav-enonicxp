@@ -2,8 +2,11 @@ import * as contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
 import { forceArray } from '../../lib/utils/nav-utils';
-import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
-import { frontendAppName, navnoRootPath, redirectsRootPath, urls } from '../../lib/constants';
+import {
+    getContentFromCustomPath,
+    isValidCustomPath,
+} from '../../lib/paths/custom-paths/custom-path-utils';
+import { FRONTEND_APP_NAME, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH, URLS } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 import { runInContext } from '../../lib/context/run-in-context';
@@ -20,12 +23,12 @@ const verifyIngressOwner = (path: string) => {
     try {
         const response = httpClient.request({
             method: 'HEAD',
-            url: `${urls.frontendOrigin}${path}`,
+            url: `${URLS.FRONTEND_ORIGIN}${path}`,
             connectionTimeout: 5000,
             followRedirects: false,
         });
 
-        return response.headers['app-name'] === frontendAppName;
+        return response.headers['app-name'] === FRONTEND_APP_NAME;
     } catch (e) {
         logger.error(`Error determining ingress owner for ${path} - ${e}`);
         return false;
@@ -67,7 +70,7 @@ const getResult = ({
     }
 
     const contentWithInternalPath = runInContext({ branch: 'master' }, () =>
-        contentLib.get({ key: `${navnoRootPath}${suggestedPath}` })
+        contentLib.get({ key: `${NAVNO_ROOT_PATH}${suggestedPath}` })
     );
     if (contentWithInternalPath && contentWithInternalPath.type !== 'portal:site') {
         return [
@@ -89,7 +92,7 @@ const getResult = ({
     }
 
     const redirectContent = runInContext({ branch: 'master' }, () =>
-        contentLib.get({ key: `${redirectsRootPath}${suggestedPath}` })
+        contentLib.get({ key: `${REDIRECTS_ROOT_PATH}${suggestedPath}` })
     );
     if (redirectContent && redirectContent.type !== 'base:folder') {
         return [

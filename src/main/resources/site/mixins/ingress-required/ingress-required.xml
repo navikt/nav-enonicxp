@@ -3,7 +3,7 @@
     <form>
         <input type="TextArea" name="ingress">
             <label>Ingress</label>
-            <help-text>Ingressen bør være maks. 240 tegn.</help-text>
+            <help-text>Ingressen skal være kort og brukes på produktkortet. Den skrives på formatet [Dette gjør produktet] når du [situasjon eller målgruppe].</help-text>
             <occurrences minimum="1" maximum="1"/>
         </input>
     </form>

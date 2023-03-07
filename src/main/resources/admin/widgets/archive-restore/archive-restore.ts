@@ -1,5 +1,5 @@
 import thymeleafLib from '/lib/thymeleaf';
-import { urls } from '../../../lib/constants';
+import { URLS } from '../../../lib/constants';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 import { getSubPath } from '../../../services/service-utils';
 import { archiveQueryResponse } from './query/archive-query-response';
@@ -14,7 +14,7 @@ const widgetResponse = (req: XP.Request) => {
     const { contextPath } = req;
     const { contentId } = req.params;
 
-    const widgetUrl = `${urls.portalAdminOrigin}${contextPath}`;
+    const widgetUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}`;
     const queryUrl = `${widgetUrl}/${queryPath}`;
     const restoreUrl = `${widgetUrl}/${restorePath}`;
 

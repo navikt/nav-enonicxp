@@ -34,13 +34,13 @@ export const getGvKeyAndContentIdFromUniqueKey = (key: string) => {
 export const getGlobalValueUsage = (gvKey: string, contentId: string) => {
     const key = getGlobalValueUniqueKey(gvKey, contentId);
 
-    const macroUsage = findContentsWithHtmlAreaText(key);
+    const macroUsage = findContentsWithHtmlAreaText(key, true);
     const calcUsage = getGlobalValueCalcUsage(key);
 
     return [...macroUsage, ...calcUsage];
 };
 
-const getGlobalValueCalcUsage = (key: string) => {
+export const getGlobalValueCalcUsage = (key: string) => {
     return contentLib.query({
         start: 0,
         count: 1000,

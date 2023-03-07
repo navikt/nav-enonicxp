@@ -1,11 +1,13 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { buildLocalePath, getLocalizedContentVersions } from './locale-utils';
+import { getContentFromAllLayers } from './locale-utils';
 import { RepoBranch } from '../../types/common';
-import { forceArray, stripPathPrefix } from '../utils/nav-utils';
+import { forceArray } from '../utils/nav-utils';
 import { runInContext } from '../context/run-in-context';
 import { LanguagesLegacy } from '../../site/mixins/languages-legacy/languages-legacy';
-import { hasValidCustomPath } from '../custom-paths/custom-paths';
+import { getPublicPath } from '../paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
+import { logger } from '../utils/logging';
 
 type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
@@ -16,14 +18,16 @@ type LanguageSelectorData = {
     _path: string;
 };
 
-const transformContent = (content: Content, layerLocale?: string): LanguageSelectorData => {
-    const basePath = hasValidCustomPath(content)
-        ? content.data.customPath
-        : stripPathPrefix(content._path);
+type GetLanguageVersionsParams = {
+    baseContent: Content;
+    branch: RepoBranch;
+    baseContentLocale: string;
+};
 
+const transformContent = (content: Content, layerLocale: string): LanguageSelectorData => {
     return {
         language: content.language,
-        _path: layerLocale ? buildLocalePath(basePath, layerLocale) : basePath,
+        _path: getPublicPath(content, layerLocale),
     };
 };
 
@@ -31,47 +35,62 @@ const contentHasLegacyLanguages = (content: unknown): content is ContentWithLega
     return !!(content as ContentWithLegacyLanguages).data?.languages;
 };
 
-const getLayersLanguages = (content: Content, branch: RepoBranch) => {
-    const { _id, language: parentLanguage } = content;
+const getLayersLanguages = (
+    baseContent: Content,
+    branch: RepoBranch,
+    baseContentLocale: string
+) => {
+    const localizedContent = getContentFromAllLayers({
+        contentId: baseContent._id,
+        branch,
+        state: 'localized',
+    });
 
-    const localizedContent = getLocalizedContentVersions(_id, branch);
-
-    return localizedContent.reduce((acc, localizedContent) => {
-        const { language } = localizedContent;
-        if (language === parentLanguage) {
+    return localizedContent.reduce<Content[]>((acc, localizedContent) => {
+        const { content, locale } = localizedContent;
+        if (locale === baseContentLocale || content.language === baseContent.language) {
             return acc;
         }
 
-        return [...acc, transformContent(localizedContent, language)];
-    }, [] as LanguageSelectorData[]);
+        return [...acc, content];
+    }, []);
 };
 
-const getLegacyLanguages = (content: Content) => {
-    if (!contentHasLegacyLanguages(content)) {
+const getLegacyLanguages = (baseContent: Content) => {
+    if (!contentHasLegacyLanguages(baseContent)) {
         return [];
     }
 
-    const { _id: parentContentId } = content;
+    const { _id: parentContentId } = baseContent;
 
-    return forceArray(content.data.languages).reduce((acc, contentId) => {
+    return forceArray(baseContent.data.languages).reduce<Content[]>((acc, contentId) => {
         if (contentId === parentContentId) {
             return acc;
         }
 
         const languageContent = contentLib.get({ key: contentId });
         if (!languageContent) {
+            logger.error(
+                `Content ${baseContent._path} has an invalid language version set: ${contentId}`
+            );
             return acc;
         }
 
-        return [...acc, transformContent(languageContent)];
-    }, [] as LanguageSelectorData[]);
+        if (languageContent.language === baseContent.language) {
+            logger.error(
+                `Content ${baseContent._path} has a language version set to the same language as itself: ${languageContent._path}`
+            );
+            return acc;
+        }
+
+        return [...acc, languageContent];
+    }, []);
 };
 
-// Language versions retrieved from layers should take precedence over legacy if there is a
-// duplicate language version
-const mergeLayersWithLegacy = (
-    fromLayers: LanguageSelectorData[],
-    fromLegacy: LanguageSelectorData[]
+// Language versions retrieved from layers should take precedence over the legacy data.languages field
+const mergeLayersWithLegacy = <Type extends LanguageSelectorData>(
+    fromLayers: Type[],
+    fromLegacy: Type[]
 ) => {
     return fromLegacy.reduce((acc, legacyData) => {
         if (acc.some((languageData) => languageData.language === legacyData.language)) {
@@ -82,9 +101,30 @@ const mergeLayersWithLegacy = (
     }, fromLayers);
 };
 
-export const getLanguageVersions = (content: Content, branch: RepoBranch) => {
-    const contentFromLayers = getLayersLanguages(content, branch);
-    const contentFromLegacyLanguages = runInContext({ branch }, () => getLegacyLanguages(content));
+const getLanguageVersions = ({
+    baseContent,
+    branch,
+    baseContentLocale,
+}: GetLanguageVersionsParams) => {
+    return {
+        contentFromLayers: getLayersLanguages(baseContent, branch, baseContentLocale),
+        contentFromLegacyLanguages: runInContext({ branch }, () => getLegacyLanguages(baseContent)),
+    };
+};
+
+export const getLanguageVersionsForSelector = (params: GetLanguageVersionsParams) => {
+    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(params);
+
+    return mergeLayersWithLegacy(
+        contentFromLayers.map((content) => transformContent(content, content.language)),
+        contentFromLegacyLanguages.map((content) =>
+            transformContent(content, CONTENT_LOCALE_DEFAULT)
+        )
+    );
+};
+
+export const getLanguageVersionsFull = (params: GetLanguageVersionsParams) => {
+    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(params);
 
     return mergeLayersWithLegacy(contentFromLayers, contentFromLegacyLanguages);
 };

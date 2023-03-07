@@ -1,9 +1,9 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
-import { contentRootRepoId } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { forceArray } from '../utils/nav-utils';
 import { batchedNodeQuery } from '../utils/batched-query';
 import {
@@ -214,13 +214,10 @@ export const revalidateAllSearchNodes = () => {
         return;
     }
 
-    const contentRepoConnection = nodeLib.connect({
-        repoId: contentRootRepoId,
+    const contentRepoConnection = getRepoConnection({
+        repoId: CONTENT_ROOT_REPO_ID,
         branch: 'master',
-        user: {
-            login: 'su',
-        },
-        principals: ['role:system.admin'],
+        asAdmin: true,
     });
 
     const searchRepoConnection = getSearchRepoConnection();

@@ -7,12 +7,12 @@ import {
     getNestedValue,
     parseJsonArray,
     removeDuplicates,
-    stripPathPrefix,
 } from '../../lib/utils/nav-utils';
-import { contentStudioEditPathPrefix } from '../../lib/constants';
+import { CONTENT_LOCALE_DEFAULT, CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
@@ -54,12 +54,12 @@ const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {
             id: content._id,
-            displayName: `${content.language !== 'no' ? `[${content.language}]` : ''} ${
-                content.displayName
-            }`,
+            displayName: `${
+                content.language !== CONTENT_LOCALE_DEFAULT ? `[${content.language}]` : ''
+            } ${content.displayName}`,
             description: stripPathPrefix(content._path),
         },
-        `${contentStudioEditPathPrefix}/${content._id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
     );
 
 const getHitsFromQuery = (query: string, contentTypes?: ContentDescriptor[]): SelectorHit[] => {

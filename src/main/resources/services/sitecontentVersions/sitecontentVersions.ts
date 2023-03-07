@@ -5,6 +5,8 @@ import { getContentVersionFromDateTime } from '../../lib/time-travel/get-content
 import { getSubPath } from '../service-utils';
 import { userIsAuthenticated, validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { publishedVersionsReqHandler } from './publishedVersions/publisedVersions';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { getLayersData } from '../../lib/localization/layers-data';
 
 const isValidTime = (time?: string): time is string => {
     try {
@@ -16,7 +18,7 @@ const isValidTime = (time?: string): time is string => {
 };
 
 const sitecontentVersionsReqHandler = (req: XP.Request) => {
-    const { id, branch = 'master', time } = req.params;
+    const { id, branch = 'master', time, locale } = req.params;
 
     if (!id || !isUUID(id)) {
         return {
@@ -49,7 +51,10 @@ const sitecontentVersionsReqHandler = (req: XP.Request) => {
     }
 
     try {
-        const content = getContentVersionFromDateTime(id, branch, time);
+        const content = runInLocaleContext(
+            { locale: locale || getLayersData().defaultLocale },
+            () => getContentVersionFromDateTime(id, branch, time)
+        );
 
         if (!content) {
             const msg = `Content version not found: ${id} - ${time}`;

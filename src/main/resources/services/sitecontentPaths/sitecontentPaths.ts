@@ -1,16 +1,22 @@
 import cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { appDescriptor, navnoRootPath, redirectsRootPath } from '../../lib/constants';
-import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
+import {
+    APP_DESCRIPTOR,
+    CONTENT_LOCALE_DEFAULT,
+    NAVNO_ROOT_PATH,
+    REDIRECTS_ROOT_PATH,
+} from '../../lib/constants';
+import { removeDuplicates } from '../../lib/utils/nav-utils';
 import {
     contentTypesRenderedByPublicFrontend,
     linkContentTypes,
 } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -24,13 +30,13 @@ const testContentTypes: ContentDescriptor[] = [
 
 const oneYearMs = 1000 * 3600 * 24 * 365;
 
-const redirectsPath = `/content${redirectsRootPath}/`;
-const statistikkRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/statistikk/`;
-const kunnskapRootPath = `/content${navnoRootPath}/no/nav-og-samfunn/kunnskap/`;
+const redirectsPath = `/content${REDIRECTS_ROOT_PATH}/`;
+const statistikkRootPath = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/statistikk/`;
+const kunnskapRootPath = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/kunnskap/`;
 
-const contentPathsQuerySegment = `_path LIKE '/content${navnoRootPath}/*' AND _path NOT LIKE '${redirectsPath}*'`;
-const statistikkContentQuerySegment = `type LIKE '${appDescriptor}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${appDescriptor}:main-article*')`;
-const newsAndPressReleasesQuerySegment = `type LIKE '${appDescriptor}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
+const contentPathsQuerySegment = `_path LIKE '/content${NAVNO_ROOT_PATH}/*' AND _path NOT LIKE '${redirectsPath}*'`;
+const statistikkContentQuerySegment = `type LIKE '${APP_DESCRIPTOR}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${APP_DESCRIPTOR}:main-article*')`;
+const newsAndPressReleasesQuerySegment = `type LIKE '${APP_DESCRIPTOR}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
 
 const excludedOldContent = `(${statistikkContentQuerySegment}) OR (${newsAndPressReleasesQuerySegment})`;
 
@@ -68,10 +74,8 @@ const getPathsToRender = (isTest?: boolean) => {
             },
         }).hits.reduce((acc, content) => {
             acc.push(stripPathPrefix(content._path));
-
-            if (hasValidCustomPath(content)) {
-                acc.push(content.data.customPath);
-            }
+            // TODO: rewrite this to include content from all layers
+            acc.push(getPublicPath(content, CONTENT_LOCALE_DEFAULT));
 
             return acc;
         }, [] as string[]);
@@ -85,7 +89,7 @@ const getPathsToRender = (isTest?: boolean) => {
             count: 20000,
             contentTypes: linkContentTypes,
             query: `_path LIKE '${redirectsPath}*'`,
-        }).hits.map((content) => content._path.replace(redirectsRootPath, ''));
+        }).hits.map((content) => content._path.replace(REDIRECTS_ROOT_PATH, ''));
 
         return removeDuplicates([...contentPaths, ...redirectPaths]);
     } catch (e) {

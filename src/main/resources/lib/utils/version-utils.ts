@@ -1,5 +1,5 @@
 import * as contextLib from '/lib/xp/context';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from './repo-connection';
 import { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { getUnixTimeFromDateTimeString } from './nav-utils';
@@ -29,7 +29,7 @@ export const getNodeVersions = ({
     });
 
     if (result.total > MAX_VERSIONS_COUNT_TO_RETRIEVE) {
-        logger.error(
+        logger.warning(
             `Content node ${nodeKey} has more than the maximum allowed versions count ${MAX_VERSIONS_COUNT_TO_RETRIEVE}`
         );
     }
@@ -103,7 +103,7 @@ export const getVersionFromTime = ({
 // Used by the version history selector in the frontend
 export const getPublishedVersionTimestamps = (contentRef: string) => {
     const context = contextLib.get();
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: context.repository,
         branch: 'master',
     });

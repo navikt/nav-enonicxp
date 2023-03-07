@@ -1,17 +1,19 @@
 import * as contentLib from '/lib/xp/content';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
-import { contentRootRepoId } from '../../lib/constants';
 import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { logger } from '../../lib/utils/logging';
+import { getLayersData } from '../../lib/localization/layers-data';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
-    const { id, path } = params;
+    const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
     logger.info(`Running task for unpublishing expired content - ${id} - ${path}`);
 
-    const repo = nodeLib.connect({ repoId: contentRootRepoId, branch: 'master' });
+    const repo = getRepoConnection({ repoId, branch: 'master' });
     const content = repo.get({ key: id });
     if (!content) {
         logger.error(`Content ${id} not found in master - aborting unpublish task`);
@@ -30,12 +32,15 @@ export const run = (params: UnpublishExpiredContentConfig) => {
         logger.info(
             `Content ${id} has not yet expired - rescheduling unpublish task (current time: ${currentTime} - expire time: ${publishToTime})`
         );
-        scheduleUnpublish({ id, path, publishTo });
+        scheduleUnpublish({ id, path, repoId, publishTo });
         return;
     }
 
     try {
-        const unpublished = contentLib.unpublish({ keys: [id] });
+        const locale = getLayersData().repoIdToLocaleMap[repoId];
+        const unpublished = runInLocaleContext({ locale }, () =>
+            contentLib.unpublish({ keys: [id] })
+        );
         if (unpublished && unpublished.length > 0) {
             logger.info(`Unpublished content: ${unpublished.join(', ')}`);
             if (unpublished.length > 1) {

@@ -1,12 +1,9 @@
 import { Content } from '/lib/xp/content';
-import { navnoRootPath } from '../constants';
 import { MediaDescriptor } from '../../types/content-types/content-config';
 import { logger } from './logging';
 import { generateUUID } from './uuid';
 
 // TODO: rydd i denne fila
-
-export const getParentPath = (path: string) => path.split('/').slice(0, -1).join('/');
 
 export const removeDuplicates = <Type>(
     array: Type[] | ReadonlyArray<Type>,
@@ -92,15 +89,11 @@ export const createObjectChecksum = (obj: Record<string, any>) => {
     return generateUUID(JSON.stringify(obj));
 };
 
-const navnoRootPathFilter = new RegExp(`^${navnoRootPath}`);
-
-export const stripPathPrefix = (_path: string) => _path.replace(navnoRootPathFilter, '');
-
 export const stringArrayToSet = (list: string[] | readonly string[]): Record<string, boolean> =>
     // @ts-ignore (TS bug? string[] | readonly string[] behaves strangely)
     list.reduce((acc, contentType) => ({ ...acc, [contentType]: true }), {});
 
-export const isMedia = (content: Content): content is Content & { type: MediaDescriptor } =>
+export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
     content.type.startsWith('media:');
 
 const Thread = Java.type('java.lang.Thread');

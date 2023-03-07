@@ -9,4 +9,9 @@ export interface PrepublishCacheWipeConfig {
    * Node id
    */
   id: string;
+
+  /**
+   * Repo id
+   */
+  repoId?: string;
 }

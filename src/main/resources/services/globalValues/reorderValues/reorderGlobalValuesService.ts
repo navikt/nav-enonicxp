@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../lib/utils/repo-connection';
 import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
@@ -42,7 +42,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
     const reorderedItems = keysParsed.map((key) => items.find((item) => item.key === key));
 
     try {
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: 'com.enonic.cms.default',
             branch: 'draft',
         });

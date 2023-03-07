@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import cacheLib from '/lib/cache';
-import { appDescriptor } from '../../lib/constants';
-import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { APP_DESCRIPTOR } from '../../lib/constants';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 const tenMinutes = 600;
 
@@ -15,7 +15,7 @@ const getOfficeInfo = () =>
         const officeInfoContent = contentLib.query({
             start: 0,
             count: 1000,
-            contentTypes: [`${appDescriptor}:office-information`],
+            contentTypes: [`${APP_DESCRIPTOR}:office-information`],
         }).hits;
 
         return officeInfoContent.map((content) => ({

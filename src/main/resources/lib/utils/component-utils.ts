@@ -1,6 +1,6 @@
 import * as portalLib from '/lib/xp/portal';
 import { Component } from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from './repo-connection';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as commonLib from '/lib/xp/common';
@@ -8,7 +8,7 @@ import { NodeComponent } from '../../types/components/component-node';
 import { forceArray } from './nav-utils';
 import { ArrayOrSingle, PickByFieldType } from '../../types/util-types';
 import { ComponentConfigAll } from '../../types/components/component-config';
-import { componentAppKey } from '../constants';
+import { COMPONENT_APP_KEY } from '../constants';
 
 // Used to separate keys/ids from descriptive helper text in values returned from macro custom-selectors
 const macroDescriptionSeparator = ' ';
@@ -42,7 +42,7 @@ export const getComponentConfig = (component?: NodeComponent) => {
 
     const componentKey = descriptor.split(':')[1];
 
-    return config?.[componentAppKey]?.[componentKey];
+    return config?.[COMPONENT_APP_KEY]?.[componentKey];
 };
 
 export const getComponentConfigByPath = (
@@ -95,7 +95,7 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
     const contentId = portalLib.getContent()._id;
     const component = portalLib.getComponent();
 
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: req.repositoryId,
         branch: req.branch,
     });
