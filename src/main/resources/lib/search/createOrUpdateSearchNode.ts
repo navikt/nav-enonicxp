@@ -110,6 +110,11 @@ const getExistingSearchNodes = (
     return existingSearchNodes ? forceArray(existingSearchNodes) : [];
 };
 
+type UpdateResult = {
+    didUpdate: boolean; // true if a search node was successfully created or updated
+    searchNodeId?: string; // the _id of the search node for the content, if it exists
+};
+
 export const createOrUpdateSearchNode = ({
     contentNode,
     facets = [],
@@ -120,7 +125,7 @@ export const createOrUpdateSearchNode = ({
     facets: ContentFacet[];
     locale: string;
     searchRepoConnection?: RepoConnection;
-}) => {
+}): UpdateResult => {
     const existingSearchNodes = getExistingSearchNodes(
         contentNode._id,
         locale,
@@ -131,7 +136,7 @@ export const createOrUpdateSearchNode = ({
         existingSearchNodes.forEach((node) => {
             deleteSearchNode(node._id, searchRepoConnection);
         });
-        return false;
+        return { didUpdate: false };
     }
 
     const searchNodeParams = searchNodeTransformer(contentNode, facets, locale);
@@ -142,14 +147,14 @@ export const createOrUpdateSearchNode = ({
         const searchNode = existingSearchNodes[0];
 
         if (searchNodeIsFresh(searchNode, contentNode, facets)) {
-            return false;
+            return { didUpdate: false, searchNodeId: searchNode._id };
         }
 
         searchRepoConnection.modify({
             key: searchNode._id,
             editor: () => searchNodeParams,
         });
-        return true;
+        return { didUpdate: true, searchNodeId: searchNode._id };
     } else if (existingSearchNodes.length > 1) {
         // If multiple search nodes exists for a content, something has gone wrong at some point
         // in the past. Remove everything and notify the problem has occured.
@@ -168,13 +173,13 @@ export const createOrUpdateSearchNode = ({
         const newSearchNode = searchRepoConnection.create(searchNodeParams);
         if (!newSearchNode) {
             logger.critical(`Failed to create search node for content from ${contentPath}`);
-            return false;
+            return { didUpdate: false };
         }
 
         logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facets)}`);
-        return true;
+        return { didUpdate: true, searchNodeId: newSearchNode._id };
     } catch (e) {
         logger.critical(`Error while creating search node for content from ${contentPath} - ${e}`);
-        return false;
+        return { didUpdate: false };
     }
 };

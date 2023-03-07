@@ -28,16 +28,14 @@ const isQueryMatchingContent = (query: string, contentId: string, locale: string
     );
 
 export const updateSearchNode = (contentId: string, repoId: string) => {
-    logger.info(`Updating search node for content id ${contentId} in repo ${repoId}`);
+    logger.info(`Updating search node for content id ${contentId} in ${repoId}`);
 
     const searchConfig = getSearchConfig();
     if (!searchConfig) {
         return;
     }
 
-    const contentTypesAllowedSet = stringArrayToSet(
-        forceArray(getSearchConfig()?.data.contentTypes)
-    );
+    const contentTypesAllowedSet = stringArrayToSet(forceArray(searchConfig.data.contentTypes));
 
     const contentRepoConnection = getRepoConnection({
         repoId,
@@ -51,7 +49,7 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         !contentTypesAllowedSet[contentNode.type] ||
         !isContentLocalized(contentNode)
     ) {
-        logger.info(`No valid content found for id ${contentId}`);
+        logger.info(`No valid content found for id ${contentId} in ${repoId}`);
         deleteSearchNodesForContent(contentId);
         return;
     }

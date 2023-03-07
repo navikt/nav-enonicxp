@@ -11,6 +11,7 @@ import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
 import { forceArray } from '../utils/array-utils';
 import {
     getLayersMultiConnection,
+    NON_LOCALIZED_QUERY_FILTER,
     sortMultiRepoNodeHitIdsToRepoIdBuckets,
 } from '../localization/locale-utils';
 import { getLayersData } from '../localization/layers-data';
@@ -19,10 +20,9 @@ type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
 type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
 type ContentIdWithMatchedFacets = { contentId: string; locale: string; facets: ContentFacet[] };
 
-// Remove any existing search nodes which no longer points to content
-// that should be indexed by the search
-// TODO: FIX
-const deleteInvalidNodes = (searchableContentIds: ContentIdWithMatchedFacets[]) => {
+// Remove any existing search nodes which no longer points to content that should be indexed by the
+// search
+const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
     const searchRepoConnection = getSearchRepoConnection();
 
     const invalidSearchNodes = batchedNodeQuery({
@@ -35,7 +35,7 @@ const deleteInvalidNodes = (searchableContentIds: ContentIdWithMatchedFacets[]) 
                     mustNot: {
                         hasValue: {
                             field: 'contentId',
-                            values: searchableContentIds.map(({ contentId }) => contentId),
+                            values: validSearchNodeIds,
                         },
                     },
                 },
@@ -60,9 +60,14 @@ const transformToArray = (repoIdsToContent: RepoIdsToContentMap) => {
         (acc, [repoId, contentIdsToFacets]) => {
             const locale = repoIdToLocaleMap[repoId];
 
+            let counter = 0;
+
             Object.entries(contentIdsToFacets).forEach(([contentId, facets]) => {
+                counter++;
                 acc.push({ contentId, locale, facets });
             });
+
+            logger.info(`Found ${counter} search entries in layer for locale ${locale}`);
 
             return acc;
         },
@@ -164,9 +169,14 @@ const getContentWithMatchingFacets = (
                 count: 50000,
                 query: ruleQuery,
                 filters: {
-                    hasValue: {
-                        field: 'type',
-                        values: contentTypes,
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'type',
+                                values: contentTypes,
+                            },
+                        },
+                        mustNot: NON_LOCALIZED_QUERY_FILTER,
                     },
                 },
             },
@@ -202,7 +212,7 @@ export const revalidateAllSearchNodesAbort = () => {
     abortFlag = true;
 };
 
-export const revalidateAllSearchNodes = () => {
+export const revalidateAllSearchNodes = ({ dryRun = true }: { dryRun?: boolean } = {}) => {
     abortFlag = false;
     const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
@@ -234,12 +244,18 @@ export const revalidateAllSearchNodes = () => {
         `Found ${contentWithMatchedFacets.length} matching contents for facets, running updates`
     );
 
-    let counter = 0;
+    if (dryRun) {
+        logger.info(`Dryrun flag was set, aborting.`);
+        return;
+    }
+
+    let updateCounter = 0;
+    const validSearchNodeIds: string[] = [];
 
     const wasCompleted = contentWithMatchedFacets.every(({ contentId, locale, facets }, index) => {
         if (index && index % 1000 === 0) {
             logger.info(
-                `Processed search nodes for ${index}/${contentWithMatchedFacets.length} contents (${counter} search nodes updated so far)`
+                `Processed search nodes for ${index}/${contentWithMatchedFacets.length} contents (${updateCounter} search nodes updated so far)`
             );
         }
 
@@ -255,7 +271,7 @@ export const revalidateAllSearchNodes = () => {
             return true;
         }
 
-        const didUpdate = createOrUpdateSearchNode({
+        const { didUpdate, searchNodeId } = createOrUpdateSearchNode({
             contentNode,
             facets,
             searchRepoConnection,
@@ -263,7 +279,10 @@ export const revalidateAllSearchNodes = () => {
         });
 
         if (didUpdate) {
-            counter++;
+            updateCounter++;
+        }
+        if (searchNodeId) {
+            validSearchNodeIds.push(searchNodeId);
         }
 
         return true;
@@ -273,16 +292,18 @@ export const revalidateAllSearchNodes = () => {
         logger.warning(
             `Search nodes update was aborted after ${
                 Date.now() - startTime
-            }ms - ${counter} nodes were updated`
+            }ms - ${updateCounter} nodes were updated`
         );
         return;
     }
 
-    deleteInvalidNodes(contentWithMatchedFacets);
+    deleteInvalidNodes(validSearchNodeIds);
 
     logger.info(
-        `Updated ${counter} search nodes from ${
+        `Updated ${updateCounter} search nodes from ${
             contentWithMatchedFacets.length
-        } matched contents - time spent: ${Date.now() - startTime}ms`
+        } matched contents - total valid search nodes: ${validSearchNodeIds.length} - time spent: ${
+            Date.now() - startTime
+        }ms`
     );
 };

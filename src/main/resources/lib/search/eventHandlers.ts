@@ -18,7 +18,7 @@ import { forceArray } from '../utils/array-utils';
 let isActive = false;
 let isRunningConfigUpdate = false;
 
-export const searchNodesUpdateAbortEvent = 'abortSearchNodeUpdates';
+export const SEARCH_NODES_UPDATE_ABORT_EVENT = 'abortSearchNodeUpdates';
 
 const runQueuedUpdates = () => {
     const updateState = getUpdateQueue();
@@ -79,7 +79,7 @@ const runUpdateAllTask = () => {
 const runUpdateSingleContentTask = (contentId: string, repoId: string) => {
     if (isRunningConfigUpdate) {
         logger.info(
-            `Attempted to update content while running update-all job - Queuing ${contentId} for later update`
+            `Attempted to update content while running update-all job - Queuing ${contentId} in ${repoId} for later update`
         );
         queueUpdateForContent(contentId, repoId);
         return;
@@ -91,7 +91,9 @@ const runUpdateSingleContentTask = (contentId: string, repoId: string) => {
             try {
                 updateSearchNode(contentId, repoId);
             } catch (e) {
-                logger.critical(`Error while running search node update for ${contentId} - ${e}`);
+                logger.critical(
+                    `Error while running search node update for ${contentId} in ${repoId} - ${e}`
+                );
             }
         },
     });
@@ -150,7 +152,7 @@ export const activateSearchIndexEventHandlers = () => {
     });
 
     eventLib.listener({
-        type: `custom.${searchNodesUpdateAbortEvent}`,
+        type: `custom.${SEARCH_NODES_UPDATE_ABORT_EVENT}`,
         callback: () => {
             revalidateAllSearchNodesAbort();
         },

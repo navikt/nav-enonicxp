@@ -9,7 +9,7 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import { searchNodesUpdateAbortEvent } from '../lib/search/eventHandlers';
+import { SEARCH_NODES_UPDATE_ABORT_EVENT } from '../lib/search/eventHandlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
@@ -42,7 +42,7 @@ const validActions: ActionsMap = {
         description: 'Avbryt pågående batch-jobb for søke-config oppdateringer',
         callback: () => {
             eventLib.send({
-                type: searchNodesUpdateAbortEvent,
+                type: SEARCH_NODES_UPDATE_ABORT_EVENT,
                 distributed: true,
             });
         },
