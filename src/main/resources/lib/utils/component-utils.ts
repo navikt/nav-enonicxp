@@ -114,10 +114,6 @@ export const generateAnchorIdField = <Config extends ComponentConfigAll & { anch
                     return content;
                 }
 
-                if (!config[idSourceField] && idSourceDefaultValue !== undefined) {
-                    (config as any)[idSourceField] = idSourceDefaultValue;
-                }
-
                 const fieldValue = config[idSourceField] as unknown as string;
 
                 if (fieldValue && fieldValue !== idSourceDefaultValue) {
