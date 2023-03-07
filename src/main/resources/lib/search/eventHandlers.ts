@@ -5,7 +5,7 @@ import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { updateSearchNode } from './onContentUpdate';
-import { revalidateAllSearchNodes, revalidateAllSearchNodesAbort } from './onConfigUpdate';
+import { revalidateAllSearchNodesSync, revalidateAllSearchNodesAbort } from './onConfigUpdate';
 import {
     clearSearchNodeUpdateQueue,
     getUpdateQueue,
@@ -31,7 +31,7 @@ const runQueuedUpdates = () => {
 
     if (updateState.isQueuedUpdateAll) {
         logger.info('Running update all search-nodes task from queue');
-        runUpdateAllTask();
+        revalidateAllSearchNodesAsync();
     } else if (updateState.queuedContentUpdates) {
         const updateQueueEntries = forceArray(updateState.queuedContentUpdates);
         logger.info(
@@ -45,7 +45,7 @@ const runQueuedUpdates = () => {
     }
 };
 
-const runUpdateAllTask = () => {
+export const revalidateAllSearchNodesAsync = () => {
     if (isRunningConfigUpdate) {
         logger.warning(
             'Attempted to run concurrent update-all jobs - Queueing a new update-all job'
@@ -64,7 +64,7 @@ const runUpdateAllTask = () => {
             try {
                 const updateIsValid = revalidateSearchConfigCache();
                 if (updateIsValid) {
-                    revalidateAllSearchNodes();
+                    revalidateAllSearchNodesSync();
                 }
             } catch (e) {
                 logger.critical(`Error while running search config updates - ${e}`);
@@ -134,7 +134,7 @@ export const activateSearchIndexEventHandlers = () => {
                 }
 
                 if (nodeData.repo === CONTENT_ROOT_REPO_ID && nodeData.id === searchConfig._id) {
-                    runUpdateAllTask();
+                    revalidateAllSearchNodesAsync();
                     return;
                 }
 

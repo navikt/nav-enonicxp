@@ -9,7 +9,10 @@ import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
-import { SEARCH_NODES_UPDATE_ABORT_EVENT } from '../lib/search/eventHandlers';
+import {
+    revalidateAllSearchNodesAsync,
+    SEARCH_NODES_UPDATE_ABORT_EVENT,
+} from '../lib/search/eventHandlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
@@ -37,6 +40,10 @@ const validActions: ActionsMap = {
     removeUnpublishedFromContentLists: {
         description: 'Fjern avpublisert innhold fra alle innholdslister',
         callback: removeUnpublishedFromAllContentLists,
+    },
+    updateAllSearchNodes: {
+        description: 'Oppdater alle søke-noder',
+        callback: revalidateAllSearchNodesAsync,
     },
     abortSearchNodesUpdate: {
         description: 'Avbryt pågående batch-jobb for søke-config oppdateringer',

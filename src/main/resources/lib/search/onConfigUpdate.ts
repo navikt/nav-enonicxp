@@ -212,7 +212,7 @@ export const revalidateAllSearchNodesAbort = () => {
     abortFlag = true;
 };
 
-export const revalidateAllSearchNodes = ({ dryRun = false }: { dryRun?: boolean } = {}) => {
+export const revalidateAllSearchNodesSync = () => {
     abortFlag = false;
     const startTime = Date.now();
     logger.info(`Updating all search nodes!`);
@@ -243,11 +243,6 @@ export const revalidateAllSearchNodes = ({ dryRun = false }: { dryRun?: boolean 
     logger.info(
         `Found ${contentWithMatchedFacets.length} matching contents for facets, running updates`
     );
-
-    if (dryRun) {
-        logger.info(`Dryrun flag was set, aborting.`);
-        return;
-    }
 
     let updateCounter = 0;
     const validSearchNodeIds: string[] = [];
