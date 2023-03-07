@@ -1,8 +1,8 @@
 import { getRepoConnection } from '../utils/repo-connection';
+import { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { batchedMultiRepoNodeQuery, batchedNodeQuery } from '../utils/batched-query';
 import { getSearchRepoConnection, SEARCH_REPO_CONTENT_BASE_NODE } from './search-utils';
 import { ContentFacet } from '../../types/search';
@@ -213,19 +213,26 @@ export const revalidateAllSearchNodes = () => {
         return;
     }
 
-    const contentRepoConnection = getRepoConnection({
-        repoId: CONTENT_ROOT_REPO_ID,
-        branch: 'master',
-        asAdmin: true,
-    });
-
     const contentWithMatchedFacets = getContentWithMatchingFacets(config);
+
+    const searchRepoConnection = getSearchRepoConnection();
+
+    const { sources, repoIdToLocaleMap } = getLayersData();
+    const localeToRepoConnection = sources.master.reduce<Record<string, RepoConnection>>(
+        (acc, source) => {
+            const { repoId } = source;
+
+            const locale = repoIdToLocaleMap[repoId];
+            const repoConnection = getRepoConnection({ repoId, branch: 'master' });
+
+            return { ...acc, [locale]: repoConnection };
+        },
+        {}
+    );
 
     logger.info(
         `Found ${contentWithMatchedFacets.length} matching contents for facets, running updates`
     );
-
-    const searchRepoConnection = getSearchRepoConnection();
 
     let counter = 0;
 
@@ -242,7 +249,7 @@ export const revalidateAllSearchNodes = () => {
             return false;
         }
 
-        const contentNode = contentRepoConnection.get<Content>(contentId);
+        const contentNode = localeToRepoConnection[locale]?.get<Content>(contentId);
         if (!contentNode) {
             logger.error(`Content not found for id ${contentId}!`);
             return true;
