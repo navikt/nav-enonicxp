@@ -52,7 +52,7 @@ gradle-app.setting
 ## Plugin-specific files:
 
 # IntelliJ
-out/
+out/y
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -64,3 +64,5 @@ node_modules/
 .enonic
 /guillotine-schema.graphql
 /coverage/
+
+/bin
