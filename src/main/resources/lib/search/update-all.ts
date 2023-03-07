@@ -21,6 +21,7 @@ type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
 type ContentIdWithMatchedFacets = { contentId: string; locale: string; facets: ContentFacet[] };
 
 const MAX_DELETE_COUNT = 100000;
+const DELETION_BATCH_SIZE = 1000;
 
 // Remove any existing search nodes which no longer points to content that should be indexed by the
 // search
@@ -46,31 +47,42 @@ const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
         repo: searchRepoConnection,
     });
 
-    if (invalidSearchNodes.total > 0) {
-        logger.info(`Found ${invalidSearchNodes.total} invalid search nodes - deleting`);
+    if (invalidSearchNodes.total === 0) {
+        return;
+    }
 
-        if (invalidSearchNodes.total > MAX_DELETE_COUNT) {
-            logger.critical(
-                `Invalid search nodes count exceeds maximum - Some invalid nodes will be remaining!`
-            );
-        }
+    logger.info(`Found ${invalidSearchNodes.total} invalid search nodes - deleting`);
 
-        const nodeIdsToDelete = invalidSearchNodes.hits.map((hit) => hit.id);
+    if (invalidSearchNodes.total > MAX_DELETE_COUNT) {
+        logger.critical(
+            `Invalid search nodes count exceeds maximum - Some invalid nodes will be remaining!`
+        );
+    }
 
-        const nodeIdsDeleted = searchRepoConnection.delete(nodeIdsToDelete);
+    const nodeIdsToDelete = invalidSearchNodes.hits.map((hit) => hit.id);
+    const nodeIdsDeleted: string[] = [];
 
-        if (nodeIdsToDelete.length !== nodeIdsDeleted.length) {
-            const nodeIdsDeletedSet = stringArrayToSet(nodeIdsDeleted);
-            const diff = nodeIdsToDelete.filter((id) => !nodeIdsDeletedSet[id]);
+    for (let i = 0; i < nodeIdsToDelete.length; i += DELETION_BATCH_SIZE) {
+        const nodeIdsDeletedBatch = searchRepoConnection.delete(
+            nodeIdsToDelete.slice(i, i + DELETION_BATCH_SIZE)
+        );
+        nodeIdsDeleted.push(...nodeIdsDeletedBatch);
+        logger.info(
+            `Deleted ${nodeIdsDeleted.length}/${nodeIdsToDelete.length} invalid search nodes`
+        );
+    }
 
-            logger.critical(
-                `Failed to delete ${diff.length} invalid search nodes: ${diff
-                    .slice(0, 50)
-                    .join(', ')}${diff.length > 50 ? ` (and ${diff.length - 50} more)` : ''}`
-            );
-        } else {
-            logger.info(`Successfully deleted ${nodeIdsDeleted.length} invalid search nodes`);
-        }
+    if (nodeIdsToDelete.length !== nodeIdsDeleted.length) {
+        const nodeIdsDeletedSet = stringArrayToSet(nodeIdsDeleted);
+        const diff = nodeIdsToDelete.filter((id) => !nodeIdsDeletedSet[id]);
+
+        logger.critical(
+            `Failed to delete ${diff.length} invalid search nodes: ${diff.slice(0, 50).join(', ')}${
+                diff.length > 50 ? ` (and ${diff.length - 50} more)` : ''
+            }`
+        );
+    } else {
+        logger.info(`Successfully deleted ${nodeIdsDeleted.length} invalid search nodes`);
     }
 };
 
@@ -148,7 +160,9 @@ const populateContentIdsToFacetsMap = ({
             return acc;
         }
 
-        logger.info(`Underfacet ${ufLogString} matched ${ufMatches.length} content nodes in ${repoId}`);
+        logger.info(
+            `Underfacet ${ufLogString} matched ${ufMatches.length} content nodes in ${repoId}`
+        );
 
         ufMatches.forEach(({ id }) => {
             if (!acc[id]) {
@@ -313,8 +327,6 @@ export const revalidateAllSearchNodesSync = () => {
         return;
     }
 
-    deleteInvalidNodes(validSearchNodeIds);
-
     logger.info(
         `Updated ${updateCounter} search nodes from ${
             contentWithMatchedFacets.length
@@ -322,4 +334,6 @@ export const revalidateAllSearchNodesSync = () => {
             Date.now() - startTime
         }ms`
     );
+
+    deleteInvalidNodes(validSearchNodeIds);
 };
