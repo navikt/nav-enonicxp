@@ -212,7 +212,7 @@ export const revalidateAllSearchNodesAbort = () => {
     abortFlag = true;
 };
 
-export const revalidateAllSearchNodes = ({ dryRun = true }: { dryRun?: boolean } = {}) => {
+export const revalidateAllSearchNodes = ({ dryRun = false }: { dryRun?: boolean } = {}) => {
     abortFlag = false;
     const startTime = Date.now();
     logger.info(`Updating all search nodes!`);

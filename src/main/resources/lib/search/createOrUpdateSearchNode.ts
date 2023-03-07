@@ -8,9 +8,6 @@ import {
     getSearchRepoConnection,
     SEARCH_REPO_CONTENT_BASE_NODE,
     SEARCH_REPO_CONTENT_ID_KEY,
-    SEARCH_REPO_CONTENT_PATH_KEY,
-    SEARCH_REPO_FACETS_KEY,
-    SEARCH_REPO_HREF_KEY,
     SEARCH_REPO_LOCALE_KEY,
 } from './search-utils';
 import { generateUUID } from '../utils/uuid';
@@ -44,11 +41,11 @@ const searchNodeTransformer = (
 
     return {
         ...rest,
-        [SEARCH_REPO_FACETS_KEY]: facets,
-        [SEARCH_REPO_CONTENT_ID_KEY]: contentNode._id,
-        [SEARCH_REPO_CONTENT_PATH_KEY]: contentNode._path,
-        [SEARCH_REPO_HREF_KEY]: getHref(contentNode, locale),
-        [SEARCH_REPO_LOCALE_KEY]: locale,
+        facets: facets,
+        contentId: contentNode._id,
+        contentPath: contentNode._path,
+        href: getHref(contentNode, locale),
+        layerLocale: locale,
         _name: name,
         _parentPath: `/${SEARCH_REPO_CONTENT_BASE_NODE}`,
         ...(createdTime && {
@@ -71,9 +68,18 @@ const searchNodeTransformer = (
     };
 };
 
-const searchNodeIsFresh = (searchNode: SearchNode, contentNode: Content, facets: ContentFacet[]) =>
+const searchNodeIsFresh = (
+    searchNode: SearchNode,
+    contentNode: Content,
+    facets: ContentFacet[],
+    locale: string
+) =>
     facetsAreEqual(facets, searchNode.facets) &&
-    dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime);
+    dateTimesAreEqual(contentNode.modifiedTime, searchNode.modifiedTime) &&
+    searchNode.contentId === contentNode._id &&
+    searchNode.contentPath === contentNode._path &&
+    searchNode.layerLocale === locale &&
+    searchNode.href === getHref(contentNode, locale);
 
 const getExistingSearchNodes = (
     contentId: string,
@@ -146,7 +152,7 @@ export const createOrUpdateSearchNode = ({
     if (existingSearchNodes.length === 1) {
         const searchNode = existingSearchNodes[0];
 
-        if (searchNodeIsFresh(searchNode, contentNode, facets)) {
+        if (searchNodeIsFresh(searchNode, contentNode, facets, locale)) {
             return { didUpdate: false, searchNodeId: searchNode._id };
         }
 
