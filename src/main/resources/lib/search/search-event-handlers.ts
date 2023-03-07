@@ -4,14 +4,14 @@ import * as taskLib from '/lib/xp/task';
 import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { updateSearchNode } from './onContentUpdate';
-import { revalidateAllSearchNodesSync, revalidateAllSearchNodesAbort } from './onConfigUpdate';
+import { updateSearchNode } from './update-one';
+import { revalidateAllSearchNodesSync, revalidateAllSearchNodesAbort } from './update-all';
 import {
     clearSearchNodeUpdateQueue,
     getUpdateQueue,
     queueUpdateAll,
     queueUpdateForContent,
-} from './repo';
+} from './search-repo';
 import { getLayersData } from '../localization/layers-data';
 import { forceArray } from '../utils/array-utils';
 

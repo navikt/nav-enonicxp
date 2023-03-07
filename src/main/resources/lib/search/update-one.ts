@@ -8,7 +8,7 @@ import { ContentFacet } from '../../types/search';
 import { isContentLocalized } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
-import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
+import { createOrUpdateSearchNode } from './create-or-update-search-node';
 import { forceArray, stringArrayToSet } from '../utils/array-utils';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>

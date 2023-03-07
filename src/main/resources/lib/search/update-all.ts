@@ -7,8 +7,8 @@ import { batchedMultiRepoNodeQuery, batchedNodeQuery } from '../utils/batched-qu
 import { getSearchRepoConnection, SEARCH_REPO_CONTENT_BASE_NODE } from './search-utils';
 import { ContentFacet } from '../../types/search';
 import { ConfigFacet, SearchConfigDescriptor } from '../../types/content-types/search-config';
-import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
-import { forceArray } from '../utils/array-utils';
+import { createOrUpdateSearchNode } from './create-or-update-search-node';
+import { forceArray, stringArrayToSet } from '../utils/array-utils';
 import {
     getLayersMultiConnection,
     NON_LOCALIZED_QUERY_FILTER,
@@ -20,6 +20,8 @@ type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
 type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
 type ContentIdWithMatchedFacets = { contentId: string; locale: string; facets: ContentFacet[] };
 
+const MAX_DELETE_COUNT = 100000;
+
 // Remove any existing search nodes which no longer points to content that should be indexed by the
 // search
 const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
@@ -28,13 +30,13 @@ const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
     const invalidSearchNodes = batchedNodeQuery({
         queryParams: {
             start: 0,
-            count: 50000,
+            count: MAX_DELETE_COUNT,
             query: `_parentPath LIKE "/${SEARCH_REPO_CONTENT_BASE_NODE}*"`,
             filters: {
                 boolean: {
                     mustNot: {
                         hasValue: {
-                            field: 'contentId',
+                            field: '_id',
                             values: validSearchNodeIds,
                         },
                     },
@@ -42,14 +44,33 @@ const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
             },
         },
         repo: searchRepoConnection,
-    }).hits;
+    });
 
-    if (invalidSearchNodes.length > 0) {
-        logger.info(`Found ${invalidSearchNodes.length} invalid search nodes - deleting`);
+    if (invalidSearchNodes.total > 0) {
+        logger.info(`Found ${invalidSearchNodes.total} invalid search nodes - deleting`);
 
-        invalidSearchNodes.forEach((hit) => {
-            searchRepoConnection.delete(hit.id);
-        });
+        if (invalidSearchNodes.total > MAX_DELETE_COUNT) {
+            logger.critical(
+                `Invalid search nodes count exceeds maximum - Some invalid nodes will be remaining!`
+            );
+        }
+
+        const nodeIdsToDelete = invalidSearchNodes.hits.map((hit) => hit.id);
+
+        const nodeIdsDeleted = searchRepoConnection.delete(nodeIdsToDelete);
+
+        if (nodeIdsToDelete.length !== nodeIdsDeleted.length) {
+            const nodeIdsDeletedSet = stringArrayToSet(nodeIdsDeleted);
+            const diff = nodeIdsToDelete.filter((id) => !nodeIdsDeletedSet[id]);
+
+            logger.critical(
+                `Failed to delete ${diff.length} invalid search nodes: ${diff
+                    .slice(0, 50)
+                    .join(', ')}${diff.length > 50 ? ` (and ${diff.length - 50} more)` : ''}`
+            );
+        } else {
+            logger.info(`Successfully deleted ${nodeIdsDeleted.length} invalid search nodes`);
+        }
     }
 };
 

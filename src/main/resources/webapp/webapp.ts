@@ -12,7 +12,7 @@ import { userIsAdmin } from '../lib/utils/auth-utils';
 import {
     revalidateAllSearchNodesAsync,
     SEARCH_NODES_UPDATE_ABORT_EVENT,
-} from '../lib/search/eventHandlers';
+} from '../lib/search/search-event-handlers';
 import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
