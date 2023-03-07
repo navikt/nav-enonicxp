@@ -119,7 +119,7 @@ const populateContentIdsToFacetsMap = ({
             contentIdsToFacetsMap[id].push({ facet: facetKey });
         });
         logger.info(
-            `Facet [${facetKey}] ${name} matched ${matchedContentIdsForFacet.length} content nodes`
+            `Facet [${facetKey}] ${name} matched ${matchedContentIdsForFacet.length} content nodes in ${repoId}`
         );
         return;
     }
@@ -144,11 +144,11 @@ const populateContentIdsToFacetsMap = ({
         const ufLogString = `[${facetKey}/${uf.facetKey}] ${name}/${uf.name}`;
 
         if (ufMatches.length === 0) {
-            logger.info(`Underfacet ${ufLogString} has no matching content`);
+            logger.info(`Underfacet ${ufLogString} has no matching content in ${repoId}`);
             return acc;
         }
 
-        logger.info(`Underfacet ${ufLogString} matched ${ufMatches.length} content nodes`);
+        logger.info(`Underfacet ${ufLogString} matched ${ufMatches.length} content nodes in ${repoId}`);
 
         ufMatches.forEach(({ id }) => {
             if (!acc[id]) {
