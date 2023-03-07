@@ -23,11 +23,9 @@ type ContentIdWithMatchedFacets = { contentId: string; locale: string; facets: C
 const MAX_DELETE_COUNT = 100000;
 const DELETION_BATCH_SIZE = 1000;
 
-// Remove any existing search nodes which no longer points to content that should be indexed by the
-// search
-const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
-    const searchRepoConnection = getSearchRepoConnection();
-
+// Remove any existing search nodes which no longer points to content
+// that should be indexed by the search
+const deleteInvalidNodes = (validSearchNodeIds: string[], searchRepoConnection: RepoConnection) => {
     const invalidSearchNodes = batchedNodeQuery({
         queryParams: {
             start: 0,
@@ -48,6 +46,7 @@ const deleteInvalidNodes = (validSearchNodeIds: string[]) => {
     });
 
     if (invalidSearchNodes.total === 0) {
+        logger.info('No invalid search nodes found, nothing to delete!');
         return;
     }
 
@@ -327,6 +326,8 @@ export const revalidateAllSearchNodesSync = () => {
         return;
     }
 
+    deleteInvalidNodes(validSearchNodeIds, searchRepoConnection);
+
     logger.info(
         `Updated ${updateCounter} search nodes from ${
             contentWithMatchedFacets.length
@@ -334,6 +335,4 @@ export const revalidateAllSearchNodesSync = () => {
             Date.now() - startTime
         }ms`
     );
-
-    deleteInvalidNodes(validSearchNodeIds);
 };
