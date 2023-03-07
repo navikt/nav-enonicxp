@@ -1,34 +1,41 @@
 import { getRepoConnection } from '../utils/repo-connection';
-import { RepoConnection } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { batchedNodeQuery } from '../utils/batched-query';
+import { batchedMultiRepoNodeQuery, batchedNodeQuery } from '../utils/batched-query';
 import { getSearchRepoConnection, SEARCH_REPO_CONTENT_BASE_NODE } from './search-utils';
 import { ContentFacet } from '../../types/search';
-import { SearchConfigDescriptor } from '../../types/content-types/search-config';
+import { ConfigFacet, SearchConfigDescriptor } from '../../types/content-types/search-config';
 import { createOrUpdateSearchNode } from './createOrUpdateSearchNode';
 import { forceArray } from '../utils/array-utils';
+import {
+    getLayersMultiConnection,
+    sortMultiRepoNodeHitIdsToRepoIdBuckets,
+} from '../localization/locale-utils';
+import { getLayersData } from '../localization/layers-data';
 
-const contentBasePath = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
+type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
+type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
+type ContentIdWithMatchedFacets = { contentId: string; locale: string; facets: ContentFacet[] };
 
 // Remove any existing search nodes which no longer points to content
 // that should be indexed by the search
-const deleteInvalidNodes = (searchableContentIds: string[]) => {
+// TODO: FIX
+const deleteInvalidNodes = (searchableContentIds: ContentIdWithMatchedFacets[]) => {
     const searchRepoConnection = getSearchRepoConnection();
 
     const invalidSearchNodes = batchedNodeQuery({
         queryParams: {
             start: 0,
             count: 50000,
-            query: `_parentPath LIKE "${contentBasePath}*"`,
+            query: `_parentPath LIKE "/${SEARCH_REPO_CONTENT_BASE_NODE}*"`,
             filters: {
                 boolean: {
                     mustNot: {
                         hasValue: {
                             field: 'contentId',
-                            values: searchableContentIds,
+                            values: searchableContentIds.map(({ contentId }) => contentId),
                         },
                     },
                 },
@@ -46,18 +53,112 @@ const deleteInvalidNodes = (searchableContentIds: string[]) => {
     }
 };
 
-const findContentWithMatchingFacets = (
-    searchConfig: Content<SearchConfigDescriptor>,
-    contentRepoConnection: RepoConnection
-) => {
-    const contentIdsWithFacetsToUpdate: Record<string, ContentFacet[]> = {};
+const transformToArray = (repoIdsToContent: RepoIdsToContentMap) => {
+    const { repoIdToLocaleMap } = getLayersData();
 
-    const { fasetter, contentTypes } = searchConfig.data;
+    return Object.entries(repoIdsToContent).reduce<ContentIdWithMatchedFacets[]>(
+        (acc, [repoId, contentIdsToFacets]) => {
+            const locale = repoIdToLocaleMap[repoId];
 
-    forceArray(fasetter).forEach((facet) => {
-        const { facetKey, name, ruleQuery, underfasetter } = facet;
+            Object.entries(contentIdsToFacets).forEach(([contentId, facets]) => {
+                acc.push({ contentId, locale, facets });
+            });
 
-        const matchedContentIds = batchedNodeQuery({
+            return acc;
+        },
+        []
+    );
+};
+
+const populateContentIdsToFacetsMap = ({
+    facet,
+    repoId,
+    matchedContentIdsForFacet,
+    contentIdsToFacetsMap,
+}: {
+    facet: ConfigFacet;
+    repoId: string;
+    matchedContentIdsForFacet: string[];
+    contentIdsToFacetsMap: ContentIdsToFacetsMap;
+}) => {
+    const { facetKey, name } = facet;
+
+    const underfacets = forceArray(facet.underfasetter);
+
+    if (underfacets.length === 0) {
+        matchedContentIdsForFacet.forEach((id) => {
+            if (!contentIdsToFacetsMap[id]) {
+                contentIdsToFacetsMap[id] = [];
+            }
+            contentIdsToFacetsMap[id].push({ facet: facetKey });
+        });
+        logger.info(
+            `Facet [${facetKey}] ${name} matched ${matchedContentIdsForFacet.length} content nodes`
+        );
+        return;
+    }
+
+    const repoConnection = getRepoConnection({ branch: 'master', repoId });
+
+    const contentIdsToUnderfacets = underfacets.reduce<Record<string, string[]>>((acc, uf) => {
+        const ufMatches = batchedNodeQuery({
+            queryParams: {
+                start: 0,
+                count: 50000,
+                query: uf.ruleQuery,
+                filters: {
+                    ids: {
+                        values: matchedContentIdsForFacet,
+                    },
+                },
+            },
+            repo: repoConnection,
+        }).hits;
+
+        const ufLogString = `[${facetKey}/${uf.facetKey}] ${name}/${uf.name}`;
+
+        if (ufMatches.length === 0) {
+            logger.info(`Underfacet ${ufLogString} has no matching content`);
+            return acc;
+        }
+
+        logger.info(`Underfacet ${ufLogString} matched ${ufMatches.length} content nodes`);
+
+        ufMatches.forEach(({ id }) => {
+            if (!acc[id]) {
+                acc[id] = [];
+            }
+            acc[id].push(uf.facetKey);
+        });
+
+        return acc;
+    }, {});
+
+    Object.entries(contentIdsToUnderfacets).forEach(([contentId, underfacets]) => {
+        if (!contentIdsToFacetsMap[contentId]) {
+            contentIdsToFacetsMap[contentId] = [];
+        }
+
+        contentIdsToFacetsMap[contentId].push({
+            facet: facetKey,
+            underfacets,
+        });
+    });
+};
+
+const getContentWithMatchingFacets = (
+    searchConfig: Content<SearchConfigDescriptor>
+): ContentIdWithMatchedFacets[] => {
+    const layersMultiRepoConnection = getLayersMultiConnection('master');
+    const repoIdsToContentMaps: RepoIdsToContentMap = {};
+
+    const facets = forceArray(searchConfig.data.fasetter);
+    const contentTypes = forceArray(searchConfig.data.contentTypes);
+
+    facets.forEach((facet) => {
+        const { facetKey, name, ruleQuery } = facet;
+
+        const matchesFromAllLayers = batchedMultiRepoNodeQuery({
             queryParams: {
                 start: 0,
                 count: 50000,
@@ -65,83 +166,35 @@ const findContentWithMatchingFacets = (
                 filters: {
                     hasValue: {
                         field: 'type',
-                        values: forceArray(contentTypes),
+                        values: contentTypes,
                     },
                 },
             },
-            repo: contentRepoConnection,
-        }).hits.map((node) => node.id);
+            repo: layersMultiRepoConnection,
+        }).hits;
 
-        if (matchedContentIds.length === 0) {
+        if (matchesFromAllLayers.length === 0) {
             logger.info(`Facet [${facetKey}] ${name} has no matching content`);
             return;
         }
 
-        const ufArray = forceArray(underfasetter);
+        const repoIdMatchesBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(matchesFromAllLayers);
 
-        if (ufArray.length === 0) {
-            matchedContentIds.forEach((id) => {
-                if (!contentIdsWithFacetsToUpdate[id]) {
-                    contentIdsWithFacetsToUpdate[id] = [];
-                }
-                contentIdsWithFacetsToUpdate[id].push({ facet: facetKey });
-            });
-
-            logger.info(
-                `Facet [${facetKey}] ${name} matched ${matchedContentIds.length} content nodes`
-            );
-
-            return;
-        }
-
-        const contentIdsWithUfs = ufArray.reduce((ufAcc, uf) => {
-            const matchedContentIdsForUf = batchedNodeQuery({
-                queryParams: {
-                    start: 0,
-                    count: 50000,
-                    query: uf.ruleQuery,
-                    filters: {
-                        ids: {
-                            values: matchedContentIds,
-                        },
-                    },
-                },
-                repo: contentRepoConnection,
-            }).hits.map((node) => node.id);
-
-            if (matchedContentIdsForUf.length === 0) {
-                logger.info(
-                    `Underfacet [${facetKey}/${uf.facetKey}] ${name}/${uf.name} has no matching content`
-                );
-                return ufAcc;
+        Object.entries(repoIdMatchesBuckets).forEach(([repoId, nodeIds]) => {
+            if (!repoIdsToContentMaps[repoId]) {
+                repoIdsToContentMaps[repoId] = {};
             }
 
-            matchedContentIdsForUf.forEach((contentId) => {
-                if (!ufAcc[contentId]) {
-                    ufAcc[contentId] = [];
-                }
-                ufAcc[contentId].push(uf.facetKey);
-            });
-
-            logger.info(
-                `Underfacet [${facetKey}/${uf.facetKey}] ${name}/${uf.name} matched ${matchedContentIdsForUf.length} content nodes`
-            );
-
-            return ufAcc;
-        }, {} as Record<string, string[]>);
-
-        Object.keys(contentIdsWithUfs).forEach((contentId) => {
-            if (!contentIdsWithFacetsToUpdate[contentId]) {
-                contentIdsWithFacetsToUpdate[contentId] = [];
-            }
-            contentIdsWithFacetsToUpdate[contentId].push({
-                facet: facetKey,
-                underfacets: contentIdsWithUfs[contentId],
+            populateContentIdsToFacetsMap({
+                facet,
+                repoId,
+                matchedContentIdsForFacet: nodeIds,
+                contentIdsToFacetsMap: repoIdsToContentMaps[repoId],
             });
         });
     });
 
-    return contentIdsWithFacetsToUpdate;
+    return transformToArray(repoIdsToContentMaps);
 };
 
 let abortFlag = false;
@@ -166,18 +219,20 @@ export const revalidateAllSearchNodes = () => {
         asAdmin: true,
     });
 
-    const searchRepoConnection = getSearchRepoConnection();
+    const contentWithMatchedFacets = getContentWithMatchingFacets(config);
 
-    const contentIdToFacetsMap = findContentWithMatchingFacets(config, contentRepoConnection);
-    const matchedContentIds = Object.keys(contentIdToFacetsMap);
-    logger.info(`Found ${matchedContentIds.length} matching contents for facets, running updates`);
+    logger.info(
+        `Found ${contentWithMatchedFacets.length} matching contents for facets, running updates`
+    );
+
+    const searchRepoConnection = getSearchRepoConnection();
 
     let counter = 0;
 
-    const success = matchedContentIds.every((contentId, index) => {
+    const wasCompleted = contentWithMatchedFacets.every(({ contentId, locale, facets }, index) => {
         if (index && index % 1000 === 0) {
             logger.info(
-                `Processed search nodes for ${index}/${matchedContentIds.length} contents (${counter} search nodes updated so far)`
+                `Processed search nodes for ${index}/${contentWithMatchedFacets.length} contents (${counter} search nodes updated so far)`
             );
         }
 
@@ -195,9 +250,9 @@ export const revalidateAllSearchNodes = () => {
 
         const didUpdate = createOrUpdateSearchNode({
             contentNode,
-            facets: contentIdToFacetsMap[contentId],
+            facets,
             searchRepoConnection,
-            locale: '',
+            locale,
         });
 
         if (didUpdate) {
@@ -207,7 +262,7 @@ export const revalidateAllSearchNodes = () => {
         return true;
     });
 
-    if (!success) {
+    if (!wasCompleted) {
         logger.warning(
             `Search nodes update was aborted after ${
                 Date.now() - startTime
@@ -216,11 +271,11 @@ export const revalidateAllSearchNodes = () => {
         return;
     }
 
-    deleteInvalidNodes(matchedContentIds);
+    deleteInvalidNodes(contentWithMatchedFacets);
 
     logger.info(
         `Updated ${counter} search nodes from ${
-            matchedContentIds.length
+            contentWithMatchedFacets.length
         } matched contents - time spent: ${Date.now() - startTime}ms`
     );
 };

@@ -11,7 +11,7 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import {
     getLayersMultiConnection,
     NodeHitsLocaleBuckets,
-    sortMultiRepoNodeHitIdsToLocaleBuckets,
+    sortMultiRepoNodeHitIdsToRepoIdBuckets,
 } from '../../lib/localization/locale-utils';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
@@ -191,7 +191,7 @@ const runQuery = (params: RunQueryParams) => {
     const end = start + RESPONSE_BATCH_SIZE;
 
     const nodeHitsBatch = nodeHits.slice(start, end);
-    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitIdsToLocaleBuckets(nodeHitsBatch);
+    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHitsBatch);
 
     const contentHits =
         branch === 'archived'

@@ -96,7 +96,7 @@ export const isContentLocalized = (content: Content) =>
 
 export type NodeHitsLocaleBuckets = Record<string, string[]>;
 
-export const sortMultiRepoNodeHitIdsToLocaleBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
+export const sortMultiRepoNodeHitIdsToRepoIdBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
     return hits.reduce<NodeHitsLocaleBuckets>((acc, node) => {
         const { repoId, id } = node;
 
