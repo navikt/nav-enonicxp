@@ -11,7 +11,7 @@ import { forceArray } from '../utils/array-utils';
 type SearchConfig = Content<SearchConfigDescriptor>;
 type PersistedSearchConfig = { config?: SearchConfig };
 
-const searchConfigKey = `/${SEARCH_REPO_CONFIG_NODE}`;
+const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_CONFIG_NODE}`;
 
 let searchConfig: SearchConfig | null = null;
 
@@ -114,7 +114,7 @@ const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
 const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
     try {
         repo.modify<PersistedSearchConfig>({
-            key: searchConfigKey,
+            key: SEARCH_CONFIG_KEY,
             editor: (node) => ({
                 ...node,
                 config,
@@ -126,7 +126,7 @@ const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
 };
 
 const getLastValidConfig = (repo: RepoConnection) => {
-    const configNode = repo.get<PersistedSearchConfig>(searchConfigKey);
+    const configNode = repo.get<PersistedSearchConfig>(SEARCH_CONFIG_KEY);
     if (!configNode?.config?.data?.fasetter) {
         logger.critical(`No valid search config found in repo!`);
         return null;

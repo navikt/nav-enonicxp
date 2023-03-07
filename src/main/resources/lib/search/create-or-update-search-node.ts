@@ -16,6 +16,8 @@ import { URLS } from '../constants';
 import { dateTimesAreEqual, fixDateFormat } from '../utils/datetime-utils';
 import { forceArray } from '../utils/array-utils';
 
+const SEARCH_REPO_CONTENT_PARENT_PATH = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
+
 const getHref = (content: Content, locale: string) => {
     if (
         content.type === 'navno.nav.no.search:search-api2' ||
@@ -29,7 +31,7 @@ const getHref = (content: Content, locale: string) => {
 
 // Note: datetimes must be provided as Date-objects with a format accepted by Nashorn
 // in order for the datetime to be indexed as the correct type
-const searchNodeTransformer = (
+const transformContentToSearchNodeParams = (
     contentNode: RepoNode<Content>,
     facets: ContentFacet[],
     locale: string
@@ -37,7 +39,7 @@ const searchNodeTransformer = (
     const { createdTime, modifiedTime, publish, ...rest } = contentNode;
 
     // Add a uuid to prevent name collisions
-    const name = `${contentNode._path.replace(/\//g, '_')}-${generateUUID()}`;
+    const name = `${contentNode._path.replace(/\//g, '_')}-${locale}-${generateUUID()}`;
 
     return {
         ...rest,
@@ -47,7 +49,7 @@ const searchNodeTransformer = (
         href: getHref(contentNode, locale),
         layerLocale: locale,
         _name: name,
-        _parentPath: `/${SEARCH_REPO_CONTENT_BASE_NODE}`,
+        _parentPath: SEARCH_REPO_CONTENT_PARENT_PATH,
         ...(createdTime && {
             createdTime: new Date(fixDateFormat(contentNode.createdTime)),
         }),
@@ -111,6 +113,10 @@ const getExistingSearchNodes = (
         })
         .hits.map((hit) => hit.id);
 
+    if (existingSearchNodeIds.length === 0) {
+        return [];
+    }
+
     const existingSearchNodes = searchRepoConnection.get<SearchNode>(existingSearchNodeIds);
 
     return existingSearchNodes ? forceArray(existingSearchNodes) : [];
@@ -145,9 +151,11 @@ export const createOrUpdateSearchNode = ({
         return { didUpdate: false };
     }
 
-    const searchNodeParams = searchNodeTransformer(contentNode, facets, locale);
+    const searchNodeParams = transformContentToSearchNodeParams(contentNode, facets, locale);
 
     const { contentPath, contentId } = searchNodeParams;
+
+    const contentLogString = `[${contentId}][${locale}] ${contentPath}`;
 
     if (existingSearchNodes.length === 1) {
         const searchNode = existingSearchNodes[0];
@@ -163,9 +171,9 @@ export const createOrUpdateSearchNode = ({
         return { didUpdate: true, searchNodeId: searchNode._id };
     } else if (existingSearchNodes.length > 1) {
         // If multiple search nodes exists for a content, something has gone wrong at some point
-        // in the past. Remove everything and notify the problem has occured.
+        // in the past. Remove everything, log that the problem has occured and create a new node.
         logger.critical(
-            `Multiple existing search nodes found for [${contentId}] ${contentPath} - ${existingSearchNodes
+            `Multiple existing search nodes found for ${contentLogString} - ${existingSearchNodes
                 .map((node) => node._id)
                 .join(', ')}`
         );
@@ -178,14 +186,18 @@ export const createOrUpdateSearchNode = ({
     try {
         const newSearchNode = searchRepoConnection.create(searchNodeParams);
         if (!newSearchNode) {
-            logger.critical(`Failed to create search node for content from ${contentPath}`);
+            logger.critical(`Failed to create search node for content ${contentLogString}`);
             return { didUpdate: false };
         }
 
-        logger.info(`Created search node for ${contentPath} with facets ${JSON.stringify(facets)}`);
+        logger.info(
+            `Created search node for content ${contentLogString} with facets ${JSON.stringify(
+                facets
+            )}`
+        );
         return { didUpdate: true, searchNodeId: newSearchNode._id };
     } catch (e) {
-        logger.critical(`Error while creating search node for content from ${contentPath} - ${e}`);
+        logger.critical(`Error while creating search node for content ${contentLogString} - ${e}`);
         return { didUpdate: false };
     }
 };
