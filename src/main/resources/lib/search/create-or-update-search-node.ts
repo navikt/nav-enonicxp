@@ -6,9 +6,8 @@ import {
     deleteSearchNode,
     facetsAreEqual,
     getSearchRepoConnection,
+    querySearchNodesForContent,
     SEARCH_REPO_CONTENT_BASE_NODE,
-    SEARCH_REPO_CONTENT_ID_KEY,
-    SEARCH_REPO_LOCALE_KEY,
 } from './search-utils';
 import { generateUUID } from '../utils/uuid';
 import { getPublicPath } from '../paths/public-path';
@@ -88,30 +87,9 @@ const getExistingSearchNodes = (
     locale: string,
     searchRepoConnection: RepoConnection
 ) => {
-    const existingSearchNodeIds = searchRepoConnection
-        .query({
-            start: 0,
-            count: 100,
-            filters: {
-                boolean: {
-                    must: [
-                        {
-                            hasValue: {
-                                field: SEARCH_REPO_CONTENT_ID_KEY,
-                                values: [contentId],
-                            },
-                        },
-                        {
-                            hasValue: {
-                                field: SEARCH_REPO_LOCALE_KEY,
-                                values: [locale],
-                            },
-                        },
-                    ],
-                },
-            },
-        })
-        .hits.map((hit) => hit.id);
+    const existingSearchNodeIds = querySearchNodesForContent(contentId, locale).hits.map(
+        (hit) => hit.id
+    );
 
     if (existingSearchNodeIds.length === 0) {
         return [];

@@ -63,21 +63,40 @@ export const deleteSearchNode = (nodeId: string, repo: RepoConnection) => {
     }
 };
 
-export const deleteSearchNodesForContent = (contentId: string) => {
-    const searchRepoConnection = getSearchRepoConnection();
-
-    searchRepoConnection
-        .query({
-            start: 0,
-            count: 1000,
-            filters: {
-                hasValue: {
-                    field: SEARCH_REPO_CONTENT_ID_KEY,
-                    values: [contentId],
-                },
+export const querySearchNodesForContent = (
+    contentId: string,
+    locale: string,
+    searchRepoConnection = getSearchRepoConnection()
+) =>
+    searchRepoConnection.query({
+        start: 0,
+        count: 1000,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: SEARCH_REPO_CONTENT_ID_KEY,
+                            values: [contentId],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: SEARCH_REPO_LOCALE_KEY,
+                            values: [locale],
+                        },
+                    },
+                ],
             },
-        })
-        .hits.forEach((node) => {
-            deleteSearchNode(node.id, searchRepoConnection);
-        });
+        },
+    });
+
+export const deleteSearchNodesForContent = (
+    contentId: string,
+    locale: string,
+    searchRepoConnection = getSearchRepoConnection()
+) => {
+    querySearchNodesForContent(contentId, locale, searchRepoConnection).hits.forEach((node) => {
+        deleteSearchNode(node.id, searchRepoConnection);
+    });
 };

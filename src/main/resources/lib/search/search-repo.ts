@@ -12,10 +12,10 @@ import {
 } from './search-utils';
 import { forceArray } from '../utils/array-utils';
 
-const baseNodeKey = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
-const deletionNodeKey = `/${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`;
-const stateNodeKey = `/${SEARCH_REPO_UPDATE_STATE_NODE}`;
-const configNodeKey = `/${SEARCH_REPO_CONFIG_NODE}`;
+const BASE_NODE_KEY = `/${SEARCH_REPO_CONTENT_BASE_NODE}`;
+const DELETION_QUEUE_NODE_KEY = `/${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`;
+const UPDATE_STATE_NODE_KEY = `/${SEARCH_REPO_UPDATE_STATE_NODE}`;
+const CONFIG_NODE_KEY = `/${SEARCH_REPO_CONFIG_NODE}`;
 
 type UpdateQueueEntry = {
     contentId: string;
@@ -29,13 +29,13 @@ type UpdateQueueState = {
 
 export const getUpdateQueue = () => {
     const repo = getSearchRepoConnection();
-    return repo.get<UpdateQueueState>(stateNodeKey);
+    return repo.get<UpdateQueueState>(UPDATE_STATE_NODE_KEY);
 };
 
 const setUpdateState = (state: UpdateQueueState) => {
     const repo = getSearchRepoConnection();
     repo.modify({
-        key: stateNodeKey,
+        key: UPDATE_STATE_NODE_KEY,
         editor: (node) => ({
             ...node,
             ...state,
@@ -95,19 +95,19 @@ const createSearchRepo = () => {
 };
 
 const createBaseNodes = (repo: RepoConnection) => {
-    if (!repo.exists(deletionNodeKey)) {
+    if (!repo.exists(DELETION_QUEUE_NODE_KEY)) {
         repo.create({ _name: SEARCH_REPO_DELETION_QUEUE_BASE_NODE });
         logger.info(`Created node in search repo: ${SEARCH_REPO_DELETION_QUEUE_BASE_NODE}`);
     }
-    if (!repo.exists(baseNodeKey)) {
+    if (!repo.exists(BASE_NODE_KEY)) {
         repo.create({ _name: SEARCH_REPO_CONTENT_BASE_NODE });
         logger.info(`Created node in search repo: ${SEARCH_REPO_CONTENT_BASE_NODE}`);
     }
-    if (!repo.exists(stateNodeKey)) {
+    if (!repo.exists(UPDATE_STATE_NODE_KEY)) {
         repo.create({ _name: SEARCH_REPO_UPDATE_STATE_NODE });
         logger.info(`Created node in search repo: ${SEARCH_REPO_UPDATE_STATE_NODE}`);
     }
-    if (!repo.exists(configNodeKey)) {
+    if (!repo.exists(CONFIG_NODE_KEY)) {
         repo.create({ _name: SEARCH_REPO_CONFIG_NODE });
         logger.info(`Created node in search repo: ${SEARCH_REPO_CONFIG_NODE}`);
     }

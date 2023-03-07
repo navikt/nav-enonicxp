@@ -43,6 +43,8 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         asAdmin: true,
     });
 
+    const locale = getLayersData().repoIdToLocaleMap[repoId];
+
     const contentNode = contentRepoConnection.get<Content>(contentId);
     if (
         !contentNode ||
@@ -50,11 +52,9 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         !isContentLocalized(contentNode)
     ) {
         logger.info(`No valid content found for id ${contentId} in ${repoId}`);
-        deleteSearchNodesForContent(contentId);
+        deleteSearchNodesForContent(contentId, locale);
         return;
     }
-
-    const locale = getLayersData().repoIdToLocaleMap[repoId];
 
     const matchedFacets = forceArray(searchConfig.data.fasetter).reduce((acc, facet) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
