@@ -5,8 +5,8 @@ import { createOrUpdateSchedule } from './schedule-job';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
 import { NodeEventData } from '../cache/utils';
-import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
+import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 
 const getPublish = (node: NodeEventData) => {
     const repo = getRepoConnection({

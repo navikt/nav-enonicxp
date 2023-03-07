@@ -1,10 +1,10 @@
 import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { forceArray } from '../../../utils/nav-utils';
 import {
     GlobalNumberValueItem,
     GlobalNumberValueSetData,
 } from '../../../../types/content-types/global-value-set';
+import { forceArray } from '../../../utils/array-utils';
 
 export const globalValueSetCallback: CreationCallback = (context, params) => {
     const valueItems: GraphQLResolver = {

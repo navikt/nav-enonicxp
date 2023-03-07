@@ -1,12 +1,12 @@
 import * as nodeLib from '/lib/xp/node';
 import { MultiRepoNodeQueryHit } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
-import { Content, BooleanFilter } from '/lib/xp/content';
+import { Content, BooleanFilter, BasicFilters } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray } from '../utils/array-utils';
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({
@@ -14,7 +14,7 @@ export const getLayersMultiConnection = (branch: RepoBranch) => {
     });
 };
 
-const nonLocalizedFilter = [
+export const NON_LOCALIZED_QUERY_FILTER: BasicFilters[] = [
     {
         hasValue: {
             field: 'inherit',
@@ -25,9 +25,9 @@ const nonLocalizedFilter = [
 
 type LocalizationState = 'localized' | 'nonlocalized' | 'all';
 
-const localizationStateFilter: Record<LocalizationState, BooleanFilter['boolean']> = {
-    localized: { mustNot: nonLocalizedFilter },
-    nonlocalized: { must: nonLocalizedFilter },
+const localizationStateFilters: Record<LocalizationState, BooleanFilter['boolean']> = {
+    localized: { mustNot: NON_LOCALIZED_QUERY_FILTER },
+    nonlocalized: { must: NON_LOCALIZED_QUERY_FILTER },
     all: {},
 };
 
@@ -53,7 +53,7 @@ export const getContentFromAllLayers = ({
             ids: {
                 values: [contentId],
             },
-            boolean: localizationStateFilter[state],
+            boolean: localizationStateFilters[state],
         },
     }).hits;
 
@@ -96,7 +96,7 @@ export const isContentLocalized = (content: Content) =>
 
 export type NodeHitsLocaleBuckets = Record<string, string[]>;
 
-export const sortMultiRepoNodeHitIdsToLocaleBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
+export const sortMultiRepoNodeHitIdsToRepoIdBuckets = (hits: readonly MultiRepoNodeQueryHit[]) => {
     return hits.reduce<NodeHitsLocaleBuckets>((acc, node) => {
         const { repoId, id } = node;
 

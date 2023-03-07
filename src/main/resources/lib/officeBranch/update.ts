@@ -3,10 +3,10 @@ import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
-import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
+import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 

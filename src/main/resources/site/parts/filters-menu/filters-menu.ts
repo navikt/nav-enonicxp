@@ -4,8 +4,8 @@ import { getRepoConnection } from '../../../lib/utils/repo-connection';
 import { NodeContent } from '/lib/xp/node';
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 import { generateUUID, isUUID } from '../../../lib/utils/uuid';
-import { forceArray } from '../../../lib/utils/nav-utils';
 import { getComponentConfigByPath } from '../../../lib/utils/component-utils';
+import { forceArray } from '../../../lib/utils/array-utils';
 
 const insertIdIfNotExist = (component: any) => {
     if (!isUUID(component.id)) {

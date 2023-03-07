@@ -4,20 +4,21 @@ import * as taskLib from '/lib/xp/task';
 import { getSearchConfig, revalidateSearchConfigCache } from './config';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { updateSearchNode } from './onContentUpdate';
-import { revalidateAllSearchNodes, revalidateAllSearchNodesAbort } from './onConfigUpdate';
+import { updateSearchNode } from './update-one';
+import { revalidateAllSearchNodesSync, revalidateAllSearchNodesAbort } from './update-all';
 import {
     clearSearchNodeUpdateQueue,
     getUpdateQueue,
     queueUpdateAll,
     queueUpdateForContent,
-} from './repo';
-import { forceArray } from '../utils/nav-utils';
+} from './search-repo';
+import { getLayersData } from '../localization/layers-data';
+import { forceArray } from '../utils/array-utils';
 
 let isActive = false;
 let isRunningConfigUpdate = false;
 
-export const searchNodesUpdateAbortEvent = 'abortSearchNodeUpdates';
+export const SEARCH_NODES_UPDATE_ABORT_EVENT = 'abortSearchNodeUpdates';
 
 const runQueuedUpdates = () => {
     const updateState = getUpdateQueue();
@@ -30,19 +31,21 @@ const runQueuedUpdates = () => {
 
     if (updateState.isQueuedUpdateAll) {
         logger.info('Running update all search-nodes task from queue');
-        runUpdateAllTask();
-    } else if (updateState.queuedContentIdUpdates) {
-        const contentIdsToUpdate = forceArray(updateState.queuedContentIdUpdates);
+        revalidateAllSearchNodesAsync();
+    } else if (updateState.queuedContentUpdates) {
+        const updateQueueEntries = forceArray(updateState.queuedContentUpdates);
         logger.info(
             `Running update search-nodes task from queue for content: ${JSON.stringify(
-                contentIdsToUpdate
+                updateQueueEntries
             )}`
         );
-        contentIdsToUpdate.forEach((contentId) => runUpdateSingleContentTask(contentId));
+        updateQueueEntries.forEach(({ contentId, repoId }) =>
+            runUpdateSingleContentTask(contentId, repoId)
+        );
     }
 };
 
-const runUpdateAllTask = () => {
+export const revalidateAllSearchNodesAsync = () => {
     if (isRunningConfigUpdate) {
         logger.warning(
             'Attempted to run concurrent update-all jobs - Queueing a new update-all job'
@@ -61,7 +64,7 @@ const runUpdateAllTask = () => {
             try {
                 const updateIsValid = revalidateSearchConfigCache();
                 if (updateIsValid) {
-                    revalidateAllSearchNodes();
+                    revalidateAllSearchNodesSync();
                 }
             } catch (e) {
                 logger.critical(`Error while running search config updates - ${e}`);
@@ -73,12 +76,12 @@ const runUpdateAllTask = () => {
     });
 };
 
-const runUpdateSingleContentTask = (contentId: string) => {
+const runUpdateSingleContentTask = (contentId: string, repoId: string) => {
     if (isRunningConfigUpdate) {
         logger.info(
-            `Attempted to update content while running update-all job - Queuing ${contentId} for later update`
+            `Attempted to update content while running update-all job - Queuing ${contentId} in ${repoId} for later update`
         );
-        queueUpdateForContent(contentId);
+        queueUpdateForContent(contentId, repoId);
         return;
     }
 
@@ -86,9 +89,11 @@ const runUpdateSingleContentTask = (contentId: string) => {
         description: `Update search node for ${contentId}`,
         func: () => {
             try {
-                updateSearchNode(contentId);
+                updateSearchNode(contentId, repoId);
             } catch (e) {
-                logger.critical(`Error while running search node update for ${contentId} - ${e}`);
+                logger.critical(
+                    `Error while running search node update for ${contentId} in ${repoId} - ${e}`
+                );
             }
         },
     });
@@ -124,23 +129,30 @@ export const activateSearchIndexEventHandlers = () => {
             }
 
             event.data.nodes.forEach((nodeData) => {
-                if (nodeData.repo !== CONTENT_ROOT_REPO_ID || nodeData.branch !== 'master') {
+                if (nodeData.branch !== 'master') {
                     return;
                 }
 
-                if (nodeData.id === searchConfig._id) {
-                    runUpdateAllTask();
+                if (nodeData.repo === CONTENT_ROOT_REPO_ID && nodeData.id === searchConfig._id) {
+                    revalidateAllSearchNodesAsync();
                     return;
                 }
 
-                runUpdateSingleContentTask(nodeData.id);
+                const { repoIdToLocaleMap } = getLayersData();
+
+                // Only nodes from a content repo should be indexed
+                if (!repoIdToLocaleMap[nodeData.repo]) {
+                    return;
+                }
+
+                runUpdateSingleContentTask(nodeData.id, nodeData.repo);
             });
         },
         localOnly: false,
     });
 
     eventLib.listener({
-        type: `custom.${searchNodesUpdateAbortEvent}`,
+        type: `custom.${SEARCH_NODES_UPDATE_ABORT_EVENT}`,
         callback: () => {
             revalidateAllSearchNodesAbort();
         },

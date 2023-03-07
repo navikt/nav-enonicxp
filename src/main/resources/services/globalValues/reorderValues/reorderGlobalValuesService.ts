@@ -1,9 +1,9 @@
 import { getRepoConnection } from '../../../lib/utils/repo-connection';
-import { forceArray, parseJsonArray } from '../../../lib/utils/nav-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { logger } from '../../../lib/utils/logging';
 import { GlobalValueItem } from '../../../lib/global-values/types';
+import { forceArray, parseJsonArray } from '../../../lib/utils/array-utils';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {

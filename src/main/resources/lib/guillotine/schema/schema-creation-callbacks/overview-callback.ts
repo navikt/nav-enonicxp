@@ -7,8 +7,8 @@ import {
     OverviewPageIllustrationIcon,
     OverviewPageProductData,
 } from '../../../product-utils/types';
-import { forceArray } from '../../../utils/nav-utils';
 import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
+import { forceArray } from '../../../utils/array-utils';
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlCreateObjectType<keyof OverviewPageIllustrationIcon['icon']>(context, {

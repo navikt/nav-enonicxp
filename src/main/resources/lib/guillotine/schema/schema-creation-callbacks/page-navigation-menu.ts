@@ -4,11 +4,11 @@ import { getRepoConnection } from '../../../utils/repo-connection';
 import { RepoConnection } from '/lib/xp/node';
 import * as contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
-import { forceArray } from '../../../utils/nav-utils';
 import { RepoBranch } from '../../../../types/common';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
 import { logger } from '../../../utils/logging';
+import { forceArray } from '../../../utils/array-utils';
 
 type AnchorLink = {
     anchorId: string;

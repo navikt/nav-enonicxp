@@ -5,11 +5,11 @@ import {
     findContentsWithFragmentComponent,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { forceArray } from '../../lib/utils/nav-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
+import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 

@@ -2,7 +2,7 @@ import { generateUUID } from '../utils/uuid';
 import { RepoBranch } from '../../types/common';
 import { timeTravelConfig } from './time-travel-config';
 import { timeTravelHooksEnabled } from './time-travel-hooks';
-import { getCurrentThreadId } from '../utils/nav-utils';
+import { getCurrentThreadId } from '../utils/mixed-bag-of-utils';
 import { logger } from '../utils/logging';
 
 export const runWithTimeTravel = (
