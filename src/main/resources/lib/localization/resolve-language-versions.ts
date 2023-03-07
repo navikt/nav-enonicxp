@@ -70,7 +70,7 @@ const getLegacyLanguages = (baseContent: Content) => {
 
         const languageContent = contentLib.get({ key: contentId });
         if (!languageContent) {
-            logger.error(
+            logger.warning(
                 `Content ${baseContent._path} has an invalid language version set: ${contentId}`
             );
             return acc;
