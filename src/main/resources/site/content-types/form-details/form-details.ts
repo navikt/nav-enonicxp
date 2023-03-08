@@ -42,9 +42,19 @@ export interface FormDetails {
             url: string;
 
             /**
+             * Tittel
+             */
+            title?: string;
+
+            /**
+             * Ingress
+             */
+            ingress?: string;
+
+            /**
              * Søknads- eller skjematype
              */
-            type: "digital" | "paper" | "addendum_digital" | "addendum_paper";
+            type: "digital" | "paper";
           }>;
         };
       }
@@ -63,19 +73,70 @@ export interface FormDetails {
            */
           variations?: Array<{
             /**
+             * Knappetekst
+             */
+            label: string;
+
+            /**
              * URL til skjema
              */
             url: string;
 
+            /**
+             * Tittel
+             */
+            title?: string;
+
+            /**
+             * Ingress
+             */
+            ingress?: string;
+
+            /**
+             * Klage- eller anketype
+             */
+            type: "complaint" | "appeal";
+          }>;
+        };
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "addendum";
+
+        /**
+         * Ettersendelse
+         */
+        addendum: {
+          /**
+           * Ettersendelsesvariasjoner
+           */
+          variations?: Array<{
             /**
              * Knappetekst
              */
             label: string;
 
             /**
-             * Klage- eller anketype
+             * URL til skjema
              */
-            type: "complaint" | "appeal" | "addendum";
+            url: string;
+
+            /**
+             * Tittel
+             */
+            title?: string;
+
+            /**
+             * Ingress
+             */
+            ingress?: string;
+
+            /**
+             * Type ettersendelse
+             */
+            type: "addendum_digital" | "addendum_paper";
           }>;
         };
       };
