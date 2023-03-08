@@ -1,14 +1,15 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import {
     appendMacroDescriptionToKey,
     findContentsWithFragmentComponent,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { forceArray } from '../../lib/utils/nav-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
 import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
-import { contentStudioEditPathPrefix } from '../../lib/constants';
+import { runInContext } from '../../lib/context/run-in-context';
+import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
+import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -21,7 +22,7 @@ const hitFromFragment = (fragment: Content<'portal:fragment'>, withDescription?:
             displayName: fragment.displayName,
             description: fragment._path,
         },
-        `${contentStudioEditPathPrefix}/${fragment._id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${fragment._id}`
     );
 
 const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
@@ -102,7 +103,7 @@ const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {
 export const get = (req: XP.CustomSelectorServiceRequest) => {
     const subPath = getSubPath(req);
 
-    return runInBranchContext(() => {
+    return runInContext({ branch: 'master' }, () => {
         if (subPath === 'fragmentUsage') {
             return getFragmentUsage(req);
         }
@@ -117,5 +118,5 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
                 hits: hits,
             },
         };
-    }, 'master');
+    });
 };

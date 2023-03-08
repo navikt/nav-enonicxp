@@ -3,7 +3,7 @@ export interface FrontPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 
   /**
    * Overskrift

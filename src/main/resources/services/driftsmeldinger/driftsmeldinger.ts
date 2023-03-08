@@ -1,19 +1,13 @@
-import portalLib from '/lib/xp/portal';
-import cacheLib from '/lib/cache';
-import contentLib, { Content } from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';
-import { forceArray } from '../../lib/utils/nav-utils';
+import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { forceArray } from '../../lib/utils/array-utils';
 
-const cacheKey = 'driftsmeldinger-cache';
-const driftsmeldingerPath = '/www.nav.no/no/driftsmeldinger';
-
-const cache = cacheLib.newCache({ size: 1, expire: 10 });
-
-export const clearDriftsmeldingerCache = () => {
-    cache.clear();
-};
-
-const maxMessages = 100;
+const CACHE_KEY = 'driftsmeldinger-cache';
+const DRIFTSMELDINGER_PATH = '/www.nav.no/no/driftsmeldinger';
+const MAX_MESSAGES = 100;
 
 type MessageContent = Content<'no.nav.navno:melding'>;
 
@@ -34,9 +28,9 @@ const transformMessageContent = (message: MessageContent): Message => {
 };
 
 export const get = () => {
-    const body = cache.get(cacheKey, () => {
+    const body = getFromLocalCache(CACHE_KEY, () => {
         const result = contentLib.getChildren({
-            key: driftsmeldingerPath,
+            key: DRIFTSMELDINGER_PATH,
             count: 1000,
             sort: '_manualordervalue DESC',
         });
@@ -49,7 +43,7 @@ export const get = () => {
                         : acc,
                 [] as Message[]
             )
-            .slice(0, maxMessages);
+            .slice(0, MAX_MESSAGES);
     });
 
     return {

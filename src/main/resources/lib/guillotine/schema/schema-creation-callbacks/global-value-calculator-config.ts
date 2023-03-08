@@ -4,7 +4,7 @@ import {
     getGlobalNumberValue,
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../global-values/global-value-utils';
-import { runInBranchContext } from '../../../utils/branch-context';
+import { runInContext } from '../../../context/run-in-context';
 import { logger } from '../../../utils/logging';
 
 export const globalValueCalculatorConfigCallback: CreationCallback = (context, params) => {
@@ -25,9 +25,8 @@ export const globalValueCalculatorConfigCallback: CreationCallback = (context, p
                 return null;
             }
 
-            const value = runInBranchContext(
-                () => getGlobalNumberValue(gvKey, contentId),
-                'master'
+            const value = runInContext({ branch: 'master' }, () =>
+                getGlobalNumberValue(gvKey, contentId)
             );
             if (value === null) {
                 logger.error(

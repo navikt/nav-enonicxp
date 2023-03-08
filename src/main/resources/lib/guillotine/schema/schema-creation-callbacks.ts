@@ -15,7 +15,8 @@ import {
 } from './schema-creation-callbacks/main-article-chapter';
 import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
 import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
-import { contactInformationCallback } from './schema-creation-callbacks/contact-information';
+import { contactInformationTelephoneCallback } from './schema-creation-callbacks/contact-information-telephone';
+import { contactInformationChatCallback } from './schema-creation-callbacks/contact-information-chat';
 import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
 import { globalValueSetCallback } from './schema-creation-callbacks/global-values';
 import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
@@ -59,30 +60,28 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
-    no_nav_navno_ContactInformation_Telefonnummer: contactInformationCallback,
-    no_nav_navno_MainArticle_InnholdIHoyremenyen: menuListDataCallback,
-    no_nav_navno_PageList_InnholdIHoyremenyen: menuListDataCallback,
+    no_nav_navno_ContactInformation_Telephone: contactInformationTelephoneCallback,
+    no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,
+    no_nav_navno_PageList_MenuListItems: menuListDataCallback,
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
     no_nav_navno_GlobalCaseTimeSet: globalCaseTimeSetCallback,
-    no_nav_navno_Calculator_GlobalVerdi: globalValueCalculatorConfigCallback,
+    no_nav_navno_Calculator_GlobalValue: globalValueCalculatorConfigCallback,
     Part_no_nav_navno_areapage_situation_card: areapageSituationCardPartCallback,
-    Part_no_nav_navno_dynamic_news_list_InnholdslisteForNyheter: contentListCallback(
+    Part_no_nav_navno_dynamic_news_list_ContentList: contentListCallback(
         'target',
         'numLinks',
         'publish.first'
     ),
-    Part_no_nav_navno_dynamic_link_list_HentLenkerFraInnholdsliste: contentListCallback(
-        'target',
-        'numLinks'
-    ),
+    Part_no_nav_navno_dynamic_link_list_ContentList: contentListCallback('target', 'numLinks'),
+    Part_no_nav_navno_contact_option_Chat: contactInformationChatCallback,
     Part_no_nav_navno_frontpage_current_topics: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_frontpage_shortcuts: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
-    Part_no_nav_navno_page_navigation_menu_OverstyrLenketekster: anchorLinksCallback,
+    Part_no_nav_navno_page_navigation_menu_AnchorLinks: anchorLinksCallback,
     Page_no_nav_navno_page_with_side_menus: pageNavigationMenuCallback,
-    Page_no_nav_navno_page_with_side_menus_OverstyrLenketekster: anchorLinksCallback,
-    Part_no_nav_navno_product_card_micro_ValgtSide: microCardTargetPageCallback,
-    Part_no_nav_navno_filters_menu_Filter: filterCallback,
+    Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
+    Part_no_nav_navno_product_card_micro_CardList: microCardTargetPageCallback,
+    Part_no_nav_navno_filters_menu_Filters: filterCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,

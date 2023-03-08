@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import {
     getGlobalValueItem,
     getGlobalValueSet,
@@ -6,12 +7,13 @@ import {
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
-import { forceArray, generateFulltextQuery } from '../../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { generateFulltextQuery } from '../../../lib/utils/mixed-bag-of-utils';
+import { runInContext } from '../../../lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 import { customSelectorHitWithLink } from '../../service-utils';
-import { contentStudioEditPathPrefix } from '../../../lib/constants';
+import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../../lib/constants';
+import { forceArray } from '../../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -33,7 +35,7 @@ const hitFromValueItem = (
             displayName: `${displayName} - ${valueItem.key}`,
             description: buildGlobalValuePreviewString(valueItem),
         },
-        `${contentStudioEditPathPrefix}/${content._id}`
+        `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`
     );
 };
 
@@ -105,12 +107,10 @@ export const globalValueSelectorService = (req: XP.Request) => {
 
     const withDescription = req.params.withDescription === 'true';
 
-    const hits = runInBranchContext(
-        () =>
-            ids
-                ? getHitsFromSelectedIds(ids, withDescription)
-                : getHitsFromQuery(contentType, query, withDescription),
-        'master'
+    const hits = runInContext({ branch: 'master' }, () =>
+        ids
+            ? getHitsFromSelectedIds(ids, withDescription)
+            : getHitsFromQuery(contentType, query, withDescription)
     );
 
     return {

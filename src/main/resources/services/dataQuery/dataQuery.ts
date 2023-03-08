@@ -1,13 +1,22 @@
 import cacheLib from '/lib/cache';
-import nodeLib, { RepoNode } from '/lib/xp/node';
+import { getRepoConnection } from '../../lib/utils/repo-connection';
+import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { parseJsonArray } from '../../lib/utils/nav-utils';
-import { runInBranchContext } from '../../lib/utils/branch-context';
+import { runInContext } from '../../lib/context/run-in-context';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import { batchedContentQuery, batchedNodeQuery } from '../../lib/utils/batched-query';
+import { batchedContentQuery, batchedMultiRepoNodeQuery } from '../../lib/utils/batched-query';
 import { contentTypesInDataQuery } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import {
+    getLayersMultiConnection,
+    NodeHitsLocaleBuckets,
+    sortMultiRepoNodeHitIdsToRepoIdBuckets,
+} from '../../lib/localization/locale-utils';
+import { getLayersData } from '../../lib/localization/layers-data';
+import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { parseJsonArray } from '../../lib/utils/array-utils';
 
 type Branch = 'published' | 'unpublished' | 'archived';
 
@@ -18,6 +27,8 @@ type RunQueryParams = {
     batch: number;
     types?: ContentDescriptor[];
 };
+
+type ContentWithLocaleData = Content & { layerLocale: string; publicPath: string };
 
 const RESPONSE_BATCH_SIZE = 1000;
 
@@ -38,12 +49,13 @@ const contentIdsCache = cacheLib.newCache({
 const buildQuery = (queryStrings: (string | undefined)[]) =>
     queryStrings.filter(Boolean).join(' AND ');
 
-const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
-    const result = batchedNodeQuery({
-        repoParams: {
-            repoId: 'com.enonic.cms.default',
-            branch: branch === 'published' ? 'master' : 'draft',
-        },
+const getNodeHitsFromQuery = ({ query, branch, types, requestId }: RunQueryParams) => {
+    const repoBranch = branch === 'published' ? 'master' : 'draft';
+
+    const repoConnection = getLayersMultiConnection(repoBranch);
+
+    const result = batchedMultiRepoNodeQuery({
+        repo: repoConnection,
         queryParams: {
             query:
                 buildQuery([
@@ -62,19 +74,27 @@ const getContentIdsFromQuery = ({ query, branch, types, requestId }: RunQueryPar
                             },
                         },
                     }),
-                    ...(branch === 'unpublished' && {
-                        mustNot: {
-                            exists: {
-                                field: 'publish.from',
+                    mustNot: [
+                        {
+                            hasValue: {
+                                field: 'inherit',
+                                values: ['CONTENT'],
                             },
                         },
-                    }),
+                        ...(branch === 'unpublished'
+                            ? [
+                                  {
+                                      exists: {
+                                          field: 'publish.from',
+                                      },
+                                  },
+                              ]
+                            : []),
+                    ],
                 },
             },
         },
-    })
-        .hits.map((hit) => hit.id)
-        .sort();
+    }).hits;
 
     logger.info(`Data query: Total hits for request ${requestId}: ${result.length}`);
 
@@ -95,62 +115,104 @@ const transformRepoNode = (node: RepoNode<Content>): Content => {
     return content;
 };
 
-const runArchiveQuery = (contentIdsBatch: string[]) => {
-    const repo = nodeLib.connect({
-        repoId: 'com.enonic.cms.default',
-        branch: 'draft',
-    });
+const runArchiveQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
+    const { repoIdToLocaleMap } = getLayersData();
 
-    const result = repo.get<RepoNode<Content>>(contentIdsBatch);
+    return Object.entries(nodeHitsLocaleBuckets).reduce<ContentWithLocaleData[]>(
+        (acc, [repoId, nodeIds]) => {
+            const locale = repoIdToLocaleMap[repoId];
 
-    if (!result) {
-        return [];
-    }
+            const repo = getRepoConnection({
+                repoId,
+                branch: 'draft',
+            });
 
-    if (!Array.isArray(result)) {
-        return [transformRepoNode(result)];
-    }
+            const result = repo.get<RepoNode<Content>>(nodeIds);
+            if (!result) {
+                return acc;
+            }
 
-    return result.map((hit) => transformRepoNode(hit));
+            const hits = Array.isArray(result)
+                ? result.map(transformRepoNode)
+                : [transformRepoNode(result)];
+
+            const hitsWithRepoIds = hits.map((content) => {
+                return {
+                    ...content,
+                    layerLocale: locale,
+                    publicPath: getPublicPath(content, locale),
+                };
+            });
+
+            return [...acc, ...hitsWithRepoIds];
+        },
+        []
+    );
 };
 
-const runContentQuery = (contentIdsBatch: string[]) => {
-    return batchedContentQuery({
-        count: RESPONSE_BATCH_SIZE,
-        filters: {
-            ids: {
-                values: contentIdsBatch,
-            },
+const runContentQuery = (nodeHitsLocaleBuckets: NodeHitsLocaleBuckets) => {
+    const { repoIdToLocaleMap } = getLayersData();
+
+    return Object.entries(nodeHitsLocaleBuckets).reduce<ContentWithLocaleData[]>(
+        (acc, [repoId, nodeIds]) => {
+            const locale = repoIdToLocaleMap[repoId];
+
+            const result = runInLocaleContext({ locale }, () =>
+                batchedContentQuery({
+                    count: RESPONSE_BATCH_SIZE,
+                    filters: {
+                        ids: {
+                            values: nodeIds,
+                        },
+                    },
+                })
+            );
+
+            const hitsWithRepoIds = result.hits.map((content) => {
+                return {
+                    ...content,
+                    layerLocale: locale,
+                    publicPath: getPublicPath(content, locale),
+                };
+            });
+
+            return [...acc, ...hitsWithRepoIds];
         },
-    }).hits;
+        []
+    );
 };
 
 const runQuery = (params: RunQueryParams) => {
     const { requestId, batch, branch } = params;
 
-    const contentIds = contentIdsCache.get(requestId, () => getContentIdsFromQuery(params));
+    const nodeHits = contentIdsCache.get(requestId, () => getNodeHitsFromQuery(params));
 
     const start = batch * RESPONSE_BATCH_SIZE;
     const end = start + RESPONSE_BATCH_SIZE;
 
-    const contentIdsBatch = contentIds.slice(start, end);
+    const nodeHitsBatch = nodeHits.slice(start, end);
+    const nodeHitsLocaleBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHitsBatch);
 
-    const hits =
-        branch === 'archived' ? runArchiveQuery(contentIdsBatch) : runContentQuery(contentIdsBatch);
+    const contentHits =
+        branch === 'archived'
+            ? runArchiveQuery(nodeHitsLocaleBuckets)
+            : runContentQuery(nodeHitsLocaleBuckets);
 
-    if (hits.length !== contentIdsBatch.length) {
-        const diff = contentIdsBatch.filter((id) => !hits.find((hit) => hit._id === id));
+    if (contentHits.length !== nodeHitsBatch.length) {
+        const diff = nodeHitsBatch.filter(
+            (node) => !contentHits.find((hit) => hit._id === node.id)
+        );
         logger.warning(
-            `Data query: missing results from contentLib query for ${
+            `Data query: missing results from content query for ${
                 diff.length
             } ids: ${JSON.stringify(diff)}`
         );
     }
 
     return {
-        hits,
-        total: contentIds.length,
-        hasMore: contentIds.length > end,
+        hits: contentHits,
+        total: nodeHits.length,
+        hasMore: nodeHits.length > end,
     };
 };
 
@@ -221,16 +283,14 @@ export const get = (req: XP.Request) => {
     try {
         logger.info(`Data query: running query for request id ${requestId}, batch ${batch}`);
 
-        const result = runInBranchContext(
-            () =>
-                runQuery({
-                    requestId,
-                    query,
-                    branch,
-                    batch: Number(batch),
-                    types: typesParsed,
-                }),
-            branch === 'published' ? 'master' : 'draft'
+        const result = runInContext({ branch: branch === 'published' ? 'master' : 'draft' }, () =>
+            runQuery({
+                requestId,
+                query,
+                branch,
+                batch: Number(batch),
+                types: typesParsed,
+            })
         );
 
         logger.info(

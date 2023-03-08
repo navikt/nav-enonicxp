@@ -1,6 +1,6 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 
 export const areapageSituationCardPartCallback: CreationCallback = (context, params) => {

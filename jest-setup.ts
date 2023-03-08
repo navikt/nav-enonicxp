@@ -1,5 +1,11 @@
-// eslint-disable-next-line no-undef
-// @ts-ignore
+// @ts-nocheck
+
 global.Java = {
     type: () => ({}),
+};
+
+global.log = {
+    info: () => ({}),
+    warning: () => ({}),
+    error: () => ({}),
 };

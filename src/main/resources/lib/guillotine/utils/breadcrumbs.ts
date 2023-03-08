@@ -1,8 +1,10 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { contentTypesWithBreadcrumbs } from '../../contenttype-lists';
-import { componentAppKey, navnoRootPath } from '../../constants';
-import { getParentPath, stringArrayToSet, stripPathPrefix } from '../../utils/nav-utils';
+import { COMPONENT_APP_KEY, NAVNO_ROOT_PATH } from '../../constants';
 import { logger } from '../../utils/logging';
+import { getParentPath, stripPathPrefix } from '../../paths/path-utils';
+import { stringArrayToSet } from '../../utils/array-utils';
 
 type Breadcrumb = {
     title: string;
@@ -13,13 +15,13 @@ const allowedContentTypes = stringArrayToSet(contentTypesWithBreadcrumbs);
 
 // The breadcrumbs trail should stop when we hit any of these paths
 const rootPaths = stringArrayToSet([
-    navnoRootPath,
-    `${navnoRootPath}/no/person`,
-    `${navnoRootPath}/no/bedrift`,
-    `${navnoRootPath}/no/samarbeidspartner`,
-    `${navnoRootPath}/no/nav-og-samfunn`,
-    `${navnoRootPath}/en/home`,
-    `${navnoRootPath}/se/samegiella`,
+    NAVNO_ROOT_PATH,
+    `${NAVNO_ROOT_PATH}/no/person`,
+    `${NAVNO_ROOT_PATH}/no/bedrift`,
+    `${NAVNO_ROOT_PATH}/no/samarbeidspartner`,
+    `${NAVNO_ROOT_PATH}/no/nav-og-samfunn`,
+    `${NAVNO_ROOT_PATH}/en/home`,
+    `${NAVNO_ROOT_PATH}/se/samegiella`,
 ]);
 
 const generateBreadcrumb = (content: Content): Breadcrumb => ({
@@ -30,7 +32,7 @@ const generateBreadcrumb = (content: Content): Breadcrumb => ({
 const getParentContent = (content: Content): Content | null => {
     // If the virtualParent field is set, we use this to generate parent breadcrumb segments
     // instead of the actual parent of the content
-    const virtualParentRef = content.x?.[componentAppKey]?.virtualParent?.virtualParent;
+    const virtualParentRef = content.x?.[COMPONENT_APP_KEY]?.virtualParent?.virtualParent;
     if (virtualParentRef) {
         const virtualParentContent = contentLib.get({ key: virtualParentRef });
 

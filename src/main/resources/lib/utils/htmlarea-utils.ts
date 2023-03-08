@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { batchedContentQuery } from './batched-query';
 
 export const htmlAreaComponentPaths = [
@@ -15,7 +15,7 @@ export const htmlAreaNodePaths = [
 
 const htmlAreaNodePathsString = htmlAreaNodePaths.join(',');
 
-export const findContentsWithHtmlAreaText = (text: string) => {
+export const findContentsWithHtmlAreaText = (text: string, searchInFragments: boolean) => {
     if (!text) {
         return [];
     }
@@ -25,6 +25,10 @@ export const findContentsWithHtmlAreaText = (text: string) => {
         count: 1000,
         query: `fulltext('${htmlAreaNodePathsString}', '"${text}"', 'AND')`,
     }).hits;
+
+    if (!searchInFragments) {
+        return queryHits;
+    }
 
     // Workaround for searching htmlarea fragments. Query strings or filters don't seem to pick
     // up component config-fields in fragments...
@@ -42,5 +46,5 @@ export const findContentsWithHtmlAreaText = (text: string) => {
 };
 
 export const findContentsWithFragmentMacro = (fragmentId: string) => {
-    return findContentsWithHtmlAreaText(fragmentId);
+    return findContentsWithHtmlAreaText(fragmentId, false);
 };

@@ -99,6 +99,9 @@ fragment macros on Macro {
                 unit
             }
         }
+        tall {
+            verdi
+        }
         varselBoks {
             varselBoks
         }

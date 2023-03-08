@@ -1,10 +1,12 @@
-import nodeLib, { RepoNode } from '/lib/xp/node';
+import { getRepoConnection } from '../../../../lib/utils/repo-connection';
+import { RepoNode } from '/lib/xp/node';
 import thymeleafLib from '/lib/thymeleaf';
 import { sanitize } from '/lib/xp/common';
-import { forceArray, getParentPath } from '../../../../lib/utils/nav-utils';
+import { forceArray } from '../../../../lib/utils/array-utils';
 import { validateCurrentUserPermissionForContent } from '../../../../lib/utils/auth-utils';
 import { batchedNodeQuery } from '../../../../lib/utils/batched-query';
 import { isUUID } from '../../../../lib/utils/uuid';
+import { getParentPath } from '../../../../lib/paths/path-utils';
 
 type ArchiveEntry = {
     name: string;
@@ -28,7 +30,7 @@ const buildQueryString = (query?: string) => {
 };
 
 const queryArchive = ({ query, repoId }: { query?: string; repoId: string }): ArchiveEntry[] => {
-    const repo = nodeLib.connect({ repoId, branch: 'draft' });
+    const repo = getRepoConnection({ repoId, branch: 'draft' });
 
     const archivedContentIds = batchedNodeQuery({
         repo,

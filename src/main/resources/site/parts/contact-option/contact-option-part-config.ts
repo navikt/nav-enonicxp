@@ -15,9 +15,19 @@ export interface ContactOptionPartConfig {
          */
         chat: {
           /**
+           * Velg chat med oss
+           */
+          sharedContactInformation?: string;
+
+          /**
            * Overstyr ingress
            */
           ingress?: string;
+
+          /**
+           * -
+           */
+          title?: undefined;
         };
       }
     | {

@@ -1,9 +1,9 @@
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import { getNodeKey, getTargetUnixTime } from '../utils/version-utils';
-import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { nodeLibConnectStandard } from './standard-functions';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
+import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 
 // Stores config-objects for time travel for threads that requested content from
 // a certain timestamp. Keyed with thread-id. Any thread with an entry in this map

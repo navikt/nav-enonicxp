@@ -1,11 +1,12 @@
 import { RepoBranch } from '../../types/common';
-import { runInBranchContext } from '../utils/branch-context';
-import { getUnixTimeFromDateTimeString, stringArrayToSet } from '../utils/nav-utils';
+import { runInContext } from '../context/run-in-context';
 import { Content } from '/lib/xp/content';
 import { timeTravelHooksEnabled } from './time-travel-hooks';
 import { graphQlContentQueries } from '../guillotine/queries/run-content-query';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard } from './standard-functions';
+import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
+import { stringArrayToSet } from '../utils/array-utils';
 
 const contentTypesWithQuery = stringArrayToSet(Object.keys(graphQlContentQueries));
 
@@ -25,7 +26,7 @@ export const validateTimestampConsistency = (
         return true;
     }
 
-    const contentRaw = runInBranchContext(() => contentLibGetStandard({ key: contentRef }), branch);
+    const contentRaw = runInContext({ branch }, () => contentLibGetStandard({ key: contentRef }));
 
     // If neither content exists we're good
     if (!contentRaw && !contentFromHookedLibs) {

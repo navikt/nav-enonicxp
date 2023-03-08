@@ -1,20 +1,20 @@
-import portalLib from '/lib/xp/portal';
-import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
-import contentLib, { Content } from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
+import { getRepoConnection } from '../utils/repo-connection';
+import { NodeContent, RepoNode } from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
-import { runInBranchContext } from '../utils/branch-context';
-import { contentRepo } from '../constants';
-import { forceArray } from '../utils/nav-utils';
+import { runInContext } from '../context/run-in-context';
+import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../constants';
+import { forceArray } from '../utils/array-utils';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
 type SituationPageContent = Content<'no.nav.navno:situation-page'>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
 type SituationCardPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
-
-const masterLanguage = 'no';
 
 const getSituationsLayout = (
     components: NodeComponent[],
@@ -38,7 +38,7 @@ const getSituationsLayout = (
 };
 
 const getRelevantSituationPages = (content: AreaPageNodeContent) =>
-    runInBranchContext(() => {
+    runInContext({ branch: 'master' }, () => {
         const { language: requestedLanguage, data } = content;
         const { area, audience } = data;
 
@@ -64,7 +64,7 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
                         {
                             hasValue: {
                                 field: 'language',
-                                values: [masterLanguage],
+                                values: [CONTENT_LOCALE_DEFAULT],
                             },
                         },
                     ],
@@ -80,7 +80,7 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
             },
         }).hits;
 
-        if (requestedLanguage === masterLanguage) {
+        if (requestedLanguage === CONTENT_LOCALE_DEFAULT) {
             return situationPages;
         }
 
@@ -107,7 +107,7 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
         });
 
         return requestedLanguageSituationPages;
-    }, 'master');
+    });
 
 const buildSituationCardPart = (path: string, target: string): SituationCardPartComponent => ({
     type: 'part',
@@ -213,7 +213,7 @@ const populateSituationsLayout = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: contentRepo, branch: 'draft' });
+    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
     if (!nodeContent?.components) {

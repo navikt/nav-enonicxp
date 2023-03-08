@@ -1,7 +1,8 @@
 import graphQlLib from '/lib/graphql';
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { logger } from '../../../utils/logging';
+import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
 
 export const officeBranchCallback: CreationCallback = (context, params) => {
     params.fields.editorial = {
@@ -17,7 +18,7 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
                 return;
             }
 
-            const { language = 'no' } = officeDataContent;
+            const { language = CONTENT_LOCALE_DEFAULT } = officeDataContent;
 
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],

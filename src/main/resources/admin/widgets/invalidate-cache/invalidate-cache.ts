@@ -1,21 +1,27 @@
-import contentLib from '/lib/xp/content';
-import portalLib from '/lib/xp/portal';
+import * as contentLib from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
 import thymeleafLib from '/lib/thymeleaf';
-import { runInBranchContext } from '../../../lib/utils/branch-context';
+import { getLayersData } from '../../../lib/localization/layers-data';
+import { runInLocaleContext } from '../../../lib/localization/locale-context';
 
 const view = resolve('./invalidate-cache.html');
 
 export const get = (req: XP.Request) => {
-    const { contentId } = req.params;
+    const { contentId, repository } = req.params;
 
-    if (!contentId) {
+    if (!contentId || !repository) {
         return {
-            body: '<widget>Ikke tilgjengelig</widget>',
+            body: '<widget>Ikke tilgjengelig, contentId eller repository mangler</widget>',
             contentType: 'text/html',
         };
     }
 
-    const content = runInBranchContext(() => contentLib.get({ key: contentId }), 'master');
+    const { repoIdToLocaleMap } = getLayersData();
+    const locale = repoIdToLocaleMap[repository];
+
+    const content = runInLocaleContext({ locale, branch: 'master' }, () =>
+        contentLib.get({ key: contentId })
+    );
 
     if (!content) {
         return {
@@ -27,6 +33,7 @@ export const get = (req: XP.Request) => {
     const model = {
         invalidate: portalLib.serviceUrl({ service: 'invalidateCache' }),
         contentId,
+        locale,
     };
 
     return {

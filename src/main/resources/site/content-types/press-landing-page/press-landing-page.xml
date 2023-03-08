@@ -1,0 +1,67 @@
+<content-type>
+    <display-name>Landingsside for presse</display-name>
+    <description>Side-type for pressevaktinfo, pressemeldinger etc</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+         <field-set>
+            <label>Tittel</label>
+            <items>
+                <input type="TextLine" name="title">
+                <label>Sett side-tittel</label>
+                <occurrences minimum="0" maximum="1"/>
+            </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Pressevakt</label>
+            <items>
+                <input type="HtmlArea" name="pressCall">
+                    <label>Informasjon om pressevakt</label>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Nyheter</label>
+            <items>
+                <input type="TextLine" name="maxNewsCount">
+                    <label>Hvor mange nyheter i listen er tillatt</label>
+                    <default>5</default>
+                </input>
+                <input type="ContentSelector" name="pressNews">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+                <input type="TextLine" name="moreNewsUrl">
+                    <label>Url til flere nyheter</label>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Snarveier</label>
+            <items>
+                <input type="TextLine" name="maxShortcutsCount">
+                    <label>Hvor mange snarveier i listen er tillatt</label>
+                    <default>3</default>
+                </input>
+                <input type="ContentSelector" name="shortcuts">
+                    <label>Velg innhold</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <config>
+                        <allowContentType>${app}:content-list</allowContentType>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+        <mixin name="custom-path-selector-required"/>
+        <mixin name="audience"/>
+        <mixin name="owner"/>
+        <mixin name="managed-by"/>
+        <mixin name="languages-legacy"/>
+    </form>
+</content-type>

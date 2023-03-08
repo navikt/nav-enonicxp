@@ -2,7 +2,7 @@ log.info('Started running main');
 
 import './lib/polyfills';
 
-import clusterLib from '/lib/xp/cluster';
+import * as clusterLib from '/lib/xp/cluster';
 import { startOfficeInfoPeriodicUpdateSchedule } from './lib/officeInformation';
 import { activateCacheEventListeners } from './lib/cache/invalidate-event-handlers';
 import {
@@ -13,42 +13,38 @@ import { startReliableEventAckListener } from './lib/events/reliable-custom-even
 import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
-import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
+import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
-
+import { activateSearchIndexEventHandlers } from './lib/search/search-event-handlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
-import {
-    activateFacetsEventListener,
-    clearFacetUpdateState,
-    getFacetValidation,
-} from './lib/facets';
+import { initSearchRepo } from './lib/search/search-repo';
+import { initLayersData } from './lib/localization/layers-data';
+import { activateLayersEventListeners } from './lib/localization/publish-events';
 
 updateClusterInfo();
+initLayersData();
+activateLayersEventListeners();
 
 startReliableEventAckListener();
 activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
-activateFacetsEventListener();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
 if (clusterLib.isMaster()) {
-    // make sure the updateAll lock is released on startup, and clear the
-    // list of recently validated nodes
-    const facetValidation = getFacetValidation();
-    if (facetValidation) {
-        clearFacetUpdateState();
-    }
-
+    log.info('Running master only init scripts');
+    initSearchRepo();
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
     // Todo: Activate this only when we're going live with the new office branch.
     // createOfficeBranchFetchSchedule(); // Temp disable fetch schedule
 }
+
+activateSearchIndexEventHandlers();
 
 log.info('Finished running main');
 

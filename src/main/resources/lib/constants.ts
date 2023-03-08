@@ -21,18 +21,25 @@ const revalidatorProxyOrigin = {
     localhost: 'http://localhost:3002',
 }[env];
 
-export const urls = {
-    frontendOrigin,
-    xpOrigin,
-    revalidatorProxyOrigin,
-    portalAdminOrigin,
-};
+export const URLS = Object.freeze({
+    FRONTEND_ORIGIN: frontendOrigin,
+    XP_ORIGIN: xpOrigin,
+    REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigin,
+    PORTAL_ADMIN_ORIGIN: portalAdminOrigin,
+});
 
-export const componentAppKey = 'no-nav-navno';
-export const appDescriptor = 'no.nav.navno';
-export const contentRepo = 'com.enonic.cms.default';
-export const navnoRootPath = '/www.nav.no';
-export const redirectsRootPath = `${navnoRootPath}/redirects`;
-export const frontendAppName = 'nav-enonicxp-frontend';
-export const contentStudioEditPathPrefix =
+export const COMPONENT_APP_KEY = 'no-nav-navno';
+export const APP_DESCRIPTOR = 'no.nav.navno';
+
+export const CONTENT_REPO_PREFIX = 'com.enonic.cms';
+export const CONTENT_ROOT_PROJECT_ID = 'default';
+export const CONTENT_ROOT_REPO_ID = `${CONTENT_REPO_PREFIX}.${CONTENT_ROOT_PROJECT_ID}`;
+
+export const CONTENT_LOCALE_DEFAULT = 'no';
+
+export const SEARCH_REPO_ID = 'nav.no.search';
+export const NAVNO_ROOT_PATH = '/www.nav.no';
+export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}/redirects`;
+export const FRONTEND_APP_NAME = 'nav-enonicxp-frontend';
+export const CONTENT_STUDIO_EDIT_PATH_PREFIX =
     '/admin/tool/com.enonic.app.contentstudio/main/default/edit';

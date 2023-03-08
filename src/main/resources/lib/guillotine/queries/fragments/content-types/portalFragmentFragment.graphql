@@ -1,3 +1,0 @@
-fragment contentPortalFragment on portal_Fragment {
-    type
-}

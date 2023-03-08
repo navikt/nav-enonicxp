@@ -1,12 +1,14 @@
-import contentLib, { Content } from '/lib/xp/content';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
-import contextLib from '/lib/xp/context';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import { getRepoConnection } from '../../../utils/repo-connection';
+import { RepoConnection } from '/lib/xp/node';
+import * as contextLib from '/lib/xp/context';
 import graphQlLib from '/lib/graphql';
-import { forceArray } from '../../../utils/nav-utils';
 import { RepoBranch } from '../../../../types/common';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { NodeComponent } from '../../../../types/components/component-node';
 import { logger } from '../../../utils/logging';
+import { forceArray } from '../../../utils/array-utils';
 
 type AnchorLink = {
     anchorId: string;
@@ -156,7 +158,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
         }
 
         const context = contextLib.get();
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: context.repository,
             branch: context.branch as RepoBranch,
         });
@@ -184,7 +186,7 @@ export const pageNavigationMenuCallback: CreationCallback = (context, params) =>
                     `Duplicate anchor id ${anchorId} found under content id ${contentId}`,
                     false,
                     true
-            );
+                );
             }
 
             return [

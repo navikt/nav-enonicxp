@@ -10,13 +10,17 @@
  * after every "time travel"-requesting thread. Keep in mind thread-ids are reused and the http-server is
  * multithreaded. Make sure you understand what you're doing if you make any changes. :)
  *
+ * TODO: See if this can be rewritten to a safer approach using the XP context library for request
+ * state, rather than the current thread-id based approach
+ *
  * */
 
-import contentLib from '/lib/xp/content';
-import nodeLib, { RepoConnection } from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
+import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
-import { runInBranchContext } from '../utils/branch-context';
-import { getCurrentThreadId } from '../utils/nav-utils';
+import { runInContext } from '../context/run-in-context';
+import { getCurrentThreadId } from '../utils/mixed-bag-of-utils';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
@@ -34,7 +38,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
 
     timeTravelHooksEnabled = true;
 
-    contentLib.get = function (args) {
+    (contentLib.get as typeof contentLibGetStandard) = function (args) {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
 
@@ -76,17 +80,15 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
 
         // If a content node version from the requested time was found, retrieve this
         // content with standard functionality
-        return runInBranchContext(
-            () =>
-                contentLibGetStandard({
-                    key: requestedVersion.nodeId,
-                    versionId: requestedVersion.versionId,
-                }),
-            'draft'
+        return runInContext({ branch: 'draft' }, () =>
+            contentLibGetStandard({
+                key: requestedVersion.nodeId,
+                versionId: requestedVersion.versionId,
+            })
         );
     };
 
-    nodeLib.connect = function (connectArgs) {
+    (nodeLib.connect as typeof nodeLibConnectStandard) = function (connectArgs) {
         const threadId = getCurrentThreadId();
         const configForThread = timeTravelConfig.get(threadId);
 
@@ -164,6 +166,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
 // Restore standard functionality
 export const unhookTimeTravel = () => {
     timeTravelHooksEnabled = false;
-    contentLib.get = contentLibGetStandard;
-    nodeLib.connect = nodeLibConnectStandard;
+
+    (contentLib.get as typeof contentLibGetStandard) = contentLibGetStandard;
+    (nodeLib.connect as typeof nodeLibConnectStandard) = nodeLibConnectStandard;
 };

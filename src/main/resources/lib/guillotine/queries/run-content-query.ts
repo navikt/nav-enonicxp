@@ -3,10 +3,10 @@ import {
     ContentDescriptor,
     CustomContentDescriptor,
 } from '../../../types/content-types/content-config';
-import { isMedia } from '../../utils/nav-utils';
+import { isMedia } from '../../utils/mixed-bag-of-utils';
 import { GuillotineQueryParams, runGuillotineQuery } from '../utils/run-guillotine-query';
 import { buildFragmentComponentTree, GuillotineComponent } from '../utils/process-components';
-import { runInBranchContext } from '../../utils/branch-context';
+import { runInContext } from '../../context/run-in-context';
 import { getBreadcrumbs } from '../utils/breadcrumbs';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
@@ -52,6 +52,7 @@ import portalPageTemplateQuery from './content-queries/portalPageTemplateQuery.g
 import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
 import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
+import publishingCalendarEntryQuery from './content-queries/publishingCalendarEntryQuery.graphql';
 import sectionPageQuery from './content-queries/sectionPageQuery.graphql';
 import situationPageQuery from './content-queries/situationPageQuery.graphql';
 import currentTopicPageQuery from './content-queries/currentTopicPageQuery.graphql';
@@ -59,6 +60,7 @@ import themedArticlePageQuery from './content-queries/themedArticlePageQuery.gra
 import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
+import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -96,12 +98,14 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:payout-dates': payoutDatesQuery,
     'no.nav.navno:page-list': pageListQuery,
     'no.nav.navno:publishing-calendar': publishingCalendarQuery,
+    'no.nav.navno:publishing-calendar-entry': publishingCalendarEntryQuery,
     'no.nav.navno:section-page': sectionPageQuery,
     'no.nav.navno:situation-page': situationPageQuery,
     'no.nav.navno:current-topic-page': currentTopicPageQuery,
     'no.nav.navno:overview': overviewPageQuery,
     'no.nav.navno:themed-article-page': themedArticlePageQuery,
     'no.nav.navno:tools-page': toolsPageQuery,
+    'no.nav.navno:press-landing-page': pressLandingPageQuery,
     'no.nav.navno:transport-page': transportPageQuery,
     'no.nav.navno:url': urlQuery,
     'portal:fragment': portalFragmentQuery,
@@ -163,7 +167,7 @@ export const runGuillotineContentQuery = (
         };
     }
 
-    const breadcrumbs = runInBranchContext(() => getBreadcrumbs(_id), baseQueryParams.branch);
+    const breadcrumbs = runInContext({ branch: baseQueryParams.branch }, () => getBreadcrumbs(_id));
 
     return {
         ...contentQueryResult,

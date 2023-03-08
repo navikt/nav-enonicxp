@@ -1,20 +1,29 @@
-import contentLib, { Content } from '/lib/xp/content';
-import taskLib from '/lib/xp/task';
-import eventLib from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
-import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
-import { forceArray, stripPathPrefix } from '../utils/nav-utils';
-import { runInBranchContext } from '../utils/branch-context';
-import { contentRepo, urls } from '../constants';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import * as taskLib from '/lib/xp/task';
+import * as eventLib from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
+import {
+    getContentFromCustomPath,
+    isValidCustomPath,
+} from '../paths/custom-paths/custom-path-utils';
+import { stringArrayToSet } from '../utils/array-utils';
+import { runInContext } from '../context/run-in-context';
+import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
 import { logger } from '../utils/logging';
+import { getLanguageVersionsFull } from '../localization/resolve-language-versions';
+import { getLayersData } from '../localization/layers-data';
+import { runInLocaleContext } from '../localization/locale-context';
+import { isContentLocalized } from '../localization/locale-utils';
+import { stripPathPrefix } from '../paths/path-utils';
 
-const batchCount = 1000;
-const maxCount = 50000;
-const eventTypeSitemapGenerated = 'sitemap-generated';
-const eventTypeSitemapRequested = 'sitemap-requested';
+const BATCH_COUNT = 1000;
+const MAX_COUNT = 50000;
+const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
+const EVENT_TYPE_SITEMAP_REQUESTED = 'sitemap-requested';
 
 type LanguageVersion = {
     language: string;
@@ -59,14 +68,14 @@ const sitemapData: SitemapData = {
     },
 };
 
-const isIncludedType = (type: string) =>
-    contentTypesInSitemap.some((includedType) => includedType === type);
+const contentTypesInSitemapSet = stringArrayToSet(contentTypesInSitemap);
 
 const shouldIncludeContent = (content: Content<any>) =>
     content &&
-    isIncludedType(content.type) &&
+    contentTypesInSitemapSet[content.type] &&
     !content.data?.externalProductUrl &&
-    !content.data?.noindex;
+    !content.data?.noindex &&
+    isContentLocalized(content);
 
 const getUrl = (content: Content<any>) => {
     if (content.data?.canonicalUrl) {
@@ -76,34 +85,20 @@ const getUrl = (content: Content<any>) => {
     const customPath = content.data?.customPath;
 
     const pathname = isValidCustomPath(customPath) ? customPath : stripPathPrefix(content._path);
-    return `${urls.frontendOrigin}${pathname}`;
+    return `${URLS.FRONTEND_ORIGIN}${pathname}`;
 };
 
-const getAlternativeLanguageVersions = (content: Content<any>): LanguageVersion[] | undefined =>
-    content.data?.languages &&
-    forceArray(content.data.languages).reduce((acc, id) => {
-        try {
-            const altContent = contentLib.get({ key: id });
-
-            return altContent?.language
-                ? [
-                      ...acc,
-                      {
-                          language: altContent.language,
-                          url: getUrl(altContent),
-                      },
-                  ]
-                : acc;
-        } catch (e) {
-            logger.error(
-                `Could not retrieve alt language content for sitemap - root id: ${content._id} - alt id: ${id} - Error: ${e}`
-            );
-            return acc;
-        }
-    }, []);
+const transformToLanguageVersion = (content: Content): LanguageVersion => ({
+    language: content.language,
+    url: getUrl(content),
+});
 
 const getSitemapEntry = (content: Content): SitemapEntry => {
-    const languageVersions = getAlternativeLanguageVersions(content);
+    const languageVersions = getLanguageVersionsFull({
+        baseContent: content,
+        branch: 'master',
+        baseContentLocale: CONTENT_LOCALE_DEFAULT,
+    }).map(transformToLanguageVersion);
 
     return {
         id: content._id,
@@ -117,18 +112,19 @@ const getSitemapEntry = (content: Content): SitemapEntry => {
 const getContent = (path: string) => {
     const contentFromCustomPath = getContentFromCustomPath(path);
     if (contentFromCustomPath.length > 0) {
-        if (contentFromCustomPath.length === 1) {
-            return contentFromCustomPath[0];
-        }
         logger.critical(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
         return null;
     }
 
-    return runInBranchContext(() => contentLib.get({ key: path }), 'master');
+    if (contentFromCustomPath.length === 1) {
+        return contentFromCustomPath[0];
+    }
+
+    return runInContext({ branch: 'master' }, () => contentLib.get({ key: path }));
 };
 
-const updateSitemapEntry = (path: string) =>
-    runInBranchContext(() => {
+const updateSitemapEntry = (path: string, locale: string) =>
+    runInLocaleContext({ branch: 'master', locale }, () => {
         const content = getContent(path);
         if (!content) {
             return;
@@ -141,13 +137,13 @@ const updateSitemapEntry = (path: string) =>
         } else if (sitemapData.get(key)) {
             sitemapData.remove(key);
         }
-    }, 'master');
+    });
 
 const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): SitemapEntry[] => {
     const entriesBatch = contentLib
         .query({
             start,
-            count: batchCount,
+            count: BATCH_COUNT,
             contentTypes: contentTypesInSitemap,
             filters: {
                 boolean: {
@@ -167,53 +163,56 @@ const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): Sit
 
     const currentEntries = [...entriesBatch, ...previousEntries];
 
-    if (entriesBatch.length < batchCount) {
+    if (entriesBatch.length < BATCH_COUNT) {
         return currentEntries;
     }
 
-    return getSitemapEntries(start + batchCount, currentEntries);
+    return getSitemapEntries(start + BATCH_COUNT, currentEntries);
 };
 
 export const getAllSitemapEntries = () => {
     return sitemapData.getEntries();
 };
 
-const generateAndBroadcastSitemapData = () =>
-    runInBranchContext(() => {
-        if (clusterLib.isMaster() && !isGenerating) {
-            isGenerating = true;
+const generateAndBroadcastSitemapData = () => {
+    if (!clusterLib.isMaster() || isGenerating) {
+        return;
+    }
 
-            taskLib.executeFunction({
-                description: 'sitemap-generator-task',
-                func: () => {
-                    try {
-                        logger.info('Started generating sitemap data');
-                        const startTime = Date.now();
-                        const sitemapEntries = getSitemapEntries();
+    isGenerating = true;
 
-                        sendReliableEvent({
-                            type: eventTypeSitemapGenerated,
-                            data: { entries: sitemapEntries },
-                        });
+    runInContext({ branch: 'master' }, () => {
+        taskLib.executeFunction({
+            description: 'sitemap-generator-task',
+            func: () => {
+                try {
+                    logger.info('Started generating sitemap data');
+                    const startTime = Date.now();
+                    const sitemapEntries = getSitemapEntries();
 
-                        logger.info(
-                            `Finished generating sitemap data with ${
-                                sitemapEntries.length
-                            } entries after ${Date.now() - startTime}ms`
-                        );
+                    sendReliableEvent({
+                        type: EVENT_TYPE_SITEMAP_GENERATED,
+                        data: { entries: sitemapEntries },
+                    });
 
-                        if (sitemapEntries.length > maxCount) {
-                            logger.error(`Sitemap entries count exceeds recommended maximum`);
-                        }
-                    } catch (e) {
-                        logger.critical(`Error while generating sitemap - ${e}`);
-                    } finally {
-                        isGenerating = false;
+                    logger.info(
+                        `Finished generating sitemap data with ${
+                            sitemapEntries.length
+                        } entries after ${Date.now() - startTime}ms`
+                    );
+
+                    if (sitemapEntries.length > MAX_COUNT) {
+                        logger.error(`Sitemap entries count exceeds recommended maximum`);
                     }
-                },
-            });
-        }
-    }, 'master');
+                } catch (e) {
+                    logger.critical(`Error while generating sitemap - ${e}`);
+                } finally {
+                    isGenerating = false;
+                }
+            },
+        });
+    });
+};
 
 export const generateSitemapDataAndActivateSchedule = () => {
     generateAndBroadcastSitemapData();
@@ -249,20 +248,20 @@ const updateSitemapData = (entries: SitemapEntry[]) => {
 
 export const requestSitemapUpdate = () => {
     sendReliableEvent({
-        type: eventTypeSitemapRequested,
+        type: EVENT_TYPE_SITEMAP_REQUESTED,
     });
 };
 
 export const activateSitemapDataUpdateEventListener = () => {
     addReliableEventListener<{ entries: SitemapEntry[] }>({
-        type: eventTypeSitemapGenerated,
+        type: EVENT_TYPE_SITEMAP_GENERATED,
         callback: (event) => {
             updateSitemapData(event.data.entries);
         },
     });
 
     addReliableEventListener({
-        type: eventTypeSitemapRequested,
+        type: EVENT_TYPE_SITEMAP_REQUESTED,
         callback: () => {
             generateAndBroadcastSitemapData();
         },
@@ -273,10 +272,17 @@ export const activateSitemapDataUpdateEventListener = () => {
         localOnly: false,
         callback: (event) => {
             event.data.nodes.forEach((node) => {
-                if (node.branch === 'master' && node.repo === contentRepo) {
-                    const xpPath = node.path.replace(/^\/content/, '');
-                    updateSitemapEntry(xpPath);
+                if (node.branch !== 'master') {
+                    return;
                 }
+
+                const locale = getLayersData().repoIdToLocaleMap[node.repo];
+                if (!locale) {
+                    return;
+                }
+
+                const xpPath = node.path.replace(/^\/content/, '');
+                updateSitemapEntry(xpPath, locale);
             });
         },
     });

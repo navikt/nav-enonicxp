@@ -1,14 +1,16 @@
-import contentLib, { QueryParams, QueryResponse, ContentLibrary } from '/lib/xp/content';
-import nodeLib, {
+import * as contentLib from '/lib/xp/content';
+import { QueryParams, QueryResponse, ContentLibrary } from '/lib/xp/content';
+import * as nodeLib from '/lib/xp/node';
+import {
     NodeQueryParams,
     NodeQueryResponse,
     Source,
     NodeQueryHit,
     RepoConnection,
+    MultiRepoConnection,
+    MultiRepoNodeQueryResponse,
 } from '/lib/xp/node';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-
-const BATCH_SIZE = 1000;
 
 type ContentQueryFunc = ContentLibrary['query'];
 type NodeQueryFunc = RepoConnection['query'];
@@ -23,6 +25,10 @@ type NodeQueryProps = {
     queryFunc: NodeQueryFunc;
 };
 
+const BATCH_SIZE = 3000;
+
+// NOTE: if a filter value array with a length greater than the batch size is passed to a query
+// the batches may not be consistent when the queries are performed in a clustered setup!
 const batchedQuery = <ContentType extends ContentDescriptor>({
     queryFunc,
     queryParams,
@@ -43,8 +49,8 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
     const getBatchHits = (start: number): ReadonlyArray<NodeQueryHit> => {
         const count = getRemainingCount(start);
 
-        // @ts-ignore (TS can't infer that queryParams type will always match the queryFunc signature...)
-        const result = queryFunc({
+        // (TS can't infer that queryParams type will always match the queryFunc signature...)
+        const result = (queryFunc as any)({
             ...queryParams,
             start,
             count,
@@ -67,12 +73,12 @@ const batchedQuery = <ContentType extends ContentDescriptor>({
 
     const countFirst = getRemainingCount(startParam);
 
-    // @ts-ignore (TS can't infer that queryParams type will always match the queryFunc signature...)
-    const firstBatch = queryFunc({ ...queryParams, start: startParam, count: countFirst });
+    // (TS can't infer that queryParams type will always match the queryFunc signature...)
+    const firstBatch = (queryFunc as any)({ ...queryParams, start: startParam, count: countFirst });
 
     // If there are more hits to retrieve, we run batched queries
     if (firstBatch.total > countFirst + startParam) {
-        const hits = [...firstBatch.hits, ...getBatchHits(startParam + BATCH_SIZE)];
+        const hits = [...firstBatch.hits, ...getBatchHits(startParam + countFirst)];
 
         return {
             total: firstBatch.total,
@@ -110,6 +116,16 @@ export const batchedNodeQuery = ({
     const _repo = repo || nodeLib.connect(repoParams as Source);
 
     return batchedQuery({ queryFunc: _repo.query.bind(_repo), queryParams });
+};
+
+export const batchedMultiRepoNodeQuery = ({
+    repo,
+    queryParams,
+}: {
+    repo: MultiRepoConnection;
+    queryParams: NodeQueryParams;
+}): MultiRepoNodeQueryResponse => {
+    return batchedQuery({ queryFunc: repo.query.bind(repo), queryParams });
 };
 
 export const batchedContentQuery = <ContentType extends ContentDescriptor>(

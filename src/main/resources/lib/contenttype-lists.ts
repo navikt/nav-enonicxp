@@ -1,51 +1,39 @@
-import { appDescriptor } from './constants';
+import { APP_DESCRIPTOR } from './constants';
 import { ContentDescriptor } from '../types/content-types/content-config';
 
 type ContentTypeList = ContentDescriptor[];
 
 export const legacyPageContentTypes: ContentTypeList = [
-    `${appDescriptor}:main-article`,
-    `${appDescriptor}:main-article-chapter`,
-    `${appDescriptor}:section-page`,
-    `${appDescriptor}:page-list`,
-    `${appDescriptor}:transport-page`,
-    `${appDescriptor}:large-table`,
-    `${appDescriptor}:office-information`,
-    `${appDescriptor}:publishing-calendar`,
-    `${appDescriptor}:melding`,
-];
-
-export const productCardPartContentTypes: ContentTypeList = [
-    `${appDescriptor}:situation-page`,
-    `${appDescriptor}:guide-page`,
-    `${appDescriptor}:themed-article-page`,
-    `${appDescriptor}:content-page-with-sidemenus`,
-    `${appDescriptor}:tools-page`,
-    `${appDescriptor}:overview`,
-    `${appDescriptor}:generic-page`,
-    `${appDescriptor}:current-topic-page`,
+    `${APP_DESCRIPTOR}:main-article`,
+    `${APP_DESCRIPTOR}:main-article-chapter`,
+    `${APP_DESCRIPTOR}:section-page`,
+    `${APP_DESCRIPTOR}:page-list`,
+    `${APP_DESCRIPTOR}:transport-page`,
+    `${APP_DESCRIPTOR}:large-table`,
+    `${APP_DESCRIPTOR}:office-information`,
+    `${APP_DESCRIPTOR}:publishing-calendar`,
+    `${APP_DESCRIPTOR}:melding`,
 ];
 
 export const dynamicPageContentTypes: ContentTypeList = [
-    `${appDescriptor}:situation-page`,
-    `${appDescriptor}:guide-page`,
-    `${appDescriptor}:themed-article-page`,
-    `${appDescriptor}:content-page-with-sidemenus`,
-    `${appDescriptor}:tools-page`,
-    `${appDescriptor}:dynamic-page`,
-    `${appDescriptor}:generic-page`,
-    `${appDescriptor}:office-editorial-page`,
-    `${appDescriptor}:office-branch`,
-    `${appDescriptor}:overview`,
-    `${appDescriptor}:front-page`,
-    `${appDescriptor}:current-topic-page`,
-    `${appDescriptor}:area-page`,
+    `${APP_DESCRIPTOR}:situation-page`,
+    `${APP_DESCRIPTOR}:guide-page`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:tools-page`,
+    `${APP_DESCRIPTOR}:dynamic-page`,
+    `${APP_DESCRIPTOR}:generic-page`,
+    `${APP_DESCRIPTOR}:overview`,
+    `${APP_DESCRIPTOR}:front-page`,
+    `${APP_DESCRIPTOR}:current-topic-page`,
+    `${APP_DESCRIPTOR}:area-page`,
+    `${APP_DESCRIPTOR}:press-landing-page`,
 ];
 
 export const linkContentTypes: ContentTypeList = [
-    `${appDescriptor}:internal-link`,
-    `${appDescriptor}:external-link`,
-    `${appDescriptor}:url`,
+    `${APP_DESCRIPTOR}:internal-link`,
+    `${APP_DESCRIPTOR}:external-link`,
+    `${APP_DESCRIPTOR}:url`,
 ];
 
 export const contentTypesInSitemap: ContentTypeList = [
@@ -65,48 +53,48 @@ export const contentTypesInContentSwitcher: ContentTypeList = [
     ...dynamicPageContentTypes,
     ...legacyPageContentTypes,
     ...linkContentTypes,
-    `${appDescriptor}:redirects-folder`,
+    `${APP_DESCRIPTOR}:redirects-folder`,
 ];
 
 export const typesWithDeepReferences: ContentTypeList = [
     'portal:fragment',
-    `${appDescriptor}:content-list`,
-    `${appDescriptor}:global-value-set`,
-    `${appDescriptor}:global-case-time-set`,
-    `${appDescriptor}:product-details`,
-    `${appDescriptor}:payout-dates`,
+    `${APP_DESCRIPTOR}:content-list`,
+    `${APP_DESCRIPTOR}:global-value-set`,
+    `${APP_DESCRIPTOR}:global-case-time-set`,
+    `${APP_DESCRIPTOR}:product-details`,
+    `${APP_DESCRIPTOR}:payout-dates`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
-    `${appDescriptor}:situation-page`,
-    `${appDescriptor}:guide-page`,
-    `${appDescriptor}:themed-article-page`,
-    `${appDescriptor}:content-page-with-sidemenus`,
-    `${appDescriptor}:tools-page`,
-    `${appDescriptor}:overview`,
-    `${appDescriptor}:dynamic-page`,
-    `${appDescriptor}:generic-page`,
-    `${appDescriptor}:overview`,
-    `${appDescriptor}:main-article`,
-    `${appDescriptor}:main-article-chapter`,
-    `${appDescriptor}:section-page`,
-    `${appDescriptor}:page-list`,
-    `${appDescriptor}:transport-page`,
-    `${appDescriptor}:large-table`,
-    `${appDescriptor}:office-information`,
-    `${appDescriptor}:publishing-calendar`,
+    `${APP_DESCRIPTOR}:situation-page`,
+    `${APP_DESCRIPTOR}:guide-page`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:tools-page`,
+    `${APP_DESCRIPTOR}:overview`,
+    `${APP_DESCRIPTOR}:dynamic-page`,
+    `${APP_DESCRIPTOR}:generic-page`,
+    `${APP_DESCRIPTOR}:overview`,
+    `${APP_DESCRIPTOR}:main-article`,
+    `${APP_DESCRIPTOR}:main-article-chapter`,
+    `${APP_DESCRIPTOR}:section-page`,
+    `${APP_DESCRIPTOR}:page-list`,
+    `${APP_DESCRIPTOR}:transport-page`,
+    `${APP_DESCRIPTOR}:large-table`,
+    `${APP_DESCRIPTOR}:office-information`,
+    `${APP_DESCRIPTOR}:publishing-calendar`,
 ];
 
 export const contentTypesWithComponents: ContentTypeList = [
     ...dynamicPageContentTypes,
-    `${appDescriptor}:product-details`,
+    `${APP_DESCRIPTOR}:product-details`,
     'portal:page-template',
 ];
 
 export const contentTypesWithProductDetails = [
-    `${appDescriptor}:guide-page`,
-    `${appDescriptor}:themed-article-page`,
-    `${appDescriptor}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page`,
+    `${APP_DESCRIPTOR}:themed-article-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
 ] as const;
 
 export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
@@ -117,14 +105,20 @@ export const contentTypesRenderedByPublicFrontend: ContentTypeList = [
 
 export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     ...contentTypesRenderedByPublicFrontend,
-    `${appDescriptor}:global-value-set`,
-    `${appDescriptor}:global-case-time-set`,
-    `${appDescriptor}:contact-information`,
-    `${appDescriptor}:product-details`,
-    `${appDescriptor}:office-branch`,
-    `${appDescriptor}:payout-dates`,
-    `${appDescriptor}:office-editorial-page`,
+    `${APP_DESCRIPTOR}:global-value-set`,
+    `${APP_DESCRIPTOR}:global-case-time-set`,
+    `${APP_DESCRIPTOR}:contact-information`,
+    `${APP_DESCRIPTOR}:product-details`,
+    `${APP_DESCRIPTOR}:office-branch`,
+    `${APP_DESCRIPTOR}:payout-dates`,
+    `${APP_DESCRIPTOR}:office-editorial-page`,
+    `${APP_DESCRIPTOR}:publishing-calendar-entry`,
     'portal:page-template',
     'portal:fragment',
     'portal:site',
+];
+
+export const contentTypesWithCustomEditor: ContentTypeList = [
+    `${APP_DESCRIPTOR}:global-value-set`,
+    `${APP_DESCRIPTOR}:global-case-time-set`,
 ];

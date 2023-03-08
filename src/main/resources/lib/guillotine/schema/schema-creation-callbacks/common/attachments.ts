@@ -1,5 +1,6 @@
-import contentLib, { Attachment } from '/lib/xp/content';
-import ioLib from '/lib/xp/io';
+import * as contentLib from '/lib/xp/content';
+import { Attachment } from '/lib/xp/content';
+import * as ioLib from '/lib/xp/io';
 import { logger } from '../../../../utils/logging';
 
 type GuillotineAttachment = Attachment & { __nodeId: string };
@@ -15,7 +16,11 @@ export const getAttachmentText = (attachment: GuillotineAttachment, maxSize = ma
     const { __nodeId: id, name, mimeType, size } = attachment;
 
     if (!id || !name) {
-        logger.warning(`Id or name for attachment not found - got id ${id} and name ${name}`, false, true);
+        logger.warning(
+            `Id or name for attachment not found - got id ${id} and name ${name}`,
+            false,
+            true
+        );
         return null;
     }
 

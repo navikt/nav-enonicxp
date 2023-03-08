@@ -1,10 +1,12 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
-import commonLib from '/lib/xp/common';
+import * as commonLib from '/lib/xp/common';
 import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
-import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
+import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 
@@ -73,7 +75,7 @@ const deleteContent = (name: string) => {
 };
 
 const getOfficeBranchLanguage = (office: any) => {
-    return office.data?.brukerkontakt?.skriftspraak?.toLowerCase() || 'no';
+    return office.data?.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
 };
 
 const getExistingOfficeBranchesInXP = () => {

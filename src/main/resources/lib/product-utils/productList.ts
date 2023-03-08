@@ -1,6 +1,6 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
-import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
@@ -11,9 +11,10 @@ import {
     DetailedOverviewType,
 } from './types';
 import { ProductData } from '../../site/mixins/product-data/product-data';
-import { appDescriptor } from '../constants';
+import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
+import { forceArray, removeDuplicates } from '../utils/array-utils';
 
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience'];
@@ -23,8 +24,8 @@ type ContentWithProductDetailsData = ContentWithProductDetails['data'] & Product
 type ProductDetailsContent = Content<'no.nav.navno:product-details'>;
 
 const contentTypesInAllProductsList = [
-    `${appDescriptor}:content-page-with-sidemenus`,
-    `${appDescriptor}:guide-page`,
+    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
+    `${APP_DESCRIPTOR}:guide-page`,
 ] as const;
 
 const getProductDetails = (
@@ -75,7 +76,7 @@ const getProductDetails = (
     return productDetailsWithLanguage;
 };
 
-const buildCommonProductData = (product: ContentWithProductDetails) => {
+const buildCommonProductData = (product: ContentWithProductDetails): OverviewPageProductData => {
     const data = product.data as ContentWithProductDetailsData;
     const fullTitle = data.title || product.displayName;
     const icons = getProductIllustrationIcons(product);
@@ -88,10 +89,11 @@ const buildCommonProductData = (product: ContentWithProductDetails) => {
         sortTitle: data.sortTitle || fullTitle,
         ingress: data.ingress,
         audience: data.audience,
-        language: product.language || 'no',
+        language: product.language || CONTENT_LOCALE_DEFAULT,
         taxonomy: forceArray(data.taxonomy),
         area: forceArray(data.area),
         illustration: {
+            type: 'no.nav.navno:animated-icons',
             data: {
                 icons,
             },
@@ -175,6 +177,12 @@ const getProductPagesForOverview = (
                     {
                         hasValue: {
                             field: 'x.no-nav-navno.previewOnly.previewOnly',
+                            values: [true],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'data.hideFromProductlist',
                             values: [true],
                         },
                     },
@@ -271,12 +279,16 @@ export const getProductDataForOverviewPage = (
     overviewType: OverviewType,
     audience: ProductAudience[]
 ) => {
-    const norwegianProductPages = getProductPagesForOverview('no', overviewType, audience);
+    const defaultLocaleProductPages = getProductPagesForOverview(
+        CONTENT_LOCALE_DEFAULT,
+        overviewType,
+        audience
+    );
 
     const productDataList =
-        language === 'no'
-            ? getProductDataFromProductPages(norwegianProductPages, overviewType, language)
-            : getLocalizedProductData(norwegianProductPages, language, overviewType);
+        language === CONTENT_LOCALE_DEFAULT
+            ? getProductDataFromProductPages(defaultLocaleProductPages, overviewType, language)
+            : getLocalizedProductData(defaultLocaleProductPages, language, overviewType);
 
     return productDataList.sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
 };

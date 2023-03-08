@@ -1,9 +1,9 @@
-import contentLib from '/lib/xp/content';
-import nodeLib from '/lib/xp/node';
+import * as contentLib from '/lib/xp/content';
+import { getRepoConnection } from '../../../../utils/repo-connection';
 import graphQlLib from '/lib/graphql';
-import contextLib from '/lib/xp/context';
+import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';
-import { contentRepo } from '../../../../constants';
+import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
 import { logger } from '../../../../utils/logging';
 
 // Find the original content type for a content source.
@@ -32,8 +32,8 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
 
             const versions = getNodeVersions({
                 nodeKey: _id,
-                repo: nodeLib.connect({
-                    repoId: contentRepo,
+                repo: getRepoConnection({
+                    repoId: CONTENT_ROOT_REPO_ID,
                     branch: 'draft',
                 }),
                 branch: 'draft',

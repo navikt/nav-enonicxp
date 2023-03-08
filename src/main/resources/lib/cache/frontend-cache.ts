@@ -1,30 +1,32 @@
 import httpClient, { HttpResponse } from '/lib/http-client';
-import taskLib from '/lib/xp/task';
-import schedulerLib from '/lib/xp/scheduler';
-import { Content } from '/lib/xp/content';
-import { appDescriptor, urls } from '../constants';
-import { getFrontendPathname, isRenderedType } from './utils';
-import { getCustomPathFromContent } from '../custom-paths/custom-paths';
+import * as taskLib from '/lib/xp/task';
+import * as schedulerLib from '/lib/xp/scheduler';
+import { APP_DESCRIPTOR, URLS } from '../constants';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
+import { getFrontendPathname } from '../paths/path-utils';
 
-const numRetries = 3;
-const timeoutMs = 10000;
+const NUM_RETRIES = 3;
+const TIMEOUT_MS = 10000;
 
-const revalidatorProxyUrl = `${urls.revalidatorProxyOrigin}/revalidator-proxy`;
-const revalidatorProxyUrlWipeAll = `${urls.revalidatorProxyOrigin}/revalidator-proxy/wipe-all`;
+const REVALIDATOR_PROXY_URL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalidator-proxy`;
+const REVALIDATOR_PROXY_URL_WIPE_ALL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalidator-proxy/wipe-all`;
 
-const deferredJobName = 'invalidate-all-job';
-const deferredTimeMs = 60000;
+const DEFERRED_JOB_NAME = 'invalidate-all-job';
+const DEFERRED_TIME_MS_DEFAULT = 60000;
 
-export const frontendInvalidateAllDeferred = (eventId: string) => {
-    const existingJob = schedulerLib.get({ name: deferredJobName });
+export const frontendInvalidateAllDeferred = (
+    eventId: string,
+    deferredTime = DEFERRED_TIME_MS_DEFAULT,
+    rescheduleIfExists = false
+) => {
+    const existingJob = schedulerLib.get({ name: DEFERRED_JOB_NAME });
 
     const now = new Date();
-    const targetScheduleTime = new Date(now.getTime() + deferredTimeMs);
+    const targetScheduleTime = new Date(now.getTime() + deferredTime);
 
-    if (existingJob) {
+    if (existingJob && !rescheduleIfExists) {
         const currentScheduleTime = new Date(existingJob.schedule.value);
         if (currentScheduleTime > now && currentScheduleTime < targetScheduleTime) {
             logger.info('Invalidation job is already scheduled within the target timeframe');
@@ -33,12 +35,12 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
     }
 
     createOrUpdateSchedule<CacheInvalidateAllConfig>({
-        jobName: deferredJobName,
+        jobName: DEFERRED_JOB_NAME,
         jobSchedule: {
             type: 'ONE_TIME',
             value: targetScheduleTime.toISOString(),
         },
-        taskDescriptor: `${appDescriptor}:cache-invalidate-all`,
+        taskDescriptor: `${APP_DESCRIPTOR}:cache-invalidate-all`,
         taskConfig: {
             retryIfFail: true,
             eventId,
@@ -52,13 +54,13 @@ export const frontendInvalidateAllDeferred = (eventId: string) => {
 const frontendInvalidatePathsRequest = (
     paths: string[],
     eventId: string,
-    retriesLeft = numRetries
+    retriesLeft = NUM_RETRIES
 ): HttpResponse | null => {
     try {
         const response = httpClient.request({
-            url: revalidatorProxyUrl,
+            url: REVALIDATOR_PROXY_URL,
             method: 'POST',
-            connectionTimeout: timeoutMs,
+            connectionTimeout: TIMEOUT_MS,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,
@@ -93,36 +95,23 @@ const frontendInvalidatePathsRequest = (
 };
 
 export const frontendInvalidatePaths = ({
-    contents = [],
-    paths = [],
+    paths,
     eventId,
 }: {
-    contents?: Content[];
-    paths?: string[];
+    paths: string[];
     eventId: string;
 }) => {
+    if (paths.length === 0) {
+        logger.info(`Nothing to invalidate for event ${eventId} - aborting frontend request`);
+        return;
+    }
+
     taskLib.executeFunction({
         description: `Send invalidate with event id ${eventId}`,
         func: () => {
             // Ensure the paths we send to the frontend for invalidation are of the same format as used
-            // by the frontend. Also filter out any content types that aren't rendered/cached by the frontend.
-            const frontendPaths = [
-                ...contents
-                    .filter((content) => isRenderedType(content))
-                    .map(
-                        (content) =>
-                            getCustomPathFromContent(content._path) ||
-                            getFrontendPathname(content._path)
-                    ),
-                ...paths.map(getFrontendPathname),
-            ];
-
-            if (frontendPaths.length === 0) {
-                logger.info(
-                    `Nothing to invalidate for event ${eventId} - aborting frontend request`
-                );
-                return;
-            }
+            // by the frontend
+            const frontendPaths = paths.map(getFrontendPathname);
 
             frontendInvalidatePathsRequest(frontendPaths, eventId);
         },
@@ -132,13 +121,13 @@ export const frontendInvalidatePaths = ({
 export const frontendInvalidateAllSync = (
     eventId: string,
     rescheduleOnFailure = false,
-    retriesLeft = numRetries
+    retriesLeft = NUM_RETRIES
 ): HttpResponse | null => {
     try {
         const response = httpClient.request({
-            url: revalidatorProxyUrlWipeAll,
+            url: REVALIDATOR_PROXY_URL_WIPE_ALL,
             method: 'GET',
-            connectionTimeout: timeoutMs,
+            connectionTimeout: TIMEOUT_MS,
             contentType: 'application/json',
             headers: {
                 secret: app.config.serviceSecret,

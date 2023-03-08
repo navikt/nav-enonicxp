@@ -1,4 +1,4 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
 import { getProductDataForOverviewPage } from '../../../product-utils/productList';
@@ -7,14 +7,15 @@ import {
     OverviewPageIllustrationIcon,
     OverviewPageProductData,
 } from '../../../product-utils/types';
-import { forceArray } from '../../../utils/nav-utils';
+import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
+import { forceArray } from '../../../utils/array-utils';
 
 export const overviewCallback: CreationCallback = (context, params) => {
     const xpImage = graphQlCreateObjectType<keyof OverviewPageIllustrationIcon['icon']>(context, {
         name: context.uniqueName('xpImage'),
         description: 'xpImage',
         fields: {
-            __typename: { type: graphQlLib.GraphQLString },
+            type: { type: graphQlLib.GraphQLString },
             mediaUrl: { type: graphQlLib.GraphQLString },
         },
     });
@@ -39,6 +40,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
         name: context.uniqueName('Illustration'),
         description: 'Illustration',
         fields: {
+            type: { type: graphQlLib.GraphQLString },
             data: { type: icons },
         },
     });
@@ -93,7 +95,7 @@ export const overviewCallback: CreationCallback = (context, params) => {
             }
 
             const productList = getProductDataForOverviewPage(
-                language || 'no',
+                language || CONTENT_LOCALE_DEFAULT,
                 overviewType,
                 forceArray(audience)
             );

@@ -1,17 +1,15 @@
-import contextLib from '/lib/xp/context';
-import nodeLib from '/lib/xp/node';
-import contentLib from '/lib/xp/content';
+import * as contextLib from '/lib/xp/context';
+import { getRepoConnection } from './repo-connection';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getNodeKey } from './version-utils';
-import {
-    forceArray,
-    getNestedValue,
-    getUnixTimeFromDateTimeString,
-    removeDuplicates,
-} from './nav-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
-import { runInBranchContext } from './branch-context';
+import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
+import { getUnixTimeFromDateTimeString } from './datetime-utils';
+import { forceArray, removeDuplicates } from './array-utils';
+import { getNestedValue } from './object-utils';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
@@ -19,7 +17,7 @@ const htmlFragmentMacroPattern = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]
 
 const getContentNode = (contentRef: string, branch: RepoBranch) => {
     const context = contextLib.get();
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: context.repository,
         branch: branch || context.branch,
     });
@@ -94,24 +92,19 @@ const getFragmentIdsFromContent = (contentRef: string, branch: RepoBranch) => {
 
 // Returns the most recent modifiedTime value, taking into account both the content
 // itself and any fragments used in the content
-export const getModifiedTimeIncludingFragments = (contentRef: string, branch: RepoBranch) =>
-    runInBranchContext(() => {
-        const content = contentLib.get({ key: contentRef });
-
-        if (!content) {
-            return null;
-        }
-
+export const getModifiedTimeIncludingFragments = (content: Content, branch: RepoBranch) =>
+    runInContext({ branch }, () => {
         const contentModifiedTime = content.modifiedTime || content.createdTime;
+        const contentId = content._id;
 
-        const fragmentIds = getFragmentIdsFromContent(contentRef, branch);
+        const fragmentIds = getFragmentIdsFromContent(contentId, branch);
 
         return fragmentIds.reduce((latestModifiedTime, fragmentId) => {
             const fragment = contentLib.get({ key: fragmentId });
             if (!fragment) {
                 if (branch === 'master') {
                     logger.error(
-                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentRef} on branch ${branch} but no fragment was found`
+                        `Attempted to get modifiedTime from fragment id ${fragmentId} on content ${contentId} on branch ${branch} but no fragment was found`
                     );
                 }
                 return latestModifiedTime;
@@ -124,4 +117,4 @@ export const getModifiedTimeIncludingFragments = (contentRef: string, branch: Re
                 ? modifiedTime
                 : latestModifiedTime;
         }, contentModifiedTime);
-    }, branch);
+    });

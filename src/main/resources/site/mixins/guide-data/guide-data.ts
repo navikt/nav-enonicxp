@@ -16,6 +16,11 @@ export interface GuideData {
   norwegianTitle?: string;
 
   /**
+   * Ikke vis denne siden i selve produktutlistingen
+   */
+  hideFromProductlist: boolean;
+
+  /**
    * Ingress
    */
   ingress: string;
@@ -23,12 +28,12 @@ export interface GuideData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider" | "self_employed";
+  audience: "person" | "employer" | "provider";
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "self_employed" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
 
   /**
    * Velg piktogram

@@ -1,6 +1,6 @@
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
 import { gvServiceInvalidRequestResponse } from '../utils';
-import { forceArray } from '../../../lib/utils/nav-utils';
+import { forceArray } from '../../../lib/utils/array-utils';
 
 export const getGlobalValueSetService = (req: XP.Request) => {
     const { contentId } = req.params;

@@ -1,15 +1,15 @@
-import nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { Content } from '/lib/xp/content';
-import { appDescriptor } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import { createOrUpdateSchedule } from './schedule-job';
 import { PrepublishCacheWipeConfig } from '../../tasks/prepublish-cache-wipe/prepublish-cache-wipe-config';
 import { UnpublishExpiredContentConfig } from '../../tasks/unpublish-expired-content/unpublish-expired-content-config';
 import { NodeEventData } from '../cache/utils';
-import { getUnixTimeFromDateTimeString } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
+import { getUnixTimeFromDateTimeString } from '../utils/datetime-utils';
 
 const getPublish = (node: NodeEventData) => {
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: node.repo,
         branch: 'master',
     });
@@ -17,12 +17,12 @@ const getPublish = (node: NodeEventData) => {
     const content = repo.get<Content>({ key: node.id });
 
     if (!content) {
-        logger.error(`Content for ${node.id} not found!`);
+        logger.error(`Content for ${node.id} not found in repo ${node.repo}!`);
         return null;
     }
 
     if (!content.publish) {
-        logger.error(`No publish object found for content ${node.id}!`);
+        logger.error(`No publish object found for content ${node.id} in repo ${node.repo}!`);
         return null;
     }
 
@@ -40,10 +40,12 @@ export const getUnpublishJobName = (contentId: string) => `unpublish-${contentId
 export const scheduleCacheInvalidation = ({
     id,
     path,
+    repoId,
     publishFrom,
 }: {
     id: string;
     path: string;
+    repoId: string;
     publishFrom: string;
 }) => {
     createOrUpdateSchedule<PrepublishCacheWipeConfig>({
@@ -52,10 +54,11 @@ export const scheduleCacheInvalidation = ({
             type: 'ONE_TIME',
             value: publishFrom,
         },
-        taskDescriptor: `${appDescriptor}:prepublish-cache-wipe`,
+        taskDescriptor: `${APP_DESCRIPTOR}:prepublish-cache-wipe`,
         taskConfig: {
             path,
             id,
+            repoId,
         },
     });
 };
@@ -63,10 +66,12 @@ export const scheduleCacheInvalidation = ({
 export const scheduleUnpublish = ({
     id,
     path,
+    repoId,
     publishTo,
 }: {
     id: string;
     path: string;
+    repoId: string;
     publishTo: string;
 }) => {
     createOrUpdateSchedule<UnpublishExpiredContentConfig>({
@@ -75,10 +80,11 @@ export const scheduleUnpublish = ({
             type: 'ONE_TIME',
             value: publishTo,
         },
-        taskDescriptor: `${appDescriptor}:unpublish-expired-content`,
+        taskDescriptor: `${APP_DESCRIPTOR}:unpublish-expired-content`,
         taskConfig: {
             path,
             id,
+            repoId,
         },
     });
 };
@@ -95,16 +101,17 @@ export const handleScheduledPublish = (nodeData: NodeEventData, eventType: strin
         return false;
     }
 
-    const { id, path } = nodeData;
+    const { id, path, repo } = nodeData;
 
     if (publish.to) {
-        scheduleUnpublish({ id, path, publishTo: publish.to });
+        scheduleUnpublish({ id, path, repoId: repo, publishTo: publish.to });
     }
 
     if (isPrepublished(publish.from)) {
         scheduleCacheInvalidation({
             id,
             path,
+            repoId: repo,
             publishFrom: publish.from,
         });
         return true;

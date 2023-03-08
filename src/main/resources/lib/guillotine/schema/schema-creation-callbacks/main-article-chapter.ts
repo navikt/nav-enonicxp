@@ -1,7 +1,8 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
-import { forceArray } from '../../../utils/nav-utils';
 import { CreationCallback } from '../../utils/creation-callback-utils';
+import { forceArray } from '../../../utils/array-utils';
 
 type ContentTypeWithLanguages = Content & { data?: { languages?: string } };
 

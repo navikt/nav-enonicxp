@@ -1,7 +1,8 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import graphQlLib from '/lib/graphql';
 import { CreationCallback } from '../../utils/creation-callback-utils';
-import { forceArray } from '../../../utils/nav-utils';
+import { forceArray } from '../../../utils/array-utils';
 
 // Resolve targetPage content to a localized version matching the product details
 // language if such a version exists

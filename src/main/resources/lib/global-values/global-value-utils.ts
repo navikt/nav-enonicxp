@@ -1,11 +1,11 @@
-import contentLib from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
 import { getKeyWithoutMacroDescription } from '../utils/component-utils';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
-import { forceArray } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { GlobalNumberValueItem } from '../../types/content-types/global-value-set';
 import { CaseTimeItem } from '../../types/content-types/global-case-time-set';
 import { GlobalValueContentTypes, isGlobalValueSetType } from './types';
+import { forceArray } from '../utils/array-utils';
 
 const uniqueKeySeparator = '::';
 
@@ -34,13 +34,13 @@ export const getGvKeyAndContentIdFromUniqueKey = (key: string) => {
 export const getGlobalValueUsage = (gvKey: string, contentId: string) => {
     const key = getGlobalValueUniqueKey(gvKey, contentId);
 
-    const macroUsage = findContentsWithHtmlAreaText(key);
+    const macroUsage = findContentsWithHtmlAreaText(key, true);
     const calcUsage = getGlobalValueCalcUsage(key);
 
     return [...macroUsage, ...calcUsage];
 };
 
-const getGlobalValueCalcUsage = (key: string) => {
+export const getGlobalValueCalcUsage = (key: string) => {
     return contentLib.query({
         start: 0,
         count: 1000,

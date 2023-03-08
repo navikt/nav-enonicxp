@@ -1,13 +1,19 @@
-import taskLib from '/lib/xp/task';
+import * as taskLib from '/lib/xp/task';
 import thymeleafLib from '/lib/thymeleaf';
+import * as eventLib from '/lib/xp/event';
 import { runOfficeInfoUpdateTask } from '../lib/officeInformation';
-import { runInBranchContext } from '../lib/utils/branch-context';
+import { runInContext } from '../lib/context/run-in-context';
 import { frontendInvalidateAllAsync } from '../lib/cache/frontend-cache';
 import { requestSitemapUpdate } from '../lib/sitemap/sitemap';
 import { updateScheduledPublishJobs } from '../lib/scheduling/scheduled-publish-updater';
 import { generateUUID } from '../lib/utils/uuid';
 import { removeUnpublishedFromAllContentLists } from '../lib/contentlists/remove-unpublished';
 import { userIsAdmin } from '../lib/utils/auth-utils';
+import {
+    revalidateAllSearchNodesAsync,
+    SEARCH_NODES_UPDATE_ABORT_EVENT,
+} from '../lib/search/search-event-handlers';
+import { pushLayerContentToMaster } from '../lib/localization/layers-data';
 
 type ActionsMap = { [key: string]: { description: string; callback: () => any } };
 
@@ -35,6 +41,31 @@ const validActions: ActionsMap = {
         description: 'Fjern avpublisert innhold fra alle innholdslister',
         callback: removeUnpublishedFromAllContentLists,
     },
+    updateAllSearchNodes: {
+        description: 'Oppdater alle søke-noder',
+        callback: revalidateAllSearchNodesAsync,
+    },
+    abortSearchNodesUpdate: {
+        description: 'Avbryt pågående batch-jobb for søke-config oppdateringer',
+        callback: () => {
+            eventLib.send({
+                type: SEARCH_NODES_UPDATE_ABORT_EVENT,
+                distributed: true,
+            });
+        },
+    },
+    pushLayerContentToMaster: {
+        description:
+            'Push manglende layer content til master (bør gjøres etter opprettelse av nytt layer)',
+        callback: () => pushLayerContentToMaster(true),
+    },
+    ...(app.config.env !== 'p' && {
+        pushLayerContentToMasterFull: {
+            description:
+                'Push ALT layer content til master (OBS: denne kan føre til at avpublisert innhold i layeret blir republisert! Ikke la denne være aktiv i prod med mindre det er et spesielt behov :))',
+            callback: () => pushLayerContentToMaster(false),
+        },
+    }),
 };
 
 type Params = {
@@ -57,7 +88,7 @@ export const get = (req: XP.Request) => {
         taskLib.executeFunction({
             description: actionToRun.description,
             func: () => {
-                runInBranchContext(actionToRun.callback, 'master');
+                runInContext({ branch: 'master', asAdmin: true }, actionToRun.callback);
             },
         });
     }

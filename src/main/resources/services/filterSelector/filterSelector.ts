@@ -1,8 +1,10 @@
-import portalLib from '/lib/xp/portal';
-import nodeLib from '/lib/xp/node';
-import { forceArray } from '../../lib/utils/nav-utils';
+import * as portalLib from '/lib/xp/portal';
+import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
+import { logger } from '../../lib/utils/logging';
+import { customSelectorErrorIcon } from '../custom-selector-icons';
+import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -21,7 +23,7 @@ const getFilterMenus = (req: XP.Request) => {
         throw new Error('Ugyldig context, forsøk å laste inn editoren på nytt (F5)');
     }
 
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: req.repositoryId,
         branch: req.branch,
     });
@@ -45,10 +47,17 @@ const generateHits = (req: XP.Request) => {
     return filterMenus
         .map((filterMenu) => {
             const config = getComponentConfig(filterMenu);
-            const categories = forceArray(config?.categories) as Category[];
+            const categories = forceArray(config?.categories);
 
             return categories.map((category) =>
-                forceArray(category.filters)?.map((filter) => generateHit(category, filter))
+                forceArray(category.filters).map((filter) => {
+                    if (!filter.id) {
+                        throw new Error(
+                            `Id-feil på "${filter.filterName}" - prøv å legge til filteret på nytt i filter-menyen`
+                        );
+                    }
+                    return generateHit(category, filter);
+                })
             );
         })
         .flat();
@@ -67,6 +76,8 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
             },
         };
     } catch (e: any) {
+        logger.error(`Filter selector error: ${e}`);
+
         return {
             status: 200,
             body: {
@@ -77,6 +88,7 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
                         id: '',
                         displayName: 'Det oppsto en feil:',
                         description: e.toString(),
+                        icon: customSelectorErrorIcon,
                     },
                 ],
             },

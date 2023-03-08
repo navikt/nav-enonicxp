@@ -1,22 +1,24 @@
-import contentLib, { Content } from '/lib/xp/content';
-import eventLib from '/lib/xp/event';
-import clusterLib from '/lib/xp/cluster';
-import { runInBranchContext } from '../utils/branch-context';
-import { forceArray } from '../utils/nav-utils';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
+import * as eventLib from '/lib/xp/event';
+import * as clusterLib from '/lib/xp/cluster';
+import { runInContext } from '../context/run-in-context';
 import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from '../utils/logging';
+import { forceArray } from '../utils/array-utils';
 
 const isPublishedOrPrepublished = (contentId: string) => {
     try {
-        const masterContent = runInBranchContext(
-            () => contentLib.get({ key: contentId }),
-            'master'
+        const masterContent = runInContext({ branch: 'master' }, () =>
+            contentLib.get({ key: contentId })
         );
         if (masterContent) {
             return true;
         }
 
-        const draftContent = runInBranchContext(() => contentLib.get({ key: contentId }), 'draft');
+        const draftContent = runInContext({ branch: 'draft' }, () =>
+            contentLib.get({ key: contentId })
+        );
         return isPrepublished(draftContent?.publish?.from);
     } catch (e) {
         logger.error(
@@ -32,37 +34,33 @@ export const removeUnpublishedFromContentList = (
     let numRemoved = 0;
 
     try {
-        runInBranchContext(
-            () =>
-                contentLib.modify<'no.nav.navno:content-list'>({
-                    key: contentList._id,
-                    requireValid: false,
-                    editor: (content) => {
-                        const sectionContents = forceArray(content.data?.sectionContents);
+        runInContext({ branch: 'draft', asAdmin: true }, () =>
+            contentLib.modify<'no.nav.navno:content-list'>({
+                key: contentList._id,
+                requireValid: false,
+                editor: (content) => {
+                    const sectionContents = forceArray(content.data?.sectionContents);
 
-                        if (sectionContents.length === 0) {
-                            return content;
+                    if (sectionContents.length === 0) {
+                        return content;
+                    }
+
+                    content.data.sectionContents = sectionContents.filter((sectionContentId) => {
+                        const shouldKeep = isPublishedOrPrepublished(sectionContentId);
+
+                        if (!shouldKeep) {
+                            logger.info(
+                                `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
+                            );
+                            numRemoved++;
                         }
 
-                        content.data.sectionContents = sectionContents.filter(
-                            (sectionContentId) => {
-                                const shouldKeep = isPublishedOrPrepublished(sectionContentId);
+                        return shouldKeep;
+                    });
 
-                                if (!shouldKeep) {
-                                    logger.info(
-                                        `Removing unpublished or deleted content ${sectionContentId} from ${content._path}`
-                                    );
-                                    numRemoved++;
-                                }
-
-                                return shouldKeep;
-                            }
-                        );
-
-                        return content;
-                    },
-                }),
-            'draft'
+                    return content;
+                },
+            })
         );
     } catch (e) {
         logger.error(`Error while modifying content list ${contentList._id} - ${e}`);
@@ -73,13 +71,11 @@ export const removeUnpublishedFromContentList = (
 };
 
 export const removeUnpublishedFromAllContentLists = () => {
-    const contentLists = runInBranchContext(
-        () =>
-            contentLib.query({
-                count: 10000,
-                contentTypes: ['no.nav.navno:content-list'],
-            }),
-        'master'
+    const contentLists = runInContext({ branch: 'master' }, () =>
+        contentLib.query({
+            count: 10000,
+            contentTypes: ['no.nav.navno:content-list'],
+        })
     ).hits;
 
     logger.info(`Pruning ${contentLists.length} content-lists`);
@@ -95,23 +91,21 @@ export const removeUnpublishedFromAllContentLists = () => {
 };
 
 const removeUnpublishedContentFromContentLists = (contentId: string) => {
-    runInBranchContext(
-        () =>
-            contentLib.query({
-                count: 10000,
-                contentTypes: ['no.nav.navno:content-list'],
-                filters: {
-                    boolean: {
-                        must: {
-                            hasValue: {
-                                field: 'data.sectionContents',
-                                values: [contentId],
-                            },
+    runInContext({ branch: 'master' }, () =>
+        contentLib.query({
+            count: 10000,
+            contentTypes: ['no.nav.navno:content-list'],
+            filters: {
+                boolean: {
+                    must: {
+                        hasValue: {
+                            field: 'data.sectionContents',
+                            values: [contentId],
                         },
                     },
                 },
-            }),
-        'master'
+            },
+        })
     ).hits.forEach(removeUnpublishedFromContentList);
 };
 

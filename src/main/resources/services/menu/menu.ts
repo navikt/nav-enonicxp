@@ -1,18 +1,13 @@
-import contentLib, { Content } from '/lib/xp/content';
-import cacheLib from '/lib/cache';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { logger } from '../../lib/utils/logging';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
-import { stripPathPrefix } from '../../lib/utils/nav-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../../lib/constants';
+import { getFromLocalCache } from '../../lib/cache/local-cache';
 
-const cacheKey = 'decorator-menu-cache';
-const menuPath = '/www.nav.no/dekorator-meny/';
-const myPageMenuPathSegment = '/my-page-menu';
-
-const cache = cacheLib.newCache({ size: 1, expire: 60 });
-
-export const clearDecoratorMenuCache = () => {
-    cache.clear();
-};
+const CACHE_KEY = 'decorator-menu-cache';
+const MENU_PATH = '/www.nav.no/dekorator-meny/';
+const MY_PAGE_MENY_PATH_SEGMENT = '/my-page-menu';
 
 type MenuItemContent = Content<'no.nav.navno:megamenu-item'>;
 
@@ -41,7 +36,7 @@ const getTargetPath = (menuItem: MenuItemContent) => {
     if (target.type === 'no.nav.navno:external-link') {
         return target.data.url;
     } else {
-        return hasValidCustomPath(target) ? target.data.customPath : stripPathPrefix(target._path);
+        return getPublicPath(target, CONTENT_LOCALE_DEFAULT);
     }
 };
 
@@ -53,7 +48,7 @@ const menuItemContentTransformer = (menuItem: MenuItemContent): MenuItem => {
         path: getTargetPath(menuItem),
         displayLock: menuItem.data.displayLock,
         flatten: menuItem.data.flatten,
-        isMyPageMenu: menuItem._path.includes(myPageMenuPathSegment) || undefined,
+        isMyPageMenu: menuItem._path.includes(MY_PAGE_MENY_PATH_SEGMENT) || undefined,
         id: menuItem._id,
         hasChildren: children.length > 0,
         children,
@@ -80,7 +75,7 @@ const getMenuItemChildren = (contentId: string) => {
 
 export const get = () => {
     try {
-        const menuContent = contentLib.get({ key: menuPath });
+        const menuContent = contentLib.get({ key: MENU_PATH });
         if (!menuContent) {
             return {
                 status: 500,
@@ -88,7 +83,7 @@ export const get = () => {
             };
         }
 
-        const menu = cache.get(cacheKey, () => getMenuItemChildren(menuContent._id));
+        const menu = getFromLocalCache(CACHE_KEY, () => getMenuItemChildren(menuContent._id));
 
         return {
             body: menu,

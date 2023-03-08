@@ -1,6 +1,6 @@
-import { isValidBranch } from '../../lib/utils/branch-context';
+import { isValidBranch } from '../../lib/context/branches';
 import { getResponseFromCache } from './cache';
-import { getSitecontentResponse } from './generate-response';
+import { generateSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 
@@ -16,7 +16,7 @@ export const get = (req: XP.Request) => {
     }
 
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch = 'master', preview, cacheKey } = req.params;
+    const { id: idOrPath, branch = 'master', preview, cacheKey, locale } = req.params;
 
     if (!idOrPath) {
         return {
@@ -41,7 +41,13 @@ export const get = (req: XP.Request) => {
     try {
         const content = getResponseFromCache(
             idOrPath,
-            () => getSitecontentResponse(idOrPath, branch, preview === 'true'),
+            () =>
+                generateSitecontentResponse({
+                    idOrPathRequested: idOrPath,
+                    localeRequested: locale,
+                    branch,
+                    preview: preview === 'true',
+                }),
             cacheKey
         );
 

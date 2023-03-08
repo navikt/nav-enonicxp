@@ -1,13 +1,14 @@
-import portalLib from '/lib/xp/portal';
-import nodeLib, { NodeContent, RepoNode } from '/lib/xp/node';
+import * as portalLib from '/lib/xp/portal';
+import { getRepoConnection } from '../utils/repo-connection';
+import { NodeContent, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
-import { contentRepo } from '../constants';
+import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { FiltersMenuPartConfig } from 'site/parts/filters-menu/filters-menu-part-config';
 import { PartComponentName, PartConfigs } from 'types/components/component-config';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray } from '../utils/array-utils';
 
 type ContentPageWithSideMenusNodeContent = NodeContent<
     Content<'no.nav.navno:content-page-with-sidemenus'>
@@ -40,7 +41,7 @@ const getValidFilterIds = (components: Component[]): string[] => {
     const availableFilterIds = filterMenus
         .map((filterMenu: FilterMenuComponent): string[] => {
             const filterCategories = forceArray(
-                filterMenu.part.config?.['no-nav-navno']['filters-menu'].categories
+                filterMenu.part.config?.['no-nav-navno']?.['filters-menu']?.categories
             );
 
             const filterIds = filterCategories
@@ -68,7 +69,7 @@ const cleanComponentForInvalidFilterId = (
         return { component, wasCleaned: false };
     }
 
-    const config = (component.part.config?.['no-nav-navno'] as PartConfigs)[partName] as any;
+    const config = (component.part.config?.['no-nav-navno'] as PartConfigs)?.[partName] as any;
     const filters = config?.filters as string[];
 
     if (!filters) {
@@ -111,7 +112,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: contentRepo, branch: 'draft' });
+    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<ContentPageWithSideMenusNodeContent>({ key: content._id });
 

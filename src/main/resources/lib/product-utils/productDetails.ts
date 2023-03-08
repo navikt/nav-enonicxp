@@ -1,4 +1,5 @@
-import contentLib, { Content } from '/lib/xp/content';
+import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 
 export const getProductDetailsUsage = (content: Content<'no.nav.navno:product-details'>) => {
     const contentWithUsage = contentLib.query({
