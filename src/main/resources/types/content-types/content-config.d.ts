@@ -1,5 +1,6 @@
-import { GlobalNumberValueSetData } from './global-value-set';
 import { Component } from '/lib/xp/portal';
+import { BaseMedia } from '/lib/xp/content';
+import { GlobalNumberValueSetData } from './global-value-set';
 import { AnimatedIcons } from '../../site/content-types/animated-icons/animated-icons';
 import { Calculator } from '../../site/content-types/calculator/calculator';
 import { ContentList } from '../../site/content-types/content-list/content-list';
@@ -107,6 +108,11 @@ export type ContentDataMapper<Type extends ContentDescriptor> = Type extends Cus
       }
     : Type extends SearchConfigDescriptor
     ? { type: Type; data: SearchConfigData }
+    : Type extends MediaDescriptor
+    ? {
+          type: Type;
+          data: BaseMedia;
+      }
     : never;
 
 export type BuiltinContentDescriptor =
@@ -117,7 +123,20 @@ export type BuiltinContentDescriptor =
     | 'base:folder'
     | 'no.nav.navno:url';
 
-export type MediaDescriptor = `media:${string}`;
+export type MediaDescriptor =
+    | 'media:archive'
+    | 'media:audio'
+    | 'media:code'
+    | 'media:data'
+    | 'media:document'
+    | 'media:executable'
+    | 'media:image'
+    | 'media:presentation'
+    | 'media:spreadsheet'
+    | 'media:text'
+    | 'media:unknown'
+    | 'media:vector'
+    | 'media:video';
 
 export type CustomContentName = keyof CustomContentDataConfigsWithoutDescriptor;
 

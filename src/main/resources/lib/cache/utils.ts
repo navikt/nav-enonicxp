@@ -1,5 +1,5 @@
 import { Content } from '/lib/xp/content';
-import { APP_DESCRIPTOR, NAVNO_ROOT_PATH } from '../constants';
+import { APP_DESCRIPTOR } from '../constants';
 import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
@@ -12,11 +12,6 @@ export type NodeEventData = {
     branch: string;
     repo: string;
 };
-
-// Matches the _path on nodes from both contentLib and nodeLib.repoConnection get/query functions
-const pathnameFilter = new RegExp(`^(/content)?(${NAVNO_ROOT_PATH})/`);
-
-export const getFrontendPathname = (path: string) => path.replace(pathnameFilter, '/');
 
 export const generateCacheEventId = (nodeData: NodeEventData, timestamp: number) =>
     `${nodeData.id}-${nodeData.repo}-${timestamp}`;

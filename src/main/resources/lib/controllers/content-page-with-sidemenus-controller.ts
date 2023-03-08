@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { NodeContent, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
@@ -112,7 +112,7 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<ContentPageWithSideMenusNodeContent>({ key: content._id });
 

@@ -1,9 +1,8 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { RepoBranch } from '../../types/common';
-import { runInContext } from '../context/run-in-context';
-import { stripPathPrefix as _stripPathPrefix } from '../utils/nav-utils';
-import { logger } from '../utils/logging';
+import { runInContext } from '../../context/run-in-context';
+import { logger } from '../../utils/logging';
+import { stripPathPrefix as _stripPathPrefix } from '../path-utils';
 
 type ContentWithCustomPath = Content & { data: { customPath: string } };
 

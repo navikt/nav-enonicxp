@@ -1,5 +1,4 @@
 fragment contentCommon on Content {
-    __typename
     _id
     _path
     type

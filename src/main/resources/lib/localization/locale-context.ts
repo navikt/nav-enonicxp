@@ -1,6 +1,7 @@
+import * as contextLib from '/lib/xp/context';
 import { logger } from '../utils/logging';
 import { runInContext, RunInContextOptions } from '../context/run-in-context';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../constants';
 import { getLayersData } from './layers-data';
 
 type RunInLocaleContextOptions = Omit<RunInContextOptions, 'repository'> & { locale: string };
@@ -24,3 +25,6 @@ export const runInLocaleContext = <ReturnType>(
         func
     );
 };
+
+export const getLocaleFromContext = () =>
+    contextLib.get<{ locale?: string }>()?.attributes?.locale || CONTENT_LOCALE_DEFAULT;

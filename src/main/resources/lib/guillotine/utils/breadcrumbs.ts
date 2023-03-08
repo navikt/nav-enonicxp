@@ -2,8 +2,9 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { contentTypesWithBreadcrumbs } from '../../contenttype-lists';
 import { COMPONENT_APP_KEY, NAVNO_ROOT_PATH } from '../../constants';
-import { getParentPath, stringArrayToSet, stripPathPrefix } from '../../utils/nav-utils';
+import { stringArrayToSet } from '../../utils/nav-utils';
 import { logger } from '../../utils/logging';
+import { getParentPath, stripPathPrefix } from '../../paths/path-utils';
 
 type Breadcrumb = {
     title: string;

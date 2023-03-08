@@ -1,10 +1,11 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-connection';
 import { getNodeVersions } from '../utils/version-utils';
-import { getFrontendPathname, NodeEventData } from './utils';
-import { getCustomPathFromContent } from '../custom-paths/custom-paths';
+import { NodeEventData } from './utils';
+import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-utils';
+import { getFrontendPathname } from '../paths/path-utils';
 
 export const findChangedPaths = ({ id, path, repo }: NodeEventData) => {
-    const repoConnection = nodeLib.connect({
+    const repoConnection = getRepoConnection({
         repoId: repo,
         branch: 'master',
     });
