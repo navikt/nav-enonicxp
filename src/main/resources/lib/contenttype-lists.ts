@@ -15,17 +15,6 @@ export const legacyPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:melding`,
 ];
 
-export const productCardPartContentTypes: ContentTypeList = [
-    `${APP_DESCRIPTOR}:situation-page`,
-    `${APP_DESCRIPTOR}:guide-page`,
-    `${APP_DESCRIPTOR}:themed-article-page`,
-    `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
-    `${APP_DESCRIPTOR}:tools-page`,
-    `${APP_DESCRIPTOR}:overview`,
-    `${APP_DESCRIPTOR}:generic-page`,
-    `${APP_DESCRIPTOR}:current-topic-page`,
-];
-
 export const dynamicPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:situation-page`,
     `${APP_DESCRIPTOR}:guide-page`,
@@ -127,4 +116,9 @@ export const contentTypesRenderedByEditorFrontend: ContentTypeList = [
     'portal:page-template',
     'portal:fragment',
     'portal:site',
+];
+
+export const contentTypesWithCustomEditor: ContentTypeList = [
+    `${APP_DESCRIPTOR}:global-value-set`,
+    `${APP_DESCRIPTOR}:global-case-time-set`,
 ];
