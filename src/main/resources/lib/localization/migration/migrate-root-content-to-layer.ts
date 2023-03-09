@@ -3,9 +3,7 @@ import { getRepoConnection } from '../../utils/repo-connection';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { CONTENT_REPO_PREFIX } from '../../constants';
-import * as valueLib from '/lib/xp/value';
-import { RepoConnection } from '/lib/xp/node';
-import { forceArray } from '../../utils/array-utils';
+import { transformNodeContentWithJavaTypes } from './transform-node-content-with-java-types';
 
 type ContentMigrationParams = {
     sourceContentId: string;
@@ -20,38 +18,13 @@ const getProjectIdFromLocale = (locale: string) => {
     return localeToRepoIdMap[locale].replace(`${CONTENT_REPO_PREFIX}.`, '');
 };
 
-const prepareGetParams = (keys: string | string[], bean: any) => {
-    forceArray(keys).forEach((param: any) => {
-        bean.add(param);
-    });
-};
-
-const testJavaGet = (repoConnection: RepoConnection, keys: string | string[]) => {
-    const handlerParams = __.newBean('com.enonic.xp.lib.node.GetNodeHandlerParams');
-
-    prepareGetParams(keys, handlerParams);
-
-    // @ts-ignore
-    logger.info(`nodeHandler: ${typeof repoConnection.nodeHandler}`);
-    // @ts-ignore
-    return __.toNativeObject(repoConnection.nodeHandler.get(handlerParams));
-};
-
 const transformToLayerContent = (content: any, sourceLocale: string, targetLocale: string) => {
-    content.originProject = getProjectIdFromLocale(sourceLocale);
-    content.inherit = ['PARENT', 'SORT'];
-    content.language = targetLocale;
-    content.data.languages = valueLib.reference(content.data.languages);
-
-    return content;
-
-    // return {
-    //     ...content,
-    //     // data: { ...content.data },
-    //     originProject: getProjectIdFromLocale(sourceLocale),
-    //     inherit: ['PARENT', 'SORT'],
-    //     language: targetLocale,
-    // };
+    return {
+        ...transformNodeContentWithJavaTypes(content),
+        originProject: getProjectIdFromLocale(sourceLocale),
+        inherit: ['PARENT', 'SORT'],
+        language: targetLocale,
+    };
 };
 
 const migrateBranch = (
@@ -78,9 +51,6 @@ const migrateBranch = (
         return null;
     }
 
-    const javaContent = testJavaGet(sourceRepo, sourceContentId);
-    logger.info(`Java content: ${JSON.stringify(javaContent)}`);
-
     const targetContent = targetDraftRepo.get(targetContentId);
     if (!targetContent) {
         logger.error(`Content not found for target id ${sourceContentId}`);
@@ -95,7 +65,7 @@ const migrateBranch = (
         editor: (_) => {
             logger.info(`Copying content from ${sourceLogString} to ${targetLogString}`);
 
-            return transformToLayerContent(javaContent, sourceLocale, targetLocale);
+            return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
         },
     });
 
@@ -121,9 +91,23 @@ const migrateBranch = (
     return 'Great success!';
 };
 
+const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
+    const repoId = getLayersData().localeToRepoIdMap[locale];
+
+    const draftContent = getRepoConnection({ branch: 'draft', repoId }).get(contentId);
+    const masterContent = getRepoConnection({ branch: 'master', repoId }).get(contentId);
+
+    return draftContent?._versionKey === masterContent?._versionKey;
+};
+
 export const migrateRootContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
+    const { sourceContentId, sourceLocale } = contentMigrationParams;
+
     migrateBranch(contentMigrationParams, 'master');
-    migrateBranch(contentMigrationParams, 'draft');
+
+    if (!isDraftAndMasterSameVersion(sourceContentId, sourceLocale)) {
+        migrateBranch(contentMigrationParams, 'draft');
+    }
 
     return 'Great success!';
 };

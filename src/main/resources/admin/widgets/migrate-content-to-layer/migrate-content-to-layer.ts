@@ -2,7 +2,6 @@ import thymeleafLib from '/lib/thymeleaf';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
 import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID, URLS } from '../../../lib/constants';
 import { getLayersData } from '../../../lib/localization/layers-data';
-import { logger } from '../../../lib/utils/logging';
 import { getServiceRequestSubPath } from '../../../services/service-utils';
 import { migrateContentToLayerWidgetHandler } from './migrate-handler/migrate-handler';
 
@@ -47,14 +46,6 @@ export const widgetResponse = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    const { repositoryId, contextPath } = req;
-
-    logger.info(
-        `params: ${JSON.stringify(
-            req.params
-        )} - repoId: ${repositoryId} - contextPath: ${contextPath}`
-    );
-
     const subPath = getServiceRequestSubPath(req);
 
     if (subPath === MIGRATE_HANDLER_PATH) {

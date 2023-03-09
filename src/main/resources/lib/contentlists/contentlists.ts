@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { notEmpty } from '../utils/mixed-bag-of-utils';
+import { notNullOrUndefined } from '../utils/mixed-bag-of-utils';
 import { sortByDateTimeField } from '../utils/sort-utils';
 import { forceArray } from '../utils/array-utils';
 
@@ -13,7 +13,7 @@ export const getContentList = (contentListKey: string, maxItemsKey: number, sort
     const sortFunc = sortByKey ? sortByDateTimeField(sortByKey) : undefined;
     const sectionContents = sectionContentsRefs
         .map((item: string) => contentLib.get({ key: item }))
-        .filter(notEmpty)
+        .filter(notNullOrUndefined)
         .sort(sortFunc)
         .slice(0, maxItemsKey)
         .map((content) => content._id);

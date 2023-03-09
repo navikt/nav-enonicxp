@@ -5,7 +5,7 @@ const Thread = Java.type('java.lang.Thread');
 
 export const getCurrentThreadId = () => Number(Thread.currentThread().getId());
 
-export const notEmpty = <TValue>(value: TValue | null | undefined): value is TValue =>
+export const notNullOrUndefined = <TValue>(value: TValue | null | undefined): value is TValue =>
     value !== null && value !== undefined;
 
 export const isMedia = (content: Content): content is Content<MediaDescriptor> =>
