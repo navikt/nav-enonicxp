@@ -23,7 +23,7 @@ export const widgetResponse = (req: XP.Request) => {
 
     if (repositoryId !== CONTENT_ROOT_REPO_ID) {
         return {
-            body: `<widget>Denne widgeten fungerer kun i layeret for default-språket (${CONTENT_LOCALE_DEFAULT})</widget>`,
+            body: `<widget>Denne widgeten kan bare brukes i layeret for default-språket (${CONTENT_LOCALE_DEFAULT})</widget>`,
             contentType: 'text/html; charset=UTF-8',
         };
     }

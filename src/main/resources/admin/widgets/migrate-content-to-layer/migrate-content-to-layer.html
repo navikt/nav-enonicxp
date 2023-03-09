@@ -11,12 +11,19 @@
             fetch(`${url}?targetLocale=${targetLocale}&targetContentId=${targetContentId}`)
                 .then((res) => {
                     if (res.ok) {
-                        return res.text();
+                        return res.json();
                     }
-                    return 'Oi, noe gikk galt!';
+
+                    return { message: 'Oi, noe gikk galt!', result: 'error' };
                 })
-                .then((html) => {
-                    document.getElementById('result').innerHTML = html;
+                .then(({ result, message }) => {
+                    if (result === 'error') {
+                        document.getElementById('error').innerHTML = message;
+                    } else {
+                        document.getElementById('success').innerHTML = message;
+                    }
+                }).catch(e => {
+                    document.getElementById('error').innerHTML = `Ukjent feil: ${e}`;
                 });
         }
     </script>
@@ -37,7 +44,7 @@
                 </select>
             </div>
             <div>
-                <label for="targetInput">Ny content id (samme som norsk versjon)</label><br />
+                <label for="targetInput">Ny contentId (samme som norsk versjon)</label><br />
                 <input
                     type="text"
                     id="targetInput"
@@ -54,6 +61,7 @@
             </div>
             <input type="hidden" name="contentId" data-th-value="${contentId}" />
         </form>
-        <div id="result" style="margin-top: 1rem" />
+        <div id="success" style="margin-top: 1rem; color: green" />
+        <div id="error" style="margin-top: 1rem; color: red" />
     </div>
 </widget>
