@@ -72,6 +72,7 @@ dependencies {
     include "com.enonic.xp:lib-repo:${xpVersion}"
     include "com.enonic.xp:lib-scheduler:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
+    include "com.enonic.xp:lib-value:${xpVersion}"
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.lib:lib-cache:2.1.1"
     include "com.enonic.lib:lib-graphql-playground:0.0.1"
