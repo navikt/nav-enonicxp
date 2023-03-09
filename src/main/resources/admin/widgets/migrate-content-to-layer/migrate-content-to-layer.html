@@ -1,0 +1,59 @@
+<widget>
+    <script th:inline="javascript">
+        function requestContentMigration(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const url = [[${migrateHandlerUrl}]];
+            const targetLocale = document.getElementById('localeSelector').value;
+            const targetContentId = document.getElementById('targetInput').value;
+
+            fetch(`${url}?targetLocale=${targetLocale}&targetContentId=${targetContentId}`)
+                .then((res) => {
+                    if (res.ok) {
+                        return res.text();
+                    }
+                    return 'Oi, noe gikk galt!';
+                })
+                .then((html) => {
+                    document.getElementById('result').innerHTML = html;
+                });
+        }
+    </script>
+    <div style="padding: 0.5rem">
+        <form th:attr="onsubmit='requestContentMigration(event)'">
+            <div style="margin-bottom: 0.75rem">
+                <label for="localeSelector">Velg språk-layer</label><br />
+                <select
+                    id="localeSelector"
+                    style="-webkit-appearance: revert; margin-top: 0.25rem; height: 32px"
+                    class="xp-admin-common-text-input option-filter-input"
+                >
+                    <option
+                        data-th-each="locale : ${locales}"
+                        data-th-text="${locale}"
+                        data-th-value="${locale}"
+                    ></option>
+                </select>
+            </div>
+            <div>
+                <label for="targetInput">Ny content id (samme som norsk versjon)</label><br />
+                <input
+                    type="text"
+                    id="targetInput"
+                    class="xp-admin-common-text-input"
+                    style="width: 100%"
+                />
+                <button
+                    type="submit"
+                    style="margin-top: 0.25rem; height: 32px"
+                    class="xp-admin-common-button"
+                >
+                    <span>Flytt innhold</span>
+                </button>
+            </div>
+            <input type="hidden" name="contentId" data-th-value="${contentId}" />
+        </form>
+        <div id="result" style="margin-top: 1rem" />
+    </div>
+</widget>
