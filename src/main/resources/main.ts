@@ -40,8 +40,7 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
-    // Todo: Activate this only when we're going live with the new office branch.
-    // createOfficeBranchFetchSchedule(); // Temp disable fetch schedule
+    createOfficeBranchFetchSchedule();
 }
 
 activateSearchIndexEventHandlers();
