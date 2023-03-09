@@ -11,11 +11,11 @@
             <items>
                 <input name="title" type="TextLine">
                     <label>Videotittel</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                 </input>
                 <input name="poster" type="ImageSelector">
                     <label>Bildeplakat</label>
-                    <occurrences minimum="0" maximum="1"/>
+                    <occurrences minimum="0" maximum="1" />
                     <config>
                         <allowPath>./*</allowPath>
                         <treeMode>false</treeMode>
@@ -24,20 +24,20 @@
                 </input>
                 <input name="duration" type="TextLine">
                     <label>Spilletid i sekunder</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                 </input>
                 <input name="accountId" type="Long">
                     <label>Konto-id</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="1" />
                     <default>763558</default>
                 </input>
                 <input name="mediaId" type="TextLine">
                     <label>Media id</label>
                     <help-text>For eksempel ddf118c6-00015227-86825a7e</help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
+                    <occurrences minimum="1" maximum="1" />
+                    <!-- <config>
                         <regexp>^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{8}\b-[0-9a-fA-F]{8}$</regexp>
-                    </config>
+                    </config> -->
                 </input>
             </items>
         </field-set>
