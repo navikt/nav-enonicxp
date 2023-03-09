@@ -4,11 +4,14 @@
             if (event) {
                 event.preventDefault();
             }
-            const url = [[${migrateHandlerUrl}]];
-            const targetLocale = document.getElementById('localeSelector').value;
-            const targetContentId = document.getElementById('targetInput').value;
 
-            fetch(`${url}?targetLocale=${targetLocale}&targetContentId=${targetContentId}`)
+            const url = [[${migrateHandlerUrl}]];
+
+            const sourceId = document.getElementById('sourceId').value;
+            const targetLocale = document.getElementById('localeSelector').value;
+            const targetId = document.getElementById('targetId').value;
+
+            fetch(`${url}?sourceId=${sourceId}&targetLocale=${targetLocale}&targetId=${targetId}`)
                 .then((res) => {
                     if (res.ok) {
                         return res.json();
@@ -44,10 +47,10 @@
                 </select>
             </div>
             <div>
-                <label for="targetInput">Ny contentId (samme som norsk versjon)</label><br />
+                <label for="targetId">Ny contentId (samme som norsk versjon)</label><br />
                 <input
                     type="text"
-                    id="targetInput"
+                    id="targetId"
                     class="xp-admin-common-text-input"
                     style="width: 100%"
                 />
@@ -59,7 +62,7 @@
                     <span>Flytt innhold</span>
                 </button>
             </div>
-            <input type="hidden" name="contentId" data-th-value="${contentId}" />
+            <input type="hidden" id="sourceId" data-th-value="${sourceId}" />
         </form>
         <div id="success" style="margin-top: 1rem; color: green" />
         <div id="error" style="margin-top: 1rem; color: red" />

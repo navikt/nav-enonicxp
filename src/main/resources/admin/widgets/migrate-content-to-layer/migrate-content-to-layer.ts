@@ -36,7 +36,7 @@ export const widgetResponse = (req: XP.Request) => {
 
     const model = {
         locales,
-        contentId,
+        sourceId: contentId,
         migrateHandlerUrl,
     };
 
