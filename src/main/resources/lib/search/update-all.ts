@@ -203,7 +203,7 @@ const getContentWithMatchingFacets = (
             queryParams: {
                 start: 0,
                 count: MAX_NODES_PER_FACET_COUNT,
-                query: `(${ruleQuery}) AND _path LIKE "/content/*`,
+                query: `(${ruleQuery}) AND _path LIKE "/content/*"`,
                 filters: {
                     boolean: {
                         must: {
