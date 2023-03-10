@@ -4,7 +4,7 @@ import {
     BuiltinContentDescriptor,
     CustomContentDescriptor,
 } from '../../types/content-types/content-config';
-import { isMedia } from '../utils/mixed-bag-of-utils';
+import { isMedia } from '../utils/content-utils';
 import { stringArrayToSet } from '../utils/array-utils';
 
 export type NodeEventData = {
