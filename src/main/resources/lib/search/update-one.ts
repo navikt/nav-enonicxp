@@ -10,6 +10,7 @@ import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { createOrUpdateSearchNode } from './create-or-update-search-node';
 import { forceArray, stringArrayToSet } from '../utils/array-utils';
+import { isArchivedContentNode } from '../utils/content-utils';
 
 const isQueryMatchingContent = (query: string, contentId: string, locale: string) =>
     runInLocaleContext(
@@ -43,23 +44,24 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         asAdmin: true,
     });
 
-    const locale = getLayersData().repoIdToLocaleMap[repoId];
-
+    const contentLocale = getLayersData().repoIdToLocaleMap[repoId];
     const contentNode = contentRepoConnection.get<Content>(contentId);
+
     if (
         !contentNode ||
         !contentTypesAllowedSet[contentNode.type] ||
-        !isContentLocalized(contentNode)
+        !isContentLocalized(contentNode) ||
+        isArchivedContentNode(contentNode)
     ) {
         logger.info(`No valid content found for id ${contentId} in ${repoId}`);
-        deleteSearchNodesForContent(contentId, locale);
+        deleteSearchNodesForContent(contentId, contentLocale);
         return;
     }
 
     const matchedFacets = forceArray(searchConfig.data.fasetter).reduce((acc, facet) => {
         const { facetKey, ruleQuery, underfasetter } = facet;
 
-        if (!isQueryMatchingContent(ruleQuery, contentId, locale)) {
+        if (!isQueryMatchingContent(ruleQuery, contentId, contentLocale)) {
             return acc;
         }
 
@@ -69,7 +71,7 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
         }
 
         const ufsMatched = ufArray.filter((uf) =>
-            isQueryMatchingContent(uf.ruleQuery, contentId, locale)
+            isQueryMatchingContent(uf.ruleQuery, contentId, contentLocale)
         );
 
         // If the facet has underfacets, at least one underfacet must match along with the main facet
@@ -83,6 +85,6 @@ export const updateSearchNode = (contentId: string, repoId: string) => {
     createOrUpdateSearchNode({
         contentNode,
         facets: matchedFacets,
-        locale,
+        locale: contentLocale,
     });
 };

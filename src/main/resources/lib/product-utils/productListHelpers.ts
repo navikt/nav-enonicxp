@@ -1,7 +1,7 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
-import { isMedia } from '../utils/mixed-bag-of-utils';
+import { isMedia } from '../utils/content-utils';
 import { ContentTypeWithProductDetails, OverviewPageIllustrationIcon } from './types';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';

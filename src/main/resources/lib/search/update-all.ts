@@ -20,6 +20,8 @@ type ContentIdsToFacetsMap = Record<string, ContentFacet[]>;
 type RepoIdsToContentMap = Record<string, ContentIdsToFacetsMap>;
 type ContentIdWithMatchedFacets = { contentId: string; locale: string; facets: ContentFacet[] };
 
+const MAX_NODES_PER_FACET_COUNT = 50000;
+
 const MAX_DELETE_COUNT = 100000;
 const DELETION_BATCH_SIZE = 1000;
 
@@ -141,7 +143,7 @@ const populateContentIdsToFacetsMap = ({
         const ufMatches = batchedNodeQuery({
             queryParams: {
                 start: 0,
-                count: 50000,
+                count: MAX_NODES_PER_FACET_COUNT,
                 query: uf.ruleQuery,
                 filters: {
                     ids: {
@@ -197,11 +199,11 @@ const getContentWithMatchingFacets = (
     facets.forEach((facet) => {
         const { facetKey, name, ruleQuery } = facet;
 
-        const matchesFromAllLayers = batchedMultiRepoNodeQuery({
+        const { hits: matchesFromAllLayers, total: matchesTotal } = batchedMultiRepoNodeQuery({
             queryParams: {
                 start: 0,
-                count: 50000,
-                query: ruleQuery,
+                count: MAX_NODES_PER_FACET_COUNT,
+                query: `(${ruleQuery}) AND _path LIKE "/content/*"`,
                 filters: {
                     boolean: {
                         must: {
@@ -215,11 +217,17 @@ const getContentWithMatchingFacets = (
                 },
             },
             repo: layersMultiRepoConnection,
-        }).hits;
+        });
 
-        if (matchesFromAllLayers.length === 0) {
+        if (matchesTotal === 0) {
             logger.info(`Facet [${facetKey}] ${name} has no matching content`);
             return;
+        }
+
+        if (matchesTotal > MAX_NODES_PER_FACET_COUNT) {
+            logger.critical(
+                `Facet [${facetKey}] ${name} has more than the maximum allowed number of matches (${MAX_NODES_PER_FACET_COUNT})`
+            );
         }
 
         const repoIdMatchesBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(matchesFromAllLayers);
