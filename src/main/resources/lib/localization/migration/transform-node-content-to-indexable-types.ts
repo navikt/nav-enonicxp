@@ -40,7 +40,9 @@ const insertJavaTypes = (value: any): any => {
     return value;
 };
 
-export const transformNodeContentWithJavaTypes = (content: NodeContent<any>): NodeContent<any> => {
+export const transformNodeContentToIndexableTypes = (
+    content: NodeContent<any>
+): NodeContent<any> => {
     const { createdTime, modifiedTime, publish, data, components, x } = content;
 
     return {

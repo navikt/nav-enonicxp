@@ -41,7 +41,7 @@ export const widgetResponse = (req: XP.Request) => {
 
     return {
         body: thymeleafLib.render(view, model),
-        contentType: 'text/html',
+        contentType: 'text/html; charset=UTF-8',
     };
 };
 

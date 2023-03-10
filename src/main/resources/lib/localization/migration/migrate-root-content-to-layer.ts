@@ -1,9 +1,11 @@
+import { Content } from '/lib/xp/content';
+import { RepoNode } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
 import { getRepoConnection } from '../../utils/repo-connection';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { CONTENT_REPO_PREFIX } from '../../constants';
-import { transformNodeContentWithJavaTypes } from './transform-node-content-with-java-types';
+import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
 
 type ContentMigrationParams = {
     sourceContentId: string;
@@ -12,19 +14,25 @@ type ContentMigrationParams = {
     targetLocale: string;
 };
 
-const getProjectIdFromLocale = (locale: string) => {
-    const { localeToRepoIdMap } = getLayersData();
-
-    return localeToRepoIdMap[locale].replace(`${CONTENT_REPO_PREFIX}.`, '');
+const getProjectIdForLocale = (locale: string) => {
+    return getLayersData().localeToRepoIdMap[locale].replace(`${CONTENT_REPO_PREFIX}.`, '');
 };
 
-const transformToLayerContent = (content: any, sourceLocale: string, targetLocale: string) => {
-    // Remove the legacy languages field
-    content.data = { ...content.data, languages: undefined };
+const transformToLayerContent = (
+    sourceContent: RepoNode<Content>,
+    sourceLocale: string,
+    targetLocale: string
+) => {
+    const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
 
     return {
-        ...transformNodeContentWithJavaTypes(content),
-        originProject: getProjectIdFromLocale(sourceLocale),
+        ...transformNodeContentToIndexableTypes(sourceContent),
+        layerMigration: {
+            sourceLocale,
+            sourceRepoId,
+            sourceContentId: sourceContent._id,
+        },
+        originProject: getProjectIdForLocale(sourceLocale),
         inherit: ['PARENT', 'SORT'],
         language: targetLocale,
     };
