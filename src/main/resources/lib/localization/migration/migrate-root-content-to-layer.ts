@@ -19,6 +19,9 @@ const getProjectIdFromLocale = (locale: string) => {
 };
 
 const transformToLayerContent = (content: any, sourceLocale: string, targetLocale: string) => {
+    // Remove the legacy languages field
+    content.data = { ...content.data, languages: undefined };
+
     return {
         ...transformNodeContentWithJavaTypes(content),
         originProject: getProjectIdFromLocale(sourceLocale),
