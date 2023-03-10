@@ -5,6 +5,7 @@ import { getContentProjectIdFromRepoId, getRepoConnection } from '../../utils/re
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
+import { archiveMigratedContent } from './archive-migrated-content';
 
 type ContentMigrationParams = {
     sourceContentId: string;
@@ -26,6 +27,7 @@ const transformToLayerContent = (
             sourceLocale,
             sourceRepoId,
             sourceContentId: sourceContent._id,
+            migrationTs: Date.now(),
         },
         originProject: getContentProjectIdFromRepoId(sourceRepoId),
         inherit: ['PARENT', 'SORT'],
@@ -107,13 +109,20 @@ const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
 };
 
 export const migrateRootContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
-    const { sourceContentId, sourceLocale } = contentMigrationParams;
+    const { sourceContentId, sourceLocale, targetContentId, targetLocale } = contentMigrationParams;
 
     migrateBranch(contentMigrationParams, 'master');
 
     if (!isDraftAndMasterSameVersion(sourceContentId, sourceLocale)) {
         migrateBranch(contentMigrationParams, 'draft');
     }
+
+    archiveMigratedContent({
+        preMigrationContentId: sourceContentId,
+        postMigrationContentId: targetContentId,
+        preMigrationLocale: sourceLocale,
+        postMigrationLocale: targetLocale,
+    });
 
     return 'Great success!';
 };
