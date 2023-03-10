@@ -2,7 +2,7 @@ import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
@@ -116,7 +116,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
 const populateWithChildLayers = (
     projects: readonly Project[],
-    newMap: LocaleToRepoIdMap,
+    localeToRepoIdMap: LocaleToRepoIdMap,
     parentId: string
 ) => {
     projects.forEach((project) => {
@@ -125,13 +125,13 @@ const populateWithChildLayers = (
             return;
         }
 
-        if (newMap[language]) {
+        if (localeToRepoIdMap[language]) {
             logger.error(`Layer was already specified for locale ${language}`);
         } else {
-            newMap[language] = `${CONTENT_REPO_PREFIX}.${id}`;
+            localeToRepoIdMap[language] = `${CONTENT_REPO_PREFIX}.${id}`;
         }
 
-        populateWithChildLayers(projects, newMap, id);
+        populateWithChildLayers(projects, localeToRepoIdMap, id);
     });
 };
 
@@ -149,6 +149,10 @@ const refreshLayersData = () => {
     if (!rootProject.language) {
         logger.critical(
             `Root project has no language set - Using default language ${CONTENT_LOCALE_DEFAULT}`
+        );
+    } else if (rootProject.language !== CONTENT_LOCALE_DEFAULT) {
+        logger.critical(
+            `Root project did not have the expected language - Expected ${CONTENT_LOCALE_DEFAULT}, got ${rootProject.language}`
         );
     }
 

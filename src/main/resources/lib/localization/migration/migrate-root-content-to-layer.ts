@@ -1,10 +1,9 @@
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
-import { getRepoConnection } from '../../utils/repo-connection';
+import { getContentProjectIdFromRepoId, getRepoConnection } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
-import { CONTENT_REPO_PREFIX } from '../../constants';
 import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
 
 type ContentMigrationParams = {
@@ -12,10 +11,6 @@ type ContentMigrationParams = {
     sourceLocale: string;
     targetContentId: string;
     targetLocale: string;
-};
-
-const getProjectIdForLocale = (locale: string) => {
-    return getLayersData().localeToRepoIdMap[locale].replace(`${CONTENT_REPO_PREFIX}.`, '');
 };
 
 const transformToLayerContent = (
@@ -32,7 +27,7 @@ const transformToLayerContent = (
             sourceRepoId,
             sourceContentId: sourceContent._id,
         },
-        originProject: getProjectIdForLocale(sourceLocale),
+        originProject: getContentProjectIdFromRepoId(sourceRepoId),
         inherit: ['PARENT', 'SORT'],
         language: targetLocale,
     };

@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';

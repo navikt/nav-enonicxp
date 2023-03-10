@@ -1,6 +1,6 @@
 import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from './repo-connection';
+import { getRepoConnection } from './repo-utils';
 import { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 import { contentLibGetStandard } from '../time-travel/standard-functions';

@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { NodeContent, RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';

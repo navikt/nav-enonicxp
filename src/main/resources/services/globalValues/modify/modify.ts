@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../../lib/utils/repo-utils';
 import {
     gvServiceInvalidRequestResponse,
     validateGlobalValueInputAndGetErrorResponse,

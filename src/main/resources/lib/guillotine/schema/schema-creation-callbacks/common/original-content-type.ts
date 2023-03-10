@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { getRepoConnection } from '../../../../utils/repo-connection';
+import { getRepoConnection } from '../../../../utils/repo-utils';
 import graphQlLib from '/lib/graphql';
 import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';

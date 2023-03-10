@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { getNodeVersions } from '../utils/version-utils';
 import { NodeEventData } from './utils';
 import { getCustomPathFromContent } from '../paths/custom-paths/custom-path-utils';
