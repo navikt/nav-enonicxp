@@ -22,19 +22,19 @@ export const widgetResponse = (req: XP.Request) => {
 
     if (repositoryId !== CONTENT_ROOT_REPO_ID) {
         return {
-            body: `<widget>Denne widgeten kan bare brukes i layeret for default-språket (${CONTENT_LOCALE_DEFAULT})</widget>`,
+            body: `<widget>Denne widgeten er kun tilgjengelig i layeret for default-språket (${CONTENT_LOCALE_DEFAULT})</widget>`,
             contentType: 'text/html; charset=UTF-8',
         };
     }
 
     const migrateHandlerUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}/${MIGRATE_HANDLER_PATH}`;
 
-    const locales = Object.keys(getLayersData().localeToRepoIdMap).filter(
+    const nonDefaultLocales = getLayersData().locales.filter(
         (locale) => locale !== CONTENT_LOCALE_DEFAULT
     );
 
     const model = {
-        locales,
+        locales: nonDefaultLocales,
         sourceId: contentId,
         migrateHandlerUrl,
     };

@@ -26,6 +26,7 @@ type LayersRepoData = {
         master: SourceWithPrincipals[];
         draft: SourceWithPrincipals[];
     };
+    locales: string[];
 };
 
 const data: LayersRepoData = {
@@ -36,6 +37,7 @@ const data: LayersRepoData = {
         master: [],
         draft: [],
     },
+    locales: [],
 };
 
 const fifteenMinutesMs = 1000 * 60 * 15;
@@ -136,7 +138,7 @@ const populateWithChildLayers = (
 const refreshLayersData = () => {
     const projects = runInContext({ asAdmin: true }, () => projectLib.list());
 
-    const newMap: LocaleToRepoIdMap = {};
+    const localeToRepoIdMap: LocaleToRepoIdMap = {};
 
     const rootProject = projects.find((project) => project.id === CONTENT_ROOT_PROJECT_ID);
     if (!rootProject) {
@@ -152,23 +154,24 @@ const refreshLayersData = () => {
 
     const { language: rootLanguage = CONTENT_LOCALE_DEFAULT } = rootProject;
 
-    newMap[rootLanguage] = CONTENT_ROOT_REPO_ID;
+    localeToRepoIdMap[rootLanguage] = CONTENT_ROOT_REPO_ID;
 
-    populateWithChildLayers(projects, newMap, CONTENT_ROOT_PROJECT_ID);
+    populateWithChildLayers(projects, localeToRepoIdMap, CONTENT_ROOT_PROJECT_ID);
 
-    const newMapEntries = Object.entries(newMap);
+    const localeToRepoIdMapEntries = Object.entries(localeToRepoIdMap);
 
     data.defaultLocale = rootLanguage;
-    data.localeToRepoIdMap = newMap;
-    data.repoIdToLocaleMap = newMapEntries.reduce((acc, [locale, repoId]) => {
+    data.localeToRepoIdMap = localeToRepoIdMap;
+    data.repoIdToLocaleMap = localeToRepoIdMapEntries.reduce((acc, [locale, repoId]) => {
         return { ...acc, [repoId]: locale };
     }, {} as RepoIdToLocaleMap);
-    data.sources.master = newMapEntries.map(([_, repoId]) => {
+    data.sources.master = localeToRepoIdMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'master', principals: ['role:system.admin'] as PrincipalKey[] };
     });
-    data.sources.draft = newMapEntries.map(([_, repoId]) => {
+    data.sources.draft = localeToRepoIdMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'draft', principals: ['role:system.admin'] as PrincipalKey[] };
     });
+    data.locales = Object.keys(localeToRepoIdMap);
 
     logger.info(`Content layers: ${JSON.stringify(data.localeToRepoIdMap)}`);
 };
