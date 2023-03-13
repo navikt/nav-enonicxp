@@ -8,7 +8,7 @@ import { NodeComponent } from '../../types/components/component-node';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
 import { FiltersMenuPartConfig } from 'site/parts/filters-menu/filters-menu-part-config';
 import { PartComponentName, PartConfigs } from 'types/components/component-config';
-import { forceArray } from '../utils/nav-utils';
+import { forceArray } from '../utils/array-utils';
 
 type ContentPageWithSideMenusNodeContent = NodeContent<
     Content<'no.nav.navno:content-page-with-sidemenus'>

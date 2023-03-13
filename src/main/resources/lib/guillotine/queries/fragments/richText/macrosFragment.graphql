@@ -103,6 +103,9 @@ fragment macros on Macro {
         tall {
             verdi
         }
+        uxsignals_widget {
+            embedCode
+        }
         varselBoks {
             varselBoks
         }

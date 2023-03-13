@@ -4,15 +4,14 @@ import * as clusterLib from '/lib/xp/cluster';
 import { RepoConnection } from '/lib/xp/node';
 import { logger } from '../utils/logging';
 import { runInContext } from '../context/run-in-context';
-import { SearchConfigDescriptor } from '../../types/content-types/content-config';
-import { forceArray } from '../utils/nav-utils';
-import { getSearchRepoConnection, searchRepoConfigNode } from './utils';
-import { SearchConfigData } from '../../types/content-types/search-config';
+import { getSearchRepoConnection, SEARCH_REPO_CONFIG_NODE } from './search-utils';
+import { SearchConfigData, SearchConfigDescriptor } from '../../types/content-types/search-config';
+import { forceArray } from '../utils/array-utils';
 
 type SearchConfig = Content<SearchConfigDescriptor>;
 type PersistedSearchConfig = { config?: SearchConfig };
 
-const searchConfigKey = `/${searchRepoConfigNode}`;
+const SEARCH_CONFIG_KEY = `/${SEARCH_REPO_CONFIG_NODE}`;
 
 let searchConfig: SearchConfig | null = null;
 
@@ -115,7 +114,7 @@ const validateConfig = (config: SearchConfig, repo: RepoConnection) => {
 const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
     try {
         repo.modify<PersistedSearchConfig>({
-            key: searchConfigKey,
+            key: SEARCH_CONFIG_KEY,
             editor: (node) => ({
                 ...node,
                 config,
@@ -127,7 +126,7 @@ const persistValidConfig = (config: SearchConfig, repo: RepoConnection) => {
 };
 
 const getLastValidConfig = (repo: RepoConnection) => {
-    const configNode = repo.get<PersistedSearchConfig>(searchConfigKey);
+    const configNode = repo.get<PersistedSearchConfig>(SEARCH_CONFIG_KEY);
     if (!configNode?.config?.data?.fasetter) {
         logger.critical(`No valid search config found in repo!`);
         return null;

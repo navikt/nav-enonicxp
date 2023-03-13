@@ -1,7 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { sanitize } from '/lib/xp/common';
-import { forceArray, removeDuplicates } from '../utils/nav-utils';
 import { getProductIllustrationIcons } from './productListHelpers';
 import { logger } from '../utils/logging';
 import { Overview } from '../../site/content-types/overview/overview';
@@ -15,6 +14,7 @@ import { ProductData } from '../../site/mixins/product-data/product-data';
 import { APP_DESCRIPTOR, CONTENT_LOCALE_DEFAULT } from '../constants';
 import { Audience } from '../../site/mixins/audience/audience';
 import { contentTypesWithProductDetails } from '../contenttype-lists';
+import { forceArray, removeDuplicates } from '../utils/array-utils';
 
 type OverviewType = Overview['overviewType'];
 type ProductAudience = Audience['audience'];

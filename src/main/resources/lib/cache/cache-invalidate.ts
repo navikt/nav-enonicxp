@@ -10,7 +10,7 @@ import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
 import { isContentLocalized } from '../localization/locale-utils';
-import { removeDuplicates } from '../utils/nav-utils';
+import { removeDuplicates } from '../utils/array-utils';
 import { getPublicPath } from '../paths/public-path';
 import { CONTENT_LOCALE_DEFAULT } from '../constants';
 

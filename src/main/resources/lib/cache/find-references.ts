@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
-import { forceArray, stringArrayToSet } from '../utils/nav-utils';
+import { forceArray, stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,

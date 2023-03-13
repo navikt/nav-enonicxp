@@ -7,7 +7,7 @@ import {
     getContentFromCustomPath,
     isValidCustomPath,
 } from '../paths/custom-paths/custom-path-utils';
-import { stringArrayToSet } from '../utils/nav-utils';
+import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
