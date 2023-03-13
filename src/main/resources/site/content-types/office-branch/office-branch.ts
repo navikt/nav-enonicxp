@@ -51,6 +51,11 @@ export interface OfficeBranch {
   sosialeTjenester?: string;
 
   /**
+   * Spesielle opplysninger
+   */
+  spesielleOpplysninger?: string;
+
+  /**
    * Beliggenhet
    */
   beliggenhet?: {
@@ -145,67 +150,9 @@ export interface OfficeBranch {
    */
   brukerkontakt?: {
     /**
-     * Brukertjenestetilbud
-     */
-    brukertjenesteTilbud?: {
-      /**
-       * Tjenester
-       */
-      tjenester?: Array<{
-        /**
-         * Type
-         */
-        type?: string;
-      }>;
-
-      /**
-       * Ytterligere informasjon
-       */
-      ytterligereInformasjon?: string;
-    };
-
-    /**
-     * Informasjon utbetalinger
-     */
-    informasjonUtbetalinger?: string;
-
-
-    publikumskanaler?: Array<{
-      /**
-       * Beskrivelse
-       */
-      beskrivelse?: string;
-
-      /**
-       * E-post
-       */
-      epost?: string;
-
-      /**
-       * Sortering
-       */
-      sortOrder?: string;
-
-      /**
-       * Telefon
-       */
-      telefon?: string;
-    }>;
-
-    /**
      * Publikumsmottak
      */
     publikumsmottak?: Array<{
-      /**
-       * Stedsbeskrivelse
-       */
-      stedsbeskrivelse?: string;
-
-      /**
-       * Adkomstbeskrivelse
-       */
-      adkomstbeskrivelse?: string;
-
       /**
        * Besøksadresse
        */
@@ -285,7 +232,67 @@ export interface OfficeBranch {
          */
         kunTimeavtale?: string;
       }>;
+
+      /**
+       * Stedsbeskrivelse
+       */
+      stedsbeskrivelse?: string;
+
+      /**
+       * Adkomstbeskrivelse
+       */
+      adkomstbeskrivelse?: string;
     }>;
+
+    /**
+     * Publikumskanaler
+     */
+    publikumskanaler?: Array<{
+      /**
+       * Beskrivelse
+       */
+      beskrivelse?: string;
+
+      /**
+       * Telefon
+       */
+      telefon?: string;
+
+      /**
+       * E-post
+       */
+      epost?: string;
+
+      /**
+       * Sortering
+       */
+      sortOrder?: string;
+    }>;
+
+    /**
+     * Brukertjenestetilbud
+     */
+    brukertjenesteTilbud?: {
+      /**
+       * Tjenester
+       */
+      tjenester?: Array<{
+        /**
+         * Type
+         */
+        type?: string;
+      }>;
+
+      /**
+       * Ytterligere informasjon
+       */
+      ytterligereInformasjon?: string;
+    };
+
+    /**
+     * Informasjon utbetalinger
+     */
+    informasjonUtbetalinger?: string;
 
     /**
      * Sosialhjelp
@@ -305,6 +312,11 @@ export interface OfficeBranch {
          */
         lenketekst?: string;
       }>;
+
+      /**
+       * Papirsøknad informasjon
+       */
+      papirsoeknadInformasjon?: string;
     };
 
     /**
