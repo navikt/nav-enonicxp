@@ -16,12 +16,12 @@ export interface Video {
   duration: string;
 
   /**
-   * Konto-id
-   */
-  accountId: number;
-
-  /**
    * Media id
    */
   mediaId: string;
+
+  /**
+   * Konto-id
+   */
+  accountId: number;
 }
