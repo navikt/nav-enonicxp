@@ -1,5 +1,5 @@
+import { forceArray } from 'lib/utils/array-utils';
 import * as contentLib from '/lib/xp/content';
-import { forceArray } from '../../lib/utils/nav-utils';
 
 const iconData = `\
 <svg width="32" height="32" viewBox="0 0 134 134">
