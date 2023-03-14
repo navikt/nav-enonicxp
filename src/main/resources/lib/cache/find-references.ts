@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
-import { forceArray, getParentPath, stringArrayToSet } from '../utils/nav-utils';
+import { forceArray, stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -12,6 +12,7 @@ import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
+import { getParentPath } from '../paths/path-utils';
 
 type ReferencesMap = Record<string, Content>;
 

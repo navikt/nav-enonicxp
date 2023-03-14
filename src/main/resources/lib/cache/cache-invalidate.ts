@@ -5,13 +5,14 @@ import { frontendInvalidateAllDeferred, frontendInvalidatePaths } from './fronte
 import { findReferences } from './find-references';
 import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
-import { invalidateLocalCaches, sendLocalCacheInvalidationEvent } from './local-cache';
+import { invalidateLocalCache, sendLocalCacheInvalidationEvent } from './local-cache';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
-import { hasValidCustomPath } from '../custom-paths/custom-paths';
-import { buildLocalePath, isContentLocalized } from '../localization/locale-utils';
-import { removeDuplicates } from '../utils/nav-utils';
+import { isContentLocalized } from '../localization/locale-utils';
+import { removeDuplicates } from '../utils/array-utils';
+import { getPublicPath } from '../paths/public-path';
+import { CONTENT_LOCALE_DEFAULT } from '../constants';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
@@ -23,9 +24,14 @@ const getPaths = (contents: Content[], locale: string) =>
             return acc;
         }
 
-        const basePath = hasValidCustomPath(content) ? content.data.customPath : content._path;
+        acc.push(getPublicPath(content, locale));
 
-        return [...acc, buildLocalePath(basePath, locale), basePath];
+        // Always include the path for the default locale as well, to be on the safe side :)
+        if (locale !== CONTENT_LOCALE_DEFAULT) {
+            acc.push(getPublicPath(content, CONTENT_LOCALE_DEFAULT));
+        }
+
+        return acc;
     }, []);
 
 const resolveReferencePaths = (id: string, eventType: string, locale: string) => {
@@ -90,7 +96,7 @@ const _invalidateCacheForNode = ({
     // If this invalidation is running on every node, we can just clear local caches immediately
     // Otherwise, we must send a cluster-wide event so every node gets cleared
     if (isRunningClusterWide) {
-        invalidateLocalCaches();
+        invalidateLocalCache();
     } else {
         sendLocalCacheInvalidationEvent();
     }

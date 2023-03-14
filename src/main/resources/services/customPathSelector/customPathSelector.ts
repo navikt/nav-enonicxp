@@ -1,12 +1,15 @@
 import * as contentLib from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as portalLib from '/lib/xp/portal';
-import { forceArray } from '../../lib/utils/nav-utils';
-import { getContentFromCustomPath, isValidCustomPath } from '../../lib/custom-paths/custom-paths';
+import {
+    getContentFromCustomPath,
+    isValidCustomPath,
+} from '../../lib/paths/custom-paths/custom-path-utils';
 import { FRONTEND_APP_NAME, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH, URLS } from '../../lib/constants';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon, customSelectorWarningIcon } from '../custom-selector-icons';
 import { runInContext } from '../../lib/context/run-in-context';
+import { forceArray } from '../../lib/utils/array-utils';
 
 // Returns an error message to the editor with an intentionally invalid id (customPath id must start with '/')
 const generateErrorHit = (displayName: string, description: string) => ({

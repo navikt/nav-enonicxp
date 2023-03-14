@@ -1,4 +1,4 @@
-// From the search-config2 type in the search app
+// From content types in the search app
 
 import { ArrayOrSingle } from '../util-types';
 import { ContentDescriptor } from './content-config';
@@ -19,3 +19,11 @@ export interface SearchConfigData {
     fields: ArrayOrSingle<string>;
     fasetter: ArrayOrSingle<ConfigFacet>;
 }
+
+export type SearchConfigDescriptor = 'navno.nav.no.search:search-config2';
+
+export type SearchExternalResourceData = {
+    url: string;
+};
+
+export type SearchExternalResourceDescriptor = 'navno.nav.no.search:search-api2';

@@ -13,5 +13,5 @@ export interface UnpublishExpiredContentConfig {
   /**
    * Repo id
    */
-  repoId: string;
+  repoId?: string;
 }

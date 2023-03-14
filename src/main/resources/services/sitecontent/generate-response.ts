@@ -26,7 +26,12 @@ const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boo
 };
 
 // Resolve the base content to a fully resolved content via a guillotine query
-const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): Content | null => {
+const resolveContent = (
+    baseContent: Content,
+    branch: RepoBranch,
+    locale: string,
+    retries = 2
+): Content | null => {
     const contentId = baseContent._id;
     const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
 
@@ -39,7 +44,7 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
             unhookTimeTravel();
         }
 
-        return resolveContent(baseContent, branch, retries - 1);
+        return resolveContent(baseContent, branch, locale, retries - 1);
     }
 
     return queryResult
@@ -47,7 +52,11 @@ const resolveContent = (baseContent: Content, branch: RepoBranch, retries = 2): 
               ...queryResult,
               // modifiedTime should also take any fragments on the page into account
               modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
-              languages: getLanguageVersionsForSelector(baseContent, branch),
+              languages: getLanguageVersionsForSelector({
+                  baseContent,
+                  branch,
+                  baseContentLocale: locale,
+              }),
           }
         : null;
 };
@@ -69,7 +78,7 @@ const resolveContentStudioRequest = (
             return null;
         }
 
-        return resolveContent(content, branch);
+        return resolveContent(content, branch, localeActual);
     });
 };
 
@@ -119,5 +128,5 @@ export const generateSitecontentResponse = ({
         return customPathRedirect;
     }
 
-    return runInLocaleContext({ locale }, () => resolveContent(content, branch));
+    return runInLocaleContext({ locale }, () => resolveContent(content, branch, locale));
 };

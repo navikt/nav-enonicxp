@@ -10,7 +10,7 @@ import {
 import { logger } from '../utils/logging';
 import {
     getLayersMultiConnection,
-    sortMultiRepoNodeHitIdsToLocaleBuckets,
+    sortMultiRepoNodeHitIdsToRepoIdBuckets,
 } from '../localization/locale-utils';
 import { runInLocaleContext } from '../localization/locale-context';
 import { getLayersData } from '../localization/layers-data';
@@ -25,7 +25,7 @@ const schedulePrepublishTasks = () => {
 
     logger.info(`Updating scheduled prepublish jobs for ${nodeHits.length} items`);
 
-    const localeBuckets = sortMultiRepoNodeHitIdsToLocaleBuckets(nodeHits);
+    const localeBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHits);
 
     Object.entries(localeBuckets).forEach(([repoId, nodeIds]) => {
         const { repoIdToLocaleMap } = getLayersData();
@@ -72,7 +72,7 @@ const scheduleUnpublishTasks = () => {
 
     logger.info(`Updating scheduled unpublish jobs for ${nodeHits.length} items`);
 
-    const localeBuckets = sortMultiRepoNodeHitIdsToLocaleBuckets(nodeHits);
+    const localeBuckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(nodeHits);
 
     Object.entries(localeBuckets).forEach(([repoId, nodeIds]) => {
         const { repoIdToLocaleMap } = getLayersData();

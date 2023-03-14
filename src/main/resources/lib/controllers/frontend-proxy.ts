@@ -1,10 +1,11 @@
 import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
-import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
 import { contentTypesRenderedByEditorFrontend } from '../contenttype-lists';
 import { getLocaleFromRepoId } from '../localization/layers-data';
+import { stripPathPrefix } from '../paths/path-utils';
+import { stringArrayToSet } from '../utils/array-utils';
 
 const loopbackCheckParam = 'fromXp';
 
