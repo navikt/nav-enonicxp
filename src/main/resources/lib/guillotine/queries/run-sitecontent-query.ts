@@ -1,7 +1,6 @@
 import { Content } from '/lib/xp/content';
 import { BaseQueryParams, RepoBranch } from '../../../types/common';
 import { contentTypesWithComponents as _contentTypesWithComponents } from '../../contenttype-lists';
-import { stringArrayToSet } from '../../utils/nav-utils';
 import { ComponentType } from '../../../types/components/component-config';
 import {
     buildFragmentComponentTree,
@@ -14,6 +13,7 @@ import componentsQuery from './component-queries/components.graphql';
 import fragmentComponentsQuery from './component-queries/fragmentComponents.graphql';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { guillotineTransformSpecialComponents } from './transform-special-components';
+import { stringArrayToSet } from '../../utils/array-utils';
 
 export type GuillotineUnresolvedComponentType = { type: ComponentType; path: string };
 export type GuillotineComponentQueryResult = {

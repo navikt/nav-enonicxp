@@ -25,9 +25,9 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             return;
         }
 
+        // This callback is only applicable to repos belonging to a content layer
         const locale = getLayersData().repoIdToLocaleMap[node.repo];
         if (!locale) {
-            logger.info(`Repo ${node.repo} does not belong to a locale`);
             return;
         }
 

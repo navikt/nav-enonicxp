@@ -1,8 +1,8 @@
 import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
-import { stringArrayToSet } from '../../lib/utils/nav-utils';
 import { logger } from '../../lib/utils/logging';
+import { stringArrayToSet } from '../../lib/utils/array-utils';
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 

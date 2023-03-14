@@ -9,8 +9,8 @@ import {
     getGlobalValueSet,
     getGlobalValueUsage,
 } from '../../../lib/global-values/global-value-utils';
-import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';
+import { forceArray } from '../../../lib/utils/array-utils';
 
 export const removeGlobalValueItemService = (req: XP.Request) => {
     const { key, contentId } = req.params;

@@ -8,7 +8,6 @@ import {
     NAVNO_ROOT_PATH,
     REDIRECTS_ROOT_PATH,
 } from '../../lib/constants';
-import { removeDuplicates } from '../../lib/utils/nav-utils';
 import {
     contentTypesRenderedByPublicFrontend,
     linkContentTypes,
@@ -17,6 +16,7 @@ import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
+import { removeDuplicates } from '../../lib/utils/array-utils';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 

@@ -7,12 +7,13 @@ import {
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../lib/global-values/global-value-utils';
 import { appendMacroDescriptionToKey } from '../../../lib/utils/component-utils';
-import { forceArray, generateFulltextQuery } from '../../../lib/utils/nav-utils';
+import { generateFulltextQuery } from '../../../lib/utils/mixed-bag-of-utils';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { GlobalValueItem, GlobalValueContentDescriptor } from '../../../lib/global-values/types';
 import { buildGlobalValuePreviewString } from '../../../lib/global-values/macro-preview';
 import { customSelectorHitWithLink } from '../../service-utils';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../../lib/constants';
+import { forceArray } from '../../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 

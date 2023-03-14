@@ -2,11 +2,11 @@ import * as contentLib from '/lib/xp/content';
 import { getRepoConnection } from '../../lib/utils/repo-connection';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
-import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
+import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
     const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;

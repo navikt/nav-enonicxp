@@ -1,18 +1,14 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
-import {
-    forceArray,
-    generateFulltextQuery,
-    getNestedValue,
-    parseJsonArray,
-    removeDuplicates,
-} from '../../lib/utils/nav-utils';
+import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { CONTENT_LOCALE_DEFAULT, CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { forceArray, parseJsonArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { getNestedValue } from '../../lib/utils/object-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 

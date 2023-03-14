@@ -1,10 +1,12 @@
 import * as contextLib from '/lib/xp/context';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from './repo-connection';
 import { RepoConnection, NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
-import { getUnixTimeFromDateTimeString } from './nav-utils';
 import { contentLibGetStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
+import { getUnixTimeFromDateTimeString } from './datetime-utils';
+import { contentTypesWithCustomEditor } from '../contenttype-lists';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
@@ -100,6 +102,12 @@ export const getVersionFromTime = ({
     return foundVersion;
 };
 
+// Workaround for content types with a custom editor, which does not update the modifiedTime field
+// in the same way as the Content Studio editor. We always need to include all timestamps for these
+// types.
+const shouldGetModifiedTimestampsOnly = (content: Content | null) =>
+    content ? !contentTypesWithCustomEditor.includes(content.type) : true;
+
 // Used by the version history selector in the frontend
 export const getPublishedVersionTimestamps = (contentRef: string) => {
     const context = contextLib.get();
@@ -108,11 +116,13 @@ export const getPublishedVersionTimestamps = (contentRef: string) => {
         branch: 'master',
     });
 
+    const content = repo.get(contentRef);
+
     const versions = getNodeVersions({
         nodeKey: getNodeKey(contentRef),
         branch: 'master',
         repo,
-        modifiedOnly: true,
+        modifiedOnly: shouldGetModifiedTimestampsOnly(content),
     });
 
     return versions.map((version) => version.timestamp);

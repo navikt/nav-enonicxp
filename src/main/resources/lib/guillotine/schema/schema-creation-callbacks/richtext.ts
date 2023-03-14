@@ -29,7 +29,7 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
 
         const content = contentLib.get({ key: contentId });
         if (!content) {
-            logger.error(`Invalid reference to contentId ${contentId} in html-area`, true);
+            logger.warning(`Invalid reference to contentId ${contentId} in html-area`, true);
             return html;
         }
 

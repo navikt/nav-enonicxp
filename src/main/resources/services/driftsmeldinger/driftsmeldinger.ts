@@ -2,8 +2,8 @@ import * as portalLib from '/lib/xp/portal';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { Melding } from '../../site/content-types/melding/melding';
-import { forceArray } from '../../lib/utils/nav-utils';
 import { getFromLocalCache } from '../../lib/cache/local-cache';
+import { forceArray } from '../../lib/utils/array-utils';
 
 const CACHE_KEY = 'driftsmeldinger-cache';
 const DRIFTSMELDINGER_PATH = '/www.nav.no/no/driftsmeldinger';

@@ -5,8 +5,8 @@ import {
     getGvKeyAndContentIdFromUniqueKey,
 } from '../../../global-values/global-value-utils';
 import { runInContext } from '../../../context/run-in-context';
-import { forceArray } from '../../../utils/nav-utils';
 import { logger } from '../../../utils/logging';
+import { forceArray } from '../../../utils/array-utils';
 
 export const globalValueMacroConfigCallback: CreationCallback = (context, params) => {
     params.fields.value = {
