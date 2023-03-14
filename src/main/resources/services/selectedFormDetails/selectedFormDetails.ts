@@ -14,10 +14,6 @@ const getFormDetailContent = (formDetailIds: string[]) => {
         count: 100,
     });
 
-    log.info(`_id = "${formDetailIds.join('" OR _id = "')}"`);
-
-    log.info(JSON.stringify(formDetails));
-
     return formDetails.hits.map((hit) => ({
         id: hit._id,
         displayName: hit.displayName,
@@ -37,8 +33,7 @@ const getPreselectedFormIds = (pageId: string) => {
     }
 
     const { data } = currentPage.hits[0];
-    const formDetailsTargets = forceArray(data.formDetailsTargets);
-    return formDetailsTargets;
+    return forceArray(data.formDetailsTargets);
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
@@ -59,8 +54,6 @@ export const get = (req: XP.CustomSelectorServiceRequest) => {
 
     const selectableFormIds = getPreselectedFormIds(id);
     const formDetails = getFormDetailContent(selectableFormIds);
-
-    log.info(JSON.stringify(selectableFormIds));
 
     return {
         status: 200,
