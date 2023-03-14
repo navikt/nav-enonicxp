@@ -16,6 +16,11 @@ export interface FormDetails {
   ingress?: string;
 
   /**
+   * Relasjon til andre skjemadetaljer
+   */
+  formDetailRelations?: Array<string>;
+
+  /**
    * Variasjoner
    */
   formType:
