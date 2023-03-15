@@ -1,4 +1,5 @@
 import * as contentLib from '/lib/xp/content';
+import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { getLayersData } from '../layers-data';
@@ -10,14 +11,34 @@ type ArchiveMigratedContentParams = {
     postMigrationLocale: string;
 };
 
-export const archiveMigratedContent = ({
-    preMigrationContentId,
-    preMigrationLocale,
-    postMigrationContentId,
-    postMigrationLocale,
-}: ArchiveMigratedContentParams): boolean => {
+const transformToArchivedContent = (
+    preMigrationContent: Content,
+    postMigrationLocale: string,
+    postMigrationContentId: string
+) => {
+    const targetRepoId = getLayersData().localeToRepoIdMap[postMigrationLocale];
+
+    return {
+        ...preMigrationContent,
+        displayName: `${preMigrationContent.displayName} - Migrert til layer: [${postMigrationLocale}] ${postMigrationContentId}`,
+        layerMigration: {
+            targetLocale: postMigrationLocale,
+            targetRepoId: targetRepoId,
+            targetContentId: postMigrationContentId,
+            migrationTs: Date.now(),
+        },
+    };
+};
+
+export const archiveMigratedContent = (params: ArchiveMigratedContentParams): boolean => {
+    const {
+        preMigrationContentId,
+        preMigrationLocale,
+        postMigrationContentId,
+        postMigrationLocale,
+    } = params;
+
     const preMigrationLogString = `[${preMigrationLocale}] ${preMigrationContentId}`;
-    const postMigrationLogString = `[${postMigrationLocale}] ${postMigrationContentId}`;
 
     const contextParams = { locale: preMigrationLocale, branch: 'draft' } as const;
 
@@ -42,8 +63,11 @@ export const archiveMigratedContent = ({
         contentLib.modify({
             key: preMigrationContentId,
             editor: (content) => {
-                content.displayName = `${content.displayName} - Migrert til layer: ${postMigrationLogString}`;
-                return content;
+                return transformToArchivedContent(
+                    content,
+                    postMigrationLocale,
+                    postMigrationContentId
+                );
             },
         })
     );
