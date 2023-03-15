@@ -70,9 +70,11 @@ const deleteContent = (name: string) => {
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
     // We want to free up the source path immediately
+
+    contentLib.unpublish({ keys: [content._id] });
     contentLib.move({
-        source: content._id,
-        target: `${fullPath}-delete`,
+        source: fullPath,
+        target: `${name}-delete`,
     });
 
     contentLib.delete({
@@ -233,7 +235,7 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
             deleteContent(name);
         }
 
-        const existingOfficeInXP = existingOfficesInXP.find(
+        /* const existingOfficeInXP = existingOfficesInXP.find(
             (content) =>
                 !!content.data?.enhetNr && content.data?.enhetNr === singleOfficeBranch.enhetNr
         );
@@ -247,6 +249,8 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
         }
 
         processedOfficeBranchIds.push(singleOfficeBranch.enhetNr);
+
+        */
     });
 
     // summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
