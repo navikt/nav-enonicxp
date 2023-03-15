@@ -3,6 +3,7 @@ import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { getLayersData } from '../layers-data';
+import { getRepoConnection } from '../../utils/repo-utils';
 
 type ArchiveMigratedContentParams = {
     preMigrationContentId: string;
@@ -59,18 +60,18 @@ export const archiveMigratedContent = (params: ArchiveMigratedContentParams): bo
     //     logger.error(`Failed to unpublish content: ${preMigrationLogString}`);
     // }
 
-    const modifyResult = runInLocaleContext(contextParams, () =>
-        contentLib.modify({
-            key: preMigrationContentId,
-            editor: (content) => {
-                return transformToArchivedContent(
-                    content,
-                    postMigrationLocale,
-                    postMigrationContentId
-                );
-            },
-        })
-    );
+    const sourceRepoId = getLayersData().localeToRepoIdMap[preMigrationLocale];
+
+    const modifyResult = getRepoConnection({
+        branch: 'draft',
+        repoId: sourceRepoId,
+        asAdmin: true,
+    }).modify({
+        key: preMigrationContentId,
+        editor: (content) => {
+            return transformToArchivedContent(content, postMigrationLocale, postMigrationContentId);
+        },
+    });
 
     if (!modifyResult) {
         logger.error(`Failed to modify content before archiving: ${preMigrationLogString}`);
