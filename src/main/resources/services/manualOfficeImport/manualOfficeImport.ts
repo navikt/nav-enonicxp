@@ -1,8 +1,9 @@
 import { runOfficeBranchFetchTask } from '../../lib/officeBranch';
 
 // Used for health check - do not remove
-export const get = () => {
-    runOfficeBranchFetchTask();
+export const get = (req: XP.Request) => {
+    const { branch = 'master' } = req.params;
+    runOfficeBranchFetchTask(false, branch);
     return {
         status: 200,
         body: {
