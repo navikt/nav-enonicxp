@@ -18,7 +18,16 @@ export const officeBranchCallback: CreationCallback = (context, params) => {
                 return;
             }
 
-            const { language = CONTENT_LOCALE_DEFAULT } = officeDataContent;
+            if (officeDataContent.type !== 'no.nav.navno:office-branch') {
+                logger.info('Content found, but it is not the excepted type of office-branch');
+                return;
+            }
+
+            const skriftspraak = officeDataContent.data.brukerkontakt?.skriftspraak;
+
+            // The field skriftspraak in NORG is an open text field, so uppercase
+            // before checking.
+            const language = skriftspraak?.toUpperCase() === 'NN' ? 'nn' : CONTENT_LOCALE_DEFAULT;
 
             const queryResult = contentLib.query({
                 contentTypes: ['no.nav.navno:office-editorial-page'],
