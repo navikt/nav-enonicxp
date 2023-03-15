@@ -263,7 +263,13 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
         includeDependencies: true,
     });
 
-    logger.info(`PublishResponse: ${JSON.stringify(publishResponse)}`);
+    if (publishResponse.failedContents.length > 0) {
+        logger.critical(
+            `OfficeImporting: Failed to publish ${
+                publishResponse.failedContents.length
+            } offices with id : ${JSON.stringify(publishResponse.failedContents.join(','))}`
+        );
+    }
 
     logger.info(
         `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
