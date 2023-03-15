@@ -15,7 +15,7 @@ export const archiveMigratedContent = ({
     preMigrationLocale,
     postMigrationContentId,
     postMigrationLocale,
-}: ArchiveMigratedContentParams) => {
+}: ArchiveMigratedContentParams): boolean => {
     const preMigrationLogString = `[${preMigrationLocale}] ${preMigrationContentId}`;
     const postMigrationLogString = `[${postMigrationLocale}] ${postMigrationContentId}`;
 
@@ -53,6 +53,8 @@ export const archiveMigratedContent = ({
         return false;
     }
 
+    let didArchiveAll = true;
+
     getLayersData().locales.forEach((locale) => {
         const archiveResult = runInLocaleContext({ locale, branch: 'draft' }, () =>
             contentLib.archive({ content: preMigrationContentId })
@@ -64,8 +66,9 @@ export const archiveMigratedContent = ({
             );
         } else {
             logger.error(`Archived content in layer for ${locale}: ${preMigrationContentId}`);
+            didArchiveAll = false;
         }
     });
 
-    return true;
+    return didArchiveAll;
 };

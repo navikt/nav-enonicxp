@@ -38,7 +38,7 @@ const transformToLayerContent = (
 const migrateBranch = (
     { sourceContentId, sourceLocale, targetContentId, targetLocale }: ContentMigrationParams,
     sourceBranch: RepoBranch
-) => {
+): boolean => {
     const { localeToRepoIdMap } = getLayersData();
 
     const sourceRepo = getRepoConnection({
@@ -56,13 +56,13 @@ const migrateBranch = (
     const sourceContent = sourceRepo.get(sourceContentId);
     if (!sourceContent) {
         logger.error(`Content not found for source id ${sourceContentId}`);
-        return null;
+        return false;
     }
 
     const targetContent = targetDraftRepo.get(targetContentId);
     if (!targetContent) {
         logger.error(`Content not found for target id ${sourceContentId}`);
-        return null;
+        return false;
     }
 
     const sourceLogString = `[${sourceLocale}] ${sourceContent._path}`;
@@ -81,22 +81,23 @@ const migrateBranch = (
         logger.error(
             `Failed to modify target content ${targetLogString} with source content ${sourceLogString}`
         );
-        return null;
+        return false;
     }
 
-    targetDraftRepo.refresh();
-
-    if (sourceBranch === 'master') {
-        const pushResult = targetDraftRepo.push({
-            key: targetContentId,
-            target: 'master',
-            resolve: false,
-        });
-        pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
-        pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
+    if (sourceBranch !== 'master') {
+        return true;
     }
 
-    return 'Great success!';
+    const pushResult = targetDraftRepo.push({
+        key: targetContentId,
+        target: 'master',
+        resolve: false,
+    });
+
+    pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
+    pushResult.success.forEach((id) => `Pushing ${id} to master succeeded`);
+
+    return pushResult.success.length > 0;
 };
 
 const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
@@ -111,18 +112,25 @@ const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
 export const migrateRootContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
     const { sourceContentId, sourceLocale, targetContentId, targetLocale } = contentMigrationParams;
 
-    migrateBranch(contentMigrationParams, 'master');
+    const didMigrateMaster = migrateBranch(contentMigrationParams, 'master');
 
-    if (!isDraftAndMasterSameVersion(sourceContentId, sourceLocale)) {
-        migrateBranch(contentMigrationParams, 'draft');
+    if (!didMigrateMaster) {
+        return false;
     }
 
-    archiveMigratedContent({
+    if (!isDraftAndMasterSameVersion(sourceContentId, sourceLocale)) {
+        const didMigrateDraft = migrateBranch(contentMigrationParams, 'draft');
+        if (!didMigrateDraft) {
+            return false;
+        }
+    }
+
+    const didArchive = archiveMigratedContent({
         preMigrationContentId: sourceContentId,
         postMigrationContentId: targetContentId,
         preMigrationLocale: sourceLocale,
         postMigrationLocale: targetLocale,
     });
 
-    return 'Great success!';
+    return didArchive;
 };
