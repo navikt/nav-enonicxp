@@ -65,10 +65,6 @@ const cleanComponentForInvalidFilterId = (
 ): { component: Component; wasCleaned: boolean } => {
     const partName = component.part.descriptor.split(':')[1] as PartComponentName;
 
-    if (partName === 'filters-menu') {
-        return { component, wasCleaned: false };
-    }
-
     const config = (component.part.config?.['no-nav-navno'] as PartConfigs)?.[partName] as any;
     const filters = config?.filters as string[];
 
@@ -129,6 +125,11 @@ const removeInvalidFilterIds = (req: XP.Request) => {
         if (partComponent.type !== 'part') {
             return partComponent;
         }
+
+        if (partComponent.part.descriptor === 'no.nav.navno:filters-menu') {
+            return partComponent;
+        }
+
         const { component, wasCleaned } = cleanComponentForInvalidFilterId(
             partComponent,
             validFilterIds
