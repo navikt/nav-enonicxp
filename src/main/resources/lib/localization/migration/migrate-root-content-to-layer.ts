@@ -6,6 +6,7 @@ import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
 import { archiveMigratedContent } from './archive-migrated-content';
+import { getLayerMigrationData } from './migration-data';
 
 type ContentMigrationParams = {
     sourceContentId: string;
@@ -23,12 +24,12 @@ const transformToLayerContent = (
 
     return {
         ...transformNodeContentToIndexableTypes(sourceContent),
-        layerMigration: {
-            sourceLocale,
-            sourceRepoId,
-            sourceContentId: sourceContent._id,
-            migrationTs: Date.now(),
-        },
+        layerMigration: getLayerMigrationData({
+            type: 'live',
+            archivedContentId: sourceContent._id,
+            archivedLocale: sourceLocale,
+            archivedRepoId: sourceRepoId,
+        }),
         originProject: getContentProjectIdFromRepoId(sourceRepoId),
         inherit: ['PARENT', 'SORT'],
         language: targetLocale,

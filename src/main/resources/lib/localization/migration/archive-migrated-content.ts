@@ -4,6 +4,7 @@ import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { getLayersData } from '../layers-data';
 import { getRepoConnection } from '../../utils/repo-utils';
+import { getLayerMigrationData } from './migration-data';
 
 type ArchiveMigratedContentParams = {
     preMigrationContentId: string;
@@ -17,17 +18,15 @@ const transformToArchivedContent = (
     postMigrationLocale: string,
     postMigrationContentId: string
 ) => {
-    const targetRepoId = getLayersData().localeToRepoIdMap[postMigrationLocale];
-
     return {
         ...preMigrationContent,
         displayName: `${preMigrationContent.displayName} - Migrert til layer: [${postMigrationLocale}] ${postMigrationContentId}`,
-        layerMigration: {
-            targetLocale: postMigrationLocale,
-            targetRepoId: targetRepoId,
-            targetContentId: postMigrationContentId,
-            migrationTs: Date.now(),
-        },
+        layerMigration: getLayerMigrationData({
+            type: 'archived',
+            liveContentId: postMigrationContentId,
+            liveLocale: postMigrationLocale,
+            liveRepoId: getLayersData().localeToRepoIdMap[postMigrationLocale],
+        }),
     };
 };
 
