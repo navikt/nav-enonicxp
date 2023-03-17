@@ -26,7 +26,7 @@ export interface ContentPageWithSidemenus {
   rates?: string;
 
   /**
-   * Velg alle detaljer som skal brukes
+   * Velg alle detaljer som skal brukes på denne siden
    */
   formDetailsTargets?: Array<string>;
 
