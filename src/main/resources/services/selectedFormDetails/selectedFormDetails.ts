@@ -1,5 +1,8 @@
-import { forceArray } from 'lib/utils/array-utils';
 import * as contentLib from '/lib/xp/content';
+import * as portalLib from '/lib/xp/portal';
+import { customSelectorHitWithLink } from '../service-utils';
+import { forceArray } from '../../lib/utils/array-utils';
+import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 
 const iconData = `\
 <svg width="32" height="32" viewBox="0 0 134 134">
@@ -10,49 +13,39 @@ const iconData = `\
 
 const getFormDetailContent = (formDetailIds: string[]) => {
     const formDetails = contentLib.query({
-        query: `_id = "${formDetailIds.join('" OR _id = "')}"`,
         count: 100,
+        filters: {
+            ids: {
+                values: formDetailIds,
+            },
+        },
     });
 
-    return formDetails.hits.map((hit) => ({
-        id: hit._id,
-        displayName: hit.displayName,
-        icon: { data: iconData, type: 'image/svg+xml' },
-    }));
+    return formDetails.hits.map((hit) =>
+        customSelectorHitWithLink(
+            {
+                id: hit._id,
+                displayName: hit.displayName,
+                icon: { data: iconData, type: 'image/svg+xml' },
+            },
+            `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${hit._id}`
+        )
+    );
 };
 
-const getPreselectedFormIds = (pageId: string) => {
-    const currentPage = contentLib.query({
-        count: 1000,
-        contentTypes: ['no.nav.navno:content-page-with-sidemenus'],
-        query: `_id = '${pageId}'`,
-    });
+const getPreselectedFormIds = () => {
+    const currentContent = portalLib.getContent();
 
-    if (currentPage.count === 0) {
+    if (!currentContent || currentContent.type !== 'no.nav.navno:content-page-with-sidemenus') {
         return [];
     }
 
-    const { data } = currentPage.hits[0];
+    const { data } = currentContent;
     return forceArray(data.formDetailsTargets);
 };
 
-export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const matcher = new RegExp(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
-    const id = req.path.match(matcher)?.[0];
-
-    if (!id) {
-        return {
-            status: 200,
-            contentType: 'application/json',
-            body: {
-                total: 0,
-                count: 0,
-                hits: [],
-            },
-        };
-    }
-
-    const selectableFormIds = getPreselectedFormIds(id);
+export const get = () => {
+    const selectableFormIds = getPreselectedFormIds();
     const formDetails = getFormDetailContent(selectableFormIds);
 
     return {
