@@ -13,7 +13,7 @@ type ContentWithLegacyLanguages = Content & {
     data: Required<LanguagesLegacy>;
 };
 
-type LanguageSelectorData = {
+export type LanguageSelectorData = {
     language: string;
     _path: string;
 };
@@ -101,19 +101,15 @@ const mergeLayersWithLegacy = <Type extends LanguageSelectorData>(
     }, fromLayers);
 };
 
-const getLanguageVersions = ({
+export const getLanguageVersions = ({
     baseContent,
     branch,
     baseContentLocale,
 }: GetLanguageVersionsParams) => {
-    return {
-        contentFromLayers: getLayersLanguages(baseContent, branch, baseContentLocale),
-        contentFromLegacyLanguages: runInContext({ branch }, () => getLegacyLanguages(baseContent)),
-    };
-};
-
-export const getLanguageVersionsForSelector = (params: GetLanguageVersionsParams) => {
-    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(params);
+    const contentFromLayers = getLayersLanguages(baseContent, branch, baseContentLocale);
+    const contentFromLegacyLanguages = runInContext({ branch }, () =>
+        getLegacyLanguages(baseContent)
+    );
 
     return mergeLayersWithLegacy(
         contentFromLayers.map((content) => transformContent(content, content.language)),
@@ -121,10 +117,4 @@ export const getLanguageVersionsForSelector = (params: GetLanguageVersionsParams
             transformContent(content, CONTENT_LOCALE_DEFAULT)
         )
     );
-};
-
-export const getLanguageVersionsFull = (params: GetLanguageVersionsParams) => {
-    const { contentFromLayers, contentFromLegacyLanguages } = getLanguageVersions(params);
-
-    return mergeLayersWithLegacy(contentFromLayers, contentFromLegacyLanguages);
 };

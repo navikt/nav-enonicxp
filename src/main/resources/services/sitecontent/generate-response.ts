@@ -12,7 +12,7 @@ import { getLayersData, isValidLocale } from '../../lib/localization/layers-data
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import { getCustomPathRedirectIfApplicable, getRedirectContent } from './resolve-redirects';
-import { getLanguageVersionsForSelector } from '../../lib/localization/resolve-language-versions';
+import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
@@ -52,7 +52,7 @@ const resolveContent = (
               ...queryResult,
               // modifiedTime should also take any fragments on the page into account
               modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
-              languages: getLanguageVersionsForSelector({
+              languages: getLanguageVersions({
                   baseContent,
                   branch,
                   baseContentLocale: locale,
