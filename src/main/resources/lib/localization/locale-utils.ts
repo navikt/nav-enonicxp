@@ -1,5 +1,5 @@
 import * as nodeLib from '/lib/xp/node';
-import { MultiRepoNodeQueryHit } from '/lib/xp/node';
+import { MultiRepoNodeQueryHit, NodeQueryParams } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content, BooleanFilter, BasicFilters } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
@@ -7,6 +7,7 @@ import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
 import { forceArray } from '../utils/array-utils';
+import { batchedContentQuery, batchedMultiRepoNodeQuery } from '../utils/batched-query';
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({
@@ -105,6 +106,46 @@ export const sortMultiRepoNodeHitIdsToRepoIdBuckets = (hits: readonly MultiRepoN
         }
 
         acc[repoId].push(id);
+
+        return acc;
+    }, {});
+};
+
+export type LocaleContentBuckets = Record<string, Content[]>;
+
+export const queryAllLayersToLocaleBuckets = ({
+    branch,
+    state = 'localized',
+    queryParams,
+}: {
+    branch: RepoBranch;
+    state: LocalizationState;
+    queryParams: NodeQueryParams;
+}) => {
+    const multiRepoConnection = getLayersMultiConnection(branch);
+
+    const multiRepoQueryResult = batchedMultiRepoNodeQuery({
+        repo: multiRepoConnection,
+        queryParams,
+    });
+
+    const buckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(multiRepoQueryResult.hits);
+
+    return Object.entries(buckets).reduce<LocaleContentBuckets>((acc, [repoId, contentIds]) => {
+        const locale = getLayersData().repoIdToLocaleMap[repoId];
+        const localeHits = runInLocaleContext({ locale, branch }, () =>
+            batchedContentQuery({
+                count: contentIds.length,
+                filters: {
+                    ids: {
+                        values: contentIds,
+                    },
+                    boolean: localizationStateFilters[state],
+                },
+            })
+        );
+
+        acc[locale] = localeHits.hits;
 
         return acc;
     }, {});
