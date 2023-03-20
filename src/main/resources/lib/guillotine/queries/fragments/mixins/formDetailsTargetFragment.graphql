@@ -1,0 +1,7 @@
+#import "../contentCommonFragment.graphql"
+#import "../content-types/formDetailsFragment.graphql"
+
+fragment formDetailsMixin on Content {
+    ...contentCommon
+    ...contentFormDetails
+}
