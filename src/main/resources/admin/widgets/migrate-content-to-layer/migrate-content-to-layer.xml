@@ -1,5 +1,5 @@
 <widget>
-    <display-name>Flytt til layer</display-name>
+    <display-name>Migrering til layers</display-name>
     <description>Flytt dette innholdet til et språk-layer</description>
     <interfaces>
         <interface>contentstudio.contextpanel</interface>

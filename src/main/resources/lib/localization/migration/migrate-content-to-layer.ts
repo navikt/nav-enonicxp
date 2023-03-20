@@ -15,7 +15,7 @@ type ContentMigrationParams = {
     targetLocale: string;
 };
 
-type MigrationResult = {
+export type LayerMigrationResult = {
     result: 'success' | 'error';
     message: string;
 };
@@ -114,9 +114,9 @@ const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
     return draftContent?._versionKey === masterContent?._versionKey;
 };
 
-export const migrateRootContentToLayer = (
+export const migrateContentToLayer = (
     contentMigrationParams: ContentMigrationParams
-): MigrationResult => {
+): LayerMigrationResult => {
     const { sourceContentId, sourceLocale, targetContentId, targetLocale } = contentMigrationParams;
 
     const logPrefix = `Migrering fra [${sourceLocale}] ${sourceContentId} til [${targetLocale}] ${targetContentId}`;

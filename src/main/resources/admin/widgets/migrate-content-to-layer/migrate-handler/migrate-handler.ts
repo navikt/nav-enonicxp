@@ -1,13 +1,13 @@
 import * as contentLib from '/lib/xp/content';
-import { migrateRootContentToLayer } from '../../../../lib/localization/migration/migrate-root-content-to-layer';
+import {
+    LayerMigrationResult,
+    migrateContentToLayer,
+} from '../../../../lib/localization/migration/migrate-content-to-layer';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
-type ResponseBody = {
-    message: string;
-    result: 'success' | 'error';
-};
-
-export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response<ResponseBody> => {
+export const migrateContentToLayerWidgetHandler = (
+    req: XP.Request
+): XP.Response<LayerMigrationResult> => {
     const { sourceId: sourceContentId, targetLocale, targetId: targetContentIdInput } = req.params;
 
     if (!targetLocale) {
@@ -51,7 +51,7 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
         };
     }
 
-    const migrationResult = migrateRootContentToLayer({
+    const migrationResult = migrateContentToLayer({
         sourceContentId,
         sourceLocale: CONTENT_LOCALE_DEFAULT,
         targetContentId,
