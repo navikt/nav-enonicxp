@@ -18,7 +18,7 @@ import {
 } from '../../lib/localization/locale-utils';
 import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
-const cache = cacheLib.newCache({ size: 2, expire: 10 });
+const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
 // Limited selection of content types for testing purposes
 // (we don't want to build all 17000+ pages on every deploy while testing :)
