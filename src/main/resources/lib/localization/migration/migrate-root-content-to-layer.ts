@@ -15,6 +15,11 @@ type ContentMigrationParams = {
     targetLocale: string;
 };
 
+type MigrationResult = {
+    result: 'success' | 'error';
+    message: string;
+};
+
 const transformToLayerContent = (
     sourceContent: RepoNode<Content>,
     sourceLocale: string,
@@ -110,19 +115,25 @@ const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
     return draftContent?._versionKey === masterContent?._versionKey;
 };
 
-export const migrateRootContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
+export const migrateRootContentToLayer = (
+    contentMigrationParams: ContentMigrationParams
+): MigrationResult => {
     const { sourceContentId, sourceLocale, targetContentId, targetLocale } = contentMigrationParams;
 
-    const didMigrateMaster = migrateBranch(contentMigrationParams, 'master');
+    const logPrefix = `Migrering fra [${sourceLocale}] ${sourceContentId} til [${targetLocale}] ${targetContentId}`;
 
+    const didMigrateMaster = migrateBranch(contentMigrationParams, 'master');
     if (!didMigrateMaster) {
-        return false;
+        return { result: 'error', message: `${logPrefix} mislyktes. Sjekk logger for detaljer.` };
     }
 
     if (!isDraftAndMasterSameVersion(sourceContentId, sourceLocale)) {
         const didMigrateDraft = migrateBranch(contentMigrationParams, 'draft');
         if (!didMigrateDraft) {
-            return false;
+            return {
+                result: 'error',
+                message: `${logPrefix} for upublisert innhold mislyktes. Sjekk logger for detaljer.`,
+            };
         }
     }
 
@@ -133,5 +144,15 @@ export const migrateRootContentToLayer = (contentMigrationParams: ContentMigrati
         postMigrationLocale: targetLocale,
     });
 
-    return didArchive;
+    if (!didArchive) {
+        return {
+            result: 'error',
+            message: `${logPrefix} ble utført, men arkivering av gammelt innhold feilet. Sjekk logger for detaljer.`,
+        };
+    }
+
+    return {
+        result: 'success',
+        message: `${logPrefix} var vellykket!`,
+    };
 };

@@ -1,6 +1,5 @@
 import * as contentLib from '/lib/xp/content';
 import { migrateRootContentToLayer } from '../../../../lib/localization/migration/migrate-root-content-to-layer';
-import { logger } from '../../../../lib/utils/logging';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
 type ResponseBody = {
@@ -21,7 +20,7 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
     if (!targetContentIdInput) {
         return {
             body: {
-                message: `Feil: contentId må være valgt. Dette skal være det samme som den norske versjonen av innholdet`,
+                message: `Feil: contentId må være valgt. Dette skal være det samme som det norske versjonen av innholdet`,
                 result: 'error',
             },
             contentType: 'application/json',
@@ -59,13 +58,8 @@ export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response
         targetLocale,
     });
 
-    logger.info(`Migration result: ${JSON.stringify(migrationResult)}`);
-
     return {
-        body: {
-            message: `Valgt locale: ${targetLocale} - Valgt contentId: ${targetContentId}`,
-            result: 'success',
-        },
+        body: migrationResult,
         contentType: 'application/json',
     };
 };
