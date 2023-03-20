@@ -1,6 +1,6 @@
 <content-type>
     <display-name>Skjemadetaljer</display-name>
-    <description>Søknad, skjema, klage og anke.</description>
+    <description>Kun til testing!</description>
     <super-type>base:structured</super-type>
     <is-abstract>false</is-abstract>
     <is-final>true</is-final>
