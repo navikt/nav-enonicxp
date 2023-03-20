@@ -40,6 +40,7 @@ const insertJavaTypes = (value: any): any => {
     return value;
 };
 
+// Ensures content id fields are indexed as references, and datetime fields are indexed as datetime instants
 export const transformNodeContentToIndexableTypes = (
     content: NodeContent<any>
 ): NodeContent<any> => {

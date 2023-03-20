@@ -24,7 +24,7 @@ export type NodeWithLayerMigrationData = Content & {
 
 type LayerMigrationParams = LayerMigrationDataLive | LayerMigrationDataArchived;
 
-export const getLayerMigrationData = (params: LayerMigrationParams): LayerMigrationData => {
+export const generateLayerMigrationData = (params: LayerMigrationParams): LayerMigrationData => {
     return {
         ...params,
         ts: new Date().toISOString(),

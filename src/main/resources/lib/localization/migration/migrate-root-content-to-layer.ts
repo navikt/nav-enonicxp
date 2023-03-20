@@ -6,7 +6,7 @@ import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
 import { archiveMigratedContent } from './archive-migrated-content';
-import { getLayerMigrationData } from './migration-data';
+import { generateLayerMigrationData } from './migration-data';
 
 type ContentMigrationParams = {
     sourceContentId: string;
@@ -29,7 +29,7 @@ const transformToLayerContent = (
 
     return {
         ...transformNodeContentToIndexableTypes(sourceContent),
-        layerMigration: getLayerMigrationData({
+        layerMigration: generateLayerMigrationData({
             type: 'live',
             archivedContentId: sourceContent._id,
             archivedLocale: sourceLocale,
@@ -77,8 +77,7 @@ const migrateBranch = (
     const modifyResult = targetDraftRepo.modify({
         key: targetContentId,
         editor: (_) => {
-            logger.info(`Copying content from ${sourceLogString} to ${targetLogString}`);
-
+            logger.info(`Duplicating content from ${sourceLogString} to ${targetLogString}`);
             return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
         },
     });
@@ -132,7 +131,7 @@ export const migrateRootContentToLayer = (
         if (!didMigrateDraft) {
             return {
                 result: 'error',
-                message: `${logPrefix} for upublisert innhold mislyktes. Sjekk logger for detaljer.`,
+                message: `${logPrefix} for innhold under arbeid mislyktes. Sjekk logger for detaljer.`,
             };
         }
     }
@@ -146,7 +145,7 @@ export const migrateRootContentToLayer = (
 
     if (!didArchive) {
         return {
-            result: 'error',
+            result: 'success',
             message: `${logPrefix} ble utført, men arkivering av gammelt innhold feilet. Sjekk logger for detaljer.`,
         };
     }

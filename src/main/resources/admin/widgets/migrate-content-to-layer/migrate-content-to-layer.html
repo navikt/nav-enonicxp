@@ -17,16 +17,16 @@
                         return res.json();
                     }
 
-                    return { message: 'Oi, noe gikk galt!', result: 'error' };
+                    return { message: `En uventet feil oppsto: ${res.status} - ${res.statusText}`, result: 'error' };
                 })
                 .then(({ result, message }) => {
                     if (result === 'error') {
                         document.getElementById('error').innerHTML = message;
                     } else {
-                        document.getElementById('success').innerHTML = message;
+                        alert(message);
                     }
                 }).catch(e => {
-                    document.getElementById('error').innerHTML = `Ukjent feil: ${e}`;
+                    document.getElementById('error').innerHTML = `En uventet feil oppsto: ${e}`;
                 });
         }
     </script>
