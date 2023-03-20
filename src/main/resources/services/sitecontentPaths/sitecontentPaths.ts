@@ -2,12 +2,7 @@ import cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
 import { ContentDescriptor } from '../../types/content-types/content-config';
-import {
-    APP_DESCRIPTOR,
-    CONTENT_LOCALE_DEFAULT,
-    NAVNO_ROOT_PATH,
-    REDIRECTS_ROOT_PATH,
-} from '../../lib/constants';
+import { APP_DESCRIPTOR, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import {
     contentTypesRenderedByPublicFrontend,
     linkContentTypes,
@@ -17,12 +12,17 @@ import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
 import { removeDuplicates } from '../../lib/utils/array-utils';
+import {
+    buildLocalePath,
+    queryAllLayersToLocaleBuckets,
+} from '../../lib/localization/locale-utils';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
 const cache = cacheLib.newCache({ size: 2, expire: 10 });
 
 // Limited selection of content types for testing purposes
 // (we don't want to build all 17000+ pages on every deploy while testing :)
-const testContentTypes: ReadonlyArray<ContentDescriptor> = [
+const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:dynamic-page',
     'no.nav.navno:content-page-with-sidemenus',
     'no.nav.navno:situation-page',
@@ -55,21 +55,20 @@ const waitUntilFinished = (msToWait = 60000) => {
 };
 
 const getPathsToRender = (isTest?: boolean) => {
-    try {
-        const now = Date.now();
+    const now = Date.now();
+    // Exclude news, press releases and statistics content if more than one year old
+    const oneYearAgo = new Date(now - ONE_YEAR_MS).toISOString();
+    // Exclude content which will soon be unpublished, as this may cause a 404-error while building the static frontend
+    const sixHoursFromNow = new Date(now + SIX_HOURS_MS).toISOString();
 
-        // Exclude news, press releases and statistics content if more than one year old
-        const oneYearAgo = new Date(now - ONE_YEAR_MS).toISOString();
+    const query = `(${CONTENT_QUERY_SEGMENT}) AND NOT publish.to < instant('${sixHoursFromNow}') AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${EXCLUDED_IF_OLD_QUERY_SEGMENT}))`;
 
-        // Exclude content which will soon be unpublished, as this may cause a 404-error while building the static frontend
-        const sixHoursFromNow = new Date(now + SIX_HOURS_MS).toISOString();
-
-        const query = `(${CONTENT_QUERY_SEGMENT}) AND NOT publish.to < instant('${sixHoursFromNow}') AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${EXCLUDED_IF_OLD_QUERY_SEGMENT}))`;
-
-        const contentPaths = batchedContentQuery({
+    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+        branch: 'master',
+        state: 'localized',
+        queryParams: {
             start: 0,
             count: 20000,
-            contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
             query,
             filters: {
                 boolean: {
@@ -79,32 +78,47 @@ const getPathsToRender = (isTest?: boolean) => {
                             values: ['true'],
                         },
                     },
+                    must: {
+                        hasValue: {
+                            field: 'type',
+                            values: isTest
+                                ? testContentTypes
+                                : contentTypesRenderedByPublicFrontend,
+                        },
+                    },
                 },
             },
-        }).hits.reduce((acc, content) => {
-            acc.push(stripPathPrefix(content._path));
-            // TODO: rewrite this to include content from all layers
-            acc.push(getPublicPath(content, CONTENT_LOCALE_DEFAULT));
+        },
+    });
 
-            return acc;
-        }, [] as string[]);
+    const contentPaths = Object.entries(localeContentBuckets)
+        .map(([locale, contentsArray]) =>
+            contentsArray.map((content) => {
+                const publicPath = getPublicPath(content, locale);
 
-        if (isTest) {
-            return removeDuplicates(contentPaths);
-        }
+                // Include the base path if the content has a custom path, to ensure the redirect
+                // from basepath -> custompath is included in the static frontend build
+                if (hasValidCustomPath(content)) {
+                    return [publicPath, buildLocalePath(stripPathPrefix(content._path), locale)];
+                }
 
-        const redirectPaths = batchedContentQuery({
-            start: 0,
-            count: 20000,
-            contentTypes: linkContentTypes,
-            query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
-        }).hits.map((content) => content._path.replace(REDIRECTS_ROOT_PATH, ''));
+                return publicPath;
+            })
+        )
+        .flat(2);
 
-        return removeDuplicates([...contentPaths, ...redirectPaths]);
-    } catch (e) {
-        logger.error(`Error while retrieving content paths - ${e}`);
-        return null;
+    if (isTest) {
+        return removeDuplicates(contentPaths);
     }
+
+    const redirectPaths = batchedContentQuery({
+        start: 0,
+        count: 20000,
+        contentTypes: linkContentTypes,
+        query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
+    }).hits.map((content) => content._path.replace(REDIRECTS_ROOT_PATH, ''));
+
+    return removeDuplicates([...contentPaths, ...redirectPaths]);
 };
 
 const getFromCache = (isTest: boolean) => {
