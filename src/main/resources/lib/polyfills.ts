@@ -45,25 +45,25 @@ Object.defineProperty(Array.prototype, 'findIndex', {
 });
 
 Object.defineProperty(Array.prototype, 'flat', {
-    value: function () {
+    value: function (depth = 1) {
         if (!this) {
             return null;
         }
 
         const newArray = [];
 
-        const flattenArray = (arr) => {
+        const flattenArray = (arr, depthRemaining = depth) => {
             for (let i = 0; i < arr.length; i++) {
                 const element = arr[i];
-                if (Array.isArray(element)) {
-                    flattenArray(element);
+                if (Array.isArray(element) && depthRemaining > 0) {
+                    flattenArray(element, depthRemaining - 1);
                 } else {
                     newArray.push(element);
                 }
             }
         };
 
-        flattenArray(this);
+        flattenArray(this, depth);
 
         return newArray;
     },
