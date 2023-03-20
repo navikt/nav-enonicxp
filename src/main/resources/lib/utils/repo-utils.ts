@@ -1,5 +1,6 @@
 import * as nodeLib from '/lib/xp/node';
 import { Source } from '/lib/xp/node';
+import { CONTENT_REPO_PREFIX } from '../constants';
 
 const asAdminParams: Pick<Source, 'user' | 'principals'> = {
     user: {
@@ -16,3 +17,6 @@ export const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
         branch,
         ...(asAdmin && asAdminParams),
     });
+
+export const getContentProjectIdFromRepoId = (repoId: string) =>
+    repoId.replace(`${CONTENT_REPO_PREFIX}.`, '');

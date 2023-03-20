@@ -1,0 +1,10 @@
+<widget>
+    <display-name>Migrering til layers</display-name>
+    <description>Flytt dette innholdet til et språk-layer</description>
+    <interfaces>
+        <interface>contentstudio.contextpanel</interface>
+    </interfaces>
+    <allow>
+        <principal>role:system.authenticated</principal>
+    </allow>
+</widget>

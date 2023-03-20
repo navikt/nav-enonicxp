@@ -38,7 +38,7 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
     // If the content was deleted, we must check in the draft branch for references
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
-    const { localeToRepoIdMap, defaultLocale } = getLayersData();
+    const { defaultLocale, locales } = getLayersData();
 
     const deadline = Date.now() + REFERENCE_SEARCH_TIMEOUT_MS;
 
@@ -54,8 +54,6 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
     if (locale !== defaultLocale) {
         return removeDuplicates(pathsToInvalidate);
     }
-
-    const locales = Object.keys(localeToRepoIdMap);
 
     const success = locales.every((locale) => {
         if (locale === defaultLocale) {

@@ -11,8 +11,8 @@ type LogLevel = 'info' | 'warning' | 'error' | 'critical';
 const formatMsg = (
     msg: string,
     level: LogLevel,
-    file: string,
-    line: string,
+    file = '',
+    line = '',
     isEditorialError?: boolean
 ) => {
     const filename = file.split(':')[1];

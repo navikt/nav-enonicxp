@@ -1,6 +1,6 @@
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../../lib/utils/repo-utils';
 import { NodeContent } from '/lib/xp/node';
 import { componentPreviewController } from '../../../lib/controllers/component-preview-controller';
 import { generateUUID, isUUID } from '../../../lib/utils/uuid';

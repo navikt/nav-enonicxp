@@ -6,7 +6,11 @@ import {
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
-import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
+import {
+    customSelectorHitWithLink,
+    getServiceRequestSubPath,
+    transformUsageHit,
+} from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { forceArray } from '../../lib/utils/array-utils';
@@ -101,7 +105,7 @@ const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const subPath = getSubPath(req);
+    const subPath = getServiceRequestSubPath(req);
 
     return runInContext({ branch: 'master' }, () => {
         if (subPath === 'fragmentUsage') {

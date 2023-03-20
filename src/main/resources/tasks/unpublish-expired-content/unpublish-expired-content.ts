@@ -1,5 +1,5 @@
 import * as contentLib from '/lib/xp/content';
-import { getRepoConnection } from '../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
 import { logger } from '../../lib/utils/logging';
