@@ -68,12 +68,14 @@ const sitemapData: SitemapData = {
 
 const contentTypesInSitemapSet = stringArrayToSet(contentTypesInSitemap);
 
-const shouldIncludeContent = (content: Content<any>) =>
-    content &&
-    contentTypesInSitemapSet[content.type] &&
-    !content.data?.externalProductUrl &&
-    !content.data?.noindex &&
-    isContentLocalized(content);
+const shouldIncludeContent = (content: Content<any> | null): content is Content =>
+    !!(
+        content &&
+        contentTypesInSitemapSet[content.type] &&
+        !content.data?.externalProductUrl &&
+        !content.data?.noindex &&
+        isContentLocalized(content)
+    );
 
 const getUrl = (content: Content<any>, locale: string) => {
     if (content.data?.canonicalUrl) {
@@ -105,24 +107,19 @@ const getSitemapEntry = (content: Content, locale: string): SitemapEntry => {
     };
 };
 
-const updateSitemapEntry = (path: string, locale: string) =>
+const updateSitemapEntry = (contentId: string, locale: string) =>
     runInLocaleContext({ branch: 'master', locale }, () => {
-        const content = contentLib.get({ key: path });
-        if (!content) {
-            return;
-        }
-
-        const key = content._id;
+        const content = contentLib.get({ key: contentId });
 
         if (shouldIncludeContent(content)) {
-            sitemapData.set(key, getSitemapEntry(content, locale));
-        } else if (sitemapData.get(key)) {
-            sitemapData.remove(key);
+            sitemapData.set(contentId, getSitemapEntry(content, locale));
+        } else if (sitemapData.get(contentId)) {
+            sitemapData.remove(contentId);
         }
     });
 
 const generateSitemapEntries = (): SitemapEntry[] => {
-    const entries = queryAllLayersToLocaleBuckets({
+    const localeContentBuckets = queryAllLayersToLocaleBuckets({
         branch: 'master',
         state: 'localized',
         queryParams: {
@@ -148,7 +145,7 @@ const generateSitemapEntries = (): SitemapEntry[] => {
         },
     });
 
-    return Object.entries(entries)
+    return Object.entries(localeContentBuckets)
         .map(([locale, contents]) => contents.map((content) => getSitemapEntry(content, locale)))
         .flat();
 };
@@ -245,9 +242,7 @@ export const activateSitemapDataUpdateEventListener = () => {
 
     addReliableEventListener({
         type: EVENT_TYPE_SITEMAP_REQUESTED,
-        callback: () => {
-            generateAndBroadcastSitemapData();
-        },
+        callback: generateAndBroadcastSitemapData,
     });
 
     eventLib.listener({
@@ -264,8 +259,7 @@ export const activateSitemapDataUpdateEventListener = () => {
                     return;
                 }
 
-                const xpPath = node.path.replace(/^\/content/, '');
-                updateSitemapEntry(xpPath, locale);
+                updateSitemapEntry(node.id, locale);
             });
         },
     });
