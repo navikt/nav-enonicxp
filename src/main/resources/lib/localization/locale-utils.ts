@@ -7,7 +7,7 @@ import { getLayersData } from './layers-data';
 import { logger } from '../utils/logging';
 import { runInLocaleContext } from './locale-context';
 import { forceArray } from '../utils/array-utils';
-import { batchedContentQuery } from '../utils/batched-query';
+import { batchedContentQuery, batchedMultiRepoNodeQuery } from '../utils/batched-query';
 
 export const getLayersMultiConnection = (branch: RepoBranch) => {
     return nodeLib.multiRepoConnect({
@@ -122,7 +122,12 @@ export const queryAllLayersToLocaleBuckets = ({
     state: LocalizationState;
     queryParams: NodeQueryParams;
 }) => {
-    const multiRepoQueryResult = getLayersMultiConnection(branch).query(queryParams);
+    const multiRepoConnection = getLayersMultiConnection(branch);
+
+    const multiRepoQueryResult = batchedMultiRepoNodeQuery({
+        repo: multiRepoConnection,
+        queryParams,
+    });
 
     const buckets = sortMultiRepoNodeHitIdsToRepoIdBuckets(multiRepoQueryResult.hits);
 
