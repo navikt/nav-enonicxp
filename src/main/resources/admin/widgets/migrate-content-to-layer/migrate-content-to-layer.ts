@@ -33,6 +33,13 @@ export const widgetResponse = (req: XP.Request) => {
         (locale) => locale !== CONTENT_LOCALE_DEFAULT
     );
 
+    if (nonDefaultLocales.length === 0) {
+        return {
+            body: `<widget>Denne widgeten kan kun benyttes etter innføring av layers (kommer snart!)</widget>`,
+            contentType: 'text/html; charset=UTF-8',
+        };
+    }
+
     const model = {
         locales: nonDefaultLocales,
         sourceId: contentId,
