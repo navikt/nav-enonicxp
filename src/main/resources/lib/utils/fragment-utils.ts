@@ -1,5 +1,5 @@
 import * as contextLib from '/lib/xp/context';
-import { getRepoConnection } from './repo-connection';
+import { getRepoConnection } from './repo-utils';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';

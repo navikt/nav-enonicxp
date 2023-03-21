@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { getContentList } from '../../lib/contentlists/contentlists';
-import { notEmpty } from '../../lib/utils/mixed-bag-of-utils';
+import { notNullOrUndefined } from '../../lib/utils/mixed-bag-of-utils';
 import { stripPathPrefix } from '../../lib/paths/path-utils';
 import { forceArray } from '../../lib/utils/array-utils';
 
@@ -23,7 +23,7 @@ const handleGet = () => {
     // Get the IDs to relevant content from given content-lists
     const listIDs = contentLists
         .map((key) => getContentList(key, 3, 'publish.first'))
-        .filter(notEmpty);
+        .filter(notNullOrUndefined);
     // Create the rssFeed based on content IDs
     const rssFeed: newsItem[] = [];
     listIDs.forEach((list) => {

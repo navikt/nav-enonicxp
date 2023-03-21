@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { NodeContent, RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { frontendProxy } from './frontend-proxy';
@@ -66,6 +66,10 @@ const cleanComponentForInvalidFilterId = (
     const partName = component.part.descriptor.split(':')[1] as PartComponentName;
 
     if (partName === 'filters-menu') {
+        return { component, wasCleaned: false };
+    }
+
+    if (!component.part.config?.['no-nav-navno']) {
         return { component, wasCleaned: false };
     }
 

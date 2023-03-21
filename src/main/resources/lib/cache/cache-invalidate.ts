@@ -16,7 +16,7 @@ import { CONTENT_LOCALE_DEFAULT } from '../constants';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
-const REFERENCE_SEARCH_TIMEOUT_MS = 8000;
+const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 
 const getPaths = (contents: Content[], locale: string) =>
     contents.reduce<string[]>((acc, content) => {
@@ -38,7 +38,7 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
     // If the content was deleted, we must check in the draft branch for references
     const branch = eventType === 'node.deleted' ? 'draft' : 'master';
 
-    const { localeToRepoIdMap, defaultLocale } = getLayersData();
+    const { defaultLocale, locales } = getLayersData();
 
     const deadline = Date.now() + REFERENCE_SEARCH_TIMEOUT_MS;
 
@@ -54,8 +54,6 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
     if (locale !== defaultLocale) {
         return removeDuplicates(pathsToInvalidate);
     }
-
-    const locales = Object.keys(localeToRepoIdMap);
 
     const success = locales.every((locale) => {
         if (locale === defaultLocale) {
@@ -118,7 +116,7 @@ const _invalidateCacheForNode = ({
             logger.warning(`Resolving paths for references failed for eventId ${eventId}`);
             // If resolving reference paths fails, schedule a full invalidation of the frontend cache
             // We defer this call a bit in case there are other events in the queue
-            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS + 1000, true);
+            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS * 2, true);
             return;
         }
 

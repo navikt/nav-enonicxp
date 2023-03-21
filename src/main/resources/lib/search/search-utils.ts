@@ -1,4 +1,4 @@
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { RepoConnection } from '/lib/xp/node';
 import { SEARCH_REPO_ID } from '../constants';
 import { logger } from '../utils/logging';
