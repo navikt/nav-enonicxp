@@ -1,22 +1,22 @@
 import thymeleafLib from '/lib/thymeleaf';
 import { URLS } from '../../../lib/constants';
 import { validateCurrentUserPermissionForContent } from '../../../lib/utils/auth-utils';
-import { getSubPath } from '../../../services/service-utils';
+import { getServiceRequestSubPath } from '../../../services/service-utils';
 import { archiveQueryResponse } from './query/archive-query-response';
 import { archiveRestoreResponse } from './restore/archive-restore-response';
 
 const view = resolve('./archive-restore.html');
 
-const queryPath = 'query';
-const restorePath = 'restore';
+const QUERY_PATH = 'query';
+const RESTORE_PATH = 'restore';
 
 const widgetResponse = (req: XP.Request) => {
     const { contextPath } = req;
     const { contentId } = req.params;
 
     const widgetUrl = `${URLS.PORTAL_ADMIN_ORIGIN}${contextPath}`;
-    const queryUrl = `${widgetUrl}/${queryPath}`;
-    const restoreUrl = `${widgetUrl}/${restorePath}`;
+    const queryUrl = `${widgetUrl}/${QUERY_PATH}`;
+    const restoreUrl = `${widgetUrl}/${RESTORE_PATH}`;
 
     if (!contentId) {
         return {
@@ -45,13 +45,13 @@ const widgetResponse = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    const subPath = getSubPath(req);
+    const subPath = getServiceRequestSubPath(req);
 
-    if (subPath === queryPath) {
+    if (subPath === QUERY_PATH) {
         return archiveQueryResponse(req);
     }
 
-    if (subPath === restorePath) {
+    if (subPath === RESTORE_PATH) {
         return archiveRestoreResponse(req);
     }
 

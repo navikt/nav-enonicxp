@@ -1,6 +1,6 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { logger } from '../utils/logging';
 import { getSearchConfig } from './config';
 import { deleteSearchNodesForContent } from './search-utils';

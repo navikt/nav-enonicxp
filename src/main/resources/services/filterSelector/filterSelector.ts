@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import { getRepoConnection } from '../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
 import { logger } from '../../lib/utils/logging';
@@ -60,7 +60,7 @@ const generateHits = (req: XP.Request) => {
                 })
             );
         })
-        .flat();
+        .flat(2);
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {

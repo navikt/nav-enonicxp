@@ -2,7 +2,7 @@ import * as projectLib from '/lib/xp/project';
 import { Project } from '/lib/xp/project';
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { SourceWithPrincipals, PrincipalKey } from '/lib/xp/node';
 import { runInContext } from '../context/run-in-context';
 import { logger } from '../utils/logging';
@@ -26,6 +26,7 @@ type LayersRepoData = {
         master: SourceWithPrincipals[];
         draft: SourceWithPrincipals[];
     };
+    locales: string[];
 };
 
 const data: LayersRepoData = {
@@ -36,6 +37,7 @@ const data: LayersRepoData = {
         master: [],
         draft: [],
     },
+    locales: [],
 };
 
 const fifteenMinutesMs = 1000 * 60 * 15;
@@ -114,7 +116,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
 const populateWithChildLayers = (
     projects: readonly Project[],
-    newMap: LocaleToRepoIdMap,
+    localeToRepoIdMap: LocaleToRepoIdMap,
     parentId: string
 ) => {
     projects.forEach((project) => {
@@ -123,20 +125,20 @@ const populateWithChildLayers = (
             return;
         }
 
-        if (newMap[language]) {
+        if (localeToRepoIdMap[language]) {
             logger.error(`Layer was already specified for locale ${language}`);
         } else {
-            newMap[language] = `${CONTENT_REPO_PREFIX}.${id}`;
+            localeToRepoIdMap[language] = `${CONTENT_REPO_PREFIX}.${id}`;
         }
 
-        populateWithChildLayers(projects, newMap, id);
+        populateWithChildLayers(projects, localeToRepoIdMap, id);
     });
 };
 
 const refreshLayersData = () => {
     const projects = runInContext({ asAdmin: true }, () => projectLib.list());
 
-    const newMap: LocaleToRepoIdMap = {};
+    const localeToRepoIdMap: LocaleToRepoIdMap = {};
 
     const rootProject = projects.find((project) => project.id === CONTENT_ROOT_PROJECT_ID);
     if (!rootProject) {
@@ -148,27 +150,32 @@ const refreshLayersData = () => {
         logger.critical(
             `Root project has no language set - Using default language ${CONTENT_LOCALE_DEFAULT}`
         );
+    } else if (rootProject.language !== CONTENT_LOCALE_DEFAULT) {
+        logger.critical(
+            `Root project did not have the expected language - Expected ${CONTENT_LOCALE_DEFAULT}, got ${rootProject.language}`
+        );
     }
 
     const { language: rootLanguage = CONTENT_LOCALE_DEFAULT } = rootProject;
 
-    newMap[rootLanguage] = CONTENT_ROOT_REPO_ID;
+    localeToRepoIdMap[rootLanguage] = CONTENT_ROOT_REPO_ID;
 
-    populateWithChildLayers(projects, newMap, CONTENT_ROOT_PROJECT_ID);
+    populateWithChildLayers(projects, localeToRepoIdMap, CONTENT_ROOT_PROJECT_ID);
 
-    const newMapEntries = Object.entries(newMap);
+    const localeToRepoIdMapEntries = Object.entries(localeToRepoIdMap);
 
     data.defaultLocale = rootLanguage;
-    data.localeToRepoIdMap = newMap;
-    data.repoIdToLocaleMap = newMapEntries.reduce((acc, [locale, repoId]) => {
+    data.localeToRepoIdMap = localeToRepoIdMap;
+    data.repoIdToLocaleMap = localeToRepoIdMapEntries.reduce((acc, [locale, repoId]) => {
         return { ...acc, [repoId]: locale };
     }, {} as RepoIdToLocaleMap);
-    data.sources.master = newMapEntries.map(([_, repoId]) => {
+    data.sources.master = localeToRepoIdMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'master', principals: ['role:system.admin'] as PrincipalKey[] };
     });
-    data.sources.draft = newMapEntries.map(([_, repoId]) => {
+    data.sources.draft = localeToRepoIdMapEntries.map(([_, repoId]) => {
         return { repoId, branch: 'draft', principals: ['role:system.admin'] as PrincipalKey[] };
     });
+    data.locales = Object.keys(localeToRepoIdMap);
 
     logger.info(`Content layers: ${JSON.stringify(data.localeToRepoIdMap)}`);
 };
