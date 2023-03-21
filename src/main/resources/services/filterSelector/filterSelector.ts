@@ -60,7 +60,7 @@ const generateHits = (req: XP.Request) => {
                 })
             );
         })
-        .flat();
+        .flat(2);
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
