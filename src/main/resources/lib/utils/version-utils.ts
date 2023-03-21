@@ -6,7 +6,7 @@ import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
-import { NodeWithLayerMigrationData } from '../localization/migration/migration-data';
+import { NodeWithLayerMigrationData } from '../localization/layers-migration/migration-data';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 

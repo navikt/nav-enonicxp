@@ -4,6 +4,7 @@ import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils
 import { logger } from '../../../lib/utils/logging';
 import { GlobalValueItem } from '../../../lib/global-values/types';
 import { forceArray, parseJsonArray } from '../../../lib/utils/array-utils';
+import { applyModifiedData } from '../../../lib/utils/content-utils';
 
 // Verify that the keys-array from the request matches the keys in the global values set
 const validateKeys = (keysFromParam: string[], valueItems: GlobalValueItem[]) => {
@@ -51,8 +52,7 @@ export const reorderGlobalValuesService = (req: XP.Request) => {
             key: contentId,
             editor: (_content) => {
                 _content.data.valueItems = reorderedItems;
-
-                return _content;
+                return applyModifiedData(_content);
             },
         });
 

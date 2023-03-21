@@ -11,6 +11,7 @@ import {
 } from '../../../lib/global-values/global-value-utils';
 import { logger } from '../../../lib/utils/logging';
 import { forceArray } from '../../../lib/utils/array-utils';
+import { applyModifiedData } from '../../../lib/utils/content-utils';
 
 export const removeGlobalValueItemService = (req: XP.Request) => {
     const { key, contentId } = req.params;
@@ -60,7 +61,7 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
             key: contentId,
             editor: (_content) => {
                 _content.data.valueItems = valueItems.filter((item) => item.key !== key);
-                return _content;
+                return applyModifiedData(_content);
             },
         });
 

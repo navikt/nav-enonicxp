@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import {
     LayerMigrationResult,
     migrateContentToLayer,
-} from '../../../../lib/localization/migration/migrate-content-to-layer';
+} from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
 export const migrateContentToLayerWidgetHandler = (
