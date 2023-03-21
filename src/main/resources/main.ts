@@ -21,6 +21,7 @@ import { timeTravelConfig } from './lib/time-travel/time-travel-config';
 import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
 import { activateLayersEventListeners } from './lib/localization/publish-events';
+import { activateMacroUpdateListener } from './lib/macros/macroUpdateListener';
 
 updateClusterInfo();
 initLayersData();
@@ -31,6 +32,7 @@ activateCacheEventListeners();
 activateSitemapDataUpdateEventListener();
 activateContentListItemUnpublishedListener();
 activateCustomPathNodeListeners();
+activateMacroUpdateListener();
 
 hookLibsWithTimeTravel(timeTravelConfig);
 
