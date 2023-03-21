@@ -16,7 +16,7 @@ import { CONTENT_LOCALE_DEFAULT } from '../constants';
 
 export const CACHE_INVALIDATE_EVENT_NAME = 'invalidate-cache';
 
-const REFERENCE_SEARCH_TIMEOUT_MS = 8000;
+const REFERENCE_SEARCH_TIMEOUT_MS = 10000;
 
 const getPaths = (contents: Content[], locale: string) =>
     contents.reduce<string[]>((acc, content) => {
@@ -116,7 +116,7 @@ const _invalidateCacheForNode = ({
             logger.warning(`Resolving paths for references failed for eventId ${eventId}`);
             // If resolving reference paths fails, schedule a full invalidation of the frontend cache
             // We defer this call a bit in case there are other events in the queue
-            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS + 1000, true);
+            frontendInvalidateAllDeferred(eventId, REFERENCE_SEARCH_TIMEOUT_MS * 2, true);
             return;
         }
 
