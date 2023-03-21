@@ -1,7 +1,7 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { getRepoConnection } from '../utils/repo-connection';
+import { getRepoConnection } from '../utils/repo-utils';
 import { logger } from '../utils/logging';
 import { getContentFromAllLayers } from './locale-utils';
 import { CONTENT_ROOT_REPO_ID } from '../constants';

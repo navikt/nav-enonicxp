@@ -4,7 +4,11 @@ import { ProductDetails } from '../../site/content-types/product-details/product
 import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
-import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
+import {
+    customSelectorHitWithLink,
+    getServiceRequestSubPath,
+    transformUsageHit,
+} from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
@@ -151,7 +155,7 @@ const usageCheckHandler = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    const subPath = getSubPath(req);
+    const subPath = getServiceRequestSubPath(req);
 
     if (subPath === 'usage') {
         return usageCheckHandler(req);

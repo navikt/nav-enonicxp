@@ -1,4 +1,4 @@
-import { getSubPath } from '../service-utils';
+import { getServiceRequestSubPath } from '../service-utils';
 import { globalValueSelectorService } from './selector/selector';
 import { getGlobalValueSetService } from './getSet/getSet';
 import { getGlobalValueUsageService } from './usage/usage';
@@ -8,7 +8,7 @@ import { addGlobalValueItemService } from './add/add';
 import { reorderGlobalValuesService } from './reorderValues/reorderGlobalValuesService';
 
 export const get = (req: XP.Request) => {
-    const subPath = getSubPath(req);
+    const subPath = getServiceRequestSubPath(req);
 
     if (!subPath) {
         return globalValueSelectorService(req);

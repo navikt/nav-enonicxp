@@ -10,6 +10,7 @@
 #import "./parts/partDynamicLinkPanel.graphql"
 #import "./parts/partDynamicNewsList.graphql"
 #import "./parts/partFiltersMenu.graphql"
+#import "./parts/partFormDetails.graphql"
 #import "./parts/partLoggedinCard.graphql"
 #import "./parts/partFrontpageContact.graphql"
 #import "./parts/partFrontpageCurrentTopics.graphql"
@@ -66,6 +67,9 @@ fragment partComponents on PartComponentData {
                 }
                 filters_menu {
                     ...partComponentFiltersMenu
+                }
+                form_details {
+                    ...partComponentFormDetails
                 }
                 frontpage_contact {
                     ...partComponentFrontpageContact

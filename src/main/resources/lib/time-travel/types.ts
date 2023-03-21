@@ -1,8 +1,7 @@
-import { RepoConnection } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
 
 type ConfigEntry = {
-    repo: RepoConnection;
+    repoId: string;
     branch: RepoBranch;
     baseNodeKey: string;
     baseContentKey: string;

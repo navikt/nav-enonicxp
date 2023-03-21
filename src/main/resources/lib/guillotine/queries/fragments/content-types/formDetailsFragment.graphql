@@ -1,0 +1,35 @@
+fragment contentFormDetails on no_nav_navno_FormDetails {
+    dataAsJson
+    data {
+        formType {
+            _selected
+            application {
+                variations {
+                    label
+                    title
+                    ingress
+                    url
+                    type
+                }
+            }
+            complaint {
+                variations {
+                    label
+                    title
+                    ingress
+                    url
+                    type
+                }
+            }
+            addendum {
+                variations {
+                    label
+                    title
+                    ingress
+                    url
+                    type
+                }
+            }
+        }
+    }
+}

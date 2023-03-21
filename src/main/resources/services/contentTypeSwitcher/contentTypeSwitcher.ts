@@ -1,8 +1,9 @@
-import { getRepoConnection } from '../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { validateCurrentUserPermissionForContent } from '../../lib/utils/auth-utils';
 import { contentTypesInContentSwitcher } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { stringArrayToSet } from '../../lib/utils/array-utils';
+import { applyModifiedData } from '../../lib/utils/content-utils';
 
 const contentTypesMap = stringArrayToSet(contentTypesInContentSwitcher);
 
@@ -32,7 +33,7 @@ const setContentType = (
                     content.data = {};
                 }
 
-                return content;
+                return applyModifiedData(content);
             },
         });
         logger.info(`Changed content type for ${contentId} to ${contentType}`);

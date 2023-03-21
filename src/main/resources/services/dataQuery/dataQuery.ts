@@ -1,5 +1,5 @@
 import cacheLib from '/lib/cache';
-import { getRepoConnection } from '../../lib/utils/repo-connection';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
 import { runInContext } from '../../lib/context/run-in-context';
