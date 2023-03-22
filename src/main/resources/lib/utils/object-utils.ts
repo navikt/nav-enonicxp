@@ -22,3 +22,35 @@ export const getNestedValue = (obj: Record<string, any>, keysString: string) => 
 export const createObjectChecksum = (obj: Record<string, any>) => {
     return generateUUID(JSON.stringify(obj));
 };
+
+type NestedObject = {
+    [key: string]: any;
+};
+
+export const findNestedKey = (obj: NestedObject, searchKey: string): any => {
+    for (const key in obj) {
+        if (key === searchKey) {
+            return obj[key];
+        }
+
+        if (typeof obj[key] === 'object') {
+            const result = findNestedKey(obj[key], searchKey);
+            if (result !== null) {
+                return result;
+            }
+        }
+
+        if (Array.isArray(obj[key])) {
+            for (const item of obj[key]) {
+                if (typeof item === 'object') {
+                    const result = findNestedKey(item, searchKey);
+                    if (result !== null) {
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+
+    return null;
+};

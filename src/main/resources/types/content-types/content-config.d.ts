@@ -44,6 +44,7 @@ import {
     SearchExternalResourceDescriptor,
 } from './search-config';
 import { PressLandingPage } from 'site/content-types/press-landing-page/press-landing-page';
+import { Video } from 'site/content-types/video/video';
 
 type CustomContentDataConfigsWithoutDescriptor = {
     'animated-icons': AnimatedIcons;
@@ -83,6 +84,7 @@ type CustomContentDataConfigsWithoutDescriptor = {
     'tools-page': ToolsPage;
     'transport-page': TransportPage;
     'press-landing-page': PressLandingPage;
+    video: Video;
 };
 
 // Add the app-specific descriptor prefix to all content types
