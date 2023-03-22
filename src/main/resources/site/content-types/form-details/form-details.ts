@@ -16,11 +16,6 @@ export interface FormDetails {
   ingress?: string;
 
   /**
-   * Relasjon til andre skjemadetaljer
-   */
-  formDetailRelations?: Array<string>;
-
-  /**
    * Variasjoner
    */
   formType:
@@ -45,16 +40,6 @@ export interface FormDetails {
              * URL til skjema
              */
             url: string;
-
-            /**
-             * Tittel
-             */
-            title?: string;
-
-            /**
-             * Ingress
-             */
-            ingress?: string;
 
             /**
              * Søknads- eller skjematype
@@ -86,16 +71,6 @@ export interface FormDetails {
              * URL til skjema
              */
             url: string;
-
-            /**
-             * Tittel
-             */
-            title?: string;
-
-            /**
-             * Ingress
-             */
-            ingress?: string;
 
             /**
              * Klage- eller anketype
