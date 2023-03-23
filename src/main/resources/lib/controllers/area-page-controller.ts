@@ -9,6 +9,7 @@ import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
 import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../constants';
 import { forceArray } from '../utils/array-utils';
+import { applyModifiedData } from '../utils/content-utils';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
@@ -254,7 +255,7 @@ const populateSituationsLayout = (req: XP.Request) => {
             );
 
             return {
-                ...content,
+                ...applyModifiedData(content),
                 components: [...otherComponents, ...situationCards],
             };
         },
