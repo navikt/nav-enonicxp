@@ -6,16 +6,6 @@ export interface Video {
   title: string;
 
   /**
-   * Bildeplakat
-   */
-  poster?: string;
-
-  /**
-   * Spilletid i sekunder
-   */
-  duration: string;
-
-  /**
    * Media id
    */
   mediaId: string;
@@ -24,4 +14,14 @@ export interface Video {
    * Konto-id
    */
   accountId: number;
+
+  /**
+   * Bildeplakat
+   */
+  poster?: string;
+
+  /**
+   * Spilletid i sekunder
+   */
+  duration?: string;
 }

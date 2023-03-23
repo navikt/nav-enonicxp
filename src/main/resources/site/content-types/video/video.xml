@@ -7,12 +7,28 @@
     <allow-child-content>true</allow-child-content>
     <form>
         <field-set>
-            <label>Video metadata</label>
+            <label>Videoinfo</label>
             <items>
                 <input name="title" type="TextLine">
                     <label>Videotittel</label>
                     <occurrences minimum="1" maximum="1"/>
                 </input>
+                <input name="mediaId" type="TextLine">
+                    <label>Media id</label>
+                    <help-text>For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du fra Qbrick eller ber om hjelp fra noen som har tilgang.</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                </input>
+                <input name="accountId" type="Long">
+                    <label>Konto-id</label>
+                    <help-text>I de fleste tilfeller kan du bruke standard foreslått id '763558'.</help-text>
+                    <occurrences minimum="1" maximum="1"/>
+                    <default>763558</default>
+                </input>
+            </items>
+        </field-set>
+        <field-set>
+            <label>Spilleinfo (hentes fra Qbrick automatisk)</label> 
+            <items>
                 <input name="poster" type="ImageSelector">
                     <label>Bildeplakat</label>
                     <occurrences minimum="0" maximum="1"/>
@@ -23,22 +39,7 @@
                     </config>
                 </input>
                 <input name="duration" type="TextLine">
-                    <label>Spilletid i sekunder</label>
-                    <occurrences minimum="1" maximum="1"/>
-                </input>
-                <input name="mediaId" type="TextLine">
-                    <label>Media id</label>
-                    <help-text>For eksempel ddf118c6-00015227-86825a7e. Denne id'en henter du fra Qbrick eller ber om hjelp fra noen som har tilgang.</help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                    <config>
-                        <regexp>^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{8}\b-[0-9a-fA-F]{8}$</regexp>
-                    </config>
-                </input>
-                <input name="accountId" type="Long">
-                    <label>Konto-id</label>
-                    <help-text>I de fleste tilfeller kan du bruke standard foreslått id '763558'.</help-text>
-                    <occurrences minimum="1" maximum="1"/>
-                    <default>763558</default>
+                    <label>Spilletid i sekunder </label>
                 </input>
             </items>
         </field-set>
