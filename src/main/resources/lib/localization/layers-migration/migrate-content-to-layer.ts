@@ -1,14 +1,20 @@
 import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
-import { getContentProjectIdFromRepoId, getRepoConnection } from '../../utils/repo-utils';
+import {
+    getContentProjectIdFromRepoId,
+    getRepoConnection,
+    isDraftAndMasterSameVersion,
+} from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
 import { archiveMigratedContent } from './archive-migrated-content';
 import { generateLayerMigrationData } from './migration-data';
+import { updateContentReferences } from './update-content-references';
+import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-event-defer';
 
-type ContentMigrationParams = {
+export type ContentMigrationParams = {
     sourceContentId: string;
     sourceLocale: string;
     targetContentId: string;
@@ -105,18 +111,10 @@ const migrateBranch = (
     return pushResult.success.length > 0;
 };
 
-const isDraftAndMasterSameVersion = (contentId: string, locale: string) => {
-    const repoId = getLayersData().localeToRepoIdMap[locale];
-
-    const draftContent = getRepoConnection({ branch: 'draft', repoId }).get(contentId);
-    const masterContent = getRepoConnection({ branch: 'master', repoId }).get(contentId);
-
-    return draftContent?._versionKey === masterContent?._versionKey;
-};
-
 export const migrateContentToLayer = (
     contentMigrationParams: ContentMigrationParams
 ): LayerMigrationResult => {
+    toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
     const { sourceContentId, sourceLocale, targetContentId, targetLocale } = contentMigrationParams;
 
     const logPrefix = `Migrering fra [${sourceLocale}] ${sourceContentId} til [${targetLocale}] ${targetContentId}`;
@@ -126,7 +124,16 @@ export const migrateContentToLayer = (
         return { result: 'error', message: `${logPrefix} mislyktes. Sjekk logger for detaljer.` };
     }
 
-    if (!isDraftAndMasterSameVersion(sourceContentId, sourceLocale)) {
+    const didUpdateRefs = updateContentReferences(contentMigrationParams);
+    if (!didUpdateRefs) {
+        logger.error(`Oh noes, failed to update refs!`);
+    }
+
+    toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+
+    const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
+
+    if (!isDraftAndMasterSameVersion(sourceContentId, sourceRepoId)) {
         const didMigrateDraft = migrateBranch(contentMigrationParams, 'draft');
         if (!didMigrateDraft) {
             return {

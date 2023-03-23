@@ -68,6 +68,8 @@ const getOverviewReferences = (content: Content) => {
         contentTypes: ['no.nav.navno:overview'],
     }).hits;
 
+    logger.info(`Found ${overviewPages.length} relevant overview pages`);
+
     return overviewPages;
 };
 
@@ -108,6 +110,8 @@ const getSituationAreaPageReferences = (content: Content) => {
             },
         },
     }).hits;
+
+    logger.info(`Found ${areaPages.length} relevant area pages`);
 
     return areaPages;
 };
@@ -219,6 +223,7 @@ const _findReferences = ({
     branch,
     references = {},
     referencesChecked = {},
+    withDeepSearch = true,
     depth = 0,
     deadline,
 }: {
@@ -226,10 +231,11 @@ const _findReferences = ({
     branch: RepoBranch;
     references?: ReferencesMap;
     referencesChecked?: Record<string, true>;
+    withDeepSearch?: boolean;
     depth?: number;
-    deadline: number;
+    deadline?: number;
 }): Content[] | null => {
-    if (Date.now() > deadline) {
+    if (deadline && Date.now() > deadline) {
         return null;
     }
 
@@ -253,22 +259,24 @@ const _findReferences = ({
         }
     });
 
-    newRefs.forEach((refContent) => {
-        if (!typesWithDeepReferences[refContent.type]) {
-            return;
-        }
+    if (withDeepSearch) {
+        newRefs.forEach((refContent) => {
+            if (!typesWithDeepReferences[refContent.type]) {
+                return;
+            }
 
-        _findReferences({
-            id: refContent._id,
-            branch: 'master',
-            depth: depth + 1,
-            references,
-            referencesChecked,
-            deadline,
+            _findReferences({
+                id: refContent._id,
+                branch: 'master',
+                depth: depth + 1,
+                references,
+                referencesChecked,
+                deadline,
+            });
         });
-    });
+    }
 
-    if (Date.now() > deadline) {
+    if (deadline && Date.now() > deadline) {
         return null;
     }
 
@@ -276,13 +284,19 @@ const _findReferences = ({
 };
 
 // Returns null if the search goes past the deadline timestamp
-export const findReferences = (id: string, branch: RepoBranch, deadline: number) => {
+export const findReferences = (
+    id: string,
+    branch: RepoBranch,
+    deadline?: number,
+    withDeepSearch?: boolean
+) => {
     const start = Date.now();
 
     const references = _findReferences({
         id,
         branch,
         deadline,
+        withDeepSearch,
     });
 
     if (!references) {
