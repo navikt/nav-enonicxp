@@ -7,6 +7,7 @@ import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
+import { modifyContentNode } from './modify-content-node';
 
 const updateReferenceNode = (
     refNode: RepoNode<Content>,
@@ -30,9 +31,11 @@ const updateReferenceNode = (
         return;
     }
 
-    repoConnection.modify({
-        key: _id,
-        editor: (_) => {
+    modifyContentNode({
+        key: targetContentId,
+        locale: '',
+        branch: targetBranch,
+        editorFunc: () => {
             const contentWithReplace = contentJson.replace(
                 new RegExp(sourceContentId, 'g'),
                 targetContentId

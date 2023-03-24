@@ -1,4 +1,3 @@
-import { Content } from '/lib/xp/content';
 import { RepoNode } from '/lib/xp/node';
 import { getLayersData } from '../layers-data';
 import {
@@ -9,10 +8,8 @@ import {
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
 import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-event-defer';
-import { runInLocaleContext } from '../locale-context';
-import * as contentLib from '/lib/xp/content';
 import { updateContentReferences } from './update-content-references';
-import { copyContentNode, CopyContentNodeDataParams } from './copy-content-node';
+import { modifyContentNode } from './modify-content-node';
 import { COMPONENT_APP_KEY } from '../../constants';
 import { generateLayerMigrationData } from './migration-data';
 
@@ -41,7 +38,7 @@ const transformToLayerContent = (
             ...sourceContent.x,
             [COMPONENT_APP_KEY]: {
                 layerMigration: generateLayerMigrationData({
-                    type: 'live',
+                    targetType: 'archived',
                     contentId: sourceContent._id,
                     locale: sourceLocale,
                     repoId: sourceRepoId,
@@ -54,8 +51,8 @@ const transformToLayerContent = (
     };
 };
 
-const migrateBranch = (params: CopyContentNodeDataParams) => {
-    const { sourceId, sourceLocale, targetId, targetLocale, branch } = params;
+const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
+    const { sourceId, sourceLocale, targetId, targetLocale } = params;
 
     const { localeToRepoIdMap } = getLayersData();
 
@@ -73,21 +70,24 @@ const migrateBranch = (params: CopyContentNodeDataParams) => {
 
     const sourceContent = sourceRepo.get(sourceId);
     if (!sourceContent) {
-        logger.error(
-            `Content not found for source: [${sourceLocale}] ${sourceId} in branch ${branch}`
-        );
+        logger.error(`Source node not found: [${sourceLocale}] ${sourceId} in branch ${branch}`);
         return false;
     }
 
     const targetContent = targetRepoDraft.get(targetId);
     if (!targetContent) {
-        logger.error(`Content not found for target: [${targetLocale}] ${targetId}`);
+        logger.error(`Target node not found: [${targetLocale}] ${targetId}`);
         return false;
     }
 
-    copyContentNode(params, () => {
-        logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
-        return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
+    modifyContentNode({
+        key: targetId,
+        locale: targetLocale,
+        branch,
+        editorFunc: () => {
+            logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
+            return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
+        },
     });
 
     if (branch !== 'master') {
@@ -110,23 +110,27 @@ export const migrateContentToLayer = (
     contentMigrationParams: ContentMigrationParams
 ): LayerMigrationResult => {
     toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
+
     const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
 
-    const logPrefix = `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId}`;
+    const responseMsgPrefix = `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId}`;
 
-    const copyMasterSuccess = migrateBranch({ ...contentMigrationParams, branch: 'master' });
+    const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
     if (!copyMasterSuccess) {
-        return { result: 'error', message: `${logPrefix} mislyktes. Sjekk logger for detaljer.` };
+        return {
+            result: 'error',
+            message: `${responseMsgPrefix} mislyktes. Sjekk logger for detaljer.`,
+        };
     }
 
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
 
     if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
-        const copyDraftSuccess = migrateBranch({ ...contentMigrationParams, branch: 'draft' });
+        const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
         if (!copyDraftSuccess) {
             return {
                 result: 'error',
-                message: `${logPrefix} for innhold under arbeid mislyktes. Sjekk logger for detaljer.`,
+                message: `${responseMsgPrefix} for innhold under arbeid mislyktes. Sjekk logger for detaljer.`,
             };
         }
     }
@@ -154,6 +158,6 @@ export const migrateContentToLayer = (
 
     return {
         result: 'success',
-        message: `${logPrefix} var vellykket!`,
+        message: `${responseMsgPrefix} var vellykket!`,
     };
 };

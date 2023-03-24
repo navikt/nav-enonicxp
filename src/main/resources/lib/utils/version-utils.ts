@@ -35,7 +35,7 @@ const getMigratedNodeVersions = (params: GetNodeVersionsParams) => {
 
     const { layerMigration } = contentNode;
 
-    if (!layerMigration || layerMigration.type === 'archived') {
+    if (!layerMigration || layerMigration.targetType === 'archived') {
         return currentVersions;
     }
 

@@ -9,7 +9,7 @@ export type NodeWithLayerMigrationData = Content & {
 };
 
 type LayerMigrationParams = {
-    type: 'live' | 'archived';
+    targetType: 'live' | 'archived';
     contentId: string;
     repoId: string;
     locale: string;
