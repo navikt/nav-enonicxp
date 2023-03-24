@@ -34,7 +34,6 @@ const updateReferenceNode = (
     modifyContentNode({
         key: targetContentId,
         locale: '',
-        branch: targetBranch,
         editorFunc: () => {
             const contentWithReplace = contentJson.replace(
                 new RegExp(sourceContentId, 'g'),

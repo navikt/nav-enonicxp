@@ -8,21 +8,20 @@ import { runInLocaleContext } from '../locale-context';
 type Params = {
     key: string;
     locale: string;
-    branch: RepoBranch;
     editorFunc: <Type = unknown>(content?: Type) => Type;
 };
 
 // Modifies a content node, while ensuring property types are valid according to the content type schema
-export const modifyContentNode = ({ key, locale, branch, editorFunc }: Params) => {
+export const modifyContentNode = ({ key, locale, editorFunc }: Params) => {
     const { localeToRepoIdMap } = getLayersData();
 
     const targetRepo = getRepoConnection({
-        branch,
+        branch: 'draft',
         repoId: localeToRepoIdMap[locale],
         asAdmin: true,
     });
 
-    const targetLogString = `[${locale}] ${key} in branch ${branch}`;
+    const targetLogString = `[${locale}] ${key}`;
 
     // We need to modify the content in two stages to get a valid result. First do a complete copy of
     // the content node from the source to the target, using the node library. This includes every field
@@ -41,11 +40,13 @@ export const modifyContentNode = ({ key, locale, branch, editorFunc }: Params) =
     // Do a second pass with the content library, where we perform no mutation of the content on our own.
     // The contentLib function will set the correct types on every field according to the content-type
     // schema for the modified content.
-    const contentModifyResult = runInLocaleContext({ locale: locale, asAdmin: true, branch }, () =>
-        contentLib.modify({
-            key: key,
-            editor: (content) => content,
-        })
+    const contentModifyResult = runInLocaleContext(
+        { locale: locale, asAdmin: true, branch: 'draft' },
+        () =>
+            contentLib.modify({
+                key: key,
+                editor: (content) => content,
+            })
     );
     if (!contentModifyResult) {
         logger.error(`Failed to modify content ${targetLogString} (stage 2)`);
