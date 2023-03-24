@@ -5,6 +5,7 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getKeyWithoutMacroDescription } from '../../../utils/component-utils';
 import { HtmlAreaPartConfig } from '../../../../site/parts/html-area/html-area-part-config';
 import { logger } from '../../../utils/logging';
+import { runInContext } from '../../../context/run-in-context';
 
 export const macroHtmlFragmentCallback: CreationCallback = (context, params) => {
     params.fields.processedHtml = {
@@ -17,7 +18,7 @@ export const macroHtmlFragmentCallback: CreationCallback = (context, params) => 
 
             const key = getKeyWithoutMacroDescription(fragmentId);
 
-            const content = contentLib.get({ key });
+            const content = runInContext({ branch: 'master' }, () => contentLib.get({ key }));
             if (!content) {
                 logger.critical(
                     `Content not found for fragment in html-fragment macro: ${fragmentId}`,

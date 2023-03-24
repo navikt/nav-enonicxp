@@ -54,7 +54,7 @@ const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
     const htmlFragments = contentLib.query({
         ...(query && { query: `displayName LIKE "*${query}*"` }),
         start: 0,
-        count: 10000,
+        count: 1000,
         contentTypes: ['portal:fragment'],
         filters: {
             boolean: {
