@@ -23,9 +23,9 @@ const transformToArchivedContent = (
         displayName: `${preMigrationContent.displayName} - Migrert til layer: [${postMigrationLocale}] ${postMigrationContentId}`,
         layerMigration: generateLayerMigrationData({
             type: 'archived',
-            liveContentId: postMigrationContentId,
-            liveLocale: postMigrationLocale,
-            liveRepoId: getLayersData().localeToRepoIdMap[postMigrationLocale],
+            contentId: postMigrationContentId,
+            locale: postMigrationLocale,
+            repoId: getLayersData().localeToRepoIdMap[postMigrationLocale],
         }),
     };
 };

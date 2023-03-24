@@ -7,7 +7,6 @@ import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
 import { RepoNode } from '/lib/xp/node';
 import { Content } from '/lib/xp/content';
-import { transformNodeContentToIndexableTypes } from './transform-node-content-to-indexable-types';
 
 const updateReferenceNode = (
     refNode: RepoNode<Content>,
@@ -39,7 +38,8 @@ const updateReferenceNode = (
                 targetContentId
             );
 
-            const newContent = transformNodeContentToIndexableTypes(JSON.parse(contentWithReplace));
+            // const newContent = transformNodeContentToIndexableTypes(JSON.parse(contentWithReplace));
+            const newContent = JSON.parse(contentWithReplace);
 
             logger.info(`Old: ${contentJson}`);
             logger.info(`New: ${JSON.stringify(newContent)}`);
@@ -63,12 +63,12 @@ const updateReferenceNode = (
 };
 
 export const updateContentReferences = ({
-    sourceContentId,
+    sourceId,
     sourceLocale,
-    targetContentId,
+    targetId,
 }: ContentMigrationParams) => {
     const references = runInLocaleContext({ locale: sourceLocale }, () =>
-        findReferences(sourceContentId, 'master', undefined, false)
+        findReferences(sourceId, 'master', undefined, false)
     );
 
     if (!references) {
@@ -78,7 +78,7 @@ export const updateContentReferences = ({
     logger.info(
         `Found ${
             references.length
-        } references to ${sourceContentId} in locale ${sourceLocale}:\n${references
+        } references to ${sourceId} in locale ${sourceLocale}:\n${references
             .map((ref) => ref._path)
             .join('\n')}`
     );
@@ -100,7 +100,7 @@ export const updateContentReferences = ({
     references.forEach((refContent) => {
         const { _id } = refContent;
 
-        if (_id === sourceContentId) {
+        if (_id === sourceId) {
             return;
         }
 
@@ -108,23 +108,11 @@ export const updateContentReferences = ({
         const refNodeDraft = repoConnectionDraft.get(_id);
 
         if (refNodeMaster) {
-            updateReferenceNode(
-                refNodeMaster,
-                sourceContentId,
-                targetContentId,
-                'master',
-                sourceRepoId
-            );
+            updateReferenceNode(refNodeMaster, sourceId, targetId, 'master', sourceRepoId);
         }
 
         if (refNodeDraft && !isDraftAndMasterSameVersion(refContent._id, sourceRepoId)) {
-            updateReferenceNode(
-                refNodeDraft,
-                sourceContentId,
-                targetContentId,
-                'draft',
-                sourceRepoId
-            );
+            updateReferenceNode(refNodeDraft, sourceId, targetId, 'draft', sourceRepoId);
         }
     });
 

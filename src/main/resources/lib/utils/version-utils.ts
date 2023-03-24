@@ -39,11 +39,15 @@ const getMigratedNodeVersions = (params: GetNodeVersionsParams) => {
         return currentVersions;
     }
 
-    const { archivedContentId, archivedRepoId, ts: migrationTs } = layerMigration;
+    const {
+        contentId: archivedContentId,
+        repoId: archivedLayerId,
+        ts: migrationTs,
+    } = layerMigration;
 
     const archivedVersions = getNodeVersions({
         nodeKey: archivedContentId,
-        repoId: archivedRepoId,
+        repoId: archivedLayerId,
         branch: 'master',
         modifiedOnly,
     });
