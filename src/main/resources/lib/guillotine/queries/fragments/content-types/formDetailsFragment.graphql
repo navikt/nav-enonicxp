@@ -6,8 +6,6 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
             application {
                 variations {
                     label
-                    title
-                    ingress
                     url
                     type
                 }
@@ -15,8 +13,6 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
             complaint {
                 variations {
                     label
-                    title
-                    ingress
                     url
                     type
                 }
