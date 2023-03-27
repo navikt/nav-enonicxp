@@ -99,8 +99,6 @@ const getOfficeBranchPagesIfEditorial = (content: Content) => {
         contentTypes: ['no.nav.navno:office-branch'],
     }).hits;
 
-    log.info('Found office branches: ' + officeBranches.length);
-
     return officeBranches;
 };
 
