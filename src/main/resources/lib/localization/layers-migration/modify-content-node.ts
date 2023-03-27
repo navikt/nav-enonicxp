@@ -1,27 +1,23 @@
 import * as contentLib from '/lib/xp/content';
 import { getRepoConnection } from '../../utils/repo-utils';
-import { RepoBranch } from '../../../types/common';
-import { getLayersData } from '../layers-data';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
+import { NodeModifyParams } from '/lib/xp/node';
 
 type Params = {
-    key: string;
-    locale: string;
-    editorFunc: <Type = unknown>(content?: Type) => Type;
-};
+    repoId: string;
+    requireValid?: boolean;
+} & NodeModifyParams;
 
 // Modifies a content node, while ensuring property types are valid according to the content type schema
-export const modifyContentNode = ({ key, locale, editorFunc }: Params) => {
-    const { localeToRepoIdMap } = getLayersData();
-
+export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params) => {
     const targetRepo = getRepoConnection({
         branch: 'draft',
-        repoId: localeToRepoIdMap[locale],
+        repoId,
         asAdmin: true,
     });
 
-    const targetLogString = `[${locale}] ${key}`;
+    const targetLogString = `[${repoId}] ${key}`;
 
     // We need to modify the content in two stages to get a valid result. First do a complete copy of
     // the content node from the source to the target, using the node library. This includes every field
@@ -29,8 +25,8 @@ export const modifyContentNode = ({ key, locale, editorFunc }: Params) => {
     // However, this does not preserve spesial string field types, such as Reference or Datetime.
     // These will be indexed as plain strings on the target node.
     const nodeModifyResult = targetRepo.modify({
-        key: key,
-        editor: editorFunc,
+        key,
+        editor,
     });
     if (!nodeModifyResult) {
         logger.error(`Failed to modify content ${targetLogString} (stage 1)`);
@@ -41,10 +37,11 @@ export const modifyContentNode = ({ key, locale, editorFunc }: Params) => {
     // The contentLib function will set the correct types on every field according to the content-type
     // schema for the modified content.
     const contentModifyResult = runInLocaleContext(
-        { locale: locale, asAdmin: true, branch: 'draft' },
+        { locale: repoId, asAdmin: true, branch: 'draft' },
         () =>
             contentLib.modify({
-                key: key,
+                requireValid,
+                key,
                 editor: (content) => content,
             })
     );

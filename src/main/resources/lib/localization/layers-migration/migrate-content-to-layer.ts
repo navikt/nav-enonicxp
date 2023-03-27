@@ -62,17 +62,19 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         asAdmin: true,
     });
 
-    const targetRepoDraft = getRepoConnection({
-        branch: 'draft',
-        repoId: localeToRepoIdMap[targetLocale],
-        asAdmin: true,
-    });
-
     const sourceContent = sourceRepo.get(sourceId);
     if (!sourceContent) {
         logger.error(`Source node not found: [${sourceLocale}] ${sourceId} in branch ${branch}`);
         return false;
     }
+
+    const targetRepoId = localeToRepoIdMap[targetLocale];
+
+    const targetRepoDraft = getRepoConnection({
+        branch: 'draft',
+        repoId: targetRepoId,
+        asAdmin: true,
+    });
 
     const targetContent = targetRepoDraft.get(targetId);
     if (!targetContent) {
@@ -82,8 +84,8 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
 
     modifyContentNode({
         key: targetId,
-        locale: targetLocale,
-        editorFunc: () => {
+        repoId: targetRepoId,
+        editor: () => {
             logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
             return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
         },

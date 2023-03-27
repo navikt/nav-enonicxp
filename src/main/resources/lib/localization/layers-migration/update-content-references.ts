@@ -1,3 +1,5 @@
+import { RepoNode } from '/lib/xp/node';
+import { Content } from '/lib/xp/content';
 import { findReferences } from '../../cache/find-references';
 import { logger } from '../../utils/logging';
 import { ContentMigrationParams } from './migrate-content-to-layer';
@@ -5,48 +7,45 @@ import { runInLocaleContext } from '../locale-context';
 import { getRepoConnection, isDraftAndMasterSameVersion } from '../../utils/repo-utils';
 import { getLayersData } from '../layers-data';
 import { RepoBranch } from '../../../types/common';
-import { RepoNode } from '/lib/xp/node';
-import { Content } from '/lib/xp/content';
 import { modifyContentNode } from './modify-content-node';
 
-const updateReferenceNode = (
-    refNode: RepoNode<Content>,
-    sourceContentId: string,
-    targetContentId: string,
-    targetBranch: RepoBranch,
-    repoId: string
-) => {
-    const { _id, _path } = refNode;
-
-    const repoConnection = getRepoConnection({
-        branch: targetBranch,
-        repoId,
-        asAdmin: true,
-    });
-
-    const contentJson = JSON.stringify(refNode);
-
-    if (!contentJson.includes(sourceContentId)) {
-        logger.info(`Source content id not found in ${_path}, skipping`);
+const updateReferenceFromNode = ({
+    contentNodeToUpdate,
+    newRefId,
+    prevRefId,
+    repoId,
+    targetBranch,
+}: {
+    contentNodeToUpdate: RepoNode<Content>;
+    prevRefId: string;
+    newRefId: string;
+    repoId: string;
+    targetBranch: RepoBranch;
+}) => {
+    const contentJson = JSON.stringify(contentNodeToUpdate);
+    if (!contentJson.includes(prevRefId)) {
+        logger.info(
+            `No reference to previous ref id ${prevRefId} found in ${contentNodeToUpdate}, skipping`
+        );
         return;
     }
 
-    modifyContentNode({
-        key: targetContentId,
-        locale: '',
-        editorFunc: () => {
-            const contentWithReplace = contentJson.replace(
-                new RegExp(sourceContentId, 'g'),
-                targetContentId
-            );
+    const { _id: contentNodeToUpdateId } = contentNodeToUpdate;
 
-            // const newContent = transformNodeContentToIndexableTypes(JSON.parse(contentWithReplace));
-            const newContent = JSON.parse(contentWithReplace);
+    modifyContentNode({
+        key: contentNodeToUpdateId,
+        repoId,
+        editor: () => {
+            const contentJsonWithUpdates = contentJson.replace(
+                new RegExp(prevRefId, 'g'),
+                newRefId
+            );
+            const contentWithUpdates = JSON.parse(contentJsonWithUpdates);
 
             logger.info(`Old: ${contentJson}`);
-            logger.info(`New: ${JSON.stringify(newContent)}`);
+            logger.info(`New: ${JSON.stringify(contentWithUpdates)}`);
 
-            return newContent;
+            return contentWithUpdates;
         },
     });
 
@@ -54,8 +53,14 @@ const updateReferenceNode = (
         return true;
     }
 
+    const repoConnection = getRepoConnection({
+        branch: targetBranch,
+        repoId,
+        asAdmin: true,
+    });
+
     const pushResult = repoConnection.push({
-        key: _id,
+        key: contentNodeToUpdateId,
         target: 'master',
         resolve: false,
     });
@@ -66,13 +71,12 @@ const updateReferenceNode = (
 
 export const updateContentReferences = ({
     sourceId,
-    sourceLocale,
     targetId,
+    sourceLocale,
 }: ContentMigrationParams) => {
     const references = runInLocaleContext({ locale: sourceLocale }, () =>
-        findReferences(sourceId, 'master', undefined, false)
+        findReferences({ id: sourceId, branch: 'master', withDeepSearch: false })
     );
-
     if (!references) {
         return false;
     }
@@ -87,34 +91,44 @@ export const updateContentReferences = ({
 
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
 
-    const repoConnectionMaster = getRepoConnection({
-        branch: 'master',
-        repoId: sourceRepoId,
-        asAdmin: true,
-    });
-
-    const repoConnectionDraft = getRepoConnection({
-        branch: 'draft',
-        repoId: sourceRepoId,
-        asAdmin: true,
-    });
-
     references.forEach((refContent) => {
         const { _id } = refContent;
-
         if (_id === sourceId) {
             return;
         }
 
-        const refNodeMaster = repoConnectionMaster.get(_id);
-        const refNodeDraft = repoConnectionDraft.get(_id);
+        const contentNodeMaster = getRepoConnection({
+            branch: 'master',
+            repoId: sourceRepoId,
+            asAdmin: true,
+        }).get(_id);
 
-        if (refNodeMaster) {
-            updateReferenceNode(refNodeMaster, sourceId, targetId, 'master', sourceRepoId);
+        // Get the content node from draft before updating master, as it may be overwritten
+        const contentNodeDraft = getRepoConnection({
+            branch: 'draft',
+            repoId: sourceRepoId,
+            asAdmin: true,
+        }).get(_id);
+
+        if (contentNodeMaster) {
+            updateReferenceFromNode({
+                contentNodeToUpdate: contentNodeMaster,
+                prevRefId: sourceId,
+                newRefId: targetId,
+                repoId: sourceRepoId,
+                targetBranch: 'master',
+            });
         }
 
-        if (refNodeDraft && !isDraftAndMasterSameVersion(refContent._id, sourceRepoId)) {
-            updateReferenceNode(refNodeDraft, sourceId, targetId, 'draft', sourceRepoId);
+        // If the draft version was not committed to master, we need to update this as well
+        if (contentNodeDraft && !isDraftAndMasterSameVersion(refContent._id, sourceRepoId)) {
+            updateReferenceFromNode({
+                contentNodeToUpdate: contentNodeDraft,
+                prevRefId: sourceId,
+                newRefId: targetId,
+                repoId: sourceRepoId,
+                targetBranch: 'draft',
+            });
         }
     });
 

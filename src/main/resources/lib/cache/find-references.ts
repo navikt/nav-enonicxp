@@ -284,12 +284,17 @@ const _findReferences = ({
 };
 
 // Returns null if the search goes past the deadline timestamp
-export const findReferences = (
-    id: string,
-    branch: RepoBranch,
-    deadline?: number,
-    withDeepSearch?: boolean
-) => {
+export const findReferences = ({
+    id,
+    branch,
+    deadline,
+    withDeepSearch,
+}: {
+    id: string;
+    branch: RepoBranch;
+    deadline?: number;
+    withDeepSearch?: boolean;
+}) => {
     const start = Date.now();
 
     const references = _findReferences({
