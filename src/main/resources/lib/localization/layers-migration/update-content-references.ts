@@ -35,6 +35,7 @@ const updateReferenceFromNode = ({
     modifyContentNode({
         key: contentNodeToUpdateId,
         repoId,
+        requireValid: false,
         editor: () => {
             const contentJsonWithUpdates = contentJson.replace(
                 new RegExp(prevRefId, 'g'),

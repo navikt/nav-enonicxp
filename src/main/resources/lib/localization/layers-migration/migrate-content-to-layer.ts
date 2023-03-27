@@ -85,6 +85,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     modifyContentNode({
         key: targetId,
         repoId: targetRepoId,
+        requireValid: false,
         editor: () => {
             logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
             return transformToLayerContent(sourceContent, sourceLocale, targetLocale);

@@ -3,6 +3,7 @@ import { getRepoConnection } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { runInLocaleContext } from '../locale-context';
 import { NodeModifyParams } from '/lib/xp/node';
+import { getLayersData } from '../layers-data';
 
 type Params = {
     repoId: string;
@@ -33,17 +34,17 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
         return false;
     }
 
+    const locale = getLayersData().repoIdToLocaleMap[repoId];
+
     // Do a second pass with the content library, where we perform no mutation of the content on our own.
     // The contentLib function will set the correct types on every field according to the content-type
     // schema for the modified content.
-    const contentModifyResult = runInLocaleContext(
-        { locale: repoId, asAdmin: true, branch: 'draft' },
-        () =>
-            contentLib.modify({
-                requireValid,
-                key,
-                editor: (content) => content,
-            })
+    const contentModifyResult = runInLocaleContext({ locale, asAdmin: true, branch: 'draft' }, () =>
+        contentLib.modify({
+            requireValid,
+            key,
+            editor: (content) => content,
+        })
     );
     if (!contentModifyResult) {
         logger.error(`Failed to modify content ${targetLogString} (stage 2)`);
