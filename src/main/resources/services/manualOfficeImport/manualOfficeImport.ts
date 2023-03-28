@@ -1,6 +1,7 @@
 import { runOfficeBranchFetchTask } from '../../lib/officeBranch';
 
-// Used for health check - do not remove
+// Used for manual import of office branches from NORG.
+// To be put behind auth before we go into production.
 export const get = (req: XP.Request) => {
     const { branch = 'master' } = req.params;
     runOfficeBranchFetchTask(false, branch);
