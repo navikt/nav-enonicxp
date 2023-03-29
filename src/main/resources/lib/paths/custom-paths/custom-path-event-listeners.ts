@@ -45,7 +45,7 @@ const removeCustomPathOnDuplicate = (event: EnonicEvent) => {
             return;
         }
 
-        logger.info(`Removing custom path from duplicated content ${id}`);
+        logger.info(`Removing custom path from duplicated content ${id} in repo ${repo}`);
 
         removeCustomPath(id, repoConnection);
     });
@@ -75,7 +75,7 @@ const removeInvalidCustomPathOnPublish = (event: EnonicEvent) => {
             return;
         }
 
-        logger.info(`Removing invalid custom path on published content ${id}`);
+        logger.info(`Removing invalid custom path on published content ${id} in repo ${repo}`);
 
         removeCustomPath(id, repoConnection);
 
