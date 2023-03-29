@@ -1,21 +1,18 @@
 import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import * as contentLib from '/lib/xp/content';
+import { RepoConnection } from '/lib/xp/node';
 import { hasInvalidCustomPath, hasValidCustomPath } from './custom-path-utils';
 import { logger } from '../../utils/logging';
 import { getLayersData } from '../../localization/layers-data';
-import { runInLocaleContext } from '../../localization/locale-context';
 import { isContentLocalized } from '../../localization/locale-utils';
+import { getRepoConnection } from '../../utils/repo-utils';
 
-type ContentWithCustomPath = { data: { customPath?: string } };
-
-const removeCustomPath = (contentId: string) => {
-    contentLib.modify({
+const removeCustomPath = (contentId: string, repoConnection: RepoConnection) => {
+    repoConnection.modify<{ data: { customPath?: string } }>({
         key: contentId,
-        requireValid: false,
         editor: (content) => {
-            (content as ContentWithCustomPath).data.customPath = undefined;
+            content.data.customPath = undefined;
 
             return content;
         },
@@ -30,27 +27,27 @@ const removeCustomPathOnDuplicate = (event: EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
-        if (node.branch !== 'draft') {
+        const { branch, repo, id } = node;
+
+        if (branch !== 'draft') {
             return;
         }
 
-        const locale = getLayersData().repoIdToLocaleMap[node.repo];
+        const locale = getLayersData().repoIdToLocaleMap[repo];
         if (!locale) {
             return;
         }
 
-        runInLocaleContext({ locale, branch: 'draft', asAdmin: true }, () => {
-            {
-                const content = contentLib.get({ key: node.id });
-                if (!content || !isContentLocalized(content) || !hasValidCustomPath(content)) {
-                    return;
-                }
+        const repoConnection = getRepoConnection({ branch: 'draft', repoId: repo, asAdmin: true });
 
-                logger.info(`Removing custom path from duplicated content ${node.id}`);
+        const content = repoConnection.get(id);
+        if (!content || !isContentLocalized(content) || !hasValidCustomPath(content)) {
+            return;
+        }
 
-                removeCustomPath(node.id);
-            }
-        });
+        logger.info(`Removing custom path from duplicated content ${id}`);
+
+        removeCustomPath(id, repoConnection);
     });
 };
 
@@ -60,25 +57,29 @@ const removeInvalidCustomPathOnPublish = (event: EnonicEvent) => {
     }
 
     event.data.nodes.forEach((node) => {
-        if (node.branch !== 'master') {
+        const { branch, repo, id } = node;
+
+        if (branch !== 'master') {
             return;
         }
 
-        const locale = getLayersData().repoIdToLocaleMap[node.repo];
+        const locale = getLayersData().repoIdToLocaleMap[repo];
         if (!locale) {
             return;
         }
 
-        runInLocaleContext({ locale, branch: 'master', asAdmin: true }, () => {
-            const content = contentLib.get({ key: node.id });
-            if (!content || !isContentLocalized(content) || !hasInvalidCustomPath(content)) {
-                return;
-            }
+        const repoConnection = getRepoConnection({ branch: 'draft', repoId: repo, asAdmin: true });
 
-            logger.info(`Removing invalid custom path on published content ${node.id}`);
+        const content = repoConnection.get(id);
+        if (!content || !isContentLocalized(content) || !hasInvalidCustomPath(content)) {
+            return;
+        }
 
-            removeCustomPath(node.id);
-        });
+        logger.info(`Removing invalid custom path on published content ${id}`);
+
+        removeCustomPath(id, repoConnection);
+
+        repoConnection.push({ key: id, target: 'master', includeChildren: false, resolve: false });
     });
 };
 
