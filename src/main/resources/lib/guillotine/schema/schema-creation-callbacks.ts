@@ -15,8 +15,7 @@ import {
 } from './schema-creation-callbacks/main-article-chapter';
 import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
 import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
-import { contactInformationTelephoneCallback } from './schema-creation-callbacks/contact-information-telephone';
-import { contactInformationChatCallback } from './schema-creation-callbacks/contact-information-chat';
+import { partContactOptionChatCallback } from './schema-creation-callbacks/part-contact-option-chat';
 import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
 import { globalValueSetCallback } from './schema-creation-callbacks/global-values';
 import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
@@ -43,6 +42,7 @@ import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
+import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -61,7 +61,8 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
-    no_nav_navno_ContactInformation_Telephone: contactInformationTelephoneCallback,
+    no_nav_navno_ContactInformation_Chat: createOpeningHoursFields,
+    no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields,
     no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,
     no_nav_navno_PageList_MenuListItems: menuListDataCallback,
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
@@ -74,7 +75,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
         'publish.first'
     ),
     Part_no_nav_navno_dynamic_link_list_ContentList: contentListCallback('target', 'numLinks'),
-    Part_no_nav_navno_contact_option_Chat: contactInformationChatCallback,
+    Part_no_nav_navno_contact_option_Chat: partContactOptionChatCallback,
     Part_no_nav_navno_frontpage_current_topics: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_frontpage_shortcuts: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
