@@ -25,7 +25,7 @@ const updateReferenceFromNode = ({
     const contentJson = JSON.stringify(contentNodeToUpdate);
     if (!contentJson.includes(prevRefId)) {
         logger.info(
-            `No reference to previous ref id ${prevRefId} found in ${contentNodeToUpdate}, skipping`
+            `No reference to previous ref id ${prevRefId} found in ${contentNodeToUpdate._path}, skipping`
         );
         return;
     }
@@ -55,7 +55,7 @@ const updateReferenceFromNode = ({
     }
 
     const repoConnection = getRepoConnection({
-        branch: targetBranch,
+        branch: 'draft',
         repoId,
         asAdmin: true,
     });
@@ -64,6 +64,7 @@ const updateReferenceFromNode = ({
         key: contentNodeToUpdateId,
         target: 'master',
         resolve: false,
+        includeChildren: false,
     });
 
     pushResult.failed.forEach(({ id, reason }) => `Pushing ${id} to master failed: ${reason}`);
