@@ -19,8 +19,8 @@ const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
     const now = Date.now();
 
     // Add an extra days margin to the date range in order to account for caching in the frontend
-    const minValidFrom = new Date(now - MILLISECONDS_IN_A_DAY).toISOString();
-    const maxValidTo = new Date(now + MILLISECONDS_IN_A_DAY).toISOString();
+    const minValidFrom = new Date(now + MILLISECONDS_IN_A_DAY).toISOString();
+    const maxValidTo = new Date(now - MILLISECONDS_IN_A_DAY).toISOString();
 
     const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
 
