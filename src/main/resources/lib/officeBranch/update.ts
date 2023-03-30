@@ -6,7 +6,7 @@ import * as commonLib from '/lib/xp/common';
 import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import { CONTENT_LOCALE_DEFAULT, NORG2_DEV } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, NORG2_DEV_URL } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
