@@ -1,12 +1,11 @@
 import * as contentLib from '/lib/xp/content';
-import * as contextLib from '/lib/xp/context';
 import { Content } from '/lib/xp/content';
 import httpClient from '/lib/http-client';
 import * as commonLib from '/lib/xp/common';
 import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import { CONTENT_LOCALE_DEFAULT, NORG2_DEV_URL } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, URLS } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
@@ -19,7 +18,7 @@ const basePath = '/www.nav.no/kontor';
 export const fetchAllOfficeBranchesFromNorg = () => {
     try {
         const response = httpClient.request({
-            url: NORG2_DEV_URL,
+            url: `${URLS.NORG_OFFICE_ORIGIN}`,
             method: 'GET',
             headers: {
                 'x-nav-apiKey': app.config.norg2ApiKey,
@@ -57,24 +56,22 @@ const isPathOccupiedByAlienContent = (name: string) => {
 
 // Delete content from XP
 const deleteContent = (name: string) => {
-    const fullPath = `${basePath}/${name}`;
-    const content = contentLib.get({ key: fullPath });
+    const office = contentLib.get({ key: name });
 
-    if (!content) {
+    if (!office) {
         return null;
     }
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
     // We want to free up the source path immediately
-
-    contentLib.unpublish({ keys: [content._id] });
+    contentLib.unpublish({ keys: [office._id] });
 
     contentLib.move({
-        source: fullPath,
-        target: `${name}-delete`,
+        source: office._path,
+        target: `${office._name}-delete`,
     });
     contentLib.delete({
-        key: content._id,
+        key: office._id,
     });
 };
 
@@ -139,7 +136,7 @@ const updateOfficeBranchIfChange = (
         existingOffice.displayName !== newOffice.navn
     ) {
         try {
-            const modifyResult = contentLib.modify<OfficeBranchDescriptor>({
+            contentLib.modify<OfficeBranchDescriptor>({
                 key: existingOffice._id,
                 editor: (content) => ({
                     ...content,
@@ -148,7 +145,6 @@ const updateOfficeBranchIfChange = (
                     data: { ...newOffice, checksum: updatedChecksum },
                 }),
             });
-            logger.info(`OfficeImporting: modifyResult: ${JSON.stringify(modifyResult)}`);
             wasUpdated = true;
         } catch (e) {
             logger.critical(
@@ -247,7 +243,7 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
         processedOfficeBranchIds.push(singleOfficeBranch.enhetNr);
     });
 
-    // summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
+    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
 
     // Publish all updates made inside basePath
     // This includes updates and new office branches
