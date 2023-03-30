@@ -9,7 +9,7 @@ type MenuListData = {
     url: string;
 };
 
-export const menuListDataCallback: CreationCallback = (context: any, params) => {
+export const menuListDataCallback: CreationCallback = (context, params) => {
     if (!context.types.menuListItemType) {
         context.types.menuListLinkType = graphQlCreateObjectType(context, {
             name: 'MenuListLink',
@@ -19,7 +19,9 @@ export const menuListDataCallback: CreationCallback = (context: any, params) => 
                 text: { type: graphQlLib.GraphQLString },
             },
         });
+    }
 
+    if (!context.types.menuListItemType) {
         context.types.menuListItemType = graphQlCreateObjectType(context, {
             name: 'MenuListItem',
             description: 'Lenker i høyremeny',

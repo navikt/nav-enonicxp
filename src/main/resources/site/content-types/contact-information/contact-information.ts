@@ -99,105 +99,49 @@ export interface ContactInformation {
              * Mandag
              */
             monday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
 
             /**
              * Tirsdag
              */
             tuesday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
 
             /**
              * Onsdag
              */
             wednesday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
 
             /**
              * Torsdag
              */
             thursday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
 
             /**
              * Fredag
              */
             friday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
 
             /**
              * Lørdag
              */
             saturday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
 
             /**
              * Søndag
              */
             sunday?: {
-              /**
-               * Fra klokken
-               */
-              from?: string;
 
-              /**
-               * Til klokken
-               */
-              to?: string;
             };
           };
 
@@ -274,17 +218,7 @@ export interface ContactInformation {
                           /**
                            * Åpent
                            */
-                          open: {
-                            /**
-                             * Fra klokken
-                             */
-                            from?: string;
-
-                            /**
-                             * Til klokken
-                             */
-                            to?: string;
-                          };
+                          open: Record<string, unknown>;
                         };
                   }>;
                 };
