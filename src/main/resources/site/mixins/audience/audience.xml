@@ -1,13 +1,29 @@
 <mixin>
   <form>
-    <input name="audience" type="ComboBox">
-        <label>Målgruppe</label>
-        <occurrences minimum="1" maximum="1"/>
-        <config>
-            <option value="person">Privatperson</option>
-            <option value="employer">Arbeidsgiver</option>
-            <option value="provider">Samarbeidspartner</option>
-        </config>
-    </input>
+    <option-set name="audience">
+      <label>Målgruppe</label>
+      <occurrences minimum="1" maximum="1"/>
+      <options>
+        <option name="person">
+          <label>Privatperson</label>
+        </option>
+        <option name="employer">
+          <label>Arbeidsgiver</label>
+        </option>
+        <option name="provider">
+          <label>Samarbeidspartner</label>
+          <items>
+            <input name="provider_audience" type="ComboBox">
+              <label>Underkategori</label>
+              <occurrences minimum="1" maximum="1"/>
+              <config>
+                <option value="doctor">Lege</option>
+                <option value="other">Annet</option>
+              </config>
+            </input>
+          </items>
+        </option>
+      </options>
+    </option-set>
   </form>
 </mixin>

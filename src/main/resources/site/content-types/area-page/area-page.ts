@@ -3,7 +3,45 @@ export interface AreaPage {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience:
+    | {
+        /**
+         * Selected
+         */
+        _selected: "person";
+
+        /**
+         * Privatperson
+         */
+        person: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "employer";
+
+        /**
+         * Arbeidsgiver
+         */
+        employer: Record<string, unknown>;
+      }
+    | {
+        /**
+         * Selected
+         */
+        _selected: "provider";
+
+        /**
+         * Samarbeidspartner
+         */
+        provider: {
+          /**
+           * Underkategori
+           */
+          provider_audience: "doctor" | "other";
+        };
+      };
 
   /**
    * Område

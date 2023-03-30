@@ -17,7 +17,7 @@ import { contentTypesWithProductDetails } from '../contenttype-lists';
 import { forceArray, removeDuplicates } from '../utils/array-utils';
 
 type OverviewType = Overview['overviewType'];
-type ProductAudience = Audience['audience'];
+type ProductAudience = Audience['audience']['_selected'];
 type ContentWithProductDetails = Content<ContentTypeWithProductDetails>;
 // Generated data type definitions are incorrect due to nested mixins
 type ContentWithProductDetailsData = ContentWithProductDetails['data'] & ProductData;
