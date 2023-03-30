@@ -7,12 +7,7 @@ import { OpeningHours } from '../../../../../site/mixins/opening-hours/opening-h
 
 const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
 
-/* When a shared referance is made, only the id will come in as part of the object.
- * If this is the case, retrieve the content manually. Otherwise,
- * just return the original  specialOpeningHoursobject.
- */
-
-type SupportedContactTypes = 'chat' | 'telephone';
+type SupportedContactType = 'chat' | 'telephone';
 
 type RawSpecialOpeningHours = OpeningHours['specialOpeningHours'];
 
@@ -20,9 +15,25 @@ type CustomSpecialOpeningHours = Extract<RawSpecialOpeningHours, { _selected: 'c
 
 const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
+const getValidTimeRangeQuery = (contactType: SupportedContactType) => {
+    const now = Date.now();
+
+    // Add an extra days margin to the date range in order to account for caching in the frontend
+    const minValidFrom = new Date(now - MILLISECONDS_IN_A_DAY).toISOString();
+    const maxValidTo = new Date(now + MILLISECONDS_IN_A_DAY).toISOString();
+
+    const dateFieldPrefix = `data.contactType.${contactType}.specialOpeningHours.custom`;
+
+    return `${dateFieldPrefix}.validFrom <= instant("${minValidFrom}") AND ${dateFieldPrefix}.validTo > instant("${maxValidTo}")`;
+};
+
+/* When a shared referance is made, only the id will come in as part of the object.
+ * If this is the case, retrieve the content manually. Otherwise,
+ * just return the original specialOpeningHours object.
+ */
 const getSpecialOpeningHoursObject = (
     specialOpeningHours: RawSpecialOpeningHours,
-    contactType: SupportedContactTypes
+    contactType: SupportedContactType
 ): CustomSpecialOpeningHours | null => {
     if (!specialOpeningHours) {
         return null;
@@ -38,10 +49,11 @@ const getSpecialOpeningHoursObject = (
         specialOpeningHours.shared.sharedSpecialOpeningHours
     );
 
-    const referencedDocuments = contentLib.query({
+    const { hits } = contentLib.query({
         count: sharedSpecialOpeningIds.length,
         contentTypes: ['no.nav.navno:contact-information'],
         sort: 'createdTime ASC',
+        query: getValidTimeRangeQuery(contactType),
         filters: {
             ids: {
                 values: sharedSpecialOpeningIds,
@@ -54,63 +66,43 @@ const getSpecialOpeningHoursObject = (
                             values: [contactType],
                         },
                     },
+                    {
+                        hasValue: {
+                            field: `data.contactType.${contactType}.specialOpeningHours._selected`,
+                            values: ['custom'],
+                        },
+                    },
                 ],
             },
         },
-    }).hits;
+    });
 
-    // Used for error log if more than one relevant document is found.
-    const relevantDocumentIds: string[] = [];
+    if (hits.length === 0) {
+        logger.info(
+            `No matching special opening hours found for ${sharedSpecialOpeningIds.join(', ')}`
+        );
+        return null;
+    }
 
-    const relevantWithinDateRange = referencedDocuments.reduce(
-        (
-            collection: CustomSpecialOpeningHours[],
-            doc: contentLib.Content<'no.nav.navno:contact-information'>
-        ) => {
-            const { _selected } = doc.data.contactType;
-
-            const specialOpeningHours = (doc.data.contactType as any)[_selected]
-                .specialOpeningHours as CustomSpecialOpeningHours;
-            if (!specialOpeningHours) {
-                return collection;
-            }
-
-            const { validFrom, validTo } = specialOpeningHours.custom;
-            if (!validFrom || !validTo) {
-                return collection;
-            }
-
-            // Increase the range by 1 day to take 24h cache into account.
-            const rangeFrom = Date.parse(validFrom) - MILLISECONDS_IN_A_DAY;
-            const rangeTo = Date.parse(validTo) + MILLISECONDS_IN_A_DAY;
-            const today = Date.now();
-
-            const isWithinRange = today > rangeFrom && today < rangeTo;
-            if (!isWithinRange) {
-                return collection;
-            }
-
-            relevantDocumentIds.push(doc._id);
-            return [...collection, specialOpeningHours];
-        },
-        []
-    );
-
-    if (relevantWithinDateRange.length > 1) {
+    if (hits.length > 1) {
         logger.critical(
-            `More than one active special opening hour found for contact information: ${relevantDocumentIds.join(
-                ','
-            )}`
+            `Multiple active special opening hour found for contact information: ${hits
+                .map((hit) => hit._id)
+                .join(', ')}`
         );
     }
 
-    // Should only be one special opening hour object. If there are more, return the first one.
-    // This practice has been OK'ed by editors.
-    return relevantWithinDateRange[0];
+    // Should only be one special opening hour object. Return the oldest if multiple are found
+    const hitToReturn = hits[0];
+
+    // The query parameters guarantees these types are correct for returned hits
+    const selected = hitToReturn.data.contactType._selected as SupportedContactType;
+    return (hitToReturn.data.contactType as any)[selected]
+        .specialOpeningHours as CustomSpecialOpeningHours;
 };
 
 export const createOpeningHoursFields =
-    (contactType: SupportedContactTypes): CreationCallback =>
+    (contactType: SupportedContactType): CreationCallback =>
     (context, params) => {
         if (!context.types.regularOpeningHour) {
             context.types.regularOpeningHour = graphQlCreateObjectType(context, {
