@@ -6,7 +6,7 @@ import * as commonLib from '/lib/xp/common';
 import { OfficeBranch } from '../../site/content-types/office-branch/office-branch';
 import { NavNoDescriptor } from '../../types/common';
 import { logger } from '../utils/logging';
-import { CONTENT_LOCALE_DEFAULT } from '../constants';
+import { CONTENT_LOCALE_DEFAULT, NORG2_DEV } from '../constants';
 import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
@@ -17,14 +17,9 @@ const internalLinkType: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const basePath = '/www.nav.no/kontor';
 
 export const fetchAllOfficeBranchesFromNorg = () => {
-    log.info(
-        `OfficeImporting: Fetching norg2 from url https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV`
-    );
-    const tempUrl =
-        'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV';
     try {
         const response = httpClient.request({
-            url: tempUrl, // app.config.norg2v2,
+            url: NORG2_DEV_URL,
             method: 'GET',
             headers: {
                 'x-nav-apiKey': app.config.norg2ApiKey,
