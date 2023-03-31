@@ -30,7 +30,6 @@ const getSpecialPreviewResponseIfApplicable = (
     const externalRedirectUrl = content.data?.externalProductUrl;
 
     if ((contentIsFlagged || !!externalRedirectUrl) === isPreview) {
-        logger.info('Valid preview');
         return null;
     }
 
