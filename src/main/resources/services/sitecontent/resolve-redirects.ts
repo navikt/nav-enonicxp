@@ -19,6 +19,8 @@ export const transformToRedirectResponse = ({
     type: 'internal' | 'external';
     isPermanent?: boolean;
 }) => {
+    // We don't want every field from the raw content in the response, ie creator/modifier ids and other
+    // fields purely for internal use
     const { _id, _path, createdTime, modifiedTime, displayName, language, publish } = content;
 
     const contentCommon = {
