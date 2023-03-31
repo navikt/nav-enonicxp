@@ -46,7 +46,7 @@ export const get = (req: XP.Request) => {
                     idOrPathRequested: idOrPath,
                     localeRequested: locale,
                     branch,
-                    preview: preview === 'true',
+                    isPreview: preview === 'true',
                 }),
             cacheKey
         );
