@@ -17,6 +17,10 @@ import {
     getRedirectContent,
 } from './resolve-redirects';
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
+import { contentTypesRenderedByEditorFrontend } from '../../lib/contenttype-lists';
+import { stringArrayToSet } from '../../lib/utils/array-utils';
+
+const contentTypesForGuillotineQuery = stringArrayToSet(contentTypesRenderedByEditorFrontend);
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
@@ -104,7 +108,11 @@ const resolveContentStudioRequest = (
             return null;
         }
 
-        return resolveContent(content, branch, localeActual);
+        // If the content type does not support a full frontend preview in the editor, just return
+        // the raw content, which is used to show certain info in place of the preview.
+        return contentTypesForGuillotineQuery[content.type]
+            ? resolveContent(content, branch, localeActual)
+            : content;
     });
 };
 
