@@ -8,6 +8,18 @@ import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-
 import { getParentPath, stripPathPrefix } from '../../lib/paths/path-utils';
 import { getPublicPath } from '../../lib/paths/public-path';
 
+export const createRedirectResponse = (content: Content, target: string, isPermanent?: boolean) => {
+    return {
+        ...content,
+        type: 'no.nav.navno:internal-link',
+        data: {
+            target: { _path: target },
+            permanentRedirect: isPermanent,
+        },
+        page: undefined,
+    };
+};
+
 // If the content has a custom path, we should redirect requests from the internal _path
 export const getCustomPathRedirectIfApplicable = ({
     content,
@@ -23,18 +35,7 @@ export const getCustomPathRedirectIfApplicable = ({
     const shouldRedirect =
         hasValidCustomPath(content) && requestedPath === content._path && branch === 'master';
 
-    return shouldRedirect
-        ? {
-              ...content,
-              type: 'no.nav.navno:internal-link',
-              data: {
-                  target: {
-                      _path: getPublicPath(content, locale),
-                  },
-              },
-              page: undefined,
-          }
-        : null;
+    return shouldRedirect ? createRedirectResponse(content, getPublicPath(content, locale)) : null;
 };
 
 // The old Enonic CMS had urls suffixed with <contentKey>.cms
@@ -72,14 +73,7 @@ const getRedirectFromLegacyPath = (path: string) => {
     // for localization purposes. Return the oldest content.
     const targetContent = legacyHits[0];
 
-    return {
-        ...targetContent,
-        type: 'no.nav.navno:internal-link',
-        data: {
-            target: { _path: targetContent._path },
-            permanentRedirect: true,
-        },
-    };
+    return createRedirectResponse(targetContent, targetContent._path, true);
 };
 
 // Find the nearest parent for a not-found content. If it is an internal link with the

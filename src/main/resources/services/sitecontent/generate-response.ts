@@ -11,18 +11,33 @@ import { logger } from '../../lib/utils/logging';
 import { getLayersData, isValidLocale } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
-import { getCustomPathRedirectIfApplicable, getRedirectContent } from './resolve-redirects';
+import {
+    createRedirectResponse,
+    getCustomPathRedirectIfApplicable,
+    getRedirectContent,
+} from './resolve-redirects';
 import { getLanguageVersions } from '../../lib/localization/resolve-language-versions';
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
-// query param
-const shouldBlockPreview = (content: Content, branch: RepoBranch, isPreview: boolean) => {
-    if (branch !== 'master' || isPreview) {
-        return false;
+// query param.
+const getSpecialPreviewResponseIfApplicable = (
+    content: Content,
+    targetPath: string,
+    branch: RepoBranch,
+    isPreview: boolean
+) => {
+    const contentIsFlagged = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+
+    if (contentIsFlagged === isPreview || branch === 'draft') {
+        return null;
     }
 
-    return !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
+    // actual content url
+    return {
+        response: contentIsFlagged ? null : createRedirectResponse(content, targetPath),
+    };
 };
 
 // Resolve the base content to a fully resolved content via a guillotine query
@@ -86,12 +101,12 @@ export const generateSitecontentResponse = ({
     idOrPathRequested,
     branch,
     localeRequested,
-    preview,
+    isPreview,
 }: {
     idOrPathRequested: string;
     branch: RepoBranch;
     localeRequested?: string;
-    preview: boolean;
+    isPreview: boolean;
 }) => {
     // Requests for a UUID should be explicitly resolved to the requested content id and requires
     // fewer steps to resolve. The same goes for requests to the draft branch.
@@ -113,8 +128,15 @@ export const generateSitecontentResponse = ({
 
     const { content, locale } = target;
 
-    if (shouldBlockPreview(content, branch, preview)) {
-        return null;
+    const specialPreviewResponse = getSpecialPreviewResponseIfApplicable(
+        content,
+        idOrPathRequested,
+        branch,
+        isPreview
+    );
+
+    if (specialPreviewResponse) {
+        return specialPreviewResponse.response;
     }
 
     const customPathRedirect = getCustomPathRedirectIfApplicable({
