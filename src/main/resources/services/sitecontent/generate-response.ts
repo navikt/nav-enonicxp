@@ -12,7 +12,7 @@ import { getLayersData, isValidLocale } from '../../lib/localization/layers-data
 import { runInLocaleContext } from '../../lib/localization/locale-context';
 import { resolvePathToTarget } from '../../lib/localization/locale-paths';
 import {
-    createRedirectResponse,
+    transformToRedirectResponse,
     getCustomPathRedirectIfApplicable,
     getRedirectContent,
 } from './resolve-redirects';
@@ -20,23 +20,34 @@ import { getLanguageVersions } from '../../lib/localization/resolve-language-ver
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
-// query param.
+// query param. We also want this behaviour for pages with an external redirect url set.
 const getSpecialPreviewResponseIfApplicable = (
-    content: Content,
-    targetPath: string,
-    branch: RepoBranch,
+    content: Content<any>,
+    requestedPath: string,
     isPreview: boolean
 ) => {
     const contentIsFlagged = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    const externalRedirectUrl = content.data?.externalProductUrl;
 
-    if (contentIsFlagged === isPreview || branch === 'draft') {
+    if ((contentIsFlagged || !!externalRedirectUrl) === isPreview) {
         return null;
     }
 
+    if (externalRedirectUrl) {
+        return {
+            response: transformToRedirectResponse({
+                content,
+                target: externalRedirectUrl,
+                type: 'external',
+            }),
+        };
+    }
     // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
     // actual content url
     return {
-        response: contentIsFlagged ? null : createRedirectResponse(content, targetPath),
+        response: contentIsFlagged
+            ? null
+            : transformToRedirectResponse({ content, target: requestedPath, type: 'internal' }),
     };
 };
 
@@ -131,7 +142,6 @@ export const generateSitecontentResponse = ({
     const specialPreviewResponse = getSpecialPreviewResponseIfApplicable(
         content,
         idOrPathRequested,
-        branch,
         isPreview
     );
 
