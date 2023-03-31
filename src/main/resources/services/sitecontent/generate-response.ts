@@ -20,23 +20,25 @@ import { getLanguageVersions } from '../../lib/localization/resolve-language-ver
 
 // The previewOnly x-data flag is used on content which should only be publicly accessible
 // through the /utkast route in the frontend. Calls from this route comes with the "preview"
-// query param.
+// query param. We also want this behaviour for pages with an external redirect url set.
 const getSpecialPreviewResponseIfApplicable = (
-    content: Content,
+    content: Content<any>,
     targetPath: string,
     branch: RepoBranch,
     isPreview: boolean
 ) => {
-    const contentIsFlagged = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    const contentIsPreviewOnly =
+        !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly ||
+        !!content.data?.externalProductUrl;
 
-    if (contentIsFlagged === isPreview || branch === 'draft') {
+    if (contentIsPreviewOnly === isPreview || branch === 'draft') {
         return null;
     }
 
     // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
     // actual content url
     return {
-        response: contentIsFlagged ? null : createRedirectResponse(content, targetPath),
+        response: contentIsPreviewOnly ? null : createRedirectResponse(content, targetPath),
     };
 };
 
