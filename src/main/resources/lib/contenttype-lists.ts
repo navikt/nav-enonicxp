@@ -63,6 +63,7 @@ export const typesWithDeepReferences: ContentTypeList = [
     `${APP_DESCRIPTOR}:global-case-time-set`,
     `${APP_DESCRIPTOR}:product-details`,
     `${APP_DESCRIPTOR}:payout-dates`,
+    `${APP_DESCRIPTOR}:contact-information`,
 ];
 
 export const contentTypesWithBreadcrumbs: ContentTypeList = [
