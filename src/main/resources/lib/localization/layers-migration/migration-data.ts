@@ -1,21 +1,8 @@
-import { Content } from '/lib/xp/content';
+import { LayerMigration } from '../../../site/x-data/layerMigration/layerMigration';
 
-type LayerMigrationData = {
-    ts: string;
-} & LayerMigrationParams;
+type LayerMigrationParams = Omit<LayerMigration, 'ts'>;
 
-export type NodeWithLayerMigrationData = Content & {
-    layerMigration?: LayerMigrationData;
-};
-
-type LayerMigrationParams = {
-    targetType: 'live' | 'archived';
-    contentId: string;
-    repoId: string;
-    locale: string;
-};
-
-export const generateLayerMigrationData = (params: LayerMigrationParams): LayerMigrationData => {
+export const generateLayerMigrationData = (params: LayerMigrationParams): LayerMigration => {
     return {
         ...params,
         ts: new Date().toISOString(),

@@ -22,7 +22,7 @@ const transformToArchivedContent = (
         ...preMigrationContent,
         displayName: `${preMigrationContent.displayName} - Migrert til layer: [${postMigrationLocale}] ${postMigrationContentId}`,
         layerMigration: generateLayerMigrationData({
-            targetType: 'live',
+            targetReferenceType: 'live',
             contentId: postMigrationContentId,
             locale: postMigrationLocale,
             repoId: getLayersData().localeToRepoIdMap[postMigrationLocale],

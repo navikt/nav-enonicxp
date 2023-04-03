@@ -5,7 +5,7 @@
     <display-name>Referanser etter layer-migrering (peker til live eller arkivert innhold etter migrering)
     </display-name>
     <form>
-        <input type="RadioButton" name="type">
+        <input type="RadioButton" name="targetReferenceType">
             <label>Type (live eller arkivert)</label>
             <config>
                 <option value="live">Live</option>

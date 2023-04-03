@@ -38,7 +38,7 @@ const transformToLayerContent = (
             ...sourceContent.x,
             [COMPONENT_APP_KEY]: {
                 layerMigration: generateLayerMigrationData({
-                    targetType: 'archived',
+                    targetReferenceType: 'archived',
                     contentId: sourceContent._id,
                     locale: sourceLocale,
                     repoId: sourceRepoId,
