@@ -3,14 +3,19 @@ import graphQlLib from '/lib/graphql';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { CONTENT_LOCALE_DEFAULT } from '../../../constants';
 
-const getChatContactInformation = (contactContentId: string, lang?: string) => {
+const getChatContactInformation = (contactContentId?: string, lang?: string) => {
     const queryResults = contentLib.query({
         count: 1,
         contentTypes: ['no.nav.navno:contact-information'],
+        sort: 'createdTime ASC',
         filters: {
-            ids: {
-                values: [contactContentId],
-            },
+            // If no contact info was specified, we will get the oldest
+            // matching language version instead
+            ...(contactContentId && {
+                ids: {
+                    values: [contactContentId],
+                },
+            }),
             boolean: {
                 must: [
                     {
