@@ -10,8 +10,7 @@ import { RepoBranch } from '../../../types/common';
 import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-event-defer';
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
-import { COMPONENT_APP_KEY } from '../../constants';
-import { generateLayerMigrationData } from './migration-data';
+import { insertLayerMigrationXData } from './migration-data';
 
 export type ContentMigrationParams = {
     sourceId: string;
@@ -32,23 +31,20 @@ const transformToLayerContent = (
 ) => {
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
 
-    return {
-        ...sourceContent,
-        x: {
-            ...sourceContent.x,
-            [COMPONENT_APP_KEY]: {
-                layerMigration: generateLayerMigrationData({
-                    targetReferenceType: 'archived',
-                    contentId: sourceContent._id,
-                    locale: sourceLocale,
-                    repoId: sourceRepoId,
-                }),
-            },
+    return insertLayerMigrationXData({
+        content: {
+            ...sourceContent,
+            originProject: getContentProjectIdFromRepoId(sourceRepoId),
+            inherit: ['PARENT', 'SORT'],
+            language: targetLocale,
         },
-        originProject: getContentProjectIdFromRepoId(sourceRepoId),
-        inherit: ['PARENT', 'SORT'],
-        language: targetLocale,
-    };
+        migrationParams: {
+            targetReferenceType: 'archived',
+            contentId: sourceContent._id,
+            locale: sourceLocale,
+            repoId: sourceRepoId,
+        },
+    });
 };
 
 const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
