@@ -40,7 +40,7 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
-    createOfficeBranchFetchSchedule();
+    // createOfficeBranchFetchSchedule();
 }
 
 activateSearchIndexEventHandlers();
