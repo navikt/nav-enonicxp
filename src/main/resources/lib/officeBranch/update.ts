@@ -35,7 +35,9 @@ export const fetchAllOfficeBranchesFromNorg = () => {
             return null;
         }
     } catch (e) {
-        logger.error(`OfficeImporting: Exception from norg2 request: ${e}`);
+        logger.error(
+            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_OFFICE_ORIGIN}.`
+        );
         return null;
     }
 };
