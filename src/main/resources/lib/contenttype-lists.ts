@@ -89,6 +89,7 @@ export const contentTypesWithBreadcrumbs: ContentTypeList = [
 export const contentTypesWithComponents: ContentTypeList = [
     ...dynamicPageContentTypes,
     `${APP_DESCRIPTOR}:product-details`,
+    `${APP_DESCRIPTOR}:office-branch`,
     'portal:page-template',
 ];
 

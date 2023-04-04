@@ -33,6 +33,13 @@ const getSpecialPreviewResponseIfApplicable = (
     const contentIsFlagged = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
     const externalRedirectUrl = content.data?.externalProductUrl;
 
+    // During pilot phase, we also want office branch pages
+    // to support the "/utkast" route. When the pilot is over and office pages
+    // are live, we can remove this check.
+    if (isPreview && content.type === 'no.nav.navno:office-branch') {
+        return null;
+    }
+
     if ((contentIsFlagged || !!externalRedirectUrl) === isPreview) {
         return null;
     }
