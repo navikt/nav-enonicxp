@@ -51,5 +51,3 @@ export const REDIRECTS_ROOT_PATH = `${NAVNO_ROOT_PATH}/redirects`;
 export const FRONTEND_APP_NAME = 'nav-enonicxp-frontend';
 export const CONTENT_STUDIO_EDIT_PATH_PREFIX =
     '/admin/tool/com.enonic.app.contentstudio/main/default/edit';
-export const NORG2_DEV_URL =
-    'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV';
