@@ -88,6 +88,34 @@ const getProductDetailsReferences = (content: Content) => {
     return references;
 };
 
+// Editorial pages are merged into office-branch-pages, which in turn is cached.
+// Therefore, any changes to a editorial page must invalidate all office-branch-page cache.
+const getOfficeBranchPagesIfEditorial = (content: Content) => {
+    if (content.type !== 'no.nav.navno:office-editorial-page') {
+        return [];
+    }
+
+    const { language } = content;
+
+    const officeBranches = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:office-branch'],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'language',
+                        values: [language],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    return officeBranches;
+};
+
 // AreaPage references to Situation pages are set programatically, which does
 // not seem to generate dependencies in XP. We need to handle this ourselves.
 const getSituationAreaPageReferences = (content: Content) => {
@@ -129,6 +157,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
+        ...getOfficeBranchPagesIfEditorial(content),
     ];
 };
 
