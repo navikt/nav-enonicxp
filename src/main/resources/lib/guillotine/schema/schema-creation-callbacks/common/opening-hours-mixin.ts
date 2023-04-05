@@ -78,9 +78,6 @@ const getSpecialOpeningHoursObject = (
     });
 
     if (hits.length === 0) {
-        logger.info(
-            `No matching special opening hours found for ${sharedSpecialOpeningIds.join(', ')}`
-        );
         return null;
     }
 
