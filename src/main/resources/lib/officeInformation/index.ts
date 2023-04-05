@@ -212,8 +212,6 @@ const fetchOfficeInfo = () => {
             },
         });
 
-        log.info(`OfficeImport: Fetching NORG2-data from ${app.config.norg2}`);
-
         if (response.status === 200 && response.body) {
             return JSON.parse(response.body);
         } else {
