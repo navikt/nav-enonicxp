@@ -30,17 +30,15 @@ const getSpecialPreviewResponseIfApplicable = (
     requestedPath: string,
     isPreview: boolean
 ) => {
-    const contentIsFlagged = !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly;
+    // During pilot phase, we want office branch pages to only be visible as a preview.
+    // When the pilot is over and office pages are live, we can remove this check.
+    const contentIsOfficeBranch = content.type === 'no.nav.navno:office-branch';
+
+    const contentIsPreviewOnly =
+        !!content.x?.[COMPONENT_APP_KEY]?.previewOnly?.previewOnly || contentIsOfficeBranch;
     const externalRedirectUrl = content.data?.externalProductUrl;
 
-    // During pilot phase, we also want office branch pages
-    // to support the "/utkast" route. When the pilot is over and office pages
-    // are live, we can remove this check.
-    if (isPreview && content.type === 'no.nav.navno:office-branch') {
-        return null;
-    }
-
-    if ((contentIsFlagged || !!externalRedirectUrl) === isPreview) {
+    if ((contentIsPreviewOnly || !!externalRedirectUrl) === isPreview) {
         return null;
     }
 
@@ -53,10 +51,11 @@ const getSpecialPreviewResponseIfApplicable = (
             }),
         };
     }
+
     // If the content is flagged for preview only we want a 404 response. Otherwise, redirect to the
     // actual content url
     return {
-        response: contentIsFlagged
+        response: contentIsPreviewOnly
             ? null
             : transformToRedirectResponse({ content, target: requestedPath, type: 'internal' }),
     };
