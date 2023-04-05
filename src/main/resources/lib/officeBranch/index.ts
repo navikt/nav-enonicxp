@@ -35,6 +35,7 @@ const createOfficeBranchFetchSingleTask = (retry: boolean, scheduledTime?: strin
 };
 
 export const runOfficeBranchFetchTask = (retry?: boolean, branch = 'draft') => {
+    return;
     const officeBranches = fetchAllOfficeBranchesFromNorg();
     if (!officeBranches) {
         if (retry) {
