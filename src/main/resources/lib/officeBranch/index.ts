@@ -35,7 +35,6 @@ const createOfficeBranchFetchSingleTask = (retry: boolean, scheduledTime?: strin
 };
 
 export const runOfficeBranchFetchTask = (retry?: boolean, branch = 'draft') => {
-    return;
     const officeBranches = fetchAllOfficeBranchesFromNorg();
     if (!officeBranches) {
         if (retry) {
@@ -74,7 +73,7 @@ export const createOfficeBranchFetchSchedule = () => {
         jobDescription: 'Fetches office branches from norg and updates into XP as hourly schedule',
         jobSchedule: {
             type: 'CRON',
-            value: '30 * * * *',
+            value: '* * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeBranchFetchTaskName,
