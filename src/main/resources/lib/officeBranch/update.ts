@@ -60,13 +60,10 @@ const isPathOccupiedByAlienContent = (name: string) => {
 const deleteContent = (name: string) => {
     const office = contentLib.get({ key: `${basePath}/${name}` });
 
-    if (!office) {
+    if (!office || office.type !== officeBranchContentType) {
         return null;
     }
 
-    return null;
-
-    /*
     const officeId = office._id;
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
@@ -83,8 +80,6 @@ const deleteContent = (name: string) => {
     });
 
     return officeId;
-
-    */
 };
 
 const getOfficeBranchLanguage = (office: any) => {
