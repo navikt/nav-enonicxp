@@ -64,6 +64,9 @@ const deleteContent = (name: string) => {
         return null;
     }
 
+    return null;
+
+    /*
     const officeId = office._id;
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
@@ -80,6 +83,8 @@ const deleteContent = (name: string) => {
     });
 
     return officeId;
+
+    */
 };
 
 const getOfficeBranchLanguage = (office: any) => {
