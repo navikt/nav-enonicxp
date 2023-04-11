@@ -1,18 +1,19 @@
 import * as contentLib from '/lib/xp/content';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { UnpublishExpiredContentConfig } from './unpublish-expired-content-config';
 import { scheduleUnpublish } from '../../lib/scheduling/scheduled-publish';
-import { getUnixTimeFromDateTimeString } from '../../lib/utils/nav-utils';
 import { logger } from '../../lib/utils/logging';
 import { getLayersData } from '../../lib/localization/layers-data';
 import { runInLocaleContext } from '../../lib/localization/locale-context';
+import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
+import { getUnixTimeFromDateTimeString } from '../../lib/utils/datetime-utils';
 
 export const run = (params: UnpublishExpiredContentConfig) => {
-    const { id, path, repoId } = params;
+    const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
 
     logger.info(`Running task for unpublishing expired content - ${id} - ${path}`);
 
-    const repo = nodeLib.connect({ repoId, branch: 'master' });
+    const repo = getRepoConnection({ repoId, branch: 'master' });
     const content = repo.get({ key: id });
     if (!content) {
         logger.error(`Content ${id} not found in master - aborting unpublish task`);

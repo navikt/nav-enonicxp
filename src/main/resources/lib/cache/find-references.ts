@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { findContentsWithHtmlAreaText } from '../utils/htmlarea-utils';
 import { getGlobalValueCalcUsage } from '../global-values/global-value-utils';
-import { forceArray, getParentPath, stringArrayToSet } from '../utils/nav-utils';
+import { forceArray, stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import {
     typesWithDeepReferences as _typesWithDeepReferences,
@@ -12,6 +12,7 @@ import { RepoBranch } from '../../types/common';
 import { logger } from '../utils/logging';
 import { isGlobalValueSetType } from '../global-values/types';
 import { getProductDetailsUsage } from '../product-utils/productDetails';
+import { getParentPath } from '../paths/path-utils';
 
 type ReferencesMap = Record<string, Content>;
 
@@ -85,6 +86,34 @@ const getProductDetailsReferences = (content: Content) => {
     return references;
 };
 
+// Editorial pages are merged into office-branch-pages, which in turn is cached.
+// Therefore, any changes to a editorial page must invalidate all office-branch-page cache.
+const getOfficeBranchPagesIfEditorial = (content: Content) => {
+    if (content.type !== 'no.nav.navno:office-editorial-page') {
+        return [];
+    }
+
+    const { language } = content;
+
+    const officeBranches = contentLib.query({
+        start: 0,
+        count: 1000,
+        contentTypes: ['no.nav.navno:office-branch'],
+        filters: {
+            boolean: {
+                must: {
+                    hasValue: {
+                        field: 'language',
+                        values: [language],
+                    },
+                },
+            },
+        },
+    }).hits;
+
+    return officeBranches;
+};
+
 // AreaPage references to Situation pages are set programatically, which does
 // not seem to generate dependencies in XP. We need to handle this ourselves.
 const getSituationAreaPageReferences = (content: Content) => {
@@ -124,6 +153,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getOverviewReferences(content),
         ...getProductDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
+        ...getOfficeBranchPagesIfEditorial(content),
     ];
 };
 

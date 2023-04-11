@@ -1,10 +1,10 @@
 import graphQlLib, { GraphQLResolver } from '/lib/graphql';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { forceArray } from '../../../utils/nav-utils';
 import {
     GlobalCaseTimeSetData,
     CaseTimeItem,
 } from '../../../../types/content-types/global-case-time-set';
+import { forceArray } from '../../../utils/array-utils';
 
 export const globalCaseTimeSetCallback: CreationCallback = (context, params) => {
     const valueItems: GraphQLResolver = {

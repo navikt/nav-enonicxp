@@ -1,0 +1,134 @@
+<content-type>
+    <display-name>Skjemadetaljer</display-name>
+    <description>Kun til testing!</description>
+    <super-type>base:structured</super-type>
+    <is-abstract>false</is-abstract>
+    <is-final>true</is-final>
+    <allow-child-content>true</allow-child-content>
+    <form>
+        <field-set name="formDetails">
+            <label>Skjemadetaljer</label>
+            <items>
+                <input name="formNumbers" type="TextLine">
+                    <label>Skjemanummer</label>
+                    <occurrences minimum="0" maximum="0"/>
+                </input>
+                <input name="title" type="TextLine">
+                    <label>Tittel</label>
+                </input>
+                <input name="ingress" type="TextArea">
+                    <label>Ingress</label>
+                </input>
+                <option-set name="formType">
+                    <label>Variasjoner</label>
+                    <occurrences minimum="1" maximum="1"/>
+                    <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse.</help-text>
+                    <options minimum="1" maximum="1">
+                        <option name="application">
+                            <label>Søknad / skjema</label>
+                            <description>Her legger du til søknads- og skjemavariasjoner.</description>
+                            <items>
+                                <item-set name="variations">
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <items>
+                                        <input name="label" type="TextLine">
+                                            <label>Knappetekst</label>
+                                            <occurrences minimum="1" maximum="1" />
+                                            <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                        </input>
+                                        <input name="url" type="TextLine">
+                                            <label>URL til skjema</label>
+                                            <occurrences minimum="1" maximum="1" />
+                                        </input>
+                                        <input type="ComboBox" name="type">
+                                            <label>Søknads- eller skjematype</label>
+                                            <occurrences minimum="1" maximum="1"/> 
+                                            <config>  
+                                                <option value="digital"> 
+                                                    Digital
+                                                </option>
+                                                <option value="paper"> 
+                                                    Papir
+                                                </option>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </item-set>
+                            </items>
+                        </option>
+                        <option name="complaint">
+                            <label>Klage- og ankevariasjoner</label>
+                            <items>
+                                <item-set name="variations">
+                                    <label>Klage- og ankevariasjoner</label>
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <items>
+                                        <input name="label" type="TextLine">
+                                            <label>Knappetekst</label>
+                                             <occurrences minimum="1" maximum="1" />
+                                            <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                        </input>
+                                        <input name="url" type="TextLine">
+                                            <label>URL til skjema</label>
+                                            <occurrences minimum="1" maximum="1" />
+                                        </input>
+                                        <input type="ComboBox" name="type">
+                                            <label>Klage- eller anketype</label>
+                                            <occurrences minimum="1" maximum="1"/> 
+                                            <config>  
+                                                <option value="complaint"> 
+                                                    Klage
+                                                </option>
+                                                <option value="appeal"> 
+                                                    Anke
+                                                </option>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </item-set>
+                            </items>
+                        </option>
+                        <option name="addendum">
+                            <label>Ettersendelse</label>
+                            <items>
+                                <item-set name="variations">
+                                    <label>Ettersendelsesvariasjoner</label>
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <items>
+                                        <input name="label" type="TextLine">
+                                            <label>Knappetekst</label>
+                                             <occurrences minimum="1" maximum="1" />
+                                            <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                        </input>
+                                        <input name="url" type="TextLine">
+                                            <label>URL til skjema</label>
+                                            <occurrences minimum="1" maximum="1" />
+                                        </input>
+                                        <input name="title" type="TextLine">
+                                            <label>Tittel</label>
+                                        </input>
+                                        <input name="ingress" type="TextArea">
+                                            <label>Ingress</label>
+                                        </input>
+                                        <input type="ComboBox" name="type">
+                                            <label>Type ettersendelse</label>
+                                            <occurrences minimum="1" maximum="1"/> 
+                                            <config>  
+                                                <option value="addendum_digital"> 
+                                                    Ettersendelse digital
+                                                </option>
+                                                <option value="addendum_paper"> 
+                                                    Ettersendelse papir
+                                                </option>
+                                            </config>
+                                        </input>
+                                    </items>
+                                </item-set>
+                            </items>
+                        </option>
+                    </options>
+                </option-set>
+            </items>
+        </field-set>
+    </form>
+</content-type>

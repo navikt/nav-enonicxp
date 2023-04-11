@@ -5,11 +5,15 @@ import {
     findContentsWithFragmentComponent,
     getKeyWithoutMacroDescription,
 } from '../../lib/utils/component-utils';
-import { forceArray } from '../../lib/utils/nav-utils';
 import { findContentsWithFragmentMacro } from '../../lib/utils/htmlarea-utils';
-import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
+import {
+    customSelectorHitWithLink,
+    getServiceRequestSubPath,
+    transformUsageHit,
+} from '../service-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
+import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -50,7 +54,7 @@ const selectorHandler = (req: XP.CustomSelectorServiceRequest) => {
     const htmlFragments = contentLib.query({
         ...(query && { query: `displayName LIKE "*${query}*"` }),
         start: 0,
-        count: 10000,
+        count: 1000,
         contentTypes: ['portal:fragment'],
         filters: {
             boolean: {
@@ -101,7 +105,7 @@ const getFragmentUsage = (req: XP.CustomSelectorServiceRequest) => {
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {
-    const subPath = getSubPath(req);
+    const subPath = getServiceRequestSubPath(req);
 
     return runInContext({ branch: 'master' }, () => {
         if (subPath === 'fragmentUsage') {

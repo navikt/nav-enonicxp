@@ -2,7 +2,7 @@ import * as eventLib from '/lib/xp/event';
 import { EnonicEvent } from '/lib/xp/event';
 import { handleScheduledPublish } from '../scheduling/scheduled-publish';
 import { addReliableEventListener } from '../events/reliable-custom-events';
-import { invalidateLocalCaches, LOCAL_CACHE_INVALIDATION_EVENT_NAME } from './local-cache';
+import { invalidateLocalCache, LOCAL_CACHE_INVALIDATION_EVENT_NAME } from './local-cache';
 import { NodeEventData } from './utils';
 import { CACHE_INVALIDATE_EVENT_NAME, invalidateCacheForNode } from './cache-invalidate';
 import { logger } from '../utils/logging';
@@ -25,9 +25,9 @@ const nodeListenerCallback = (event: EnonicEvent) => {
             return;
         }
 
+        // This callback is only applicable to repos belonging to a content layer
         const locale = getLayersData().repoIdToLocaleMap[node.repo];
         if (!locale) {
-            logger.info(`Repo ${node.repo} does not belong to a locale`);
             return;
         }
 
@@ -75,7 +75,7 @@ export const activateCacheEventListeners = () => {
     // is not executed cluster-wide
     addReliableEventListener({
         type: LOCAL_CACHE_INVALIDATION_EVENT_NAME,
-        callback: invalidateLocalCaches,
+        callback: invalidateLocalCache,
     });
 
     // This event is sent via the Content Studio widget for manual invalidation of a single page

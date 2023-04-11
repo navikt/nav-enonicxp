@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../lib/utils/repo-utils';
 import { generateUUID } from '../../../lib/utils/uuid';
 import {
     gvServiceInvalidRequestResponse,
@@ -6,8 +6,9 @@ import {
 } from '../utils';
 import { runInContext } from '../../../lib/context/run-in-context';
 import { getGlobalValueSet } from '../../../lib/global-values/global-value-utils';
-import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';
+import { forceArray } from '../../../lib/utils/array-utils';
+import { applyModifiedData } from '../../../lib/utils/content-utils';
 
 const generateKey = () => `gv_${generateUUID()}`;
 
@@ -34,7 +35,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
     }
 
     try {
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: 'com.enonic.cms.default',
             branch: 'draft',
         });
@@ -55,8 +56,7 @@ export const addGlobalValueItemService = (req: XP.Request) => {
             key: contentId,
             editor: (_content) => {
                 _content.data.valueItems = [...valueItems, newItem];
-
-                return _content;
+                return applyModifiedData(_content);
             },
         });
 

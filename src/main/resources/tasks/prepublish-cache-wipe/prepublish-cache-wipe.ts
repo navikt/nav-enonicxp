@@ -1,9 +1,10 @@
 import { PrepublishCacheWipeConfig } from './prepublish-cache-wipe-config';
 import { invalidateCacheForNode } from '../../lib/cache/cache-invalidate';
 import { logger } from '../../lib/utils/logging';
+import { CONTENT_ROOT_REPO_ID } from '../../lib/constants';
 
 export const run = (params: PrepublishCacheWipeConfig) => {
-    const { id, path, repoId } = params;
+    const { id, path, repoId = CONTENT_ROOT_REPO_ID } = params;
     logger.info(`Running task for cache invalidation of prepublished content - ${id} - ${path}`);
 
     invalidateCacheForNode({

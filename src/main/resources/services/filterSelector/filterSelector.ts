@@ -1,10 +1,10 @@
 import * as portalLib from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
-import { forceArray } from '../../lib/utils/nav-utils';
+import { getRepoConnection } from '../../lib/utils/repo-utils';
 import { getComponentConfig } from '../../lib/utils/component-utils';
 import { FiltersMenuPartConfig } from '../../site/parts/filters-menu/filters-menu-part-config';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
+import { forceArray } from '../../lib/utils/array-utils';
 
 type Hit = XP.CustomSelectorServiceResponseHit;
 
@@ -23,7 +23,7 @@ const getFilterMenus = (req: XP.Request) => {
         throw new Error('Ugyldig context, forsøk å laste inn editoren på nytt (F5)');
     }
 
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: req.repositoryId,
         branch: req.branch,
     });
@@ -60,7 +60,7 @@ const generateHits = (req: XP.Request) => {
                 })
             );
         })
-        .flat();
+        .flat(2);
 };
 
 export const get = (req: XP.CustomSelectorServiceRequest) => {

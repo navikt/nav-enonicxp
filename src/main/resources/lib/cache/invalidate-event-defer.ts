@@ -1,6 +1,6 @@
 import { EnonicEvent } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { invalidateLocalCaches } from './local-cache';
+import { invalidateLocalCache } from './local-cache';
 import { frontendInvalidateAllAsync } from './frontend-cache';
 import { generateUUID } from '../utils/uuid';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
@@ -22,7 +22,7 @@ const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEven
     if (isDeferring && !shouldDefer) {
         // When deferred invalidation state is toggled off, invalidate everything
         // to ensure caches will be consistent again
-        invalidateLocalCaches();
+        invalidateLocalCache();
         if (clusterLib.isMaster()) {
             frontendInvalidateAllAsync(`deferred-${generateUUID()}`, true);
         }

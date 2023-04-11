@@ -1,18 +1,15 @@
 import * as contextLib from '/lib/xp/context';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from './repo-utils';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
 import { getNodeKey } from './version-utils';
-import {
-    forceArray,
-    getNestedValue,
-    getUnixTimeFromDateTimeString,
-    removeDuplicates,
-} from './nav-utils';
 import { htmlAreaComponentPaths, htmlAreaDataPaths } from './htmlarea-utils';
 import { runInContext } from '../context/run-in-context';
 import { logger } from './logging';
+import { getUnixTimeFromDateTimeString } from './datetime-utils';
+import { forceArray, removeDuplicates } from './array-utils';
+import { getNestedValue } from './object-utils';
 
 const htmlFragmentMacroPrefix = 'html-fragment fragmentId="';
 
@@ -20,7 +17,7 @@ const htmlFragmentMacroPattern = new RegExp(`${htmlFragmentMacroPrefix}[0-9a-z-]
 
 const getContentNode = (contentRef: string, branch: RepoBranch) => {
     const context = contextLib.get();
-    const repo = nodeLib.connect({
+    const repo = getRepoConnection({
         repoId: context.repository,
         branch: branch || context.branch,
     });

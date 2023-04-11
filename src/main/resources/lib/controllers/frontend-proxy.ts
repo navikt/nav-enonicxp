@@ -1,20 +1,10 @@
-import * as portalLib from '/lib/xp/portal';
 import httpClient from '/lib/http-client';
 import { URLS } from '../constants';
-import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
 import { logger } from '../utils/logging';
-import { contentTypesRenderedByEditorFrontend } from '../contenttype-lists';
 import { getLocaleFromRepoId } from '../localization/layers-data';
+import { stripPathPrefix } from '../paths/path-utils';
 
 const loopbackCheckParam = 'fromXp';
-
-const contentTypesForFrontendProxy = stringArrayToSet(contentTypesRenderedByEditorFrontend);
-
-const noRenderResponse = (): XP.Response => ({
-    status: 200,
-    contentType: 'text/html; charset=UTF-8',
-    body: '<div style="text-align: center;font-size: 2rem"><span>Ingen forhåndsvisning tilgjengelig for denne innholdstypen</span></div>',
-});
 
 const errorResponse = (url: string, status: number, message: string) => {
     const msg = `Failed to fetch from frontend: ${url} - ${status}: ${message}`;
@@ -61,14 +51,6 @@ export const frontendProxy = (req: XP.Request, path?: string) => {
     // TODO: remove this asap after the health-check has been updated
     if (req.mode === 'live' && req.url.endsWith('/no/person')) {
         return healthCheckDummyResponse();
-    }
-
-    if (!path) {
-        const content = portalLib.getContent();
-
-        if (!contentTypesForFrontendProxy[content?.type]) {
-            return noRenderResponse();
-        }
     }
 
     const pathStartIndex = req.rawPath.indexOf(req.branch) + req.branch.length;

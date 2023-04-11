@@ -2,14 +2,14 @@ import * as contentLib from '/lib/xp/content';
 import graphQlLib, { GraphQLResolverCallback } from '/lib/graphql';
 import { sanitizeText } from '/lib/guillotine/util/naming';
 import { CreationCallback, graphQlCreateObjectType } from '../../utils/creation-callback-utils';
-import { forceArray } from '../../../utils/nav-utils';
+import { forceArray } from '../../../utils/array-utils';
 
 type MenuListData = {
     text: string;
     url: string;
 };
 
-export const menuListDataCallback: CreationCallback = (context: any, params) => {
+export const menuListDataCallback: CreationCallback = (context, params) => {
     if (!context.types.menuListItemType) {
         context.types.menuListLinkType = graphQlCreateObjectType(context, {
             name: 'MenuListLink',
@@ -19,7 +19,9 @@ export const menuListDataCallback: CreationCallback = (context: any, params) => 
                 text: { type: graphQlLib.GraphQLString },
             },
         });
+    }
 
+    if (!context.types.menuListItemType) {
         context.types.menuListItemType = graphQlCreateObjectType(context, {
             name: 'MenuListItem',
             description: 'Lenker i høyremeny',

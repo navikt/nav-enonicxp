@@ -1,12 +1,58 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { RepoBranch } from '../../types/common';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
-import { getParentPath, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { REDIRECTS_ROOT_PATH } from '../../lib/constants';
 import { runSitecontentGuillotineQuery } from '../../lib/guillotine/queries/run-sitecontent-query';
-import { buildLocalePath } from '../../lib/localization/locale-utils';
+import { getParentPath, stripPathPrefix } from '../../lib/paths/path-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+
+export const transformToRedirectResponse = ({
+    content,
+    target,
+    type,
+    isPermanent = false,
+}: {
+    content: Content;
+    target: string;
+    type: 'internal' | 'external';
+    isPermanent?: boolean;
+}) => {
+    // We don't want every field from the raw content in the response, ie creator/modifier ids and other
+    // fields purely for internal use
+    const { _id, _path, createdTime, modifiedTime, displayName, language, publish } = content;
+
+    const contentCommon = {
+        _id,
+        _path,
+        createdTime,
+        modifiedTime,
+        displayName,
+        language,
+        publish,
+        page: {},
+    };
+
+    return type === 'internal'
+        ? {
+              ...contentCommon,
+              type: 'no.nav.navno:internal-link',
+              data: {
+                  target: { _path: target },
+                  permanentRedirect: isPermanent,
+                  redirectSubpaths: false,
+              },
+          }
+        : {
+              ...contentCommon,
+              type: 'no.nav.navno:external-link',
+              data: {
+                  url: target,
+                  permanentRedirect: isPermanent,
+              },
+          };
+};
 
 // If the content has a custom path, we should redirect requests from the internal _path
 export const getCustomPathRedirectIfApplicable = ({
@@ -24,17 +70,11 @@ export const getCustomPathRedirectIfApplicable = ({
         hasValidCustomPath(content) && requestedPath === content._path && branch === 'master';
 
     return shouldRedirect
-        ? ({
-              ...content,
-              __typename: 'no_nav_navno_InternalLink',
-              type: 'no.nav.navno:internal-link',
-              data: {
-                  target: {
-                      _path: buildLocalePath(content.data.customPath, locale),
-                  },
-              },
-              page: undefined,
-          } as unknown as Content<'no.nav.navno:internal-link'>)
+        ? transformToRedirectResponse({
+              content,
+              target: getPublicPath(content, locale),
+              type: 'internal',
+          })
         : null;
 };
 
@@ -42,7 +82,7 @@ export const getCustomPathRedirectIfApplicable = ({
 // This contentKey was saved as an x-data field after the migration to XP
 // Check if a path matches this pattern and return the content with the contentKey
 // if it exists
-const getRedirectFromLegacyPath = (path: string): Content | null => {
+const getRedirectFromLegacyPath = (path: string) => {
     const legacyCmsKeyMatch = /\d+(?=\.cms$)/.exec(path);
     if (!legacyCmsKeyMatch) {
         return null;
@@ -73,15 +113,12 @@ const getRedirectFromLegacyPath = (path: string): Content | null => {
     // for localization purposes. Return the oldest content.
     const targetContent = legacyHits[0];
 
-    return {
-        ...targetContent,
-        __typename: 'no_nav_navno_InternalLink',
-        type: 'no.nav.navno:internal-link',
-        data: {
-            target: { _path: targetContent._path },
-            permanentRedirect: true,
-        },
-    } as unknown as Content<'no.nav.navno:internal-link'>;
+    return transformToRedirectResponse({
+        content: targetContent,
+        target: targetContent._path,
+        type: 'internal',
+        isPermanent: true,
+    });
 };
 
 // Find the nearest parent for a not-found content. If it is an internal link with the

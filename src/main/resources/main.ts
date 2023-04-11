@@ -13,16 +13,18 @@ import { startReliableEventAckListener } from './lib/events/reliable-custom-even
 import { updateClusterInfo } from './lib/utils/cluster-utils';
 import { activateContentListItemUnpublishedListener } from './lib/contentlists/remove-unpublished';
 import { startFailsafeSchedule } from './lib/scheduling/scheduler-failsafe';
-import { activateCustomPathNodeListeners } from './lib/custom-paths/event-listeners';
+import { activateCustomPathNodeListeners } from './lib/paths/custom-paths/custom-path-event-listeners';
 import { createOfficeBranchFetchSchedule } from 'lib/officeBranch';
-import { activateSearchIndexEventHandlers } from './lib/search/eventHandlers';
+import { activateSearchIndexEventHandlers } from './lib/search/search-event-handlers';
 import { hookLibsWithTimeTravel } from './lib/time-travel/time-travel-hooks';
 import { timeTravelConfig } from './lib/time-travel/time-travel-config';
-import { initSearchRepo } from './lib/search/repo';
+import { initSearchRepo } from './lib/search/search-repo';
 import { initLayersData } from './lib/localization/layers-data';
+import { activateLayersEventListeners } from './lib/localization/publish-events';
 
 updateClusterInfo();
 initLayersData();
+activateLayersEventListeners();
 
 startReliableEventAckListener();
 activateCacheEventListeners();
@@ -38,7 +40,6 @@ if (clusterLib.isMaster()) {
     startFailsafeSchedule();
     generateSitemapDataAndActivateSchedule();
     startOfficeInfoPeriodicUpdateSchedule();
-    // Todo: Activate this only when we're going live with the new office branch.
     createOfficeBranchFetchSchedule();
 }
 

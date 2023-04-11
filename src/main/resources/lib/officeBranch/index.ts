@@ -34,22 +34,24 @@ const createOfficeBranchFetchSingleTask = (retry: boolean, scheduledTime?: strin
     }
 };
 
-export const runOfficeBranchFetchTask = (retry?: boolean) => {
+export const runOfficeBranchFetchTask = (retry?: boolean, branch = 'draft') => {
     const officeBranches = fetchAllOfficeBranchesFromNorg();
     if (!officeBranches) {
         if (retry) {
-            logger.error('Failed to fetch from norg2, retrying in 5 minutes');
+            logger.error('OfficeImporting: Failed to fetch from norg2, retrying in 5 minutes');
             createOfficeBranchFetchSingleTask(
                 false,
                 new Date(Date.now() + fetchRetryDelay).toISOString()
             );
         } else {
-            logger.critical('Failed to fetch office branch from norg2');
+            logger.critical('OfficeImporting: Failed to fetch office branch from norg2');
         }
         return;
     }
 
-    logger.info('Fetched office branch from norg2, updating site data...');
+    logger.info(
+        `OfficeImporting: Fetched ${officeBranches.length} office branches from norg2, updating site data...`
+    );
 
     contextLib.run(
         {
@@ -58,6 +60,7 @@ export const runOfficeBranchFetchTask = (retry?: boolean) => {
                 login: 'su',
                 idProvider: 'system',
             },
+            branch,
             principals: ['role:system.admin'],
         },
         () => processAllOfficeBranches(officeBranches)
@@ -70,7 +73,7 @@ export const createOfficeBranchFetchSchedule = () => {
         jobDescription: 'Fetches office branches from norg and updates into XP as hourly schedule',
         jobSchedule: {
             type: 'CRON',
-            value: '42 16 * * *',
+            value: '* * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: officeBranchFetchTaskName,

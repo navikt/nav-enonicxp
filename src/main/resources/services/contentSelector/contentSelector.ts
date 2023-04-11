@@ -1,18 +1,14 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import * as portalLib from '/lib/xp/portal';
-import {
-    forceArray,
-    generateFulltextQuery,
-    getNestedValue,
-    parseJsonArray,
-    removeDuplicates,
-    stripPathPrefix,
-} from '../../lib/utils/nav-utils';
-import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
+import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
+import { CONTENT_LOCALE_DEFAULT, CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
 import { customSelectorHitWithLink } from '../service-utils';
 import { logger } from '../../lib/utils/logging';
 import { ContentDescriptor } from '../../types/content-types/content-config';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { forceArray, parseJsonArray, removeDuplicates } from '../../lib/utils/array-utils';
+import { getNestedValue } from '../../lib/utils/object-utils';
 
 type SelectorHit = XP.CustomSelectorServiceResponseHit;
 
@@ -54,9 +50,9 @@ const transformHit = (content: Content): SelectorHit =>
     customSelectorHitWithLink(
         {
             id: content._id,
-            displayName: `${content.language !== 'no' ? `[${content.language}]` : ''} ${
-                content.displayName
-            }`,
+            displayName: `${
+                content.language !== CONTENT_LOCALE_DEFAULT ? `[${content.language}]` : ''
+            } ${content.displayName}`,
             description: stripPathPrefix(content._path),
         },
         `${CONTENT_STUDIO_EDIT_PATH_PREFIX}/${content._id}`

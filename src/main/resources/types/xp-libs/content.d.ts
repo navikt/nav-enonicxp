@@ -47,6 +47,7 @@ declare module '*/lib/xp/content' {
                 readonly _id: string;
                 readonly _name: string;
                 readonly _path: string;
+                readonly type: Type;
                 readonly creator: string;
                 readonly modifier: string;
                 readonly createdTime: string;

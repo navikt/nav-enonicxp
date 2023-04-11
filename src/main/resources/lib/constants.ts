@@ -21,11 +21,19 @@ const revalidatorProxyOrigin = {
     localhost: 'http://localhost:3002',
 }[env];
 
+const norgOfficeOrigin = {
+    p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+    localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
+}[env];
+
 export const URLS = Object.freeze({
     FRONTEND_ORIGIN: frontendOrigin,
     XP_ORIGIN: xpOrigin,
     REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigin,
     PORTAL_ADMIN_ORIGIN: portalAdminOrigin,
+    NORG_OFFICE_ORIGIN: norgOfficeOrigin,
 });
 
 export const COMPONENT_APP_KEY = 'no-nav-navno';
@@ -34,6 +42,8 @@ export const APP_DESCRIPTOR = 'no.nav.navno';
 export const CONTENT_REPO_PREFIX = 'com.enonic.cms';
 export const CONTENT_ROOT_PROJECT_ID = 'default';
 export const CONTENT_ROOT_REPO_ID = `${CONTENT_REPO_PREFIX}.${CONTENT_ROOT_PROJECT_ID}`;
+
+export const CONTENT_LOCALE_DEFAULT = 'no';
 
 export const SEARCH_REPO_ID = 'nav.no.search';
 export const NAVNO_ROOT_PATH = '/www.nav.no';

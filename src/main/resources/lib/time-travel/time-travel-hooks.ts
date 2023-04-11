@@ -3,12 +3,12 @@
  *
  * The function hooks in this file alters content retrieval functions, adding the option to get content from
  * a certain timestamp, with all references also correctly resolved to this timestamp. This "time travel"
- * functionality should only be enabled for threads spawned from requests where the "time" parameter to the
- * sitecontent service was set. All other requests should get standard functionality.
+ * functionality should only be enabled for threads spawned from requests to the "sitecontentVersions" service.
+ * All other requests should get standard functionality.
  *
- * This is a very scary hack which can result in outdated content being served if proper cleanup is not done
- * after every "time travel"-requesting thread. Keep in mind thread-ids are reused and the http-server is
- * multithreaded. Make sure you understand what you're doing if you make any changes. :)
+ * This is a very scary monkey-patch hack which can result in outdated content being served if proper cleanup
+ * is not done after every "time travel"-requesting thread. Keep in mind thread-ids are reused and the http-server
+ * is multithreaded. Make sure you understand what you're doing if you make any changes. :)
  *
  * TODO: See if this can be rewritten to a safer approach using the XP context library for request
  * state, rather than the current thread-id based approach
@@ -20,7 +20,7 @@ import * as nodeLib from '/lib/xp/node';
 import { RepoConnection } from '/lib/xp/node';
 import { getNodeKey, getVersionFromTime } from '../utils/version-utils';
 import { runInContext } from '../context/run-in-context';
-import { getCurrentThreadId } from '../utils/nav-utils';
+import { getCurrentThreadId } from '../utils/thread-utils';
 import { TimeTravelConfig } from './types';
 import { logger } from '../utils/logging';
 import { contentLibGetStandard, nodeLibConnectStandard } from './standard-functions';
@@ -64,11 +64,11 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
             return contentLibGetStandard(args);
         }
 
-        const { repo, branch, baseContentKey, targetUnixTime } = configForThread;
+        const { repoId, branch, baseContentKey, targetUnixTime } = configForThread;
 
         const requestedVersion = getVersionFromTime({
             nodeKey: getNodeKey(key),
-            repo,
+            repoId,
             branch,
             unixTime: targetUnixTime,
             getOldestIfNotFound: key === baseContentKey,
@@ -98,7 +98,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
             return nodeLibConnectStandard(connectArgs);
         }
 
-        const { branch, targetUnixTime, baseNodeKey } = configForThread;
+        const { branch, targetUnixTime, baseNodeKey, repoId } = configForThread;
 
         const repoConnection = nodeLibConnectStandard(connectArgs);
         const repoGet = repoConnection.get.bind(repoConnection);
@@ -124,7 +124,7 @@ export const hookLibsWithTimeTravel = (timeTravelConfig: TimeTravelConfig) => {
         const getNode = (nodeKey: string) => {
             const requestedVersion = getVersionFromTime({
                 nodeKey,
-                repo: repoConnection,
+                repoId,
                 branch,
                 unixTime: targetUnixTime,
                 getOldestIfNotFound: nodeKey === baseNodeKey,

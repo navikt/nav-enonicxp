@@ -1,5 +1,5 @@
 import * as portalLib from '/lib/xp/portal';
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../utils/repo-utils';
 import { NodeContent, RepoNode } from '/lib/xp/node';
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
@@ -7,16 +7,15 @@ import { frontendProxy } from './frontend-proxy';
 import { logger } from '../utils/logging';
 import { NodeComponent } from '../../types/components/component-node';
 import { runInContext } from '../context/run-in-context';
-import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { forceArray } from '../utils/nav-utils';
+import { CONTENT_LOCALE_DEFAULT, CONTENT_ROOT_REPO_ID } from '../constants';
+import { forceArray } from '../utils/array-utils';
+import { applyModifiedData } from '../utils/content-utils';
 
 type AreaPageNodeContent = NodeContent<Content<'no.nav.navno:area-page'>>;
 type AreaPageRepoNode = RepoNode<Content<'no.nav.navno:area-page'>>;
 type SituationPageContent = Content<'no.nav.navno:situation-page'>;
 type SituationsLayoutComponent = NodeComponent<'layout', 'areapage-situations'>;
 type SituationCardPartComponent = NodeComponent<'part', 'areapage-situation-card'>;
-
-const masterLanguage = 'no';
 
 const getSituationsLayout = (
     components: NodeComponent[],
@@ -66,7 +65,7 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
                         {
                             hasValue: {
                                 field: 'language',
-                                values: [masterLanguage],
+                                values: [CONTENT_LOCALE_DEFAULT],
                             },
                         },
                     ],
@@ -82,7 +81,7 @@ const getRelevantSituationPages = (content: AreaPageNodeContent) =>
             },
         }).hits;
 
-        if (requestedLanguage === masterLanguage) {
+        if (requestedLanguage === CONTENT_LOCALE_DEFAULT) {
             return situationPages;
         }
 
@@ -215,7 +214,7 @@ const populateSituationsLayout = (req: XP.Request) => {
         return;
     }
 
-    const repo = nodeLib.connect({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
+    const repo = getRepoConnection({ repoId: CONTENT_ROOT_REPO_ID, branch: 'draft' });
 
     const nodeContent = repo.get<AreaPageNodeContent>({ key: content._id });
     if (!nodeContent?.components) {
@@ -256,7 +255,7 @@ const populateSituationsLayout = (req: XP.Request) => {
             );
 
             return {
-                ...content,
+                ...applyModifiedData(content),
                 components: [...otherComponents, ...situationCards],
             };
         },

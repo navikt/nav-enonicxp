@@ -1,16 +1,22 @@
 import cacheLib from '/lib/cache';
 import * as taskLib from '/lib/xp/task';
 import { batchedContentQuery } from '../../lib/utils/batched-query';
-import { hasValidCustomPath } from '../../lib/custom-paths/custom-paths';
 import { ContentDescriptor } from '../../types/content-types/content-config';
 import { APP_DESCRIPTOR, NAVNO_ROOT_PATH, REDIRECTS_ROOT_PATH } from '../../lib/constants';
-import { removeDuplicates, stripPathPrefix } from '../../lib/utils/nav-utils';
 import {
     contentTypesRenderedByPublicFrontend,
     linkContentTypes,
 } from '../../lib/contenttype-lists';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
+import { getPublicPath } from '../../lib/paths/public-path';
+import { removeDuplicates } from '../../lib/utils/array-utils';
+import {
+    buildLocalePath,
+    queryAllLayersToLocaleBuckets,
+} from '../../lib/localization/locale-utils';
+import { hasValidCustomPath } from '../../lib/paths/custom-paths/custom-path-utils';
 
 const cache = cacheLib.newCache({ size: 2, expire: 600 });
 
@@ -22,17 +28,18 @@ const testContentTypes: ContentDescriptor[] = [
     'no.nav.navno:situation-page',
 ];
 
-const oneYearMs = 1000 * 3600 * 24 * 365;
+const ONE_YEAR_MS = 1000 * 3600 * 24 * 365;
+const SIX_HOURS_MS = 1000 * 3600 * 6;
 
-const redirectsPath = `/content${REDIRECTS_ROOT_PATH}/`;
-const statistikkRootPath = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/statistikk/`;
-const kunnskapRootPath = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/kunnskap/`;
+const REDIRECTS_NODE_PATH = `/content${REDIRECTS_ROOT_PATH}/`;
+const STATISTIKK_NODE_PATH = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/statistikk/`;
+const KUNNSKAP_NODE_PATH = `/content${NAVNO_ROOT_PATH}/no/nav-og-samfunn/kunnskap/`;
 
-const contentPathsQuerySegment = `_path LIKE '/content${NAVNO_ROOT_PATH}/*' AND _path NOT LIKE '${redirectsPath}*'`;
-const statistikkContentQuerySegment = `type LIKE '${APP_DESCRIPTOR}:large-table' OR ((_path LIKE '${statistikkRootPath}*' OR _path LIKE '${kunnskapRootPath}*') AND type LIKE '${APP_DESCRIPTOR}:main-article*')`;
-const newsAndPressReleasesQuerySegment = `type LIKE '${APP_DESCRIPTOR}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
+const CONTENT_QUERY_SEGMENT = `_path LIKE '/content${NAVNO_ROOT_PATH}/*' AND _path NOT LIKE '${REDIRECTS_NODE_PATH}*'`;
+const STATISTIKK_QUERY_SEGMENT = `type LIKE '${APP_DESCRIPTOR}:large-table' OR ((_path LIKE '${STATISTIKK_NODE_PATH}*' OR _path LIKE '${KUNNSKAP_NODE_PATH}*') AND type LIKE '${APP_DESCRIPTOR}:main-article*')`;
+const NEWS_AND_PRESS_RELEASES_QUERY_SEGMENT = `type LIKE '${APP_DESCRIPTOR}:main-article*' AND (data.contentType='news' OR data.contentType='pressRelease')`;
 
-const excludedOldContent = `(${statistikkContentQuerySegment}) OR (${newsAndPressReleasesQuerySegment})`;
+const EXCLUDED_IF_OLD_QUERY_SEGMENT = `(${STATISTIKK_QUERY_SEGMENT}) OR (${NEWS_AND_PRESS_RELEASES_QUERY_SEGMENT})`;
 
 // Prevent concurrent queries
 let isRunning = false;
@@ -48,14 +55,21 @@ const waitUntilFinished = (msToWait = 60000) => {
 };
 
 const getPathsToRender = (isTest?: boolean) => {
-    try {
-        const oneYearAgo = new Date(Date.now() - oneYearMs).toISOString();
+    const now = Date.now();
+    // Exclude news, press releases and statistics content if more than one year old
+    const oneYearAgo = new Date(now - ONE_YEAR_MS).toISOString();
+    // Exclude content which will soon be unpublished, as this may cause a 404-error while building the static frontend
+    const sixHoursFromNow = new Date(now + SIX_HOURS_MS).toISOString();
 
-        const contentPaths = batchedContentQuery({
+    const query = `(${CONTENT_QUERY_SEGMENT}) AND NOT publish.to < instant('${sixHoursFromNow}') AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${EXCLUDED_IF_OLD_QUERY_SEGMENT}))`;
+
+    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+        branch: 'master',
+        state: 'localized',
+        queryParams: {
             start: 0,
             count: 20000,
-            contentTypes: isTest ? testContentTypes : contentTypesRenderedByPublicFrontend,
-            query: `(${contentPathsQuerySegment}) AND NOT (modifiedTime < instant('${oneYearAgo}') AND (${excludedOldContent}))`,
+            query,
             filters: {
                 boolean: {
                     mustNot: {
@@ -64,34 +78,47 @@ const getPathsToRender = (isTest?: boolean) => {
                             values: ['true'],
                         },
                     },
+                    must: {
+                        hasValue: {
+                            field: 'type',
+                            values: isTest
+                                ? testContentTypes
+                                : contentTypesRenderedByPublicFrontend,
+                        },
+                    },
                 },
             },
-        }).hits.reduce((acc, content) => {
-            acc.push(stripPathPrefix(content._path));
+        },
+    });
 
-            if (hasValidCustomPath(content)) {
-                acc.push(content.data.customPath);
-            }
+    const contentPaths = Object.entries(localeContentBuckets)
+        .map(([locale, contentsArray]) =>
+            contentsArray.map((content) => {
+                const publicPath = getPublicPath(content, locale);
 
-            return acc;
-        }, [] as string[]);
+                // Include the base path if the content has a custom path, to ensure the redirect
+                // from basepath -> custompath is included in the static frontend build
+                if (hasValidCustomPath(content)) {
+                    return [publicPath, buildLocalePath(stripPathPrefix(content._path), locale)];
+                }
 
-        if (isTest) {
-            return contentPaths;
-        }
+                return publicPath;
+            })
+        )
+        .flat(2);
 
-        const redirectPaths = batchedContentQuery({
-            start: 0,
-            count: 20000,
-            contentTypes: linkContentTypes,
-            query: `_path LIKE '${redirectsPath}*'`,
-        }).hits.map((content) => content._path.replace(REDIRECTS_ROOT_PATH, ''));
-
-        return removeDuplicates([...contentPaths, ...redirectPaths]);
-    } catch (e) {
-        logger.error(`Error while retrieving content paths - ${e}`);
-        return null;
+    if (isTest) {
+        return removeDuplicates(contentPaths);
     }
+
+    const redirectPaths = batchedContentQuery({
+        start: 0,
+        count: 20000,
+        contentTypes: linkContentTypes,
+        query: `_path LIKE '${REDIRECTS_NODE_PATH}*'`,
+    }).hits.map((content) => content._path.replace(REDIRECTS_ROOT_PATH, ''));
+
+    return removeDuplicates([...contentPaths, ...redirectPaths]);
 };
 
 const getFromCache = (isTest: boolean) => {

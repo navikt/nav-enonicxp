@@ -1,4 +1,4 @@
-import * as nodeLib from '/lib/xp/node';
+import { getRepoConnection } from '../../../lib/utils/repo-utils';
 import {
     insufficientPermissionResponse,
     userIsAdmin,
@@ -9,8 +9,9 @@ import {
     getGlobalValueSet,
     getGlobalValueUsage,
 } from '../../../lib/global-values/global-value-utils';
-import { forceArray } from '../../../lib/utils/nav-utils';
 import { logger } from '../../../lib/utils/logging';
+import { forceArray } from '../../../lib/utils/array-utils';
+import { applyModifiedData } from '../../../lib/utils/content-utils';
 
 export const removeGlobalValueItemService = (req: XP.Request) => {
     const { key, contentId } = req.params;
@@ -51,7 +52,7 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
     }
 
     try {
-        const repo = nodeLib.connect({
+        const repo = getRepoConnection({
             repoId: 'com.enonic.cms.default',
             branch: 'draft',
         });
@@ -60,7 +61,7 @@ export const removeGlobalValueItemService = (req: XP.Request) => {
             key: contentId,
             editor: (_content) => {
                 _content.data.valueItems = valueItems.filter((item) => item.key !== key);
-                return _content;
+                return applyModifiedData(_content);
             },
         });
 

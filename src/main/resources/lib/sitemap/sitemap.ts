@@ -3,20 +3,22 @@ import { Content } from '/lib/xp/content';
 import * as taskLib from '/lib/xp/task';
 import * as eventLib from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
-import { getContentFromCustomPath, isValidCustomPath } from '../custom-paths/custom-paths';
-import { stringArrayToSet, stripPathPrefix } from '../utils/nav-utils';
+import { stringArrayToSet } from '../utils/array-utils';
 import { runInContext } from '../context/run-in-context';
 import { URLS } from '../constants';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
 import { contentTypesInSitemap } from '../contenttype-lists';
 import { logger } from '../utils/logging';
-import { getLanguageVersionsFull } from '../localization/resolve-language-versions';
+import {
+    getLanguageVersions,
+    LanguageSelectorData,
+} from '../localization/resolve-language-versions';
 import { getLayersData } from '../localization/layers-data';
 import { runInLocaleContext } from '../localization/locale-context';
-import { isContentLocalized } from '../localization/locale-utils';
+import { isContentLocalized, queryAllLayersToLocaleBuckets } from '../localization/locale-utils';
+import { getPublicPath } from '../paths/public-path';
 
-const BATCH_COUNT = 1000;
 const MAX_COUNT = 50000;
 const EVENT_TYPE_SITEMAP_GENERATED = 'sitemap-generated';
 const EVENT_TYPE_SITEMAP_REQUESTED = 'sitemap-requested';
@@ -66,79 +68,61 @@ const sitemapData: SitemapData = {
 
 const contentTypesInSitemapSet = stringArrayToSet(contentTypesInSitemap);
 
-const shouldIncludeContent = (content: Content<any>) =>
-    content &&
-    contentTypesInSitemapSet[content.type] &&
-    !content.data?.externalProductUrl &&
-    !content.data?.noindex &&
-    isContentLocalized(content);
+const shouldIncludeContent = (content: Content<any> | null): content is Content =>
+    !!(
+        content &&
+        contentTypesInSitemapSet[content.type] &&
+        !content.data?.externalProductUrl &&
+        !content.data?.noindex &&
+        isContentLocalized(content)
+    );
 
-const getUrl = (content: Content<any>) => {
+const getUrl = (content: Content<any>, locale: string) => {
     if (content.data?.canonicalUrl) {
         return content.data.canonicalUrl;
     }
 
-    const customPath = content.data?.customPath;
-
-    const pathname = isValidCustomPath(customPath) ? customPath : stripPathPrefix(content._path);
+    const pathname = getPublicPath(content, locale);
     return `${URLS.FRONTEND_ORIGIN}${pathname}`;
 };
 
-const transformToLanguageVersion = (content: Content): LanguageVersion => ({
-    language: content.language,
-    url: getUrl(content),
+const transformLanguageVersion = (languageSelectorData: LanguageSelectorData): LanguageVersion => ({
+    language: languageSelectorData.language,
+    url: `${URLS.FRONTEND_ORIGIN}${languageSelectorData._path}`,
 });
 
-const getSitemapEntry = (content: Content): SitemapEntry => {
-    const languageVersions = getLanguageVersionsFull(content, 'master').map(
-        transformToLanguageVersion
-    );
+const getSitemapEntry = (content: Content, locale: string): SitemapEntry => {
+    const languageVersions = getLanguageVersions({
+        baseContent: content,
+        branch: 'master',
+        baseContentLocale: locale,
+    }).map(transformLanguageVersion);
 
     return {
-        id: content._id,
-        url: getUrl(content),
+        id: `${content._id}-${locale}`,
+        url: getUrl(content, locale),
         modifiedTime: content.modifiedTime,
         language: content.language,
         ...(languageVersions && languageVersions.length > 0 && { languageVersions }),
     };
 };
 
-const getContent = (path: string) => {
-    const contentFromCustomPath = getContentFromCustomPath(path);
-    if (contentFromCustomPath.length > 0) {
-        logger.critical(`Multiple entries found for custom path ${path} - skipping sitemap entry`);
-        return null;
-    }
-
-    if (contentFromCustomPath.length === 1) {
-        return contentFromCustomPath[0];
-    }
-
-    return runInContext({ branch: 'master' }, () => contentLib.get({ key: path }));
-};
-
-const updateSitemapEntry = (path: string, locale: string) =>
+const updateSitemapEntry = (contentId: string, locale: string) =>
     runInLocaleContext({ branch: 'master', locale }, () => {
-        const content = getContent(path);
-        if (!content) {
-            return;
-        }
-
-        const key = content._id;
+        const content = contentLib.get({ key: contentId });
 
         if (shouldIncludeContent(content)) {
-            sitemapData.set(key, getSitemapEntry(content));
-        } else if (sitemapData.get(key)) {
-            sitemapData.remove(key);
+            sitemapData.set(contentId, getSitemapEntry(content, locale));
+        } else if (sitemapData.get(contentId)) {
+            sitemapData.remove(contentId);
         }
     });
 
-const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): SitemapEntry[] => {
-    const entriesBatch = contentLib
-        .query({
-            start,
-            count: BATCH_COUNT,
-            contentTypes: contentTypesInSitemap,
+const generateSitemapEntries = (): SitemapEntry[] => {
+    const localeContentBuckets = queryAllLayersToLocaleBuckets({
+        branch: 'master',
+        state: 'localized',
+        queryParams: {
             filters: {
                 boolean: {
                     mustNot: {
@@ -150,18 +134,20 @@ const getSitemapEntries = (start = 0, previousEntries: SitemapEntry[] = []): Sit
                             field: 'data.externalProductUrl',
                         },
                     },
+                    must: {
+                        hasValue: {
+                            field: 'type',
+                            values: contentTypesInSitemap,
+                        },
+                    },
                 },
             },
-        })
-        .hits.map(getSitemapEntry);
+        },
+    });
 
-    const currentEntries = [...entriesBatch, ...previousEntries];
-
-    if (entriesBatch.length < BATCH_COUNT) {
-        return currentEntries;
-    }
-
-    return getSitemapEntries(start + BATCH_COUNT, currentEntries);
+    return Object.entries(localeContentBuckets)
+        .map(([locale, contents]) => contents.map((content) => getSitemapEntry(content, locale)))
+        .flat();
 };
 
 export const getAllSitemapEntries = () => {
@@ -182,7 +168,7 @@ const generateAndBroadcastSitemapData = () => {
                 try {
                     logger.info('Started generating sitemap data');
                     const startTime = Date.now();
-                    const sitemapEntries = getSitemapEntries();
+                    const sitemapEntries = generateSitemapEntries();
 
                     sendReliableEvent({
                         type: EVENT_TYPE_SITEMAP_GENERATED,
@@ -256,9 +242,7 @@ export const activateSitemapDataUpdateEventListener = () => {
 
     addReliableEventListener({
         type: EVENT_TYPE_SITEMAP_REQUESTED,
-        callback: () => {
-            generateAndBroadcastSitemapData();
-        },
+        callback: generateAndBroadcastSitemapData,
     });
 
     eventLib.listener({
@@ -275,8 +259,7 @@ export const activateSitemapDataUpdateEventListener = () => {
                     return;
                 }
 
-                const xpPath = node.path.replace(/^\/content/, '');
-                updateSitemapEntry(xpPath, locale);
+                updateSitemapEntry(node.id, locale);
             });
         },
     });

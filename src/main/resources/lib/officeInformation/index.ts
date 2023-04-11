@@ -6,11 +6,11 @@ import * as taskLib from '/lib/xp/task';
 import * as contextLib from '/lib/xp/context';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { OfficeInformation } from '../../site/content-types/office-information/office-information';
-import { createObjectChecksum } from '../utils/nav-utils';
 import { NavNoDescriptor } from '../../types/common';
 import { UpdateOfficeInfoConfig } from '../../tasks/update-office-info/update-office-info-config';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
+import { createObjectChecksum } from '../utils/object-utils';
 
 type OfficeInformationDescriptor = NavNoDescriptor<'office-information'>;
 

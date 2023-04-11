@@ -6,7 +6,7 @@ fragment partComponentFrontpageContact on Part_no_nav_navno_frontpage_contact {
     contactUsAlertText
     contactUsIngress
     contactUsLink {
-        __typename
+        type
         _path
         ... on no_nav_navno_ExternalLink {
             data {

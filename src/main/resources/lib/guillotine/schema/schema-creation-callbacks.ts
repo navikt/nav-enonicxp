@@ -15,8 +15,7 @@ import {
 } from './schema-creation-callbacks/main-article-chapter';
 import { sectionPageDataCallback } from './schema-creation-callbacks/section-page-data';
 import { contentListDataCallback } from './schema-creation-callbacks/content-list-data';
-import { contactInformationTelephoneCallback } from './schema-creation-callbacks/contact-information-telephone';
-import { contactInformationChatCallback } from './schema-creation-callbacks/contact-information-chat';
+import { partContactOptionChatCallback } from './schema-creation-callbacks/part-contact-option-chat';
 import { menuListDataCallback } from './schema-creation-callbacks/menu-list-data';
 import { globalValueSetCallback } from './schema-creation-callbacks/global-values';
 import { globalValueCalculatorConfigCallback } from './schema-creation-callbacks/global-value-calculator-config';
@@ -34,6 +33,7 @@ import { macroAlertboxCallback } from './schema-creation-callbacks/macro-alert-b
 import { richTextCallback } from './schema-creation-callbacks/richtext';
 import { overviewCallback } from './schema-creation-callbacks/overview-callback';
 import { officeBranchCallback } from './schema-creation-callbacks/office-branch-callback';
+import { formDetailsCallback } from './schema-creation-callbacks/form-details';
 import { fragmentComponentDataCallback } from './schema-creation-callbacks/fragment-component-data';
 import { globalCaseTimeSetCallback } from './schema-creation-callbacks/global-case-time-set';
 import { saksbehandlingstidMacroCallback } from './schema-creation-callbacks/saksbehandlingstid-macro-config';
@@ -42,6 +42,7 @@ import { CreationCallback } from '../utils/creation-callback-utils';
 import { contentInterfaceCallback } from './schema-creation-callbacks/content-interface';
 import { externalLinkCallback } from './schema-creation-callbacks/external-link-callback';
 import { microCardTargetPageCallback } from './schema-creation-callbacks/microcard-part';
+import { createOpeningHoursFields } from './schema-creation-callbacks/common/opening-hours-mixin';
 
 export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Attachment: attachmentCallback,
@@ -60,7 +61,8 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     no_nav_navno_ContentList_Data: contentListDataCallback,
     no_nav_navno_Overview_Data: overviewCallback,
     no_nav_navno_OfficeBranch: officeBranchCallback,
-    no_nav_navno_ContactInformation_Telephone: contactInformationTelephoneCallback,
+    no_nav_navno_ContactInformation_Chat: createOpeningHoursFields('chat'),
+    no_nav_navno_ContactInformation_Telephone: createOpeningHoursFields('telephone'),
     no_nav_navno_MainArticle_MenuListItems: menuListDataCallback,
     no_nav_navno_PageList_MenuListItems: menuListDataCallback,
     no_nav_navno_GlobalValueSet: globalValueSetCallback,
@@ -73,7 +75,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
         'publish.first'
     ),
     Part_no_nav_navno_dynamic_link_list_ContentList: contentListCallback('target', 'numLinks'),
-    Part_no_nav_navno_contact_option_Chat: contactInformationChatCallback,
+    Part_no_nav_navno_contact_option_Chat: partContactOptionChatCallback,
     Part_no_nav_navno_frontpage_current_topics: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_frontpage_shortcuts: contentListCallback('contentList', 'maxItems'),
     Part_no_nav_navno_page_navigation_menu: pageNavigationMenuCallback,
@@ -82,6 +84,7 @@ export const schemaCreationCallbacks: { [key: string]: CreationCallback } = {
     Page_no_nav_navno_page_with_side_menus_AnchorLinks: anchorLinksCallback,
     Part_no_nav_navno_product_card_micro_CardList: microCardTargetPageCallback,
     Part_no_nav_navno_filters_menu_Filters: filterCallback,
+    Part_no_nav_navno_form_details: formDetailsCallback,
     Macro_no_nav_navno_saksbehandlingstid_DataConfig: saksbehandlingstidMacroCallback,
     Macro_no_nav_navno_global_value_DataConfig: globalValueMacroConfigCallback,
     Macro_no_nav_navno_global_value_with_math_DataConfig: globalValueWithMathMacroConfigCallback,

@@ -2,10 +2,10 @@ import httpClient, { HttpResponse } from '/lib/http-client';
 import * as taskLib from '/lib/xp/task';
 import * as schedulerLib from '/lib/xp/scheduler';
 import { APP_DESCRIPTOR, URLS } from '../constants';
-import { getFrontendPathname } from './utils';
 import { logger } from '../utils/logging';
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidateAllConfig } from '../../tasks/cache-invalidate-all/cache-invalidate-all-config';
+import { getFrontendPathname } from '../paths/path-utils';
 
 const NUM_RETRIES = 3;
 const TIMEOUT_MS = 10000;
@@ -13,29 +13,35 @@ const TIMEOUT_MS = 10000;
 const REVALIDATOR_PROXY_URL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalidator-proxy`;
 const REVALIDATOR_PROXY_URL_WIPE_ALL = `${URLS.REVALIDATOR_PROXY_ORIGIN}/revalidator-proxy/wipe-all`;
 
-const DEFERRED_JOB_NAME = 'invalidate-all-job';
+const DEFERRED_INVALIDATION_JOB_NAME = 'invalidate-all-job';
 const DEFERRED_TIME_MS_DEFAULT = 60000;
+
+export const isFrontendInvalidateAllScheduled = () => {
+    const existingJob = schedulerLib.get({ name: DEFERRED_INVALIDATION_JOB_NAME });
+    if (!existingJob) {
+        return false;
+    }
+
+    const now = new Date();
+    const currentScheduleTime = new Date(existingJob.schedule.value);
+
+    return currentScheduleTime > now;
+};
 
 export const frontendInvalidateAllDeferred = (
     eventId: string,
     deferredTime = DEFERRED_TIME_MS_DEFAULT,
     rescheduleIfExists = false
 ) => {
-    const existingJob = schedulerLib.get({ name: DEFERRED_JOB_NAME });
+    const targetScheduleTime = new Date(new Date().getTime() + deferredTime);
 
-    const now = new Date();
-    const targetScheduleTime = new Date(now.getTime() + deferredTime);
-
-    if (existingJob && !rescheduleIfExists) {
-        const currentScheduleTime = new Date(existingJob.schedule.value);
-        if (currentScheduleTime > now && currentScheduleTime < targetScheduleTime) {
-            logger.info('Invalidation job is already scheduled within the target timeframe');
-            return;
-        }
+    if (isFrontendInvalidateAllScheduled() && !rescheduleIfExists) {
+        logger.info('Invalidation job is already scheduled within the target timeframe');
+        return;
     }
 
     createOrUpdateSchedule<CacheInvalidateAllConfig>({
-        jobName: DEFERRED_JOB_NAME,
+        jobName: DEFERRED_INVALIDATION_JOB_NAME,
         jobSchedule: {
             type: 'ONE_TIME',
             value: targetScheduleTime.toISOString(),

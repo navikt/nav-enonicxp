@@ -1,9 +1,7 @@
 import * as contentLib from '/lib/xp/content';
-import * as nodeLib from '/lib/xp/node';
 import graphQlLib from '/lib/graphql';
 import * as contextLib from '/lib/xp/context';
 import { getNodeVersions } from '../../../../utils/version-utils';
-import { CONTENT_ROOT_REPO_ID } from '../../../../constants';
 import { logger } from '../../../../utils/logging';
 
 // Find the original content type for a content source.
@@ -16,7 +14,9 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
     params.fields.originalType = {
         type: graphQlLib.GraphQLString,
         resolve: (env) => {
-            if (contextLib.get().branch !== 'draft') {
+            const { branch, repository } = contextLib.get();
+
+            if (branch !== 'draft') {
                 return null;
             }
 
@@ -32,10 +32,7 @@ export const insertOriginalContentTypeField = (params: graphQlLib.CreateObjectTy
 
             const versions = getNodeVersions({
                 nodeKey: _id,
-                repo: nodeLib.connect({
-                    repoId: CONTENT_ROOT_REPO_ID,
-                    branch: 'draft',
-                }),
+                repoId: repository,
                 branch: 'draft',
             });
 

@@ -1,13 +1,18 @@
 import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { ProductDetails } from '../../site/content-types/product-details/product-details';
-import { generateFulltextQuery, stripPathPrefix } from '../../lib/utils/nav-utils';
+import { generateFulltextQuery } from '../../lib/utils/mixed-bag-of-utils';
 import { runInContext } from '../../lib/context/run-in-context';
 import { CONTENT_STUDIO_EDIT_PATH_PREFIX } from '../../lib/constants';
-import { customSelectorHitWithLink, getSubPath, transformUsageHit } from '../service-utils';
+import {
+    customSelectorHitWithLink,
+    getServiceRequestSubPath,
+    transformUsageHit,
+} from '../service-utils';
 import { getProductDetailsUsage } from '../../lib/product-utils/productDetails';
 import { logger } from '../../lib/utils/logging';
 import { customSelectorErrorIcon } from '../custom-selector-icons';
+import { stripPathPrefix } from '../../lib/paths/path-utils';
 
 type ProductDetailsType = ProductDetails['detailType'];
 type ProductDetailsContentType = Content<'no.nav.navno:product-details'>;
@@ -150,7 +155,7 @@ const usageCheckHandler = (req: XP.Request) => {
 };
 
 export const get = (req: XP.Request) => {
-    const subPath = getSubPath(req);
+    const subPath = getServiceRequestSubPath(req);
 
     if (subPath === 'usage') {
         return usageCheckHandler(req);
