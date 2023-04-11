@@ -112,7 +112,7 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
 
         // Create a redirect from the old path
 
-        contentLib.create<'no.nav.navno:internal-link'>({
+        const internalLink = contentLib.create<'no.nav.navno:internal-link'>({
             name: currentName,
             parentPath: basePath,
             displayName: `${existingOffice.displayName} (redirect til ${newOffice.navn})`,
@@ -122,6 +122,13 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
                 permanentRedirect: false,
                 redirectSubpaths: false,
             },
+        });
+
+        contentLib.publish({
+            keys: [internalLink._id],
+            sourceBranch: 'draft',
+            targetBranch: 'master',
+            includeDependencies: false,
         });
     } catch (e) {
         logger.critical(
