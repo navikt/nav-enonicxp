@@ -179,7 +179,7 @@ const getChatContactInfoReferences = (content: Content) => {
     }).hits;
 
     logger.info(
-        `Updated chat module ${content._path} for ${pagesWithDefaultChatInfo.length} references`
+        `Found ${pagesWithDefaultChatInfo.length} references for chat contact info ${content._path}`
     );
 
     return pagesWithDefaultChatInfo;
