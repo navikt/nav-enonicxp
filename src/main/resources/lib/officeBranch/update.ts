@@ -167,11 +167,9 @@ const updateOfficeBranchIfChange = (
 const addNewOfficeBranch = (singleOffice: any) => {
     const pathName = commonLib.sanitize(singleOffice.navn);
 
-    let wasAdded = false;
-
     try {
         logger.info('trying to create office branch');
-        contentLib.create({
+        const content = contentLib.create({
             name: pathName,
             parentPath: basePath,
             displayName: singleOffice.navn,
@@ -182,41 +180,40 @@ const addNewOfficeBranch = (singleOffice: any) => {
                 checksum: createObjectChecksum(singleOffice),
             },
         });
-        wasAdded = true;
+        return content._id;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to create new office page for ${singleOffice.navn} - ${e}`
         );
+        return null;
     }
-
-    return wasAdded;
 };
 
 const deleteStaleOfficesFromXP = (
     existingOfficesInXP: Content<OfficeBranchDescriptor>[],
-    validOfficeIds: string[]
+    validOfficeEnhetNrs: string[]
 ) => {
-    let deleteCount = 0;
+    const deletedIds: string[] = [];
     existingOfficesInXP.forEach((existingOffice) => {
         const { enhetNr, navn } = existingOffice?.data;
 
-        if (!validOfficeIds.includes(enhetNr)) {
+        if (!validOfficeEnhetNrs.includes(enhetNr)) {
             deleteContent(commonLib.sanitize(navn));
-            deleteCount++;
+            deletedIds.push(existingOffice._id);
         }
     });
 
-    return deleteCount;
+    return deletedIds;
 };
 
 export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[]) => {
     const existingOfficesInXP = getExistingOfficeBranchesInXP();
-    const processedOfficeBranchIds: string[] = [];
+    const processedOfficeBranchEnhetNr: string[] = [];
 
-    const summary: { created: number; updated: number; deleted: number } = {
-        created: 0,
-        updated: 0,
-        deleted: 0,
+    const summary: { created: string[]; updated: string[]; deleted: string[] } = {
+        created: [],
+        updated: [],
+        deleted: [],
     };
 
     incomingOfficeBranches.forEach((singleOfficeBranch) => {
@@ -236,24 +233,26 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
 
         if (existingOfficeInXP) {
             const wasUpdated = updateOfficeBranchIfChange(singleOfficeBranch, existingOfficeInXP);
-            summary.updated += wasUpdated ? 1 : 0;
+            summary.updated = wasUpdated
+                ? [...summary.updated, existingOfficeInXP._id]
+                : summary.updated;
         } else {
-            const wasAdded = addNewOfficeBranch(singleOfficeBranch);
-            summary.created += wasAdded ? 1 : 0;
+            const createdId = addNewOfficeBranch(singleOfficeBranch);
+            summary.created = createdId ? [...summary.created, createdId] : summary.created;
         }
 
-        processedOfficeBranchIds.push(singleOfficeBranch.enhetNr);
+        processedOfficeBranchEnhetNr.push(singleOfficeBranch.enhetNr);
     });
 
-    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
+    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchEnhetNr);
+    const idsToPublish = [...summary.created, ...summary.updated];
 
-    // Publish all updates made inside basePath
-    // This includes updates and new office branches
+    // Publish all updated and created offices by id.
     const publishResponse = contentLib.publish({
-        keys: [basePath],
+        keys: idsToPublish,
         sourceBranch: 'draft',
         targetBranch: 'master',
-        includeDependencies: true,
+        includeDependencies: false,
     });
 
     if (publishResponse.failedContents.length > 0) {
@@ -265,6 +264,6 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
     }
 
     logger.info(
-        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
+        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length} Deleted: ${summary.deleted.length}`
     );
 };
