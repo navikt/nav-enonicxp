@@ -3,6 +3,15 @@ import { getResponseFromCache } from './cache';
 import { generateSitecontentResponse } from './generate-response';
 import { logger } from '../../lib/utils/logging';
 import { validateServiceSecretHeader } from '../../lib/utils/auth-utils';
+import { RepoBranch } from '../../types/common';
+
+export type SiteContentParams = {
+    id: string;
+    branch?: RepoBranch;
+    preview?: 'true';
+    cacheKey?: string;
+    locale: string;
+};
 
 export const get = (req: XP.Request) => {
     if (!validateServiceSecretHeader(req)) {
@@ -16,7 +25,13 @@ export const get = (req: XP.Request) => {
     }
 
     // id can be a content UUID, or a content path, ie. /www.nav.no/no/person
-    const { id: idOrPath, branch = 'master', preview, cacheKey, locale } = req.params;
+    // TODO: validate parameters in a cleaner way
+    const {
+        id: idOrPath,
+        branch = 'master',
+        preview,
+        locale,
+    } = req.params as unknown as Partial<SiteContentParams>;
 
     if (!idOrPath) {
         return {
@@ -39,16 +54,13 @@ export const get = (req: XP.Request) => {
     }
 
     try {
-        const content = getResponseFromCache(
-            idOrPath,
-            () =>
-                generateSitecontentResponse({
-                    idOrPathRequested: idOrPath,
-                    localeRequested: locale,
-                    branch,
-                    preview: preview === 'true',
-                }),
-            cacheKey
+        const content = getResponseFromCache(req.params as SiteContentParams, () =>
+            generateSitecontentResponse({
+                idOrPathRequested: idOrPath,
+                localeRequested: locale,
+                branch,
+                isPreview: preview === 'true',
+            })
         );
 
         if (!content) {

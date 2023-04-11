@@ -1,7 +1,11 @@
 import { Content } from '/lib/xp/content';
 import * as clusterLib from '/lib/xp/cluster';
 import * as taskLib from '/lib/xp/task';
-import { frontendInvalidateAllDeferred, frontendInvalidatePaths } from './frontend-cache';
+import {
+    frontendInvalidateAllDeferred,
+    frontendInvalidatePaths,
+    isFrontendInvalidateAllScheduled,
+} from './frontend-cache';
 import { findReferences } from './find-references';
 import { generateCacheEventId, isPublicRenderedType, NodeEventData } from './utils';
 import { findChangedPaths } from './find-changed-paths';
@@ -78,33 +82,11 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
     return success ? removeDuplicates(pathsToInvalidate) : null;
 };
 
-type InvalidateCacheParams = {
-    node: NodeEventData;
-    eventType: string;
-    timestamp: number;
-    isRunningClusterWide: boolean;
-};
-
-const _invalidateCacheForNode = ({
+const resolveReferencesAndInvalidateFrontend = ({
     node,
     eventType,
     timestamp,
-    isRunningClusterWide,
 }: InvalidateCacheParams) => {
-    // If this invalidation is running on every node, we can just clear local caches immediately
-    // Otherwise, we must send a cluster-wide event so every node gets cleared
-    if (isRunningClusterWide) {
-        invalidateLocalCache();
-    } else {
-        sendLocalCacheInvalidationEvent();
-    }
-
-    // If this invalidation is running on every node, we only want the master node to send
-    // invalidation calls to the frontend
-    if (isRunningClusterWide && !clusterLib.isMaster()) {
-        return;
-    }
-
     const { repoIdToLocaleMap } = getLayersData();
     const locale = repoIdToLocaleMap[node.repo];
 
@@ -140,6 +122,40 @@ const _invalidateCacheForNode = ({
             eventId,
         });
     });
+};
+
+type InvalidateCacheParams = {
+    node: NodeEventData;
+    eventType: string;
+    timestamp: number;
+    isRunningClusterWide: boolean;
+};
+
+const _invalidateCacheForNode = (params: InvalidateCacheParams) => {
+    const { isRunningClusterWide, node } = params;
+
+    // If this invalidation is running on every node, we can just clear local caches immediately
+    // Otherwise, we must send a cluster-wide event so every node gets cleared
+    if (isRunningClusterWide) {
+        invalidateLocalCache();
+    } else {
+        sendLocalCacheInvalidationEvent();
+    }
+
+    // If this invalidation is running on every node, we only want the master node to send
+    // invalidation calls to the frontend
+    if (isRunningClusterWide && !clusterLib.isMaster()) {
+        return;
+    }
+
+    if (isFrontendInvalidateAllScheduled()) {
+        logger.info(
+            `Full cache invalidation is already scheduled, skipping invalidation for ${node.id}/${node.repo}/${node.branch}`
+        );
+        return;
+    }
+
+    resolveReferencesAndInvalidateFrontend(params);
 };
 
 export const invalidateCacheForNode = (params: InvalidateCacheParams) => {
