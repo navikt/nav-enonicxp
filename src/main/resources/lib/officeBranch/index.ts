@@ -1,13 +1,13 @@
 import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { logger } from '../utils/logging';
 import { CONTENT_ROOT_REPO_ID } from '../constants';
-import { processAllOfficeBranches, fetchAllOfficeBranchesFromNorg } from './update';
+import { processAllOfficeBranches, fetchAllOfficeBranchDataFromNorg } from './update';
 import { runInContext } from '../context/run-in-context';
 
 const OFFICE_BRANCH_FETCH_TASK_NAME = 'no.nav.navno:update-office-branch';
 
 export const runOfficeBranchFetchTask = () => {
-    const officeBranches = fetchAllOfficeBranchesFromNorg();
+    const officeBranches = fetchAllOfficeBranchDataFromNorg();
 
     if (!officeBranches) {
         logger.critical('OfficeImporting: Failed to fetch office branch from norg2');

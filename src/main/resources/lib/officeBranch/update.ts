@@ -15,7 +15,9 @@ const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
-export const fetchAllOfficeBranchesFromNorg = () => {
+const createContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn)
+
+export const fetchAllOfficeBranchDataFromNorg = () => {
     try {
         const response = httpClient.request({
             url: URLS.NORG_OFFICE_API_URL,
@@ -55,21 +57,21 @@ const pageHasInvalidContentType = (name: string) => {
     );
 };
 
-// Delete content from XP
 const deleteContent = (contentRef: string) => {
     const office = contentLib.get({ key: contentRef });
     if (!office) {
         return null;
     }
 
-    // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
-    // We want to free up the source path immediately
     contentLib.unpublish({ keys: [office._id] });
 
+    // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
+    // We want to free up the source path immediately
     contentLib.move({
         source: office._path,
         target: `${office._name}-delete`,
     });
+
     contentLib.delete({
         key: office._id,
     });
@@ -90,37 +92,40 @@ const getExistingOfficePages = () => {
         ) as Content<OfficeBranchDescriptor>[];
 };
 
-const moveOfficeToNewName = (
-    existingOffice: Content<OfficeBranchDescriptor>,
-    newOffice: OfficeBranchData
+const moveAndRedirectOnNameChange = (
+    prevOfficePage: Content<OfficeBranchDescriptor>,
+    newOfficeData: OfficeBranchData
 ) => {
-    const currentName = existingOffice._name;
-    const newName = commonLib.sanitize(newOffice.navn);
+    const prevContentName = prevOfficePage._name;
+    const newContentName = createContentName(newOfficeData);
+
+    if (prevContentName === newContentName) {
+        return;
+    }
 
     try {
-        logger.info(`OfficeImporting: moving to new name: ${currentName} -> ${newName}`);
+        logger.info(`OfficeImporting: moving to new name: ${prevContentName} -> ${newContentName}`);
 
-        // Move the office branch page to a new path if the name changed
         contentLib.move({
-            source: existingOffice._path,
-            target: newName,
+            source: prevOfficePage._path,
+            target: newContentName,
         });
 
         // Create a redirect from the old path
-        contentLib.create<'no.nav.navno:internal-link'>({
-            name: currentName,
+        contentLib.create<InternalLinkDescriptor>({
+            name: prevContentName,
             parentPath: OFFICES_BASE_PATH,
-            displayName: `${existingOffice.displayName} (redirect til ${newOffice.navn})`,
-            contentType: `${app.name}:internal-link`,
+            displayName: `${prevOfficePage.displayName} (redirect til ${newOfficeData.navn})`,
+            contentType: INTERNAL_LINK_CONTENT_TYPE,
             data: {
-                target: existingOffice._id,
+                target: prevOfficePage._id,
                 permanentRedirect: false,
                 redirectSubpaths: false,
             },
         });
     } catch (e) {
         logger.critical(
-            `OfficeImporting: Failed to update office branch name for ${existingOffice._path} - ${e}`
+            `OfficeImporting: Failed to update office branch name for ${prevOfficePage._path} - ${e}`
         );
     }
 };
@@ -129,67 +134,56 @@ const updateOfficePageIfChanged = (
     newOfficeData: OfficeBranchData,
     existingOfficePage: Content<OfficeBranchDescriptor>
 ) => {
-    const newName = commonLib.sanitize(newOfficeData.navn);
-    const updatedChecksum = createObjectChecksum(newOfficeData);
-    let wasUpdated = false;
-
-    if (
-        existingOfficePage.data.checksum !== updatedChecksum ||
-        existingOfficePage.displayName !== newOfficeData.navn
-    ) {
-        try {
-            contentLib.modify<OfficeBranchDescriptor>({
-                key: existingOfficePage._id,
-                editor: (content) => ({
-                    ...content,
-                    language: getOfficeBranchLanguage(newOfficeData),
-                    displayName: newOfficeData.navn,
-                    data: { ...newOfficeData, checksum: updatedChecksum },
-                }),
-            });
-            wasUpdated = true;
-        } catch (e) {
-            logger.critical(
-                `OfficeImporting: Failed to modify office branch content ${existingOfficePage._path} - ${e}`
-            );
-        }
+    const newChecksum = createObjectChecksum(newOfficeData);
+    if (newChecksum === existingOfficePage.data.checksum) {
+        return false;
     }
-
-    if (newName !== existingOfficePage._name) {
-        logger.info(`Moving ${existingOfficePage._name} to ${newName}`);
-        moveOfficeToNewName(existingOfficePage, newOfficeData);
-        wasUpdated = true;
-    }
-
-    return wasUpdated;
-};
-
-const addNewOfficeBranch = (singleOffice: OfficeBranchData) => {
-    const name = commonLib.sanitize(singleOffice.navn);
-
-    let wasAdded = false;
 
     try {
-        logger.info('trying to create office branch');
-        contentLib.create({
-            name,
-            parentPath: OFFICES_BASE_PATH,
-            displayName: singleOffice.navn,
-            language: getOfficeBranchLanguage(singleOffice),
-            contentType: OFFICE_BRANCH_CONTENT_TYPE,
-            data: {
-                ...singleOffice,
-                checksum: createObjectChecksum(singleOffice),
-            },
+        moveAndRedirectOnNameChange(existingOfficePage, newOfficeData);
+
+        contentLib.modify<OfficeBranchDescriptor>({
+            key: existingOfficePage._id,
+            editor: (content) => ({
+                ...content,
+                language: getOfficeBranchLanguage(newOfficeData),
+                displayName: newOfficeData.navn,
+                data: { ...newOfficeData, checksum: newChecksum },
+            }),
         });
-        wasAdded = true;
+
+        return true;
     } catch (e) {
         logger.critical(
-            `OfficeImporting: Failed to create new office page for ${singleOffice.navn} - ${e}`
+            `OfficeImporting: Failed to modify office branch content ${existingOfficePage._path} - ${e}`
         );
+        return false;
     }
+};
 
-    return wasAdded;
+const createOfficeBranchPage = (officeData: OfficeBranchData) => {
+    try {
+        logger.info('Trying to create office branch page');
+        contentLib.create({
+            name: createContentName(officeData),
+            parentPath: OFFICES_BASE_PATH,
+            displayName: officeData.navn,
+            language: getOfficeBranchLanguage(officeData),
+            contentType: OFFICE_BRANCH_CONTENT_TYPE,
+            data: {
+                ...officeData,
+                checksum: createObjectChecksum(officeData),
+            },
+        });
+
+        return true;
+    } catch (e) {
+        logger.critical(
+            `OfficeImporting: Failed to create new office page for ${officeData.navn} - ${e}`
+        );
+
+        return false;
+    }
 };
 
 const deleteStaleOfficePages = (
@@ -221,7 +215,7 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
     };
 
     incomingOfficeBranches.forEach((officeBranch) => {
-        const name = commonLib.sanitize(officeBranch.navn);
+        const name = createContentName(officeBranch);
 
         if (pageHasInvalidContentType(name)) {
             logger.info(`Found invalid content with name ${name}`);
@@ -236,7 +230,7 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
             const wasUpdated = updateOfficePageIfChanged(officeBranch, existingPage);
             summary.updated += wasUpdated ? 1 : 0;
         } else {
-            const wasAdded = addNewOfficeBranch(officeBranch);
+            const wasAdded = createOfficeBranchPage(officeBranch);
             summary.created += wasAdded ? 1 : 0;
         }
 
