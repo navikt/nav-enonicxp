@@ -11,14 +11,14 @@ import { createObjectChecksum } from '../utils/object-utils';
 type OfficeBranchDescriptor = NavNoDescriptor<'office-branch'>;
 type InternalLinkDescriptor = NavNoDescriptor<'internal-link'>;
 
-const officeBranchContentType: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
-const internalLinkType: InternalLinkDescriptor = `no.nav.navno:internal-link`;
-const basePath = '/www.nav.no/kontor';
+const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-branch`;
+const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
+const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
 export const fetchAllOfficeBranchesFromNorg = () => {
     try {
         const response = httpClient.request({
-            url: `${URLS.NORG_OFFICE_ORIGIN}`,
+            url: URLS.NORG_OFFICE_API_URL,
             method: 'GET',
             headers: {
                 'x-nav-apiKey': app.config.norg2ApiKey,
@@ -36,7 +36,7 @@ export const fetchAllOfficeBranchesFromNorg = () => {
         }
     } catch (e) {
         logger.error(
-            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_OFFICE_ORIGIN}.`
+            `OfficeImporting: Exception from norg2 request: ${e}. Fetching from ${URLS.NORG_OFFICE_API_URL}.`
         );
         return null;
     }
@@ -46,20 +46,19 @@ export const fetchAllOfficeBranchesFromNorg = () => {
 // No content other than office branches should be in the 'kontor' folder, so that content
 // should be considered alien.
 const isPathOccupiedByAlienContent = (name: string) => {
-    const updatedPath = `${basePath}/${name}`;
+    const updatedPath = `${OFFICES_BASE_PATH}/${name}`;
     const existingContentOnPath = contentLib.get({ key: updatedPath });
 
     return (
         existingContentOnPath &&
-        existingContentOnPath.type !== officeBranchContentType &&
-        existingContentOnPath.type !== internalLinkType
+        existingContentOnPath.type !== OFFICE_BRANCH_CONTENT_TYPE &&
+        existingContentOnPath.type !== INTERNAL_LINK_CONTENT_TYPE
     );
 };
 
 // Delete content from XP
-const deleteContent = (name: string) => {
-    const office = contentLib.get({ key: name });
-
+const deleteContent = (contentRef: string) => {
+    const office = contentLib.get({ key: contentRef });
     if (!office) {
         return null;
     }
@@ -77,18 +76,18 @@ const deleteContent = (name: string) => {
     });
 };
 
-const getOfficeBranchLanguage = (office: any) => {
-    return office.data?.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
+const getOfficeBranchLanguage = (office: OfficeBranch) => {
+    return office.brukerkontakt?.skriftspraak?.toLowerCase() || CONTENT_LOCALE_DEFAULT;
 };
 
-const getExistingOfficeBranchesInXP = () => {
+const getExistingOfficePages = () => {
     return contentLib
         .getChildren({
-            key: basePath,
+            key: OFFICES_BASE_PATH,
             count: 2000,
         })
         .hits.filter(
-            (office) => office.type === officeBranchContentType
+            (office) => office.type === OFFICE_BRANCH_CONTENT_TYPE
         ) as Content<OfficeBranchDescriptor>[];
 };
 
@@ -109,7 +108,7 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
 
         contentLib.create<'no.nav.navno:internal-link'>({
             name: currentName,
-            parentPath: basePath,
+            parentPath: OFFICES_BASE_PATH,
             displayName: `${existingOffice.displayName} (redirect til ${newOffice.navn})`,
             contentType: `${app.name}:internal-link`,
             data: {
@@ -142,7 +141,7 @@ const updateOfficeBranchIfChange = (
                 key: existingOffice._id,
                 editor: (content) => ({
                     ...content,
-                    language: getOfficeBranchLanguage(content),
+                    language: getOfficeBranchLanguage(content.data),
                     displayName: newOffice.navn,
                     data: { ...newOffice, checksum: updatedChecksum },
                 }),
@@ -164,19 +163,19 @@ const updateOfficeBranchIfChange = (
     return wasUpdated;
 };
 
-const addNewOfficeBranch = (singleOffice: any) => {
-    const pathName = commonLib.sanitize(singleOffice.navn);
+const addNewOfficeBranch = (singleOffice: OfficeBranch) => {
+    const name = commonLib.sanitize(singleOffice.navn);
 
     let wasAdded = false;
 
     try {
         logger.info('trying to create office branch');
         contentLib.create({
-            name: pathName,
-            parentPath: basePath,
+            name,
+            parentPath: OFFICES_BASE_PATH,
             displayName: singleOffice.navn,
             language: getOfficeBranchLanguage(singleOffice),
-            contentType: officeBranchContentType,
+            contentType: OFFICE_BRANCH_CONTENT_TYPE,
             data: {
                 ...singleOffice,
                 checksum: createObjectChecksum(singleOffice),
@@ -192,16 +191,17 @@ const addNewOfficeBranch = (singleOffice: any) => {
     return wasAdded;
 };
 
-const deleteStaleOfficesFromXP = (
-    existingOfficesInXP: Content<OfficeBranchDescriptor>[],
-    validOfficeIds: string[]
+const deleteStaleOfficePages = (
+    existingOfficePages: Content<OfficeBranchDescriptor>[],
+    validOfficeEnhetsNr: string[]
 ) => {
     let deleteCount = 0;
-    existingOfficesInXP.forEach((existingOffice) => {
-        const { enhetNr, navn } = existingOffice?.data;
 
-        if (!validOfficeIds.includes(enhetNr)) {
-            deleteContent(commonLib.sanitize(navn));
+    existingOfficePages.forEach((existingOffice) => {
+        const { enhetNr } = existingOffice.data;
+
+        if (!validOfficeEnhetsNr.includes(enhetNr)) {
+            deleteContent(existingOffice._id);
             deleteCount++;
         }
     });
@@ -210,8 +210,8 @@ const deleteStaleOfficesFromXP = (
 };
 
 export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[]) => {
-    const existingOfficesInXP = getExistingOfficeBranchesInXP();
-    const processedOfficeBranchIds: string[] = [];
+    const existingOfficePages = getExistingOfficePages();
+    const processedOfficeEnhetsNr: string[] = [];
 
     const summary: { created: number; updated: number; deleted: number } = {
         created: 0,
@@ -224,12 +224,13 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
 
         if (isPathOccupiedByAlienContent(name)) {
             logger.info(
-                'Found alien (non-office or internal link for redirect) content on path, deleting it.'
+                'Found alien (non-office or internal link for redirect) content on path, deleting it'
             );
+            logger.info(`Trying to delete 2 ${name}`);
             deleteContent(name);
         }
 
-        const existingOfficeInXP = existingOfficesInXP.find(
+        const existingOfficeInXP = existingOfficePages.find(
             (content) =>
                 !!content.data?.enhetNr && content.data?.enhetNr === singleOfficeBranch.enhetNr
         );
@@ -242,15 +243,15 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
             summary.created += wasAdded ? 1 : 0;
         }
 
-        processedOfficeBranchIds.push(singleOfficeBranch.enhetNr);
+        processedOfficeEnhetsNr.push(singleOfficeBranch.enhetNr);
     });
 
-    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
+    summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
 
     // Publish all updates made inside basePath
     // This includes updates and new office branches
     const publishResponse = contentLib.publish({
-        keys: [basePath],
+        keys: [OFFICES_BASE_PATH],
         sourceBranch: 'draft',
         targetBranch: 'master',
         includeDependencies: true,

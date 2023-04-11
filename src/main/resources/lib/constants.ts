@@ -1,39 +1,42 @@
-const { xpOrigin, env } = app.config;
+type ServerEnv = typeof app.config.env;
+type EnvRecord = Record<ServerEnv, string>;
 
-const portalAdminOrigin = {
+const env = app.config.env || 'p';
+
+const portalAdminOrigins: EnvRecord = {
     p: 'https://portal-admin.oera.no',
     dev: 'https://portal-admin-dev.oera.no',
     q6: 'https://portal-admin-q6.oera.no',
     localhost: 'http://localhost:8080',
-}[env];
+};
 
-const frontendOrigin = {
+const frontendOrigins: EnvRecord = {
     p: 'https://www.nav.no',
     dev: 'https://www.dev.nav.no',
     q6: 'https://www-2.dev.nav.no',
     localhost: 'http://localhost:3000',
-}[env];
+};
 
-const revalidatorProxyOrigin = {
+const revalidatorProxyOrigins: EnvRecord = {
     p: 'https://www.nav.no/revalidator-proxy',
     dev: 'https://nav-enonicxp-frontend-revalidator-proxy.dev.nav.no',
     q6: 'https://nav-enonicxp-frontend-revalidator-proxy-2.dev.nav.no',
     localhost: 'http://localhost:3002',
-}[env];
+};
 
-const norgOfficeOrigin = {
+const norgOfficeApiUrls: EnvRecord = {
     p: 'https://norg2.prod-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     dev: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     q6: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
     localhost: 'https://norg2.dev-fss-pub.nais.io/norg2/api/v2/navlokalkontor?statusFilter=AKTIV',
-}[env];
+};
 
 export const URLS = Object.freeze({
-    FRONTEND_ORIGIN: frontendOrigin,
-    XP_ORIGIN: xpOrigin,
-    REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigin,
-    PORTAL_ADMIN_ORIGIN: portalAdminOrigin,
-    NORG_OFFICE_ORIGIN: norgOfficeOrigin,
+    FRONTEND_ORIGIN: frontendOrigins[env],
+    XP_ORIGIN: app.config.xpOrigin,
+    REVALIDATOR_PROXY_ORIGIN: revalidatorProxyOrigins[env],
+    PORTAL_ADMIN_ORIGIN: portalAdminOrigins[env],
+    NORG_OFFICE_API_URL: norgOfficeApiUrls[env],
 });
 
 export const COMPONENT_APP_KEY = 'no-nav-navno';
