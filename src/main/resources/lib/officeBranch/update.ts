@@ -68,7 +68,7 @@ const deleteContent = (name: string) => {
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
     // We want to free up the source path immediately
-    contentLib.unpublish({ keys: [office._id] });
+    contentLib.unpublish({ keys: [officeId] });
 
     contentLib.move({
         source: office._path,
@@ -76,7 +76,7 @@ const deleteContent = (name: string) => {
     });
 
     contentLib.delete({
-        key: office._id,
+        key: officeId,
     });
 
     return officeId;
