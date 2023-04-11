@@ -58,11 +58,13 @@ const isPathOccupiedByAlienContent = (name: string) => {
 
 // Delete content from XP
 const deleteContent = (name: string) => {
-    const office = contentLib.get({ key: name });
+    const office = contentLib.get({ key: `${basePath}/${name}` });
 
     if (!office) {
         return null;
     }
+
+    const officeId = office._id;
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
     // We want to free up the source path immediately
@@ -72,9 +74,12 @@ const deleteContent = (name: string) => {
         source: office._path,
         target: `${office._name}-delete`,
     });
+
     contentLib.delete({
         key: office._id,
     });
+
+    return officeId;
 };
 
 const getOfficeBranchLanguage = (office: any) => {
@@ -196,10 +201,14 @@ const deleteStaleOfficesFromXP = (
     const deletedIds: string[] = [];
     existingOfficesInXP.forEach((existingOffice) => {
         const { enhetNr, navn } = existingOffice?.data;
+        let deletedId;
 
         if (!validOfficeEnhetNrs.includes(enhetNr)) {
-            deleteContent(commonLib.sanitize(navn));
-            deletedIds.push(existingOffice._id);
+            deletedId = deleteContent(commonLib.sanitize(navn));
+        }
+
+        if (deletedId) {
+            deletedIds.push(deletedId);
         }
     });
 
