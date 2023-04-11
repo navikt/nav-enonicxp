@@ -6,14 +6,24 @@ export interface FormDetails {
   formNumbers?: Array<string>;
 
   /**
-   * Tittel
+   * Tekst
    */
   title?: string;
 
   /**
-   * Ingress
+   * ...eller kobling til fragment
+   */
+  titleTarget?: string;
+
+  /**
+   * Tekst
    */
   ingress?: string;
+
+  /**
+   * ...eller kobling til fragment
+   */
+  ingressTarget?: string;
 
   /**
    * Variasjoner
