@@ -23,17 +23,17 @@ export interface ProductData {
   /**
    * Målgruppe
    */
-  audience: "person" | "employer" | "provider";
+  audience: "person" | "employer" | "provider" | "other";
 
   /**
    * Kategori
    */
-  taxonomy?: Array<"assistive_tools" | "followup" | "benefits" | "measures" | "service" | "rights" | "for_employers" | "for_providers" | "for_municipality" | "for_event_organizers" | "for_health_service">;
+  taxonomy?: Array<"assistive_tools" | "benefits" | "measures" | "service" | "rights" | "for_providers">;
 
   /**
    * Områdekategori
    */
-  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "municipality" | "other">;
+  area: Array<"work" | "family" | "health" | "accessibility" | "pension" | "social_counselling" | "other">;
 
   /**
    * Velg piktogram
