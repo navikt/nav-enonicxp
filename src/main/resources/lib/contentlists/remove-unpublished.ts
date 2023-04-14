@@ -87,7 +87,7 @@ export const removeUnpublishedFromAllContentLists = () => {
         })
     ).hits;
 
-    logger.info(`Pruning ${contentLists.length} content-lists`);
+    logger.info(`Pruning ${contentLists.length} content lists`);
 
     const numContentListsWithRemovedItems = contentLists
         .map(removeUnpublishedFromContentList)
@@ -95,7 +95,7 @@ export const removeUnpublishedFromAllContentLists = () => {
     const numRemovedItems = numContentListsWithRemovedItems.reduce((acc, item) => acc + item, 0);
 
     logger.info(
-        `Removed ${numRemovedItems} unpublished content from ${numContentListsWithRemovedItems.length} content-lists`
+        `Removed ${numRemovedItems} unpublished content from ${numContentListsWithRemovedItems.length} pages with content lists`
     );
 };
 
