@@ -6,7 +6,7 @@ metadata:
   name: xp-navno-deploy
   namespace: personbruker
 spec:
-  image: alpine/curl:latest
+  image: ghcr.io/navikt/nav-enonicxp/curlimages_curl:latest
   command:
     - curl
     - https://www.nav.no
