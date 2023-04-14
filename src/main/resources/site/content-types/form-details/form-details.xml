@@ -128,12 +128,36 @@
                                             <label>URL til skjema</label>
                                             <occurrences minimum="1" maximum="1" />
                                         </input>
-                                        <input name="title" type="TextLine">
+                                        <field-set>
                                             <label>Tittel</label>
-                                        </input>
-                                        <input name="ingress" type="TextArea">
+                                            <items>
+                                                <input name="title" type="TextLine">
+                                                    <label>Tekst</label>
+                                                </input>
+                                                <input name="titleTarget" type="ContentSelector">
+                                                    <label>...eller kobling til fragment</label>
+                                                    <occurrences minimum="0" maximum="1" />
+                                                    <config>
+                                                        <allowContentType>portal:fragment</allowContentType>
+                                                    </config>
+                                                </input>
+                                            </items>
+                                        </field-set>
+                                        <field-set>
                                             <label>Ingress</label>
-                                        </input>
+                                            <items>
+                                                <input name="ingress" type="TextArea">
+                                                    <label>Tekst</label>
+                                                </input>
+                                                <input name="ingressTarget" type="ContentSelector">
+                                                    <label>...eller kobling til fragment</label>
+                                                    <occurrences minimum="0" maximum="1" />
+                                                    <config>
+                                                        <allowContentType>portal:fragment</allowContentType>
+                                                    </config>
+                                                </input>
+                                            </items>
+                                        </field-set>
                                         <input type="ComboBox" name="type">
                                             <label>Type ettersendelse</label>
                                             <occurrences minimum="1" maximum="1"/> 
