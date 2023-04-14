@@ -72,7 +72,7 @@ export const removeUnpublishedFromContentList = (
             })
         );
     } catch (e) {
-        logger.error(`Error while modifying content list ${contentList._id} - ${e}`);
+        logger.error(`Error while modifying ${contentList._id} - ${e}`);
         return 0;
     }
 
@@ -89,13 +89,13 @@ export const removeUnpublishedFromAllContentLists = () => {
 
     logger.info(`Pruning ${contentLists.length} content lists`);
 
-    const numContentListsWithRemovedItems = contentLists
+    const numContentsWithRemovedItems = contentLists
         .map(removeUnpublishedFromContentList)
         .filter((item) => item !== 0);
-    const numRemovedItems = numContentListsWithRemovedItems.reduce((acc, item) => acc + item, 0);
+    const numRemovedItems = numContentsWithRemovedItems.reduce((acc, item) => acc + item, 0);
 
     logger.info(
-        `Removed ${numRemovedItems} unpublished content from ${numContentListsWithRemovedItems.length} pages with content lists`
+        `Removed ${numRemovedItems} unpublished content from ${numContentsWithRemovedItems.length} contents with content lists`
     );
 };
 
