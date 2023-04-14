@@ -6,6 +6,7 @@ import { runInContext } from '../context/run-in-context';
 import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
+import { CONTENT_REPO_PREFIX } from '../constants';
 
 const isPublishedOrPrepublished = (contentId: string) => {
     try {
@@ -73,40 +74,42 @@ export const removeUnpublishedFromContentList = (
 export const removeUnpublishedFromAllContentLists = () => {
     const contentLists = runInContext({ branch: 'master' }, () =>
         contentLib.query({
-            count: 10000,
+            count: 2000,
             contentTypes: ['no.nav.navno:content-list'],
         })
     ).hits;
 
     logger.info(`Pruning ${contentLists.length} content-lists`);
 
-    const numRemovedArray = contentLists
+    const numContentListsWithRemovedItems = contentLists
         .map(removeUnpublishedFromContentList)
         .filter((item) => item !== 0);
-    const numRemoved = numRemovedArray.reduce((acc, item) => acc + item);
+    const numRemovedItems = numContentListsWithRemovedItems.reduce((acc, item) => acc + item, 0);
 
     logger.info(
-        `Removed ${numRemoved} unpublished content from ${numRemovedArray.length} content-lists`
+        `Removed ${numRemovedItems} unpublished content from ${numContentListsWithRemovedItems.length} content-lists`
     );
 };
 
-const removeUnpublishedContentFromContentLists = (contentId: string) => {
-    runInContext({ branch: 'master' }, () =>
-        contentLib.query({
-            count: 10000,
-            contentTypes: ['no.nav.navno:content-list'],
-            filters: {
-                boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'data.sectionContents',
-                            values: [contentId],
+const removeUnpublishedContentFromContentLists = (contentId: string, repoId: string) => {
+    runInContext({ branch: 'master', repository: repoId }, () =>
+        contentLib
+            .query({
+                count: 2000,
+                contentTypes: ['no.nav.navno:content-list'],
+                filters: {
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'data.sectionContents',
+                                values: [contentId],
+                            },
                         },
                     },
                 },
-            },
-        })
-    ).hits.forEach(removeUnpublishedFromContentList);
+            })
+            .hits.forEach(removeUnpublishedFromContentList)
+    );
 };
 
 let didActivateListener = false;
@@ -126,7 +129,11 @@ export const activateContentListItemUnpublishedListener = () => {
             }
 
             event.data.nodes.forEach((node) => {
-                removeUnpublishedContentFromContentLists(node.id);
+                if (!node.repo.startsWith(CONTENT_REPO_PREFIX)) {
+                    return;
+                }
+
+                removeUnpublishedContentFromContentLists(node.id, node.repo);
             });
         },
     });
