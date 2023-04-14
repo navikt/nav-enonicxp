@@ -10,7 +10,7 @@ spec:
   command:
     - curl
     - https://www.nav.no
-    - --ca-cert
+    - --cacert
     - /etc/pki/tls/cacert.pem
   accessPolicy:
     outbound:
