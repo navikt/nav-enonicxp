@@ -7,12 +7,17 @@ metadata:
   namespace: personbruker
 spec:
   image: ghcr.io/navikt/nav-enonicxp/curlimages_curl:latest
-  command:
-    - curl
-    - https://www.nav.no
-    - --cacert
-    - /etc/pki/tls/cacert.pem
   accessPolicy:
     outbound:
       external:
-        - host: www.nav.no
+        - host: {{ xpAdminHost }}
+  command:
+    - curl
+    - --cacert
+    - /etc/pki/tls/cacert.pem
+    - -k
+    - "{{ XP_INSTALL_URL }}"
+    - --user
+    - "{{ XP_USER }}:{{ XP_PASSWORD }}"
+    - -F
+    - URL={{ APP_FILE_URL }}
