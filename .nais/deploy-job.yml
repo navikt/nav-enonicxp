@@ -1,10 +1,10 @@
 apiVersion: nais.io/v1
 kind: Naisjob
 metadata:
-  labels:
-    team: personbruker
   name: xp-navno-deploy
   namespace: personbruker
+  labels:
+    team: personbruker
 spec:
   image: ghcr.io/navikt/nav-enonicxp/curlimages_curl:latest
   accessPolicy:
@@ -12,12 +12,13 @@ spec:
       external:
         - host: {{ xpAdminHost }}
   command:
-    - curl
-    - --cacert
-    - /etc/pki/tls/cacert.pem
-    - -k
-    - "{{ XP_INSTALL_URL }}"
-    - --user
-    - "{{ XP_USER }}:{{ XP_PASSWORD }}"
-    - -F
-    - URL={{ APP_FILE_URL }}
+    - cat
+#    - curl
+#    - --cacert
+#    - /etc/pki/tls/cacert.pem
+#    - -k
+#    - "{{ XP_INSTALL_URL }}"
+#    - --user
+#    - "{{ XP_USER }}:{{ XP_PASSWORD }}"
+#    - -F
+#    - URL={{ APP_FILE_URL }}
