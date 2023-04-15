@@ -13,10 +13,9 @@ spec:
     outbound:
       external:
         - host: {{ xpAdminHost }}
-#  command:
-#    - exec
-#    - echo
-#    - $XP_USER
+  command:
+    - echo
+    - $XP_USER
 #    - curl
 #    - --cacert
 #    - /etc/pki/tls/cacert.pem
