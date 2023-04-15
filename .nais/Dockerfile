@@ -1,4 +1,6 @@
-FROM ghcr.io/navikt/nav-enonicxp/alpine-curl:latest
+FROM alpine:latest
+
+RUN apk --no-cache add curl
 
 COPY .nais/deploy.sh /
 COPY .nais/chucknorris-2.2.3.jar /
