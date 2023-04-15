@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/nav-enonicxp/alpine_curl:latest
+FROM ghcr.io/navikt/nav-enonicxp/alpine-curl:latest
 
 COPY .nais/deploy.sh /
 COPY .nais/chucknorris-2.2.3.jar /
