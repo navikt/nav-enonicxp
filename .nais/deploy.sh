@@ -29,4 +29,4 @@ curl \
   --cacert /etc/pki/tls/cacert.pem \
   -k "$XP_INSTALL_API" \
   --user "$XP_USER:$XP_PASSWORD" \
-  -F file="chucknorris-2.2.3.jar"
+  -F file=@chucknorris-2.2.3.jar
