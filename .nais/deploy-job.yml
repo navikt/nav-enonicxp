@@ -22,4 +22,4 @@ spec:
     - --user
     - "{{ XP_USER }}:{{ XP_PASSWORD }}"
     - -F
-    - URL="https://repo.enonic.com/public/com/enonic/app/chucknorris/2.2.3/chucknorris-2.2.3.jar"
+    - file="chucknorris-2.2.3.jar"
