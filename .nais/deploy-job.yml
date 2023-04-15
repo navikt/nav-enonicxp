@@ -15,7 +15,7 @@ spec:
         - host: {{ xpAdminHost }}
   command:
     - echo
-    - {{XP_USER}}
+    - $XP_USER
 #    - curl
 #    - --cacert
 #    - /etc/pki/tls/cacert.pem
