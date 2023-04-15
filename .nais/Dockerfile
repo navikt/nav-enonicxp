@@ -1,6 +1,6 @@
 FROM ghcr.io/navikt/nav-enonicxp/curlimages_curl:latest
 
-COPY chucknorris-2.2.3.jar /
+COPY .nais/chucknorris-2.2.3.jar /
 
 CMD ["echo", "No command specified!"]
 
