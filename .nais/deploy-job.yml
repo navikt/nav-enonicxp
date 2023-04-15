@@ -14,6 +14,7 @@ spec:
       external:
         - host: {{ xpAdminHost }}
   command:
+    - exec
     - echo
     - $XP_USER
 #    - curl
