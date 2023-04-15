@@ -15,4 +15,4 @@ jobs:
           CLUSTER: dev-gcp
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           RESOURCE: .nais/deploy-job.yml
-          VAR: xpAdminHost="www.nav.no"
+          VAR: xpAdminHost=www.nav.no
