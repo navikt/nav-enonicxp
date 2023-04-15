@@ -6,7 +6,7 @@ metadata:
   labels:
     team: personbruker
 spec:
-  image: ghcr.io/navikt/nav-enonicxp/curlimages_curl:latest
+  image: {{ image }}
   envFrom:
     - secret: xp-navno-deploy
   accessPolicy:
