@@ -10,15 +10,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Print secret url!
-        env:
-          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
-        run: |
-          echo URL: ${ENONIC_CLI_REMOTE_URL:1}
       - name: Deploy to nais
         uses: nais/deploy/actions/deploy@v1
         env:
           CLUSTER: dev-gcp
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           RESOURCE: .nais/deploy-job.yml
-          VAR: xpAdminHost=www.nav.no
+          VAR: xpAdminHost=portal-admin-dev.oera.no,xpAdminInstallServicePath=/admin/rest/app/install,

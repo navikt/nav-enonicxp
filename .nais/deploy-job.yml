@@ -12,13 +12,12 @@ spec:
       external:
         - host: {{ xpAdminHost }}
   command:
-    - cat
-#    - curl
-#    - --cacert
-#    - /etc/pki/tls/cacert.pem
-#    - -k
-#    - "{{ XP_INSTALL_URL }}"
-#    - --user
-#    - "{{ XP_USER }}:{{ XP_PASSWORD }}"
-#    - -F
-#    - URL={{ APP_FILE_URL }}
+    - curl
+    - --cacert
+    - /etc/pki/tls/cacert.pem
+    - -k
+    - "https://{{ xpAdminHost }}{{ xpAdminInstallServicePath }}"
+    - --user
+    - "{{ XP_USER }}:{{ XP_PASSWORD }}"
+    - -F
+    - URL="https://repo.enonic.com/public/com/enonic/app/chucknorris/2.2.3/chucknorris-2.2.3.jar"
