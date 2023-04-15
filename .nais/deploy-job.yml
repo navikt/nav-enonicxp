@@ -7,6 +7,9 @@ metadata:
     team: personbruker
 spec:
   image: {{ image }}
+  env:
+    - name: XP_INSTALL_API
+      value: "https://{{ xpAdminHost }}{{ xpAdminInstallServicePath }}"
   envFrom:
     - secret: xp-navno-deploy
   accessPolicy:
