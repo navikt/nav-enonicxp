@@ -10,6 +10,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+      - name: Print secret user!
+        env:
+          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
+        run: |
+          echo User: ${ENONIC_CLI_REMOTE_USER:1}
       - name: Deploy to nais
         uses: nais/deploy/actions/deploy@v1
         env:
