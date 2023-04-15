@@ -6,9 +6,15 @@ jobs:
   deploy:
     name: Deploy to nais k8s
     runs-on: ubuntu-latest
+    environment: dev-sbs:personbruker
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+      - name: Print secret url!
+        env:
+          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
+        run: |
+          echo URL: ${ENONIC_CLI_REMOTE_URL:1}
       - name: Deploy to nais
         uses: nais/deploy/actions/deploy@v1
         env:
