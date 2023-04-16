@@ -6,24 +6,14 @@ export interface FormDetails {
   formNumbers?: Array<string>;
 
   /**
-   * Tekst
+   * Tittel
    */
   title?: string;
-
-  /**
-   * ...eller kobling til fragment
-   */
-  titleTarget?: string;
 
   /**
    * Tekst
    */
   ingress?: string;
-
-  /**
-   * ...eller kobling til fragment
-   */
-  ingressTarget?: string;
 
   /**
    * Variasjoner
@@ -44,12 +34,12 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label: string;
+            label?: string;
 
             /**
              * URL til skjema
              */
-            url: string;
+            url?: string;
 
             /**
              * Søknads- eller skjematype
@@ -75,12 +65,12 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label: string;
+            label?: string;
 
             /**
              * URL til skjema
              */
-            url: string;
+            url?: string;
 
             /**
              * Klage- eller anketype
@@ -106,32 +96,12 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label: string;
+            label?: string;
 
             /**
              * URL til skjema
              */
-            url: string;
-
-            /**
-             * Tekst
-             */
-            title?: string;
-
-            /**
-             * ...eller kobling til fragment
-             */
-            titleTarget?: string;
-
-            /**
-             * Tekst
-             */
-            ingress?: string;
-
-            /**
-             * ...eller kobling til fragment
-             */
-            ingressTarget?: string;
+            url?: string;
 
             /**
              * Type ettersendelse

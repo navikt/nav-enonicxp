@@ -1,13 +1,11 @@
-#import "../mixins/formDetailTargetFragments.graphql"
+#import "../richText/richTextFragment.graphql"
 
 fragment contentFormDetails on no_nav_navno_FormDetails {
     dataAsJson
     data {
-        titleTarget {
-            ...formDetailsTargetFragment
-        }
-        ingressTarget {
-            ...formDetailsTargetFragment
+        title
+        ingress(processHtml: { type: server }) {
+            ...richText
         }
         formType {
             _selected
@@ -28,14 +26,6 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
             addendum {
                 variations {
                     label
-                    title
-                    titleTarget {
-                        ...formDetailsTargetFragment
-                    }
-                    ingress
-                    ingressTarget {
-                        ...formDetailsTargetFragment
-                    }
                     url
                     type
                 }

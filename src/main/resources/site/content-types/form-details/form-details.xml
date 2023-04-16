@@ -13,36 +13,12 @@
                     <label>Skjemanummer</label>
                     <occurrences minimum="0" maximum="0"/>
                 </input>
-                <field-set>
+                <input name="title" type="TextLine">
                     <label>Tittel</label>
-                    <items>
-                        <input name="title" type="TextLine">
-                            <label>Tekst</label>
-                        </input>
-                        <input name="titleTarget" type="ContentSelector">
-                            <label>...eller kobling til fragment</label>
-                            <occurrences minimum="0" maximum="1" />
-                            <config>
-                                <allowContentType>portal:fragment</allowContentType>
-                            </config>
-                        </input>
-                    </items>
-                </field-set>
-                <field-set>
-                    <label>Ingress</label>
-                    <items>
-                        <input name="ingress" type="TextArea">
-                            <label>Tekst</label>
-                        </input>
-                        <input name="ingressTarget" type="ContentSelector">
-                            <label>...eller kobling til fragment</label>
-                            <occurrences minimum="0" maximum="1" />
-                            <config>
-                                <allowContentType>portal:fragment</allowContentType>
-                            </config>
-                        </input>
-                    </items>
-                </field-set>
+                </input>
+                <input name="ingress" type="HtmlArea">
+                    <label>Tekst</label>
+                </input>
                 <option-set name="formType">
                     <label>Variasjoner</label>
                     <occurrences minimum="1" maximum="1"/>
@@ -57,17 +33,15 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                            <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
                                         </input>
                                         <input name="url" type="TextLine">
                                             <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
                                         </input>
                                         <input type="ComboBox" name="type">
                                             <label>Søknads- eller skjematype</label>
                                             <occurrences minimum="1" maximum="1"/> 
-                                            <config>  
+                                            <config>
                                                 <option value="digital"> 
                                                     Digital
                                                 </option>
@@ -89,12 +63,10 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                             <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
                                         </input>
                                         <input name="url" type="TextLine">
                                             <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
                                         </input>
                                         <input type="ComboBox" name="type">
                                             <label>Klage- eller anketype</label>
@@ -121,43 +93,11 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                             <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
                                         </input>
                                         <input name="url" type="TextLine">
                                             <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
                                         </input>
-                                        <field-set>
-                                            <label>Tittel</label>
-                                            <items>
-                                                <input name="title" type="TextLine">
-                                                    <label>Tekst</label>
-                                                </input>
-                                                <input name="titleTarget" type="ContentSelector">
-                                                    <label>...eller kobling til fragment</label>
-                                                    <occurrences minimum="0" maximum="1" />
-                                                    <config>
-                                                        <allowContentType>portal:fragment</allowContentType>
-                                                    </config>
-                                                </input>
-                                            </items>
-                                        </field-set>
-                                        <field-set>
-                                            <label>Ingress</label>
-                                            <items>
-                                                <input name="ingress" type="TextArea">
-                                                    <label>Tekst</label>
-                                                </input>
-                                                <input name="ingressTarget" type="ContentSelector">
-                                                    <label>...eller kobling til fragment</label>
-                                                    <occurrences minimum="0" maximum="1" />
-                                                    <config>
-                                                        <allowContentType>portal:fragment</allowContentType>
-                                                    </config>
-                                                </input>
-                                            </items>
-                                        </field-set>
                                         <input type="ComboBox" name="type">
                                             <label>Type ettersendelse</label>
                                             <occurrences minimum="1" maximum="1"/> 
