@@ -1,0 +1,49 @@
+name: Deploy with naisjob
+on:
+  workflow_call:
+    inputs:
+      naisEnv:
+        required: true
+        type: string
+      xpEnv:
+        required: true
+        type: string
+      xpAdminHost:
+        required: true
+        type: string
+      appFileName:
+        required: true
+        type: string
+      imageTag:
+        required: false
+        type: string
+    secrets:
+      NAIS_DEPLOY_APIKEY:
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy with naisjob
+    runs-on: ubuntu-latest
+    env:
+      image: ghcr.io/${{ github.repository }}:deploy-job-${{ inputs.xpEnv }}:${{ inputs.imageTag }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Login to Docker registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push docker image
+        run: |
+          docker build -f .nais-deploy-job/Dockerfile -t ${{ env.image }} .
+          docker push ${{ env.image }}
+      - name: Deploy to nais
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          CLUSTER: ${{ inputs.naisEnv }}-gcp
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          RESOURCE: .nais-deploy-job/deploy-job.yml
+          VAR: image=${{ env.image }},xpHost=${{ inputs.xpAdminHost }},appFileName=${{ inputs.appFileName }}

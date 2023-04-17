@@ -22,11 +22,16 @@ then
   exit
 fi
 
+if [[ -z $APP_FILE_NAME ]]
+then
+  echo "APP_FILE_NAME must be specified"
+  exit
+fi
+
 echo "XP api: $XP_INSTALL_API"
 
 curl \
-  -v \
   --cacert /etc/pki/tls/cacert.pem \
   -k "$XP_INSTALL_API" \
   --user "$XP_USER:$XP_PASSWORD" \
-  -F file=@chucknorris-2.2.3.jar
+  -F file=@$APP_FILE_NAME
