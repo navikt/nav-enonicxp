@@ -1,5 +1,4 @@
 name: Build to prod
-
 on:
   release:
     types: [created]
