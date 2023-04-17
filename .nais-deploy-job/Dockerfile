@@ -8,6 +8,6 @@ ENV APP_FILE_NAME=${appFileName}
 RUN echo $APP_FILE_NAME
 
 COPY .nais-deploy-job/deploy.sh /
-COPY $APP_FILE_NAME /
+COPY build/libs/$APP_FILE_NAME /
 
 CMD ["sh", "deploy.sh"]
