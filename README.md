@@ -36,7 +36,7 @@ enonic project deploy
 
 ## Deploy
 
-- **dev/Q6:** Run build-to-dev/q6 workflow dispatch
+- **dev/dev2(q6):** Run deploy-to-(dev|dev2/q6) workflow dispatch
 - **P:**  Make a PR between master and your feature branch __*__ and create a release at <br />
 https://github.com/navikt/nav-enonicxp/releases <br />
 **Obs:** Release must be formatted as **vX.X.X** (e.g v1.2.1)
