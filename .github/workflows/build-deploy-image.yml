@@ -33,7 +33,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build application
-        id: build
         run: |
           gradle clean build deploy
       - name: Login to Docker registry
@@ -46,6 +45,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          context: .
           file: .nais-deploy-job/Dockerfile
           tags: ${{ env.image }}
           build-args: |
