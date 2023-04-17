@@ -3,13 +3,13 @@ on:
   workflow_dispatch
 
 jobs:
-  build-deploy-image:
+  build:
     uses: ./.github/workflows/build-deploy-image.yml
     with:
       imagename: 'dev-deploy'
-  deploy-to-dev:
+  deploy:
     uses: ./.github/workflows/deploy-with-naisjob.yml
-    needs: build-deploy-image
+    needs: build
     with:
       naisCluster: dev-gcp
       xpAdminHost: portal-admin-dev.oera.no
