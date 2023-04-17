@@ -10,8 +10,6 @@ spec:
   env:
     - name: XP_INSTALL_API
       value: "https://{{ xpAdminHost }}/admin/rest/app/install"
-    - name: APP_FILE_NAME
-      value: {{ appFileName }}
   envFrom:
     - secret: xp-navno-deploy
   accessPolicy:
