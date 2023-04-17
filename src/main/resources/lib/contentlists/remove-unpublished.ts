@@ -6,6 +6,15 @@ import { runInContext } from '../context/run-in-context';
 import { isPrepublished } from '../scheduling/scheduled-publish';
 import { logger } from '../utils/logging';
 import { forceArray } from '../utils/array-utils';
+import { CONTENT_REPO_PREFIX } from '../constants';
+import { NavNoDescriptor } from '../../types/common';
+
+type ContentTypesWithContentLists = NavNoDescriptor<'content-list'> | NavNoDescriptor<'page-list'>;
+
+const CONTENT_TYPES_WITH_CONTENT_LISTS: ContentTypesWithContentLists[] = [
+    'no.nav.navno:content-list',
+    'no.nav.navno:page-list',
+];
 
 const isPublishedOrPrepublished = (contentId: string) => {
     try {
@@ -29,13 +38,13 @@ const isPublishedOrPrepublished = (contentId: string) => {
 };
 
 export const removeUnpublishedFromContentList = (
-    contentList: Content<'no.nav.navno:content-list'>
+    contentList: Content<ContentTypesWithContentLists>
 ): number => {
     let numRemoved = 0;
 
     try {
         runInContext({ branch: 'draft', asAdmin: true }, () =>
-            contentLib.modify<'no.nav.navno:content-list'>({
+            contentLib.modify<ContentTypesWithContentLists>({
                 key: contentList._id,
                 requireValid: false,
                 editor: (content) => {
@@ -63,7 +72,7 @@ export const removeUnpublishedFromContentList = (
             })
         );
     } catch (e) {
-        logger.error(`Error while modifying content list ${contentList._id} - ${e}`);
+        logger.error(`Error while modifying ${contentList._id} - ${e}`);
         return 0;
     }
 
@@ -73,40 +82,42 @@ export const removeUnpublishedFromContentList = (
 export const removeUnpublishedFromAllContentLists = () => {
     const contentLists = runInContext({ branch: 'master' }, () =>
         contentLib.query({
-            count: 10000,
-            contentTypes: ['no.nav.navno:content-list'],
+            count: 2000,
+            contentTypes: CONTENT_TYPES_WITH_CONTENT_LISTS,
         })
     ).hits;
 
-    logger.info(`Pruning ${contentLists.length} content-lists`);
+    logger.info(`Pruning ${contentLists.length} content lists`);
 
-    const numRemovedArray = contentLists
+    const numContentsWithRemovedItems = contentLists
         .map(removeUnpublishedFromContentList)
         .filter((item) => item !== 0);
-    const numRemoved = numRemovedArray.reduce((acc, item) => acc + item);
+    const numRemovedItems = numContentsWithRemovedItems.reduce((acc, item) => acc + item, 0);
 
     logger.info(
-        `Removed ${numRemoved} unpublished content from ${numRemovedArray.length} content-lists`
+        `Removed ${numRemovedItems} unpublished content from ${numContentsWithRemovedItems.length} contents with content lists`
     );
 };
 
-const removeUnpublishedContentFromContentLists = (contentId: string) => {
-    runInContext({ branch: 'master' }, () =>
-        contentLib.query({
-            count: 10000,
-            contentTypes: ['no.nav.navno:content-list'],
-            filters: {
-                boolean: {
-                    must: {
-                        hasValue: {
-                            field: 'data.sectionContents',
-                            values: [contentId],
+const removeUnpublishedContentFromContentLists = (contentId: string, repoId: string) => {
+    runInContext({ branch: 'master', repository: repoId }, () =>
+        contentLib
+            .query({
+                count: 2000,
+                contentTypes: CONTENT_TYPES_WITH_CONTENT_LISTS,
+                filters: {
+                    boolean: {
+                        must: {
+                            hasValue: {
+                                field: 'data.sectionContents',
+                                values: [contentId],
+                            },
                         },
                     },
                 },
-            },
-        })
-    ).hits.forEach(removeUnpublishedFromContentList);
+            })
+            .hits.forEach(removeUnpublishedFromContentList)
+    );
 };
 
 let didActivateListener = false;
@@ -126,7 +137,11 @@ export const activateContentListItemUnpublishedListener = () => {
             }
 
             event.data.nodes.forEach((node) => {
-                removeUnpublishedContentFromContentLists(node.id);
+                if (!node.repo.startsWith(CONTENT_REPO_PREFIX)) {
+                    return;
+                }
+
+                removeUnpublishedContentFromContentLists(node.id, node.repo);
             });
         },
     });

@@ -22,6 +22,7 @@
                         <input name="ingress" type="HtmlArea">
                             <label>Ingress</label>
                         </input>
+                        <mixin name="opening-hours"/>
                     </items>
                 </option>
                 <option name="write">
