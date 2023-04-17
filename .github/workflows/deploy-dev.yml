@@ -1,13 +1,13 @@
 name: Deploy to dev
 
 on:
-  repository_dispatch:
-    types: deploy-to-dev
+  workflow_dispatch
 
 jobs:
-  deploy:
-    runs-on: [self-hosted, nav-enonicxp-actions-runner-dev]
-    environment: dev-sbs:personbruker
+  build-deploy-image:
+
+  deploy-to-dev:
+    uses: ./.github/workflows/deploy-with-naisjob
     steps:
       - name: Cleanup
         run: rm -rf $(ls navno*.jar)
