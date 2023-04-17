@@ -5,6 +5,10 @@ on:
       imagename:
         required: true
         type: string
+    outputs:
+      image:
+        description: "Url to docker image"
+        value: ${{ jobs.build.outputs.image }}
 
 jobs:
   build:
