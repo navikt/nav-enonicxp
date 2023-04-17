@@ -2,7 +2,7 @@ name: Deploy with naisjob
 on:
   workflow_call:
     inputs:
-      naisEnv:
+      naisCluster:
         required: true
         type: string
       xpAdminHost:
@@ -25,7 +25,7 @@ jobs:
       - name: Deploy to nais
         uses: nais/deploy/actions/deploy@v1
         env:
-          CLUSTER: ${{ inputs.naisEnv }}-gcp
+          CLUSTER: ${{ inputs.naisCluster }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           RESOURCE: .nais-deploy-job/deploy-job.yml
           VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }}
