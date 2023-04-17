@@ -11,7 +11,7 @@ export interface FormDetails {
   title?: string;
 
   /**
-   * Tekst
+   * Ingress
    */
   ingress?: string;
 

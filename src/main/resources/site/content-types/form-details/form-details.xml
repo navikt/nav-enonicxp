@@ -17,7 +17,7 @@
                     <label>Tittel</label>
                 </input>
                 <input name="ingress" type="HtmlArea">
-                    <label>Tekst</label>
+                    <label>Ingress</label>
                 </input>
                 <option-set name="formType">
                     <label>Variasjoner</label>
