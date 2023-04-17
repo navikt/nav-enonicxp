@@ -1,21 +1,19 @@
 name: Build and test
-
 on: [push]
 
 jobs:
   build:
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-      - name: Define variables
-        id: vars
-        run: |
-          echo ::set-output name=VERSION::$(git tag | grep -E '^v[0-9]' | grep -v '-' | sort -V | tail -1)-$(git rev-parse --short HEAD)
-      - uses: actions/setup-java@v1
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v2
         with:
+          distribution: 'zulu'
           java-version: 11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -24,9 +22,4 @@ jobs:
       - name: Build application and run tests
         id: build
         run: |
-          version=${{ steps.vars.outputs.VERSION }}
-          gradle clean build deploy -Pversion=${version//v}
-      - uses: actions/upload-artifact@v1
-        with:
-          name: Application
-          path: build/libs
+          gradle clean build deploy
