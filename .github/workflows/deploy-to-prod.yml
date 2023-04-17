@@ -13,8 +13,8 @@ jobs:
     uses: ./.github/workflows/deploy-with-naisjob.yml
     needs: build
     with:
-      naisCluster: dev-gcp
-      xpAdminHost: portal-admin-dev.oera.no
+      naisCluster: prod-gcp
+      xpAdminHost: portal-admin.oera.no
       image: ${{ needs.build.outputs.image }}
     secrets:
       NAIS_DEPLOY_APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
