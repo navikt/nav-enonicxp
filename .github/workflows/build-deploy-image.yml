@@ -49,4 +49,4 @@ jobs:
           file: .nais-deploy-job/Dockerfile
           tags: ${{ env.image }}
           build-args: |
-            appFileName=navno.jar
+            APP_FILE_NAME=navno.jar
