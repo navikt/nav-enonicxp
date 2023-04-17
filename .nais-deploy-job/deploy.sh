@@ -22,13 +22,15 @@ then
   exit
 fi
 
+echo "XP api: $XP_INSTALL_API"
+
 if [[ -z $APP_FILE_NAME ]]
 then
   echo "APP_FILE_NAME must be specified"
   exit
 fi
 
-echo "XP api: $XP_INSTALL_API"
+echo "APP_FILE_NAME: $APP_FILE_NAME"
 
 curl \
   --cacert /etc/pki/tls/cacert.pem \

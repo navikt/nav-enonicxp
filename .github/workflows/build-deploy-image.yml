@@ -1,5 +1,4 @@
 name: Build deploy job image
-
 on:
   workflow_call:
     inputs:

@@ -8,10 +8,7 @@ on:
       xpAdminHost:
         required: true
         type: string
-      appFileName:
-        required: true
-        type: string
-      imageTag:
+      image:
         required: true
         type: string
     secrets:
@@ -22,8 +19,6 @@ jobs:
   deploy:
     name: Deploy with naisjob
     runs-on: ubuntu-latest
-    env:
-      image: ghcr.io/${{ github.repository }}:deploy-job-${{ inputs.xpEnv }}:${{ inputs.imageTag }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -33,4 +28,4 @@ jobs:
           CLUSTER: ${{ inputs.naisEnv }}-gcp
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           RESOURCE: .nais-deploy-job/deploy-job.yml
-          VAR: image=${{ env.image }},xpHost=${{ inputs.xpAdminHost }},appFileName=${{ inputs.appFileName }}
+          VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }}
