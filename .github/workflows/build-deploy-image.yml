@@ -9,6 +9,9 @@ on:
       image:
         description: "Url to docker image"
         value: ${{ jobs.build.outputs.image }}
+    secrets:
+      NAIS_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
 
 jobs:
   build:
@@ -43,10 +46,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push docker image
-        uses: docker/build-push-action@v4
+        uses: nais/docker-build-push@v0
         with:
-          push: true
-          file: .nais-deploy-job/Dockerfile
-          tags: ${{ env.image }}
-          build-args: |
-            APP_FILE_NAME=navno.jar
+          team: personbruker
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          tag: ${{ env.image }}
+          dockerfile: .nais-deploy-job/Dockerfile
+          build_args: |
+            appFileName=navno.jar

@@ -2,8 +2,6 @@
 
 echo "Running deploy script!"
 
-APP_FILE_NAME=$1
-
 if [[ -z $APP_FILE_NAME ]]
 then
   echo "APP_FILE_NAME must be specified"
