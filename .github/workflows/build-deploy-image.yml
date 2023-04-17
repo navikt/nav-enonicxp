@@ -17,6 +17,9 @@ jobs:
   build:
     name: Build deploy job image
     runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
     env:
       image: ghcr.io/${{ github.repository }}:${{ inputs.imagename }}-${{ github.sha }}
     outputs:
