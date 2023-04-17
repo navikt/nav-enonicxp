@@ -20,6 +20,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build application and run tests
-        id: build
         run: |
           gradle clean build deploy

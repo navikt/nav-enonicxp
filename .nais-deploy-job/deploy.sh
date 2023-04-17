@@ -16,7 +16,7 @@ then
   exit
 fi
 
-echo "XP user: $XP_USER"
+echo "XP_USER: $XP_USER"
 
 if [[ -z $XP_PASSWORD ]]
 then
@@ -24,13 +24,15 @@ then
   exit
 fi
 
+echo "XP_PASSWORD is specified"
+
 if [[ -z $XP_INSTALL_API ]]
 then
   echo "XP_INSTALL_API must be specified"
   exit
 fi
 
-echo "XP api: $XP_INSTALL_API"
+echo "XP_INSTALL_API: $XP_INSTALL_API"
 
 curl \
   --cacert /etc/pki/tls/cacert.pem \

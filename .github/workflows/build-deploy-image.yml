@@ -1,4 +1,4 @@
-name: Build deploy job image
+name: Build image for deploy job
 on:
   workflow_call:
     inputs:
@@ -7,12 +7,12 @@ on:
         type: string
     outputs:
       image:
-        description: "Url to docker image"
+        description: "Docker image tag"
         value: ${{ jobs.build.outputs.image }}
 
 jobs:
   build:
-    name: Build deploy job image
+    name: Build image
     runs-on: ubuntu-latest
     env:
       image: ghcr.io/${{ github.repository }}:${{ inputs.imagename }}-${{ github.sha }}
