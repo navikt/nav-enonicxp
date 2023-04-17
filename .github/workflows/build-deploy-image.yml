@@ -9,17 +9,11 @@ on:
       image:
         description: "Url to docker image"
         value: ${{ jobs.build.outputs.image }}
-    secrets:
-      NAIS_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
 
 jobs:
   build:
     name: Build deploy job image
     runs-on: ubuntu-latest
-    permissions:
-      contents: "read"
-      id-token: "write"
     env:
       image: ghcr.io/${{ github.repository }}:${{ inputs.imagename }}-${{ github.sha }}
     outputs:
