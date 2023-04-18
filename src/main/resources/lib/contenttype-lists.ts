@@ -22,6 +22,7 @@ export const dynamicPageContentTypes: ContentTypeList = [
     `${APP_DESCRIPTOR}:content-page-with-sidemenus`,
     `${APP_DESCRIPTOR}:tools-page`,
     `${APP_DESCRIPTOR}:dynamic-page`,
+    `${APP_DESCRIPTOR}:form-intermediate-step`,
     `${APP_DESCRIPTOR}:generic-page`,
     `${APP_DESCRIPTOR}:overview`,
     `${APP_DESCRIPTOR}:front-page`,

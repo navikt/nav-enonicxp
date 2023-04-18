@@ -1,0 +1,33 @@
+<mixin>
+    <form>
+        <field-set>
+            <items>
+                <mixin name="page-header"/>
+                <mixin name="audience" />
+                <mixin name="area" />
+                <mixin name="custom-path-selector-required" />
+                <item-set name="stepOptions">
+                    <label>Valg for steg</label>
+                    <occurrences minimum="1" maximum="0"/>
+                    <items>
+                        <input name="label" type="TextLine">
+                            <label>Tittel på valget</label>
+                            <occurrences minimum="1" maximum="1"/>
+                        </input>
+                        <input name="explanation" type="TextLine">
+                            <label>Ekstra forklaring</label>
+                            <occurrences minimum="0" maximum="1"/>
+                        </input>
+                        <input name="nextStepReference" type="ContentSelector">
+                            <label>Neste steg</label>
+                            <occurrences minimum="0" maximum="1"/>
+                            <config>
+                                <allowContentType>${app}:intermediate-step-data</allowContentType>
+                            </config>
+                        </input>
+                    </items>
+                </item-set>
+            </items>
+        </field-set>
+    </form>
+</mixin>

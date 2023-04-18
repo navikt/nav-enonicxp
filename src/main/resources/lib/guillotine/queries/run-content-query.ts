@@ -51,6 +51,7 @@ import portalFragmentQuery from './content-queries/portalFragmentQuery.graphql';
 import portalPageTemplateQuery from './content-queries/portalPageTemplateQuery.graphql';
 import portalSiteQuery from './content-queries/portalSiteQuery.graphql';
 import formDetailsQuery from './content-queries/formDetailsQuery.graphql';
+import formIntermediateStepQuery from './content-queries/formIntermediateStepQuery.graphql';
 import productDetailsQuery from './content-queries/productDetailsQuery.graphql';
 import publishingCalendarQuery from './content-queries/publishingCalendarQuery.graphql';
 import publishingCalendarEntryQuery from './content-queries/publishingCalendarEntryQuery.graphql';
@@ -82,6 +83,7 @@ export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'no.nav.navno:content-page-with-sidemenus': contentPageWithSidemenusQuery,
     'no.nav.navno:product-details': productDetailsQuery,
     'no.nav.navno:form-details': formDetailsQuery,
+    'no.nav.navno:form-intermediate-step': formIntermediateStepQuery,
     'no.nav.navno:dynamic-page': dynamicPageQuery,
     'no.nav.navno:external-link': externalLinkQuery,
     'no.nav.navno:front-page': frontPageQuery,
