@@ -1,0 +1,18 @@
+apiVersion: nais.io/v1
+kind: Naisjob
+metadata:
+  name: xp-navno-deploy
+  namespace: personbruker
+  labels:
+    team: personbruker
+spec:
+  image: {{ image }}
+  env:
+    - name: XP_INSTALL_API
+      value: "https://{{ xpAdminHost }}/admin/rest/app/install"
+  envFrom:
+    - secret: xp-navno-deploy
+  accessPolicy:
+    outbound:
+      external:
+        - host: {{ xpAdminHost }}

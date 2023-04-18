@@ -144,6 +144,51 @@ const getSituationAreaPageReferences = (content: Content) => {
     return areaPages;
 };
 
+// Contact-option parts for chat which does not have a sharedContactInformation field set will have
+// a default option set via graphql schema creation callback.
+const getChatContactInfoReferences = (content: Content) => {
+    if (
+        content.type !== 'no.nav.navno:contact-information' ||
+        content.data.contactType._selected !== 'chat'
+    ) {
+        return [];
+    }
+
+    const pagesWithDefaultChatInfo = contentLib.query({
+        start: 0,
+        count: 1000,
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        hasValue: {
+                            field: 'components.part.config.no-nav-navno.contact-option.contactOptions._selected',
+                            values: ['chat'],
+                        },
+                    },
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [content.language],
+                        },
+                    },
+                    {
+                        notExists: {
+                            field: 'components.part.config.no-nav-navno.contact-option.contactOptions.chat.sharedContactInformation',
+                        },
+                    },
+                ],
+            },
+        },
+    }).hits;
+
+    logger.info(
+        `Found ${pagesWithDefaultChatInfo.length} references for chat contact info ${content._path}`
+    );
+
+    return pagesWithDefaultChatInfo;
+};
+
 // Some content relations are not defined through explicit references in XP. This includes references
 // from macros. We must use our own implementations to find such references.
 const getCustomReferences = (content: Content | null) => {
@@ -158,6 +203,7 @@ const getCustomReferences = (content: Content | null) => {
         ...getProductDetailsReferences(content),
         ...getSituationAreaPageReferences(content),
         ...getOfficeBranchPagesIfEditorial(content),
+        ...getChatContactInfoReferences(content),
     ];
 };
 

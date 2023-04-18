@@ -1,0 +1,20 @@
+name: Deploy to prod
+on:
+  release:
+    types: [released]
+
+jobs:
+  build:
+    if: github.event.release.target_commitish == 'master'
+    uses: ./.github/workflows/build-deploy-image.yml
+    with:
+      imagename: 'prod-release-${{ github.ref_name }}'
+  deploy:
+    uses: ./.github/workflows/deploy-with-naisjob.yml
+    needs: build
+    with:
+      naisCluster: prod-gcp
+      xpAdminHost: portal-admin.oera.no
+      image: ${{ needs.build.outputs.image }}
+    secrets:
+      NAIS_DEPLOY_APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}

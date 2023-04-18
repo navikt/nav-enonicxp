@@ -42,6 +42,24 @@ fragment contentContactInformation on no_nav_navno_ContactInformation {
                 ingress(processHtml: { type: server }) {
                     ...richText
                 }
+                regularOpeningHours {
+                    hours {
+                        dayName
+                        from
+                        to
+                        status
+                    }
+                }
+                specialOpeningHours {
+                    validFrom
+                    validTo
+                    hours {
+                        date
+                        from
+                        to
+                        status
+                    }
+                }
             }
         }
     }
