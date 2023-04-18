@@ -1,8 +1,10 @@
+#import "../mixins/audienceFragment.graphql"
 #import "../mixins/languagesFragment.graphql"
 
 fragment contentDynamicPage on no_nav_navno_DynamicPage {
     dataAsJson
     data {
+        ...audienceMixin
         languages {
             ...languagesMixin
         }

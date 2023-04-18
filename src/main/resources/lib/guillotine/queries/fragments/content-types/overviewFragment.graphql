@@ -1,9 +1,11 @@
 #import "../mixins/languagesFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
+#import "../mixins/audienceFragment.graphql"
 
 fragment contentOverviewPage on no_nav_navno_Overview {
     dataAsJson
     data {
+        ...audienceMixin
         languages {
             ...languagesMixin
         }
@@ -21,7 +23,7 @@ fragment contentOverviewPage on no_nav_navno_Overview {
             ingress
             taxonomy
             language
-            audience
+            ...audienceMixin
             area
             illustration {
                 type

@@ -1,3 +1,4 @@
+#import "../mixins/audienceFragment.graphql"
 #import "../mixins/languagesFragment.graphql"
 #import "../richText/richTextFragment.graphql"
 #import "./contentListFragment.graphql"
@@ -5,6 +6,7 @@
 fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
     dataAsJson
     data {
+        ...audienceMixin
         pressCall(processHtml: { type: server }) {
             ...richText
         }

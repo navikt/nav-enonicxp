@@ -1,3 +1,4 @@
+#import "../mixins/audienceFragment.graphql"
 #import "../mixins/languagesFragment.graphql"
 #import "../mixins/internalLinkTargetFragment.graphql"
 #import "../richText/richTextFragment.graphql"
@@ -5,6 +6,7 @@
 fragment contentAreaPage on no_nav_navno_AreaPage {
     dataAsJson
     data {
+        ...audienceMixin
         banner {
             link {
                 _selected
