@@ -6,7 +6,13 @@ export const htmlAreaComponentPaths = [
     'part.config.no-nav-navno.dynamic-alert.content',
 ];
 
-export const htmlAreaDataPaths = ['text', 'fact', 'article.data.text', 'article.data.fact'];
+export const htmlAreaDataPaths = [
+    'text',
+    'fact',
+    'article.data.text',
+    'article.data.fact',
+    'ingress',
+];
 
 export const htmlAreaNodePaths = [
     ...htmlAreaDataPaths.map((path) => `data.${path}`),
