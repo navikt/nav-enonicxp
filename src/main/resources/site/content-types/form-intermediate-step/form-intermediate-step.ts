@@ -12,12 +12,12 @@ export interface FormIntermediateStep {
     /**
      * Ekstra forklaring
      */
-    explanation?: Array<string>;
+    explanation?: string;
 
     /**
      * Neste steg
      */
-    nextStepReference?: Array<string>;
+    nextStepReference?: string;
   }>;
 
   /**

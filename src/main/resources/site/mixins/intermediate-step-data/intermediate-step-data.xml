@@ -1,13 +1,14 @@
 <mixin>
     <form>
         <field-set>
+            <label>Mellomsteg</label>
             <items>
-                <mixin name="page-header"/>
-                <mixin name="audience" />
-                <mixin name="area" />
-                <mixin name="custom-path-selector-required" />
-                <item-set name="stepOptions">
-                    <label>Valg for steg</label>
+                <input name="editorial" type="HtmlArea">
+                    <label>Redaksjonelt innhold ovenfor valgene</label>
+                    <occurrences minimum="0" maximum="1"/>
+                </input>
+                <item-set name="steps">
+                    <label>Steg</label>
                     <occurrences minimum="1" maximum="0"/>
                     <items>
                         <input name="label" type="TextLine">
@@ -18,13 +19,16 @@
                             <label>Ekstra forklaring</label>
                             <occurrences minimum="0" maximum="1"/>
                         </input>
-                        <input name="nextStepReference" type="ContentSelector">
-                            <label>Neste steg</label>
+                        <input name="externalUrl" type="TextLine">
+                            <label>Ekstern URL til søknad eller liknende</label>
                             <occurrences minimum="0" maximum="1"/>
-                            <config>
-                                <allowContentType>${app}:intermediate-step-data</allowContentType>
-                            </config>
                         </input>
+                        <field-set>
+                            <label>Steginnhold</label>
+                            <items>
+                                <mixin name="intermediate-step-data"/>
+                            </items>
+                        </field-set>
                     </items>
                 </item-set>
             </items>
