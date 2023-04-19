@@ -1,4 +1,3 @@
-import { EnonicEvent } from '/lib/xp/event';
 import * as clusterLib from '/lib/xp/cluster';
 import { invalidateLocalCache } from './local-cache';
 import { frontendInvalidateAllAsync } from './frontend-cache';
@@ -16,8 +15,8 @@ const deferInvalidationEventName = 'deferCacheInvalidation';
 let hasSetupListeners = false;
 let isDeferring = false;
 
-const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEventData>) => {
-    const { shouldDefer, maxDeferTime = deferredTimeMsDefault } = event.data;
+const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) => {
+    const { shouldDefer, maxDeferTime = deferredTimeMsDefault } = eventData;
 
     if (isDeferring && !shouldDefer) {
         // When deferred invalidation state is toggled off, invalidate everything
@@ -48,6 +47,8 @@ const deferInvalidationCallback = (event: EnonicEvent<DeferCacheInvalidationEven
 };
 
 export const toggleCacheInvalidationOnNodeEvents = (eventData: DeferCacheInvalidationEventData) => {
+    deferInvalidationCallback(eventData);
+
     sendReliableEvent({
         type: deferInvalidationEventName,
         data: eventData,
@@ -68,6 +69,6 @@ export const activateDeferCacheInvalidationEventListener = () => {
     // trigger cache invalidation.
     addReliableEventListener<DeferCacheInvalidationEventData>({
         type: deferInvalidationEventName,
-        callback: deferInvalidationCallback,
+        callback: (event) => deferInvalidationCallback(event.data),
     });
 };
