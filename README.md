@@ -5,9 +5,6 @@ NAVs content management system powered by Enonic XP, an open source project.
 ![Deploy to dev](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-dev.yml/badge.svg) |
 ![Deploy to dev2/q6](https://github.com/navikt/nav-enonicxp/actions/workflows/deploy-to-q6.yml/badge.svg)
 
-Deployed by [nav-enonicxp-actions-runner
-](https://github.com/navikt/nav-enonicxp-actions-runner)
-
 ## How to get started
 1. Install Enonic by following the guide at https://developer.enonic.com/start
 2. Create a sandbox (preferably called **navno**)

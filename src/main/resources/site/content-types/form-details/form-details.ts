@@ -34,12 +34,12 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label: string;
+            label?: string;
 
             /**
              * URL til skjema
              */
-            url: string;
+            url?: string;
 
             /**
              * Søknads- eller skjematype
@@ -65,12 +65,12 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label: string;
+            label?: string;
 
             /**
              * URL til skjema
              */
-            url: string;
+            url?: string;
 
             /**
              * Klage- eller anketype
@@ -96,22 +96,12 @@ export interface FormDetails {
             /**
              * Knappetekst
              */
-            label: string;
+            label?: string;
 
             /**
              * URL til skjema
              */
-            url: string;
-
-            /**
-             * Tittel
-             */
-            title?: string;
-
-            /**
-             * Ingress
-             */
-            ingress?: string;
+            url?: string;
 
             /**
              * Type ettersendelse

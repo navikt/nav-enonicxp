@@ -16,7 +16,7 @@
                 <input name="title" type="TextLine">
                     <label>Tittel</label>
                 </input>
-                <input name="ingress" type="TextArea">
+                <input name="ingress" type="HtmlArea">
                     <label>Ingress</label>
                 </input>
                 <option-set name="formType">
@@ -33,17 +33,15 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                            <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
                                         </input>
                                         <input name="url" type="TextLine">
                                             <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
                                         </input>
                                         <input type="ComboBox" name="type">
                                             <label>Søknads- eller skjematype</label>
                                             <occurrences minimum="1" maximum="1"/> 
-                                            <config>  
+                                            <config>
                                                 <option value="digital"> 
                                                     Digital
                                                 </option>
@@ -65,12 +63,10 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                             <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
                                         </input>
                                         <input name="url" type="TextLine">
                                             <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
                                         </input>
                                         <input type="ComboBox" name="type">
                                             <label>Klage- eller anketype</label>
@@ -97,18 +93,10 @@
                                     <items>
                                         <input name="label" type="TextLine">
                                             <label>Knappetekst</label>
-                                             <occurrences minimum="1" maximum="1" />
                                             <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
                                         </input>
                                         <input name="url" type="TextLine">
                                             <label>URL til skjema</label>
-                                            <occurrences minimum="1" maximum="1" />
-                                        </input>
-                                        <input name="title" type="TextLine">
-                                            <label>Tittel</label>
-                                        </input>
-                                        <input name="ingress" type="TextArea">
-                                            <label>Ingress</label>
                                         </input>
                                         <input type="ComboBox" name="type">
                                             <label>Type ettersendelse</label>

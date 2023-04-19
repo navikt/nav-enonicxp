@@ -1,6 +1,12 @@
+#import "../richText/richTextFragment.graphql"
+
 fragment contentFormDetails on no_nav_navno_FormDetails {
     dataAsJson
     data {
+        title
+        ingress(processHtml: { type: server }) {
+            ...richText
+        }
         formType {
             _selected
             application {
@@ -20,8 +26,6 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
             addendum {
                 variations {
                     label
-                    title
-                    ingress
                     url
                     type
                 }
