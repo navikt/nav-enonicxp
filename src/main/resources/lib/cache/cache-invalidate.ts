@@ -46,7 +46,7 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
 
     const deadline = Date.now() + REFERENCE_SEARCH_TIMEOUT_MS;
 
-    const contentToInvalidate = findReferences(id, branch, deadline);
+    const contentToInvalidate = findReferences({ id, branch, deadline });
     if (!contentToInvalidate) {
         return null;
     }
@@ -65,7 +65,7 @@ const resolveReferencePaths = (id: string, eventType: string, locale: string) =>
         }
 
         const references = runInLocaleContext({ locale }, () =>
-            findReferences(id, branch, deadline)
+            findReferences({ id, branch, deadline })
         );
         if (!references) {
             return false;

@@ -52,9 +52,9 @@ export const migrateContentToLayerWidgetHandler = (
     }
 
     const migrationResult = migrateContentToLayer({
-        sourceContentId,
+        sourceId: sourceContentId,
         sourceLocale: CONTENT_LOCALE_DEFAULT,
-        targetContentId,
+        targetId: targetContentId,
         targetLocale,
     });
 

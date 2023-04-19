@@ -1,4 +1,5 @@
 import * as contextLib from '/lib/xp/context';
+import { Content } from '/lib/xp/content';
 import { getRepoConnection } from './repo-utils';
 import { NodeVersionMetadata } from '/lib/xp/node';
 import { RepoBranch } from '../../types/common';
@@ -6,7 +7,8 @@ import { nodeLibConnectStandard } from '../time-travel/standard-functions';
 import { logger } from './logging';
 import { getUnixTimeFromDateTimeString } from './datetime-utils';
 import { contentTypesWithCustomEditor } from '../contenttype-lists';
-import { NodeWithLayerMigrationData } from '../localization/layers-migration/migration-data';
+import { COMPONENT_APP_KEY } from '../constants';
+import { LayerMigration } from '../../site/x-data/layerMigration/layerMigration';
 
 const MAX_VERSIONS_COUNT_TO_RETRIEVE = 1000;
 
@@ -25,7 +27,7 @@ const getMigratedNodeVersions = (params: GetNodeVersionsParams) => {
 
     const repo = getRepoConnection({ repoId, branch });
 
-    const contentNode = repo.get<NodeWithLayerMigrationData>(nodeKey);
+    const contentNode = repo.get<Content>(nodeKey);
     if (!contentNode) {
         logger.info(`Content not found: ${nodeKey}`);
         return [];
@@ -33,17 +35,21 @@ const getMigratedNodeVersions = (params: GetNodeVersionsParams) => {
 
     const currentVersions = getNodeVersions(params);
 
-    const { layerMigration } = contentNode;
+    const layerMigration = contentNode.x?.[COMPONENT_APP_KEY]?.layerMigration as LayerMigration;
 
-    if (!layerMigration || layerMigration.type === 'archived') {
+    if (!layerMigration || layerMigration.targetReferenceType === 'archived') {
         return currentVersions;
     }
 
-    const { archivedContentId, archivedRepoId, ts: migrationTs } = layerMigration;
+    const {
+        contentId: archivedContentId,
+        repoId: archivedLayerId,
+        ts: migrationTs,
+    } = layerMigration;
 
     const archivedVersions = getNodeVersions({
         nodeKey: archivedContentId,
-        repoId: archivedRepoId,
+        repoId: archivedLayerId,
         branch: 'master',
         modifiedOnly,
     });

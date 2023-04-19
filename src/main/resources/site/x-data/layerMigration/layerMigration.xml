@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--These fields should only be set programatically-->
+
+<x-data>
+    <display-name>Referanser etter layer-migrering (peker til live eller arkivert innhold etter migrering)
+    </display-name>
+    <form>
+        <input type="RadioButton" name="targetReferenceType">
+            <label>Type (live eller arkivert)</label>
+            <config>
+                <option value="live">Live</option>
+                <option value="archived">Arkivert</option>
+            </config>
+        </input>
+        <input type="TextLine" name="contentId">
+            <label>Content id (viser til arkivert innhold fra live innhold og vice versa)</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextLine" name="repoId">
+            <label>Repo id (viser til arkivert innhold fra live innhold og vice versa)</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextLine" name="locale">
+            <label>Locale (viser til arkivert innhold fra live innhold og vice versa)</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+        <input type="TextLine" name="ts">
+            <label>Timestamp for migrering</label>
+            <occurrences minimum="1" maximum="1"/>
+        </input>
+    </form>
+</x-data>
