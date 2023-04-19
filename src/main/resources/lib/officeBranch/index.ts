@@ -29,7 +29,7 @@ export const createOfficeBranchFetchSchedule = () => {
         jobDescription: 'Fetches office branches from norg and updates into XP as hourly schedule',
         jobSchedule: {
             type: 'CRON',
-            value: '*/5 * * * *',
+            value: '* * * * *',
             timeZone: 'GMT+2:00',
         },
         taskDescriptor: OFFICE_BRANCH_FETCH_TASK_NAME,
