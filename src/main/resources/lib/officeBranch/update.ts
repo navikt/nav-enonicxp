@@ -15,7 +15,7 @@ const OFFICE_BRANCH_CONTENT_TYPE: OfficeBranchDescriptor = `no.nav.navno:office-
 const INTERNAL_LINK_CONTENT_TYPE: InternalLinkDescriptor = `no.nav.navno:internal-link`;
 const OFFICES_BASE_PATH = '/www.nav.no/kontor';
 
-const createContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn)
+const getOfficeContentName = (officeData: OfficeBranchData) => commonLib.sanitize(officeData.navn);
 
 export const fetchAllOfficeBranchDataFromNorg = () => {
     try {
@@ -46,9 +46,8 @@ export const fetchAllOfficeBranchDataFromNorg = () => {
 
 // Check if a path is taken by content with an invalid type
 // (only office-branch pages and internal redirects should be allowed)
-const pageHasInvalidContentType = (name: string) => {
-    const pathname = `${OFFICES_BASE_PATH}/${name}`;
-    const existingContent = contentLib.get({ key: pathname });
+const pageHasInvalidContentType = (pathName: string) => {
+    const existingContent = contentLib.get({ key: pathName });
 
     return (
         existingContent &&
@@ -97,7 +96,7 @@ const moveAndRedirectOnNameChange = (
     newOfficeData: OfficeBranchData
 ) => {
     const prevContentName = prevOfficePage._name;
-    const newContentName = createContentName(newOfficeData);
+    const newContentName = getOfficeContentName(newOfficeData);
 
     if (prevContentName === newContentName) {
         return;
@@ -165,7 +164,7 @@ const createOfficeBranchPage = (officeData: OfficeBranchData) => {
     try {
         logger.info('Trying to create office branch page');
         contentLib.create({
-            name: createContentName(officeData),
+            name: getOfficeContentName(officeData),
             parentPath: OFFICES_BASE_PATH,
             displayName: officeData.navn,
             language: getOfficeBranchLanguage(officeData),
@@ -214,27 +213,29 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
         deleted: 0,
     };
 
-    incomingOfficeBranches.forEach((officeBranch) => {
-        const name = createContentName(officeBranch);
+    incomingOfficeBranches.forEach((officeBranchData) => {
+        const contentName = getOfficeContentName(officeBranchData);
+        const pathName = `${OFFICES_BASE_PATH}/${contentName}`;
 
-        if (pageHasInvalidContentType(name)) {
-            logger.info(`Found invalid content with name ${name}`);
-            deleteContent(name);
+        if (pageHasInvalidContentType(pathName)) {
+            logger.info(`Found invalid content on ${pathName} - deleting`);
+            deleteContent(pathName);
         }
 
         const existingPage = existingOfficePages.find(
-            (content) => !!content.data?.enhetNr && content.data.enhetNr === officeBranch.enhetNr
+            (content) =>
+                !!content.data?.enhetNr && content.data.enhetNr === officeBranchData.enhetNr
         );
 
         if (existingPage) {
-            const wasUpdated = updateOfficePageIfChanged(officeBranch, existingPage);
+            const wasUpdated = updateOfficePageIfChanged(officeBranchData, existingPage);
             summary.updated += wasUpdated ? 1 : 0;
         } else {
-            const wasAdded = createOfficeBranchPage(officeBranch);
+            const wasAdded = createOfficeBranchPage(officeBranchData);
             summary.created += wasAdded ? 1 : 0;
         }
 
-        processedOfficeEnhetsNr.push(officeBranch.enhetNr);
+        processedOfficeEnhetsNr.push(officeBranchData.enhetNr);
     });
 
     summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
