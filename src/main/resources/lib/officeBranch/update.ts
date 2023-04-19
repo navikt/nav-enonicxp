@@ -46,7 +46,7 @@ export const fetchAllOfficeBranchDataFromNorg = () => {
 
 // Check if a path is taken by content with an invalid type
 // (only office-branch pages and internal redirects should be allowed)
-const pageHasInvalidContentType = (pathName: string) => {
+const pathHasInvalidContent = (pathName: string) => {
     const existingContent = contentLib.get({ key: pathName });
 
     return (
@@ -134,7 +134,10 @@ const updateOfficePageIfChanged = (
     existingOfficePage: Content<OfficeBranchDescriptor>
 ) => {
     const newChecksum = createObjectChecksum(newOfficeData);
-    if (newChecksum === existingOfficePage.data.checksum) {
+    if (
+        newChecksum === existingOfficePage.data.checksum &&
+        newOfficeData.navn === existingOfficePage.displayName
+    ) {
         return false;
     }
 
@@ -217,7 +220,7 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
         const contentName = getOfficeContentName(officeBranchData);
         const pathName = `${OFFICES_BASE_PATH}/${contentName}`;
 
-        if (pageHasInvalidContentType(pathName)) {
+        if (pathHasInvalidContent(pathName)) {
             logger.info(`Found invalid content on ${pathName} - deleting`);
             deleteContent(pathName);
         }
