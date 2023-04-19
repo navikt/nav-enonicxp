@@ -62,18 +62,22 @@ const deleteContent = (contentRef: string) => {
         return null;
     }
 
-    contentLib.unpublish({ keys: [office._id] });
+    const officeId = office._id;
 
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
     // We want to free up the source path immediately
+    contentLib.unpublish({ keys: [officeId] });
+
     contentLib.move({
         source: office._path,
         target: `${office._name}-delete`,
     });
 
     contentLib.delete({
-        key: office._id,
+        key: officeId,
     });
+
+    return officeId;
 };
 
 const getOfficeBranchLanguage = (office: OfficeBranchData) => {
@@ -111,7 +115,7 @@ const moveAndRedirectOnNameChange = (
         });
 
         // Create a redirect from the old path
-        contentLib.create<InternalLinkDescriptor>({
+        const internalLink = contentLib.create<InternalLinkDescriptor>({
             name: prevContentName,
             parentPath: OFFICES_BASE_PATH,
             displayName: `${prevOfficePage.displayName} (redirect til ${newOfficeData.navn})`,
@@ -121,6 +125,13 @@ const moveAndRedirectOnNameChange = (
                 permanentRedirect: false,
                 redirectSubpaths: false,
             },
+        });
+
+        contentLib.publish({
+            keys: [internalLink._id],
+            sourceBranch: 'draft',
+            targetBranch: 'master',
+            includeDependencies: false,
         });
     } catch (e) {
         logger.critical(
@@ -166,7 +177,7 @@ const updateOfficePageIfChanged = (
 const createOfficeBranchPage = (officeData: OfficeBranchData) => {
     try {
         logger.info('Trying to create office branch page');
-        contentLib.create({
+        const content = contentLib.create({
             name: getOfficeContentName(officeData),
             parentPath: OFFICES_BASE_PATH,
             displayName: officeData.navn,
@@ -178,13 +189,12 @@ const createOfficeBranchPage = (officeData: OfficeBranchData) => {
             },
         });
 
-        return true;
+        return content._id;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to create new office page for ${officeData.navn} - ${e}`
         );
-
-        return false;
+        return null;
     }
 };
 
@@ -192,28 +202,30 @@ const deleteStaleOfficePages = (
     existingOfficePages: Content<OfficeBranchDescriptor>[],
     validOfficeEnhetsNr: string[]
 ) => {
-    let deleteCount = 0;
+    const deletedIds: string[] = [];
 
     existingOfficePages.forEach((existingOffice) => {
         const { enhetNr } = existingOffice.data;
 
         if (!validOfficeEnhetsNr.includes(enhetNr)) {
-            deleteContent(existingOffice._id);
-            deleteCount++;
+            const deletedId = deleteContent(existingOffice._id);
+            if (deletedId) {
+                deletedIds.push(deletedId);
+            }
         }
     });
 
-    return deleteCount;
+    return deletedIds;
 };
 
 export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchData[]) => {
     const existingOfficePages = getExistingOfficePages();
     const processedOfficeEnhetsNr: string[] = [];
 
-    const summary: { created: number; updated: number; deleted: number } = {
-        created: 0,
-        updated: 0,
-        deleted: 0,
+    const summary: { created: string[]; updated: string[]; deleted: string[] } = {
+        created: [],
+        updated: [],
+        deleted: [],
     };
 
     incomingOfficeBranches.forEach((officeBranchData) => {
@@ -232,10 +244,12 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
 
         if (existingPage) {
             const wasUpdated = updateOfficePageIfChanged(officeBranchData, existingPage);
-            summary.updated += wasUpdated ? 1 : 0;
+            summary.updated = wasUpdated
+                ? [...summary.updated, existingPage._id]
+                : summary.updated;
         } else {
-            const wasAdded = createOfficeBranchPage(officeBranchData);
-            summary.created += wasAdded ? 1 : 0;
+            const createdId = createOfficeBranchPage(officeBranchData);
+            summary.created = createdId ? [...summary.created, createdId] : summary.created;
         }
 
         processedOfficeEnhetsNr.push(officeBranchData.enhetNr);
@@ -243,10 +257,11 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
 
     summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
 
-    // Publish all updates made inside basePath
-    // This includes updates and new office branches
+    const idsToPublish = [...summary.created, ...summary.updated];
+
+    // Publish all updated and created offices by id.
     const publishResponse = contentLib.publish({
-        keys: [OFFICES_BASE_PATH],
+        keys: idsToPublish,
         sourceBranch: 'draft',
         targetBranch: 'master',
         includeDependencies: false,
@@ -261,6 +276,6 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
     }
 
     logger.info(
-        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
+        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length} Deleted: ${summary.deleted.length}`
     );
 };
