@@ -58,23 +58,28 @@ const isPathOccupiedByAlienContent = (name: string) => {
 
 // Delete content from XP
 const deleteContent = (name: string) => {
-    const office = contentLib.get({ key: name });
+    const office = contentLib.get({ key: `${basePath}/${name}` });
 
-    if (!office) {
+    if (!office || office.type !== officeBranchContentType) {
         return null;
     }
 
+    const officeId = office._id;
+
     // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
     // We want to free up the source path immediately
-    contentLib.unpublish({ keys: [office._id] });
+    contentLib.unpublish({ keys: [officeId] });
 
     contentLib.move({
         source: office._path,
         target: `${office._name}-delete`,
     });
+
     contentLib.delete({
-        key: office._id,
+        key: officeId,
     });
+
+    return officeId;
 };
 
 const getOfficeBranchLanguage = (office: any) => {
@@ -107,7 +112,7 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
 
         // Create a redirect from the old path
 
-        contentLib.create<'no.nav.navno:internal-link'>({
+        const internalLink = contentLib.create<'no.nav.navno:internal-link'>({
             name: currentName,
             parentPath: basePath,
             displayName: `${existingOffice.displayName} (redirect til ${newOffice.navn})`,
@@ -117,6 +122,13 @@ const moveOfficeToNewName = (existingOffice: Content<OfficeBranchDescriptor>, ne
                 permanentRedirect: false,
                 redirectSubpaths: false,
             },
+        });
+
+        contentLib.publish({
+            keys: [internalLink._id],
+            sourceBranch: 'draft',
+            targetBranch: 'master',
+            includeDependencies: false,
         });
     } catch (e) {
         logger.critical(
@@ -167,11 +179,9 @@ const updateOfficeBranchIfChange = (
 const addNewOfficeBranch = (singleOffice: any) => {
     const pathName = commonLib.sanitize(singleOffice.navn);
 
-    let wasAdded = false;
-
     try {
         logger.info('trying to create office branch');
-        contentLib.create({
+        const content = contentLib.create({
             name: pathName,
             parentPath: basePath,
             displayName: singleOffice.navn,
@@ -182,41 +192,44 @@ const addNewOfficeBranch = (singleOffice: any) => {
                 checksum: createObjectChecksum(singleOffice),
             },
         });
-        wasAdded = true;
+        return content._id;
     } catch (e) {
         logger.critical(
             `OfficeImporting: Failed to create new office page for ${singleOffice.navn} - ${e}`
         );
+        return null;
     }
-
-    return wasAdded;
 };
 
 const deleteStaleOfficesFromXP = (
     existingOfficesInXP: Content<OfficeBranchDescriptor>[],
-    validOfficeIds: string[]
+    validOfficeEnhetNrs: string[]
 ) => {
-    let deleteCount = 0;
+    const deletedIds: string[] = [];
     existingOfficesInXP.forEach((existingOffice) => {
         const { enhetNr, navn } = existingOffice?.data;
+        let deletedId;
 
-        if (!validOfficeIds.includes(enhetNr)) {
-            deleteContent(commonLib.sanitize(navn));
-            deleteCount++;
+        if (!validOfficeEnhetNrs.includes(enhetNr)) {
+            deletedId = deleteContent(commonLib.sanitize(navn));
+        }
+
+        if (deletedId) {
+            deletedIds.push(deletedId);
         }
     });
 
-    return deleteCount;
+    return deletedIds;
 };
 
 export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[]) => {
     const existingOfficesInXP = getExistingOfficeBranchesInXP();
-    const processedOfficeBranchIds: string[] = [];
+    const processedOfficeBranchEnhetNr: string[] = [];
 
-    const summary: { created: number; updated: number; deleted: number } = {
-        created: 0,
-        updated: 0,
-        deleted: 0,
+    const summary: { created: string[]; updated: string[]; deleted: string[] } = {
+        created: [],
+        updated: [],
+        deleted: [],
     };
 
     incomingOfficeBranches.forEach((singleOfficeBranch) => {
@@ -236,24 +249,26 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
 
         if (existingOfficeInXP) {
             const wasUpdated = updateOfficeBranchIfChange(singleOfficeBranch, existingOfficeInXP);
-            summary.updated += wasUpdated ? 1 : 0;
+            summary.updated = wasUpdated
+                ? [...summary.updated, existingOfficeInXP._id]
+                : summary.updated;
         } else {
-            const wasAdded = addNewOfficeBranch(singleOfficeBranch);
-            summary.created += wasAdded ? 1 : 0;
+            const createdId = addNewOfficeBranch(singleOfficeBranch);
+            summary.created = createdId ? [...summary.created, createdId] : summary.created;
         }
 
-        processedOfficeBranchIds.push(singleOfficeBranch.enhetNr);
+        processedOfficeBranchEnhetNr.push(singleOfficeBranch.enhetNr);
     });
 
-    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchIds);
+    summary.deleted = deleteStaleOfficesFromXP(existingOfficesInXP, processedOfficeBranchEnhetNr);
+    const idsToPublish = [...summary.created, ...summary.updated];
 
-    // Publish all updates made inside basePath
-    // This includes updates and new office branches
+    // Publish all updated and created offices by id.
     const publishResponse = contentLib.publish({
-        keys: [basePath],
+        keys: idsToPublish,
         sourceBranch: 'draft',
         targetBranch: 'master',
-        includeDependencies: true,
+        includeDependencies: false,
     });
 
     if (publishResponse.failedContents.length > 0) {
@@ -265,6 +280,6 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranch[])
     }
 
     logger.info(
-        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated} Created: ${summary.created} Deleted: ${summary.deleted}`
+        `OfficeImporting: Import summary from NORG2 - Updated: ${summary.updated.length} Created: ${summary.created.length} Deleted: ${summary.deleted.length}`
     );
 };
