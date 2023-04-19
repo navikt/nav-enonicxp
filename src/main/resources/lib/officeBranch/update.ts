@@ -64,10 +64,10 @@ const deleteContent = (contentRef: string) => {
 
     const officeId = office._id;
 
-    // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
-    // We want to free up the source path immediately
     contentLib.unpublish({ keys: [officeId] });
 
+    // Move the content to a temp path first, as deletion does not seem to be a synchronous operation
+    // We want to free up the source path immediately
     contentLib.move({
         source: office._path,
         target: `${office._name}-delete`,
@@ -244,12 +244,14 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
 
         if (existingPage) {
             const wasUpdated = updateOfficePageIfChanged(officeBranchData, existingPage);
-            summary.updated = wasUpdated
-                ? [...summary.updated, existingPage._id]
-                : summary.updated;
+            if (wasUpdated) {
+                summary.updated.push(existingPage._id);
+            }
         } else {
             const createdId = createOfficeBranchPage(officeBranchData);
-            summary.created = createdId ? [...summary.created, createdId] : summary.created;
+            if (createdId) {
+                summary.created.push(createdId);
+            }
         }
 
         processedOfficeEnhetsNr.push(officeBranchData.enhetNr);
@@ -257,11 +259,9 @@ export const processAllOfficeBranches = (incomingOfficeBranches: OfficeBranchDat
 
     summary.deleted = deleteStaleOfficePages(existingOfficePages, processedOfficeEnhetsNr);
 
-    const idsToPublish = [...summary.created, ...summary.updated];
-
     // Publish all updated and created offices by id.
     const publishResponse = contentLib.publish({
-        keys: idsToPublish,
+        keys: [...summary.created, ...summary.updated],
         sourceBranch: 'draft',
         targetBranch: 'master',
         includeDependencies: false,
