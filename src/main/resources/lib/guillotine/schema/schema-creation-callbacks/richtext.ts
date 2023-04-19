@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
-import { getLocaleFromContext } from '../../../localization/locale-context';
+import { getLocaleFromContext, runInLocaleContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
 import { getLayersData } from '../../../localization/layers-data';
 import { getGuillotineContentQueryContext } from '../../utils/content-query-context';
@@ -23,10 +23,9 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
         return processedHtml;
     }
 
-    const localeFromContext = getLocaleFromContext();
     const { defaultLocale } = getLayersData();
-
-    const { baseContentId, baseContentLocale } = getGuillotineContentQueryContext();
+    const localeFromContext = getLocaleFromContext();
+    const { baseContentId, baseContentLocale = defaultLocale } = getGuillotineContentQueryContext();
 
     return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
@@ -34,8 +33,10 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
             return html;
         }
 
-        const content = contentLib.get({ key: contentId });
-        if (!content) {
+        const targetContent = runInLocaleContext({ locale: baseContentLocale }, () =>
+            contentLib.get({ key: contentId })
+        );
+        if (!targetContent) {
             logger.warning(
                 `Invalid reference to contentId ${contentId} in html-area on [${localeFromContext}] ${baseContentId}`,
                 true
@@ -43,18 +44,7 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
             return html;
         }
 
-        const localeActual =
-            localeFromContext === defaultLocale &&
-            baseContentLocale &&
-            localeFromContext !== baseContentLocale
-                ? baseContentLocale
-                : localeFromContext;
-
-        const publicPath = getPublicPath(content, localeActual);
-
-        logger.info(
-            `Context: ${localeFromContext} - Content: ${baseContentLocale} - Actual: ${localeActual}`
-        );
+        const publicPath = getPublicPath(targetContent, baseContentLocale);
 
         return html.replace(
             new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),
