@@ -4,6 +4,8 @@ import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
 import { getLocaleFromContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
+import { getLayersData } from '../../../localization/layers-data';
+import { getGuillotineContentQueryContext } from '../../utils/content-query-context';
 
 type Links = {
     contentId: string;
@@ -21,6 +23,11 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
         return processedHtml;
     }
 
+    const localeFromContext = getLocaleFromContext();
+    const { defaultLocale } = getLayersData();
+
+    const { baseContentId, baseContentLocale } = getGuillotineContentQueryContext();
+
     return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
         if (!contentId || !linkRef) {
@@ -29,12 +36,25 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
 
         const content = contentLib.get({ key: contentId });
         if (!content) {
-            logger.warning(`Invalid reference to contentId ${contentId} in html-area`, true);
+            logger.warning(
+                `Invalid reference to contentId ${contentId} in html-area on [${localeFromContext}] ${baseContentId}`,
+                true
+            );
             return html;
         }
 
-        const locale = getLocaleFromContext();
-        const publicPath = getPublicPath(content, locale);
+        const localeActual =
+            localeFromContext === defaultLocale &&
+            baseContentLocale &&
+            localeFromContext !== baseContentLocale
+                ? baseContentLocale
+                : localeFromContext;
+
+        const publicPath = getPublicPath(content, localeActual);
+
+        logger.info(
+            `Context: ${localeFromContext} - Content: ${baseContentLocale} - Actual: ${localeActual}`
+        );
 
         return html.replace(
             new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),
