@@ -2,7 +2,7 @@ declare const app: {
     name: 'no.nav.navno';
     version: string;
     config: {
-        env: string;
+        env: 'p' | 'dev' | 'q6' | 'localhost';
         norg2: string;
         norg2ApiKey: string;
         norg2ConsumerId: string;
