@@ -1,32 +1,20 @@
-import { Content } from '/lib/xp/content';
+import { RepoNode } from '/lib/xp/node';
+import { LayerMigration } from '../../../site/x-data/layerMigration/layerMigration';
+import { COMPONENT_APP_KEY } from '../../constants';
 
-type LayerMigrationDataLive = {
-    type: 'live';
-    archivedContentId: string;
-    archivedRepoId: string;
-    archivedLocale: string;
-};
+type LayerMigrationParams = Omit<LayerMigration, 'ts'>;
 
-type LayerMigrationDataArchived = {
-    type: 'archived';
-    liveContentId: string;
-    liveRepoId: string;
-    liveLocale: string;
-};
-
-type LayerMigrationData = {
-    ts: string;
-} & LayerMigrationParams;
-
-export type NodeWithLayerMigrationData = Content & {
-    layerMigration?: LayerMigrationData;
-};
-
-type LayerMigrationParams = LayerMigrationDataLive | LayerMigrationDataArchived;
-
-export const generateLayerMigrationData = (params: LayerMigrationParams): LayerMigrationData => {
-    return {
-        ...params,
+export const insertLayerMigrationXData = ({
+    content,
+    migrationParams,
+}: {
+    content: RepoNode<any>;
+    migrationParams: LayerMigrationParams;
+}) => {
+    content.x[COMPONENT_APP_KEY].layerMigration = {
+        ...migrationParams,
         ts: new Date().toISOString(),
     };
+
+    return content;
 };

@@ -20,3 +20,10 @@ export const getRepoConnection = ({ repoId, branch, asAdmin }: Params) =>
 
 export const getContentProjectIdFromRepoId = (repoId: string) =>
     repoId.replace(`${CONTENT_REPO_PREFIX}.`, '');
+
+export const isDraftAndMasterSameVersion = (contentId: string, repoId: string) => {
+    const draftContent = getRepoConnection({ branch: 'draft', repoId }).get(contentId);
+    const masterContent = getRepoConnection({ branch: 'master', repoId }).get(contentId);
+
+    return draftContent?._versionKey === masterContent?._versionKey;
+};

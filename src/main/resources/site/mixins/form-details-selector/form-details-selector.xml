@@ -1,7 +1,7 @@
 <mixin>
     <form>
     <field-set>
-            <label>Skjemadetaljer (kun for testing)</label>
+            <label>Skjemadetaljer</label>
             <items>
                 <input name="formDetailsTargets" type="ContentSelector">
                 <label>Velg alle detaljer som skal brukes på denne siden</label>
