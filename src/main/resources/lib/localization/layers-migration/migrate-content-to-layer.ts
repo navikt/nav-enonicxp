@@ -11,6 +11,7 @@ import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-even
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
 import { insertLayerMigrationXData } from './migration-data';
+import { archiveMigratedContent } from './archive-migrated-content';
 
 export type ContentMigrationParams = {
     sourceId: string;
@@ -153,18 +154,18 @@ const _migrateContentToLayer = (
         response.messages.push('Oppdatering av referanser feilet. Sjekk logger for detaljer.');
     }
 
-    // const didArchive = archiveMigratedContent({
-    //     preMigrationContentId: sourceId,
-    //     postMigrationContentId: targetId,
-    //     preMigrationLocale: sourceLocale,
-    //     postMigrationLocale: targetLocale,
-    // });
-    // if (didArchive) {
-    //     response.messages.push('Arkivering av migreringskilde var vellykket.');
-    // } else {
-    //     response.result = 'error';
-    //     response.messages.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
-    // }
+    const didArchive = archiveMigratedContent({
+        preMigrationContentId: sourceId,
+        postMigrationContentId: targetId,
+        preMigrationLocale: sourceLocale,
+        postMigrationLocale: targetLocale,
+    });
+    if (didArchive) {
+        response.messages.push('Arkivering av migreringskilde var vellykket.');
+    } else {
+        response.result = 'error';
+        response.messages.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
+    }
 
     return { result: response.result, message: response.messages.join('\n') };
 };
