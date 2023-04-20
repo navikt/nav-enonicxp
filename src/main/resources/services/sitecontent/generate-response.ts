@@ -174,5 +174,7 @@ export const generateSitecontentResponse = ({
         return customPathRedirect;
     }
 
-    return runInLocaleContext({ locale }, () => resolveContent(content, branch, locale));
+    return runInLocaleContext({ locale: content.language }, () =>
+        resolveContent(content, branch, locale)
+    );
 };

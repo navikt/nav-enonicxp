@@ -136,7 +136,6 @@ export const runGuillotineContentQuery = (
         {
             attributes: {
                 baseContentId: baseContent._id,
-                baseContentLocale: baseContent.language,
             } as GuillotineContentQueryContext,
         },
         () => {
