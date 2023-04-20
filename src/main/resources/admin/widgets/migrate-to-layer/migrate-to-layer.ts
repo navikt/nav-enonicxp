@@ -5,7 +5,7 @@ import { getLayersData } from '../../../lib/localization/layers-data';
 import { getServiceRequestSubPath } from '../../../services/service-utils';
 import { migrateContentToLayerWidgetHandler } from './migrate-handler/migrate-handler';
 
-const view = resolve('./migrate-content-to-layer.html');
+const view = resolve('./migrate-to-layer.html');
 
 const MIGRATE_HANDLER_PATH = 'migrate-handler';
 

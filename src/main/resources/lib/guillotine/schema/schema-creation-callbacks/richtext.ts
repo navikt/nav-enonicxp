@@ -2,8 +2,10 @@ import * as contentLib from '/lib/xp/content';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
-import { getLocaleFromContext } from '../../../localization/locale-context';
+import { getLocaleFromContext, runInLocaleContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
+import { getLayersData } from '../../../localization/layers-data';
+import { getGuillotineContentQueryContext } from '../../utils/content-query-context';
 
 type Links = {
     contentId: string;
@@ -21,20 +23,28 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
         return processedHtml;
     }
 
+    const { defaultLocale } = getLayersData();
+    const localeFromContext = getLocaleFromContext();
+    const { baseContentId, baseContentLocale = defaultLocale } = getGuillotineContentQueryContext();
+
     return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
         if (!contentId || !linkRef) {
             return html;
         }
 
-        const content = contentLib.get({ key: contentId });
-        if (!content) {
-            logger.warning(`Invalid reference to contentId ${contentId} in html-area`, true);
+        const targetContent = runInLocaleContext({ locale: baseContentLocale }, () =>
+            contentLib.get({ key: contentId })
+        );
+        if (!targetContent) {
+            logger.warning(
+                `Invalid reference to contentId ${contentId} in html-area on [${localeFromContext}] ${baseContentId}`,
+                true
+            );
             return html;
         }
 
-        const locale = getLocaleFromContext();
-        const publicPath = getPublicPath(content, locale);
+        const publicPath = getPublicPath(targetContent, baseContentLocale);
 
         return html.replace(
             new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),

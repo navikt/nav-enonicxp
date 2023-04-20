@@ -1,0 +1,31 @@
+name: Deploy with naisjob
+on:
+  workflow_call:
+    inputs:
+      naisCluster:
+        required: true
+        type: string
+      xpAdminHost:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+    secrets:
+      NAIS_DEPLOY_APIKEY:
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy with naisjob
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Deploy to nais
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          CLUSTER: ${{ inputs.naisCluster }}
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          RESOURCE: .nais-deploy-job/deploy-job.yml
+          VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }}
