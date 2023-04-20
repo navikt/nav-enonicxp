@@ -11,6 +11,7 @@ import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-even
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
 import { insertLayerMigrationXData } from './migration-data';
+import { archiveMigratedContent } from './archive-migrated-content';
 
 export type ContentMigrationParams = {
     sourceId: string;
@@ -104,58 +105,72 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     return pushResult.success.length > 0;
 };
 
+const _migrateContentToLayer = (
+    contentMigrationParams: ContentMigrationParams
+): LayerMigrationResult => {
+    const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
+
+    const response: LayerMigrationResult = {
+        result: 'success',
+        message: `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId} - resultat:`,
+    };
+
+    const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
+    if (copyMasterSuccess) {
+        response.message = `${response.message}\nMigrering av publisert innhold var vellykket.`;
+    } else {
+        return {
+            result: 'error',
+            message: `${response.message}\nMigrering av publisert innhold feilet. Sjekk logger for detaljer.`,
+        };
+    }
+
+    const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
+    if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
+        const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
+        if (copyDraftSuccess) {
+            response.message = `${response.message}\nMigrering av innhold under arbeid var vellykket.`;
+        } else {
+            response.result = 'error';
+            response.message = `${response.message}\nMigrering av innhold under arbeid feilet. Sjekk logger for detaljer.`;
+        }
+    } else {
+        response.message = `${response.message}\nInnhold var ikke under arbeid (ikke noe å migrere).`;
+    }
+
+    const didUpdateRefs = updateContentReferences(contentMigrationParams);
+    if (!didUpdateRefs) {
+        response.message = `${response.message}\nOppdatering av referanser var vellykket.`;
+    } else {
+        response.result = 'error';
+        response.message = `${response.message}\nOppdatering av referanser feiled. Sjekk logger for detaljer.`;
+    }
+
+    const didArchive = archiveMigratedContent({
+        preMigrationContentId: sourceId,
+        postMigrationContentId: targetId,
+        preMigrationLocale: sourceLocale,
+        postMigrationLocale: targetLocale,
+    });
+    if (didArchive) {
+        response.message = `${response.message}\nArkivering av migreringskilde var vellykket.`;
+    } else {
+        response.result = 'error';
+        response.message = `${response.message}\nArkivering av migreringskilde feilet. Sjekk logger for detaljer.`;
+    }
+
+    return response;
+};
+
 export const migrateContentToLayer = (
     contentMigrationParams: ContentMigrationParams
 ): LayerMigrationResult => {
     toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
 
-    const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
-
-    const responseMsgPrefix = `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId}`;
-
-    const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
-    if (!copyMasterSuccess) {
-        return {
-            result: 'error',
-            message: `${responseMsgPrefix} mislyktes. Sjekk logger for detaljer.`,
-        };
-    }
-
-    const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
-
-    if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
-        const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
-        if (!copyDraftSuccess) {
-            return {
-                result: 'error',
-                message: `${responseMsgPrefix} for innhold under arbeid mislyktes. Sjekk logger for detaljer.`,
-            };
-        }
-    }
-
-    const didUpdateRefs = updateContentReferences(contentMigrationParams);
-    if (!didUpdateRefs) {
-        logger.error(`Oh noes, failed to update refs!`);
-    }
-
-    // const didArchive = archiveMigratedContent({
-    //     preMigrationContentId: sourceContentId,
-    //     postMigrationContentId: targetContentId,
-    //     preMigrationLocale: sourceLocale,
-    //     postMigrationLocale: targetLocale,
-    // });
-    //
-    // if (!didArchive) {
-    //     return {
-    //         result: 'success',
-    //         message: `${logPrefix} ble utført, men arkivering av gammelt innhold feilet. Sjekk logger for detaljer.`,
-    //     };
-    // }
+    const response = _migrateContentToLayer(contentMigrationParams);
+    logger[response.result === 'success' ? 'info' : 'error'](response.message);
 
     toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
-    return {
-        result: 'success',
-        message: `${responseMsgPrefix} var vellykket!`,
-    };
+    return response;
 };
