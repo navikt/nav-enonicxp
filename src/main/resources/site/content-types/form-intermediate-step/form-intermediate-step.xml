@@ -6,6 +6,6 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
-        <mixin name="intermediate-step-data"/>
+        <mixin name="form-intermediate-step-data"/>
     </form>
 </content-type>
