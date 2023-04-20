@@ -2,10 +2,9 @@ import * as contentLib from '/lib/xp/content';
 import striptags from '/assets/striptags/3.1.1/src/striptags';
 import { CreationCallback } from '../../utils/creation-callback-utils';
 import { getPublicPath } from '../../../paths/public-path';
-import { getLocaleFromContext, runInLocaleContext } from '../../../localization/locale-context';
+import { getLocaleFromContext } from '../../../localization/locale-context';
 import { logger } from '../../../utils/logging';
-import { getLayersData } from '../../../localization/layers-data';
-import { getGuillotineContentQueryContext } from '../../utils/content-query-context';
+import { getGuillotineContentQueryBaseContentId } from '../../utils/content-query-context';
 
 type Links = {
     contentId: string;
@@ -23,9 +22,8 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
         return processedHtml;
     }
 
-    const { defaultLocale } = getLayersData();
     const localeFromContext = getLocaleFromContext();
-    const { baseContentId, baseContentLocale = defaultLocale } = getGuillotineContentQueryContext();
+    const baseContentId = getGuillotineContentQueryBaseContentId();
 
     return links.reduce((html, link) => {
         const { contentId, linkRef } = link;
@@ -33,9 +31,7 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
             return html;
         }
 
-        const targetContent = runInLocaleContext({ locale: baseContentLocale }, () =>
-            contentLib.get({ key: contentId })
-        );
+        const targetContent = contentLib.get({ key: contentId });
         if (!targetContent) {
             logger.warning(
                 `Invalid reference to contentId ${contentId} in html-area on [${localeFromContext}] ${baseContentId}`,
@@ -44,7 +40,7 @@ const resolvePublicPathsInLinks = (processedHtml: string, links?: Links[]) => {
             return html;
         }
 
-        const publicPath = getPublicPath(targetContent, baseContentLocale);
+        const publicPath = getPublicPath(targetContent, localeFromContext);
 
         return html.replace(
             new RegExp(`<a href="([^"]*)" data-link-ref="${linkRef}"`, 'g'),

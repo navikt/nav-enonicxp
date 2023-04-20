@@ -80,6 +80,7 @@ export const updateContentReferences = ({
         findReferences({ id: sourceId, branch: 'master', withDeepSearch: false })
     );
     if (!references) {
+        logger.error(`References search failed for ${sourceId} in locale ${sourceLocale}`);
         return false;
     }
 
