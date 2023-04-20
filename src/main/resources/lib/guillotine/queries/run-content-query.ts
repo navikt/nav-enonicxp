@@ -11,6 +11,8 @@ import { getBreadcrumbs } from '../utils/breadcrumbs';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { NodeComponent } from '../../../types/components/component-node';
+import { GuillotineContentQueryContext } from '../utils/content-query-context';
+import { runInLocaleContext } from '../../localization/locale-context';
 
 import mediaArchiveQuery from './media-queries/mediaArchiveQuery.graphql';
 import mediaAudioQuery from './media-queries/mediaAudioQuery.graphql';
@@ -62,7 +64,6 @@ import toolsPageQuery from './content-queries/toolsPageQuery.graphql';
 import transportPageQuery from './content-queries/transportPageQuery.graphql';
 import urlQuery from './content-queries/urlQuery.graphql';
 import pressLandingPageQuery from './content-queries/pressLandingPageQuery.graphql';
-import { GuillotineContentQueryContext } from '../utils/content-query-context';
 
 export const graphQlContentQueries: { [type in ContentDescriptor]?: string } = {
     'media:archive': mediaArchiveQuery,
@@ -132,8 +133,9 @@ export const runGuillotineContentQuery = (
     baseContent: Content,
     baseQueryParams: Omit<GuillotineQueryParams, 'query'>
 ) =>
-    runInContext(
+    runInLocaleContext(
         {
+            locale: baseContent.language,
             attributes: {
                 baseContentId: baseContent._id,
             } as GuillotineContentQueryContext,
