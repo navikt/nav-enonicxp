@@ -110,18 +110,24 @@ const _migrateContentToLayer = (
 ): LayerMigrationResult => {
     const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
 
-    const response: LayerMigrationResult = {
+    const response: {
+        result: LayerMigrationResult['result'];
+        messages: LayerMigrationResult['message'][];
+    } = {
         result: 'success',
-        message: `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId} - resultat:`,
+        messages: [
+            `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId} - resultat:`,
+        ],
     };
 
     const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
     if (copyMasterSuccess) {
-        response.message = `${response.message}\nMigrering av publisert innhold var vellykket.`;
+        response.messages.push('Migrering av publisert innhold var vellykket.');
     } else {
+        response.messages.push('Migrering av publisert innhold feilet. Sjekk logger for detaljer.');
         return {
             result: 'error',
-            message: `${response.message}\nMigrering av publisert innhold feilet. Sjekk logger for detaljer.`,
+            message: response.messages.join('\n'),
         };
     }
 
@@ -129,21 +135,23 @@ const _migrateContentToLayer = (
     if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
         const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
         if (copyDraftSuccess) {
-            response.message = `${response.message}\nMigrering av innhold under arbeid var vellykket.`;
+            response.messages.push('Migrering av innhold under arbeid var vellykket.');
         } else {
             response.result = 'error';
-            response.message = `${response.message}\nMigrering av innhold under arbeid feilet. Sjekk logger for detaljer.`;
+            response.messages.push(
+                'Migrering av innhold under arbeid feilet. Sjekk logger for detaljer.'
+            );
         }
     } else {
-        response.message = `${response.message}\nInnhold var ikke under arbeid (ikke noe å migrere).`;
+        response.messages.push('Innhold er ikke under arbeid (ikke noe å migrere).');
     }
 
     const didUpdateRefs = updateContentReferences(contentMigrationParams);
     if (!didUpdateRefs) {
-        response.message = `${response.message}\nOppdatering av referanser var vellykket.`;
+        response.messages.push('Oppdatering av referanser var vellykket.');
     } else {
         response.result = 'error';
-        response.message = `${response.message}\nOppdatering av referanser feiled. Sjekk logger for detaljer.`;
+        response.messages.push('Oppdatering av referanser feilet. Sjekk logger for detaljer.');
     }
 
     const didArchive = archiveMigratedContent({
@@ -153,13 +161,13 @@ const _migrateContentToLayer = (
         postMigrationLocale: targetLocale,
     });
     if (didArchive) {
-        response.message = `${response.message}\nArkivering av migreringskilde var vellykket.`;
+        response.messages.push('Arkivering av migreringskilde var vellykket.');
     } else {
         response.result = 'error';
-        response.message = `${response.message}\nArkivering av migreringskilde feilet. Sjekk logger for detaljer.`;
+        response.messages.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
     }
 
-    return response;
+    return { result: response.result, message: response.messages.join('\n') };
 };
 
 export const migrateContentToLayer = (
