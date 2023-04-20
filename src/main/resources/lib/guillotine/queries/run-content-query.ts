@@ -11,8 +11,6 @@ import { getBreadcrumbs } from '../utils/breadcrumbs';
 import { GuillotineUnresolvedComponentType } from './run-sitecontent-query';
 import { PortalComponent } from '../../../types/components/component-portal';
 import { NodeComponent } from '../../../types/components/component-node';
-import { GuillotineContentQueryContext } from '../utils/content-query-context';
-import { runInLocaleContext } from '../../localization/locale-context';
 
 import mediaArchiveQuery from './media-queries/mediaArchiveQuery.graphql';
 import mediaAudioQuery from './media-queries/mediaAudioQuery.graphql';
@@ -132,60 +130,49 @@ export type GuillotineContentQueryResult =
 export const runGuillotineContentQuery = (
     baseContent: Content,
     baseQueryParams: Omit<GuillotineQueryParams, 'query'>
-) =>
-    runInLocaleContext(
-        {
-            locale: baseContent.language,
-            attributes: {
-                baseContentId: baseContent._id,
-            } as GuillotineContentQueryContext,
-        },
-        () => {
-            const { _id } = baseContent;
+) => {
+    const { _id } = baseContent;
 
-            const contentQuery = graphQlContentQueries[baseContent.type];
-            if (!contentQuery) {
-                return null;
-            }
+    const contentQuery = graphQlContentQueries[baseContent.type];
+    if (!contentQuery) {
+        return null;
+    }
 
-            // Media types only redirect to the media asset in the frontend and don't require any further processing
-            if (isMedia(baseContent)) {
-                return runGuillotineQuery({
-                    ...baseQueryParams,
-                    query: contentQuery,
-                })?.get;
-            }
+    // Media types only redirect to the media asset in the frontend and don't require any further processing
+    if (isMedia(baseContent)) {
+        return runGuillotineQuery({
+            ...baseQueryParams,
+            query: contentQuery,
+        })?.get;
+    }
 
-            const contentQueryResult = runGuillotineQuery({
-                ...baseQueryParams,
-                query: contentQuery,
-                jsonBaseKeys: ['data', 'config', 'page'],
-            })?.get as GuillotineContentQueryResult;
+    const contentQueryResult = runGuillotineQuery({
+        ...baseQueryParams,
+        query: contentQuery,
+        jsonBaseKeys: ['data', 'config', 'page'],
+    })?.get as GuillotineContentQueryResult;
 
-            if (!contentQueryResult) {
-                return null;
-            }
+    if (!contentQueryResult) {
+        return null;
+    }
 
-            // This is the preview/editor page for fragments (not user-facing). This content type has a slightly
-            // different components structure which requires some special handling
-            if (contentQueryResult.type === 'portal:fragment') {
-                return {
-                    ...contentQueryResult,
-                    fragment: buildFragmentComponentTree(
-                        contentQueryResult.components as GuillotineComponent[],
-                        contentQueryResult.unresolvedComponentTypes
-                    ),
-                    components: undefined,
-                };
-            }
+    // This is the preview/editor page for fragments (not user-facing). This content type has a slightly
+    // different components structure which requires some special handling
+    if (contentQueryResult.type === 'portal:fragment') {
+        return {
+            ...contentQueryResult,
+            fragment: buildFragmentComponentTree(
+                contentQueryResult.components as GuillotineComponent[],
+                contentQueryResult.unresolvedComponentTypes
+            ),
+            components: undefined,
+        };
+    }
 
-            const breadcrumbs = runInContext({ branch: baseQueryParams.branch }, () =>
-                getBreadcrumbs(_id)
-            );
+    const breadcrumbs = runInContext({ branch: baseQueryParams.branch }, () => getBreadcrumbs(_id));
 
-            return {
-                ...contentQueryResult,
-                ...(breadcrumbs && { breadcrumbs }),
-            };
-        }
-    );
+    return {
+        ...contentQueryResult,
+        ...(breadcrumbs && { breadcrumbs }),
+    };
+};

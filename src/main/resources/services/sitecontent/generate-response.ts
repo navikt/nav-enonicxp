@@ -67,35 +67,46 @@ const resolveContent = (
     branch: RepoBranch,
     locale: string,
     retries = 2
-): Content | null => {
-    const contentId = baseContent._id;
-    const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
+): Content | null =>
+    runInLocaleContext(
+        {
+            locale: baseContent.language,
+            attributes: {
+                baseContentId: baseContent._id,
+            },
+        },
+        () => {
+            const contentId = baseContent._id;
+            const queryResult = runSitecontentGuillotineQuery(baseContent, branch);
 
-    // Peace-of-mind consistency check to ensure our version-history hack isn't affecting normal requests
-    if (!validateTimestampConsistency(contentId, queryResult, branch)) {
-        if (retries > 0) {
-            logger.error(`Timestamp consistency check failed - Retrying ${retries} more times`);
-        } else {
-            logger.critical(`Time travel permanently disabled on this node`);
-            unhookTimeTravel();
+            // Peace-of-mind consistency check to ensure our version-history hack isn't affecting normal requests
+            if (!validateTimestampConsistency(contentId, queryResult, branch)) {
+                if (retries > 0) {
+                    logger.error(
+                        `Timestamp consistency check failed - Retrying ${retries} more times`
+                    );
+                } else {
+                    logger.critical(`Time travel permanently disabled on this node`);
+                    unhookTimeTravel();
+                }
+
+                return resolveContent(baseContent, branch, locale, retries - 1);
+            }
+
+            return queryResult
+                ? {
+                      ...queryResult,
+                      // modifiedTime should also take any fragments on the page into account
+                      modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
+                      languages: getLanguageVersions({
+                          baseContent,
+                          branch,
+                          baseContentLocale: locale,
+                      }),
+                  }
+                : null;
         }
-
-        return resolveContent(baseContent, branch, locale, retries - 1);
-    }
-
-    return queryResult
-        ? {
-              ...queryResult,
-              // modifiedTime should also take any fragments on the page into account
-              modifiedTime: getModifiedTimeIncludingFragments(baseContent, branch),
-              languages: getLanguageVersions({
-                  baseContent,
-                  branch,
-                  baseContentLocale: locale,
-              }),
-          }
-        : null;
-};
+    );
 
 const resolveContentStudioRequest = (
     idOrPathRequested: string,
@@ -174,5 +185,5 @@ export const generateSitecontentResponse = ({
         return customPathRedirect;
     }
 
-    return runInLocaleContext({ locale }, () => resolveContent(content, branch, locale));
+    return resolveContent(content, branch, locale);
 };
