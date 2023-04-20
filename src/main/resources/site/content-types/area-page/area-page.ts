@@ -3,7 +3,7 @@ export interface AreaPage {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

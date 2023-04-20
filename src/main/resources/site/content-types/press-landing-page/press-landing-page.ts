@@ -43,7 +43,7 @@ export interface PressLandingPage {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

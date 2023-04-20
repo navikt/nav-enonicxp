@@ -3,7 +3,7 @@
     <option-set name="audience">
       <label>Målgruppe</label>
       <occurrences minimum="1" maximum="1"/>
-      <options>
+      <options minimum="1" maximum="1">
         <option name="person">
           <label>Privatperson</label>
         </option>

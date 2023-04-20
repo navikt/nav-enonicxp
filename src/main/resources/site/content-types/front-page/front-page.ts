@@ -3,7 +3,7 @@ export interface FrontPage {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

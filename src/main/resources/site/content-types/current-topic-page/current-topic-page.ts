@@ -13,7 +13,7 @@ export interface CurrentTopicPage {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

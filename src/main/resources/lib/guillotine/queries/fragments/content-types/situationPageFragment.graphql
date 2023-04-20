@@ -1,5 +1,4 @@
 #import "../contentCommonFragment.graphql"
-#import "../mixins/audienceFragment.graphql"
 #import "../mixins/languagesFragment.graphql"
 #import "../mixins/animatedIconsTargetFragment.graphql"
 
@@ -7,7 +6,6 @@ fragment contentSituationPage on no_nav_navno_SituationPage {
     dataAsJson
     data {
         area
-        ...audienceMixin
         languages {
             ...languagesMixin
         }

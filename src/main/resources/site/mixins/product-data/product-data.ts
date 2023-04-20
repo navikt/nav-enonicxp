@@ -23,7 +23,7 @@ export interface ProductData {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

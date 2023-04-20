@@ -28,7 +28,7 @@ export interface GuideData {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

@@ -23,7 +23,7 @@ export interface ThemedArticleData {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

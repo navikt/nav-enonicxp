@@ -23,7 +23,7 @@ export interface ToolsPage {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

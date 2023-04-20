@@ -23,7 +23,7 @@ export interface GenericPageData {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected

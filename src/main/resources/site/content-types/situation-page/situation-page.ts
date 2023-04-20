@@ -23,7 +23,7 @@ export interface SituationPage {
   /**
    * Målgruppe
    */
-  audience:
+  audience?:
     | {
         /**
          * Selected
