@@ -49,6 +49,10 @@ export const getLocaleFromRepoId = (repoId: string) => data.repoIdToLocaleMap[re
 
 export const getLayersData = () => data;
 
+const contentOnlyQueryParams = {
+    query: '_path LIKE "/content/*"'
+};
+
 // Pushes any nodes which exists on master in the root project to master on
 // the child layers as well.
 //
@@ -60,7 +64,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
         repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'master' },
-        queryParams: {},
+        queryParams: contentOnlyQueryParams,
     }).hits.map((hit) => hit.id);
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
@@ -74,11 +78,11 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
         const existingNodesSet = batchedNodeQuery({
             repoParams: { repoId: repoId, branch: 'master' },
-            queryParams: {},
-        }).hits.reduce((acc, hit) => {
+            queryParams: contentOnlyQueryParams,
+        }).hits.reduce<Record<string, true>>((acc, hit) => {
             acc[hit.id] = true;
             return acc;
-        }, {} as Record<string, true>);
+        }, {});
 
         const nodesToPush = pushMissingOnly
             ? nodeIdsInRootRepoMaster.filter((id) => !existingNodesSet[id])
