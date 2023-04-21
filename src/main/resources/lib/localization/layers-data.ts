@@ -97,23 +97,17 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
         });
 
         try {
-            let batchCount = 0;
+            const result = repoConnection.push({
+                keys: nodesToPush,
+                target: 'master',
+                resolve: false,
+            });
 
-            for (let i = 0; i < nodesToPush.length; i += 10000) {
-                const result = repoConnection.push({
-                    keys: nodesToPush.slice(i, i + 10000),
-                    target: 'master',
-                    resolve: false,
-                });
-
-                batchCount++;
-
-                logger.info(
-                    `Result for batch #${batchCount} in ${repoId} // Success: (${
-                        result.success.length
-                    }) - Failed: (${result.failed.length}) ${JSON.stringify(result.failed)}`
-                );
-            }
+            logger.info(
+                `Result for ${repoId} // Success: (${result.success.length}) - Failed: (${
+                    result.failed.length
+                }) ${JSON.stringify(result.failed)}`
+            );
         } catch (e) {
             logger.error(`Error while pushing layer content to master in ${repoId} - ${e}`);
         }
