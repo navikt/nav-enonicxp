@@ -7,7 +7,6 @@ import {
 } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
-import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-event-defer';
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
 import { insertLayerMigrationXData } from './migration-data';
@@ -105,9 +104,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     return pushResult.success.length > 0;
 };
 
-const _migrateContentToLayer = (
-    contentMigrationParams: ContentMigrationParams
-): LayerMigrationResult => {
+const _migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
     const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
 
     const response: {
@@ -125,10 +122,7 @@ const _migrateContentToLayer = (
         response.messages.push('Migrering av publisert innhold var vellykket.');
     } else {
         response.messages.push('Migrering av publisert innhold feilet. Sjekk logger for detaljer.');
-        return {
-            result: 'error',
-            message: response.messages.join('\n'),
-        };
+        return response;
     }
 
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
@@ -167,18 +161,20 @@ const _migrateContentToLayer = (
         response.messages.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
     }
 
-    return { result: response.result, message: response.messages.join('\n') };
+    return response;
 };
 
 export const migrateContentToLayer = (
     contentMigrationParams: ContentMigrationParams
 ): LayerMigrationResult => {
-    toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
-
     const response = _migrateContentToLayer(contentMigrationParams);
-    logger[response.result === 'success' ? 'info' : 'error'](response.message);
 
-    toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+    const message = response.messages.join('\n');
 
-    return response;
+    logger[response.result === 'success' ? 'info' : 'error'](message);
+
+    return {
+        result: response.result,
+        message,
+    };
 };
