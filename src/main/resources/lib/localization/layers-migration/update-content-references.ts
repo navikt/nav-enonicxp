@@ -43,9 +43,6 @@ const updateReferenceFromNode = ({
             );
             const contentWithUpdates = JSON.parse(contentJsonWithUpdates);
 
-            logger.info(`Old: ${contentJson}`);
-            logger.info(`New: ${JSON.stringify(contentWithUpdates)}`);
-
             return contentWithUpdates;
         },
     });

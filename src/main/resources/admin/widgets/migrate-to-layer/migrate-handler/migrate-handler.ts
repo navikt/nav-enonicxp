@@ -1,13 +1,8 @@
 import * as contentLib from '/lib/xp/content';
-import {
-    LayerMigrationResult,
-    migrateContentToLayer,
-} from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
+import { migrateContentToLayer } from '../../../../lib/localization/layers-migration/migrate-content-to-layer';
 import { CONTENT_LOCALE_DEFAULT } from '../../../../lib/constants';
 
-export const migrateContentToLayerWidgetHandler = (
-    req: XP.Request
-): XP.Response<LayerMigrationResult> => {
+export const migrateContentToLayerWidgetHandler = (req: XP.Request): XP.Response => {
     const { sourceId: sourceContentId, targetLocale, targetId: targetContentIdInput } = req.params;
 
     if (!targetLocale) {

@@ -20,8 +20,8 @@ export type ContentMigrationParams = {
 };
 
 export type LayerMigrationResult = {
-    result: 'success' | 'error';
-    message: string;
+    errorMsgs: string[];
+    statusMsgs: string[];
 };
 
 const transformToLayerContent = (
@@ -104,24 +104,23 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     return pushResult.success.length > 0;
 };
 
-const _migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
+export const migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
     const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
 
-    const response: {
-        result: LayerMigrationResult['result'];
-        messages: LayerMigrationResult['message'][];
-    } = {
-        result: 'success',
-        messages: [
+    const response: LayerMigrationResult = {
+        errorMsgs: [],
+        statusMsgs: [
             `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId} - resultat:`,
         ],
     };
 
     const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
     if (copyMasterSuccess) {
-        response.messages.push('Migrering av publisert innhold var vellykket.');
+        response.statusMsgs.push('Migrering av publisert innhold var vellykket.');
     } else {
-        response.messages.push('Migrering av publisert innhold feilet. Sjekk logger for detaljer.');
+        response.errorMsgs.push(
+            'Migrering av publisert innhold feilet. Sjekk logger for detaljer.'
+        );
         return response;
     }
 
@@ -129,23 +128,21 @@ const _migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) 
     if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
         const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
         if (copyDraftSuccess) {
-            response.messages.push('Migrering av innhold under arbeid var vellykket.');
+            response.statusMsgs.push('Migrering av innhold under arbeid var vellykket.');
         } else {
-            response.result = 'error';
-            response.messages.push(
+            response.errorMsgs.push(
                 'Migrering av innhold under arbeid feilet. Sjekk logger for detaljer.'
             );
         }
     } else {
-        response.messages.push('Innhold er ikke under arbeid (ikke noe å migrere).');
+        response.statusMsgs.push('Innhold er ikke under arbeid (ikke noe å migrere).');
     }
 
     const didUpdateRefs = updateContentReferences(contentMigrationParams);
     if (didUpdateRefs) {
-        response.messages.push('Oppdatering av referanser var vellykket.');
+        response.statusMsgs.push('Oppdatering av referanser var vellykket.');
     } else {
-        response.result = 'error';
-        response.messages.push('Oppdatering av referanser feilet. Sjekk logger for detaljer.');
+        response.errorMsgs.push('Oppdatering av referanser feilet. Sjekk logger for detaljer.');
     }
 
     const didArchive = archiveMigratedContent({
@@ -155,26 +152,10 @@ const _migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) 
         postMigrationLocale: targetLocale,
     });
     if (didArchive) {
-        response.messages.push('Arkivering av migreringskilde var vellykket.');
+        response.statusMsgs.push('Arkivering av migreringskilde var vellykket.');
     } else {
-        response.result = 'error';
-        response.messages.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
+        response.errorMsgs.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
     }
 
     return response;
-};
-
-export const migrateContentToLayer = (
-    contentMigrationParams: ContentMigrationParams
-): LayerMigrationResult => {
-    const response = _migrateContentToLayer(contentMigrationParams);
-
-    const message = response.messages.join('\n');
-
-    logger[response.result === 'success' ? 'info' : 'error'](message);
-
-    return {
-        result: response.result,
-        message,
-    };
 };
