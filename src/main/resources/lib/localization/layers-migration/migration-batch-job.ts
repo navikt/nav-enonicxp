@@ -23,7 +23,7 @@ export const migrateContentBatchToLayers = ({
     count,
     query,
 }: Params) =>
-    runInLocaleContext({ locale: sourceLocale }, () => {
+    runInLocaleContext({ locale: sourceLocale, branch: 'draft' }, () => {
         const contentToMigrate = contentLib
             .query({
                 count,
@@ -87,7 +87,6 @@ export const migrateContentBatchToLayers = ({
             );
 
         if (contentToMigrate.length === 0) {
-            logger.info('No applicable content found for migrating');
             return ['No applicable content found for migrating'];
         }
 
