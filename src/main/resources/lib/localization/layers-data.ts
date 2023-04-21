@@ -40,7 +40,7 @@ const data: LayersRepoData = {
     locales: [],
 };
 
-const fifteenMinutesMs = 1000 * 60 * 15;
+const THIRTY_MIN_MS = 1000 * 60 * 30;
 
 export const isValidLocale = (locale?: string): locale is string =>
     !!(locale && data.localeToRepoIdMap[locale]);
@@ -64,6 +64,8 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     }).hits.map((hit) => hit.id);
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
+
+    toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: THIRTY_MIN_MS });
 
     Object.values(data.localeToRepoIdMap).forEach((repoId) => {
         if (repoId === CONTENT_ROOT_REPO_ID) {
@@ -94,22 +96,30 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
             asAdmin: true,
         });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: fifteenMinutesMs });
+        try {
+            let batchCount = 0;
 
-        const result = repoConnection.push({
-            keys: nodesToPush,
-            target: 'master',
-            resolve: false,
-        });
+            for (let i = 0; i < nodesToPush.length; i += 10000) {
+                const result = repoConnection.push({
+                    keys: nodesToPush.slice(i, i + 10000),
+                    target: 'master',
+                    resolve: false,
+                });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
+                batchCount++;
 
-        logger.info(
-            `Result for ${repoId} // Success: (${result.success.length}) - Failed: (${
-                result.failed.length
-            }) ${JSON.stringify(result.failed)}`
-        );
+                logger.info(
+                    `Result for batch #${batchCount} in ${repoId} // Success: (${
+                        result.success.length
+                    }) - Failed: (${result.failed.length}) ${JSON.stringify(result.failed)}`
+                );
+            }
+        } catch (e) {
+            logger.error(`Error while pushing layer content to master in ${repoId} - ${e}`);
+        }
     });
+
+    toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
     logger.info('Finished job to publish layer content to master!');
 };
