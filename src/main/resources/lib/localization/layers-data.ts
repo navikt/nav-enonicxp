@@ -40,7 +40,7 @@ const data: LayersRepoData = {
     locales: [],
 };
 
-const THIRTY_MIN_MS = 1000 * 60 * 30;
+const ONE_HOUR_MS = 1000 * 60 * 60;
 
 export const isValidLocale = (locale?: string): locale is string =>
     !!(locale && data.localeToRepoIdMap[locale]);
@@ -71,8 +71,6 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
 
     logger.info(`Found ${nodeIdsInRootRepoMaster.length} nodes in root repo`);
 
-    toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: THIRTY_MIN_MS });
-
     Object.values(data.localeToRepoIdMap).forEach((repoId) => {
         if (repoId === CONTENT_ROOT_REPO_ID) {
             return;
@@ -101,6 +99,8 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
             branch: 'draft',
             asAdmin: true,
         });
+
+        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: ONE_HOUR_MS });
 
         try {
             const result = repoConnection.push({
