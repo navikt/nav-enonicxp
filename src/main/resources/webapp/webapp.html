@@ -15,7 +15,7 @@
     </form>
 </div>
 <script th:inline="javascript">
-    window.history.pushState({}, document.title, window.location.pathname);
+    window.history.replaceState({}, document.title, window.location.pathname);
 </script>
 </body>
 </html>
