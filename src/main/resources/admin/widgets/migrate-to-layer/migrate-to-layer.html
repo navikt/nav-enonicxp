@@ -1,5 +1,45 @@
 <widget>
     <script th:inline="javascript">
+        function onFilterInput() {
+            const optionsFilterElement = document.getElementById('optionsFilter');
+            if (!optionsFilterElement) {
+                console.log("Options filter element not found!")
+            } else {
+                updateTargetOptions(optionsFilterElement);
+            }
+        }
+
+        function updateTargetOptions(optionsFilterElement) {
+            const allTargetOptions = [[${targetOptions}]];
+            const targetSelector = document.getElementById('targetSelector');
+
+            const filterValue = optionsFilterElement.value?.trim();
+            console.log(`Filter value: ${filterValue}`);
+
+            const filteredOptions = filterValue ? allTargetOptions.filter(({ id, text }) =>
+                id.toLowerCase() === filterValue.toLowerCase() || text.toLowerCase().includes(filterValue.toLowerCase())
+            ) : allTargetOptions;
+
+            console.log(`Found ${filteredOptions.length} options for ${filterValue}`);
+
+            const optionElements = filteredOptions.map(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.id;
+                optionElement.text = option.text;
+                return optionElement;
+            })
+
+            if (optionElements.length === 0) {
+                const emptyOption = document.createElement('option');
+                emptyOption.text = `Ingen treff for ${filterValue}`;
+                emptyOption.disabled = true;
+                targetSelector.replaceChildren(emptyOption);
+                return;
+            }
+
+            targetSelector.replaceChildren(...optionElements);
+        }
+
         function requestContentMigration(event) {
             if (event) {
                 event.preventDefault();
@@ -9,7 +49,12 @@
 
             const sourceId = document.getElementById('sourceId').value;
             const targetLocale = document.getElementById('localeSelector').value;
-            const targetId = document.getElementById('targetId').value;
+            const targetId = document.getElementById('targetSelector').value;
+
+            if (!targetId) {
+                document.getElementById('error').innerHTML = 'Velg en norsk versjon som dette innholdet skal knyttes til';
+                return;
+            }
 
             fetch(`${url}?sourceId=${sourceId}&targetLocale=${targetLocale}&targetId=${targetId}`)
                 .then((res) => {
@@ -20,20 +65,20 @@
                     return { message: `En uventet feil oppsto: ${res.status} - ${res.statusText}`, result: 'error' };
                 })
                 .then(({ result, message }) => {
+                    alert(message);
                     if (result === 'error') {
                         document.getElementById('error').innerHTML = message;
-                    } else {
-                        alert(message);
                     }
                 }).catch(e => {
-                    document.getElementById('error').innerHTML = `En uventet feil oppsto: ${e}`;
-                });
+                document.getElementById('error').innerHTML = `En uventet feil oppsto: ${e}`;
+            });
         }
     </script>
     <div style="padding: 0.5rem">
         <form th:attr="onsubmit='requestContentMigration(event)'">
             <div style="margin-bottom: 0.75rem">
-                <label for="localeSelector">Velg språk-layer</label><br />
+                <label for="localeSelector">Velg språk-layer innholdet skal flyttes til</label
+                ><br />
                 <select
                     id="localeSelector"
                     style="-webkit-appearance: revert; margin-top: 0.25rem; height: 32px"
@@ -46,25 +91,44 @@
                     ></option>
                 </select>
             </div>
+
+            <div style="margin-bottom: 0.75rem">
+                <label for="targetSelector">Velg norsk versjon av innholdet</label><br />
+                <select
+                    id="targetSelector"
+                    style="-webkit-appearance: revert; margin-top: 0.25rem; height: 32px"
+                    class="xp-admin-common-text-input option-filter-input"
+                >
+                    <option
+                        data-th-each="option : ${targetOptions}"
+                        data-th-text="${option.text}"
+                        data-th-value="${option.id}"
+                    ></option>
+                </select>
+            </div>
+
             <div>
-                <label for="targetId">Ny contentId (samme som norsk versjon)</label><br />
+                <label for="optionsFilter">Filter for innholdsvelgeren (id, path eller navn)</label
+                ><br />
                 <input
                     type="text"
-                    id="targetId"
+                    id="optionsFilter"
                     class="xp-admin-common-text-input"
                     style="width: 100%"
+                    th:attr="oninput='onFilterInput()'"
                 />
-                <button
-                    type="submit"
-                    style="margin-top: 0.25rem; height: 32px"
-                    class="xp-admin-common-button"
-                >
-                    <span>Flytt innhold</span>
-                </button>
             </div>
+
+            <button
+                type="submit"
+                style="margin-top: 0.25rem; height: 32px"
+                class="xp-admin-common-button"
+            >
+                <span>Start migrering</span>
+            </button>
+
             <input type="hidden" id="sourceId" data-th-value="${sourceId}" />
         </form>
-        <div id="success" style="margin-top: 1rem; color: green" />
         <div id="error" style="margin-top: 1rem; color: red" />
     </div>
 </widget>
