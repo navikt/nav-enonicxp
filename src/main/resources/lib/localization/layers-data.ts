@@ -62,6 +62,8 @@ const contentOnlyQueryParams = {
 export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
     logger.info('Starting job to publish layer content to master');
 
+    refreshLayersData();
+
     const nodeIdsInRootRepoMaster = batchedNodeQuery({
         repoParams: { repoId: CONTENT_ROOT_REPO_ID, branch: 'master' },
         queryParams: contentOnlyQueryParams,
