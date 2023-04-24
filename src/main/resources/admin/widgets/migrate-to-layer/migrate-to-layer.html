@@ -92,17 +92,6 @@
                 </select>
             </div>
 
-            <div>
-                <label for="optionsFilter">Søk etter innhold (id, path eller navn)</label><br />
-                <input
-                    type="text"
-                    id="optionsFilter"
-                    class="xp-admin-common-text-input"
-                    style="width: 100%"
-                    th:attr="oninput='onFilterInput()'"
-                />
-            </div>
-
             <div style="margin-bottom: 0.75rem">
                 <label for="targetSelector">Velg norsk versjon av innholdet</label><br />
                 <select
@@ -116,6 +105,19 @@
                         data-th-value="${option.id}"
                     ></option>
                 </select>
+            </div>
+
+            <div>
+                <label for="optionsFilter"
+                    >Filter for innhold i velgeren (id, path eller navn)</label
+                ><br />
+                <input
+                    type="text"
+                    id="optionsFilter"
+                    class="xp-admin-common-text-input"
+                    style="width: 100%"
+                    th:attr="oninput='onFilterInput()'"
+                />
             </div>
 
             <button
