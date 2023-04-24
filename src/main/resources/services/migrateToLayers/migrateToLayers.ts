@@ -109,7 +109,7 @@ export const get = (req: XP.Request) => {
     }
 
     return {
-        status: 500,
+        status: 200,
         body: {
             message: `Migration job had errors: ${errors.join(' || ')}`,
         },

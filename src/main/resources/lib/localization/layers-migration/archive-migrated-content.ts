@@ -79,7 +79,7 @@ export const archiveMigratedContent = (params: ArchiveMigratedContentParams): bo
             logger.info(
                 `Content ${preMigrationContentId} in layer ${preMigrationLocale} has children, skipping archiving`
             );
-            return false;
+            return true;
         }
 
         const archiveResult = runInLocaleContext(contextParams, () =>
