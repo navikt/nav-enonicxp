@@ -1,12 +1,21 @@
-<html>
-    <h1>Webapp</h1>
-    <div data-th-each="cmd: ${cmds}">
-        <h2 data-th-text="${cmd.description}"></h2>
-        <div data-th-if="${cmd.cmd==runningCmd}">
-            <h3>Just ran this procedure</h3>
-        </div>
-        <form data-th-action="${actionUrl}" method="get">
-            <input type="submit" name="cmd" data-th-value="${cmd.cmd}"></input>
-        </form>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <title>NAV Enonic XP admin scripts</title>
+</head>
+<body>
+<h1>Webapp</h1>
+<div data-th-each="cmd: ${cmds}">
+    <h2 data-th-text="${cmd.description}"></h2>
+    <div data-th-if="${cmd.cmd==runningCmd}">
+        <h3>Just ran this procedure</h3>
     </div>
+    <form data-th-action="${actionUrl}" method="get">
+        <input type="submit" name="cmd" data-th-value="${cmd.cmd}">
+    </form>
+</div>
+<script th:inline="javascript">
+    window.history.pushState({}, document.title, window.location.pathname);
+</script>
+</body>
 </html>
