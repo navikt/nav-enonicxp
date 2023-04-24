@@ -21,7 +21,7 @@
                 </input>
                 <option-set name="formType">
                     <label>Variasjoner</label>
-                    <occurrences minimum="1" maximum="1"/>
+                    <occurrences minimum="1" maximum="0"/>
                     <help-text>Velg hva slags type variasjon du vil lage - søknad, klage eller ettersendelse. For kun redaksjonell tekst kan du la være å fylle inn felter for søknadsvariasjonen.</help-text>
                     <options minimum="1" maximum="1">
                         <option name="application">
@@ -72,21 +72,26 @@
                                 </item-set>
                             </items>
                         </option>
+                        <option name="addendum">
+                            <label>Ettersendelse</label>
+                            <items>
+                                <item-set name="variations">
+                                    <label>Ettersendelsesvariasjoner</label>
+                                    <occurrences minimum="0" maximum="0"/>
+                                    <items>
+                                        <input name="label" type="TextLine">
+                                            <label>Knappetekst</label>
+                                            <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
+                                        </input>
+                                        <input name="url" type="TextLine">
+                                            <label>URL til skjema</label>
+                                        </input>
+                                    </items>
+                                </item-set>
+                            </items>
+                        </option>
                     </options>
                 </option-set>
-                <item-set name="addendums">
-                    <label>Ettersendelser</label>
-                    <occurrences minimum="0" maximum="0"/>
-                    <items>
-                        <input name="label" type="TextLine">
-                            <label>Knappetekst</label>
-                            <help-text>Bør være kort. Alternativt flere korte ord.</help-text>
-                        </input>
-                        <input name="url" type="TextLine">
-                            <label>URL til skjema</label>
-                        </input>
-                    </items>
-                </item-set>
             </items>
         </field-set>
     </form>
