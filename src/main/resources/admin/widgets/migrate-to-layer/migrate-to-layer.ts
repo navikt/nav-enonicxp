@@ -18,7 +18,7 @@ const view = resolve('./migrate-to-layer.html');
 const MIGRATE_HANDLER_PATH = 'migrate-handler';
 
 const getTargetOptions = (content: Content) => {
-    const options = batchedContentQuery({
+    return batchedContentQuery({
         count: 5000,
         contentTypes: [content.type],
         filters: {
@@ -28,11 +28,17 @@ const getTargetOptions = (content: Content) => {
                         ids: { values: [content._id] },
                     },
                 ],
+                must: [
+                    {
+                        hasValue: {
+                            field: 'language',
+                            values: [CONTENT_LOCALE_DEFAULT],
+                        },
+                    },
+                ],
             },
         },
     }).hits.map((hit) => ({ id: hit._id, text: `${hit.displayName} [${hit._path}]` }));
-
-    return options;
 };
 
 const isApplicableContentType = (content: Content) =>
