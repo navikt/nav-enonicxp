@@ -94,13 +94,11 @@ export const get = (req: XP.Request) => {
         };
     }
 
-    logger.info(`Migration params: ${JSON.stringify(params)}`);
-
-    const { errors, successes } = migrateContentBatchToLayers(params);
+    const result = migrateContentBatchToLayers(params);
 
     return {
         status: 200,
-        body: { errors, successes },
+        body: result,
         contentType: 'application/json',
     };
 };

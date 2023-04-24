@@ -16,83 +16,83 @@ type Params = {
     query?: string;
 };
 
-export const migrateContentBatchToLayers = ({
-    sourceLocale,
-    targetLocale,
-    contentTypes,
-    count,
-    query,
-}: Params) =>
-    runInLocaleContext({ locale: sourceLocale, branch: 'draft' }, () => {
-        const batchResult: { errors: string[]; successes: string[] } = {
-            errors: [],
-            successes: [],
-        };
+type MigrationResult = { msg: string; errors: string[] };
 
-        const contentToMigrate = contentLib
-            .query({
-                count,
-                query,
-                contentTypes,
-                filters: {
-                    boolean: {
-                        must: [
-                            {
-                                hasValue: {
-                                    field: 'language',
-                                    values: [targetLocale],
-                                },
+const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetLocale }: Params) =>
+    contentLib
+        .query({
+            count,
+            query,
+            contentTypes,
+            filters: {
+                boolean: {
+                    must: [
+                        {
+                            hasValue: {
+                                field: 'language',
+                                values: [targetLocale],
                             },
-                            {
-                                exists: {
-                                    field: 'data.languages',
-                                },
-                            },
-                            {
-                                notExists: {
-                                    field: 'x.no-nav-navno.layerMigration',
-                                },
-                            },
-                        ],
-                    },
-                },
-            })
-            .hits.reduce<{ sourceContent: Content; targetBaseContent: Content }[]>(
-                (acc, sourceContent) => {
-                    const languageVersionIds = forceArray(
-                        (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
-                    );
-
-                    const validBaseLanguageVersions = languageVersionIds.reduce<Content[]>(
-                        (acc, versionContentId) => {
-                            const content = contentLib.get({ key: versionContentId });
-                            return content?.language === sourceLocale ? [...acc, content] : acc;
                         },
-                        []
-                    );
-
-                    if (validBaseLanguageVersions.length === 1) {
-                        acc.push({
-                            sourceContent: sourceContent,
-                            targetBaseContent: validBaseLanguageVersions[0],
-                        });
-                    } else if (validBaseLanguageVersions.length > 1) {
-                        logger.error(
-                            `Multiple base locale versions found for [${sourceLocale}] ${
-                                sourceContent._path
-                            } - ${JSON.stringify(
-                                validBaseLanguageVersions.map((content) => content._path)
-                            )}`
-                        );
-                    }
-
-                    return acc;
+                        {
+                            exists: {
+                                field: 'data.languages',
+                            },
+                        },
+                        {
+                            notExists: {
+                                field: 'x.no-nav-navno.layerMigration',
+                            },
+                        },
+                    ],
                 },
-                []
-            );
+            },
+        })
+        .hits.reduce<{ sourceContent: Content; targetBaseContent: Content }[]>(
+            (acc, sourceContent) => {
+                const languageVersionIds = forceArray(
+                    (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
+                );
+
+                const validBaseLanguageVersions = languageVersionIds.reduce<Content[]>(
+                    (acc, versionContentId) => {
+                        const content = contentLib.get({ key: versionContentId });
+                        return content?.language === sourceLocale ? [...acc, content] : acc;
+                    },
+                    []
+                );
+
+                if (validBaseLanguageVersions.length === 1) {
+                    acc.push({
+                        sourceContent: sourceContent,
+                        targetBaseContent: validBaseLanguageVersions[0],
+                    });
+                } else if (validBaseLanguageVersions.length > 1) {
+                    logger.error(
+                        `Multiple base locale versions found for [${sourceLocale}] ${
+                            sourceContent._path
+                        } - ${JSON.stringify(
+                            validBaseLanguageVersions.map((content) => content._path)
+                        )}`
+                    );
+                }
+
+                return acc;
+            },
+            []
+        );
+
+export const migrateContentBatchToLayers = (params: Params) =>
+    runInLocaleContext({ locale: params.sourceLocale, branch: 'draft' }, () => {
+        logger.info(`Running migration batch job with params: ${JSON.stringify(params)}`);
+
+        const { sourceLocale, targetLocale } = params;
+
+        const batchResult: MigrationResult[] = [];
+
+        const contentToMigrate = getContentToMigrate(params);
 
         if (contentToMigrate.length === 0) {
-            batchResult.successes.push('No applicable content found for migrating');
+            batchResult.push({ msg: 'No applicable content found for migrating', errors: [] });
             return batchResult;
         }
 
@@ -117,16 +117,13 @@ export const migrateContentBatchToLayers = ({
                 targetLocale,
             });
 
-            const logPrefix = `Migration from [${sourceLocale}] ${sourceContent._path} to [${targetLocale}] ${targetBaseContent._path}`;
+            const contentResult: MigrationResult = {
+                msg: `Migration from [${sourceLocale}] ${sourceContent._path} to [${targetLocale}] ${targetBaseContent._path}`,
+                errors: [],
+            };
 
             if (result.errorMsgs.length > 0) {
-                const msg = `${logPrefix} had errors: ${result.errorMsgs.join(', ')}`;
-                logger.error(msg);
-                batchResult.errors.push(msg);
-            } else {
-                const msg = `${logPrefix} completed without errors!`;
-                logger.info(msg);
-                batchResult.successes.push(msg);
+                contentResult.errors.push(...result.errorMsgs);
             }
         });
 
