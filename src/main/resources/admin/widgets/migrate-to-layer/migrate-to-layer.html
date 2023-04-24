@@ -78,7 +78,8 @@
     <div style="padding: 0.5rem">
         <form th:attr="onsubmit='requestContentMigration(event)'">
             <div style="margin-bottom: 0.75rem">
-                <label for="localeSelector">Velg språk-layer</label><br />
+                <label for="localeSelector">Velg språk-layer innholdet skal flyttes til</label
+                ><br />
                 <select
                     id="localeSelector"
                     style="-webkit-appearance: revert; margin-top: 0.25rem; height: 32px"
@@ -108,8 +109,7 @@
             </div>
 
             <div>
-                <label for="optionsFilter"
-                    >Filter for innhold i velgeren (id, path eller navn)</label
+                <label for="optionsFilter">Filter for innholdsvelgeren (id, path eller navn)</label
                 ><br />
                 <input
                     type="text"
