@@ -84,9 +84,7 @@ export interface FormDetails {
          * Ettersendelse
          */
         addendum: {
-          /**
-           * Ettersendelsesvariasjoner
-           */
+
           variations?: Array<{
             /**
              * Knappetekst

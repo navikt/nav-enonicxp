@@ -46,7 +46,6 @@
                             <label>Klage- og ankevariasjoner</label>
                             <items>
                                 <item-set name="variations">
-                                    <label>Klage- og ankevariasjoner</label>
                                     <occurrences minimum="0" maximum="0"/>
                                     <items>
                                         <input name="label" type="TextLine">
@@ -76,7 +75,6 @@
                             <label>Ettersendelse</label>
                             <items>
                                 <item-set name="variations">
-                                    <label>Ettersendelsesvariasjoner</label>
                                     <occurrences minimum="0" maximum="0"/>
                                     <items>
                                         <input name="label" type="TextLine">
