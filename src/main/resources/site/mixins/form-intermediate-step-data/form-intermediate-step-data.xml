@@ -41,6 +41,10 @@
                                                     <label>Redaksjonelt innhold ovenfor valgene</label>
                                                     <occurrences minimum="0" maximum="1"/>
                                                 </input>
+                                                <input name="stepsHeadline" type="TextLine">
+                                                    <label>Overskrift til stegene</label>
+                                                    <occurrences minimum="0" maximum="1"/>
+                                                </input>
                                                 <item-set name="steps">
                                                     <label>Steg</label>
                                                     <occurrences minimum="1" maximum="0"/>

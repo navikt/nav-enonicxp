@@ -6,6 +6,12 @@
     <is-final>true</is-final>
     <allow-child-content>true</allow-child-content>
     <form>
+        <field-set>
+            <label>Piktogram</label>
+            <items>
+                <mixin name="illustration" />
+            </items>
+        </field-set>
         <mixin name="form-intermediate-step-data"/>
     </form>
 </content-type>
