@@ -24,6 +24,11 @@ export const migrateContentBatchToLayers = ({
     query,
 }: Params) =>
     runInLocaleContext({ locale: sourceLocale, branch: 'draft' }, () => {
+        const batchResult: { errors: string[]; successes: string[] } = {
+            errors: [],
+            successes: [],
+        };
+
         const contentToMigrate = contentLib
             .query({
                 count,
@@ -87,7 +92,8 @@ export const migrateContentBatchToLayers = ({
             );
 
         if (contentToMigrate.length === 0) {
-            return ['No applicable content found for migrating'];
+            batchResult.successes.push('No applicable content found for migrating');
+            return batchResult;
         }
 
         logger.info(
@@ -100,8 +106,6 @@ export const migrateContentBatchToLayers = ({
                 4
             )}`
         );
-
-        const errors: string[] = [];
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
 
@@ -118,13 +122,15 @@ export const migrateContentBatchToLayers = ({
             if (result.errorMsgs.length > 0) {
                 const msg = `${logPrefix} had errors: ${result.errorMsgs.join(', ')}`;
                 logger.error(msg);
-                errors.push(msg);
+                batchResult.errors.push(msg);
             } else {
-                logger.info(`${logPrefix} completed without errors!`);
+                const msg = `${logPrefix} completed without errors!`;
+                logger.info(msg);
+                batchResult.successes.push(msg);
             }
         });
 
         toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
-        return errors;
+        return batchResult;
     });
