@@ -11,6 +11,7 @@ import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
 import { insertLayerMigrationXData } from './migration-data';
 import { archiveMigratedContent } from './archive-migrated-content';
+import { forceArray } from '../../utils/array-utils';
 
 export type ContentMigrationParams = {
     sourceId: string;
@@ -19,7 +20,7 @@ export type ContentMigrationParams = {
     targetLocale: string;
 };
 
-export type LayerMigrationResult = {
+type LayerMigrationResult = {
     errorMsgs: string[];
     statusMsgs: string[];
 };
@@ -27,13 +28,19 @@ export type LayerMigrationResult = {
 const transformToLayerContent = (
     sourceContent: RepoNode<any>,
     sourceLocale: string,
-    targetLocale: string
+    targetLocale: string,
+    targetId: string
 ) => {
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
+    const languages = forceArray(sourceContent.data.languages).filter(
+        (languageVersionContentId) =>
+            languageVersionContentId !== targetId && languageVersionContentId !== sourceContent._id
+    );
 
     return insertLayerMigrationXData({
         content: {
             ...sourceContent,
+            data: { ...sourceContent.data, languages },
             originProject: getContentProjectIdFromRepoId(sourceRepoId),
             inherit: ['PARENT', 'SORT'],
             language: targetLocale,
@@ -84,7 +91,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         requireValid: false,
         editor: () => {
             logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
-            return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
+            return transformToLayerContent(sourceContent, sourceLocale, targetLocale, targetId);
         },
     });
 

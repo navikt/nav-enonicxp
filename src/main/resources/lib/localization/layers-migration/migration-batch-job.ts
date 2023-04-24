@@ -2,7 +2,7 @@ import * as contentLib from '/lib/xp/content';
 import { Content } from '/lib/xp/content';
 import { logger } from '../../utils/logging';
 import { ArrayOrSingle } from '../../../types/util-types';
-import { forceArray } from '../../utils/array-utils';
+import { forceArray, removeDuplicates } from '../../utils/array-utils';
 import { runInLocaleContext } from '../locale-context';
 import { migrateContentToLayer } from './migrate-content-to-layer';
 import { ContentDescriptor } from '../../../types/content-types/content-config';
@@ -53,13 +53,12 @@ const getContentToMigrate = ({ contentTypes, query, count, sourceLocale, targetL
                     (sourceContent.data as { languages: ArrayOrSingle<string> }).languages
                 );
 
-                const validBaseLanguageVersions = languageVersionIds.reduce<Content[]>(
-                    (acc, versionContentId) => {
-                        const content = contentLib.get({ key: versionContentId });
-                        return content?.language === sourceLocale ? [...acc, content] : acc;
-                    },
-                    []
-                );
+                const validBaseLanguageVersions = removeDuplicates(languageVersionIds).reduce<
+                    Content[]
+                >((acc, versionContentId) => {
+                    const content = contentLib.get({ key: versionContentId });
+                    return content?.language === sourceLocale ? [...acc, content] : acc;
+                }, []);
 
                 if (validBaseLanguageVersions.length === 1) {
                     acc.push({
