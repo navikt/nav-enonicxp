@@ -40,7 +40,7 @@ const data: LayersRepoData = {
     locales: [],
 };
 
-const ONE_HOUR_MS = 1000 * 60 * 60;
+const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
 export const isValidLocale = (locale?: string): locale is string =>
     !!(locale && data.localeToRepoIdMap[locale]);
@@ -100,7 +100,7 @@ export const pushLayerContentToMaster = (pushMissingOnly: boolean) => {
             asAdmin: true,
         });
 
-        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: ONE_HOUR_MS });
+        toggleCacheInvalidationOnNodeEvents({ shouldDefer: true, maxDeferTime: ONE_DAY_MS });
 
         try {
             const result = repoConnection.push({
