@@ -65,10 +65,9 @@
                     return { message: `En uventet feil oppsto: ${res.status} - ${res.statusText}`, result: 'error' };
                 })
                 .then(({ result, message }) => {
+                    alert(message);
                     if (result === 'error') {
                         document.getElementById('error').innerHTML = message;
-                    } else {
-                        alert(message);
                     }
                 }).catch(e => {
                 document.getElementById('error').innerHTML = `En uventet feil oppsto: ${e}`;
