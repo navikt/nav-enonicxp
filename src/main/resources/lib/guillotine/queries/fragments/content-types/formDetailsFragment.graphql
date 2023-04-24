@@ -13,7 +13,6 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
                 variations {
                     label
                     url
-                    type
                 }
             }
             complaint {
@@ -23,13 +22,10 @@ fragment contentFormDetails on no_nav_navno_FormDetails {
                     type
                 }
             }
-            addendum {
-                variations {
-                    label
-                    url
-                    type
-                }
-            }
+        }
+        addendums {
+            label
+            url
         }
     }
 }

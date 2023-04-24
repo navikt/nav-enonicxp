@@ -40,11 +40,6 @@ export interface FormDetails {
              * URL til skjema
              */
             url?: string;
-
-            /**
-             * Søknads- eller skjematype
-             */
-            type: "digital" | "paper";
           }>;
         };
       }
@@ -78,36 +73,25 @@ export interface FormDetails {
             type: "complaint" | "appeal";
           }>;
         };
-      }
-    | {
-        /**
-         * Selected
-         */
-        _selected: "addendum";
-
-        /**
-         * Ettersendelse
-         */
-        addendum: {
-          /**
-           * Ettersendelsesvariasjoner
-           */
-          variations?: Array<{
-            /**
-             * Knappetekst
-             */
-            label?: string;
-
-            /**
-             * URL til skjema
-             */
-            url?: string;
-
-            /**
-             * Type ettersendelse
-             */
-            type: "addendum_digital" | "addendum_paper";
-          }>;
-        };
       };
+
+  /**
+   * Ettersendelser
+   */
+  addendums?: Array<{
+    /**
+     * Knappetekst
+     */
+    label?: string;
+
+    /**
+     * URL til skjema
+     */
+    url?: string;
+
+    /**
+     * Type ettersendelse
+     */
+    type: "addendum_digital" | "addendum_paper";
+  }>;
 }
