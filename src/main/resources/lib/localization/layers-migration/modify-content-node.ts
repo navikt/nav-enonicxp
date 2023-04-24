@@ -25,12 +25,19 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
     // of the node object, including the complete components array.
     // However, this does not preserve spesial string field types, such as Reference or Datetime.
     // These will be indexed as plain strings on the target node.
-    const nodeModifyResult = targetRepo.modify({
-        key,
-        editor,
-    });
-    if (!nodeModifyResult) {
-        logger.error(`Failed to modify content ${targetLogString} (stage 1)`);
+    try {
+        const nodeModifyResult = targetRepo.modify({
+            key,
+            editor,
+        });
+        if (!nodeModifyResult) {
+            logger.error(`Failed to modify content ${targetLogString} (stage 1)`);
+            return false;
+        }
+
+        logger.info(`Modify content ${targetLogString} succeeded (stage 1)`);
+    } catch (e) {
+        logger.error(`Failed to modify content ${targetLogString} (stage 1 exception) ${e}`);
         return false;
     }
 
@@ -39,15 +46,24 @@ export const modifyContentNode = ({ key, repoId, editor, requireValid }: Params)
     // Do a second pass with the content library, where we perform no mutation of the content on our own.
     // The contentLib function will set the correct types on every field according to the content-type
     // schema for the modified content.
-    const contentModifyResult = runInLocaleContext({ locale, asAdmin: true, branch: 'draft' }, () =>
-        contentLib.modify({
-            requireValid,
-            key,
-            editor: (content) => content,
-        })
-    );
-    if (!contentModifyResult) {
-        logger.error(`Failed to modify content ${targetLogString} (stage 2)`);
+    try {
+        const contentModifyResult = runInLocaleContext(
+            { locale, asAdmin: true, branch: 'draft' },
+            () =>
+                contentLib.modify({
+                    requireValid,
+                    key,
+                    editor: (content) => content,
+                })
+        );
+        if (!contentModifyResult) {
+            logger.error(`Failed to modify content ${targetLogString} (stage 2)`);
+            return false;
+        }
+
+        logger.info(`Modify content ${targetLogString} succeeded (stage 2)`);
+    } catch (e) {
+        logger.error(`Failed to modify content ${targetLogString} (stage 2 exception) ${e}`);
         return false;
     }
 
