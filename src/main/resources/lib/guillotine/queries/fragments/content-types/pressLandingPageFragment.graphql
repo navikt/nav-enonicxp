@@ -5,6 +5,12 @@
 fragment contentPressLandingPage on no_nav_navno_PressLandingPage {
     dataAsJson
     data {
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
         pressCall(processHtml: { type: server }) {
             ...richText
         }

@@ -3,6 +3,12 @@
 fragment contentDynamicPage on no_nav_navno_DynamicPage {
     dataAsJson
     data {
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
         languages {
             ...languagesMixin
         }

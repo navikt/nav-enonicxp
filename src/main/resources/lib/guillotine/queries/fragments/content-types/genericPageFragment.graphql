@@ -4,6 +4,12 @@
 fragment contentGenericPage on no_nav_navno_GenericPage {
     dataAsJson
     data {
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
         languages {
             ...languagesMixin
         }

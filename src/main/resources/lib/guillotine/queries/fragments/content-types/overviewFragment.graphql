@@ -4,6 +4,12 @@
 fragment contentOverviewPage on no_nav_navno_Overview {
     dataAsJson
     data {
+        audience {
+            _selected
+            provider {
+                provider_audience
+            }
+        }
         languages {
             ...languagesMixin
         }
