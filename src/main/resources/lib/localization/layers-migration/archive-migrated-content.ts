@@ -40,11 +40,11 @@ export const archiveMigratedContent = (params: ArchiveMigratedContentParams): bo
         postMigrationLocale,
     } = params;
 
-    const { localeToRepoIdMap, locales } = getLayersData();
+    const { localeToRepoIdMap } = getLayersData();
 
     const preMigrationLogString = `[${preMigrationLocale}] ${preMigrationContentId}`;
 
-    const contextParams = { locale: preMigrationLocale, branch: 'draft' } as const;
+    const contextParams = { locale: preMigrationLocale, branch: 'draft', asAdmin: true } as const;
 
     const preMigrationContent = runInLocaleContext(contextParams, () =>
         contentLib.get({ key: preMigrationContentId })
@@ -73,29 +73,35 @@ export const archiveMigratedContent = (params: ArchiveMigratedContentParams): bo
         return false;
     }
 
-    let didArchiveAll = true;
-
-    locales.forEach((locale) => {
-        try {
-            const archiveResult = runInLocaleContext({ locale, branch: 'draft' }, () =>
-                contentLib.archive({ content: preMigrationContentId })
+    try {
+        const children = contentLib.getChildren({ key: preMigrationContentId, count: 0 });
+        if (children.total > 0) {
+            logger.info(
+                `Content ${preMigrationContentId} in layer ${preMigrationLocale} has children, skipping archiving`
             );
-
-            if (archiveResult.length === 0) {
-                logger.error(
-                    `Failed to archive content in layer for ${locale}: ${preMigrationContentId}`
-                );
-                didArchiveAll = false;
-            } else {
-                logger.info(`Archived content in layer for ${locale}: ${preMigrationContentId}`);
-            }
-        } catch (e) {
-            logger.error(
-                `Error while archiving content in layer for ${locale}: ${preMigrationContentId} - ${e}`
-            );
-            didArchiveAll = false;
+            return true;
         }
-    });
 
-    return didArchiveAll;
+        const archiveResult = runInLocaleContext(contextParams, () =>
+            contentLib.archive({ content: preMigrationContentId })
+        );
+
+        if (archiveResult.length === 0) {
+            logger.error(
+                `Failed to archive content in layer for ${preMigrationLocale}: ${preMigrationContentId}`
+            );
+            return false;
+        } else {
+            logger.info(
+                `Archived content in layer for ${preMigrationLocale}: ${preMigrationContentId}`
+            );
+        }
+    } catch (e) {
+        logger.error(
+            `Error while archiving content in layer for ${preMigrationLocale}: ${preMigrationContentId} - ${e}`
+        );
+        return false;
+    }
+
+    return true;
 };
