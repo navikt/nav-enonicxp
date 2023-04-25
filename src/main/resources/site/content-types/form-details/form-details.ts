@@ -53,9 +53,7 @@ export interface FormDetails {
          * Klage- og ankevariasjoner
          */
         complaint: {
-          /**
-           * Klage- og ankevariasjoner
-           */
+
           variations?: Array<{
             /**
              * Knappetekst
