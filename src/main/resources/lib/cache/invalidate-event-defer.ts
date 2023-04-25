@@ -6,7 +6,7 @@ import { createOrUpdateSchedule } from '../scheduling/schedule-job';
 import { CacheInvalidationDeferConfig } from '../../tasks/cache-invalidation-defer/cache-invalidation-defer-config';
 import { APP_DESCRIPTOR } from '../constants';
 import { addReliableEventListener, sendReliableEvent } from '../events/reliable-custom-events';
-import { logger } from "../utils/logging";
+import { logger } from '../utils/logging';
 
 type DeferCacheInvalidationEventData = CacheInvalidationDeferConfig;
 
@@ -17,10 +17,10 @@ let hasSetupListeners = false;
 let isDeferring = false;
 
 const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) => {
-    const {shouldDefer, maxDeferTime = deferredTimeMsDefault} = eventData;
+    const { shouldDefer, maxDeferTime = deferredTimeMsDefault } = eventData;
 
     if (isDeferring && !shouldDefer) {
-        logger.info('Deferred cache invalidation toggled OFF')
+        logger.info('Deferred cache invalidation toggled OFF');
 
         // When deferred invalidation state is toggled off, invalidate everything
         // to ensure caches will be consistent again
@@ -29,7 +29,7 @@ const deferInvalidationCallback = (eventData: DeferCacheInvalidationEventData) =
             frontendInvalidateAllAsync(`deferred-${generateUUID()}`, true);
         }
     } else if (shouldDefer) {
-        logger.info('Deferred cache invalidation toggled ON')
+        logger.info('Deferred cache invalidation toggled ON');
 
         // When deferred invalidation state is toggled on, schedule it to be turned off after a
         // certain amount of time. This should preferably be handled by whichever action enabled the
