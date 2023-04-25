@@ -18,7 +18,7 @@ export interface FormDetails {
   /**
    * Variasjoner
    */
-  formType:
+  formType: Array<
     | {
         /**
          * Selected
@@ -40,11 +40,6 @@ export interface FormDetails {
              * URL til skjema
              */
             url?: string;
-
-            /**
-             * Søknads- eller skjematype
-             */
-            type: "digital" | "paper";
           }>;
         };
       }
@@ -58,9 +53,7 @@ export interface FormDetails {
          * Klage- og ankevariasjoner
          */
         complaint: {
-          /**
-           * Klage- og ankevariasjoner
-           */
+
           variations?: Array<{
             /**
              * Knappetekst
@@ -89,9 +82,7 @@ export interface FormDetails {
          * Ettersendelse
          */
         addendum: {
-          /**
-           * Ettersendelsesvariasjoner
-           */
+
           variations?: Array<{
             /**
              * Knappetekst
@@ -102,12 +93,8 @@ export interface FormDetails {
              * URL til skjema
              */
             url?: string;
-
-            /**
-             * Type ettersendelse
-             */
-            type: "addendum_digital" | "addendum_paper";
           }>;
         };
-      };
+      }
+  >;
 }
