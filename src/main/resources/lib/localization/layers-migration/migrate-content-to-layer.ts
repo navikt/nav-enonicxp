@@ -7,11 +7,11 @@ import {
 } from '../../utils/repo-utils';
 import { logger } from '../../utils/logging';
 import { RepoBranch } from '../../../types/common';
-import { toggleCacheInvalidationOnNodeEvents } from '../../cache/invalidate-event-defer';
 import { updateContentReferences } from './update-content-references';
 import { modifyContentNode } from './modify-content-node';
 import { insertLayerMigrationXData } from './migration-data';
 import { archiveMigratedContent } from './archive-migrated-content';
+import { forceArray } from '../../utils/array-utils';
 
 export type ContentMigrationParams = {
     sourceId: string;
@@ -20,21 +20,27 @@ export type ContentMigrationParams = {
     targetLocale: string;
 };
 
-export type LayerMigrationResult = {
-    result: 'success' | 'error';
-    message: string;
+type LayerMigrationResult = {
+    errorMsgs: string[];
+    statusMsgs: string[];
 };
 
 const transformToLayerContent = (
     sourceContent: RepoNode<any>,
     sourceLocale: string,
-    targetLocale: string
+    targetLocale: string,
+    targetId: string
 ) => {
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
+    const languages = forceArray(sourceContent.data.languages).filter(
+        (languageVersionContentId) =>
+            languageVersionContentId !== targetId && languageVersionContentId !== sourceContent._id
+    );
 
     return insertLayerMigrationXData({
         content: {
             ...sourceContent,
+            data: { ...sourceContent.data, languages },
             originProject: getContentProjectIdFromRepoId(sourceRepoId),
             inherit: ['PARENT', 'SORT'],
             language: targetLocale,
@@ -85,7 +91,7 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
         requireValid: false,
         editor: () => {
             logger.info(`Copying node content from ${sourceId} to ${sourceId}`);
-            return transformToLayerContent(sourceContent, sourceLocale, targetLocale);
+            return transformToLayerContent(sourceContent, sourceLocale, targetLocale, targetId);
         },
     });
 
@@ -105,53 +111,45 @@ const migrateBranch = (params: ContentMigrationParams, branch: RepoBranch) => {
     return pushResult.success.length > 0;
 };
 
-const _migrateContentToLayer = (
-    contentMigrationParams: ContentMigrationParams
-): LayerMigrationResult => {
+export const migrateContentToLayer = (contentMigrationParams: ContentMigrationParams) => {
     const { sourceId, sourceLocale, targetId, targetLocale } = contentMigrationParams;
 
-    const response: {
-        result: LayerMigrationResult['result'];
-        messages: LayerMigrationResult['message'][];
-    } = {
-        result: 'success',
-        messages: [
+    const response: LayerMigrationResult = {
+        errorMsgs: [],
+        statusMsgs: [
             `Migrering fra [${sourceLocale}] ${sourceId} til [${targetLocale}] ${targetId} - resultat:`,
         ],
     };
 
     const copyMasterSuccess = migrateBranch(contentMigrationParams, 'master');
     if (copyMasterSuccess) {
-        response.messages.push('Migrering av publisert innhold var vellykket.');
+        response.statusMsgs.push('Migrering av publisert innhold var vellykket.');
     } else {
-        response.messages.push('Migrering av publisert innhold feilet. Sjekk logger for detaljer.');
-        return {
-            result: 'error',
-            message: response.messages.join('\n'),
-        };
+        response.errorMsgs.push(
+            'Migrering av publisert innhold feilet. Sjekk logger for detaljer.'
+        );
+        return response;
     }
 
     const sourceRepoId = getLayersData().localeToRepoIdMap[sourceLocale];
     if (!isDraftAndMasterSameVersion(sourceId, sourceRepoId)) {
         const copyDraftSuccess = migrateBranch(contentMigrationParams, 'draft');
         if (copyDraftSuccess) {
-            response.messages.push('Migrering av innhold under arbeid var vellykket.');
+            response.statusMsgs.push('Migrering av innhold under arbeid var vellykket.');
         } else {
-            response.result = 'error';
-            response.messages.push(
+            response.errorMsgs.push(
                 'Migrering av innhold under arbeid feilet. Sjekk logger for detaljer.'
             );
         }
     } else {
-        response.messages.push('Innhold er ikke under arbeid (ikke noe å migrere).');
+        response.statusMsgs.push('Innhold er ikke under arbeid (ikke noe å migrere).');
     }
 
     const didUpdateRefs = updateContentReferences(contentMigrationParams);
     if (didUpdateRefs) {
-        response.messages.push('Oppdatering av referanser var vellykket.');
+        response.statusMsgs.push('Oppdatering av referanser var vellykket.');
     } else {
-        response.result = 'error';
-        response.messages.push('Oppdatering av referanser feilet. Sjekk logger for detaljer.');
+        response.errorMsgs.push('Oppdatering av referanser feilet. Sjekk logger for detaljer.');
     }
 
     const didArchive = archiveMigratedContent({
@@ -161,24 +159,10 @@ const _migrateContentToLayer = (
         postMigrationLocale: targetLocale,
     });
     if (didArchive) {
-        response.messages.push('Arkivering av migreringskilde var vellykket.');
+        response.statusMsgs.push('Arkivering av migreringskilde var vellykket.');
     } else {
-        response.result = 'error';
-        response.messages.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
+        response.errorMsgs.push('Arkivering av migreringskilde feilet. Sjekk logger for detaljer.');
     }
-
-    return { result: response.result, message: response.messages.join('\n') };
-};
-
-export const migrateContentToLayer = (
-    contentMigrationParams: ContentMigrationParams
-): LayerMigrationResult => {
-    toggleCacheInvalidationOnNodeEvents({ shouldDefer: true });
-
-    const response = _migrateContentToLayer(contentMigrationParams);
-    logger[response.result === 'success' ? 'info' : 'error'](response.message);
-
-    toggleCacheInvalidationOnNodeEvents({ shouldDefer: false });
 
     return response;
 };
