@@ -15,6 +15,7 @@ jobs:
     with:
       naisCluster: prod-gcp
       xpAdminHost: portal-admin.oera.no
+      xpEnv: prod
       image: ${{ needs.build.outputs.image }}
     secrets:
       NAIS_DEPLOY_APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}

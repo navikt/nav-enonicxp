@@ -8,6 +8,9 @@ on:
       xpAdminHost:
         required: true
         type: string
+      xpEnv:
+        required: true
+        type: string
       image:
         required: true
         type: string
@@ -28,4 +31,4 @@ jobs:
           CLUSTER: ${{ inputs.naisCluster }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           RESOURCE: .nais-deploy-job/deploy-job.yml
-          VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }}
+          VAR: image=${{ inputs.image }},xpAdminHost=${{ inputs.xpAdminHost }},xpEnv=${{ inputs.xpEnv }}
