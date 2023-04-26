@@ -95,7 +95,13 @@ const getTargetBaseContent = (sourceContent: Content, sourceLocale: string) => {
     return null;
 };
 
-const getContentToMigrate = ({ contentTypes, query, maxCount, sourceLocale, targetLocale }: Params) =>
+const getContentToMigrate = ({
+    contentTypes,
+    query,
+    maxCount,
+    sourceLocale,
+    targetLocale,
+}: Params) =>
     contentLib
         .query({
             count: 2000,
